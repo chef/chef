@@ -30,7 +30,7 @@ class Chef
       default_action :create
       allowed_actions :create, :assemble, :stop
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
 
         @chunk = 16
@@ -42,7 +42,7 @@ class Chef
         @raid_device = name
       end
 
-      def chunk(arg=nil)
+      def chunk(arg = nil)
         set_or_return(
           :chunk,
           arg,
@@ -50,7 +50,7 @@ class Chef
         )
       end
 
-      def devices(arg=nil)
+      def devices(arg = nil)
         set_or_return(
           :devices,
           arg,
@@ -58,7 +58,7 @@ class Chef
         )
       end
 
-      def exists(arg=nil)
+      def exists(arg = nil)
         set_or_return(
           :exists,
           arg,
@@ -66,7 +66,7 @@ class Chef
         )
       end
 
-      def level(arg=nil)
+      def level(arg = nil)
         set_or_return(
           :level,
           arg,
@@ -74,7 +74,7 @@ class Chef
         )
       end
 
-      def metadata(arg=nil)
+      def metadata(arg = nil)
         set_or_return(
           :metadata,
           arg,
@@ -82,7 +82,7 @@ class Chef
         )
       end
 
-      def bitmap(arg=nil)
+      def bitmap(arg = nil)
         set_or_return(
           :bitmap,
           arg,
@@ -90,14 +90,13 @@ class Chef
         )
       end
 
-      def raid_device(arg=nil)
+      def raid_device(arg = nil)
         set_or_return(
           :raid_device,
           arg,
           :kind_of => [ String ],
         )
       end
-
 
     end
   end

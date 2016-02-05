@@ -184,4 +184,3 @@ describe Chef::Cookbook::CookbookVersionLoader do
   end
 
 end
-

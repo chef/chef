@@ -66,7 +66,7 @@ class Chef
           end
 
           requirements.assert(:restart) do |a|
-            a.assertion { @new_resource.restart_command  || ( @new_resource.start_command && @new_resource.stop_command ) }
+            a.assertion { @new_resource.restart_command || ( @new_resource.start_command && @new_resource.stop_command ) }
             a.failure_message Chef::Exceptions::Service, "#{self} requires a restart_command or both start_command and stop_command be set in order to perform a restart"
           end
 
@@ -109,6 +109,7 @@ class Chef
         end
 
       protected
+
         def determine_current_status!
           if @new_resource.status_command
             Chef::Log.debug("#{@new_resource} you have specified a status command, running..")

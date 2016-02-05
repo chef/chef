@@ -37,7 +37,7 @@ describe Chef::Provider::Subversion do
   it "converts resource attributes to options for run_command and popen4" do
     expect(@provider.run_options).to eq({})
     @resource.user "deployninja"
-    expect(@provider.run_options).to eq({:user => "deployninja"})
+    expect(@provider.run_options).to eq({ :user => "deployninja" })
   end
 
   context "determining the revision of the currently deployed code" do
@@ -64,18 +64,18 @@ describe Chef::Provider::Subversion do
                           "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
                           "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
       expect(::File).to receive(:exist?).at_least(1).times.with("/my/deploy/dir/.svn").and_return(true)
-      expected_command = ["svn info", {:cwd => "/my/deploy/dir", :returns => [0,1]}]
+      expected_command = ["svn info", { :cwd => "/my/deploy/dir", :returns => [0, 1] }]
       expect(@provider).to receive(:shell_out!).with(*expected_command).
-                             and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
+        and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
       expect(@provider.find_current_revision).to eql("11410")
     end
 
     it "gives nil as the current revision if the deploy dir isn't a SVN working copy" do
       example_svn_info = "svn: '/tmp/deploydir' is not a working copy\n"
       expect(::File).to receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
-      expected_command = ["svn info", {:cwd => "/my/deploy/dir", :returns => [0,1]}]
+      expected_command = ["svn info", { :cwd => "/my/deploy/dir", :returns => [0, 1] }]
       expect(@provider).to receive(:shell_out!).with(*expected_command).
-                             and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
+        and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
       expect(@provider.find_current_revision).to be_nil
     end
 
@@ -119,19 +119,19 @@ describe Chef::Provider::Subversion do
                           "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
                           "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
       @resource.revision "HEAD"
-      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {:cwd => "/my/deploy/dir", :returns => [0,1]}]
+      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", { :cwd => "/my/deploy/dir", :returns => [0, 1] }]
       expect(@provider).to receive(:shell_out!).with(*expected_command).
-                                        and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
+        and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
       expect(@provider.revision_int).to eql("11410")
     end
 
     it "returns a helpful message if data from `svn info` can't be parsed" do
       example_svn_info =  "some random text from an error message\n"
       @resource.revision "HEAD"
-      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {:cwd => "/my/deploy/dir", :returns => [0,1]}]
+      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", { :cwd => "/my/deploy/dir", :returns => [0, 1] }]
       expect(@provider).to receive(:shell_out!).with(*expected_command).
-                             and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
-      expect {@provider.revision_int}.to raise_error(RuntimeError, "Could not parse `svn info` data: some random text from an error message\n")
+        and_return(double("ShellOut result", :stdout => example_svn_info, :stderr => ""))
+      expect { @provider.revision_int }.to raise_error(RuntimeError, "Could not parse `svn info` data: some random text from an error message\n")
 
     end
 
@@ -154,8 +154,7 @@ describe Chef::Provider::Subversion do
 
   it "generates a checkout command with arbitrary options" do
     @resource.svn_arguments "--no-auth-cache"
-    expect(@provider.checkout_command).to eql("svn checkout --no-auth-cache -q  -r12345 "+
-                                          "http://svn.example.org/trunk/ /my/deploy/dir")
+    expect(@provider.checkout_command).to eql("svn checkout --no-auth-cache -q  -r12345 " + "http://svn.example.org/trunk/ /my/deploy/dir")
   end
 
   it "generates a sync command with default options" do
@@ -195,14 +194,14 @@ describe Chef::Provider::Subversion do
   end
 
   it "raises an error if the svn checkout command would fail because the enclosing directory doesn't exist" do
-    expect {@provider.run_action(:sync)}.to raise_error(Chef::Exceptions::MissingParentDirectory)
+    expect { @provider.run_action(:sync) }.to raise_error(Chef::Exceptions::MissingParentDirectory)
   end
 
   it "should not checkout if the destination exists or is a non empty directory" do
     allow(::File).to receive(:exist?).with("/my/deploy/dir/.svn").and_return(false)
     allow(::File).to receive(:exist?).with("/my/deploy/dir").and_return(true)
     allow(::File).to receive(:directory?).with("/my/deploy").and_return(true)
-    allow(::Dir).to receive(:entries).with("/my/deploy/dir").and_return([".","..","foo","bar"])
+    allow(::Dir).to receive(:entries).with("/my/deploy/dir").and_return([".", "..", "foo", "bar"])
     expect(@provider).not_to receive(:checkout_command)
     @provider.run_action(:checkout)
     expect(@resource).not_to be_updated
@@ -213,7 +212,7 @@ describe Chef::Provider::Subversion do
     @resource.user "whois"
     @resource.group "thisis"
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    expect(@provider).to receive(:shell_out!).with(expected_cmd, {user: "whois", group: "thisis"})
+    expect(@provider).to receive(:shell_out!).with(expected_cmd, { user: "whois", group: "thisis" })
     @provider.run_action(:checkout)
     expect(@resource).to be_updated
   end

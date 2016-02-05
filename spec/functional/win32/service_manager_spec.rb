@@ -101,8 +101,8 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
       end
 
       it "install => should say service already exists" do
-          service_manager.run(["-a", "install"])
-          expect(@service_manager_output.grep(/already exists/).length).to be > 0
+        service_manager.run(["-a", "install"])
+        expect(@service_manager_output.grep(/already exists/).length).to be > 0
       end
 
       context "and service is stopped" do
@@ -132,7 +132,6 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
           service_manager.run(["-a", "stop"])
           expect(test_service_state).to eq("stopped")
         end
-
 
         ["pause", "resume"].each do |action|
           it "#{action} => should raise error" do
@@ -211,7 +210,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
           end
 
           it "start should raise an error" do
-            expect {service_manager.run(["-a", "start"])}.to raise_error(::Win32::Service::Error)
+            expect { service_manager.run(["-a", "start"]) }.to raise_error(::Win32::Service::Error)
           end
 
         end

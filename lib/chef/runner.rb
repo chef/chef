@@ -45,8 +45,7 @@ class Chef
 
     # Determine the appropriate provider for the given resource, then
     # execute it.
-    def run_action(resource, action, notification_type=nil, notifying_resource=nil)
-
+    def run_action(resource, action, notification_type = nil, notifying_resource = nil)
       # If there are any before notifications, why-run the resource
       # and notify anyone who needs notifying
       # TODO cheffish has a bug where it passes itself instead of the run_context to us, so doesn't have before_notifications. Fix there, update dependency requirement, and remove this if statement.
@@ -103,7 +102,7 @@ class Chef
 
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|
-        Array(resource.action).each {|action| run_action(resource, action)}
+        Array(resource.action).each { |action| run_action(resource, action) }
       end
 
     rescue Exception => e
@@ -117,7 +116,7 @@ class Chef
     private
 
     # Run all our :delayed actions
-    def run_delayed_notifications(error=nil)
+    def run_delayed_notifications(error = nil)
       collected_failures = Exceptions::MultipleFailures.new
       collected_failures.client_run_failure(error) unless error.nil?
       delayed_actions.each do |notification|

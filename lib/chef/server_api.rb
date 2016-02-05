@@ -57,7 +57,7 @@ class Chef
     # Makes an HTTP request to +path+ with the given +method+, +headers+, and
     # +data+ (if applicable). Does not apply any middleware, besides that
     # needed for Authentication.
-    def raw_request(method, path, headers={}, data=false)
+    def raw_request(method, path, headers = {}, data = false)
       url = create_url(path)
       method, url, headers, data = Chef::HTTP::Authenticator.new(options).handle_request(method, url, headers, data)
       method, url, headers, data = Chef::HTTP::RemoteRequestID.new(options).handle_request(method, url, headers, data)

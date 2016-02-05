@@ -799,7 +799,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
         let(:deploy_that_fails) do
           resource = deploy_to_latest_rev.dup
-          errant_callback = lambda {|x| raise Exception, "I am a failed deploy" }
+          errant_callback = lambda { |x| raise Exception, "I am a failed deploy" }
           resource.send(callback, &errant_callback)
           resource
         end
@@ -862,7 +862,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
       let(:deploy_that_fails) do
         resource = deploy_to_previous_rev.dup
-        resource.after_restart {|x| raise Exception, "I am a failed deploy" }
+        resource.after_restart { |x| raise Exception, "I am a failed deploy" }
         resource
       end
 

@@ -57,6 +57,7 @@ class Chef
       end
 
       private
+
       def cookbooks_api_url
         "https://supermarket.chef.io/api/v1/cookbooks"
       end

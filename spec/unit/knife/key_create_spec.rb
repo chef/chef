@@ -95,7 +95,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
 
     context "when public_key and key_name weren't passed" do
       it "raises a Chef::Exceptions::KeyCommandInputError with the proper error message" do
-        expect{ key_create_object.run }.to raise_error(Chef::Exceptions::KeyCommandInputError, key_create_object.public_key_or_key_name_error_msg)
+        expect { key_create_object.run }.to raise_error(Chef::Exceptions::KeyCommandInputError, key_create_object.public_key_or_key_name_error_msg)
       end
     end
 
@@ -221,4 +221,3 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
     end
   end
 end
-

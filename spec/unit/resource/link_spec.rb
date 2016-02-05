@@ -39,7 +39,7 @@ describe Chef::Resource::Link do
     expect(@resource.action).to eql([:create])
   end
 
-  { :create => false, :delete => false, :blues => true }.each do |action,bad_value|
+  { :create => false, :delete => false, :blues => true }.each do |action, bad_value|
     it "should #{bad_value ? 'not' : ''} accept #{action}" do
       if bad_value
         expect { @resource.action action }.to raise_error(ArgumentError)

@@ -43,7 +43,7 @@ class Chef
           end
 
           # Clean all the paths... this is required because of the join
-          files.map {|f| Chef::Util::PathHelper.cleanpath(f)}
+          files.map { |f| Chef::Util::PathHelper.cleanpath(f) }
         end
 
       end

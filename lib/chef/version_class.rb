@@ -20,7 +20,7 @@ class Chef
     include Comparable
     attr_reader :major, :minor, :patch
 
-    def initialize(str="")
+    def initialize(str = "")
       parse(str)
     end
 
@@ -53,7 +53,7 @@ class Chef
 
     protected
 
-    def parse(str="")
+    def parse(str = "")
       @major, @minor, @patch =
         case str.to_s
         when /^(\d+)\.(\d+)\.(\d+)$/

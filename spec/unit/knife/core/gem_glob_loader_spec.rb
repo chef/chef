@@ -18,14 +18,14 @@
 require "spec_helper"
 
 describe Chef::Knife::SubcommandLoader::GemGlobLoader do
-   let(:loader) { Chef::Knife::SubcommandLoader::GemGlobLoader.new(File.join(CHEF_SPEC_DATA, "knife-site-subcommands")) }
-   let(:home) { File.join(CHEF_SPEC_DATA, "knife-home") }
-   let(:plugin_dir) { File.join(home, ".chef", "plugins", "knife") }
+  let(:loader) { Chef::Knife::SubcommandLoader::GemGlobLoader.new(File.join(CHEF_SPEC_DATA, "knife-site-subcommands")) }
+  let(:home) { File.join(CHEF_SPEC_DATA, "knife-home") }
+  let(:plugin_dir) { File.join(home, ".chef", "plugins", "knife") }
 
-   before do
-     allow(ChefConfig).to receive(:windows?) { false }
-     Chef::Util::PathHelper.class_variable_set(:@@home_dir, home)
-   end
+  before do
+    allow(ChefConfig).to receive(:windows?) { false }
+    Chef::Util::PathHelper.class_variable_set(:@@home_dir, home)
+  end
 
   after do
     Chef::Util::PathHelper.class_variable_set(:@@home_dir, nil)
@@ -40,7 +40,7 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
 
   it "finds files installed via rubygems" do
     expect(loader.find_subcommands_via_rubygems).to include("chef/knife/node_create")
-    loader.find_subcommands_via_rubygems.each {|rel_path, abs_path| expect(abs_path).to match(%r{chef/knife/.+})}
+    loader.find_subcommands_via_rubygems.each { |rel_path, abs_path| expect(abs_path).to match(%r{chef/knife/.+}) }
   end
 
   it "finds files from latest version of installed gems" do
@@ -65,7 +65,7 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
 
   it "finds files using a dirglob when rubygems is not available" do
     expect(loader.find_subcommands_via_dirglob).to include("chef/knife/node_create")
-    loader.find_subcommands_via_dirglob.each {|rel_path, abs_path| expect(abs_path).to match(%r{chef/knife/.+})}
+    loader.find_subcommands_via_dirglob.each { |rel_path, abs_path| expect(abs_path).to match(%r{chef/knife/.+}) }
   end
 
   it "finds user-specific subcommands in the user's ~/.chef directory" do
@@ -177,7 +177,6 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
       allow(ENV).to receive(:[]) { |key| env_dup[key] }
       allow(ENV).to receive(:[]).with("HOME").and_return(env_home)
     end
-
 
     it "searches rubygems for plugins" do
       if Gem::Specification.respond_to?(:latest_specs)

@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-
 class Chef
   class Cookbook
     # == Chef::Cookbook::FileVendor

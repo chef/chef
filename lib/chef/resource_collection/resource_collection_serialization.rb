@@ -41,7 +41,7 @@ class Chef
       module ClassMethods
         def json_create(o)
           collection = self.new()
-          o["instance_vars"].each do |k,v|
+          o["instance_vars"].each do |k, v|
             collection.instance_variable_set(k.to_sym, v)
           end
           collection

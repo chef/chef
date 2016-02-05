@@ -20,7 +20,7 @@
 require "spec_helper"
 
 describe Chef::Log::WinEvt do
-  let(:evtlog) { instance_double("Win32::EventLog")}
+  let(:evtlog) { instance_double("Win32::EventLog") }
   let(:winevt) { Chef::Log::WinEvt.new(evtlog) }
   let(:app) { Chef::Application.new }
 

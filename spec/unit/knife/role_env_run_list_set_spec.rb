@@ -21,8 +21,8 @@ require "spec_helper"
 
 describe Chef::Knife::RoleEnvRunListSet do
   before(:each) do
-    Chef::Config[:role_name]  = "will"
-    Chef::Config[:env_name]  = "QA"
+    Chef::Config[:role_name] = "will"
+    Chef::Config[:env_name] = "QA"
     @setup = Chef::Knife::RoleEnvRunListAdd.new
     @setup.name_args = [ "will", "QA", "role[monkey]", "role[person]", "role[bucket]" ]
 
@@ -42,10 +42,7 @@ describe Chef::Knife::RoleEnvRunListSet do
 
   end
 
-
-
   describe "run" do
-
 
 #    it "should display all the things" do
 #      @knife.run
@@ -60,8 +57,8 @@ describe Chef::Knife::RoleEnvRunListSet do
     it "should replace all the items in the runlist with what is specified" do
       @setup.run
       @knife.run
-      expect(@role.run_list_for("QA")[0]).to eq("role[owen]") 
-      expect(@role.run_list_for("QA")[1]).to eq("role[mauntel]") 
+      expect(@role.run_list_for("QA")[0]).to eq("role[owen]")
+      expect(@role.run_list_for("QA")[1]).to eq("role[mauntel]")
       expect(@role.run_list_for("QA")[2]).to be_nil
       expect(@role.run_list[0]).to be_nil
     end

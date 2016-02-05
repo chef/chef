@@ -40,7 +40,7 @@ class Chef
       end
 
       def expired_and_non_expired_msg
-<<EOS
+        <<EOS
 You cannot pass both --only-expired and --only-non-expired.
 Please pass one or none.
 EOS

@@ -91,7 +91,6 @@ describe Chef::ApiClientV1 do
     expect { @client.public_key Hash.new }.to raise_error(ArgumentError)
   end
 
-
   it "has a private key attribute" do
     @client.private_key("super private")
     expect(@client.private_key).to eq("super private")
@@ -299,11 +298,10 @@ describe Chef::ApiClientV1 do
     end
 
     let :private_key_data do
-      File.open(Chef::Config[:client_key], "r") {|f| f.read.chomp }
+      File.open(Chef::Config[:client_key], "r") { |f| f.read.chomp }
     end
 
   end
-
 
   describe "when requesting a new key" do
     before do
@@ -328,7 +326,7 @@ describe Chef::ApiClientV1 do
   describe "Versioned API Interactions" do
     let(:response_406) { OpenStruct.new(:code => "406") }
     let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
-    let(:payload)  {
+    let(:payload) {
       {
         :name => "some_name",
         :validator => true,
@@ -391,7 +389,7 @@ describe Chef::ApiClientV1 do
             end
 
             it "updates the client with only the name" do
-              expect(rest). to receive(:put).with("clients/some_name", {:name => "some_name"}).and_return({:name => "some_name"})
+              expect(rest). to receive(:put).with("clients/some_name", { :name => "some_name" }).and_return({ :name => "some_name" })
               @client.update
             end
           end
@@ -439,7 +437,7 @@ describe Chef::ApiClientV1 do
     describe "reregister" do
       context "when server API V0 is valid on the Chef Server receiving the request" do
         it "creates a new object via the API" do
-          expect(@client.chef_rest_v0).to receive(:put).with("clients/#{@client.name}", payload.merge({:private_key => true})).and_return({})
+          expect(@client.chef_rest_v0).to receive(:put).with("clients/#{@client.name}", payload.merge({ :private_key => true })).and_return({})
           @client.reregister
         end
       end # when server API V0 is valid on the Chef Server receiving the request

@@ -87,7 +87,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     end
 
     describe "when the json_attribs configuration option is specified" do
-      let(:json_attribs) { {"a" => "b"} }
+      let(:json_attribs) { { "a" => "b" } }
       let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
       let(:json_source) { "https://foo.com/foo.json" }
 
@@ -107,7 +107,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       let(:tarfile) { StringIO.new("remote_tarball_content") }
       let(:target_file) { StringIO.new }
       let(:shellout) { double(run_command: nil, error!: nil, stdout: "") }
-     
+
       before do
         Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"
         Chef::Config[:recipe_url] = "http://junglist.gen.nz/recipes.tgz"
@@ -137,14 +137,14 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       end
 
       it "should untar the target file to the parent of the cookbook path" do
-        expect(Mixlib::ShellOut).to receive(:new).with("tar zxvf #{Dir.tmpdir}/chef-solo/recipes.tgz -C #{Dir.tmpdir}/chef-solo")  
+        expect(Mixlib::ShellOut).to receive(:new).with("tar zxvf #{Dir.tmpdir}/chef-solo/recipes.tgz -C #{Dir.tmpdir}/chef-solo")
         app.reconfigure
       end
     end
   end
 
   describe "when the json_attribs and recipe_url configuration options are both specified" do
-    let(:json_attribs) { {"a" => "b"} }
+    let(:json_attribs) { { "a" => "b" } }
     let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
     let(:json_source) { "https://foo.com/foo.json" }
 

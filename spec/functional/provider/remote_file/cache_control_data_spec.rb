@@ -22,13 +22,13 @@ require "uri"
 describe Chef::Provider::RemoteFile::CacheControlData do
 
   before do
-    @original_config = Chef::Config.hash_dup    
+    @original_config = Chef::Config.hash_dup
   end
 
   after do
-    Chef::Config.configuration = @original_config if @original_config    
+    Chef::Config.configuration = @original_config if @original_config
   end
-  
+
   before(:each) do
     Chef::Config[:file_cache_path] = Dir.mktmpdir
   end
@@ -38,7 +38,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
   end
 
   let(:uri) { URI.parse("http://www.bing.com/robots.txt") }
-  
+
   describe "when the cache control data save method is invoked" do
 
     subject(:cache_control_data) do
@@ -66,7 +66,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       saved_cache_control_data = Chef::Provider::RemoteFile::CacheControlData.load_and_validate(uri, file_checksum)
       expect(saved_cache_control_data.etag).to eq(cache_control_data.etag)
       expect(saved_cache_control_data.mtime).to eq(cache_control_data.mtime)
-      expect(saved_cache_control_data.checksum).to eq(cache_control_data.checksum)  
+      expect(saved_cache_control_data.checksum).to eq(cache_control_data.checksum)
     end
 
     # Cover the very long remote file path case -- see CHEF-4422 where
@@ -91,11 +91,10 @@ describe Chef::Provider::RemoteFile::CacheControlData do
         saved_cache_control_data = Chef::Provider::RemoteFile::CacheControlData.load_and_validate(uri, file_checksum)
         expect(saved_cache_control_data.etag).to eq(cache_control_data.etag)
         expect(saved_cache_control_data.mtime).to eq(cache_control_data.mtime)
-        expect(saved_cache_control_data.checksum).to eq(cache_control_data.checksum)  
+        expect(saved_cache_control_data.checksum).to eq(cache_control_data.checksum)
       end
 
     end
   end
 
 end
-

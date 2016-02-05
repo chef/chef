@@ -106,7 +106,7 @@ class Chef
         if purge
           Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob(path), "**", "*"), ::File::FNM_DOTMATCH).sort!.reverse!.each do |file|
             # skip '.' and '..'
-            next if [".",".."].include?(Pathname.new(file).basename().to_s)
+            next if [".", ".."].include?(Pathname.new(file).basename().to_s)
 
             # Clean the path.  This is required because of the ::File.join
             file = Chef::Util::PathHelper.cleanpath(file)
@@ -251,7 +251,7 @@ class Chef
           # Windows will handle inheritance.
           if dir == path
             rights.each do |r|
-              r = r.dup  # do not update the new_resource
+              r = r.dup # do not update the new_resource
               permissions = r.delete(:permissions)
               principals = r.delete(:principals)
               res.rights(permissions, principals, r)

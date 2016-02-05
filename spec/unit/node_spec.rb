@@ -32,7 +32,7 @@ describe Chef::Node do
   end
 
   it "should validate the name of the node" do
-    expect{Chef::Node.build("solo node")}.to raise_error(Chef::Exceptions::ValidationFailed)
+    expect { Chef::Node.build("solo node") }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "should be sortable" do
@@ -107,11 +107,11 @@ describe Chef::Node do
     end
 
     it "cannot be blank" do
-      expect { node.name("")}.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.name("") }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "should not accept name doesn't match /^[\-[:alnum:]_:.]+$/" do
-      expect { node.name("space in it")}.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.name("space in it") }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
   end
 
@@ -131,7 +131,7 @@ describe Chef::Node do
     end
 
     it "cannot be blank" do
-      expect { node.chef_environment("")}.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.chef_environment("") }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
   end
 
@@ -167,7 +167,7 @@ describe Chef::Node do
     end
 
     it "cannot be blank" do
-      expect { node.policy_name("")}.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.policy_name("") }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
   end
 
@@ -203,7 +203,7 @@ describe Chef::Node do
     end
 
     it "cannot be blank" do
-      expect { node.policy_group("")}.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.policy_group("") }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
   end
 
@@ -223,7 +223,7 @@ describe Chef::Node do
     end
 
     it "does not allow you to set an attribute via node[]=" do
-      expect  { node["secret"] = "shush" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
+      expect { node["secret"] = "shush" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
     it "should allow you to query whether an attribute exists with attribute?" do
@@ -239,7 +239,7 @@ describe Chef::Node do
     end
 
     it "does not allow you to set an attribute via method_missing" do
-      expect { node.sunshine = "is bright"}.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
+      expect { node.sunshine = "is bright" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
     it "should allow you get get an attribute via method_missing" do
@@ -389,7 +389,7 @@ describe Chef::Node do
 
         it "deletes nested things correctly" do
           node.default["mysql"]["client"]["client_setting"] = "foo"
-          expect( node.rm("mysql", "server") ).to eql( {"port" => 3456} )
+          expect( node.rm("mysql", "server") ).to eql( { "port" => 3456 } )
           expect( node["mysql"] ).to eql( { "client" => { "client_setting" => "foo" } } )
         end
 
@@ -398,7 +398,7 @@ describe Chef::Node do
         end
 
         it "can delete the entire tree" do
-          expect( node.rm("mysql") ).to eql({"server"=>{"port"=>3456}})
+          expect( node.rm("mysql") ).to eql({ "server" => { "port" => 3456 } })
         end
       end
 
@@ -736,7 +736,7 @@ describe Chef::Node do
       node.default.sunshine = "is bright"
       node.default.canada = "is a nice place"
       seen_attributes = Hash.new
-      node.each_attribute do |a,v|
+      node.each_attribute do |a, v|
         seen_attributes[a] = v
       end
       expect(seen_attributes).to have_key("sunshine")
@@ -749,12 +749,12 @@ describe Chef::Node do
   describe "consuming json" do
 
     before do
-      @ohai_data = {:platform => "foo", :platform_version => "bar"}
+      @ohai_data = { :platform => "foo", :platform_version => "bar" }
     end
 
     it "consumes the run list portion of a collection of attributes and returns the remainder" do
-      attrs = {"run_list" => [ "role[base]", "recipe[chef::server]" ], "foo" => "bar"}
-      expect(node.consume_run_list(attrs)).to eq({"foo" => "bar"})
+      attrs = { "run_list" => [ "role[base]", "recipe[chef::server]" ], "foo" => "bar" }
+      expect(node.consume_run_list(attrs)).to eq({ "foo" => "bar" })
       expect(node.run_list).to eq([ "role[base]", "recipe[chef::server]" ])
     end
 
@@ -774,7 +774,7 @@ describe Chef::Node do
     it "should not add duplicate recipes from the json attributes" do
       node.run_list << "one"
       node.consume_run_list "recipes" => [ "one", "two", "three" ]
-      expect(node.run_list).to  eq([ "one", "two", "three" ])
+      expect(node.run_list).to eq([ "one", "two", "three" ])
     end
 
     it "doesn't change the run list if no run_list is specified in the json" do
@@ -788,7 +788,7 @@ describe Chef::Node do
     end
 
     it "should add json attributes to the node" do
-      node.consume_external_attrs(@ohai_data, {"one" => "two", "three" => "four"})
+      node.consume_external_attrs(@ohai_data, { "one" => "two", "three" => "four" })
       expect(node.one).to eql("two")
       expect(node.three).to eql("four")
     end
@@ -823,25 +823,25 @@ describe Chef::Node do
     end
 
     it "deep merges attributes instead of overwriting them" do
-      node.consume_external_attrs(@ohai_data, "one" => {"two" => {"three" => "four"}})
-      expect(node.one.to_hash).to eq({"two" => {"three" => "four"}})
-      node.consume_external_attrs(@ohai_data, "one" => {"abc" => "123"})
-      node.consume_external_attrs(@ohai_data, "one" => {"two" => {"foo" => "bar"}})
-      expect(node.one.to_hash).to eq({"two" => {"three" => "four", "foo" => "bar"}, "abc" => "123"})
+      node.consume_external_attrs(@ohai_data, "one" => { "two" => { "three" => "four" } })
+      expect(node.one.to_hash).to eq({ "two" => { "three" => "four" } })
+      node.consume_external_attrs(@ohai_data, "one" => { "abc" => "123" })
+      node.consume_external_attrs(@ohai_data, "one" => { "two" => { "foo" => "bar" } })
+      expect(node.one.to_hash).to eq({ "two" => { "three" => "four", "foo" => "bar" }, "abc" => "123" })
     end
 
     it "gives attributes from JSON priority when deep merging" do
-      node.consume_external_attrs(@ohai_data, "one" => {"two" => {"three" => "four"}})
-      expect(node.one.to_hash).to eq({"two" => {"three" => "four"}})
-      node.consume_external_attrs(@ohai_data, "one" => {"two" => {"three" => "forty-two"}})
-      expect(node.one.to_hash).to eq({"two" => {"three" => "forty-two"}})
+      node.consume_external_attrs(@ohai_data, "one" => { "two" => { "three" => "four" } })
+      expect(node.one.to_hash).to eq({ "two" => { "three" => "four" } })
+      node.consume_external_attrs(@ohai_data, "one" => { "two" => { "three" => "forty-two" } })
+      expect(node.one.to_hash).to eq({ "two" => { "three" => "forty-two" } })
     end
 
   end
 
   describe "preparing for a chef client run" do
     before do
-      @ohai_data = {:platform => "foobuntu", :platform_version => "23.42"}
+      @ohai_data = { :platform => "foobuntu", :platform_version => "23.42" }
     end
 
     it "sets its platform according to platform detection" do
@@ -851,16 +851,16 @@ describe Chef::Node do
     end
 
     it "consumes the run list from provided json attributes" do
-      node.consume_external_attrs(@ohai_data, {"run_list" => ["recipe[unicorn]"]})
+      node.consume_external_attrs(@ohai_data, { "run_list" => ["recipe[unicorn]"] })
       expect(node.run_list).to eq(["recipe[unicorn]"])
     end
 
     it "saves non-runlist json attrs for later" do
       expansion = Chef::RunList::RunListExpansion.new("_default", [])
       allow(node.run_list).to receive(:expand).and_return(expansion)
-      node.consume_external_attrs(@ohai_data, {"foo" => "bar"})
+      node.consume_external_attrs(@ohai_data, { "foo" => "bar" })
       node.expand!
-      expect(node.normal_attrs).to eq({"foo" => "bar", "tags" => []})
+      expect(node.normal_attrs).to eq({ "foo" => "bar", "tags" => [] })
     end
 
   end
@@ -885,7 +885,7 @@ describe Chef::Node do
     end
 
     it "sets the 'roles' automatic attribute to the expanded role list" do
-      @expansion.instance_variable_set(:@applied_roles, {"arf" => nil, "countersnark" => nil})
+      @expansion.instance_variable_set(:@applied_roles, { "arf" => nil, "countersnark" => nil })
       node.expand!
       expect(node.automatic_attrs[:roles].sort).to eq(["arf", "countersnark"])
     end
@@ -985,12 +985,12 @@ describe Chef::Node do
     before do
       node.chef_environment = "rspec"
       @expansion = Chef::RunList::RunListExpansion.new("rspec", [])
-      @expansion.default_attrs.replace({:default => "from role", :d_role => "role only"})
-      @expansion.override_attrs.replace({:override => "from role", :o_role => "role only"})
+      @expansion.default_attrs.replace({ :default => "from role", :d_role => "role only" })
+      @expansion.override_attrs.replace({ :override => "from role", :o_role => "role only" })
 
       @environment = Chef::Environment.new
-      @environment.default_attributes = {:default => "from env", :d_env => "env only" }
-      @environment.override_attributes = {:override => "from env", :o_env => "env only"}
+      @environment.default_attributes = { :default => "from env", :d_env => "env only" }
+      @environment.override_attributes = { :override => "from env", :o_env => "env only" }
       allow(Chef::Environment).to receive(:load).and_return(@environment)
       node.apply_expansion_attributes(@expansion)
     end
@@ -1173,8 +1173,8 @@ describe Chef::Node do
     it "should serialize valid json with a run list", :json => true do
       #This test came about because activesupport mucks with Chef json serialization
       #Test should pass with and without Activesupport
-      node.run_list << {"type" => "role", "name" => "Cthulu"}
-      node.run_list << {"type" => "role", "name" => "Hastur"}
+      node.run_list << { "type" => "role", "name" => "Cthulu" }
+      node.run_list << { "type" => "role", "name" => "Hastur" }
       json = Chef::JSONCompat.to_json(node)
       expect(json).to match(/\"run_list\":\[\"role\[Cthulu\]\",\"role\[Hastur\]\"\]/)
     end
@@ -1211,7 +1211,7 @@ describe Chef::Node do
       expect(serialized_node).to be_a_kind_of(Chef::Node)
       expect(serialized_node.name).to eql(node.name)
       expect(serialized_node.chef_environment).to eql(node.chef_environment)
-      node.each_attribute do |k,v|
+      node.each_attribute do |k, v|
         expect(serialized_node[k]).to eql(v)
       end
       expect(serialized_node.run_list).to eq(node.run_list)

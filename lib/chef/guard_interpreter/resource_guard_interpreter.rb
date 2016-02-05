@@ -42,9 +42,9 @@ class Chef
         # We need to make sure we check for Script first because any resource
         # that can get to here is an Execute resource.
         if @resource.is_a? Chef::Resource::Script
-          block_attributes = @command_opts.merge({:code => @command})
+          block_attributes = @command_opts.merge({ :code => @command })
         else
-          block_attributes = @command_opts.merge({:command => @command})
+          block_attributes = @command_opts.merge({ :command => @command })
         end
 
         # Handles cases like powershell_script where default
@@ -62,7 +62,7 @@ class Chef
 
       protected
 
-      def evaluate_action(action=nil, &block)
+      def evaluate_action(action = nil, &block)
         @resource.instance_eval(&block)
 
         run_action = action || @resource.action
@@ -71,7 +71,7 @@ class Chef
           # Coerce to an array to be safe. This could happen with a legacy
           # resource or something overriding the default_action code in a
           # subclass.
-          Array(run_action).each {|action_to_run| @resource.run_action(action_to_run) }
+          Array(run_action).each { |action_to_run| @resource.run_action(action_to_run) }
           resource_updated = @resource.updated
         rescue Mixlib::ShellOut::ShellCommandFailed
           resource_updated = nil

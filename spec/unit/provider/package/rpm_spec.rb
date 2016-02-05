@@ -116,7 +116,6 @@ describe Chef::Provider::Package::Rpm do
       end
     end
 
-
     context "when the package is installed" do
 
       let(:rpm_qp_stdout) { "ImageMagick-c++ 6.5.4.7-7.el6_5" }
@@ -236,7 +235,6 @@ describe Chef::Provider::Package::Rpm do
             provider.action_remove
           end
         end
-
 
         context "when the package name contains a tilde (chef#3503)" do
 
@@ -396,7 +394,6 @@ describe Chef::Provider::Package::Rpm do
 
       end
 
-
     end
   end
 
@@ -428,6 +425,5 @@ describe Chef::Provider::Package::Rpm do
       provider.upgrade_package("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", "6.5.4.7-7.el6_5")
     end
   end
-
 
 end

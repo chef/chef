@@ -38,12 +38,12 @@ describe Chef::Provider::Package::Zypper do
     allow(provider).to receive(:`).and_return("2.0")
   end
 
-  def shell_out_expectation(command, options=nil)
+  def shell_out_expectation(command, options = nil)
     options ||= { timeout: 900 }
     expect(provider).to receive(:shell_out).with(command, options)
   end
 
-  def shell_out_expectation!(command, options=nil)
+  def shell_out_expectation!(command, options = nil)
     options ||= { timeout: 900 }
     expect(provider).to receive(:shell_out!).with(command, options)
   end
@@ -104,8 +104,7 @@ describe Chef::Provider::Package::Zypper do
     it "should run zypper install without gpg checks" do
       allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
       shell_out_expectation!(
-        "zypper --non-interactive --no-gpg-checks install "+
-        "--auto-agree-with-licenses emacs=1.0"
+        "zypper --non-interactive --no-gpg-checks install " + "--auto-agree-with-licenses emacs=1.0"
       )
       provider.install_package(["emacs"], ["1.0"])
     end
@@ -114,8 +113,7 @@ describe Chef::Provider::Package::Zypper do
         /All packages will be installed without gpg signature checks/
       )
       shell_out_expectation!(
-        "zypper --non-interactive --no-gpg-checks install "+
-        "--auto-agree-with-licenses emacs=1.0"
+        "zypper --non-interactive --no-gpg-checks install " + "--auto-agree-with-licenses emacs=1.0"
       )
       provider.install_package(["emacs"], ["1.0"])
     end
@@ -132,8 +130,7 @@ describe Chef::Provider::Package::Zypper do
     it "should run zypper update without gpg checks" do
       allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
       shell_out_expectation!(
-        "zypper --non-interactive --no-gpg-checks install "+
-        "--auto-agree-with-licenses emacs=1.0"
+        "zypper --non-interactive --no-gpg-checks install " + "--auto-agree-with-licenses emacs=1.0"
       )
       provider.upgrade_package(["emacs"], ["1.0"])
     end
@@ -142,15 +139,13 @@ describe Chef::Provider::Package::Zypper do
         /All packages will be installed without gpg signature checks/
       )
       shell_out_expectation!(
-        "zypper --non-interactive --no-gpg-checks install "+
-        "--auto-agree-with-licenses emacs=1.0"
+        "zypper --non-interactive --no-gpg-checks install " + "--auto-agree-with-licenses emacs=1.0"
       )
       provider.upgrade_package(["emacs"], ["1.0"])
     end
     it "should run zypper upgrade without gpg checks" do
       shell_out_expectation!(
-        "zypper --non-interactive --no-gpg-checks install "+
-        "--auto-agree-with-licenses emacs=1.0"
+        "zypper --non-interactive --no-gpg-checks install " + "--auto-agree-with-licenses emacs=1.0"
       )
       provider.upgrade_package(["emacs"], ["1.0"])
     end
@@ -257,8 +252,7 @@ describe Chef::Provider::Package::Zypper do
     it "should install an array of package names and versions" do
       allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
       shell_out_expectation!(
-        "zypper --non-interactive --no-gpg-checks install "+
-        "--auto-agree-with-licenses emacs=1.0 vim=2.0"
+        "zypper --non-interactive --no-gpg-checks install " + "--auto-agree-with-licenses emacs=1.0 vim=2.0"
       )
       provider.install_package(["emacs", "vim"], ["1.0", "2.0"])
     end

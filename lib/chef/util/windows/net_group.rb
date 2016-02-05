@@ -72,7 +72,6 @@ class Chef::Util::Windows::NetGroup
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
-
   end
 
   def local_delete

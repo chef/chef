@@ -35,7 +35,7 @@ describe Chef::Provider::DscResource do
     }
     it "raises a ProviderNotFound exception" do
       expect(provider).not_to receive(:meta_configuration)
-      expect{provider.run_action(:run)}.to raise_error(
+      expect { provider.run_action(:run) }.to raise_error(
               Chef::Exceptions::ProviderNotFound, /5\.0\.10018\.0/)
     end
   end
@@ -70,7 +70,7 @@ describe Chef::Provider::DscResource do
       end
     end
   end
-  
+
   context "when the LCM supports Invoke-DscResource" do
     let (:node) {
       node = Chef::Node.new
@@ -92,23 +92,23 @@ describe Chef::Provider::DscResource do
       provider.run_action(:run)
       expect(resource).to be_updated
     end
-    
+
     it "flags the resource as reboot required when required" do
       expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:invoke_resource).
-        and_return(double(:stdout => "", :return_value =>nil))
+        and_return(double(:stdout => "", :return_value => nil))
       expect(provider).to receive(:add_dsc_verbose_log)
       expect(provider).to receive(:return_dsc_resource_result).and_return(true)
       expect(provider).to receive(:create_reboot_resource)
       provider.run_action(:run)
     end
-    
+
     it "does not flag the resource as reboot required when not required" do
       expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:invoke_resource).
-        and_return(double(:stdout => "", :return_value =>nil))
+        and_return(double(:stdout => "", :return_value => nil))
       expect(provider).to receive(:add_dsc_verbose_log)
       expect(provider).to receive(:return_dsc_resource_result).and_return(false)
       expect(provider).to_not receive(:create_reboot_resource)

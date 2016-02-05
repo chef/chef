@@ -222,7 +222,6 @@ class Chef
             @assertion_failed
           end
 
-
           # Runs the assertion/assumption logic. Will raise an Exception of the
           # type specified in #failure_message (or AssertionFailure by default)
           # if the requirement is not met and Chef is not running in why run
@@ -247,7 +246,7 @@ class Chef
 
         def initialize(resource, run_context)
           @resource, @run_context = resource, run_context
-          @assertions = Hash.new {|h,k| h[k] = [] }
+          @assertions = Hash.new { |h, k| h[k] = [] }
           @blocked_actions = []
         end
 
@@ -313,7 +312,7 @@ class Chef
         def assert(*actions)
           assertion = Assertion.new
           yield assertion
-          actions.each {|action| @assertions[action] << assertion }
+          actions.each { |action| @assertions[action] << assertion }
         end
 
         # Run the assertion and assumption logic.

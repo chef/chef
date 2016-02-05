@@ -24,14 +24,13 @@ class Chef
   module Mixin
     module Command
       module Windows
-        def popen4(cmd, args={}, &b)
-
+        def popen4(cmd, args = {}, &b)
           # By default, we are waiting before we yield the block.
           args[:waitlast] ||= false
 
           #XXX :user, :group, :environment support?
 
-          Open3.popen3(cmd) do |stdin,stdout,stderr,cid|
+          Open3.popen3(cmd) do |stdin, stdout, stderr, cid|
             if b
               if args[:waitlast]
                 b[cid, stdin, stdout, stderr]

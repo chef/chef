@@ -4,7 +4,7 @@ require "chef/local_mode"
 class Chef
   class Knife
     class Serve < Knife
-      
+
       banner "knife serve (options)"
 
       option :repo_mode,

@@ -70,7 +70,7 @@ describe "Chef::Win32::Security", :windows_only do
     let(:desired_access) { Chef::ReservedNames::Win32::Security::FILE_GENERIC_READ }
 
     it "should check if the provided token has the desired access" do
-      expect(Chef::ReservedNames::Win32::Security.access_check(security_descriptor, 
+      expect(Chef::ReservedNames::Win32::Security.access_check(security_descriptor,
                      token, desired_access, mapping)).to be true
     end
   end
@@ -85,7 +85,7 @@ describe "Chef::Win32::Security", :windows_only do
       let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_ALL_ACCESS }
 
       it "can duplicate a token" do
-        expect{ token.duplicate_token(:SecurityImpersonation) }.not_to raise_error
+        expect { token.duplicate_token(:SecurityImpersonation) }.not_to raise_error
       end
     end
 
@@ -93,7 +93,7 @@ describe "Chef::Win32::Security", :windows_only do
       let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_READ }
 
       it "raises an exception when trying to duplicate" do
-        expect{ token.duplicate_token(:SecurityImpersonation) }.to raise_error(Chef::Exceptions::Win32APIError)
+        expect { token.duplicate_token(:SecurityImpersonation) }.to raise_error(Chef::Exceptions::Win32APIError)
       end
     end
   end

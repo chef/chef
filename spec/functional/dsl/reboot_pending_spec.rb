@@ -22,7 +22,7 @@ require "spec_helper"
 
 describe Chef::DSL::RebootPending, :windows_only do
   def run_ohai
-    node.consume_external_attrs(OHAI_SYSTEM.data,{})
+    node.consume_external_attrs(OHAI_SYSTEM.data, {})
   end
 
   let(:node) { Chef::Node.new }
@@ -98,7 +98,7 @@ describe Chef::DSL::RebootPending, :windows_only do
 
     describe "when there is nothing to indicate a reboot is pending" do
       it "should return false" do
-        skip "reboot pending" if @any_flag.any? { |_,v| v == true }
+        skip "reboot pending" if @any_flag.any? { |_, v| v == true }
         expect(recipe.reboot_pending?).to be_falsey
       end
     end

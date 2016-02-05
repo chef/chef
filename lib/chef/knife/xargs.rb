@@ -22,7 +22,7 @@ class Chef
         :long => "--pattern [PATTERN]",
         :short => "-p [PATTERN]",
         :description => "Pattern on command line (if these are not specified, a list of patterns is expected on standard input).  Multiple patterns may be passed in this way.",
-        :arg_arity => [1,-1]
+        :arg_arity => [1, -1]
 
       option :diff,
         :long => "--[no-]diff",
@@ -264,4 +264,3 @@ class Chef
     end
   end
 end
-

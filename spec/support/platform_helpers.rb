@@ -65,10 +65,10 @@ def windows_2008r2_or_later?
   host = wmi.first_of("Win32_OperatingSystem")
   version = host["version"]
   return false unless version
-  components = version.split(".").map do | component |
+  components = version.split(".").map do |component|
     component.to_i
   end
-  components.length >=2 && components[0] >= 6 && components[1] >= 1
+  components.length >= 2 && components[0] >= 6 && components[1] >= 1
 end
 
 def windows_powershell_dsc?
@@ -113,7 +113,6 @@ def mac_osx?
 
   false
 end
-
 
 # detects if the hardware is 64-bit (evaluates to true in "WOW64" mode in a 32-bit app on a 64-bit system)
 def windows64?
@@ -166,7 +165,7 @@ def selinux_enabled?
   # specs independent of product.
   selinuxenabled_path = which("selinuxenabled")
   if selinuxenabled_path
-    cmd = Mixlib::ShellOut.new(selinuxenabled_path, :returns => [0,1])
+    cmd = Mixlib::ShellOut.new(selinuxenabled_path, :returns => [0, 1])
     cmd_result = cmd.run_command
     case cmd_result.exitstatus
     when 1
@@ -213,7 +212,7 @@ class GCEDetector
 end
 
 def gce?
-  GCEDetector.can_metadata_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR,80)
+  GCEDetector.can_metadata_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR, 80)
 rescue SocketError
   false
 end

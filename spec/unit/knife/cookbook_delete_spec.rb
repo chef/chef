@@ -63,7 +63,7 @@ describe Chef::Knife::CookbookDelete do
         it "should prompt to purge the files" do
           @knife.config[:purge] = true
           expect(@knife).to receive(:confirm).
-                 with(/.+Are you sure you want to purge files.+/)
+            with(/.+Are you sure you want to purge files.+/)
           expect(@knife).to receive(:delete_without_explicit_version)
           @knife.run
         end
@@ -127,9 +127,9 @@ describe Chef::Knife::CookbookDelete do
     before(:each) do
       @rest_mock = double("rest")
       expect(@knife).to receive(:rest).and_return(@rest_mock)
-      @cookbook_data = { "foobar" => { "versions" => [{"version" => "1.0.0"},
-                                                      {"version" => "1.1.0"},
-                                                      {"version" => "2.0.0"} ]}
+      @cookbook_data = { "foobar" => { "versions" => [{ "version" => "1.0.0" },
+                                                      { "version" => "1.1.0" },
+                                                      { "version" => "2.0.0" } ] }
       }
     end
 

@@ -30,7 +30,7 @@ class Chef
 
       default_action :run
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
 
         @code = "q()." # your erlang code goes here
@@ -40,7 +40,7 @@ class Chef
         @node_name = "chef@localhost" # the erlang node hostname
       end
 
-      def code(arg=nil)
+      def code(arg = nil)
         set_or_return(
           :code,
           arg,
@@ -48,7 +48,7 @@ class Chef
         )
       end
 
-      def cookie(arg=nil)
+      def cookie(arg = nil)
         set_or_return(
           :cookie,
           arg,
@@ -56,7 +56,7 @@ class Chef
         )
       end
 
-      def distributed(arg=nil)
+      def distributed(arg = nil)
         set_or_return(
           :distributed,
           arg,
@@ -64,7 +64,7 @@ class Chef
         )
       end
 
-      def name_type(arg=nil)
+      def name_type(arg = nil)
         set_or_return(
           :name_type,
           arg,
@@ -72,7 +72,7 @@ class Chef
         )
       end
 
-      def node_name(arg=nil)
+      def node_name(arg = nil)
         set_or_return(
           :node_name,
           arg,

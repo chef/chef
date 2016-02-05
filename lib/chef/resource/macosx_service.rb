@@ -29,7 +29,7 @@ class Chef
 
       state_attrs :enabled, :running
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @plist = nil
         @session_type = nil
@@ -37,7 +37,7 @@ class Chef
 
       # This will enable user to pass a plist in the case
       # that the filename and label for the service dont match
-      def plist(arg=nil)
+      def plist(arg = nil)
         set_or_return(
           :plist,
           arg,
@@ -45,7 +45,7 @@ class Chef
         )
       end
 
-      def session_type(arg=nil)
+      def session_type(arg = nil)
         set_or_return(
           :session_type,
           arg,

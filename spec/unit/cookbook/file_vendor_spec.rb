@@ -40,7 +40,7 @@ describe Chef::Cookbook::FileVendor do
     context "with a manifest from a cookbook version" do
 
       # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
-      let(:manifest) { {:cookbook_name => "bob", :name => "bob-1.2.3"} }
+      let(:manifest) { { :cookbook_name => "bob", :name => "bob-1.2.3" } }
 
       it "creates a RemoteFileVendor for a given manifest" do
         file_vendor = file_vendor_class.create_from_manifest(manifest)
@@ -54,7 +54,7 @@ describe Chef::Cookbook::FileVendor do
     context "with a manifest from a cookbook artifact" do
 
       # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
-      let(:manifest) { {:name => "bob"} }
+      let(:manifest) { { :name => "bob" } }
 
       it "creates a RemoteFileVendor for a given manifest" do
         file_vendor = file_vendor_class.create_from_manifest(manifest)
@@ -71,7 +71,7 @@ describe Chef::Cookbook::FileVendor do
     let(:cookbook_path) { %w{/var/chef/cookbooks /var/chef/other_cookbooks} }
 
     # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
-    let(:manifest) { {:cookbook_name => "bob"} }
+    let(:manifest) { { :cookbook_name => "bob" } }
 
     before do
       file_vendor_class.fetch_from_disk(cookbook_path)
@@ -95,4 +95,3 @@ describe Chef::Cookbook::FileVendor do
   end
 
 end
-

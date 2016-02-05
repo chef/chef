@@ -50,12 +50,12 @@ class Chef
       DEFLATE           = "deflate".freeze
       IDENTITY          = "identity".freeze
 
-      def initialize(opts={})
+      def initialize(opts = {})
         @disable_gzip = false
         handle_options(opts)
       end
 
-      def handle_request(method, url, headers={}, data=false)
+      def handle_request(method, url, headers = {}, data = false)
         headers[HTTPRequest::ACCEPT_ENCODING] = HTTPRequest::ENCODING_GZIP_DEFLATE unless gzip_disabled?
         [method, url, headers, data]
       end
@@ -114,7 +114,6 @@ class Chef
         end
       end
 
-
       # gzip is disabled using the disable_gzip => true option in the
       # constructor. When gzip is disabled, no 'Accept-Encoding' header will be
       # set, and the response will not be decompressed, no matter what the
@@ -137,7 +136,6 @@ class Chef
           end
         end
       end
-
 
     end
   end

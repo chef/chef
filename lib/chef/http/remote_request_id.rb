@@ -21,11 +21,11 @@ class Chef
   class HTTP
     class RemoteRequestID
 
-      def initialize(opts={})
+      def initialize(opts = {})
       end
 
-      def handle_request(method, url, headers={}, data=false)
-        headers.merge!({"X-REMOTE-REQUEST-ID" => Chef::RequestID.instance.request_id})
+      def handle_request(method, url, headers = {}, data = false)
+        headers.merge!({ "X-REMOTE-REQUEST-ID" => Chef::RequestID.instance.request_id })
         [method, url, headers, data]
       end
 

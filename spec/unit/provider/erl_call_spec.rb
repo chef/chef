@@ -83,4 +83,3 @@ describe Chef::Provider::ErlCall do
   end
 
 end
-

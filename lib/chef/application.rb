@@ -154,7 +154,7 @@ class Chef
     def configure_stdout_logger
       stdout_logger = MonoLogger.new(STDOUT)
       stdout_logger.formatter = Chef::Log.logger.formatter
-      Chef::Log.loggers <<  stdout_logger
+      Chef::Log.loggers << stdout_logger
     end
 
     # Based on config and whether or not STDOUT is a tty, should we setup a
@@ -232,6 +232,7 @@ class Chef
     end
 
     private
+
     def can_fork?
       # win32-process gem exposes some form of :fork for Process
       # class. So we are separately ensuring that the platform we're
@@ -297,7 +298,7 @@ class Chef
     rescue Exception => error
       Chef::Log.fatal("Configuration error #{error.class}: #{error.message}")
       filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
-      filtered_trace.each {|line| Chef::Log.fatal("  " + line )}
+      filtered_trace.each { |line| Chef::Log.fatal("  " + line ) }
       Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", 2)
     end
 

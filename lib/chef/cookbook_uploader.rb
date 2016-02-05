@@ -37,7 +37,7 @@ class Chef
     #           in Chef::Config.
     # * :concurrency   An integer that decided how many threads will be used to
     #           perform concurrent uploads
-    def initialize(cookbooks, opts={})
+    def initialize(cookbooks, opts = {})
       @opts = opts
       @cookbooks = Array(cookbooks)
       @rest = opts[:rest] || Chef::ServerAPI.new(Chef::Config[:chef_server_url])
@@ -55,7 +55,7 @@ class Chef
         checksum_files.merge!(cb.checksums)
       end
 
-      checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
+      checksums = checksum_files.inject({}) { |memo, elt| memo[elt.first] = nil ; memo }
       new_sandbox = rest.post("sandboxes", { :checksums => checksums })
 
       Chef::Log.info("Uploading files")
@@ -83,7 +83,7 @@ class Chef
       # in eventual consistency)
       retries = 0
       begin
-        rest.put(sandbox_url, {:is_completed => true})
+        rest.put(sandbox_url, { :is_completed => true })
       rescue Net::HTTPServerException => e
         if e.message =~ /^400/ && (retries += 1) <= 5
           sleep 2
@@ -120,7 +120,7 @@ class Chef
         # but we need the base64 encoding for the content-md5
         # header
         checksum64 = Base64.encode64([checksum].pack("H*")).strip
-        file_contents = File.open(file, "rb") {|f| f.read}
+        file_contents = File.open(file, "rb") { |f| f.read }
 
         # Custom headers. 'content-type' disables JSON serialization of the request body.
         headers = { "content-type" => "application/x-binary", "content-md5" => checksum64, "accept" => "application/json" }

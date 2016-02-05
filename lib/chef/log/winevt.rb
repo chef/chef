@@ -42,7 +42,7 @@ class Chef
 
       attr_accessor :sync, :formatter, :level
 
-      def initialize(eventlog=nil)
+      def initialize(eventlog = nil)
         @eventlog = eventlog || ::Win32::EventLog::open("Application")
       end
 

@@ -31,7 +31,7 @@ class Chef
 
       def replace_in_env_run_list(role, environment, old_entry, new_entry)
         nlist = []
-        role.run_list_for(environment).each do |entry| 
+        role.run_list_for(environment).each do |entry|
           if entry == old_entry
             nlist << new_entry
           else

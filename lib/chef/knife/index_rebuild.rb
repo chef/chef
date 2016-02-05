@@ -40,7 +40,6 @@ class Chef
           nag
           output rest.post("/search/reindex", {})
         end
-
       end
 
       def grab_api_info

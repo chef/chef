@@ -22,8 +22,8 @@ require "chef/policy_builder"
 describe Chef::PolicyBuilder::Policyfile do
 
   let(:node_name) { "joe_node" }
-  let(:ohai_data) { {"platform" => "ubuntu", "platform_version" => "13.04", "fqdn" => "joenode.example.com"} }
-  let(:json_attribs) { {"custom_attr" => "custom_attr_value"} }
+  let(:ohai_data) { { "platform" => "ubuntu", "platform_version" => "13.04", "fqdn" => "joenode.example.com" } }
+  let(:json_attribs) { { "custom_attr" => "custom_attr_value" } }
   let(:override_runlist) { nil }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:policy_builder) { Chef::PolicyBuilder::Policyfile.new(node_name, ohai_data, json_attribs, override_runlist, events) }
@@ -40,10 +40,9 @@ describe Chef::PolicyBuilder::Policyfile do
     major = sha1_id[0...14]
     minor = sha1_id[14...28]
     patch = sha1_id[28..40]
-    decimal_integers =[major, minor, patch].map {|hex| hex.to_i(16) }
+    decimal_integers = [major, minor, patch].map { |hex| hex.to_i(16) }
     decimal_integers.join(".")
   end
-
 
   let(:example1_lock_data) do
     # based on https://github.com/danielsdeleo/chef-workflow2-prototype/blob/master/skeletons/basic_policy/Policyfile.lock.json
@@ -53,10 +52,10 @@ describe Chef::PolicyBuilder::Policyfile do
       # NOTE: for compatibility mode we include the dotted id in the policyfile to enhance discoverability.
       "dotted_decimal_identifier" => id_to_dotted("168d2102fb11c9617cd8a981166c8adc30a6e915"),
       "source" => { "path" => "./cookbooks/demo" },
-      "scm_identifier"=> {
-        "vcs"=> "git",
-        "rev_id"=> "9d5b09026470c322c3cb5ca8a4157c4d2f16cef3",
-        "remote"=> nil,
+      "scm_identifier" => {
+        "vcs" => "git",
+        "rev_id" => "9d5b09026470c322c3cb5ca8a4157c4d2f16cef3",
+        "remote" => nil,
       },
     }
   end
@@ -71,8 +70,8 @@ describe Chef::PolicyBuilder::Policyfile do
     }
   end
 
-  let(:policyfile_default_attributes) { {"policyfile_default_attr" => "policyfile_default_value"} }
-  let(:policyfile_override_attributes) { {"policyfile_override_attr" => "policyfile_override_value"} }
+  let(:policyfile_default_attributes) { { "policyfile_default_attr" => "policyfile_default_value" } }
+  let(:policyfile_override_attributes) { { "policyfile_override_attr" => "policyfile_override_value" } }
 
   let(:policyfile_run_list) { ["recipe[example1::default]", "recipe[example2::server]"] }
 
@@ -132,7 +131,7 @@ describe Chef::PolicyBuilder::Policyfile do
     end
 
     context "when json_attribs contains a run_list" do
-      let(:json_attribs) { {"run_list" => []} }
+      let(:json_attribs) { { "run_list" => [] } }
 
       it "errors on create" do
         expect { initialize_pb }.to raise_error(err_namespace::UnsupportedFeature)
@@ -158,8 +157,8 @@ describe Chef::PolicyBuilder::Policyfile do
     let(:override_runlist) { nil }
     let(:primary_runlist) { nil }
 
-    let(:original_default_attrs) { {"default_key" => "default_value"} }
-    let(:original_override_attrs) { {"override_key" => "override_value"} }
+    let(:original_default_attrs) { { "default_key" => "default_value" } }
+    let(:original_override_attrs) { { "override_key" => "override_value" } }
 
     let(:node) do
       node = Chef::Node.new
@@ -268,7 +267,6 @@ describe Chef::PolicyBuilder::Policyfile do
 
     end
 
-
     describe "building policy from the policyfile" do
 
       before do
@@ -303,7 +301,6 @@ describe Chef::PolicyBuilder::Policyfile do
         expect(policy_builder.expand_run_list.recipes).to eq(["example1::default", "example2::server"])
         expect(policy_builder.expand_run_list.roles).to eq([])
       end
-
 
       describe "validating the Policyfile.lock" do
 
@@ -446,7 +443,6 @@ describe Chef::PolicyBuilder::Policyfile do
               node.policy_group = "policy_group_from_node"
               node
             end
-
 
             it "prefers the policy_name and policy_group from the node json" do
               expect(policy_builder.policy_name).to eq("policy_name_from_node_json")
@@ -592,7 +588,6 @@ describe Chef::PolicyBuilder::Policyfile do
         end
       end
 
-
       describe "fetching the desired cookbook set" do
 
         let(:example1_cookbook_data) { double("CookbookVersion Hash for example1 cookbook") }
@@ -716,7 +711,6 @@ describe Chef::PolicyBuilder::Policyfile do
             include_examples "fetching cookbooks when they don't exist"
           end
 
-
           context "when the cookbooks exist on the server" do
 
             before do
@@ -734,7 +728,6 @@ describe Chef::PolicyBuilder::Policyfile do
             include_examples "fetching cookbooks when they exist"
 
           end
-
 
         end
 

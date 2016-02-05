@@ -50,7 +50,7 @@ class Chef
           files = Dir[File.join(Chef::Util::PathHelper.escape_glob(File.expand_path("../../../knife", __FILE__)), "*.rb")]
           subcommand_files = {}
           files.each do |knife_file|
-            rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1]
+            rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/, 1]
             subcommand_files[rel_path] = knife_file
           end
           subcommand_files
@@ -77,7 +77,7 @@ class Chef
 
         private
 
-        def find_files_latest_gems(glob, check_load_path=true)
+        def find_files_latest_gems(glob, check_load_path = true)
           files = []
 
           if check_load_path
@@ -103,7 +103,7 @@ class Chef
 
         def latest_gem_specs
           @latest_gem_specs ||= if Gem::Specification.respond_to? :latest_specs
-                                  Gem::Specification.latest_specs(true)  # find prerelease gems
+                                  Gem::Specification.latest_specs(true) # find prerelease gems
                                 else
                                   Gem.source_index.latest_specs(true)
                                 end

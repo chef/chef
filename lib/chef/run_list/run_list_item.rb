@@ -25,7 +25,6 @@ class Chef
 
       attr_reader :name, :type, :version
 
-
       def initialize(item)
         @version = nil
         case item
@@ -89,7 +88,7 @@ class Chef
       end
 
       def assert_hash_is_valid_run_list_item!(item)
-        unless (item.key?("type")|| item.key?(:type)) && (item.key?("name") || item.key?(:name))
+        unless (item.key?("type") || item.key?(:type)) && (item.key?("name") || item.key?(:name))
           raise ArgumentError, "Initializing a #{self.class} from a hash requires that it have a 'type' and 'name' key"
         end
       end

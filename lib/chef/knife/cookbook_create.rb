@@ -182,11 +182,11 @@ EOH
 
       def create_changelog(dir, cookbook_name)
         msg("** Creating CHANGELOG for cookbook: #{cookbook_name}")
-        unless File.exists?(File.join(dir,cookbook_name,"CHANGELOG.md"))
-          open(File.join(dir, cookbook_name, "CHANGELOG.md"),"w") do |file|
+        unless File.exists?(File.join(dir, cookbook_name, "CHANGELOG.md"))
+          open(File.join(dir, cookbook_name, "CHANGELOG.md"), "w") do |file|
             file.puts <<-EOH
 #{cookbook_name} CHANGELOG
-#{'='*"#{cookbook_name} CHANGELOG".length}
+#{'=' * "#{cookbook_name} CHANGELOG".length}
 
 This file is used to list changes made in each version of the #{cookbook_name} cookbook.
 
@@ -271,10 +271,10 @@ e.g.
 == License and Authors
 Authors: TODO: List authors
 EOH
-            when "md","mkd","txt"
+            when "md", "mkd", "txt"
               file.puts <<-EOH
 #{cookbook_name} Cookbook
-#{'='*"#{cookbook_name} Cookbook".length}
+#{'=' * "#{cookbook_name} Cookbook".length}
 TODO: Enter the cookbook description here.
 
 e.g.
@@ -345,7 +345,7 @@ EOH
             else
               file.puts <<-EOH
 #{cookbook_name} Cookbook
-#{'='*"#{cookbook_name} Cookbook".length}
+#{'=' * "#{cookbook_name} Cookbook".length}
   TODO: Enter the cookbook description here.
 
   e.g.

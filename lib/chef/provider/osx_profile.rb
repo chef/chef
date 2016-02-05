@@ -51,7 +51,7 @@ class Chef
           @new_profile_identifier = @new_profile_hash["PayloadIdentifier"]
         else
           @new_profile_identifier = @new_resource.identifier ||
-          @new_resource.profile_name
+                                    @new_resource.profile_name
         end
 
         if all_profiles.empty?
@@ -62,7 +62,6 @@ class Chef
           end
         end
         @current_resource.profile(current_profile)
-
       end
 
       def define_resource_requirements
@@ -70,15 +69,15 @@ class Chef
           if @new_profile_identifier
             a.assertion {
               !@new_profile_identifier.nil? and
-              !@new_profile_identifier.end_with?(".mobileconfig") and
-              /^\w+(?:\.\w+)+$/.match(@new_profile_identifier)
+                !@new_profile_identifier.end_with?(".mobileconfig") and
+                /^\w+(?:\.\w+)+$/.match(@new_profile_identifier)
             }
             a.failure_message RuntimeError, "when removing using the identifier attribute, it must match the profile identifier"
           else
-          new_profile_name = @new_resource.profile_name
+            new_profile_name = @new_resource.profile_name
             a.assertion {
               !new_profile_name.end_with?(".mobileconfig") and
-              /^\w+(?:\.\w+)+$/.match(new_profile_name)
+                /^\w+(?:\.\w+)+$/.match(new_profile_name)
             }
             a.failure_message RuntimeError, "When removing by resource name, it must match the profile identifier "
           end
@@ -206,7 +205,7 @@ class Chef
         shellout_results.exitstatus
       end
 
-      def get_installed_profiles(update=nil)
+      def get_installed_profiles(update = nil)
         if update
           node.run_state[:config_profiles] = query_installed_profiles
         else

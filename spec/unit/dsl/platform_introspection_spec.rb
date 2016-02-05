@@ -39,9 +39,9 @@ end
 describe Chef::DSL::PlatformIntrospection::PlatformDependentValue do
   before do
     platform_hash = {
-      :openbsd => {:default => "free, functional, secure"},
-      [:redhat, :centos, :fedora, :scientific] => {:default => '"stable"'},
-      :ubuntu => {"10.04" => "using upstart more", :default => "using init more"},
+      :openbsd => { :default => "free, functional, secure" },
+      [:redhat, :centos, :fedora, :scientific] => { :default => '"stable"' },
+      :ubuntu => { "10.04" => "using upstart more", :default => "using init more" },
       :default => "bork da bork",
     }
     @platform_specific_value = Chef::DSL::PlatformIntrospection::PlatformDependentValue.new(platform_hash)
@@ -60,12 +60,12 @@ describe Chef::DSL::PlatformIntrospection::PlatformDependentValue do
   end
 
   it "returns a value for a specific platform version" do
-    node = {:platform => "ubuntu", :platform_version => "10.04"}
+    node = { :platform => "ubuntu", :platform_version => "10.04" }
     expect(@platform_specific_value.value_for_node(node)).to eq("using upstart more")
   end
 
   it "returns a platform-default value if the platform version doesn't match an explicit one" do
-    node = {:platform => "ubuntu", :platform_version => "9.10" }
+    node = { :platform => "ubuntu", :platform_version => "9.10" }
     expect(@platform_specific_value.value_for_node(node)).to eq("using init more")
   end
 
@@ -77,8 +77,8 @@ describe Chef::DSL::PlatformIntrospection::PlatformDependentValue do
   end
 
   it "raises an argument error if the platform hash is not correctly structured" do
-    bad_hash = {:ubuntu => :foo} # should be :ubuntu => {:default => 'foo'}
-    expect {Chef::DSL::PlatformIntrospection::PlatformDependentValue.new(bad_hash)}.to raise_error(ArgumentError)
+    bad_hash = { :ubuntu => :foo } # should be :ubuntu => {:default => 'foo'}
+    expect { Chef::DSL::PlatformIntrospection::PlatformDependentValue.new(bad_hash) }.to raise_error(ArgumentError)
   end
 
 end
@@ -100,7 +100,6 @@ describe Chef::DSL::PlatformIntrospection::PlatformFamilyDependentValue do
   it "returns the default value when the platform family doesn't match" do
     expect(@platform_family_value.value_for_node(:platform_family => :os2)).to eq("default value")
   end
-
 
   it "returns a value for the platform family when it was set as a string but fetched as a symbol" do
     expect(@platform_family_value.value_for_node(:platform_family => :debian)).to eq("debian value")

@@ -21,7 +21,6 @@ require "spec_helper"
 
 require "support/shared/unit/provider/file"
 
-
 describe Chef::Provider::RemoteFile do
   let(:resource) do
     resource = Chef::Resource::RemoteFile.new("seattle", @run_context)
@@ -36,7 +35,7 @@ describe Chef::Provider::RemoteFile do
   end
 
   let(:node) { double("Chef::Node") }
-  let(:events) { double("Chef::Events").as_null_object }  # mock all the methods
+  let(:events) { double("Chef::Events").as_null_object } # mock all the methods
   let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
   let(:enclosing_directory) {
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
@@ -60,4 +59,3 @@ describe Chef::Provider::RemoteFile do
 
   it_behaves_like "a file provider with source field"
 end
-

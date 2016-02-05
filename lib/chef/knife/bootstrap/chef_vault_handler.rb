@@ -136,7 +136,7 @@ class Chef
           ChefVault::Item.load(vault, item)
         end
 
-        public :load_chef_bootstrap_vault_item  # for stubbing
+        public :load_chef_bootstrap_vault_item # for stubbing
 
         # Helper to very lazily require the chef-vault gem
         def require_chef_vault!

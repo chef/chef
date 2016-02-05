@@ -28,7 +28,7 @@ class Chef
         output(search_cookbook(name_args[0]))
       end
 
-      def search_cookbook(query, items=10, start=0, cookbook_collection={})
+      def search_cookbook(query, items = 10, start = 0, cookbook_collection = {})
         cookbooks_url = "https://supermarket.chef.io/api/v1/search?q=#{query}&items=#{items}&start=#{start}"
         cr = noauth_rest.get(cookbooks_url)
         cr["items"].each do |cookbook|
@@ -44,8 +44,3 @@ class Chef
     end
   end
 end
-
-
-
-
-

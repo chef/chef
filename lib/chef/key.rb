@@ -75,23 +75,23 @@ class Chef
                     end
     end
 
-    def actor(arg=nil)
+    def actor(arg = nil)
       set_or_return(:actor, arg,
                     :regex => /^[a-z0-9\-_]+$/)
     end
 
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(:name, arg,
                     :kind_of => String)
     end
 
-    def public_key(arg=nil)
+    def public_key(arg = nil)
       raise Chef::Exceptions::InvalidKeyAttribute, "you cannot set the public_key if create_key is true" if !arg.nil? && @create_key
       set_or_return(:public_key, arg,
                     :kind_of => String)
     end
 
-    def private_key(arg=nil)
+    def private_key(arg = nil)
       set_or_return(:private_key, arg,
                     :kind_of => String)
     end
@@ -104,13 +104,13 @@ class Chef
       @create_key = nil
     end
 
-    def create_key(arg=nil)
+    def create_key(arg = nil)
       raise Chef::Exceptions::InvalidKeyAttribute, "you cannot set create_key to true if the public_key field exists" if arg == true && !@public_key.nil?
       set_or_return(:create_key, arg,
                     :kind_of => [TrueClass, FalseClass])
     end
 
-    def expiration_date(arg=nil)
+    def expiration_date(arg = nil)
       set_or_return(:expiration_date, arg,
                     :regex => /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z|infinity)$/)
     end
@@ -148,7 +148,7 @@ class Chef
         end
       end
 
-      payload = {"name" => @name}
+      payload = { "name" => @name }
       payload["public_key"] = @public_key unless @public_key.nil?
       payload["create_key"] = @create_key if @create_key
       payload["expiration_date"] = @expiration_date unless @expiration_date.nil?
@@ -165,7 +165,7 @@ class Chef
     end
 
     # set @name and pass put_name if you wish to update the name of an existing key put_name to @name
-    def update(put_name=nil)
+    def update(put_name = nil)
       if @name.nil? && put_name.nil?
         raise Chef::Exceptions::MissingKeyAttribute, "the name field must be populated or you must pass a name to update when update is called"
       end
@@ -227,33 +227,33 @@ class Chef
       Chef::Key.from_json(json)
     end
 
-    def self.list_by_user(actor, inflate=false)
+    def self.list_by_user(actor, inflate = false)
       keys = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("users/#{actor}/keys")
       self.list(keys, actor, :load_by_user, inflate)
     end
 
-    def self.list_by_client(actor, inflate=false)
+    def self.list_by_client(actor, inflate = false)
       keys = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("clients/#{actor}/keys")
       self.list(keys, actor, :load_by_client, inflate)
     end
 
     def self.load_by_user(actor, key_name)
       response = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("users/#{actor}/keys/#{key_name}")
-      Chef::Key.from_hash(response.merge({"user" => actor}))
+      Chef::Key.from_hash(response.merge({ "user" => actor }))
     end
 
     def self.load_by_client(actor, key_name)
       response = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("clients/#{actor}/keys/#{key_name}")
-      Chef::Key.from_hash(response.merge({"client" => actor}))
+      Chef::Key.from_hash(response.merge({ "client" => actor }))
     end
 
     def self.generate_fingerprint(public_key)
-        openssl_key_object = OpenSSL::PKey::RSA.new(public_key)
-        data_string = OpenSSL::ASN1::Sequence([
-                                                OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.n),
-                                                OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.e),
-                                              ])
-        OpenSSL::Digest::SHA1.hexdigest(data_string.to_der).scan(/../).join(":")
+      openssl_key_object = OpenSSL::PKey::RSA.new(public_key)
+      data_string = OpenSSL::ASN1::Sequence([
+                                              OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.n),
+                                              OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.e),
+                                            ])
+      OpenSSL::Digest::SHA1.hexdigest(data_string.to_der).scan(/../).join(":")
     end
 
     private

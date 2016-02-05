@@ -138,7 +138,6 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
                     expect(config_loader.config_location).to eq("#{cwd}/config.rb")
                   end
 
-
                   context "and/or KNIFE_HOME is set" do
 
                     let(:knife_home) { "/path/to/knife/home" }
@@ -205,7 +204,6 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
 
     end
   end
-
 
   describe "loading the config file" do
 

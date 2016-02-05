@@ -45,7 +45,7 @@ class Chef
         end
 
         if platforms.has_key?(name_sym)
-          platform_versions = platforms[name_sym].select {|k, v| k != :default }
+          platform_versions = platforms[name_sym].select { |k, v| k != :default }
           if platforms[name_sym].has_key?(:default)
             provider_map.merge!(platforms[name_sym][:default])
           end
@@ -89,7 +89,7 @@ class Chef
         return platform, version
       end
 
-      def provider_for_resource(resource, action=:nothing)
+      def provider_for_resource(resource, action = :nothing)
         node = resource.run_context && resource.run_context.node
         raise ArgumentError, "Cannot find the provider for a resource with no run context set" unless node
         provider = find_provider_for_node(node, resource).new(resource, resource.run_context)
@@ -183,31 +183,31 @@ class Chef
 
       private
 
-        def explicit_provider(platform, version, resource_type)
-          resource_type.kind_of?(Chef::Resource) ? resource_type.provider : nil
-        end
+      def explicit_provider(platform, version, resource_type)
+        resource_type.kind_of?(Chef::Resource) ? resource_type.provider : nil
+      end
 
-        def platform_provider(platform, version, resource_type)
-          pmap = Chef::Platform.find(platform, version)
-          rtkey = resource_type.kind_of?(Chef::Resource) ? resource_type.resource_name.to_sym : resource_type
-          pmap.has_key?(rtkey) ? pmap[rtkey] : nil
-        end
+      def platform_provider(platform, version, resource_type)
+        pmap = Chef::Platform.find(platform, version)
+        rtkey = resource_type.kind_of?(Chef::Resource) ? resource_type.resource_name.to_sym : resource_type
+        pmap.has_key?(rtkey) ? pmap[rtkey] : nil
+      end
 
-        include Chef::Mixin::ConvertToClassName
+      include Chef::Mixin::ConvertToClassName
 
-        def resource_matching_provider(platform, version, resource_type)
-          if resource_type.kind_of?(Chef::Resource)
-            class_name = resource_type.class.name ? resource_type.class.name.split("::").last :
-              convert_to_class_name(resource_type.resource_name.to_s)
+      def resource_matching_provider(platform, version, resource_type)
+        if resource_type.kind_of?(Chef::Resource)
+          class_name = resource_type.class.name ? resource_type.class.name.split("::").last :
+            convert_to_class_name(resource_type.resource_name.to_s)
 
-            if Chef::Provider.const_defined?(class_name)
-              Chef::Log.warn("Class Chef::Provider::#{class_name} does not declare 'provides #{convert_to_snake_case(class_name).to_sym.inspect}'.")
-              Chef::Log.warn("This will no longer work in Chef 13: you must use 'provides' to use the resource's DSL.")
-              return Chef::Provider.const_get(class_name)
-            end
+          if Chef::Provider.const_defined?(class_name)
+            Chef::Log.warn("Class Chef::Provider::#{class_name} does not declare 'provides #{convert_to_snake_case(class_name).to_sym.inspect}'.")
+            Chef::Log.warn("This will no longer work in Chef 13: you must use 'provides' to use the resource's DSL.")
+            return Chef::Provider.const_get(class_name)
           end
-          nil
         end
+        nil
+      end
 
     end
   end

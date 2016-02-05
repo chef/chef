@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 require "spec_helper"
 require "ostruct"
 
@@ -30,14 +29,12 @@ describe Chef::Provider::Package::Freebsd::Port do
     @provider = Chef::Provider::Package::Freebsd::Pkgng.new(@new_resource, @run_context)
   end
 
-
   describe "initialization" do
     it "should create a current resource with the name of the new resource" do
       expect(@provider.current_resource.is_a?(Chef::Resource::Package)).to be_truthy
       expect(@provider.current_resource.name).to eq("zsh")
     end
   end
-
 
   describe "loading current resource" do
     before(:each) do
@@ -63,7 +60,6 @@ describe Chef::Provider::Package::Freebsd::Port do
     end
   end
 
-
   describe "determining current installed version" do
     before(:each) do
       allow(@provider).to receive(:supports_pkgng?)
@@ -71,11 +67,10 @@ describe Chef::Provider::Package::Freebsd::Port do
     end
 
     it "should query pkg database" do
-      expect(@provider).to receive(:shell_out!).with('pkg info "zsh"', env: nil, returns: [0,70], timeout: 900).and_return(@pkg_info)
+      expect(@provider).to receive(:shell_out!).with('pkg info "zsh"', env: nil, returns: [0, 70], timeout: 900).and_return(@pkg_info)
       expect(@provider.current_installed_version).to eq("3.1.7")
     end
   end
-
 
   describe "determining candidate version" do
     it "should query repository" do
@@ -96,7 +91,6 @@ describe Chef::Provider::Package::Freebsd::Port do
       expect(@provider.candidate_version).to eq("5.0.1")
     end
   end
-
 
   describe "installing a binary package" do
     before(:each) do
@@ -132,7 +126,6 @@ describe Chef::Provider::Package::Freebsd::Port do
       @provider.install_package("zsh", "5.0.1")
     end
   end
-
 
   describe "removing a binary package" do
     before(:each) do

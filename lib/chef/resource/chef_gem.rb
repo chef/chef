@@ -25,7 +25,7 @@ class Chef
       resource_name :chef_gem
 
       property :gem_binary, default: "#{RbConfig::CONFIG['bindir']}/gem",
-               callbacks: {
+                            callbacks: {
                  "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments." => proc { |v| v == "#{RbConfig::CONFIG['bindir']}/gem" }
                }
       property :compile_time, [ true, false, nil ], default: lazy { Chef::Config[:chef_gem_compile_time] }, desired_state: false

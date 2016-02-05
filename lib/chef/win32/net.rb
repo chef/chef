@@ -40,7 +40,7 @@ class Chef
             usri3_priv: 0,
             usri3_home_dir: nil,
             usri3_comment: nil,
-            usri3_flags: UF_SCRIPT|UF_DONT_EXPIRE_PASSWD|UF_NORMAL_ACCOUNT,
+            usri3_flags: UF_SCRIPT | UF_DONT_EXPIRE_PASSWD | UF_NORMAL_ACCOUNT,
             usri3_script_path: nil,
             usri3_auth_flags: 0,
             usri3_full_name: nil,
@@ -63,7 +63,7 @@ class Chef
             usri3_profile: nil,
             usri3_home_dir_drive: nil,
             usri3_password_expired: 0,
-          }.each do |(k,v)|
+          }.each do |(k, v)|
             s.set(k, v)
           end
         end
@@ -254,7 +254,7 @@ class Chef
         end
       end
 
-      def self.net_use_del(server_name, use_name, force=:use_noforce)
+      def self.net_use_del(server_name, use_name, force = :use_noforce)
         server_name = wstring(server_name)
         use_name = wstring(use_name)
         force_const = case force
@@ -296,8 +296,8 @@ class Chef
 
         buf = USE_INFO_2.new
 
-        ui2_hash.each do |(k,v)|
-          buf.set(k,v)
+        ui2_hash.each do |(k, v)|
+          buf.set(k, v)
         end
 
         rc = NetUseAdd(server_name, 2, buf, nil)

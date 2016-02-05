@@ -298,7 +298,7 @@ class Chef
       #
 
       # Called before action is executed on a resource.
-      def resource_action_start(resource, action, notification_type=nil, notifier=nil)
+      def resource_action_start(resource, action, notification_type = nil, notifier = nil)
       end
 
       # Called when a resource action has been skipped b/c of a conditional
@@ -381,7 +381,7 @@ class Chef
       end
 
       # Emit a message about something being deprecated.
-      def deprecation(message, location=caller(2..2)[0])
+      def deprecation(message, location = caller(2..2)[0])
       end
 
       def run_list_expanded(run_list_expansion)

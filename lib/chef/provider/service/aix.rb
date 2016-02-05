@@ -90,6 +90,7 @@ class Chef
         end
 
         protected
+
         def determine_current_status!
           Chef::Log.debug "#{@new_resource} using lssrc to check the status"
           begin
@@ -126,4 +127,3 @@ class Chef
     end
   end
 end
-

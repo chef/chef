@@ -137,7 +137,7 @@ class Chef
         @presenter.interchange?
       end
 
-      def ask_question(question, opts={})
+      def ask_question(question, opts = {})
         question = question + "[#{opts[:default]}] " if opts[:default]
 
         if opts[:default] and config[:defaults]
@@ -163,7 +163,6 @@ class Chef
         end
       end
 
-
       # Hash -> Hash
       # Works the same as edit_data but
       # returns a hash rather than a JSON string/Fully infated object
@@ -172,7 +171,7 @@ class Chef
         Chef::JSONCompat.parse(raw)
       end
 
-      def edit_data(data, parse_output=true)
+      def edit_data(data, parse_output = true)
         output = Chef::JSONCompat.to_json_pretty(data)
         if (!config[:disable_editing])
           Tempfile.open([ "knife-edit-", ".json" ]) do |tf|
@@ -226,7 +225,7 @@ class Chef
       end
 
       # See confirm method for argument information
-      def confirm_without_exit(question, append_instructions=true, default_choice=nil)
+      def confirm_without_exit(question, append_instructions = true, default_choice = nil)
         return true if config[:yes]
 
         stdout.print question
@@ -264,7 +263,7 @@ class Chef
       # append_instructions => Should print '? (Y/N)' as instructions
       # default_choice => Set to true for 'Y', and false for 'N' as default answer
       #
-      def confirm(question, append_instructions=true, default_choice=nil)
+      def confirm(question, append_instructions = true, default_choice = nil)
         unless confirm_without_exit(question, append_instructions, default_choice)
           exit 3
         end

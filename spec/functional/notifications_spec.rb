@@ -1,7 +1,6 @@
 require "spec_helper"
 require "chef/recipe"
 
-
 # The goal of these tests is to make sure that loading resources from a file creates the necessary notifications.
 # Then once converge has started, both immediate and delayed notifications are called as the resources are converged.
 # We want to do this WITHOUT actually converging any resources - we don't want to take time changing the system,
@@ -136,7 +135,7 @@ describe "Notifications" do
 
     expect(actions).to eq [
       # First it runs why-run to check if the resource would update
-      { resource: log_resource.to_s,     action: :write,   why_run: true },
+      { resource: log_resource.to_s,     action: :write, why_run: true },
       # Then it does NOT run the before action
       # Then it runs the actual action
       { resource: log_resource.to_s,     action: :write },
@@ -228,7 +227,7 @@ describe "Notifications" do
   end
 
   # Mocks having the provider run successfully and update the resource
-  def update_action(resource, times=1)
+  def update_action(resource, times = 1)
     p = Chef::Provider.new(resource, run_context)
     expect(resource).to receive(:provider_for_action).exactly(times).times.and_return(p)
     expect(p).to receive(:run_action).exactly(times).times {

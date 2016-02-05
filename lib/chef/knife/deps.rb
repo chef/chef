@@ -61,12 +61,12 @@ class Chef
 
       def print_dependencies_tree(entry, dependencies, printed = {}, depth = 0)
         dependencies[entry.path] = get_dependencies(entry) if !dependencies[entry.path]
-        output "#{'  '*depth}#{format_path(entry)}"
+        output "#{'  ' * depth}#{format_path(entry)}"
         if !printed[entry.path] && (config[:recurse] || depth == 0)
           printed[entry.path] = true
           dependencies[entry.path].each do |child|
             child_entry = Chef::ChefFS::FileSystem.resolve_path(@root, child)
-            print_dependencies_tree(child_entry, dependencies, printed, depth+1)
+            print_dependencies_tree(child_entry, dependencies, printed, depth + 1)
           end
         end
       end
@@ -96,7 +96,7 @@ class Chef
               end
             end
             if role["env_run_lists"]
-              role["env_run_lists"].each_pair do |env,run_list|
+              role["env_run_lists"].each_pair do |env, run_list|
                 dependencies_from_runlist(run_list).each do |dependency|
                   result << dependency if !result.include?(dependency)
                 end

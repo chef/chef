@@ -69,7 +69,7 @@ describe Chef::Knife::ClientDelete do
     it "should not delete validator client if --delete-validators is not set" do
       @client.validator(true)
       expect(@knife.ui).to receive(:fatal)
-      expect { @knife.run}.to raise_error(SystemExit)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
 
     it "should delete validator client if --delete-validators is set" do

@@ -82,13 +82,12 @@ class Chef::Application::Apply < Chef::Application
     :show_options => true,
     :exit         => 0
 
-
   option :version,
     :short        => "-v",
     :long         => "--version",
     :description  => "Show chef version",
     :boolean      => true,
-    :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+    :proc         => lambda { |v| puts "Chef: #{::Chef::VERSION}" },
     :exit         => 0
 
   option :why_run,
@@ -187,9 +186,9 @@ class Chef::Application::Apply < Chef::Application
         Chef::Application.exit! "No recipe file provided", 1
       end
       @recipe_filename = ARGV[0]
-      @recipe_text,@recipe_fh = read_recipe_file @recipe_filename
+      @recipe_text, @recipe_fh = read_recipe_file @recipe_filename
     end
-    recipe,run_context = get_recipe_and_run_context
+    recipe, run_context = get_recipe_and_run_context
     recipe.instance_eval(@recipe_text, @recipe_filename, 1)
     runner = Chef::Runner.new(run_context)
     begin

@@ -171,11 +171,11 @@ describe Chef::Platform do
 
     it "raises an error when trying to find the provider for a resource with no run context" do
       file = Chef::Resource::File.new("whateva")
-      expect {Chef::Platform.provider_for_resource(file)}.to raise_error(ArgumentError)
+      expect { Chef::Platform.provider_for_resource(file) }.to raise_error(ArgumentError)
     end
 
     it "does not support finding a provider by resource and node -- a run context is required" do
-      expect {Chef::Platform.provider_for_node("node", "resource")}.to raise_error(NotImplementedError)
+      expect { Chef::Platform.provider_for_node("node", "resource") }.to raise_error(NotImplementedError)
     end
 
     it "should update the provider map with map" do

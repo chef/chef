@@ -39,7 +39,7 @@ cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
 
-      file "config/node.json",<<-E
+      file "config/node.json", <<-E
 {"run_list":["x::default"]}
 E
 
@@ -104,7 +104,6 @@ EOM
     end
   end
 
-
   when_the_repository "has a cookbook with a recipe with sleep" do
     before do
       directory "logs"
@@ -152,12 +151,12 @@ EOM
       run_log = File.read(path_to("logs/runs.log"))
 
       # both of the runs should succeed
-      expect(run_log.lines.reject {|l| !l.include? "INFO: Chef Run complete in"}.length).to eq(2)
+      expect(run_log.lines.reject { |l| !l.include? "INFO: Chef Run complete in" }.length).to eq(2)
 
       # second run should have a message which indicates it's waiting for the first run
-      pid_lines = run_log.lines.reject {|l| !l.include? "Chef-client pid:"}
+      pid_lines = run_log.lines.reject { |l| !l.include? "Chef-client pid:" }
       expect(pid_lines.length).to eq(2)
-      pids = pid_lines.map {|l| l.split(" ").last}
+      pids = pid_lines.map { |l| l.split(" ").last }
       expect(run_log).to include("Chef client #{pids[0]} is running, will wait for it to finish and then run.")
 
       # second run should start after first run ends

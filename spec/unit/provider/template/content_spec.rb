@@ -113,7 +113,7 @@ describe Chef::Provider::Template::Content do
 
     it "fails when :file_desployment_uses_destdir is set" do
       Chef::Config[:file_staging_uses_destdir] = true
-      expect{content.tempfile}.to raise_error(Chef::Exceptions::FileContentStagingError)
+      expect { content.tempfile }.to raise_error(Chef::Exceptions::FileContentStagingError)
     end
 
     it "returns a tempfile in the tempdir when :file_desployment_uses_destdir is not set" do

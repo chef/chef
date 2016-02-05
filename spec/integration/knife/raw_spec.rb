@@ -186,7 +186,7 @@ EOM
       before :each do
         Chef::Config.chef_server_url = "http://localhost:9018"
         app = lambda do |env|
-          [200, {"Content-Type" => "application/json" }, ['{ "x": "y", "a": "b" }'] ]
+          [200, { "Content-Type" => "application/json" }, ['{ "x": "y", "a": "b" }'] ]
         end
         @raw_server, @raw_server_thread = start_app_server(app, 9018)
       end
@@ -216,7 +216,7 @@ EOM
       before :each do
         Chef::Config.chef_server_url = "http://localhost:9018"
         app = lambda do |env|
-          [200, {"Content-Type" => "text" }, ['{ "x": "y", "a": "b" }'] ]
+          [200, { "Content-Type" => "text" }, ['{ "x": "y", "a": "b" }'] ]
         end
         @raw_server, @raw_server_thread = start_app_server(app, 9018)
       end

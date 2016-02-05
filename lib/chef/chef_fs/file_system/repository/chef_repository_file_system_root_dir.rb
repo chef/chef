@@ -60,7 +60,7 @@ class Chef
           # [chef_config] - a hash of options that looks suspiciously like the ones
           #   stored in Chef::Config, containing at least these keys:
           #   :versioned_cookbooks:: whether to include versions in cookbook names
-          def initialize(child_paths, root_paths=[], chef_config=Chef::Config)
+          def initialize(child_paths, root_paths = [], chef_config = Chef::Config)
             super("", nil)
             @child_paths = child_paths
             @root_paths = root_paths

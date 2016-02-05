@@ -47,7 +47,6 @@ describe Chef::Provider::Route do
     end
   end
 
-
   describe Chef::Provider::Route, "load_current_resource" do
     context "on linux" do
       before do
@@ -188,15 +187,15 @@ describe Chef::Provider::Route do
   describe Chef::Provider::Route, "config_file_contents for action_add" do
     it "should include a netmask when a one is specified" do
       allow(@new_resource).to receive(:netmask).and_return("255.255.0.0")
-      expect(@provider.config_file_contents(:add, { :target => @new_resource.target, :netmask => @new_resource.netmask})).to match(/\/\d{1,2}.*\n$/)
+      expect(@provider.config_file_contents(:add, { :target => @new_resource.target, :netmask => @new_resource.netmask })).to match(/\/\d{1,2}.*\n$/)
     end
 
     it "should not include a netmask when a one is specified" do
-      expect(@provider.config_file_contents(:add, { :target => @new_resource.target})).not_to match(/\/\d{1,2}.*\n$/)
+      expect(@provider.config_file_contents(:add, { :target => @new_resource.target })).not_to match(/\/\d{1,2}.*\n$/)
     end
 
     it "should include ' via $gateway ' when a gateway is specified" do
-      expect(@provider.config_file_contents(:add, { :target => @new_resource.target, :gateway => @new_resource.gateway})).to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\n/)
+      expect(@provider.config_file_contents(:add, { :target => @new_resource.target, :gateway => @new_resource.gateway })).to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\n/)
     end
 
     it "should not include ' via $gateway ' when a gateway is not specified" do

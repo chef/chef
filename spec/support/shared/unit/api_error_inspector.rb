@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-
-
 # == API Error Inspector Examples
 # These tests are work in progress. They exercise the code enough to ensure it
 # runs without error, but don't make assertions about the output. This is

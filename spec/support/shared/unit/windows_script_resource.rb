@@ -78,4 +78,3 @@ shared_examples_for "a Windows script resource" do
   end
 
 end
-

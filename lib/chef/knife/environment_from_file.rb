@@ -62,7 +62,6 @@ class Chef
         ui.info("Updated Environment #{updated.name}")
       end
 
-
       def run
         if config[:all] == true
           load_all_environments

@@ -69,7 +69,6 @@ class Chef
 
               relevant_lines = ["# In #{file}\n\n"]
 
-
               current_line = line - 1
               current_line = 0 if current_line < 0
               nesting = 0
@@ -99,8 +98,8 @@ class Chef
         end
 
         def filtered_bt
-          filters = Array(Chef::Config.cookbook_path).map {|p| /^#{Regexp.escape(p)}/ }
-          exception.backtrace.select {|line| filters.any? {|filter| line =~ filter }}
+          filters = Array(Chef::Config.cookbook_path).map { |p| /^#{Regexp.escape(p)}/ }
+          exception.backtrace.select { |line| filters.any? { |filter| line =~ filter } }
         end
 
         private
@@ -112,14 +111,12 @@ class Chef
         end
 
         def parse_source
-          resource.source_line[/^(([\w]:)?[^:]+):([\d]+)/,1]
+          resource.source_line[/^(([\w]:)?[^:]+):([\d]+)/, 1]
         end
 
         def parse_line(source)
-          resource.source_line[/^#{Regexp.escape(source)}:([\d]+)/,1].to_i
+          resource.source_line[/^#{Regexp.escape(source)}:([\d]+)/, 1].to_i
         end
-
-
 
       end
     end

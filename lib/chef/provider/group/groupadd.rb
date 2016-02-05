@@ -113,7 +113,7 @@ class Chef
         # <string>:: A string containing the option and then the quoted value
         def set_options
           opts = ""
-          { :gid => "-g" }.sort { |a,b| a[0] <=> b[0] }.each do |field, option|
+          { :gid => "-g" }.sort { |a, b| a[0] <=> b[0] }.each do |field, option|
             if @current_resource.send(field) != @new_resource.send(field)
               if @new_resource.send(field)
                 opts << " #{option} '#{@new_resource.send(field)}'"

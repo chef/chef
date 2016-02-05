@@ -91,7 +91,7 @@ describe Chef::RunLock do
         it "should raise Chef::Exceptions::RunLockTimeout" do
           stub_blocked_run(0.001)
           expect(runlock).not_to receive(:wait)
-          expect{ runlock.acquire }.to raise_error(Chef::Exceptions::RunLockTimeout)
+          expect { runlock.acquire }.to raise_error(Chef::Exceptions::RunLockTimeout)
         end
       end
     end
@@ -118,9 +118,9 @@ describe Chef::RunLock do
       describe "and the lockfile is locked by another client run" do
         describe "and the lock is released before the timeout expires" do
           it "should acquire the lock" do
-            stub_blocked_run(@timeout/2.0)
+            stub_blocked_run(@timeout / 2.0)
             expect(runlock).to receive(:wait)
-            expect{ runlock.acquire }.not_to raise_error
+            expect { runlock.acquire }.not_to raise_error
           end
         end
 
@@ -128,7 +128,7 @@ describe Chef::RunLock do
           it "should raise a RunLockTimeout exception" do
             stub_blocked_run(2.0)
             expect(runlock).to receive(:wait)
-            expect{ runlock.acquire }.to raise_error(Chef::Exceptions::RunLockTimeout)
+            expect { runlock.acquire }.to raise_error(Chef::Exceptions::RunLockTimeout)
           end
         end
       end

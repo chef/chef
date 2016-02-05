@@ -22,9 +22,9 @@ describe Chef::Knife::CookbookBulkDelete do
   before(:each) do
     Chef::Log.logger = Logger.new(StringIO.new)
 
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::CookbookBulkDelete.new
-    @knife.config = {:print_after => nil}
+    @knife.config = { :print_after => nil }
     @knife.name_args = ["."]
     @stdout = StringIO.new
     @stderr = StringIO.new
@@ -44,15 +44,13 @@ describe Chef::Knife::CookbookBulkDelete do
 
   end
 
-
-
   describe "when there are several cookbooks on the server" do
     before do
-      @cheezburger = {"cheezburger" => {"url" => "file:///dev/null", "versions" => [{"url" => "file:///dev/null-cheez", "version" => "1.0.0"}]}}
+      @cheezburger = { "cheezburger" => { "url" => "file:///dev/null", "versions" => [{ "url" => "file:///dev/null-cheez", "version" => "1.0.0" }] } }
       allow(@rest).to receive(:get).with("cookbooks/cheezburger").and_return(@cheezburger)
-      @pizza = {"pizza" => {"url" => "file:///dev/null", "versions" => [{"url" => "file:///dev/null-pizza", "version" => "2.0.0"}]}}
+      @pizza = { "pizza" => { "url" => "file:///dev/null", "versions" => [{ "url" => "file:///dev/null-pizza", "version" => "2.0.0" }] } }
       allow(@rest).to receive(:get).with("cookbooks/pizza").and_return(@pizza)
-      @lasagna = {"lasagna" => {"url" => "file:///dev/null", "versions" => [{"url" => "file:///dev/null-lasagna", "version" => "3.0.0"}]}}
+      @lasagna = { "lasagna" => { "url" => "file:///dev/null", "versions" => [{ "url" => "file:///dev/null-lasagna", "version" => "3.0.0" }] } }
       allow(@rest).to receive(:get).with("cookbooks/lasagna").and_return(@lasagna)
     end
 
@@ -68,7 +66,7 @@ describe Chef::Knife::CookbookBulkDelete do
     end
 
     it "should delete each cookbook" do
-      {"cheezburger" => "1.0.0", "pizza" => "2.0.0", "lasagna" => "3.0.0"}.each do |cookbook_name, version|
+      { "cheezburger" => "1.0.0", "pizza" => "2.0.0", "lasagna" => "3.0.0" }.each do |cookbook_name, version|
         expect(@rest).to receive(:delete).with("cookbooks/#{cookbook_name}/#{version}")
       end
       @knife.run

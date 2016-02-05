@@ -130,7 +130,7 @@ describe Chef::Resource::RegistryKey, "recursive" do
   end
 
   it "should not allow a hash" do
-    expect { @resource.recursive({:sonic => :screwdriver}) }.to raise_error(ArgumentError)
+    expect { @resource.recursive({ :sonic => :screwdriver }) }.to raise_error(ArgumentError)
   end
 
   it "should not allow an array" do
@@ -159,7 +159,7 @@ describe Chef::Resource::RegistryKey, "architecture" do
   end
 
   it "should not allow a hash" do
-    expect { @resource.architecture({:sonic => :screwdriver}) }.to raise_error(ArgumentError)
+    expect { @resource.architecture({ :sonic => :screwdriver }) }.to raise_error(ArgumentError)
   end
 
   it "should not allow an array" do
@@ -194,6 +194,6 @@ describe Chef::Resource::RegistryKey, "state" do
 
   it "should return scrubbed values" do
     @resource.values([ { :name => "poosh", :type => :binary, :data => 255.chr * 1 } ])
-    expect(@resource.state).to eql( { :values => [{ :name => "poosh", :type => :binary, :data => "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89"}] } )
+    expect(@resource.state).to eql( { :values => [{ :name => "poosh", :type => :binary, :data => "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89" }] } )
   end
 end

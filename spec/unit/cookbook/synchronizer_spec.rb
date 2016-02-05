@@ -93,7 +93,7 @@ describe Chef::CookbookSynchronizer do
 
   let(:cookbook_a_manifest) do
     segments = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
-    cookbook_a_manifest = segments.inject({}) {|h, segment| h[segment.to_s] = []; h}
+    cookbook_a_manifest = segments.inject({}) { |h, segment| h[segment.to_s] = []; h }
     cookbook_a_manifest["recipes"] = [ cookbook_a_default_recipe ]
     cookbook_a_manifest["attributes"] = [ cookbook_a_default_attrs ]
     cookbook_a_manifest["templates"] = [ cookbook_a_template ]
@@ -157,7 +157,7 @@ describe Chef::CookbookSynchronizer do
     let(:file_cache) { double("Chef::FileCache with files from unused cookbooks") }
 
     let(:cookbook_manifest) do
-      {"valid1"=> {}, "valid2" => {}}
+      { "valid1" => {}, "valid2" => {} }
     end
 
     it "removes unneeded cookbooks" do
@@ -175,7 +175,7 @@ describe Chef::CookbookSynchronizer do
     let(:file_cache) { double("Chef::FileCache with files from unused cookbooks") }
 
     let(:cookbook_manifest) do
-      {"valid1"=> {}, "valid2" => {}}
+      { "valid1" => {}, "valid2" => {} }
     end
 
     it "removes only deleted files" do

@@ -33,7 +33,7 @@ describe Chef::Provider::Package::Paludis do
 
     @stdin = StringIO.new
     @stderr = StringIO.new
-    @stdout =<<-PKG_STATUS
+    @stdout = <<-PKG_STATUS
 group/ntp 0 accounts
 group/ntp 0 installed-accounts
 net/ntp 4.2.6_p5-r2 arbor
@@ -42,7 +42,7 @@ user/ntp 0 installed-accounts
 net/ntp 4.2.6_p5-r1 installed
 PKG_STATUS
     @pid = 12345
-    @shell_out = OpenStruct.new(:stdout => @stdout,:stdin => @stdin,:stderr => @stderr,:status => @status,:exitstatus => 0)
+    @shell_out = OpenStruct.new(:stdout => @stdout, :stdin => @stdin, :stderr => @stderr, :status => @status, :exitstatus => 0)
   end
 
   context "when loading current resource" do
@@ -86,13 +86,12 @@ INSTALLED
 
   context "when installing a package" do
     it "should run pkg install with the package name and version" do
-      expect(@provider).to receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>@new_resource.timeout})
+      expect(@provider).to receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"", { :timeout => @new_resource.timeout })
       @provider.install_package("net/ntp", "4.2.6_p5-r2")
     end
 
-
     it "should run pkg install with the package name and version and options if specified" do
-      expect(@provider).to receive(:shell_out!).with("cave -L warning resolve -x --preserve-world \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>@new_resource.timeout})
+      expect(@provider).to receive(:shell_out!).with("cave -L warning resolve -x --preserve-world \"=net/ntp-4.2.6_p5-r2\"", { :timeout => @new_resource.timeout })
       allow(@new_resource).to receive(:options).and_return("--preserve-world")
       @provider.install_package("net/ntp", "4.2.6_p5-r2")
     end
@@ -102,7 +101,7 @@ INSTALLED
 sys-process/lsof 4.87 arbor
 sys-process/lsof 4.87 x86_64
 PKG_STATUS
-      expect(@provider).to receive(:shell_out!).with("cave -L warning resolve -x \"=sys-process/lsof-4.87\"", {:timeout=>@new_resource.timeout})
+      expect(@provider).to receive(:shell_out!).with("cave -L warning resolve -x \"=sys-process/lsof-4.87\"", { :timeout => @new_resource.timeout })
       @provider.install_package("sys-process/lsof", "4.87")
     end
 
@@ -120,7 +119,7 @@ PKG_STATUS
 
   context "when upgrading a package" do
     it "should run pkg install with the package name and version" do
-      expect(@provider).to receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>@new_resource.timeout})
+      expect(@provider).to receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"", { :timeout => @new_resource.timeout })
       @provider.upgrade_package("net/ntp", "4.2.6_p5-r2")
     end
   end

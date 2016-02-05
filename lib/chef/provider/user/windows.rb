@@ -29,7 +29,7 @@ class Chef
 
         provides :user, os: "windows"
 
-        def initialize(new_resource,run_context)
+        def initialize(new_resource, run_context)
           super
           @net_user = Chef::Util::Windows::NetUser.new(@new_resource.username)
         end
@@ -37,7 +37,7 @@ class Chef
         def load_current_resource
           if @new_resource.gid
             Chef::Log.warn("The 'gid' attribute is not implemented by the Windows platform. Please use the 'group' resource to assign a user to a group.")
-          end          
+          end
 
           @current_resource = Chef::Resource::User.new(@new_resource.name)
           @current_resource.username(@new_resource.username)
@@ -98,7 +98,7 @@ class Chef
         end
 
         def set_options
-          opts = {:name => @new_resource.username}
+          opts = { :name => @new_resource.username }
 
           field_list = {
             "comment" => "full_name",
@@ -108,7 +108,7 @@ class Chef
             "password" => "password",
           }
 
-          field_list.sort{ |a,b| a[0] <=> b[0] }.each do |field, option|
+          field_list.sort { |a, b| a[0] <=> b[0] }.each do |field, option|
             field_symbol = field.to_sym
             if @current_resource.send(field_symbol) != @new_resource.send(field_symbol)
               if @new_resource.send(field_symbol)

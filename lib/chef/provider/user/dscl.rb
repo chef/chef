@@ -109,7 +109,6 @@ in 'password', with the associated 'salt' and 'iterations'.")
 Mac OS X version 10.7. Please specify a SALTED-SHA512 shadow hash in 'password' attribute to set the \
 user password using shadow hash.")
           end
-
         end
 
         def load_current_resource
@@ -145,7 +144,7 @@ user password using shadow hash.")
                 # Convert the salt from Base64 encoding to hex before consuming them
                 current_resource.salt(shadow_hash["SALTED-SHA512-PBKDF2"]["salt"].string.unpack("H*").first)
               else
-                raise(Chef::Exceptions::User,"Unknown shadow_hash format: #{shadow_hash.keys.join(' ')}")
+                raise(Chef::Exceptions::User, "Unknown shadow_hash format: #{shadow_hash.keys.join(' ')}")
               end
             end
 
@@ -226,7 +225,7 @@ user password using shadow hash.")
         # Find the next available uid on the system. starting with 200 if `system` is set,
         # 500 otherwise.
         #
-        def get_free_uid(search_limit=1000)
+        def get_free_uid(search_limit = 1000)
           uid = nil
           base_uid = new_resource.system ? 200 : 500
           next_uid_guess = base_uid
@@ -308,7 +307,7 @@ user password using shadow hash.")
 
         def validate_home_dir_specification!
           unless new_resource.home =~ /^\//
-            raise(Chef::Exceptions::InvalidHomeDirectory,"invalid path spec for User: '#{new_resource.username}', home directory: '#{new_resource.home}'")
+            raise(Chef::Exceptions::InvalidHomeDirectory, "invalid path spec for User: '#{new_resource.username}', home directory: '#{new_resource.home}'")
           end
         end
 
@@ -322,9 +321,9 @@ user password using shadow hash.")
 
         def ditto_home
           skel = "/System/Library/User Template/English.lproj"
-          raise(Chef::Exceptions::User,"can't find skel at: #{skel}") unless ::File.exists?(skel)
+          raise(Chef::Exceptions::User, "can't find skel at: #{skel}") unless ::File.exists?(skel)
           shell_out! "ditto '#{skel}' '#{new_resource.home}'"
-          ::FileUtils.chown_R(new_resource.username,new_resource.gid.to_s,new_resource.home)
+          ::FileUtils.chown_R(new_resource.username, new_resource.gid.to_s, new_resource.home)
         end
 
         def move_home
@@ -332,10 +331,10 @@ user password using shadow hash.")
 
           src = current_resource.home
           FileUtils.mkdir_p(new_resource.home)
-          files = ::Dir.glob("#{Chef::Util::PathHelper.escape_glob(src)}/*", ::File::FNM_DOTMATCH) - ["#{src}/.","#{src}/.."]
-          ::FileUtils.mv(files,new_resource.home, :force => true)
+          files = ::Dir.glob("#{Chef::Util::PathHelper.escape_glob(src)}/*", ::File::FNM_DOTMATCH) - ["#{src}/.", "#{src}/.."]
+          ::FileUtils.mv(files, new_resource.home, :force => true)
           ::FileUtils.rmdir(src)
-          ::FileUtils.chown_R(new_resource.username,new_resource.gid.to_s,new_resource.home)
+          ::FileUtils.chown_R(new_resource.username, new_resource.gid.to_s, new_resource.home)
         end
 
         #
@@ -384,7 +383,7 @@ user password using shadow hash.")
         # Prepares the password shadow info based on the platform version.
         #
         def prepare_password_shadow_info
-          shadow_info = { }
+          shadow_info = {}
           entropy = nil
           salt = nil
           iterations = nil
@@ -420,7 +419,7 @@ user password using shadow hash.")
               )
             end
 
-            pbkdf_info = { }
+            pbkdf_info = {}
             pbkdf_info["entropy"] = StringIO.new
             pbkdf_info["entropy"].string = entropy
             pbkdf_info["salt"] = StringIO.new
@@ -465,7 +464,7 @@ user password using shadow hash.")
         # Unlocks the user
         #
         def unlock_user
-          auth_string = authentication_authority.gsub(/AuthenticationAuthority: /,"").gsub(/;DisabledUser;/,"").strip
+          auth_string = authentication_authority.gsub(/AuthenticationAuthority: /, "").gsub(/;DisabledUser;/, "").strip
           run_dscl("create /Users/#{new_resource.username} AuthenticationAuthority '#{auth_string}'")
         end
 
@@ -655,16 +654,16 @@ user password using shadow hash.")
         def run_dscl(*args)
           result = shell_out("dscl . -#{args.join(' ')}")
           return "" if ( args.first =~ /^delete/ ) && ( result.exitstatus != 0 )
-          raise(Chef::Exceptions::DsclCommandFailed,"dscl error: #{result.inspect}") unless result.exitstatus == 0
-          raise(Chef::Exceptions::DsclCommandFailed,"dscl error: #{result.inspect}") if result.stdout =~ /No such key: /
+          raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") unless result.exitstatus == 0
+          raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if result.stdout =~ /No such key: /
           result.stdout
         end
 
         def run_plutil(*args)
           result = shell_out("plutil -#{args.join(' ')}")
-          raise(Chef::Exceptions::PlistUtilCommandFailed,"plutil error: #{result.inspect}") unless result.exitstatus == 0
+          raise(Chef::Exceptions::PlistUtilCommandFailed, "plutil error: #{result.inspect}") unless result.exitstatus == 0
           if result.stdout.encoding == Encoding::ASCII_8BIT
-            result.stdout.encode("utf-8", "binary",  :undef => :replace, :invalid => :replace, :replace => "?")
+            result.stdout.encode("utf-8", "binary", :undef => :replace, :invalid => :replace, :replace => "?")
           else
             result.stdout
           end
@@ -675,7 +674,7 @@ user password using shadow hash.")
         end
 
         def convert_to_binary(string)
-          string.unpack("a2"*(string.size/2)).collect { |i| i.hex.chr }.join
+          string.unpack("a2" * (string.size / 2)).collect { |i| i.hex.chr }.join
         end
 
         def salted_sha512?(string)
@@ -684,7 +683,7 @@ user password using shadow hash.")
 
         def salted_sha512_password_match?
           # Salt is included in the first 4 bytes of shadow data
-          salt = current_resource.password.slice(0,8)
+          salt = current_resource.password.slice(0, 8)
           shadow = OpenSSL::Digest::SHA512.hexdigest(convert_to_binary(salt) + new_resource.password)
           current_resource.password == salt + shadow
         end

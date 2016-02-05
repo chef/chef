@@ -69,7 +69,7 @@ class Chef
       end
 
       def osc_11_warning
-<<-EOF
+        <<-EOF
 IF YOU ARE USING CHEF SERVER 12+, PLEASE FOLLOW THE INSTRUCTIONS UNDER knife user create --help.
 You only passed a single argument to knife user create.
 For backwards compatibility, when only a single argument is passed,
@@ -144,8 +144,6 @@ EOF
             end
           end
         end
-
-
       end
     end
   end

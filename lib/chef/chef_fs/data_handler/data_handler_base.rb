@@ -28,10 +28,10 @@ class Chef
         # Takes a name like blah.json and removes the .json from it.
         #
         def remove_dot_json(name)
-          if name.length < 5 || name[-5,5] != ".json"
+          if name.length < 5 || name[-5, 5] != ".json"
             raise "Invalid name #{path}: must end in .json"
           end
-          name[0,name.length-5]
+          name[0, name.length - 5]
         end
 
         #
@@ -154,11 +154,11 @@ class Chef
                 if object[key].size > 0
                   result << key
                   first = true
-                  object[key].each_pair do |k,v|
+                  object[key].each_pair do |k, v|
                     if first
                       first = false
                     else
-                      result << " "*key.length
+                      result << " " * key.length
                     end
                     result << " #{k.inspect} => #{v.inspect}\n"
                   end

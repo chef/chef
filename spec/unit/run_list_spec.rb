@@ -223,7 +223,6 @@ describe Chef::RunList do
             @role_prod_base.name("prod-base")
             @role_prod_base.env_run_list["production"] = Chef::RunList.new("role[nested-deeper]")
 
-
             @role_nested_deeper = Chef::Role.new
             @role_nested_deeper.name("nested-deeper")
             @role_nested_deeper.env_run_list["production"] = Chef::RunList.new("recipe[prod-secret-sauce]")

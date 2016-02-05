@@ -34,7 +34,6 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
-
 if windows?
   override :'ruby-windows', version: "2.0.0-p645"
   # Leave dev-kit pinned to 4.5 because 4.7 is 20MB larger and we don't want
@@ -43,7 +42,7 @@ if windows?
     override :'ruby-windows-devkit', version: "4.5.2-20111229-1559"
   end
 else
-  override :ruby,           version: "2.1.6"
+  override :ruby, version: "2.1.6"
 end
 
 override :bundler,      version: "1.11.2"
@@ -81,5 +80,5 @@ package :msi do
   wix_light_extension "WixUtilExtension"
   signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
   parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
-    ProjectLocationDir: project_location_dir
+             ProjectLocationDir: project_location_dir
 end

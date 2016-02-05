@@ -52,7 +52,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
 
   def for_each_windows_version(&block)
     @version.methods.each do |method_name|
-      if Chef::ReservedNames::Win32::Version::WIN_VERSIONS.keys.find { | key | method_name.to_s == Chef::ReservedNames::Win32::Version.send(:method_name_from_marketing_name,key) }
+      if Chef::ReservedNames::Win32::Version::WIN_VERSIONS.keys.find { |key| method_name.to_s == Chef::ReservedNames::Win32::Version.send(:method_name_from_marketing_name, key) }
         yield method_name
       end
     end

@@ -44,7 +44,6 @@ shared_context "deploying via destdir" do
   end
 end
 
-
 shared_examples_for "a file with the wrong content" do
   before do
     # Assert starting state is as expected
@@ -103,7 +102,7 @@ shared_examples_for "a file with the wrong content" do
         end
 
         it "raises an exception" do
-          expect{ resource.run_action(:create) }.to raise_error(Chef::Exceptions::ChecksumMismatch)
+          expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::ChecksumMismatch)
         end
       end
     end
@@ -308,14 +307,14 @@ shared_examples_for "a file resource" do
 
   describe "when setting atomic_update" do
     it "booleans should work" do
-      expect {resource.atomic_update(true)}.not_to raise_error
-      expect {resource.atomic_update(false)}.not_to raise_error
+      expect { resource.atomic_update(true) }.not_to raise_error
+      expect { resource.atomic_update(false) }.not_to raise_error
     end
 
     it "anything else should raise an error" do
-      expect {resource.atomic_update(:copy)}.to raise_error(ArgumentError)
-      expect {resource.atomic_update(:move)}.to raise_error(ArgumentError)
-      expect {resource.atomic_update(958)}.to raise_error(ArgumentError)
+      expect { resource.atomic_update(:copy) }.to raise_error(ArgumentError)
+      expect { resource.atomic_update(:move) }.to raise_error(ArgumentError)
+      expect { resource.atomic_update(958) }.to raise_error(ArgumentError)
     end
   end
 
@@ -351,13 +350,13 @@ shared_examples_for "file resource not pointing to a real file" do
 
   describe "when force_unlink is set to false" do
     it ":create raises an error" do
-      expect {resource.run_action(:create) }.to raise_error(Chef::Exceptions::FileTypeMismatch)
+      expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::FileTypeMismatch)
     end
   end
 
   describe "when force_unlink is not set (default)" do
     it ":create raises an error" do
-      expect {resource.run_action(:create) }.to raise_error(Chef::Exceptions::FileTypeMismatch)
+      expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::FileTypeMismatch)
     end
   end
 end
@@ -404,7 +403,6 @@ shared_examples_for "a configured file resource" do
     let(:symlink_target) {
       File.join(CHEF_SPEC_DATA, "file-test-target")
     }
-
 
     describe "when configured not to manage symlink's target" do
       before(:each) do
@@ -574,7 +572,6 @@ shared_examples_for "a configured file resource" do
             File.open(path, "wb") { |f| f.write(expected_content) }
           end
 
-
           include_context "setup broken permissions"
 
           include_examples "a securable resource with existing target"
@@ -721,7 +718,7 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
-  context "when the target file is a blockdev",:unix_only, :requires_root, :not_supported_on_solaris do
+  context "when the target file is a blockdev", :unix_only, :requires_root, :not_supported_on_solaris do
     include Chef::Mixin::ShellOut
     let(:path) do
       File.join(CHEF_SPEC_DATA, "testdev")
@@ -739,7 +736,7 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
-  context "when the target file is a chardev",:unix_only, :requires_root, :not_supported_on_solaris do
+  context "when the target file is a chardev", :unix_only, :requires_root, :not_supported_on_solaris do
     include Chef::Mixin::ShellOut
     let(:path) do
       File.join(CHEF_SPEC_DATA, "testdev")
@@ -757,7 +754,7 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
-  context "when the target file is a pipe",:unix_only do
+  context "when the target file is a pipe", :unix_only do
     include Chef::Mixin::ShellOut
     let(:path) do
       File.join(CHEF_SPEC_DATA, "testpipe")
@@ -775,7 +772,7 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
-  context "when the target file is a socket",:unix_only do
+  context "when the target file is a socket", :unix_only do
     require "socket"
 
     # It turns out that the path to a socket can have at most ~104
@@ -1018,7 +1015,7 @@ shared_examples_for "a configured file resource" do
 
 end
 
-shared_context Chef::Resource::File  do
+shared_context Chef::Resource::File do
   if windows?
     require "chef/win32/file"
   end

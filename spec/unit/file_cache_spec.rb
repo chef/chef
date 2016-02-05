@@ -36,7 +36,7 @@ describe Chef::FileCache do
     end
 
     it "creates the cached file at the correct relative path" do
-      expect(File).to receive(:open).with(File.join(@file_cache_path, "whiz", "bang"), "w",416).and_yield(@io)
+      expect(File).to receive(:open).with(File.join(@file_cache_path, "whiz", "bang"), "w", 416).and_yield(@io)
       Chef::FileCache.store("whiz/bang", "borkborkbork")
     end
 

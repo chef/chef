@@ -52,14 +52,14 @@ class Chef
         def candidate_version
           return @candidate_version if @candidate_version
 
-          repos = ["extra","core","community"]
+          repos = ["extra", "core", "community"]
 
           if(::File.exists?("/etc/pacman.conf"))
             pacman = ::File.read("/etc/pacman.conf")
             repos = pacman.scan(/\[(.+)\]/).flatten
           end
 
-          package_repos = repos.map {|r| Regexp.escape(r) }.join("|")
+          package_repos = repos.map { |r| Regexp.escape(r) }.join("|")
 
           status = shell_out_with_timeout("pacman -Sl")
           status.stdout.each_line do |line|
@@ -80,7 +80,6 @@ class Chef
           end
 
           @candidate_version
-
         end
 
         def install_package(name, version)

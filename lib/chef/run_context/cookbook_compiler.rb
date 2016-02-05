@@ -165,7 +165,7 @@ class Chef
 
       def load_attributes_from_cookbook(cookbook_name)
         list_of_attr_files = files_in_cookbook_by_segment(cookbook_name, :attributes).dup
-        if default_file = list_of_attr_files.find {|path| File.basename(path) == "default.rb" }
+        if default_file = list_of_attr_files.find { |path| File.basename(path) == "default.rb" }
           list_of_attr_files.delete(default_file)
           load_attribute_file(cookbook_name.to_s, default_file)
         end
@@ -224,7 +224,6 @@ class Chef
         raise
       end
 
-
       def load_resource_definitions_from_cookbook(cookbook_name)
         files_in_cookbook_by_segment(cookbook_name, :definitions).each do |filename|
           begin
@@ -258,7 +257,6 @@ class Chef
         ordered_cookbooks << cookbook
       end
 
-
       def count_files_by_segment(segment)
         cookbook_collection.inject(0) do |count, cookbook_by_name|
           count + cookbook_by_name[1].segment_filenames(segment).size
@@ -275,7 +273,7 @@ class Chef
       # +cookbook_name+ in lexical sort order.
       def each_cookbook_dep(cookbook_name, &block)
         cookbook = cookbook_collection[cookbook_name]
-        cookbook.metadata.dependencies.keys.sort.map{|x| x.to_sym}.each(&block)
+        cookbook.metadata.dependencies.keys.sort.map { |x| x.to_sym }.each(&block)
       end
 
       # Given a +recipe_name+, finds the file associated with the recipe.
@@ -284,7 +282,6 @@ class Chef
         cookbook = cookbook_collection[cookbook_name]
         cookbook.recipe_filenames_by_name[recipe_short_name]
       end
-
 
     end
 

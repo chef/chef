@@ -21,7 +21,6 @@ ALL_EXPANDED_PERMISSIONS = ["generic read",
                             "read attributes",
                             "write attributes"]
 
-
 shared_examples_for "a securable resource with reporting" do
 
   include_context "diff disabled"
@@ -273,7 +272,6 @@ shared_examples_for "a securable resource with reporting" do
       # Windows reporting data should look like this (+/- ish):
       # { "owner" => "bob", "checksum" => "ffff", "access control" => { "bob" => { "permissions" => ["perm1", "perm2", ...], "flags" => [] }}}
 
-
       before do
         resource.action(:create)
       end
@@ -293,14 +291,13 @@ shared_examples_for "a securable resource with reporting" do
           resource.run_action(:create)
           # TODO: most stable way to specify?
           expect(resource.owner).to eq(etc.getpwuid(process.uid).name)
-          expect(resource.state[:expanded_rights]).to eq({ "CURRENTUSER" => { "permissions" => ALL_EXPANDED_PERMISSIONS, "flags" => [] }})
+          expect(resource.state[:expanded_rights]).to eq({ "CURRENTUSER" => { "permissions" => ALL_EXPANDED_PERMISSIONS, "flags" => [] } })
           expect(resource.state[:expanded_deny_rights]).to eq({})
           expect(resource.state[:inherits]).to be_truthy
         end
       end
 
-
-      context "and owner is specified with a string (username) in new_resource"  do
+      context "and owner is specified with a string (username) in new_resource" do
 
         # TODO/bug: duplicated from the "securable resource" tests
         let(:expected_user_name) { "Guest" }
@@ -391,7 +388,6 @@ shared_examples_for "a securable resource with reporting" do
           skip
         end
       end
-
 
     end
   end

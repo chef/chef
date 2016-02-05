@@ -85,19 +85,19 @@ describe Chef::Knife::CookbookMetadata do
     before(:each) do
       @knife.config[:cookbook_path] = @cookbook_dir
       allow(File).to receive(:expand_path).with("#{@cookbook_dir}/foobar/metadata.rb").
-                                    and_return("#{@cookbook_dir}/foobar/metadata.rb")
+        and_return("#{@cookbook_dir}/foobar/metadata.rb")
     end
 
     it "should generate the metadata from metadata.rb if it exists" do
       expect(File).to receive(:exists?).with("#{@cookbook_dir}/foobar/metadata.rb").
-                                    and_return(true)
+        and_return(true)
       expect(@knife).to receive(:generate_metadata_from_file).with("foobar", "#{@cookbook_dir}/foobar/metadata.rb")
       @knife.run
     end
 
     it "should validate the metadata json if metadata.rb does not exist" do
       expect(File).to receive(:exists?).with("#{@cookbook_dir}/foobar/metadata.rb").
-                                    and_return(false)
+        and_return(false)
       expect(@knife).to receive(:validate_metadata_json).with(@cookbook_dir, "foobar")
       @knife.run
     end
@@ -114,10 +114,10 @@ describe Chef::Knife::CookbookMetadata do
       expect(@metadata_mock).to receive(:name).with("foobar")
       expect(@metadata_mock).to receive(:from_file).with("#{@cookbook_dir}/foobar/metadata.rb")
       expect(File).to receive(:open).with("#{@cookbook_dir}/foobar/metadata.json", "w").
-                                 and_yield(@json_file_mock)
+        and_yield(@json_file_mock)
       expect(@json_file_mock).to receive(:write).with(@json_data)
       expect(Chef::JSONCompat).to receive(:to_json_pretty).with(@metadata_mock).
-                                                       and_return(@json_data)
+        and_return(@json_data)
       @knife.generate_metadata_from_file("foobar", "#{@cookbook_dir}/foobar/metadata.rb")
       expect(@stderr.string).to match /generating metadata for foobar from #{@cookbook_dir}\/foobar\/metadata\.rb/im
     end
@@ -141,16 +141,16 @@ describe Chef::Knife::CookbookMetadata do
   describe "validate_metadata_json" do
     it "should validate the metadata json" do
       expect(File).to receive(:exist?).with("#{@cookbook_dir}/foobar/metadata.json").
-                                   and_return(true)
+        and_return(true)
       expect(IO).to receive(:read).with("#{@cookbook_dir}/foobar/metadata.json").
-                               and_return(@json_data)
+        and_return(@json_data)
       expect(Chef::Cookbook::Metadata).to receive(:validate_json).with(@json_data)
       @knife.validate_metadata_json(@cookbook_dir, "foobar")
     end
 
     it "should not try to validate the metadata json if the file does not exist" do
       expect(File).to receive(:exist?).with("#{@cookbook_dir}/foobar/metadata.json").
-                                   and_return(false)
+        and_return(false)
       expect(IO).not_to receive(:read)
       expect(Chef::Cookbook::Metadata).not_to receive(:validate_json)
       @knife.validate_metadata_json(@cookbook_dir, "foobar")
@@ -161,9 +161,9 @@ describe Chef::Knife::CookbookMetadata do
     }.each_pair do |klass, description|
       it "should print an error and exit when an #{description} syntax exception is encountered" do
         expect(File).to receive(:exist?).with("#{@cookbook_dir}/foobar/metadata.json").
-                                     and_return(true)
+          and_return(true)
         expect(IO).to receive(:read).with("#{@cookbook_dir}/foobar/metadata.json").
-                                 and_return(@json_data)
+          and_return(@json_data)
         exception = klass.new("#{description} blah")
         allow(Chef::Cookbook::Metadata).to receive(:validate_json).and_raise(exception)
         expect {

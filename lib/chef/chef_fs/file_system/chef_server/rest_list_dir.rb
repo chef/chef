@@ -60,7 +60,6 @@ class Chef
           # the server version directly, and can't ask the server for a list of the endpoints it supports.
           #
 
-
           #
           # Does GET /<api_path>, assumes the result is of the format:
           #

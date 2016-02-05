@@ -74,13 +74,13 @@ class Chef
 
         argument_is_absolute = Chef::ChefFS::PathUtils::is_absolute?(path)
         return false if is_absolute != argument_is_absolute
-        path = path[1,path.length-1] if argument_is_absolute
+        path = path[1, path.length - 1] if argument_is_absolute
 
         path_parts = Chef::ChefFS::PathUtils::split(path)
         # If the pattern is shorter than the path (or same size), children will be larger than the pattern, and will not match.
         return false if regexp_parts.length <= path_parts.length && !has_double_star
         # If the path doesn't match up to this point, children won't match either.
-        return false if path_parts.zip(regexp_parts).any? { |part,regexp| !regexp.nil? && !regexp.match(part) }
+        return false if path_parts.zip(regexp_parts).any? { |part, regexp| !regexp.nil? && !regexp.match(part) }
         # Otherwise, it's possible we could match: the path matches to this point, and the pattern is longer than the path.
         # TODO There is one edge case where the double star comes after some characters like abc**def--we could check whether the next
         # bit of path starts with abc in that case.
@@ -111,7 +111,7 @@ class Chef
       #
       # This method assumes +could_match_children?(path)+ is +true+.
       def exact_child_name_under(path)
-        path = path[1,path.length-1] if Chef::ChefFS::PathUtils::is_absolute?(path)
+        path = path[1, path.length - 1] if Chef::ChefFS::PathUtils::is_absolute?(path)
         dirs_in_path = Chef::ChefFS::PathUtils::split(path).length
         return nil if exact_parts.length <= dirs_in_path
         return exact_parts[dirs_in_path]
@@ -151,7 +151,7 @@ class Chef
       def match?(path)
         argument_is_absolute = Chef::ChefFS::PathUtils::is_absolute?(path)
         return false if is_absolute != argument_is_absolute
-        path = path[1,path.length-1] if argument_is_absolute
+        path = path[1, path.length - 1] if argument_is_absolute
         !!regexp.match(path)
       end
 
@@ -275,15 +275,15 @@ class Chef
               exact = nil
               regexp << "."
             else
-              if part[0,1] == '\\' && part.length == 2
+              if part[0, 1] == '\\' && part.length == 2
                 # backslash escapes are only supported on Unix, and are handled here by leaving the escape on (it means the same thing in a regex)
-                exact << part[1,1] if !exact.nil?
-                if regexp_escape_characters.include?(part[1,1])
+                exact << part[1, 1] if !exact.nil?
+                if regexp_escape_characters.include?(part[1, 1])
                   regexp << part
                 else
-                  regexp << part[1,1]
+                  regexp << part[1, 1]
                 end
-              elsif part[0,1] == "[" && part.length > 1
+              elsif part[0, 1] == "[" && part.length > 1
                 # [...] happens only on Unix, and is handled here by *not* backslashing (it means the same thing in and out of regex)
                 exact = nil
                 regexp << part

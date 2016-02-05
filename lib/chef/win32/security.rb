@@ -235,7 +235,6 @@ class Chef
         SecurityDescriptor.new(security_descriptor_ptr)
       end
 
-
       def self.get_named_security_info(path, type = :SE_FILE_OBJECT, info = OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION)
         security_descriptor = FFI::MemoryPointer.new :pointer
         hr = GetNamedSecurityInfoW(path.to_wstring, type, info, nil, nil, nil, nil, security_descriptor)
@@ -385,7 +384,7 @@ class Chef
         end
 
         sid = FFI::MemoryPointer.new :char, sid_size.read_long
-        referenced_domain_name = FFI::MemoryPointer.new :char, (referenced_domain_name_size.read_long*2)
+        referenced_domain_name = FFI::MemoryPointer.new :char, (referenced_domain_name_size.read_long * 2)
         use = FFI::Buffer.new(:long).write_long(0)
         unless LookupAccountNameW(system_name, name.to_wstring, sid, sid_size, referenced_domain_name, referenced_domain_name_size, use)
           Chef::ReservedNames::Win32::Error.raise!
@@ -406,8 +405,8 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        name = FFI::MemoryPointer.new :char, (name_size.read_long*2)
-        referenced_domain_name = FFI::MemoryPointer.new :char, (referenced_domain_name_size.read_long*2)
+        name = FFI::MemoryPointer.new :char, (name_size.read_long * 2)
+        referenced_domain_name = FFI::MemoryPointer.new :char, (referenced_domain_name_size.read_long * 2)
         use = FFI::Buffer.new(:long).write_long(0)
         unless LookupAccountSidW(system_name, sid, name, name_size, referenced_domain_name, referenced_domain_name_size, use)
           Chef::ReservedNames::Win32::Error.raise!
@@ -425,7 +424,7 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        name = FFI::MemoryPointer.new :char, (name_size.read_long*2)
+        name = FFI::MemoryPointer.new :char, (name_size.read_long * 2)
         unless LookupPrivilegeNameW(system_name, luid, name, name_size)
           Chef::ReservedNames::Win32::Error.raise!
         end
@@ -443,7 +442,7 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        display_name = FFI::MemoryPointer.new :char, (display_name_size.read_long*2)
+        display_name = FFI::MemoryPointer.new :char, (display_name_size.read_long * 2)
         unless LookupPrivilegeDisplayNameW(system_name, name.to_wstring, display_name, display_name_size, language_id)
           Chef::ReservedNames::Win32::Error.raise!
         end

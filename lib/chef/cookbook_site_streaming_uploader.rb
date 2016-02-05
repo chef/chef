@@ -114,14 +114,14 @@ class Chef
         # TODO: tim: 2009-12-28: It'd be nice to remove this special case, and
         # always hash the entire request body. In the file case it would just be
         # expanded multipart text - the entire body of the POST.
-        content_body = parts.inject("") { |result,part| result + part.read(0, part.size) }
+        content_body = parts.inject("") { |result, part| result + part.read(0, part.size) }
         content_file.rewind if content_file # we consumed the file for the above operation, so rewind it.
 
         signing_options = {
-          :http_method=>http_verb,
-          :path=>url.path,
-          :user_id=>user_id,
-          :timestamp=>timestamp}
+          :http_method => http_verb,
+          :path => url.path,
+          :user_id => user_id,
+          :timestamp => timestamp }
         (content_file && signing_options[:file] = content_file) || (signing_options[:body] = (content_body || ""))
 
         headers.merge!(Mixlib::Authentication::SignedHeaderAuth.signing_object(signing_options).sign(secret_key))
@@ -129,7 +129,7 @@ class Chef
         content_file.rewind if content_file
 
         # net/http doesn't like symbols for header keys, so we'll to_s each one just in case
-        headers = DefaultHeaders.merge(Hash[*headers.map{ |k,v| [k.to_s, v] }.flatten])
+        headers = DefaultHeaders.merge(Hash[*headers.map { |k, v| [k.to_s, v] }.flatten])
 
         req = case http_verb
               when :put
@@ -201,7 +201,7 @@ class Chef
       end
 
       def size
-        @parts.inject(0) {|size, part| size + part.size}
+        @parts.inject(0) { |size, part| size + part.size }
       end
 
       def read(how_much, dst_buf = nil)

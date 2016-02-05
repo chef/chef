@@ -27,7 +27,6 @@ describe Chef::Formatters::APIErrorFormatting do
     allow(response).to receive(:body)
   end
 
-
   context "when describe_406_error is called" do
     context "when response['x-ops-server-api-version'] exists" do
       let(:min_version) { "2" }
@@ -47,17 +46,17 @@ describe Chef::Formatters::APIErrorFormatting do
       end
 
       it "prints an error about client and server API version incompatibility with a min API version" do
-        expect(error_description).to receive(:section).with("Incompatible server API version:",/a min API version of #{min_version}/)
+        expect(error_description).to receive(:section).with("Incompatible server API version:", /a min API version of #{min_version}/)
         class_instance.describe_406_error(error_description, response)
       end
 
       it "prints an error about client and server API version incompatibility with a max API version" do
-        expect(error_description).to receive(:section).with("Incompatible server API version:",/a max API version of #{max_version}/)
+        expect(error_description).to receive(:section).with("Incompatible server API version:", /a max API version of #{max_version}/)
         class_instance.describe_406_error(error_description, response)
       end
 
       it "prints an error describing the request API version" do
-        expect(error_description).to receive(:section).with("Incompatible server API version:",/a request with an API version of #{request_version}/)
+        expect(error_description).to receive(:section).with("Incompatible server API version:", /a request with an API version of #{request_version}/)
         class_instance.describe_406_error(error_description, response)
       end
     end

@@ -26,7 +26,7 @@ class Chef
 
       allowed_actions :install, :upgrade, :remove, :uninstall, :purge, :reconfig
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @resource_name = :chocolatey_package
       end

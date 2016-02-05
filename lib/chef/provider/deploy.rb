@@ -56,7 +56,7 @@ class Chef
         @shared_path = @new_resource.shared_path
       end
 
-      def sudo(command,&block)
+      def sudo(command, &block)
         execute(command, &block)
       end
 
@@ -93,7 +93,6 @@ class Chef
             a.whyrun("Would assume callback file #{callback_file} included in release")
           end
         end
-
       end
 
       def action_deploy
@@ -175,7 +174,7 @@ class Chef
         restart
       end
 
-      def callback(what, callback_code=nil)
+      def callback(what, callback_code = nil)
         @collection = Chef::ResourceCollection.new
         case callback_code
         when Proc
@@ -201,7 +200,7 @@ class Chef
 
           converge_by("execute migration command #{@new_resource.migration_command}") do
             Chef::Log.info "#{@new_resource} migrating #{@new_resource.user} with environment #{env_info}"
-            shell_out!(@new_resource.migration_command,run_options(:cwd=>release_path, :log_level => :info))
+            shell_out!(@new_resource.migration_command, run_options(:cwd => release_path, :log_level => :info))
           end
         end
       end
@@ -221,7 +220,7 @@ class Chef
           else
             converge_by("restart app using command #{@new_resource.restart_command}") do
               Chef::Log.info("#{@new_resource} restarting app")
-              shell_out!(@new_resource.restart_command,run_options(:cwd=>@new_resource.current_path))
+              shell_out!(@new_resource.restart_command, run_options(:cwd => @new_resource.current_path))
             end
           end
         end
@@ -391,7 +390,7 @@ class Chef
         end
       end
 
-      def run_options(run_opts={})
+      def run_options(run_opts = {})
         run_opts[:user] = @new_resource.user if @new_resource.user
         run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts[:environment] = @new_resource.environment if @new_resource.environment

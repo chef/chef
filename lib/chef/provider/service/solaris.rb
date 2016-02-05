@@ -28,7 +28,7 @@ class Chef
 
         provides :service, os: "solaris2"
 
-        def initialize(new_resource, run_context=nil)
+        def initialize(new_resource, run_context = nil)
           super
           @init_command   = "/usr/sbin/svcadm"
           @status_command = "/bin/svcs"

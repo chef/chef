@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Knife::NodeRunListSet do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeRunListSet.new
     @knife.config = {}
     @knife.name_args = [ "adam", "role[monkey]" ]

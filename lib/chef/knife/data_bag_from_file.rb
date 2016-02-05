@@ -60,6 +60,7 @@ class Chef
       end
 
       private
+
       def data_bags_path
         @data_bag_path ||= "data_bags"
       end

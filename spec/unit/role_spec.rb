@@ -44,7 +44,6 @@ describe Chef::Role do
       @role.run_list(%w{ nginx recipe[ree] role[base]})
     end
 
-
     it "returns the run list" do
       expect(@role.run_list).to eq(%w{ nginx recipe[ree] role[base]})
     end
@@ -79,11 +78,10 @@ describe Chef::Role do
 
       it "env_run_lists can only be set with _default run list in it" do
         long_exception_name = Chef::Exceptions::InvalidEnvironmentRunListSpecification
-        expect {@role.env_run_lists({})}.to raise_error(long_exception_name)
+        expect { @role.env_run_lists({}) }.to raise_error(long_exception_name)
       end
 
     end
-
 
     describe "using the old #recipes API" do
       it "should let you set the recipe array" do
@@ -103,8 +101,6 @@ describe Chef::Role do
     end
 
   end
-
-
 
   describe "default_attributes" do
     it "should let you set the default attributes hash explicitly" do
@@ -249,7 +245,7 @@ describe Chef::Role do
     end
   end
 
-  ROLE_DSL=<<-EOR
+  ROLE_DSL = <<-EOR
 name "ceiling_cat"
 description "like Aliens, but furry"
 EOR
@@ -293,20 +289,20 @@ EOR
     it "should raise an exception if the file does not exist" do
       expect(Dir).to receive(:glob).and_return(["#{Chef::Config[:role_path]}/meme.rb"])
       expect(File).not_to receive(:exists?)
-      expect {@role.class.from_disk("lolcat")}.to raise_error(Chef::Exceptions::RoleNotFound)
+      expect { @role.class.from_disk("lolcat") }.to raise_error(Chef::Exceptions::RoleNotFound)
     end
 
     it "should raise an exception if two files exist with the same name" do
       expect(Dir).to receive(:glob).and_return(["#{Chef::Config[:role_path]}/memes/lolcat.rb", "#{Chef::Config[:role_path]}/lolcat.rb"])
       expect(File).not_to receive(:exists?)
-      expect {@role.class.from_disk("lolcat")}.to raise_error(Chef::Exceptions::DuplicateRole)
+      expect { @role.class.from_disk("lolcat") }.to raise_error(Chef::Exceptions::DuplicateRole)
     end
 
     it "should not raise an exception if two files exist with a similar name" do
       expect(Dir).to receive(:glob).and_return(["#{Chef::Config[:role_path]}/memes/lolcat.rb", "#{Chef::Config[:role_path]}/super_lolcat.rb"])
       expect(File).to receive(:exists?).with("#{Chef::Config[:role_path]}/memes/lolcat.rb").and_return(true)
       allow_any_instance_of(Chef::Role).to receive(:from_file).with("#{Chef::Config[:role_path]}/memes/lolcat.rb")
-      expect{ @role.class.from_disk("lolcat") }.not_to raise_error
+      expect { @role.class.from_disk("lolcat") }.not_to raise_error
     end
   end
 
@@ -355,7 +351,7 @@ EOR
     it "should raise an exception if the file does not exist" do
       expect(Dir).to receive(:glob).with(File.join("/path1", "**", "**")).exactly(1).times.and_return([])
       expect(Dir).to receive(:glob).with(File.join("/path/path2", "**", "**")).exactly(1).times.and_return([])
-      expect {@role.class.from_disk("lolcat")}.to raise_error(Chef::Exceptions::RoleNotFound)
+      expect { @role.class.from_disk("lolcat") }.to raise_error(Chef::Exceptions::RoleNotFound)
     end
 
   end

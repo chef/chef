@@ -22,7 +22,7 @@ require "spec_helper"
 
 describe Chef::Knife::CookbookMetadataFromFile do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @src = File.expand_path(File.join(CHEF_SPEC_DATA, "metadata", "quick_start", "metadata.rb"))
     @tgt = File.expand_path(File.join(CHEF_SPEC_DATA, "metadata", "quick_start", "metadata.json"))
     @knife = Chef::Knife::CookbookMetadataFromFile.new

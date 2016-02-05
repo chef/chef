@@ -250,7 +250,6 @@ describe Chef::Application do
     end
   end
 
-
   context "with an invalid log location" do
 
     it "logs a fatal error and exits" do
@@ -260,7 +259,6 @@ describe Chef::Application do
       @app.configure_logging
     end
   end
-
 
   describe "class method: fatal!" do
     before do

@@ -83,11 +83,11 @@ class Chef
         fn = Regexp.escape(::File.basename(path))
         Dir.entries(::File.dirname(backup_path)).select do |f|
           !!(f =~ /\A#{fn}.chef-[0-9.]*\B/)
-        end.map {|f| ::File.join(::File.dirname(backup_path), f)}
+        end.map { |f| ::File.join(::File.dirname(backup_path), f) }
       end
 
       def sorted_backup_files
-        unsorted_backup_files.sort { |a,b| b <=> a }
+        unsorted_backup_files.sort { |a, b| b <=> a }
       end
     end
   end

@@ -31,7 +31,6 @@ class Chef
 
       banner "knife role show ROLE (options)"
 
-
       def run
         @role_name = @name_args[0]
 
@@ -48,5 +47,3 @@ class Chef
     end
   end
 end
-
-

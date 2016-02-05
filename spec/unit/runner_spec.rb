@@ -239,7 +239,7 @@ describe Chef::Runner do
       second_resource.notifies(:fail, third_resource, :delayed)
       second_resource.notifies(:purr, first_resource, :delayed)
 
-      expect {runner.converge}.to raise_error(FailureProvider::ChefClientFail)
+      expect { runner.converge }.to raise_error(FailureProvider::ChefClientFail)
 
       expect(first_resource).to be_updated
     end
@@ -271,7 +271,7 @@ describe Chef::Runner do
       end
       expect(exception).to be_a(Chef::Exceptions::MultipleFailures)
 
-      expected_message =<<-E
+      expected_message = <<-E
 Multiple failures occurred:
 * FailureProvider::ChefClientFail occurred in delayed notification: [explode] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
 * FailureProvider::ChefClientFail occurred in delayed notification: [explode again] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
@@ -372,10 +372,10 @@ Multiple failures occurred:
       first_resource.action = :buy
 
       only_if_called_times = 0
-      first_resource.only_if {only_if_called_times += 1; true}
+      first_resource.only_if { only_if_called_times += 1; true }
 
       not_if_called_times = 0
-      first_resource.not_if {not_if_called_times += 1; false}
+      first_resource.not_if { not_if_called_times += 1; false }
 
       second_resource = Chef::Resource::Cat.new("carmel", run_context)
       run_context.resource_collection << second_resource

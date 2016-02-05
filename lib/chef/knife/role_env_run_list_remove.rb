@@ -30,14 +30,14 @@ class Chef
       banner "knife role env_run_list remove [ROLE] [ENVIRONMENT] [ENTRIES]"
 
       def remove_from_env_run_list(role, environment, item_to_remove)
-          nlist = []
-          role.run_list_for(environment).each do |entry|
-            nlist << entry unless entry == item_to_remove
-            #unless entry == @name_args[2]
-            #  nlist << entry
-            #end
-          end
-          role.env_run_lists_add(environment => nlist)
+        nlist = []
+        role.run_list_for(environment).each do |entry|
+          nlist << entry unless entry == item_to_remove
+          #unless entry == @name_args[2]
+          #  nlist << entry
+          #end
+        end
+        role.env_run_lists_add(environment => nlist)
       end
 
       def run

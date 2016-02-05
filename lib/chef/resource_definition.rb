@@ -27,14 +27,14 @@ class Chef
 
     attr_accessor :name, :params, :recipe, :node
 
-    def initialize(node=nil)
+    def initialize(node = nil)
       @name = nil
       @params = Hash.new
       @recipe = nil
       @node = node
     end
 
-    def define(resource_name, prototype_params=nil, &block)
+    def define(resource_name, prototype_params = nil, &block)
       unless resource_name.kind_of?(Symbol)
         raise ArgumentError, "You must use a symbol when defining a new resource!"
       end

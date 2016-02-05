@@ -78,7 +78,7 @@ describe Chef::CookbookUploader do
 
     let(:sandbox_response) do
       sandbox_checksums = cksums_not_on_remote.inject({}) do |cksum_map, cksum|
-        cksum_map[cksum] = { "needs_upload" => true, "url" => url_for(cksum)}
+        cksum_map[cksum] = { "needs_upload" => true, "url" => url_for(cksum) }
         cksum_map
       end
       { "checksums" => sandbox_checksums, "uri" => sandbox_commit_uri }
@@ -86,7 +86,7 @@ describe Chef::CookbookUploader do
 
     def expect_sandbox_create
       expect(http_client).to receive(:post).
-        with("sandboxes", {:checksums => checksums_set}).
+        with("sandboxes", { :checksums => checksums_set }).
         and_return(sandbox_response)
     end
 
@@ -111,7 +111,7 @@ describe Chef::CookbookUploader do
     end
 
     def expect_sandbox_commit
-      expect(http_client).to receive(:put).with(sandbox_commit_uri, {:is_completed => true})
+      expect(http_client).to receive(:put).with(sandbox_commit_uri, { :is_completed => true })
     end
 
     def expect_cookbook_create
@@ -192,7 +192,6 @@ describe Chef::CookbookUploader do
 
         uploader.upload_cookbooks
       end
-
 
     end
   end

@@ -239,7 +239,7 @@ class Chef
         # In WinNT.h: host.typedef wchar_t WCHAR;
         #WINAPI: K,      # Calling convention for system functions. WinDef.h: define WINAPI __stdcall
         host.typedef :ushort,  :WORD # 16-bit unsigned integer. The range is 0 through 65535 decimal.
-        host.typedef :uint,    :WPARAM    # Message parameter. WinDef.h as follows: host.typedef UINT_PTR WPARAM;
+        host.typedef :uint,    :WPARAM # Message parameter. WinDef.h as follows: host.typedef UINT_PTR WPARAM;
       end
 
       module Macros

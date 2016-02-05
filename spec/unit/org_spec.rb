@@ -110,8 +110,8 @@ describe Chef::Org do
   describe "when deserializing from JSON" do
     let(:org) do
       o = { "name" => "turtle",
-        "full_name" => "turtle_club",
-        "private_key" => "pandas" }
+            "full_name" => "turtle_club",
+            "private_key" => "pandas" }
       Chef::Org.from_json(o.to_json)
     end
 
@@ -147,8 +147,8 @@ describe Chef::Org do
     end
 
     describe "list" do
-      let(:response) { {"foobar" => "http://www.example.com/organizations/foobar"} }
-      let(:inflated_response) { {"foobar" => org } }
+      let(:response) { { "foobar" => "http://www.example.com/organizations/foobar" } }
+      let(:inflated_response) { { "foobar" => org } }
 
       it "lists all orgs" do
         expect(rest).to receive(:get).with("organizations").and_return(response)
@@ -164,14 +164,14 @@ describe Chef::Org do
 
     describe "create" do
       it "creates a new org via the API" do
-        expect(rest).to receive(:post).with("organizations", {:name => "foobar", :full_name => "foo bar bat"}).and_return({})
+        expect(rest).to receive(:post).with("organizations", { :name => "foobar", :full_name => "foo bar bat" }).and_return({})
         org.create
       end
     end
 
     describe "read" do
       it "loads a named org from the API" do
-        expect(rest).to receive(:get).with("organizations/foobar").and_return({"name" => "foobar", "full_name" => "foo bar bat", "private_key" => "private"})
+        expect(rest).to receive(:get).with("organizations/foobar").and_return({ "name" => "foobar", "full_name" => "foo bar bat", "private_key" => "private" })
         org = Chef::Org.load("foobar")
         expect(org.name).to eq("foobar")
         expect(org.full_name).to eq("foo bar bat")
@@ -181,7 +181,7 @@ describe Chef::Org do
 
     describe "update" do
       it "updates an existing org on via the API" do
-        expect(rest).to receive(:put).with("organizations/foobar", {:name => "foobar", :full_name => "foo bar bat"}).and_return({})
+        expect(rest).to receive(:put).with("organizations/foobar", { :name => "foobar", :full_name => "foo bar bat" }).and_return({})
         org.update
       end
     end

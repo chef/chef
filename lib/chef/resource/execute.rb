@@ -34,7 +34,7 @@ class Chef
 
       default_action :run
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @command = name
         @backup = 5
@@ -52,7 +52,7 @@ class Chef
         @live_stream = false
       end
 
-      def umask(arg=nil)
+      def umask(arg = nil)
         set_or_return(
           :umask,
           arg,
@@ -60,7 +60,7 @@ class Chef
         )
       end
 
-      def command(arg=nil)
+      def command(arg = nil)
         set_or_return(
           :command,
           arg,
@@ -68,7 +68,7 @@ class Chef
         )
       end
 
-      def creates(arg=nil)
+      def creates(arg = nil)
         set_or_return(
           :creates,
           arg,
@@ -76,7 +76,7 @@ class Chef
         )
       end
 
-      def cwd(arg=nil)
+      def cwd(arg = nil)
         set_or_return(
           :cwd,
           arg,
@@ -84,7 +84,7 @@ class Chef
         )
       end
 
-      def environment(arg=nil)
+      def environment(arg = nil)
         set_or_return(
           :environment,
           arg,
@@ -94,7 +94,7 @@ class Chef
 
       alias :env :environment
 
-      def group(arg=nil)
+      def group(arg = nil)
         set_or_return(
           :group,
           arg,
@@ -102,14 +102,14 @@ class Chef
         )
       end
 
-      def live_stream(arg=nil)
+      def live_stream(arg = nil)
         set_or_return(
           :live_stream,
           arg,
           :kind_of => [ TrueClass, FalseClass ])
       end
 
-      def path(arg=nil)
+      def path(arg = nil)
         Chef::Log.warn "The 'path' attribute of 'execute' is not used by any provider in Chef 11 or Chef 12. Use 'environment' attribute to configure 'PATH'. This attribute will be removed in Chef 13."
 
         set_or_return(
@@ -119,7 +119,7 @@ class Chef
         )
       end
 
-      def returns(arg=nil)
+      def returns(arg = nil)
         set_or_return(
           :returns,
           arg,
@@ -127,7 +127,7 @@ class Chef
         )
       end
 
-      def timeout(arg=nil)
+      def timeout(arg = nil)
         set_or_return(
           :timeout,
           arg,
@@ -135,7 +135,7 @@ class Chef
         )
       end
 
-      def user(arg=nil)
+      def user(arg = nil)
         set_or_return(
           :user,
           arg,

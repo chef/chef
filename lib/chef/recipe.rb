@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-
 require "chef/dsl/recipe"
 require "chef/dsl/data_query"
 require "chef/dsl/platform_introspection"

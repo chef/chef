@@ -29,7 +29,6 @@ describe Chef::Resource::FreebsdPackage do
     @resource = Chef::Resource::FreebsdPackage.new("foo", @run_context)
   end
 
-
   describe "Initialization" do
     it "should return a Chef::Resource::FreebsdPackage" do
       expect(@resource).to be_a_kind_of(Chef::Resource::FreebsdPackage)
@@ -43,7 +42,6 @@ describe Chef::Resource::FreebsdPackage do
       expect(@resource.provider).to be_nil
     end
   end
-
 
   describe "Assigning provider after creation" do
     describe "if ports specified as source" do
@@ -87,4 +85,3 @@ describe Chef::Resource::FreebsdPackage do
     end
   end
 end
-

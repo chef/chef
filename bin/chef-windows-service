@@ -19,7 +19,7 @@
 
 # Note:
 # The file is used by appbundler to generate a ruby file that
-# we can execute using the correct gems. The batch file we 
+# we can execute using the correct gems. The batch file we
 # generate will call that file, and will be registered as
 # a windows service.
 

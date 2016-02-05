@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-
 require "spec_helper"
 require "tmpdir"
 
@@ -553,11 +552,11 @@ describe Chef::Util::Diff, :uses_diff => true do
 
   let(:plain_ascii) { "This is a text file.\nWith more than one line.\nAnd a \tTab.\nAnd lets make sure that other printable chars work too: ~!@\#$%^&*()`:\"<>?{}|_+,./;'[]\\-=\n" }
   # these are all byte sequences that are illegal in the other encodings... (but they may legally transcode)
-  let(:utf_8) { "testing utf-8 unicode...\n\n\non a new line: \xE2\x80\x93\n" }  # unicode em-dash
+  let(:utf_8) { "testing utf-8 unicode...\n\n\non a new line: \xE2\x80\x93\n" } # unicode em-dash
   let(:latin_1) { "It is more metal.\nif you have an \xFDmlaut.\n" } # NB: changed to y-with-diaresis, but i'm American so I don't know the difference
   let(:shift_jis) { "I have no idea what this character is:\n \x83\x80.\n" } # seriously, no clue, but \x80 is nice and illegal in other encodings
 
-  let(:differ) do  # subject
+  let(:differ) do # subject
     differ = Chef::Util::Diff.new
     differ.diff(old_file, new_file)
     differ
@@ -569,11 +568,9 @@ describe Chef::Util::Diff, :uses_diff => true do
     it_behaves_like "a diff util"
   end
 
-
   describe "when file path doesn't have spaces" do
     include_context "using file paths without spaces"
 
     it_behaves_like "a diff util"
   end
 end
-

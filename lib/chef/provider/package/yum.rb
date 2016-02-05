@@ -63,7 +63,7 @@ class Chef
                 end
               end
 
-              version = evr[lead,tail]
+              version = evr[lead, tail]
               if version.empty?
                 version = nil
               end
@@ -159,12 +159,12 @@ class Chef
                   end
                   # copy the segment but not the unmatched character that x_seg_pos will
                   # refer to
-                  x_comp = x[x_pos,x_seg_pos - x_pos]
+                  x_comp = x[x_pos, x_seg_pos - x_pos]
 
                   while (y_seg_pos <= y_pos_max) and isdigit(y[y_seg_pos])
                     y_seg_pos += 1
                   end
-                  y_comp = y[y_pos,y_seg_pos - y_pos]
+                  y_comp = y[y_pos, y_seg_pos - y_pos]
                 else
                   # we are comparing strings
                   x_seg_is_num = false
@@ -172,12 +172,12 @@ class Chef
                   while (x_seg_pos <= x_pos_max) and isalpha(x[x_seg_pos])
                     x_seg_pos += 1
                   end
-                  x_comp = x[x_pos,x_seg_pos - x_pos]
+                  x_comp = x[x_pos, x_seg_pos - x_pos]
 
                   while (y_seg_pos <= y_pos_max) and isalpha(y[y_seg_pos])
                     y_seg_pos += 1
                   end
-                  y_comp = y[y_pos,y_seg_pos - y_pos]
+                  y_comp = y[y_pos, y_seg_pos - y_pos]
                 end
 
                 # if y_seg_pos didn't advance in the above loop it means the segments are
@@ -240,7 +240,7 @@ class Chef
               @r = args[2]
             else
               raise ArgumentError, "Expecting either 'epoch-version-release' or 'epoch, " +
-                                   "version, release'"
+                "version, release'"
             end
           end
           attr_reader :e, :v, :r
@@ -286,7 +286,7 @@ class Chef
           # 2:1.2-1 == 2:1.2
           # 2:1.2-1 == 2:
           #
-          def compare_versions(y, partial=false)
+          def compare_versions(y, partial = false)
             x = self
 
             # compare epoch
@@ -344,12 +344,12 @@ class Chef
               e = args[1].to_i
               v = args[2]
               r = args[3]
-              @version = RPMVersion.new(e,v,r)
+              @version = RPMVersion.new(e, v, r)
               @a = args[4]
               @provides = args[5]
             else
               raise ArgumentError, "Expecting either 'name, epoch-version-release, arch, provides' " +
-                                   "or 'name, epoch, version, release, arch, provides'"
+                "or 'name, epoch, version, release, arch, provides'"
             end
 
             # We always have one, ourselves!
@@ -429,11 +429,11 @@ class Chef
               e = args[1].to_i
               v = args[2]
               r = args[3]
-              @version = RPMVersion.new(e,v,r)
+              @version = RPMVersion.new(e, v, r)
               @flag = args[4] || :==
             else
               raise ArgumentError, "Expecting either 'name, epoch-version-release, flag' or " +
-                                   "'name, epoch, version, release, flag'"
+                "'name, epoch, version, release, flag'"
             end
           end
           attr_reader :name, :version, :flag
@@ -690,15 +690,15 @@ class Chef
             when :installed
               reset_installed
               # fast
-              opts=" --installed"
+              opts = " --installed"
             when :all
               reset
               # medium
-              opts=" --options --installed-provides"
+              opts = " --options --installed-provides"
             when :provides
               reset
               # slow!
-              opts=" --options --all-provides"
+              opts = " --options --all-provides"
             else
               raise ArgumentError, "Unexpected value in next_refresh: #{@next_refresh}"
             end
@@ -870,7 +870,7 @@ class Chef
           end
 
           # Check if a package-version.arch is available to install
-          def version_available?(package_name, desired_version, arch=nil)
+          def version_available?(package_name, desired_version, arch = nil)
             version(package_name, arch, true, false) do |v|
               return true if desired_version == v
             end
@@ -879,7 +879,7 @@ class Chef
           end
 
           # Return the source repository for a package-version.arch
-          def package_repository(package_name, desired_version, arch=nil)
+          def package_repository(package_name, desired_version, arch = nil)
             package(package_name, arch, true, false) do |pkg|
               return pkg.repoid if desired_version == pkg.version.to_s
             end
@@ -888,13 +888,13 @@ class Chef
           end
 
           # Return the latest available version for a package.arch
-          def available_version(package_name, arch=nil)
+          def available_version(package_name, arch = nil)
             version(package_name, arch, true, false)
           end
           alias :candidate_version :available_version
 
           # Return the currently installed version for a package.arch
-          def installed_version(package_name, arch=nil)
+          def installed_version(package_name, arch = nil)
             version(package_name, arch, false, true)
           end
 
@@ -922,7 +922,7 @@ class Chef
 
           private
 
-          def version(package_name, arch=nil, is_available=false, is_installed=false)
+          def version(package_name, arch = nil, is_available = false, is_installed = false)
             package(package_name, arch, is_available, is_installed) do |pkg|
               if block_given?
                 yield pkg.version.to_s
@@ -939,7 +939,7 @@ class Chef
             end
           end
 
-          def package(package_name, arch=nil, is_available=false, is_installed=false)
+          def package(package_name, arch = nil, is_available = false, is_installed = false)
             refresh
             packages = @rpmdb[package_name]
             if packages
@@ -1049,7 +1049,7 @@ class Chef
         def yum_command(command)
           command = "#{yum_binary} #{command}"
           Chef::Log.debug("#{@new_resource}: yum command: \"#{command}\"")
-          status = shell_out_with_timeout(command, {:timeout => Chef::Config[:yum_timeout]})
+          status = shell_out_with_timeout(command, { :timeout => Chef::Config[:yum_timeout] })
 
           # This is fun: rpm can encounter errors in the %post/%postun scripts which aren't
           # considered fatal - meaning the rpm is still successfully installed. These issue
@@ -1066,7 +1066,7 @@ class Chef
               if l =~ %r{^error: %(post|postun)\(.*\) scriptlet failed, exit status \d+$}
                 Chef::Log.warn("#{@new_resource} caught non-fatal scriptlet issue: \"#{l}\". Can't trust yum exit status " +
                                "so running install again to verify.")
-                status = shell_out_with_timeout(command, {:timeout => Chef::Config[:yum_timeout]})
+                status = shell_out_with_timeout(command, { :timeout => Chef::Config[:yum_timeout] })
                 break
               end
             end
@@ -1125,7 +1125,6 @@ class Chef
               end
             end
           end
-
 
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
@@ -1225,7 +1224,7 @@ class Chef
                   else
                     # we bail like yum when the package is older
                     raise Chef::Exceptions::Package, "Installed package #{n}-#{current_version_array[idx]} is newer " +
-                                                     "than candidate package #{n}-#{v}"
+                      "than candidate package #{n}-#{v}"
                   end
                 end
               end
@@ -1258,7 +1257,7 @@ class Chef
             yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{pkg_string}")
           else
             raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version " +
-                                             "and release? (version-release, e.g. 1.84-10.fc6)"
+              "and release? (version-release, e.g. 1.84-10.fc6)"
           end
         end
 
@@ -1359,7 +1358,7 @@ class Chef
         # matching them up with an actual package so the standard resource handling can apply.
         #
         # There is currently no support for filename matching.
-        def parse_dependency(name,version)
+        def parse_dependency(name, version)
           # Transform the package_name into a requirement
 
           # If we are passed a version or a version constraint we have to assume it's a requirement first. If it can't be
@@ -1412,7 +1411,7 @@ class Chef
               new_package_version = nil
             end
 
-            [new_package_name,new_package_version]
+            [new_package_name, new_package_version]
           end
         end
 

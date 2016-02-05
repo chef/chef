@@ -136,20 +136,10 @@ class Chef
                                      SYNCHRONIZE |
                                      0x1FF
         FILE_GENERIC_READ          = STANDARD_RIGHTS_READ |
-                                     FILE_READ_DATA       |
-                                     FILE_READ_ATTRIBUTES |
-                                     FILE_READ_EA         |
-                                     SYNCHRONIZE
-        FILE_GENERIC_WRITE         = STANDARD_RIGHTS_WRITE    |
-                                     FILE_WRITE_DATA          |
-                                     FILE_WRITE_ATTRIBUTES    |
-                                     FILE_WRITE_EA            |
-                                     FILE_APPEND_DATA         |
-                                     SYNCHRONIZE
-        FILE_GENERIC_EXECUTE       = STANDARD_RIGHTS_EXECUTE  |
-                                     FILE_READ_ATTRIBUTES     |
-                                     FILE_EXECUTE             |
-                                     SYNCHRONIZE
+                                     FILE_READ_DATA | FILE_READ_ATTRIBUTES |
+                                     FILE_READ_EA | SYNCHRONIZE
+        FILE_GENERIC_WRITE         = STANDARD_RIGHTS_WRITE | FILE_WRITE_DATA | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA | FILE_APPEND_DATA | SYNCHRONIZE
+        FILE_GENERIC_EXECUTE       = STANDARD_RIGHTS_EXECUTE | FILE_READ_ATTRIBUTES | FILE_EXECUTE | SYNCHRONIZE
         # Access Token Rights (for OpenProcessToken)
         # Access Rights for Access-Token Objects (used in OpenProcessToken)
         TOKEN_ASSIGN_PRIMARY = 0x0001
@@ -173,9 +163,7 @@ class Chef
         SE_PRIVILEGE_REMOVED = 0X00000004
         SE_PRIVILEGE_USED_FOR_ACCESS = 0x80000000
         SE_PRIVILEGE_VALID_ATTRIBUTES = SE_PRIVILEGE_ENABLED_BY_DEFAULT |
-                                         SE_PRIVILEGE_ENABLED            |
-                                         SE_PRIVILEGE_REMOVED            |
-                                         SE_PRIVILEGE_USED_FOR_ACCESS
+                                        SE_PRIVILEGE_ENABLED | SE_PRIVILEGE_REMOVED | SE_PRIVILEGE_USED_FOR_ACCESS
 
         # Minimum size of a SECURITY_DESCRIPTOR.  TODO: this is probably platform dependent.
         # Make it work on 64 bit.
@@ -315,7 +303,6 @@ class Chef
              :SecurityDelegation,
         ]
 
-
         # SECURITY_DESCRIPTOR is an opaque structure whose contents can vary.  Pass the
         # pointer around and free it with LocalFree.
         # http://msdn.microsoft.com/en-us/library/windows/desktop/aa379561(v=vs.85).aspx
@@ -384,7 +371,7 @@ class Chef
                  :Privileges, LUID_AND_ATTRIBUTES
 
           def self.size_with_privileges(num_privileges)
-            offset_of(:Privileges) + LUID_AND_ATTRIBUTES.size*num_privileges
+            offset_of(:Privileges) + LUID_AND_ATTRIBUTES.size * num_privileges
           end
 
           def size_with_privileges
@@ -431,7 +418,7 @@ class Chef
         safe_attach_function :GetAce, [ :pointer, :DWORD, :pointer ], :BOOL
         safe_attach_function :GetFileSecurityW, [:LPCWSTR, :DWORD, :pointer, :DWORD, :pointer], :BOOL
         safe_attach_function :GetLengthSid, [ :pointer ], :DWORD
-        safe_attach_function :GetNamedSecurityInfoW,  [ :LPWSTR, :SE_OBJECT_TYPE, :DWORD, :pointer, :pointer, :pointer, :pointer, :pointer ], :DWORD
+        safe_attach_function :GetNamedSecurityInfoW, [ :LPWSTR, :SE_OBJECT_TYPE, :DWORD, :pointer, :pointer, :pointer, :pointer, :pointer ], :DWORD
         safe_attach_function :GetSecurityDescriptorControl, [ :pointer, :PWORD, :LPDWORD], :BOOL
         safe_attach_function :GetSecurityDescriptorDacl, [ :pointer, :LPBOOL, :pointer, :LPBOOL ], :BOOL
         safe_attach_function :GetSecurityDescriptorGroup, [ :pointer, :pointer, :LPBOOL], :BOOL

@@ -30,7 +30,7 @@ class Chef
       attr_reader :inline_helper_blocks
       attr_reader :inline_helper_modules
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @source = "#{::File.basename(name)}.erb"
         @cookbook = nil
@@ -41,7 +41,7 @@ class Chef
         @helper_modules = []
       end
 
-      def source(file=nil)
+      def source(file = nil)
         set_or_return(
           :source,
           file,
@@ -49,7 +49,7 @@ class Chef
         )
       end
 
-      def variables(args=nil)
+      def variables(args = nil)
         set_or_return(
           :variables,
           args,
@@ -57,7 +57,7 @@ class Chef
         )
       end
 
-      def cookbook(args=nil)
+      def cookbook(args = nil)
         set_or_return(
           :cookbook,
           args,
@@ -65,7 +65,7 @@ class Chef
         )
       end
 
-      def local(args=nil)
+      def local(args = nil)
         set_or_return(
           :local,
           args,
@@ -160,7 +160,7 @@ class Chef
       # And in the template resource:
       #   helpers(MyTemplateHelper)
       # The template code in the above example will work unmodified.
-      def helpers(module_name=nil,&block)
+      def helpers(module_name = nil, &block)
         if block_given? and !module_name.nil?
           raise Exceptions::ValidationFailed,
             "Passing both a module and block to #helpers is not supported. Call #helpers multiple times instead"
@@ -171,8 +171,8 @@ class Chef
         elsif module_name.nil?
           raise Exceptions::ValidationFailed,
             "#helpers requires either a module name or inline module code as a block.\n" +
-            "e.g.: helpers do; helper_code; end;\n" +
-            "OR: helpers(MyHelpersModule)"
+              "e.g.: helpers do; helper_code; end;\n" +
+              "OR: helpers(MyHelpersModule)"
         else
           raise Exceptions::ValidationFailed,
             "Argument to #helpers must be a module. You gave #{module_name.inspect} (#{module_name.class})"

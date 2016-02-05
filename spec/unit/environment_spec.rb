@@ -167,7 +167,7 @@ describe Chef::Environment do
     before(:each) do
       @environment.name("spec")
       @environment.description("Where we run the spec tests")
-      @environment.cookbook_versions({:apt => "= 1.2.3"})
+      @environment.cookbook_versions({ :apt => "= 1.2.3" })
       @hash = @environment.to_hash
     end
 
@@ -190,7 +190,7 @@ describe Chef::Environment do
     before(:each) do
       @environment.name("spec")
       @environment.description("Where we run the spec tests")
-      @environment.cookbook_versions({:apt => "= 1.2.3"})
+      @environment.cookbook_versions({ :apt => "= 1.2.3" })
       @json = @environment.to_json
     end
 
@@ -329,13 +329,13 @@ describe Chef::Environment do
       # NOTE: I'm only choosing this (admittedly weird) structure for the hash b/c the better more obvious
       # one, i.e, {:cookbook_version_constraints => {COOKBOOK_NAME => CONSTRAINT}} is difficult to implement
       # the way merb does params
-      params = {:name=>"superbowl", :cookbook_version => {"0" => "apache2 ~> 1.0.0", "1" => "nginx < 2.0.0"}}
+      params = { :name => "superbowl", :cookbook_version => { "0" => "apache2 ~> 1.0.0", "1" => "nginx < 2.0.0" } }
       @environment.update_from_params(params)
-      expect(@environment.cookbook_versions).to eq({"apache2" => "~> 1.0.0", "nginx" => "< 2.0.0"})
+      expect(@environment.cookbook_versions).to eq({ "apache2" => "~> 1.0.0", "nginx" => "< 2.0.0" })
     end
 
     it "validates the cookbook constraints" do
-      params = {:cookbook_version => {"0" => "apache2 >>> 1.0.0"}}
+      params = { :cookbook_version => { "0" => "apache2 >>> 1.0.0" } }
       expect(@environment.update_from_params(params)).to be_falsey
       err_msg = @environment.invalid_fields[:cookbook_version]["0"]
       expect(err_msg).to eq("apache2 >>> 1.0.0 is not a valid cookbook constraint")
@@ -353,12 +353,12 @@ describe Chef::Environment do
 
     it "updates default attributes from a JSON string in params[:attributes]" do
       @environment.update_from_params(:name => "fuuu", :default_attributes => %q|{"fuuu":"RAGE"}|)
-      expect(@environment.default_attributes).to eq({"fuuu" => "RAGE"})
+      expect(@environment.default_attributes).to eq({ "fuuu" => "RAGE" })
     end
 
     it "updates override attributes from a JSON string in params[:attributes]" do
       @environment.update_from_params(:name => "fuuu", :override_attributes => %q|{"foo":"override"}|)
-      expect(@environment.override_attributes).to eq({"foo" => "override"})
+      expect(@environment.override_attributes).to eq({ "foo" => "override" })
     end
 
   end
@@ -405,7 +405,7 @@ describe Chef::Environment do
         expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.json")).and_return(false)
         expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.rb")).exactly(2).times.and_return(true)
         expect(File).to receive(:readable?).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(true)
-        role_dsl="name \"foo\"\ndescription \"desc\"\n"
+        role_dsl = "name \"foo\"\ndescription \"desc\"\n"
         expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(role_dsl)
         Chef::Environment.load("foo")
       end
@@ -438,7 +438,7 @@ describe Chef::Environment do
         expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.json")).and_return(false)
         expect(File).to receive(:exists?).with(File.join(Chef::Config[:environment_path], "foo.rb")).exactly(2).times.and_return(true)
         expect(File).to receive(:readable?).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(true)
-        role_dsl="name \"foo\"\ndescription \"desc\"\n"
+        role_dsl = "name \"foo\"\ndescription \"desc\"\n"
         expect(IO).to receive(:read).with(File.join(Chef::Config[:environment_path], "foo.rb")).and_return(role_dsl)
         environment = Chef::Environment.load("foo")
 

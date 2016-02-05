@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-
 shared_examples_for "a platform introspector" do
   before(:each) do
     @platform_hash = {}
@@ -27,12 +26,12 @@ shared_examples_for "a platform introspector" do
         "1.2.3" => "#{x}-1.2.3",
       }
     end
-    @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"}
+    @platform_hash["debian"] = { ["5", "6"] => "debian-5/6", "default" => "debian" }
     @platform_hash["default"] = "default"
     # The following @platform_hash keys are used for testing version constraints
-    @platform_hash["exact_match"] = { "1.2.3" => "exact", ">= 1.0" => "not exact"}
+    @platform_hash["exact_match"] = { "1.2.3" => "exact", ">= 1.0" => "not exact" }
     @platform_hash["multiple_matches"] = { "~> 2.3.4" => "matched ~> 2.3.4", ">= 2.3" => "matched >=2.3" }
-    @platform_hash["invalid_cookbook_version"] = {">= 21" => "Matches a single number"}
+    @platform_hash["invalid_cookbook_version"] = { ">= 21" => "Matches a single number" }
     @platform_hash["successful_matches"] = { "< 3.0" => "matched < 3.0", ">= 3.0" => "matched >= 3.0" }
 
     @platform_family_hash = {
@@ -93,7 +92,7 @@ shared_examples_for "a platform introspector" do
   it "raises RuntimeError" do
     node.automatic_attrs[:platform] = "multiple_matches"
     node.automatic_attrs[:platform_version] = "2.3.4"
-    expect {platform_introspector.value_for_platform(@platform_hash)}.to raise_error(RuntimeError)
+    expect { platform_introspector.value_for_platform(@platform_hash) }.to raise_error(RuntimeError)
   end
 
   it "should not require .0 to match >= 21.0" do
@@ -171,7 +170,7 @@ shared_examples_for "a platform introspector" do
         "centos" => { "default" => [ :restart, :reload, :status ] },
         "redhat" => { "default" => [ :restart, :reload, :status ] },
         "fedora" => { "default" => [ :restart, :reload, :status ] },
-        "default" => { "default" => [:restart, :reload ] }}
+        "default" => { "default" => [:restart, :reload ] } }
     end
 
     it "returns the correct default for a given platform" do
@@ -188,4 +187,3 @@ shared_examples_for "a platform introspector" do
   end
 
 end
-

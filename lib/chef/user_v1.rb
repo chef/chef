@@ -39,7 +39,7 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::ApiVersionRequestHandling
 
-    SUPPORTED_API_VERSIONS = [0,1]
+    SUPPORTED_API_VERSIONS = [0, 1]
 
     def initialize
       @username = nil
@@ -55,59 +55,59 @@ class Chef
     end
 
     def chef_root_rest_v0
-      @chef_root_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], {:api_version => "0"})
+      @chef_root_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], { :api_version => "0" })
     end
 
     def chef_root_rest_v1
-      @chef_root_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], {:api_version => "1"})
+      @chef_root_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], { :api_version => "1" })
     end
 
-    def username(arg=nil)
+    def username(arg = nil)
       set_or_return(:username, arg,
                     :regex => /^[a-z0-9\-_]+$/)
     end
 
-    def display_name(arg=nil)
+    def display_name(arg = nil)
       set_or_return(:display_name,
                     arg, :kind_of => String)
     end
 
-    def first_name(arg=nil)
+    def first_name(arg = nil)
       set_or_return(:first_name,
                     arg, :kind_of => String)
     end
 
-    def middle_name(arg=nil)
+    def middle_name(arg = nil)
       set_or_return(:middle_name,
                     arg, :kind_of => String)
     end
 
-    def last_name(arg=nil)
+    def last_name(arg = nil)
       set_or_return(:last_name,
                     arg, :kind_of => String)
     end
 
-    def email(arg=nil)
+    def email(arg = nil)
       set_or_return(:email,
                     arg, :kind_of => String)
     end
 
-    def create_key(arg=nil)
+    def create_key(arg = nil)
       set_or_return(:create_key, arg,
                     :kind_of => [TrueClass, FalseClass])
     end
 
-    def public_key(arg=nil)
+    def public_key(arg = nil)
       set_or_return(:public_key,
                     arg, :kind_of => String)
     end
 
-    def private_key(arg=nil)
+    def private_key(arg = nil)
       set_or_return(:private_key,
                     arg, :kind_of => String)
     end
 
-    def password(arg=nil)
+    def password(arg = nil)
       set_or_return(:password,
                     arg, :kind_of => String)
     end
@@ -183,9 +183,9 @@ class Chef
       Chef::UserV1.from_hash(self.to_hash.merge(new_user))
     end
 
-    def update(new_key=false)
+    def update(new_key = false)
       begin
-        payload = {:username => username}
+        payload = { :username => username }
         payload[:display_name] = display_name unless display_name.nil?
         payload[:first_name] = first_name unless first_name.nil?
         payload[:middle_name] = middle_name unless middle_name.nil?
@@ -216,7 +216,7 @@ class Chef
       Chef::UserV1.from_hash(self.to_hash.merge(updated_user))
     end
 
-    def save(new_key=false)
+    def save(new_key = false)
       begin
         create
       rescue Net::HTTPServerException => e
@@ -231,7 +231,7 @@ class Chef
     # Note: remove after API v0 no longer supported by client (and knife command).
     def reregister
       begin
-        payload = self.to_hash.merge({"private_key" => true})
+        payload = self.to_hash.merge({ "private_key" => true })
         reregistered_self = chef_root_rest_v0.put("users/#{username}", payload)
         private_key(reregistered_self["private_key"])
       # only V0 supported for reregister
@@ -281,7 +281,7 @@ class Chef
       Chef::UserV1.from_json(json)
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       response = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("users")
       users = if response.is_a?(Array)
                 # EC 11 / CS 12 V0, V1

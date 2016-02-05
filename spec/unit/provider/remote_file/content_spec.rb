@@ -141,7 +141,6 @@ describe Chef::Provider::RemoteFile::Content do
     it_behaves_like "the resource needs fetching"
   end
 
-
   describe "when the fetcher throws an exception" do
     before do
       allow(new_resource).to receive(:checksum).and_return(nil)
@@ -163,7 +162,7 @@ describe Chef::Provider::RemoteFile::Content do
     # https://github.com/opscode/chef/pull/1358#issuecomment-40853299
     def create_exception(exception_class)
       if [ Net::HTTPServerException, Net::HTTPFatalError ].include? exception_class
-        exception_class.new("message", {"something" => 1})
+        exception_class.new("message", { "something" => 1 })
       else
         exception_class.new
       end

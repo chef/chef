@@ -20,7 +20,7 @@ class Chef
   module Mixin
     module PathSanity
 
-      def enforce_path_sanity(env=ENV)
+      def enforce_path_sanity(env = ENV)
         if Chef::Config[:enforce_path_sanity]
           env["PATH"] = "" if env["PATH"].nil?
           path_separator = Chef::Platform.windows? ? ";" : ":"

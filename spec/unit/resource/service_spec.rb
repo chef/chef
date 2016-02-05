@@ -140,7 +140,7 @@ describe Chef::Resource::Service do
     end
 
     it "should default all the feature support to nil" do
-      support_hash = { :status => nil, :restart => nil, :reload=> nil }
+      support_hash = { :status => nil, :restart => nil, :reload => nil }
       expect(@resource.supports).to eq(support_hash)
     end
 
@@ -175,6 +175,5 @@ describe Chef::Resource::Service do
       expect(@resource.identity).to eq("superfriend")
     end
   end
-
 
 end

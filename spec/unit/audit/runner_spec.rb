@@ -24,7 +24,6 @@ require "chef/audit/rspec_formatter"
 require "rspec/support/spec/in_sub_process"
 require "rspec/support/spec/stderr_splitter"
 
-
 describe Chef::Audit::Runner do
   include RSpec::Support::InSubProcess
 
@@ -100,8 +99,8 @@ describe Chef::Audit::Runner do
       end
 
       context "audits exist" do
-        let(:audits) { {"audit_name" => group} }
-        let(:group) {Struct.new(:args, :block).new(["group_name"], nil)}
+        let(:audits) { { "audit_name" => group } }
+        let(:group) { Struct.new(:args, :block).new(["group_name"], nil) }
 
         it "sends the audits to the world" do
           runner.send(:register_control_groups)

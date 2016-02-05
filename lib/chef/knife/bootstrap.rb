@@ -250,7 +250,7 @@ class Chef
           Chef::Config[:knife][:bootstrap_vault_item]
         }
 
-      def initialize(argv=[])
+      def initialize(argv = [])
         super
         @client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(
           chef_config: Chef::Config,
@@ -312,8 +312,8 @@ class Chef
         bootstrap_files = []
         bootstrap_files << File.join(File.dirname(__FILE__), "bootstrap/templates", "#{template}.erb")
         bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{template}.erb") if Chef::Knife.chef_config_dir
-        Chef::Util::PathHelper.home(".chef", "bootstrap", "#{template}.erb") {|p| bootstrap_files << p}
-        bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{template}.erb"))
+        Chef::Util::PathHelper.home(".chef", "bootstrap", "#{template}.erb") { |p| bootstrap_files << p }
+        bootstrap_files << Gem.find_files(File.join("chef", "knife", "bootstrap", "#{template}.erb"))
         bootstrap_files.flatten!
 
         template_file = Array(bootstrap_files).find do |bootstrap_template|
@@ -367,8 +367,8 @@ class Chef
 
         # chef-vault integration must use the new client-side hawtness, otherwise to use the
         # new client-side hawtness, just delete your validation key.
-        if chef_vault_handler.doing_chef_vault? || 
-            (Chef::Config[:validation_key] && !File.exist?(File.expand_path(Chef::Config[:validation_key])))
+        if chef_vault_handler.doing_chef_vault? ||
+           (Chef::Config[:validation_key] && !File.exist?(File.expand_path(Chef::Config[:validation_key])))
 
           unless config[:chef_node_name]
             ui.error("You must pass a node name with -N when bootstrapping with user credentials")
@@ -449,7 +449,7 @@ class Chef
 
         if config[:use_sudo]
           sudo_prefix = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -S " : "sudo "
-          command = config[:preserve_home] ? "#{sudo_prefix} #{command}" : "#{sudo_prefix} -H #{command}" 
+          command = config[:preserve_home] ? "#{sudo_prefix} #{command}" : "#{sudo_prefix} -H #{command}"
         end
 
         command

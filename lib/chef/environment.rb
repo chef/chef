@@ -55,7 +55,7 @@ class Chef
       Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(
         :name,
         arg,
@@ -63,7 +63,7 @@ class Chef
       )
     end
 
-    def description(arg=nil)
+    def description(arg = nil)
       set_or_return(
         :description,
         arg,
@@ -71,7 +71,7 @@ class Chef
       )
     end
 
-    def default_attributes(arg=nil)
+    def default_attributes(arg = nil)
       set_or_return(
         :default_attributes,
         arg,
@@ -83,7 +83,7 @@ class Chef
       default_attributes(attrs)
     end
 
-    def override_attributes(arg=nil)
+    def override_attributes(arg = nil)
       set_or_return(
         :override_attributes,
         arg,
@@ -95,7 +95,7 @@ class Chef
       override_attributes(attrs)
     end
 
-    def cookbook_versions(arg=nil)
+    def cookbook_versions(arg = nil)
       set_or_return(
         :cookbook_versions,
         arg,
@@ -111,7 +111,7 @@ class Chef
     def cookbook(cookbook, version)
       validate({
         :version => version
-      },{
+      }, {
         :version => {
           :callbacks => { "should be a valid version requirement" => lambda { |v| Chef::Environment.validate_cookbook_version(v) } }
         }
@@ -231,7 +231,7 @@ class Chef
       environment
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:environment) do |e|

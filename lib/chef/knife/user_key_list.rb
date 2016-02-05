@@ -34,7 +34,7 @@ class Chef
 
       attr_reader :actor
 
-      def initialize(argv=[])
+      def initialize(argv = [])
         super(argv)
         @service_object = nil
       end

@@ -29,14 +29,14 @@ class Chef
       default_action :get
       allowed_actions :get, :put, :post, :delete, :head, :options
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @message = name
         @url = nil
         @headers = {}
       end
 
-      def url(args=nil)
+      def url(args = nil)
         set_or_return(
           :url,
           args,
@@ -44,7 +44,7 @@ class Chef
         )
       end
 
-      def message(args=nil, &block)
+      def message(args = nil, &block)
         args = block if block_given?
         set_or_return(
           :message,
@@ -53,7 +53,7 @@ class Chef
         )
       end
 
-      def headers(args=nil)
+      def headers(args = nil)
         set_or_return(
           :headers,
           args,

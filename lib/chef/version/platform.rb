@@ -22,7 +22,7 @@ class Chef
 
       protected
 
-      def parse(str="")
+      def parse(str = "")
         @major, @minor, @patch =
           case str.to_s
           when /^(\d+)\.(\d+)\.(\d+)$/
@@ -31,7 +31,7 @@ class Chef
             [ $1.to_i, $2.to_i, 0 ]
           when /^(\d+)$/
             [ $1.to_i, 0, 0 ]
-          when /^(\d+).(\d+)-[a-z]+\d?(-p(\d+))?$/i   # Match FreeBSD
+          when /^(\d+).(\d+)-[a-z]+\d?(-p(\d+))?$/i # Match FreeBSD
             [ $1.to_i, $2.to_i, ($4 ? $4.to_i : 0)]
           else
             msg = "'#{str}' does not match 'x.y.z', 'x.y' or 'x'"

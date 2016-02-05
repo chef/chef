@@ -93,7 +93,6 @@ class Chef
             file_time_struct[:dw_high_date_time]))
         end
 
-
       end
     end
   end

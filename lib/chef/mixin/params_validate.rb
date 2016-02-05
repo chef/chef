@@ -140,7 +140,7 @@ class Chef
       end
 
       # Raise an exception if the parameter is not found.
-      def _pv_required(opts, key, is_required=true, explicitly_allows_nil=false)
+      def _pv_required(opts, key, is_required = true, explicitly_allows_nil = false)
         if is_required
           return true if opts.has_key?(key.to_s) && (explicitly_allows_nil || !opts[key.to_s].nil?)
           return true if opts.has_key?(key.to_sym) && (explicitly_allows_nil || !opts[key.to_sym].nil?)
@@ -329,7 +329,7 @@ class Chef
       #    property :x, name_property: true
       #   ```
       #
-      def _pv_name_property(opts, key, is_name_property=true)
+      def _pv_name_property(opts, key, is_name_property = true)
         if is_name_property
           if opts[key].nil?
             raise CannotValidateStaticallyError, "name_property cannot be evaluated without a resource." if self == Chef::Mixin::ParamsValidate
@@ -462,7 +462,6 @@ class Chef
       # (which is the norm).
       extend self
 
-
       # Used by #set_or_return to avoid emitting a deprecation warning for
       # "value nil" and to keep default stickiness working exactly the same
       # @api private
@@ -476,7 +475,7 @@ class Chef
           value
         end
 
-        def call(resource, value=NOT_PASSED)
+        def call(resource, value = NOT_PASSED)
           # setting to nil does a get
           if value.nil? && !explicitly_accepts_nil?(resource)
             get(resource)

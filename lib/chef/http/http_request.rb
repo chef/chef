@@ -72,7 +72,7 @@ class Chef
 
       attr_reader :method, :url, :headers, :http_client, :http_request
 
-      def initialize(method, url, req_body, base_headers={})
+      def initialize(method, url, req_body, base_headers = {})
         @method, @url = method, url
         @request_body = nil
         build_headers(base_headers)
@@ -145,13 +145,12 @@ class Chef
         # for the url scheme (80;443) - Fixes CHEF-5355
         host_header = uri_safe_host.dup
         host_header << ":#{port}" unless URI_SCHEME_DEFAULT_PORT[@url.scheme] == port.to_i
-        @headers["Host"] = host_header unless @headers.keys.any? {|k| k.downcase.to_s == HOST_LOWER }
+        @headers["Host"] = host_header unless @headers.keys.any? { |k| k.downcase.to_s == HOST_LOWER }
 
         @headers
       end
 
-
-      def configure_http_request(request_body=nil)
+      def configure_http_request(request_body = nil)
         req_path = "#{path}"
         req_path << "?#{query}" if query
 

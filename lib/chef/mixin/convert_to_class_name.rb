@@ -40,10 +40,10 @@ class Chef
         rname
       end
 
-      def convert_to_snake_case(str, namespace=nil)
+      def convert_to_snake_case(str, namespace = nil)
         str = str.dup
         str.sub!(/^#{namespace}(\:\:)?/, "") if namespace
-        str.gsub!(/[A-Z]/) {|s| "_" + s}
+        str.gsub!(/[A-Z]/) { |s| "_" + s }
         str.downcase!
         str.sub!(/^\_/, "")
         str
@@ -51,8 +51,8 @@ class Chef
 
       def normalize_snake_case_name(str)
         str = str.dup
-        str.gsub!(/[^A-Za-z0-9_]/,"_")
-        str.gsub!(/^(_+)?/,"")
+        str.gsub!(/[^A-Za-z0-9_]/, "_")
+        str.gsub!(/^(_+)?/, "")
         str
       end
 

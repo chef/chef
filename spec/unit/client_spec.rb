@@ -181,7 +181,7 @@ describe Chef::Client do
 
       describe "calling run" do
         include_examples "a successful client run" do
-          let(:client_opts) { {:override_runlist => "recipe[override_recipe]"} }
+          let(:client_opts) { { :override_runlist => "recipe[override_recipe]" } }
 
           def stub_for_sync_cookbooks
             # --Client#setup_run_context
@@ -190,7 +190,7 @@ describe Chef::Client do
             expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
             expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
             expect(http_cookbook_sync).to receive(:post).
-              with("environments/_default/cookbook_versions", {:run_list => ["override_recipe"]}).
+              with("environments/_default/cookbook_versions", { :run_list => ["override_recipe"] }).
               and_return({})
           end
 
@@ -215,7 +215,7 @@ describe Chef::Client do
 
       include_examples "a successful client run" do
         let(:new_runlist) { "recipe[new_run_list_recipe]" }
-        let(:client_opts) { {:runlist => new_runlist} }
+        let(:client_opts) { { :runlist => new_runlist } }
 
         def stub_for_sync_cookbooks
           # --Client#setup_run_context
@@ -224,7 +224,7 @@ describe Chef::Client do
           expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
           expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
           expect(http_cookbook_sync).to receive(:post).
-            with("environments/_default/cookbook_versions", {:run_list => ["new_run_list_recipe"]}).
+            with("environments/_default/cookbook_versions", { :run_list => ["new_run_list_recipe"] }).
             and_return({})
         end
 
@@ -388,7 +388,7 @@ describe Chef::Client do
       expect(node.chef_environment).to eq("_default")
       Chef::Config[:environment] = "A"
 
-      test_env = {"name" => "A"}
+      test_env = { "name" => "A" }
 
       mock_chef_rest = double("Chef::ServerAPI")
       expect(mock_chef_rest).to receive(:get).with("environments/A").and_return(test_env)

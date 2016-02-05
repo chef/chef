@@ -67,7 +67,7 @@ describe Chef::Provider::User::Pw do
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not null, without homedir management" do
-        allow(@new_resource).to receive(:supports).and_return({:manage_home => false})
+        allow(@new_resource).to receive(:supports).and_return({ :manage_home => false })
         allow(@new_resource).to receive(attribute).and_return("hola")
         expect(@provider.set_options).to eql(" #{@new_resource.username} #{option} '#{@new_resource.send(attribute)}'")
       end
@@ -75,7 +75,7 @@ describe Chef::Provider::User::Pw do
 
     it "should combine all the possible options" do
       match_string = " adam"
-      field_list.sort{ |a,b| a[0] <=> b[0] }.each do |attribute, option|
+      field_list.sort { |a, b| a[0] <=> b[0] }.each do |attribute, option|
         allow(@new_resource).to receive(attribute).and_return("hola")
         match_string << " #{option} 'hola'"
       end
@@ -126,7 +126,7 @@ describe Chef::Provider::User::Pw do
     end
 
     it "should run pw userdel with the new resources user name and -r if manage_home is true" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw userdel #{@new_resource.username} -r"}).and_return(true)
+      expect(@provider).to receive(:run_command).with({ :command => "pw userdel #{@new_resource.username} -r" }).and_return(true)
       @provider.remove_user
     end
   end
@@ -145,14 +145,14 @@ describe Chef::Provider::User::Pw do
 
   describe "when locking the user" do
     it "should run pw lock with the new resources username" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw lock #{@new_resource.username}"})
+      expect(@provider).to receive(:run_command).with({ :command => "pw lock #{@new_resource.username}" })
       @provider.lock_user
     end
   end
 
   describe "when unlocking the user" do
     it "should run pw unlock with the new resources username" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw unlock #{@new_resource.username}"})
+      expect(@provider).to receive(:run_command).with({ :command => "pw unlock #{@new_resource.username}" })
       @provider.unlock_user
     end
   end

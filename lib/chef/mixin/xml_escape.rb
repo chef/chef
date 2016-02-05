@@ -95,7 +95,7 @@ class Chef
         PREDEFINED = {
           38 => "&amp;", # ampersand
           60 => "&lt;",  # left angle bracket
-          62 => "&gt;"  # right angle bracket
+          62 => "&gt;" # right angle bracket
         }
 
         # http://www.w3.org/TR/REC-xml/#charsets
@@ -104,9 +104,9 @@ class Chef
 
         def xml_escape(unescaped_str)
           begin
-            unescaped_str.unpack("U*").map {|char| xml_escape_char!(char)}.join
+            unescaped_str.unpack("U*").map { |char| xml_escape_char!(char) }.join
           rescue
-            unescaped_str.unpack("C*").map {|char| xml_escape_char!(char)}.join
+            unescaped_str.unpack("C*").map { |char| xml_escape_char!(char) }.join
           end
         end
 
@@ -114,8 +114,8 @@ class Chef
 
         def xml_escape_char!(char)
           char = CP1252[char] || char
-          char = 42 unless VALID.detect {|range| range.include? char}
-          char = PREDEFINED[char] || (char<128 ? char.chr : "&##{char};")
+          char = 42 unless VALID.detect { |range| range.include? char }
+          char = PREDEFINED[char] || (char < 128 ? char.chr : "&##{char};")
         end
       end
 

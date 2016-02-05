@@ -45,8 +45,8 @@ describe "key edit commands that inherit knife" do
       context "when the service object is called" do
         it "creates a new instance of Chef::Knife::KeyEdit with the correct args" do
           expect(Chef::Knife::KeyEdit).to receive(:new).
-                                             with("charmander-key", "charmander", command.actor_field_name, command.ui, command.config).
-                                             and_return(service_object)
+            with("charmander-key", "charmander", command.actor_field_name, command.ui, command.config).
+            and_return(service_object)
           command.service_object
         end
       end # when the service object is called
@@ -114,7 +114,6 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
         allow(key_edit_object).to receive(:display_info)
       end
 
-
       context "when public_key and create_key are passed" do
         before do
           key_edit_object.config[:public_key] = "public_key_path"
@@ -122,7 +121,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
         end
 
         it "raises a Chef::Exceptions::KeyCommandInputError with the proper error message" do
-          expect{ key_edit_object.run }.to raise_error(Chef::Exceptions::KeyCommandInputError, key_edit_object.public_key_and_create_key_error_msg)
+          expect { key_edit_object.run }.to raise_error(Chef::Exceptions::KeyCommandInputError, key_edit_object.public_key_and_create_key_error_msg)
         end
       end
 
@@ -248,8 +247,6 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
       end # when the server returns a private key
 
     end # when the command is run
-
-
 
   end # key edit run command
 

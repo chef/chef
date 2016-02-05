@@ -62,7 +62,7 @@ class Chef
       attr_reader :all_missing_roles
       attr_reader :role_errors
 
-      def initialize(environment, run_list_items, source=nil)
+      def initialize(environment, run_list_items, source = nil)
         @environment = environment
         @missing_roles_with_including_role = Array.new
 
@@ -75,8 +75,8 @@ class Chef
         @recipes = Chef::RunList::VersionedRecipeList.new
 
         @applied_roles = {}
-        @run_list_trace = Hash.new {|h, key| h[key] = [] }
-        @better_run_list_trace = Hash.new {|h, key| h[key] = [] }
+        @run_list_trace = Hash.new { |h, key| h[key] = [] }
+        @better_run_list_trace = Hash.new { |h, key| h[key] = [] }
         @all_missing_roles = {}
         @role_errors = {}
       end
@@ -140,7 +140,7 @@ class Chef
       end
 
       def errors
-        @missing_roles_with_including_role.map {|item| item.first }
+        @missing_roles_with_including_role.map { |item| item.first }
       end
 
       def to_json(*a)
@@ -148,8 +148,8 @@ class Chef
       end
 
       def to_hash
-        seen_items = {:recipe => {}, :role => {}}
-        {:id => @environment, :run_list => convert_run_list_trace("top level", seen_items)}
+        seen_items = { :recipe => {}, :role => {} }
+        { :id => @environment, :run_list => convert_run_list_trace("top level", seen_items) }
       end
 
       private
@@ -160,11 +160,10 @@ class Chef
         @applied_roles[role_name] = true
       end
 
-      def expand_run_list_items(items, included_by="top level")
-
+      def expand_run_list_items(items, included_by = "top level")
         if entry = items.shift
           @run_list_trace[included_by.to_s] << entry.to_s
-          @better_run_list_trace[included_by.to_s] <<  entry
+          @better_run_list_trace[included_by.to_s] << entry
 
           case entry.type
           when :recipe
@@ -186,18 +185,17 @@ class Chef
           seen_items[item.type][item.name] = true
           case item.type
             when :recipe
-                {:type => "recipe", :name => item.name, :version => item.version, :skipped => !!skipped}
+              { :type => "recipe", :name => item.name, :version => item.version, :skipped => !!skipped }
             when :role
               error = @role_errors[item.name]
               missing = @all_missing_roles[item.name]
-              {:type => :role, :name => item.name, :children => (missing || error || skipped) ? [] : convert_run_list_trace(item.to_s, seen_items),
-               :missing => missing, :error => error, :skipped => skipped}
+              { :type => :role, :name => item.name, :children => (missing || error || skipped) ? [] : convert_run_list_trace(item.to_s, seen_items),
+                :missing => missing, :error => error, :skipped => skipped }
           end
         end
       end
 
     end
-
 
     # Expand a run list from disk. Suitable for chef-solo
     class RunListExpansionFromDisk < RunListExpansion
@@ -234,5 +232,3 @@ class Chef
 
   end
 end
-
-

@@ -31,7 +31,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only do
   let(:package_name) { "test-A" }
   let(:package_list) { proc { powershell_out!("choco list -lo -r #{Array(package_name).join(' ')}").stdout.chomp } }
   let(:package_source) { File.join(CHEF_SPEC_ASSETS, "chocolatey_feed") }
-  
+
   subject do
     new_resource = Chef::Resource::ChocolateyPackage.new("test choco package", run_context)
     new_resource.package_name package_name
@@ -80,13 +80,13 @@ describe Chef::Resource::ChocolateyPackage, :windows_only do
 
     it "raises if package is not found" do
       subject.package_name "blah"
-      expect{ subject.run_action(:install) }.to raise_error Chef::Exceptions::Package
+      expect { subject.run_action(:install) }.to raise_error Chef::Exceptions::Package
     end
 
-     it "raises if package version is not found" do
+    it "raises if package version is not found" do
       subject.version "3.0"
-      expect{ subject.run_action(:install) }.to raise_error Chef::Exceptions::Package
-     end
+      expect { subject.run_action(:install) }.to raise_error Chef::Exceptions::Package
+    end
   end
 
   context "upgrading a package" do

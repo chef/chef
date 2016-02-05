@@ -22,7 +22,7 @@ describe Chef::Knife::NodeBulkDelete do
   before(:each) do
     Chef::Log.logger = Logger.new(StringIO.new)
 
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeBulkDelete.new
     @knife.name_args = ["."]
     @stdout = StringIO.new
@@ -37,14 +37,14 @@ describe Chef::Knife::NodeBulkDelete do
   describe "when creating the list of nodes" do
     it "fetches the node list" do
       expected = @nodes.inject({}) do |inflatedish, (name, uri)|
-        inflatedish[name] = Chef::Node.new.tap {|n| n.name(name)}
+        inflatedish[name] = Chef::Node.new.tap { |n| n.name(name) }
         inflatedish
       end
       expect(Chef::Node).to receive(:list).and_return(@nodes)
       # I hate not having == defined for anything :(
       actual = @knife.all_nodes
       expect(actual.keys).to match_array(expected.keys)
-      expect(actual.values.map {|n| n.name }).to match_array(%w{adam brent jacob})
+      expect(actual.values.map { |n| n.name }).to match_array(%w{adam brent jacob})
     end
   end
 
@@ -92,6 +92,3 @@ describe Chef::Knife::NodeBulkDelete do
 
   end
 end
-
-
-

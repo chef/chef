@@ -82,7 +82,7 @@ class Chef
       @raw_data = new_data
     end
 
-    def data_bag(arg=nil)
+    def data_bag(arg = nil)
       set_or_return(
         :data_bag,
         arg,
@@ -164,12 +164,12 @@ class Chef
       end
     end
 
-    def destroy(data_bag=self.data_bag(), databag_item=name)
+    def destroy(data_bag = self.data_bag(), databag_item = name)
       chef_server_rest.delete("data/#{data_bag}/#{databag_item}")
     end
 
     # Save this Data Bag Item via RESTful API
-    def save(item_id=@raw_data["id"])
+    def save(item_id = @raw_data["id"])
       r = chef_server_rest
       begin
         if Chef::Config[:why_run]
@@ -192,9 +192,9 @@ class Chef
 
     def ==(other)
       other.respond_to?(:to_hash) &&
-      other.respond_to?(:data_bag) &&
-      (other.to_hash == to_hash) &&
-      (other.data_bag.to_s == data_bag.to_s)
+        other.respond_to?(:data_bag) &&
+        (other.to_hash == to_hash) &&
+        (other.data_bag.to_s == data_bag.to_s)
     end
 
     # As a string
@@ -207,7 +207,7 @@ class Chef
     end
 
     def pretty_print(pretty_printer)
-      pretty_printer.pp({"data_bag_item('#{data_bag}', '#{id}')" => self.to_hash})
+      pretty_printer.pp({ "data_bag_item('#{data_bag}', '#{id}')" => self.to_hash })
     end
 
     def id

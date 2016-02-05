@@ -90,7 +90,7 @@ describe Chef::Resource::Env, :windows_only do
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
         test_resource.key_name(chef_env_test_lower_case)
         test_resource.value(env_value1)
-        expect {test_resource.run_action(:modify) }.to raise_error(Chef::Exceptions::Env)
+        expect { test_resource.run_action(:modify) }.to raise_error(Chef::Exceptions::Env)
       end
 
       it "should modify an existing variable's value to a new value" do
@@ -127,7 +127,7 @@ describe Chef::Resource::Env, :windows_only do
 
       context "when using PATH" do
         let(:random_name) { Time.now.to_i }
-        let(:env_val) { "#{env_value_expandable}_#{random_name}"}
+        let(:env_val) { "#{env_value_expandable}_#{random_name}" }
         let!(:path_before) { test_resource.provider_for_action(test_resource.action).env_value("PATH") || "" }
         let!(:env_path_before) { ENV["PATH"] }
 
@@ -165,7 +165,7 @@ describe Chef::Resource::Env, :windows_only do
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
         test_resource.key_name(chef_env_test_lower_case)
         test_resource.value(env_value1)
-        expect{test_resource.run_action(:delete)}.not_to raise_error
+        expect { test_resource.run_action(:delete) }.not_to raise_error
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
       end
 

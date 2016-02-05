@@ -43,7 +43,7 @@ class Chef
         def check_package_state(name)
           Chef::Log.debug("#{@new_resource} checking package #{name}")
           version = nil
-          info = shell_out_with_timeout!("/opt/local/sbin/pkg_info", "-E", "#{name}*", :env => nil, :returns => [0,1])
+          info = shell_out_with_timeout!("/opt/local/sbin/pkg_info", "-E", "#{name}*", :env => nil, :returns => [0, 1])
 
           if info.stdout
             version = info.stdout[/^#{@new_resource.package_name}-(.+)/, 1]
@@ -58,7 +58,7 @@ class Chef
           return @candidate_version if @candidate_version
           name = nil
           version = nil
-          pkg = shell_out_with_timeout!("/opt/local/bin/pkgin", "se", new_resource.package_name, :env => nil, :returns => [0,1])
+          pkg = shell_out_with_timeout!("/opt/local/bin/pkgin", "se", new_resource.package_name, :env => nil, :returns => [0, 1])
           pkg.stdout.each_line do |line|
             case line
             when /^#{new_resource.package_name}/

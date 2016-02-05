@@ -170,7 +170,7 @@ class Chef
             found = false
             ::File.readlines("/etc/fstab").reverse_each do |line|
               if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s/
-                  found = true
+                found = true
                 Chef::Log.debug("#{@new_resource} is removed from fstab")
                 next
               else
@@ -179,7 +179,7 @@ class Chef
             end
 
             ::File.open("/etc/fstab", "w") do |fstab|
-              contents.reverse_each { |line| fstab.puts line}
+              contents.reverse_each { |line| fstab.puts line }
             end
           else
             Chef::Log.debug("#{@new_resource} is not enabled - nothing to do")
@@ -237,13 +237,13 @@ class Chef
         def device_mount_regex
           if network_device?
             # ignore trailing slash
-            Regexp.escape(device_real)+"/?"
+            Regexp.escape(device_real) + "/?"
           elsif ::File.symlink?(device_real)
             # This regular expression tries to match device_real. If that does not match it will try to match the target of device_real.
             # So given a symlink like this:
             # /dev/mapper/vgroot-tmp.vol -> /dev/dm-9
             # First it will try to match "/dev/mapper/vgroot-tmp.vol". If there is no match it will try matching for "/dev/dm-9".
-            "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.expand_path(::File.readlink(device_real),::File.dirname(device_real)))})"
+            "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.expand_path(::File.readlink(device_real), ::File.dirname(device_real)))})"
           else
             Regexp.escape(device_real)
           end

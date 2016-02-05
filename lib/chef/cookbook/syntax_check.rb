@@ -43,7 +43,7 @@ class Chef
 
         # Create a new PersistentSet. Values in the set are persisted by
         # creating a file in the +cache_path+ directory.
-        def initialize(cache_path=Chef::Config[:syntax_check_cache_path])
+        def initialize(cache_path = Chef::Config[:syntax_check_cache_path])
           @cache_path = cache_path
           @cache_path_created = false
         end
@@ -82,7 +82,7 @@ class Chef
 
       # Creates a new SyntaxCheck given the +cookbook_name+ and a +cookbook_path+.
       # If no +cookbook_path+ is given, +Chef::Config.cookbook_path+ is used.
-      def self.for_cookbook(cookbook_name, cookbook_path=nil)
+      def self.for_cookbook(cookbook_name, cookbook_path = nil)
         cookbook_path ||= Chef::Config.cookbook_path
         unless cookbook_path
           raise ArgumentError, "Cannot find cookbook #{cookbook_name} unless Chef::Config.cookbook_path is set or an explicit cookbook path is given"
@@ -209,7 +209,7 @@ class Chef
 
       # Debug a syntax error in a template.
       def invalid_erb_file(erb_file, error_message)
-        file_relative_path = erb_file[/^#{Regexp.escape(cookbook_path+File::Separator)}(.*)/, 1]
+        file_relative_path = erb_file[/^#{Regexp.escape(cookbook_path + File::Separator)}(.*)/, 1]
         Chef::Log.fatal("Erb template #{file_relative_path} has a syntax error:")
         error_message.each_line { |l| Chef::Log.fatal(l.chomp) }
         nil
@@ -244,7 +244,7 @@ class Chef
       # Debugs ruby syntax errors by printing the path to the file and any
       # diagnostic info given in +error_message+
       def invalid_ruby_file(ruby_file, error_message)
-        file_relative_path = ruby_file[/^#{Regexp.escape(cookbook_path+File::Separator)}(.*)/, 1]
+        file_relative_path = ruby_file[/^#{Regexp.escape(cookbook_path + File::Separator)}(.*)/, 1]
         Chef::Log.fatal("Cookbook file #{file_relative_path} has a ruby syntax error:")
         error_message.each_line { |l| Chef::Log.fatal(l.chomp) }
         false

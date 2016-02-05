@@ -24,14 +24,14 @@ describe Chef::Util::DSC::ResourceStore do
   let(:resource_a) { {
     "ResourceType" => "AFoo",
     "Name" => "Foo",
-    "Module" => {"Name" => "ModuleA"},
+    "Module" => { "Name" => "ModuleA" },
     }
   }
 
   let(:resource_b) { {
     "ResourceType" => "BFoo",
     "Name" => "Foo",
-    "Module" => {"Name" => "ModuleB"},
+    "Module" => { "Name" => "ModuleB" },
     }
   }
 

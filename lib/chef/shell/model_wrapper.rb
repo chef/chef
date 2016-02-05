@@ -26,7 +26,7 @@ module Shell
 
     attr_reader :model_symbol
 
-    def initialize(model_class, symbol=nil)
+    def initialize(model_class, symbol = nil)
       @model_class = model_class
       @model_symbol = symbol || convert_to_snake_case(model_class.name, "Chef").to_sym
     end
@@ -79,8 +79,8 @@ module Shell
     # paper over inconsistencies in the model classes APIs, and return the objects
     # the user wanted instead of the URI=>object stuff
     def list_objects
-      objects = @model_class.method(:list).arity == 0? @model_class.list : @model_class.list(true)
-      objects.map { |obj| Array(obj).find {|o| o.kind_of?(@model_class)} }
+      objects = @model_class.method(:list).arity == 0 ? @model_class.list : @model_class.list(true)
+      objects.map { |obj| Array(obj).find { |o| o.kind_of?(@model_class) } }
     end
 
     def format_query(query)
@@ -97,7 +97,6 @@ module Shell
     def initialize(databag_name)
       @model_symbol = @databag_name = databag_name
     end
-
 
     alias :list :all
 

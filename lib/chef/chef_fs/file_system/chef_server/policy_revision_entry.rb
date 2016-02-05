@@ -10,7 +10,7 @@ class Chef
         class PolicyRevisionEntry < RestListEntry
 
           # /policies/foo-1.0.0.json -> /policies/foo/revisions/1.0.0
-          def api_path(options={})
+          def api_path(options = {})
             "#{parent.api_path}/#{policy_name}/revisions/#{revision_id}"
           end
 

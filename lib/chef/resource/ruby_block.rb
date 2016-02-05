@@ -28,7 +28,7 @@ class Chef
 
       identity_attr :block_name
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @block_name = name
       end
@@ -41,7 +41,7 @@ class Chef
         end
       end
 
-      def block_name(arg=nil)
+      def block_name(arg = nil)
         set_or_return(
           :block_name,
           arg,

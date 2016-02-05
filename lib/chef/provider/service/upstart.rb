@@ -89,7 +89,7 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion  { @config_file_found }
+            a.assertion { @config_file_found }
             # no failure here, just document the assumptions made.
             a.whyrun "Could not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}. Assuming service is disabled."
           end
@@ -130,7 +130,7 @@ class Chef
           # Get enabled/disabled state by reading job configuration file
           if ::File.exists?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             Chef::Log.debug("#{@new_resource} found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}","r") do |file|
+            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}", "r") do |file|
               while line = file.gets
                 case line
                 when /^start on/

@@ -108,13 +108,13 @@ class Chef
     end
 
     # Set the name of this Node, or return the current name.
-    def name(arg=nil)
+    def name(arg = nil)
       if arg != nil
         validate(
-                 {:name => arg },
-                 {:name => { :kind_of => String,
-                     :cannot_be => :blank,
-                     :regex => /^[\-[:alnum:]_:.]+$/}
+                 { :name => arg },
+                 { :name => { :kind_of => String,
+                              :cannot_be => :blank,
+                              :regex => /^[\-[:alnum:]_:.]+$/ }
                  },)
         @name = arg
       else
@@ -122,7 +122,7 @@ class Chef
       end
     end
 
-    def chef_environment(arg=nil)
+    def chef_environment(arg = nil)
       set_or_return(
         :chef_environment,
         arg,
@@ -145,9 +145,9 @@ class Chef
     #
     # @param arg [String] the new policy_name value
     # @return [String] the current policy_name, or the one you just set
-    def policy_name(arg=NULL_ARG)
+    def policy_name(arg = NULL_ARG)
       return @policy_name if arg.equal?(NULL_ARG)
-      validate({policy_name: arg}, { policy_name: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
+      validate({ policy_name: arg }, { policy_name: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
       @policy_name = arg
     end
 
@@ -167,9 +167,9 @@ class Chef
     #
     # @param arg [String] the new policy_group value
     # @return [String] the current policy_group, or the one you just set
-    def policy_group(arg=NULL_ARG)
+    def policy_group(arg = NULL_ARG)
       return @policy_group if arg.equal?(NULL_ARG)
-      validate({policy_group: arg}, { policy_group: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
+      validate({ policy_group: arg }, { policy_group: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
       @policy_group = arg
     end
 
@@ -365,7 +365,7 @@ class Chef
       normal_attrs_to_merge = consume_run_list(attrs)
       normal_attrs_to_merge = consume_chef_environment(normal_attrs_to_merge)
       Chef::Log.debug("Applying attributes from json file")
-      self.normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs,normal_attrs_to_merge)
+      self.normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs, normal_attrs_to_merge)
       self.tags # make sure they're defined
     end
 
@@ -452,7 +452,7 @@ class Chef
     # passed in, which came from roles.
     def apply_expansion_attributes(expansion)
       loaded_environment = if chef_environment == "_default"
-                             Chef::Environment.new.tap {|e| e.name("_default")}
+                             Chef::Environment.new.tap { |e| e.name("_default") }
                            else
                              Chef::Environment.load(chef_environment)
                            end
@@ -561,17 +561,17 @@ class Chef
       node
     end
 
-    def self.list_by_environment(environment, inflate=false)
+    def self.list_by_environment(environment, inflate = false)
       if inflate
         response = Hash.new
-        Chef::Search::Query.new.search(:node, "chef_environment:#{environment}") {|n| response[n.name] = n unless n.nil?}
+        Chef::Search::Query.new.search(:node, "chef_environment:#{environment}") { |n| response[n.name] = n unless n.nil? }
         response
       else
         Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("environments/#{environment}/nodes")
       end
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:node) do |n|
@@ -655,7 +655,7 @@ class Chef
 
     def ==(other)
       if other.kind_of?(self.class)
-         self.name == other.name
+        self.name == other.name
       else
         false
       end

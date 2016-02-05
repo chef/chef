@@ -145,7 +145,7 @@ class Chef::Application::Solo < Chef::Application
     :long         => "--version",
     :description  => "Show chef version",
     :boolean      => true,
-    :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+    :proc         => lambda { |v| puts "Chef: #{::Chef::VERSION}" },
     :exit         => 0
 
   option :override_runlist,
@@ -211,7 +211,7 @@ class Chef::Application::Solo < Chef::Application
     Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
 
     if Chef::Config[:recipe_url]
-      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
+      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, ".."))
 
       Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
@@ -253,7 +253,6 @@ class Chef::Application::Solo < Chef::Application
       interval_run_chef_client
     end
   end
-
 
   private
 
@@ -312,8 +311,8 @@ EOH
 
   def unforked_interval_error_message
     "Unforked chef-client interval runs are disabled in Chef 12." +
-    "\nConfiguration settings:" +
-    "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
-    "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+      "\nConfiguration settings:" +
+      "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
+      "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 end

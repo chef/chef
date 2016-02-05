@@ -32,7 +32,7 @@ class Chef
       default_action :create
       allowed_actions :create, :delete
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         verify_links_supported!
         super
         @to = nil
@@ -40,7 +40,7 @@ class Chef
         @target_file = name
       end
 
-      def to(arg=nil)
+      def to(arg = nil)
         set_or_return(
           :to,
           arg,
@@ -48,7 +48,7 @@ class Chef
         )
       end
 
-      def target_file(arg=nil)
+      def target_file(arg = nil)
         set_or_return(
           :target_file,
           arg,
@@ -56,7 +56,7 @@ class Chef
         )
       end
 
-      def link_type(arg=nil)
+      def link_type(arg = nil)
         real_arg = arg.kind_of?(String) ? arg.to_sym : arg
         set_or_return(
           :link_type,
@@ -65,7 +65,7 @@ class Chef
         )
       end
 
-      def group(arg=nil)
+      def group(arg = nil)
         set_or_return(
           :group,
           arg,
@@ -73,7 +73,7 @@ class Chef
         )
       end
 
-      def owner(arg=nil)
+      def owner(arg = nil)
         set_or_return(
           :owner,
           arg,
@@ -87,6 +87,7 @@ class Chef
       end
 
       private
+
       def verify_links_supported!
         # On certain versions of windows links are not supported. Make
         # sure we are not on such a platform.

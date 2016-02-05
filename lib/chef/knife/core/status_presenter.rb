@@ -93,7 +93,7 @@ class Chef
         # the volume of output is adjusted accordingly. Uses colors if enabled
         # in the ui object.
         def summarize(list)
-          summarized=""
+          summarized = ""
           list.each do |data|
             node = data
             # special case ec2 with their split horizon whatsis.
@@ -130,7 +130,7 @@ class Chef
               line_parts << platform
             end
 
-            summarized=summarized + line_parts.join(", ") + ".\n"
+            summarized = summarized + line_parts.join(", ") + ".\n"
           end
           summarized
         end

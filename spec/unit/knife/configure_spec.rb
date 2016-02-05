@@ -4,7 +4,7 @@ describe Chef::Knife::Configure do
   before do
     Chef::Log.logger = Logger.new(StringIO.new)
 
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::Configure.new
     @rest_client = double("null rest client", :post => { :result => :true })
     allow(@knife).to receive(:rest).and_return(@rest_client)
@@ -21,7 +21,6 @@ describe Chef::Knife::Configure do
 
     allow(Ohai::System).to receive(:new).and_return(ohai)
   end
-
 
   let(:fqdn) { "foo.example.org" }
 
@@ -40,7 +39,6 @@ describe Chef::Knife::Configure do
   let(:default_validator_key_win32) { File.expand_path(default_validator_key) }
 
   let(:default_server_url) { "https://#{fqdn}:443" }
-
 
   it "asks the user for the URL of the chef server" do
     @knife.ask_user_for_config
@@ -220,7 +218,7 @@ describe Chef::Knife::Configure do
     expect(File).to receive(:expand_path).with("/home/you/.chef/a-new-user.pem").and_return("/home/you/.chef/a-new-user.pem")
     expect(File).to receive(:expand_path).with(default_validator_key).and_return(default_validator_key)
     expect(File).to receive(:expand_path).with(default_admin_key).and_return(default_admin_key)
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
 
     user_command = Chef::Knife::UserCreate.new
     expect(user_command).to receive(:run)

@@ -38,7 +38,7 @@ describe Chef::Mixin::ProxifiedSocket do
   let(:host) { "host" }
   let(:port) { 7979 }
   let(:test_instance) { TestProxifiedSocket.new }
-  let(:socket_double) { instance_double(TCPSocket)}
+  let(:socket_double) { instance_double(TCPSocket) }
   let(:proxifier_double) { instance_double(Proxifier::Proxy) }
   let(:http_uri) { "http://somehost:1" }
   let(:https_uri) { "https://somehost:1" }

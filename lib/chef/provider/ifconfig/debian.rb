@@ -67,7 +67,7 @@ iface <%= @new_resource.device %> inet static
           dir.run_action(:create)
           new_resource.updated_by_last_action(true) if dir.updated_by_last_action?
           # roll our own file_edit resource, this will not get reported until we have a file_edit resource
-          interfaces_dot_d_for_regexp = INTERFACES_DOT_D_DIR.gsub(/\./, '\.')  # escape dots for the regexp
+          interfaces_dot_d_for_regexp = INTERFACES_DOT_D_DIR.gsub(/\./, '\.') # escape dots for the regexp
           regexp = %r{^\s*source\s+#{interfaces_dot_d_for_regexp}/\*\s*$}
           unless ::File.exists?(INTERFACES_FILE) && regexp.match(IO.read(INTERFACES_FILE))
             converge_by("modifying #{INTERFACES_FILE} to source #{INTERFACES_DOT_D_DIR}") do

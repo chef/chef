@@ -29,7 +29,7 @@ class Chef
       attr_accessor :rest
       attr_reader :config
 
-      def initialize(url=nil, config:Chef::Config)
+      def initialize(url = nil, config:Chef::Config)
         @config = config
         @url = url
       end
@@ -40,7 +40,7 @@ class Chef
 
       # Backwards compatability for cookbooks.
       # This can be removed in Chef > 12.
-      def partial_search(type, query="*:*", *args, &block)
+      def partial_search(type, query = "*:*", *args, &block)
         Chef::Log.warn(<<-WARNDEP)
 DEPRECATED: The 'partial_search' API is deprecated and will be removed in
 future releases. Please use 'search' with a :filter_result argument to get
@@ -80,7 +80,7 @@ WARNDEP
       # an example of the returned json may be:
       # {"ip_address":"127.0.0.1", "ruby_version": "1.9.3"}
       #
-      def search(type, query="*:*", *args, &block)
+      def search(type, query = "*:*", *args, &block)
         validate_type(type)
 
         args_h = hashify_args(*args)
@@ -116,8 +116,8 @@ WARNDEP
       def validate_type(t)
         unless t.kind_of?(String) || t.kind_of?(Symbol)
           msg = "Invalid search object type #{t.inspect} (#{t.class}), must be a String or Symbol." +
-          "Usage: search(:node, QUERY[, OPTIONAL_ARGS])" +
-          "        `knife search environment QUERY (options)`"
+                "Usage: search(:node, QUERY[, OPTIONAL_ARGS])" +
+                "        `knife search environment QUERY (options)`"
           raise Chef::Exceptions::InvalidSearchQuery, msg
         end
       end

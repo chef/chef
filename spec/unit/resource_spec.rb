@@ -225,13 +225,13 @@ describe Chef::Resource do
     it "should make notified resources appear in the actions hash" do
       run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       resource.notifies :reload, run_context.resource_collection.find(:zen_master => "coffee")
-      expect(resource.delayed_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}).not_to be_nil
+      expect(resource.delayed_notifications.detect { |e| e.resource.name == "coffee" && e.action == :reload }).not_to be_nil
     end
 
     it "should make notified resources be capable of acting immediately" do
       run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       resource.notifies :reload, run_context.resource_collection.find(:zen_master => "coffee"), :immediate
-      expect(resource.immediate_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}).not_to be_nil
+      expect(resource.immediate_notifications.detect { |e| e.resource.name == "coffee" && e.action == :reload }).not_to be_nil
     end
 
     it "should raise an exception if told to act in other than :delay or :immediate(ly)" do
@@ -244,35 +244,35 @@ describe Chef::Resource do
     it "should allow multiple notified resources appear in the actions hash" do
       run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       resource.notifies :reload, run_context.resource_collection.find(:zen_master => "coffee")
-      expect(resource.delayed_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}).not_to be_nil
+      expect(resource.delayed_notifications.detect { |e| e.resource.name == "coffee" && e.action == :reload }).not_to be_nil
 
       run_context.resource_collection << Chef::Resource::ZenMaster.new("beans")
       resource.notifies :reload, run_context.resource_collection.find(:zen_master => "beans")
-      expect(resource.delayed_notifications.detect{|e| e.resource.name == "beans" && e.action == :reload}).not_to be_nil
+      expect(resource.delayed_notifications.detect { |e| e.resource.name == "beans" && e.action == :reload }).not_to be_nil
     end
 
     it "creates a notification for a resource that is not yet in the resource collection" do
       resource.notifies(:restart, :service => "apache")
-      expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, resource)
+      expected_notification = Chef::Resource::Notification.new({ :service => "apache" }, :restart, resource)
       expect(resource.delayed_notifications).to include(expected_notification)
     end
 
     it "notifies another resource immediately" do
       resource.notifies_immediately(:restart, :service => "apache")
-      expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, resource)
+      expected_notification = Chef::Resource::Notification.new({ :service => "apache" }, :restart, resource)
       expect(resource.immediate_notifications).to include(expected_notification)
     end
 
     it "notifies a resource to take action at the end of the chef run" do
       resource.notifies_delayed(:restart, :service => "apache")
-      expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, resource)
+      expected_notification = Chef::Resource::Notification.new({ :service => "apache" }, :restart, resource)
       expect(resource.delayed_notifications).to include(expected_notification)
     end
 
     it "notifies a resource with an array for its name via its prettified string name" do
       run_context.resource_collection << Chef::Resource::ZenMaster.new(["coffee", "tea"])
       resource.notifies :reload, run_context.resource_collection.find(:zen_master => "coffee, tea")
-      expect(resource.delayed_notifications.detect{|e| e.resource.name == "coffee, tea" && e.action == :reload}).not_to be_nil
+      expect(resource.delayed_notifications.detect { |e| e.resource.name == "coffee, tea" && e.action == :reload }).not_to be_nil
     end
   end
 
@@ -281,26 +281,26 @@ describe Chef::Resource do
       run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       zr = run_context.resource_collection.find(:zen_master => "coffee")
       resource.subscribes :reload, zr
-      expect(zr.delayed_notifications.detect{|e| e.resource.name == "funk" && e.action == :reload}).not_to be_nil
+      expect(zr.delayed_notifications.detect { |e| e.resource.name == "funk" && e.action == :reload }).not_to be_nil
     end
 
     it "should make resources appear in the actions hash of subscribed nodes" do
       run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       zr = run_context.resource_collection.find(:zen_master => "coffee")
       resource.subscribes :reload, zr
-      expect(zr.delayed_notifications.detect{|e| e.resource.name == resource.name && e.action == :reload}).not_to be_nil
+      expect(zr.delayed_notifications.detect { |e| e.resource.name == resource.name && e.action == :reload }).not_to be_nil
 
       run_context.resource_collection << Chef::Resource::ZenMaster.new("bean")
       zrb = run_context.resource_collection.find(:zen_master => "bean")
       zrb.subscribes :reload, zr
-      expect(zr.delayed_notifications.detect{|e| e.resource.name == resource.name && e.action == :reload}).not_to be_nil
+      expect(zr.delayed_notifications.detect { |e| e.resource.name == resource.name && e.action == :reload }).not_to be_nil
     end
 
     it "should make subscribed resources be capable of acting immediately" do
       run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       zr = run_context.resource_collection.find(:zen_master => "coffee")
       resource.subscribes :reload, zr, :immediately
-      expect(zr.immediate_notifications.detect{|e| e.resource.name == resource.name && e.action == :reload}).not_to be_nil
+      expect(zr.immediate_notifications.detect { |e| e.resource.name == resource.name && e.action == :reload }).not_to be_nil
     end
   end
 
@@ -644,7 +644,7 @@ describe Chef::Resource do
     it "accepts command options for only_if conditionals" do
       expect_any_instance_of(Chef::Resource::Conditional).to receive(:evaluate_command).at_least(1).times
       resource.only_if("true", :cwd => "/tmp")
-      expect(resource.only_if.first.command_opts).to eq({:cwd => "/tmp"})
+      expect(resource.only_if.first.command_opts).to eq({ :cwd => "/tmp" })
       resource.run_action(:purr)
     end
 
@@ -668,13 +668,13 @@ describe Chef::Resource do
 
     it "accepts command options for not_if conditionals" do
       resource.not_if("pwd" , :cwd => "/tmp")
-      expect(resource.not_if.first.command_opts).to eq({:cwd => "/tmp"})
+      expect(resource.not_if.first.command_opts).to eq({ :cwd => "/tmp" })
     end
 
     it "accepts multiple not_if conditionals" do
       snitch_var1, snitch_var2 = true, true
-      resource.not_if {snitch_var1 = nil}
-      resource.not_if {snitch_var2 = false}
+      resource.not_if { snitch_var1 = nil }
+      resource.not_if { snitch_var2 = false }
       resource.run_action(:purr)
       expect(snitch_var1).to be_nil
       expect(snitch_var2).to be_falsey
@@ -859,7 +859,7 @@ describe Chef::Resource do
 
     it "adds mappings for multiple platforms" do
       expect(Chef.resource_handler_map).to receive(:set).with(
-        :energy, Chef::Resource::Klz, { platform: ["autobots", "decepticons"]}
+        :energy, Chef::Resource::Klz, { platform: ["autobots", "decepticons"] }
       )
       klz.provides :energy, platform: ["autobots", "decepticons"]
     end
@@ -1000,14 +1000,14 @@ describe Chef::Resource do
 
     it "when set to false should show compiled resource for failed resource" do
       expect { resource_file.run_action(action) }.to raise_error { |err|
-            expect(compiled_resource_data(resource_file, action, err)).to match 'path "/nonexistent/CHEF-5098/file"'
+        expect(compiled_resource_data(resource_file, action, err)).to match 'path "/nonexistent/CHEF-5098/file"'
       }
     end
 
     it "when set to true should show compiled resource for failed resource" do
       resource_file.sensitive true
       expect { resource_file.run_action(action) }.to raise_error { |err|
-            expect(compiled_resource_data(resource_file, action, err)).to eql("suppressed sensitive resource output")
+        expect(compiled_resource_data(resource_file, action, err)).to eql("suppressed sensitive resource output")
       }
     end
 
@@ -1070,7 +1070,7 @@ describe Chef::Resource do
   end
 
   describe ".default_action" do
-    let(:default_action) { }
+    let(:default_action) {}
     let(:resource_class) do
       actions = default_action
       Class.new(described_class) do

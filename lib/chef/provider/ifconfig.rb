@@ -67,7 +67,7 @@ class Chef
         @status.stdout.each_line do |line|
           if !line[0..9].strip.empty?
             @int_name = line[0..9].strip
-            @interfaces[@int_name] = {"hwaddr" => (line =~ /(HWaddr)/ ? ($') : "nil").strip.chomp }
+            @interfaces[@int_name] = { "hwaddr" => (line =~ /(HWaddr)/ ? ($') : "nil").strip.chomp }
           else
             @interfaces[@int_name]["inet_addr"] = (line =~ /inet addr:(\S+)/ ? ($1) : "nil") if line =~ /inet addr:/
             @interfaces[@int_name]["bcast"] = (line =~ /Bcast:(\S+)/ ? ($1) : "nil") if line =~ /Bcast:/
@@ -193,6 +193,7 @@ class Chef
       end
 
       private
+
       def add_command
         command = "ifconfig #{@new_resource.device} #{@new_resource.target}"
         command << " netmask #{@new_resource.mask}" if @new_resource.mask

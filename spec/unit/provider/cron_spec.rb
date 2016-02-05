@@ -94,7 +94,7 @@ CRONTAB
         cron = @provider.load_current_resource
 
         expect(cron.mailto).to eq("warn@example.com")
-        expect(cron.environment).to eq({"TEST" => "lol", "FLAG" => "1"})
+        expect(cron.environment).to eq({ "TEST" => "lol", "FLAG" => "1" })
       end
 
       it "should not break with variables that match the cron resource internals" do
@@ -109,7 +109,7 @@ CRONTAB
         cron = @provider.load_current_resource
 
         expect(cron.time).to eq(:reboot)
-        expect(cron.environment).to eq({"MINUTE" => "40", "REBOOT" => "midnight", "TEST" => "lol", "ENVIRONMENT" => "production"})
+        expect(cron.environment).to eq({ "MINUTE" => "40", "REBOOT" => "midnight", "TEST" => "lol", "ENVIRONMENT" => "production" })
       end
 
       it "should report the match" do
@@ -276,7 +276,7 @@ CRONTAB
         cron = @provider.load_current_resource
 
         expect(cron.mailto).to eq("warn@example.com")
-        expect(cron.environment).to eq({"TEST" => "lol", "FLAG" => "1"})
+        expect(cron.environment).to eq({ "TEST" => "lol", "FLAG" => "1" })
       end
 
       it "should not break with variabels that match the cron resource internals" do
@@ -292,7 +292,7 @@ CRONTAB
 
         expect(cron.minute).to eq("*")
         expect(cron.hour).to eq("5")
-        expect(cron.environment).to eq({"MINUTE" => "40", "HOUR" => "midnight", "TEST" => "lol", "ENVIRONMENT" => "production"})
+        expect(cron.environment).to eq({ "MINUTE" => "40", "HOUR" => "midnight", "TEST" => "lol", "ENVIRONMENT" => "production" })
       end
 
       it "should report the match" do

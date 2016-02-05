@@ -176,7 +176,6 @@ describe Chef::DataBagItem do
 
     let(:deserial) { Chef::DataBagItem.from_hash(Chef::JSONCompat.parse(Chef::JSONCompat.to_json(data_bag_item))) }
 
-
     it "should deserialize to a Chef::DataBagItem object" do
       expect(deserial).to be_a_kind_of(Chef::DataBagItem)
     end
@@ -205,7 +204,7 @@ describe Chef::DataBagItem do
     end
 
     it "inspects as data_bag_item[BAG, ID, RAW_DATA]" do
-      raw_data = {"id" => "heart_of_darkness", "author" => "Conrad"}
+      raw_data = { "id" => "heart_of_darkness", "author" => "Conrad" }
       data_bag_item.raw_data = raw_data
       data_bag_item.data_bag("books")
 
@@ -219,7 +218,7 @@ describe Chef::DataBagItem do
     let(:data_bag_item) {
       data_bag_item = Chef::DataBagItem.new
       data_bag_item["id"] = "heart of darkness"
-      data_bag_item.raw_data = {"id" => "heart_of_darkness", "author" => "Conrad"}
+      data_bag_item.raw_data = { "id" => "heart_of_darkness", "author" => "Conrad" }
       data_bag_item.data_bag("books")
       data_bag_item
     }
@@ -278,7 +277,7 @@ describe Chef::DataBagItem do
 
   describe "when loading" do
     before do
-      data_bag_item.raw_data = {"id" => "charlie", "shell" => "zsh", "ssh_keys" => %w{key1 key2}}
+      data_bag_item.raw_data = { "id" => "charlie", "shell" => "zsh", "ssh_keys" => %w{key1 key2} }
       data_bag_item.data_bag("users")
     end
 
@@ -314,7 +313,7 @@ describe Chef::DataBagItem do
       end
 
       it "converts the raw data to a data bag item" do
-        expect(Chef::DataBag).to receive(:load).with("users").and_return({"charlie" => data_bag_item.to_hash})
+        expect(Chef::DataBag).to receive(:load).with("users").and_return({ "charlie" => data_bag_item.to_hash })
         item = Chef::DataBagItem.load("users", "charlie")
         expect(item).to be_a_kind_of(Chef::DataBagItem)
         expect(item).to eq(data_bag_item)

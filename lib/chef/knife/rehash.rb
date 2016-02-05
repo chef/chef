@@ -21,7 +21,7 @@ require "chef/knife/core/subcommand_loader"
 
 class Chef
   class Knife
-    class Rehash <  Chef::Knife
+    class Rehash < Chef::Knife
       banner "knife rehash"
 
       def run
@@ -42,7 +42,7 @@ class Chef
         output = if Chef::Knife::SubcommandLoader.plugin_manifest?
                    Chef::Knife::SubcommandLoader.plugin_manifest
                  else
-                   { Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY => {}}
+                   { Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY => {} }
                  end
         output[Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY]["plugins_paths"] = Chef::Knife.subcommand_files
         output[Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY]["plugins_by_category"] = Chef::Knife.subcommands_by_category

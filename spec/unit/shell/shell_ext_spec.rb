@@ -92,9 +92,9 @@ describe Shell::Extensions do
     end
 
     it "prints node attributes" do
-      node = double("node", :attribute => {:foo => :bar})
+      node = double("node", :attribute => { :foo => :bar })
       @shell_client.node = node
-      expect(@root_context).to receive(:pp).with({:foo => :bar})
+      expect(@root_context).to receive(:pp).with({ :foo => :bar })
       @root_context.ohai
       expect(@root_context).to receive(:pp).with(:bar)
       @root_context.ohai(:foo)

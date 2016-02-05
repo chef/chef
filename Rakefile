@@ -46,7 +46,6 @@ task :register_eventlog do
   end
 end
 
-
 begin
   require "chefstyle"
   require "rubocop/rake_task"

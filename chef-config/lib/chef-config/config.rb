@@ -57,7 +57,7 @@ module ChefConfig
       path
     end
 
-    def self.add_formatter(name, file_path=nil)
+    def self.add_formatter(name, file_path = nil)
       formatters << [name, file_path]
     end
 
@@ -115,7 +115,7 @@ module ChefConfig
           end
         end
       elsif configuration[:cookbook_artifact_path]
-          File.expand_path("..", self.configuration[:cookbook_artifact_path])
+        File.expand_path("..", self.configuration[:cookbook_artifact_path])
       else
         cache_path
       end
@@ -141,7 +141,7 @@ module ChefConfig
       if chef_repo_path.kind_of?(String)
         PathHelper.join(chef_repo_path, child_path)
       else
-        chef_repo_path.uniq.map { |path| PathHelper.join(path, child_path)}
+        chef_repo_path.uniq.map { |path| PathHelper.join(path, child_path) }
       end
     end
 
@@ -367,7 +367,7 @@ module ChefConfig
       # if the chef_server_url is a path to an organization, aka
       # 'some_url.../organizations/*' then remove the '/organization/*' by default
       if self.configuration[:chef_server_url] =~ /\/organizations\/\S*$/
-         self.configuration[:chef_server_url].split("/")[0..-3].join("/")
+        self.configuration[:chef_server_url].split("/")[0..-3].join("/")
       elsif self.configuration[:chef_server_url] # default to whatever chef_server_url is
         self.configuration[:chef_server_url]
       else
@@ -448,7 +448,6 @@ module ChefConfig
     # item that the policy will be stored as. NOTE: this setting only has an
     # effect if `policy_document_native_api` is set to `false`.
     default :deployment_group, nil
-
 
     # Set these to enable SSL authentication / mutual-authentication
     # with the server

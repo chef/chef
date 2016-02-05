@@ -35,7 +35,7 @@ describe Chef::Audit::AuditEventProxy do
 
     let(:description) { "poots" }
     let(:group) { double("ExampleGroup", :parent_groups => parents,
-      :description => description) }
+                                         :description => description) }
     let(:notification) { double("Notification", :group => group) }
 
     context "when notified from a top-level example group" do
@@ -121,8 +121,8 @@ describe Chef::Audit::AuditEventProxy do
       let(:examples) { [example] }
 
       let(:example) { double("Example", :metadata => metadata,
-        :description => example_description,
-        :full_description => full_description, :exception => nil) }
+                                        :description => example_description,
+                                        :full_description => full_description, :exception => nil) }
 
       let(:metadata) {
         {

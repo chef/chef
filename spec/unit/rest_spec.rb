@@ -24,7 +24,7 @@ require "uri"
 require "net/https"
 require "stringio"
 
-SIGNING_KEY_DOT_PEM="-----BEGIN RSA PRIVATE KEY-----
+SIGNING_KEY_DOT_PEM = "-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA49TA0y81ps0zxkOpmf5V4/c4IeR5yVyQFpX3JpxO4TquwnRh
 8VSUhrw8kkTLmB3cS39Db+3HadvhoqCEbqPE6915kXSuk/cWIcNozujLK7tkuPEy
 YVsyTioQAddSdfe+8EhQVf3oHxaKmUd6waXrWqYCnhxgOjxocenREYNhZ/OETIei
@@ -59,7 +59,7 @@ describe Chef::REST do
 
   let(:log_stringio) { StringIO.new }
 
-  let(:request_id) {"1234"}
+  let(:request_id) { "1234" }
 
   let(:rest) do
     allow(Chef::REST::CookieJar).to receive(:instance).and_return({})
@@ -69,8 +69,8 @@ describe Chef::REST do
     rest
   end
 
-  let(:standard_read_headers) {{"Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID"=>request_id, "X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION}}
-  let(:standard_write_headers) {{"Accept"=>"application/json", "Content-Type"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID"=>request_id, "X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION}}
+  let(:standard_read_headers) { { "Accept" => "application/json", "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID" => request_id, "X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION } }
+  let(:standard_write_headers) { { "Accept" => "application/json", "Content-Type" => "application/json", "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "X-REMOTE-REQUEST-ID" => request_id, "X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION } }
 
   before(:each) do
     Chef::Log.init(log_stringio)
@@ -120,8 +120,8 @@ describe Chef::REST do
     it "makes a :GET request with the composed url object" do
       expect(rest).to receive(:send_http_request).
         with(:GET, monkey_uri, standard_read_headers, false).
-        and_return([1,2,3])
-      expect(rest).to receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+        and_return([1, 2, 3])
+      expect(rest).to receive(:apply_response_middleware).with(1, 2, 3).and_return([1, 2, 3])
       expect(rest).to receive("success_response?".to_sym).with(1).and_return(true)
       rest.get_rest("monkey")
     end
@@ -134,8 +134,8 @@ describe Chef::REST do
     it "makes a :DELETE request with the composed url object" do
       expect(rest).to receive(:send_http_request).
         with(:DELETE, monkey_uri, standard_read_headers, false).
-        and_return([1,2,3])
-      expect(rest).to receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+        and_return([1, 2, 3])
+      expect(rest).to receive(:apply_response_middleware).with(1, 2, 3).and_return([1, 2, 3])
       expect(rest).to receive("success_response?".to_sym).with(1).and_return(true)
       rest.delete_rest("monkey")
     end
@@ -143,8 +143,8 @@ describe Chef::REST do
     it "makes a :POST request with the composed url object and data" do
       expect(rest).to receive(:send_http_request).
         with(:POST, monkey_uri, standard_write_headers, "\"data\"").
-        and_return([1,2,3])
-      expect(rest).to receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+        and_return([1, 2, 3])
+      expect(rest).to receive(:apply_response_middleware).with(1, 2, 3).and_return([1, 2, 3])
       expect(rest).to receive("success_response?".to_sym).with(1).and_return(true)
       rest.post_rest("monkey", "data")
     end
@@ -152,8 +152,8 @@ describe Chef::REST do
     it "makes a :PUT request with the composed url object and data" do
       expect(rest).to receive(:send_http_request).
         with(:PUT, monkey_uri, standard_write_headers, "\"data\"").
-        and_return([1,2,3])
-      expect(rest).to receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+        and_return([1, 2, 3])
+      expect(rest).to receive(:apply_response_middleware).with(1, 2, 3).and_return([1, 2, 3])
       expect(rest).to receive("success_response?".to_sym).with(1).and_return(true)
       rest.put_rest("monkey", "data")
     end
@@ -176,14 +176,14 @@ describe Chef::REST do
     it "calls the authn middleware" do
       data = "\"secure data\""
 
-      auth_headers = standard_write_headers.merge({"auth_done"=>"yep"})
+      auth_headers = standard_write_headers.merge({ "auth_done" => "yep" })
 
       expect(rest.authenticator).to receive(:handle_request).
         with(:POST, monkey_uri, standard_write_headers, data).
         and_return([:POST, monkey_uri, auth_headers, data])
       expect(rest).to receive(:send_http_request).
         with(:POST, monkey_uri, auth_headers, data).
-        and_return([1,2,3])
+        and_return([1, 2, 3])
       expect(rest).to receive("success_response?".to_sym).with(1).and_return(true)
       rest.raw_http_request(:POST, monkey_uri, standard_write_headers, data)
     end
@@ -194,12 +194,11 @@ describe Chef::REST do
 
       expect(rest).to receive(:send_http_request).
         with(:POST, monkey_uri, auth_headers, data).
-        and_return([1,2,3])
+        and_return([1, 2, 3])
       expect(rest).to receive("success_response?".to_sym).with(1).and_return(true)
       rest.raw_http_request(:POST, monkey_uri, standard_write_headers, data)
     end
   end
-
 
   describe "when configured to authenticate to the Chef server" do
     let(:base_url) { URI.parse("http://chef.example.com:4000") }
@@ -234,12 +233,12 @@ describe Chef::REST do
     end
 
     it "raises PrivateKeyMissing when the key file doesn't exist" do
-      expect {Chef::REST.new(base_url, "client-name", "/dev/null/nothing_here")}.to raise_error(Chef::Exceptions::PrivateKeyMissing)
+      expect { Chef::REST.new(base_url, "client-name", "/dev/null/nothing_here") }.to raise_error(Chef::Exceptions::PrivateKeyMissing)
     end
 
     it "raises InvalidPrivateKey when the key file doesnt' look like a key" do
       invalid_key_file = CHEF_SPEC_DATA + "/bad-config.rb"
-      expect {Chef::REST.new(base_url, "client-name", invalid_key_file)}.to raise_error(Chef::Exceptions::InvalidPrivateKey)
+      expect { Chef::REST.new(base_url, "client-name", invalid_key_file) }.to raise_error(Chef::Exceptions::InvalidPrivateKey)
     end
 
     it "can take private key as a sting :raw_key in options during initializaton" do
@@ -247,7 +246,7 @@ describe Chef::REST do
     end
 
     it "raises InvalidPrivateKey when the key passed as string :raw_key in options doesnt' look like a key" do
-      expect {Chef::REST.new(base_url, "client-name", nil, :raw_key => "bad key string")}.to raise_error(Chef::Exceptions::InvalidPrivateKey)
+      expect { Chef::REST.new(base_url, "client-name", nil, :raw_key => "bad key string") }.to raise_error(Chef::Exceptions::InvalidPrivateKey)
     end
 
   end
@@ -292,7 +291,7 @@ describe Chef::REST do
     describe "as JSON API requests" do
       let(:request_mock) { {} }
 
-      let(:base_headers) do  #FIXME: huh?
+      let(:base_headers) do #FIXME: huh?
         {
           "Accept" => "application/json",
           "X-Chef-Version" => Chef::VERSION,
@@ -393,15 +392,15 @@ describe Chef::REST do
         expected_headers = base_headers.merge("Content-Type" => "application/json", "Content-Length" => "13")
 
         expect(Net::HTTP::Post).to receive(:new).with("/?foo=bar", expected_headers).and_return(request)
-        rest.request(:POST, url, {}, {:one=>:two})
+        rest.request(:POST, url, {}, { :one => :two })
         expect(request.body).to eq('{"one":"two"}')
       end
 
       it "should build a new HTTP PUT request" do
         request = Net::HTTP::Put.new(url.path)
         expected_headers = base_headers.merge("Content-Type" => "application/json", "Content-Length" => "13")
-        expect(Net::HTTP::Put).to receive(:new).with("/?foo=bar",expected_headers).and_return(request)
-        rest.request(:PUT, url, {}, {:one=>:two})
+        expect(Net::HTTP::Put).to receive(:new).with("/?foo=bar", expected_headers).and_return(request)
+        rest.request(:PUT, url, {}, { :one => :two })
         expect(request.body).to eq('{"one":"two"}')
       end
 
@@ -427,7 +426,7 @@ describe Chef::REST do
         let(:body) { '{"ohai2u":"json_api"}' }
         it "should inflate the body as to an object" do
           http_response.add_field("content-type", "application/json")
-          expect(rest.request(:GET, url, {})).to eq({"ohai2u"=>"json_api"})
+          expect(rest.request(:GET, url, {})).to eq({ "ohai2u" => "json_api" })
         end
 
         it "should fail if the response is truncated" do
@@ -492,7 +491,7 @@ describe Chef::REST do
           it "should show the JSON error message" do
             allow(rest).to receive(:sleep)
 
-            expect {rest.request(:GET, url)}.to raise_error(Net::HTTPFatalError)
+            expect { rest.request(:GET, url) }.to raise_error(Net::HTTPFatalError)
             expect(log_stringio.string).to match(Regexp.escape("INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four"))
           end
         end
@@ -517,13 +516,13 @@ describe Chef::REST do
           end
 
           it "decompresses the JSON error message" do
-            expect {rest.request(:GET, url)}.to raise_error(Net::HTTPFatalError)
+            expect { rest.request(:GET, url) }.to raise_error(Net::HTTPFatalError)
             expect(log_stringio.string).to match(Regexp.escape("INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four"))
           end
 
           it "fails when the compressed body is truncated" do
             http_response["Content-Length"] = (body.bytesize + 99).to_s
-            expect {rest.request(:GET, url)}.to raise_error(Chef::Exceptions::ContentLengthMismatch)
+            expect { rest.request(:GET, url) }.to raise_error(Chef::Exceptions::ContentLengthMismatch)
           end
         end
 
@@ -537,7 +536,7 @@ describe Chef::REST do
 
           it "retries then throws an exception" do
             allow(rest).to receive(:sleep)
-            expect {rest.request(:GET, url)}.to raise_error(Net::HTTPFatalError)
+            expect { rest.request(:GET, url) }.to raise_error(Net::HTTPFatalError)
             count = Chef::Config[:http_retry_count]
             expect(log_stringio.string).to match(Regexp.escape("ERROR: Server returned error 500 for #{url}, retrying #{count}/#{count}"))
           end
@@ -551,7 +550,7 @@ describe Chef::REST do
       let(:request_mock) { {} }
 
       let(:http_response) do
-        http_response = Net::HTTPSuccess.new("1.1","200", "it-works")
+        http_response = Net::HTTPSuccess.new("1.1", "200", "it-works")
 
         allow(http_response).to receive(:read_body)
         expect(http_response).not_to receive(:body)
@@ -577,24 +576,24 @@ describe Chef::REST do
       end
 
       it " build a new HTTP GET request without the application/json accept header" do
-        expected_headers = {"Accept" => "*/*",
-                            "X-Chef-Version" => Chef::VERSION,
-                            "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
-                            "Host" => host_header,
-                            "X-REMOTE-REQUEST-ID"=> request_id,
-                            "X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION,
+        expected_headers = { "Accept" => "*/*",
+                             "X-Chef-Version" => Chef::VERSION,
+                             "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
+                             "Host" => host_header,
+                             "X-REMOTE-REQUEST-ID" => request_id,
+                             "X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION,
                             }
         expect(Net::HTTP::Get).to receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
         rest.streaming_request(url, {})
       end
 
       it "build a new HTTP GET request with the X-Remote-Request-Id header" do
-        expected_headers = {"Accept" => "*/*",
-                            "X-Chef-Version" => Chef::VERSION,
-                            "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
-                            "Host" => host_header,
-                            "X-REMOTE-REQUEST-ID"=> request_id,
-                            "X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION,
+        expected_headers = { "Accept" => "*/*",
+                             "X-Chef-Version" => Chef::VERSION,
+                             "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
+                             "Host" => host_header,
+                             "X-REMOTE-REQUEST-ID" => request_id,
+                             "X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION,
                             }
         expect(Net::HTTP::Get).to receive(:new).with("/?foo=bar", expected_headers).and_return(request_mock)
         rest.streaming_request(url, {})
@@ -661,7 +660,7 @@ describe Chef::REST do
         path = tempfile.path
         expect(path).not_to be_nil
         allow(tempfile).to receive(:write).and_raise(IOError)
-        rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
+        rest.fetch("cookbooks/a_cookbook") { |tmpfile| "shouldn't get here" }
         expect(File.exists?(path)).to be_falsey
       end
 
@@ -676,12 +675,12 @@ describe Chef::REST do
 
         expect(http_client).to receive(:request).and_yield(redirect).and_return(redirect)
         expect(http_client).to receive(:request).and_yield(http_response).and_return(http_response)
-        rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
+        rest.fetch("cookbooks/a_cookbook") { |tmpfile| "shouldn't get here" }
       end
 
       it "passes the original block to the redirected request" do
         http_redirect = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
-        http_redirect.add_field("location","/that-thing-is-here-now")
+        http_redirect.add_field("location", "/that-thing-is-here-now")
         allow(http_redirect).to receive(:read_body)
 
         block_called = false
@@ -705,8 +704,8 @@ describe Chef::REST do
     end
 
     it "raises a RedirectLimitExceeded when redirected more than 10 times" do
-      redirected = lambda {rest.follow_redirect { redirected.call }}
-      expect {redirected.call}.to raise_error(Chef::Exceptions::RedirectLimitExceeded)
+      redirected = lambda { rest.follow_redirect { redirected.call } }
+      expect { redirected.call }.to raise_error(Chef::Exceptions::RedirectLimitExceeded)
     end
 
     it "does not count redirects from previous calls against the redirect limit" do
@@ -717,9 +716,9 @@ describe Chef::REST do
           redirected.call unless total_redirects >= 9
         end
       end
-      expect {redirected.call}.not_to raise_error
+      expect { redirected.call }.not_to raise_error
       total_redirects = 0
-      expect {redirected.call}.not_to raise_error
+      expect { redirected.call }.not_to raise_error
     end
 
     it "does not sign the redirected request when sign_on_redirect is false" do
@@ -743,11 +742,11 @@ describe Chef::REST do
           redirected.call unless total_redirects >= 9
         end
       end
-      expect {redirected.call}.not_to raise_error
+      expect { redirected.call }.not_to raise_error
 
       total_redirects = 0
       rest.redirect_limit = 3
-      expect {redirected.call}.to raise_error(Chef::Exceptions::RedirectLimitExceeded)
+      expect { redirected.call }.to raise_error(Chef::Exceptions::RedirectLimitExceeded)
     end
 
   end

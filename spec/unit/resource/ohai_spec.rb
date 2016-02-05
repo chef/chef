@@ -58,5 +58,4 @@ describe Chef::Resource::Ohai do
     end
   end
 
-
 end

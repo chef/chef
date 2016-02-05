@@ -54,5 +54,5 @@ Gem::Specification.new do |s|
   s.executables  = %w{ chef-client chef-solo knife chef-shell chef-apply }
 
   s.require_paths = %w{ lib lib-backcompat }
-  s.files = %w{Gemfile Rakefile LICENSE README.md CONTRIBUTING.md VERSION} + Dir.glob("{distro,lib,lib-backcompat,tasks,acceptance,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) } + Dir.glob("*.gemspec")
+  s.files = %w{Gemfile Rakefile LICENSE README.md CONTRIBUTING.md VERSION} + Dir.glob("{distro,lib,lib-backcompat,tasks,acceptance,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } + Dir.glob("*.gemspec")
 end

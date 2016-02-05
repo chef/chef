@@ -258,10 +258,10 @@ describe Chef::Provider::Package::Yum do
         @yum_cache = double(
           "Chef::Provider::Yum::YumCache"
         )
-         allow(@yum_cache).to receive(:installed_version) do |package_name, arch|
-           # nothing installed for package_name/new_package_name
-         nil
-         end
+        allow(@yum_cache).to receive(:installed_version) do |package_name, arch|
+          # nothing installed for package_name/new_package_name
+          nil
+        end
         allow(@yum_cache).to receive(:candidate_version) do |package_name, arch|
           if package_name == "testing.noarch"
             nil
@@ -282,13 +282,13 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should flush the cache if :before is true" do
-      allow(@new_resource).to receive(:flush_cache).and_return({:after => false, :before => true})
+      allow(@new_resource).to receive(:flush_cache).and_return({ :after => false, :before => true })
       expect(@yum_cache).to receive(:reload).once
       @provider.load_current_resource
     end
 
     it "should flush the cache if :before is false" do
-      allow(@new_resource).to receive(:flush_cache).and_return({:after => false, :before => false})
+      allow(@new_resource).to receive(:flush_cache).and_return({ :after => false, :before => false })
       expect(@yum_cache).not_to receive(:reload)
       @provider.load_current_resource
     end
@@ -346,7 +346,6 @@ describe Chef::Provider::Package::Yum do
         expect(@new_resource.version).to eq("2.0.1.el5")
       end
 
-
       it "should search provides then set version to match if a requirement was passed in the version" do
         @new_resource = Chef::Resource::YumPackage.new("test-package")
         @new_resource.version("= 2.0.1.el5")
@@ -355,7 +354,6 @@ describe Chef::Provider::Package::Yum do
         expect(@new_resource.package_name).to eq("test-package")
         expect(@new_resource.version).to eq("2.0.1.el5")
       end
-
 
       it "should search provides and not set the version to match if a specific version was requested" do
         @new_resource = Chef::Resource::YumPackage.new("test-package")
@@ -398,7 +396,7 @@ describe Chef::Provider::Package::Yum do
           :disable_extra_repo_control => true,
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
-        allow(@yum_cache).to receive(:yum_binary=).with("yum")
+      allow(@yum_cache).to receive(:yum_binary=).with("yum")
       pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "2.0.1.el5", "x86_64", [])
       expect(@yum_cache).to receive(:packages_from_require).and_return([pkg])
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -420,7 +418,7 @@ describe Chef::Provider::Package::Yum do
         :disable_extra_repo_control => true,
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
-        allow(@yum_cache).to receive(:yum_binary=).with("yum")
+      allow(@yum_cache).to receive(:yum_binary=).with("yum")
       pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "2.0.1.el5", "x86_64", [])
       expect(@yum_cache).to receive(:packages_from_require).and_return([pkg])
       @new_resource = Chef::Resource::YumPackage.new("test-package = 2.0.1.el5")
@@ -448,12 +446,12 @@ describe Chef::Provider::Package::Yum do
       expect(@yum_cache).to receive(:packages_from_require).exactly(4).times.and_return([])
       expect(@yum_cache).to receive(:reload_provides).twice
 
-      @new_resource = Chef::Resource::YumPackage.new(["test-package","test-package2"])
-      @new_resource.version(["2.0.1.el5","3.0.1.el5"])
+      @new_resource = Chef::Resource::YumPackage.new(["test-package", "test-package2"])
+      @new_resource.version(["2.0.1.el5", "3.0.1.el5"])
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
-      expect(@new_resource.package_name).to eq(["test-package","test-package2"])
-      expect(@new_resource.version).to eq(["2.0.1.el5","3.0.1.el5"])
+      expect(@new_resource.package_name).to eq(["test-package", "test-package2"])
+      expect(@new_resource.version).to eq(["2.0.1.el5", "3.0.1.el5"])
     end
 
     it "should search provides if no package is available - if no match in installed provides then load the complete set" do
@@ -656,7 +654,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should run yum install then flush the cache if :after is true" do
-      allow(@new_resource).to receive(:flush_cache).and_return({:after => true, :before => false})
+      allow(@new_resource).to receive(:flush_cache).and_return({ :after => true, :before => false })
       @provider.load_current_resource
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
@@ -667,7 +665,7 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should run yum install then not flush the cache if :after is false" do
-      allow(@new_resource).to receive(:flush_cache).and_return({:after => false, :before => false})
+      allow(@new_resource).to receive(:flush_cache).and_return({ :after => false, :before => false })
       @provider.load_current_resource
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
@@ -792,7 +790,7 @@ describe Chef::Provider::Package::Yum do
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        {:timeout => Chef::Config[:yum_timeout]},
+        { :timeout => Chef::Config[:yum_timeout] },
       )
       @provider.yum_command("-d0 -e0 -y install emacs-1.0")
     end
@@ -802,18 +800,18 @@ describe Chef::Provider::Package::Yum do
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        {:timeout => Chef::Config[:yum_timeout]},
+        { :timeout => Chef::Config[:yum_timeout] },
       )
       expect { @provider.yum_command("-d0 -e0 -y install emacs-1.0") }.to raise_error(Chef::Exceptions::Exec)
     end
 
     it "should run yum once if it exits with a return code of 1 and %pre scriptlet failures" do
       @status = double("Status", :exitstatus => 1, :stdout => "error: %pre(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2",
-                      :stderr => "")
+                                 :stderr => "")
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        {:timeout => Chef::Config[:yum_timeout]},
+        { :timeout => Chef::Config[:yum_timeout] },
       )
       # will still raise an exception, can't stub out the subsequent call
       expect { @provider.yum_command("-d0 -e0 -y install emacs-1.0") }.to raise_error(Chef::Exceptions::Exec)
@@ -821,11 +819,11 @@ describe Chef::Provider::Package::Yum do
 
     it "should run yum twice if it exits with a return code of 1 and %post scriptlet failures" do
       @status = double("Status", :exitstatus => 1, :stdout => "error: %post(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2",
-                      :stderr => "")
+                                 :stderr => "")
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).twice.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        {:timeout => Chef::Config[:yum_timeout]},
+        { :timeout => Chef::Config[:yum_timeout] },
       )
       # will still raise an exception, can't stub out the subsequent call
       expect { @provider.yum_command("-d0 -e0 -y install emacs-1.0") }.to raise_error(Chef::Exceptions::Exec)
@@ -839,7 +837,7 @@ describe Chef::Provider::Package::Yum do
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).once.with(
         "yum-deprecated -d0 -e0 -y install emacs-1.0",
-        {:timeout => Chef::Config[:yum_timeout]},
+        { :timeout => Chef::Config[:yum_timeout] },
       )
       @provider.yum_command("-d0 -e0 -y install emacs-1.0")
     end
@@ -965,7 +963,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
         [ "0.0.1aa", "0.0.1aa", 0 ],
         [ "0.0.1a", "0.0.1aa", -1 ],
      ].each do |x, y, result|
-        expect(@rpmutils.rpmvercmp(x,y)).to eq(result)
+        expect(@rpmutils.rpmvercmp(x, y)).to eq(result)
       end
     end
 
@@ -984,7 +982,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
         [ "", "", 0 ],
         [ "", "1.0.1", -1 ],
      ].each do |x, y, result|
-        expect(@rpmutils.rpmvercmp(x,y)).to eq(result)
+        expect(@rpmutils.rpmvercmp(x, y)).to eq(result)
       end
     end
 
@@ -1840,19 +1838,19 @@ EOF
     end
 
     it "should return the default python if the yum-executable doesn't start with #!" do
-      allow(::File).to receive(:open).with("/usr/bin/yum", "r") { |&b| r = b.call(bin_exe); bin_exe.rewind; r}
+      allow(::File).to receive(:open).with("/usr/bin/yum", "r") { |&b| r = b.call(bin_exe); bin_exe.rewind; r }
       expect(@yc.python_bin).to eq("/usr/bin/python")
     end
 
     it "should return /usr/bin/python if the interpreter is /bin/bash" do
       other = StringIO.new("#!/bin/bash\n# The yum executable redirecting to dnf from dnf-yum compatible package.")
-      allow(::File).to receive(:open).with("/usr/bin/yum", "r") { |&b| r = b.call(other); other.rewind; r}
+      allow(::File).to receive(:open).with("/usr/bin/yum", "r") { |&b| r = b.call(other); other.rewind; r }
       expect(@yc.python_bin).to eq("/usr/bin/python")
     end
 
     it "should return the interpreter for yum" do
       other = StringIO.new("#!/usr/bin/super_python\n\nlasjdfdsaljf\nlasdjfs")
-      allow(::File).to receive(:open).with("/usr/bin/yum", "r") { |&b| r = b.call(other); other.rewind; r}
+      allow(::File).to receive(:open).with("/usr/bin/yum", "r") { |&b| r = b.call(other); other.rewind; r }
       expect(@yc.python_bin).to eq("/usr/bin/super_python")
     end
   end
@@ -1867,32 +1865,32 @@ EOF
 
     it "should run yum-dump.py using the system python when next_refresh is for :all" do
       @yc.reload
-      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --yum-lock-timeout 30$}, :timeout=>Chef::Config[:yum_timeout])
+      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --yum-lock-timeout 30$}, :timeout => Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should run yum-dump.py with the installed flag when next_refresh is for :installed" do
       @yc.reload_installed
-      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --installed --yum-lock-timeout 30$}, :timeout=>Chef::Config[:yum_timeout])
+      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --installed --yum-lock-timeout 30$}, :timeout => Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should run yum-dump.py with the all-provides flag when next_refresh is for :provides" do
       @yc.reload_provides
-      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --all-provides --yum-lock-timeout 30$}, :timeout=>Chef::Config[:yum_timeout])
+      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --all-provides --yum-lock-timeout 30$}, :timeout => Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should pass extra_repo_control args to yum-dump.py" do
       @yc.enable_extra_repo_control("--enablerepo=foo --disablerepo=bar")
-      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar --yum-lock-timeout 30$}, :timeout=>Chef::Config[:yum_timeout])
+      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar --yum-lock-timeout 30$}, :timeout => Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should pass extra_repo_control args and configured yum lock timeout to yum-dump.py" do
       Chef::Config[:yum_lock_timeout] = 999
       @yc.enable_extra_repo_control("--enablerepo=foo --disablerepo=bar")
-      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar --yum-lock-timeout 999$}, :timeout=>Chef::Config[:yum_timeout])
+      expect(@yc).to receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar --yum-lock-timeout 999$}, :timeout => Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
@@ -1920,7 +1918,7 @@ EOF
     it "should raise exception yum-dump.py exits with a non zero status" do
       @status = double("Status", :exitstatus => 1, :stdin => @stdin, :stdout => @stdout_no_output, :stderr => @stderr)
       allow(@yc).to receive(:shell_out!).and_return(@status)
-      expect { @yc.refresh}.to raise_error(Chef::Exceptions::Package, %r{CentOS-Base.repo, line: 12})
+      expect { @yc.refresh }.to raise_error(Chef::Exceptions::Package, %r{CentOS-Base.repo, line: 12})
     end
 
     it "should parse type 'i' into an installed state for a package" do

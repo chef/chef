@@ -18,7 +18,6 @@
 require "spec_helper"
 require "ostruct"
 
-
 class TestableShellSession < Shell::ShellSession
 
   def rebuild_node
@@ -158,7 +157,7 @@ describe Shell::SoloSession do
   end
 
   it "keeps json attribs and passes them to the node for consumption" do
-    @session.node_attributes = {"besnard_lakes" => "are_the_dark_horse"}
+    @session.node_attributes = { "besnard_lakes" => "are_the_dark_horse" }
     expect(@session.node.besnard_lakes).to eq("are_the_dark_horse")
     #pending "1) keep attribs in an ivar 2) pass them to the node 3) feed them to the node on reset"
   end

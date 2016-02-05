@@ -27,7 +27,7 @@ class Chef
       attr_accessor :collection
       attr_reader :position
 
-      def initialize(collection=[])
+      def initialize(collection = [])
         @position = 0
         @paused = false
         @collection = collection
@@ -72,11 +72,11 @@ class Chef
         @position = 0
       end
 
-      def skip_back(skips=1)
+      def skip_back(skips = 1)
         @position -= skips
       end
 
-      def skip_forward(skips=1)
+      def skip_forward(skips = 1)
         @position += skips
       end
 

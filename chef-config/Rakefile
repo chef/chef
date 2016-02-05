@@ -11,4 +11,3 @@ desc "Run standard specs"
 RSpec::Core::RakeTask.new(:spec) do |t|
   t.pattern = FileList["spec/**/*_spec.rb"]
 end
-

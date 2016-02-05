@@ -28,7 +28,7 @@ describe Chef::Resource::Conditional do
   end
 
   it "raises an exception when neither a block or command is given" do
-    expect { Chef::Resource::Conditional.send(:new, :always, @parent_resource, nil, {})}.to raise_error(ArgumentError, /requires either a command or a block/)
+    expect { Chef::Resource::Conditional.send(:new, :always, @parent_resource, nil, {}) }.to raise_error(ArgumentError, /requires either a command or a block/)
   end
 
   it "does not evaluate a guard interpreter on initialization of the conditional" do
@@ -171,7 +171,7 @@ describe Chef::Resource::Conditional do
 
     describe "after running a command which timed out" do
       before do
-        @conditional = Chef::Resource::Conditional.not_if(@parent_resource,  "false")
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource, "false")
         allow_any_instance_of(Chef::GuardInterpreter::DefaultGuardInterpreter).to receive(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
       end
 

@@ -32,7 +32,7 @@ class Chef
       banner "knife user show USER (options)"
 
       def osc_11_warning
-<<-EOF
+        <<-EOF
 The Chef Server you are using does not support the username field.
 This means it is an Open Source 11 Server.
 knife user show for Open Source 11 Server is being deprecated.

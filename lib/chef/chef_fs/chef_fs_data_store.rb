@@ -154,7 +154,7 @@ class Chef
       #   Generally will be a +ChefFS::FileSystem::ChefRepositoryFileSystemRoot+
       #   object, created from +ChefFS::Config.local_fs+.
       #
-      def initialize(chef_fs, chef_config=Chef::Config)
+      def initialize(chef_fs, chef_config = Chef::Config)
         @chef_fs = chef_fs
         @memory_store = ChefZero::DataStore::MemoryStore.new
         @repo_mode = chef_config[:repo_mode]
@@ -260,7 +260,7 @@ class Chef
         end
       end
 
-      def get(path, request=nil)
+      def get(path, request = nil)
         if use_memory_store?(path)
           @memory_store.get(path)
 
@@ -335,11 +335,11 @@ class Chef
 
             if cookbook_type == "cookbook_artifacts"
               result["metadata"] = result["metadata"].to_hash
-              result["metadata"].delete_if do |key,value|
+              result["metadata"].delete_if do |key, value|
                 value == [] ||
-                (value == {} && !%w{dependencies attributes recipes}.include?(key)) ||
-                (value == "" && %w{source_url issues_url}.include?(key)) ||
-                (value == false && key == "privacy")
+                  (value == {} && !%w{dependencies attributes recipes}.include?(key)) ||
+                  (value == "" && %w{source_url issues_url}.include?(key)) ||
+                  (value == false && key == "privacy")
               end
             end
 
@@ -537,8 +537,8 @@ class Chef
             result = with_entry([ path[0] ]) do |entry|
               # list /cookbooks/name = filter /cookbooks/name-version down to name
               entry.children.map { |child| split_name_version(child.name) }.
-                             select { |name, version| name == path[1] }.
-                             map { |name, version| version }
+              select { |name, version| name == path[1] }.
+              map { |name, version| version }
             end
             if result.empty?
               raise ChefZero::DataStore::DataNotFoundError.new(path)
@@ -651,7 +651,7 @@ class Chef
         name_version = entry_name.split("-")
         name = name_version[0..-2].join("-")
         version = name_version[-1]
-        [name,version]
+        [name, version]
       end
 
       def to_chef_fs_path(path)
@@ -798,7 +798,7 @@ class Chef
         end
       end
 
-      def get_dir(path, create=false)
+      def get_dir(path, create = false)
         result = Chef::ChefFS::FileSystem.resolve_path(chef_fs, path.join("/"))
         if result.exists?
           result

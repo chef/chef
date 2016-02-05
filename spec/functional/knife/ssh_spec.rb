@@ -262,7 +262,7 @@ describe Chef::Knife::Ssh do
     end
   end
 
-  def setup_knife(params=[])
+  def setup_knife(params = [])
     @knife = Chef::Knife::Ssh.new(params)
     # We explicitly avoid running #configure_chef, which would read a knife.rb
     # if available, but #merge_configs (which is called by #configure_chef) is

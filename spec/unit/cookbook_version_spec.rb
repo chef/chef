@@ -233,7 +233,6 @@ describe Chef::CookbookVersion do
 
   end
 
-
   describe "<=>" do
 
     it "should sort based on the version number" do
@@ -270,13 +269,12 @@ describe Chef::CookbookVersion do
       expect(a).to eq(b)
     end
 
-
     it "should not allow you to sort cookbooks with different names" do
       apt = Chef::CookbookVersion.new "apt", "/tmp/blah"
       apt.version = "1.0"
       god = Chef::CookbookVersion.new "god", "/tmp/blah"
       god.version = "2.0"
-      expect {apt <=> god}.to raise_error(Chef::Exceptions::CookbookVersionNameMismatch)
+      expect { apt <=> god }.to raise_error(Chef::Exceptions::CookbookVersionNameMismatch)
     end
   end
 
@@ -296,7 +294,7 @@ describe Chef::CookbookVersion do
                       "1 2 3", "1-2-3", "1_2_3", "1.2_3", "1.2-3"]
       the_error = Chef::Exceptions::InvalidCookbookVersion
       bad_versions.each do |v|
-        expect {@cbv.version = v}.to raise_error(the_error)
+        expect { @cbv.version = v }.to raise_error(the_error)
       end
     end
 
@@ -334,7 +332,6 @@ describe Chef::CookbookVersion do
       # [Dan 15-Jul-2010]
       expect(cbv.status).to eq(:ready)
     end
-
 
     include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
       let(:jsonable) { Chef::CookbookVersion.new("tatft", "/tmp/blah") }

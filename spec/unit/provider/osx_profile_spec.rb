@@ -23,56 +23,47 @@ describe Chef::Provider::OsxProfile do
     double("shell_out", :exitstatus => 0, :error? => false)
   end
   describe "action_create" do
-      let(:node) { Chef::Node.new }
-      let(:events) { Chef::EventDispatch::Dispatcher.new }
-      let(:run_context) { Chef::RunContext.new(node, {}, events) }
-      let(:new_resource) { Chef::Resource::OsxProfile.new("Profile Test", run_context) }
-      let(:provider) { Chef::Provider::OsxProfile.new(new_resource, run_context) }
-      let(:all_profiles) do
-        {"_computerlevel"=>
-          [{"ProfileDisplayName"=>"Finder Settings",
-            "ProfileIdentifier"=>"com.apple.finder",
-            "ProfileInstallDate"=>"2015-11-08 23:15:21 +0000",
-            "ProfileItems"=>
-             [{"PayloadContent"=>
-                {"PayloadContentManagedPreferences"=>
-                  {"com.apple.finder"=>
-                    {"Forced"=>[{"mcx_preference_settings"=>{"ShowExternalHardDrivesOnDesktop"=>false}}]}}},
-               "PayloadDisplayName"=>"Custom: (com.apple.finder)",
-               "PayloadIdentifier"=>"com.apple.finder",
-               "PayloadType"=>"com.apple.ManagedClient.preferences",
-               "PayloadUUID"=>"a017048f-684b-4e81-baa3-43afe316d739",
-               "PayloadVersion"=>1}],
-            "ProfileOrganization"=>"Chef",
-            "ProfileRemovalDisallowed"=>"false",
-            "ProfileType"=>"Configuration",
-            "ProfileUUID"=>"e2e09bef-e673-44a6-bcbe-ecb5f1c1b740",
-            "ProfileVerificationState"=>"unsigned",
-            "ProfileVersion"=>1},
-          {"ProfileDisplayName"=>"ScreenSaver Settings",
-            "ProfileIdentifier"=>"com.testprofile.screensaver",
-            "ProfileInstallDate"=>"2015-10-05 23:15:21 +0000",
-            "ProfileItems"=>
-             [{"PayloadContent"=>
-                {"PayloadContentManagedPreferences"=>
-                  {"com.apple.screensaver"=>
-                    {"Forced"=>[{"mcx_preference_settings"=>{"idleTime"=>0}}]}}},
-               "PayloadDisplayName"=>"Custom: (com.apple.screensaver)",
-               "PayloadIdentifier"=>"com.apple.screensaver",
-               "PayloadType"=>"com.apple.ManagedClient.preferences",
-               "PayloadUUID"=>"73fc30e0-1e57-0131-c32d-000c2944c110",
-               "PayloadVersion"=>1}],
-            "ProfileOrganization"=>"Chef",
-            "ProfileRemovalDisallowed"=>"false",
-            "ProfileType"=>"Configuration",
-            "ProfileUUID"=>"6e95927c-f200-54b4-85c7-52ab99b61c47",
-            "ProfileVerificationState"=>"unsigned",
-            "ProfileVersion"=>1}]
-        }
-      end
+    let(:node) { Chef::Node.new }
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
+    let(:new_resource) { Chef::Resource::OsxProfile.new("Profile Test", run_context) }
+    let(:provider) { Chef::Provider::OsxProfile.new(new_resource, run_context) }
+    let(:all_profiles) do
+      { "_computerlevel" =>         [{ "ProfileDisplayName" => "Finder Settings",
+                                       "ProfileIdentifier" => "com.apple.finder",
+                                       "ProfileInstallDate" => "2015-11-08 23:15:21 +0000",
+                                       "ProfileItems" =>            [{ "PayloadContent" =>               { "PayloadContentManagedPreferences" =>                 { "com.apple.finder" =>                   { "Forced" => [{ "mcx_preference_settings" => { "ShowExternalHardDrivesOnDesktop" => false } }] } } },
+                                                                       "PayloadDisplayName" => "Custom: (com.apple.finder)",
+                                                                       "PayloadIdentifier" => "com.apple.finder",
+                                                                       "PayloadType" => "com.apple.ManagedClient.preferences",
+                                                                       "PayloadUUID" => "a017048f-684b-4e81-baa3-43afe316d739",
+                                                                       "PayloadVersion" => 1 }],
+                                       "ProfileOrganization" => "Chef",
+                                       "ProfileRemovalDisallowed" => "false",
+                                       "ProfileType" => "Configuration",
+                                       "ProfileUUID" => "e2e09bef-e673-44a6-bcbe-ecb5f1c1b740",
+                                       "ProfileVerificationState" => "unsigned",
+                                       "ProfileVersion" => 1 },
+        { "ProfileDisplayName" => "ScreenSaver Settings",
+          "ProfileIdentifier" => "com.testprofile.screensaver",
+          "ProfileInstallDate" => "2015-10-05 23:15:21 +0000",
+          "ProfileItems" =>            [{ "PayloadContent" =>               { "PayloadContentManagedPreferences" =>                 { "com.apple.screensaver" =>                   { "Forced" => [{ "mcx_preference_settings" => { "idleTime" => 0 } }] } } },
+                                          "PayloadDisplayName" => "Custom: (com.apple.screensaver)",
+                                          "PayloadIdentifier" => "com.apple.screensaver",
+                                          "PayloadType" => "com.apple.ManagedClient.preferences",
+                                          "PayloadUUID" => "73fc30e0-1e57-0131-c32d-000c2944c110",
+                                          "PayloadVersion" => 1 }],
+          "ProfileOrganization" => "Chef",
+          "ProfileRemovalDisallowed" => "false",
+          "ProfileType" => "Configuration",
+          "ProfileUUID" => "6e95927c-f200-54b4-85c7-52ab99b61c47",
+          "ProfileVerificationState" => "unsigned",
+          "ProfileVersion" => 1 }]
+      }
+    end
       # If anything is changed within this profile, be sure to update the
       # ProfileUUID in all_profiles to match the new config specific UUID
-      let(:test_profile) do
+    let(:test_profile) do
       {
         "PayloadIdentifier" => "com.testprofile.screensaver",
         "PayloadRemovalDisallowed" => false,
@@ -82,7 +73,7 @@ describe Chef::Provider::OsxProfile do
         "PayloadOrganization" => "Chef",
         "PayloadVersion" => 1,
         "PayloadDisplayName" => "Screensaver Settings",
-        "PayloadContent"=> [
+        "PayloadContent" => [
           {
             "PayloadType" => "com.apple.ManagedClient.preferences",
             "PayloadVersion" => 1,
@@ -104,10 +95,10 @@ describe Chef::Provider::OsxProfile do
           },
         ],
         }
-      end
-      let(:no_profiles) do
-        { }
-      end
+    end
+    let(:no_profiles) do
+      {}
+    end
 
     before(:each) do
       allow(provider).to receive(:cookbook_file_available?).and_return(true)
@@ -181,7 +172,7 @@ describe Chef::Provider::OsxProfile do
       test_profile.delete("PayloadIdentifier")
       new_resource.profile test_profile
       error_message = "The specified profile does not seem to be valid"
-      expect{provider.run_action(:install)}.to raise_error(RuntimeError, error_message)
+      expect { provider.run_action(:install) }.to raise_error(RuntimeError, error_message)
     end
 
   end
@@ -194,45 +185,36 @@ describe Chef::Provider::OsxProfile do
     let(:provider) { Chef::Provider::OsxProfile.new(new_resource, run_context) }
     let(:current_resource) { Chef::Resource::OsxProfile.new("Profile Test") }
     let(:all_profiles) do
-      {"_computerlevel"=>
-        [{"ProfileDisplayName"=>"ScreenSaver Settings",
-          "ProfileIdentifier"=>"com.apple.screensaver",
-          "ProfileInstallDate"=>"2015-10-05 23:15:21 +0000",
-          "ProfileItems"=>
-           [{"PayloadContent"=>
-              {"PayloadContentManagedPreferences"=>
-                {"com.apple.screensaver"=>
-                  {"Forced"=>[{"mcx_preference_settings"=>{"idleTime"=>0}}]}}},
-             "PayloadDisplayName"=>"Custom: (com.apple.screensaver)",
-             "PayloadIdentifier"=>"com.apple.screensaver",
-             "PayloadType"=>"com.apple.ManagedClient.preferences",
-             "PayloadUUID"=>"73fc30e0-1e57-0131-c32d-000c2944c108",
-             "PayloadVersion"=>1}],
-          "ProfileOrganization"=>"Chef",
-          "ProfileRemovalDisallowed"=>"false",
-          "ProfileType"=>"Configuration",
-          "ProfileUUID"=>"1781fbec-3325-565f-9022-8aa28135c3cc",
-          "ProfileVerificationState"=>"unsigned",
-          "ProfileVersion"=>1},
-        {"ProfileDisplayName"=>"ScreenSaver Settings",
-          "ProfileIdentifier"=>"com.testprofile.screensaver",
-          "ProfileInstallDate"=>"2015-10-05 23:15:21 +0000",
-          "ProfileItems"=>
-           [{"PayloadContent"=>
-              {"PayloadContentManagedPreferences"=>
-                {"com.apple.screensaver"=>
-                  {"Forced"=>[{"mcx_preference_settings"=>{"idleTime"=>0}}]}}},
-             "PayloadDisplayName"=>"Custom: (com.apple.screensaver)",
-             "PayloadIdentifier"=>"com.apple.screensaver",
-             "PayloadType"=>"com.apple.ManagedClient.preferences",
-             "PayloadUUID"=>"73fc30e0-1e57-0131-c32d-000c2944c110",
-             "PayloadVersion"=>1}],
-          "ProfileOrganization"=>"Chef",
-          "ProfileRemovalDisallowed"=>"false",
-          "ProfileType"=>"Configuration",
-          "ProfileUUID"=>"1781fbec-3325-565f-9022-8aa28135c3cc",
-          "ProfileVerificationState"=>"unsigned",
-          "ProfileVersion"=>1}]
+      { "_computerlevel" =>         [{ "ProfileDisplayName" => "ScreenSaver Settings",
+                                       "ProfileIdentifier" => "com.apple.screensaver",
+                                       "ProfileInstallDate" => "2015-10-05 23:15:21 +0000",
+                                       "ProfileItems" =>            [{ "PayloadContent" =>               { "PayloadContentManagedPreferences" =>                 { "com.apple.screensaver" =>                   { "Forced" => [{ "mcx_preference_settings" => { "idleTime" => 0 } }] } } },
+                                                                       "PayloadDisplayName" => "Custom: (com.apple.screensaver)",
+                                                                       "PayloadIdentifier" => "com.apple.screensaver",
+                                                                       "PayloadType" => "com.apple.ManagedClient.preferences",
+                                                                       "PayloadUUID" => "73fc30e0-1e57-0131-c32d-000c2944c108",
+                                                                       "PayloadVersion" => 1 }],
+                                       "ProfileOrganization" => "Chef",
+                                       "ProfileRemovalDisallowed" => "false",
+                                       "ProfileType" => "Configuration",
+                                       "ProfileUUID" => "1781fbec-3325-565f-9022-8aa28135c3cc",
+                                       "ProfileVerificationState" => "unsigned",
+                                       "ProfileVersion" => 1 },
+        { "ProfileDisplayName" => "ScreenSaver Settings",
+          "ProfileIdentifier" => "com.testprofile.screensaver",
+          "ProfileInstallDate" => "2015-10-05 23:15:21 +0000",
+          "ProfileItems" =>            [{ "PayloadContent" =>               { "PayloadContentManagedPreferences" =>                 { "com.apple.screensaver" =>                   { "Forced" => [{ "mcx_preference_settings" => { "idleTime" => 0 } }] } } },
+                                          "PayloadDisplayName" => "Custom: (com.apple.screensaver)",
+                                          "PayloadIdentifier" => "com.apple.screensaver",
+                                          "PayloadType" => "com.apple.ManagedClient.preferences",
+                                          "PayloadUUID" => "73fc30e0-1e57-0131-c32d-000c2944c110",
+                                          "PayloadVersion" => 1 }],
+          "ProfileOrganization" => "Chef",
+          "ProfileRemovalDisallowed" => "false",
+          "ProfileType" => "Configuration",
+          "ProfileUUID" => "1781fbec-3325-565f-9022-8aa28135c3cc",
+          "ProfileVerificationState" => "unsigned",
+          "ProfileVersion" => 1 }]
       }
     end
     before(:each) do

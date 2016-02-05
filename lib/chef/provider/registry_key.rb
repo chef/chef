@@ -72,22 +72,22 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:create, :create_if_missing, :delete, :delete_key) do |a|
-          a.assertion{ registry.hive_exists?(@new_resource.key) }
+          a.assertion { registry.hive_exists?(@new_resource.key) }
           a.failure_message(Chef::Exceptions::Win32RegHiveMissing, "Hive #{@new_resource.key.split("\\").shift} does not exist")
         end
         requirements.assert(:create) do |a|
-          a.assertion{ registry.key_exists?(@new_resource.key) }
+          a.assertion { registry.key_exists?(@new_resource.key) }
           a.whyrun("Key #{@new_resource.key} does not exist. Unless it would have been created before, attempt to modify its values would fail.")
         end
         requirements.assert(:create, :create_if_missing) do |a|
           #If keys missing in the path and recursive == false
-          a.assertion{ !registry.keys_missing?(@current_resource.key) || @new_resource.recursive }
+          a.assertion { !registry.keys_missing?(@current_resource.key) || @new_resource.recursive }
           a.failure_message(Chef::Exceptions::Win32RegNoRecursive, "Intermediate keys missing but recursive is set to false")
           a.whyrun("Intermediate keys in #{@new_resource.key} go not exist. Unless they would have been created earlier, attempt to modify them would fail.")
         end
         requirements.assert(:delete_key) do |a|
           #If key to be deleted has subkeys but recurssive == false
-          a.assertion{ !registry.key_exists?(@new_resource.key) || !registry.has_subkeys?(@new_resource.key) || @new_resource.recursive }
+          a.assertion { !registry.key_exists?(@new_resource.key) || !registry.has_subkeys?(@new_resource.key) || @new_resource.recursive }
           a.failure_message(Chef::Exceptions::Win32RegNoRecursive, "#{@new_resource.key} has subkeys but recursive is set to false.")
           a.whyrun("#{@current_resource.key} has subkeys, but recursive is set to false. attempt to delete would fails unless subkeys were deleted prior to this action.")
         end

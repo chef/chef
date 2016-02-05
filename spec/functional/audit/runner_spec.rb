@@ -63,7 +63,7 @@ describe Chef::Audit::Runner do
             expect(2 - 2).to eq(0)
           end
         end
-        { control_group_name => Struct.new(:args, :block).new([control_group_name], should_pass)}
+        { control_group_name => Struct.new(:args, :block).new([control_group_name], should_pass) }
       end
     end
 
@@ -74,7 +74,7 @@ describe Chef::Audit::Runner do
             expect(2 - 1).to eq(0)
           end
         end
-        { control_group_name => Struct.new(:args, :block).new([control_group_name], should_fail)}
+        { control_group_name => Struct.new(:args, :block).new([control_group_name], should_fail) }
       end
     end
 

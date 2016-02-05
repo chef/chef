@@ -21,10 +21,10 @@ require "chef/node/immutable_collections"
 
 describe Chef::Node::ImmutableMash do
   before do
-    @data_in = {:top => {:second_level => "some value"},
-                "top_level_2" => %w{array of values},
-                :top_level_3 => [{:hash_array => 1, :hash_array_b => 2}],
-                :top_level_4 => {:level2 => {:key => "value"}},
+    @data_in = { :top => { :second_level => "some value" },
+                 "top_level_2" => %w{array of values},
+                 :top_level_3 => [{ :hash_array => 1, :hash_array_b => 2 }],
+                 :top_level_4 => { :level2 => { :key => "value" } },
     }
     @immutable_mash = Chef::Node::ImmutableMash.new(@data_in)
   end
@@ -113,8 +113,8 @@ describe Chef::Node::ImmutableArray do
 
   before do
     @immutable_array = Chef::Node::ImmutableArray.new(%w{foo bar baz} + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ])
-    immutable_mash = Chef::Node::ImmutableMash.new({:m => "m"})
-    @immutable_nested_array = Chef::Node::ImmutableArray.new(["level1",@immutable_array, immutable_mash])
+    immutable_mash = Chef::Node::ImmutableMash.new({ :m => "m" })
+    @immutable_nested_array = Chef::Node::ImmutableArray.new(["level1", @immutable_array, immutable_mash])
   end
 
   ##
@@ -154,7 +154,7 @@ describe Chef::Node::ImmutableArray do
     :unshift,
   ].each do |mutator|
     it "does not allow mutation via `#{mutator}" do
-      expect { @immutable_array.send(mutator)}.to raise_error
+      expect { @immutable_array.send(mutator) }.to raise_error
     end
   end
 
@@ -195,4 +195,3 @@ describe Chef::Node::ImmutableArray do
   end
 
 end
-

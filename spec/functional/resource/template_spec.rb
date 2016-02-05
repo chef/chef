@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::Resource::Template do
 
   def binread(file)
-    File.open(file,"rb") {|f| f.read }
+    File.open(file, "rb") { |f| f.read }
   end
 
   include_context Chef::Resource::File
@@ -73,7 +73,7 @@ describe Chef::Resource::Template do
     end
 
     it "creates the template with the rendered content using a local erb file when the :create action is run" do
-      resource.source(File.expand_path(File.join(CHEF_SPEC_DATA,"cookbooks","openldap","templates","default","openldap_stuff.conf.erb")))
+      resource.source(File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks", "openldap", "templates", "default", "openldap_stuff.conf.erb")))
       resource.cookbook(nil)
       resource.local(true)
       resource.run_action(:create)

@@ -55,6 +55,7 @@ class Chef
       end
 
       private
+
       def validate!(event_type)
         all_event_types = (Chef::EventDispatch::Base.instance_methods - Object.instance_methods)
         raise Chef::Exceptions::InvalidEventType, "Invalid event type: #{event_type}" unless all_event_types.include?(event_type)

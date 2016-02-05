@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Knife::RoleCreate do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::RoleCreate.new
     @knife.config = {
       :description => nil

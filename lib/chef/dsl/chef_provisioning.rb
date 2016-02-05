@@ -37,7 +37,7 @@ class Chef
         with_image_options
         with_machine_options
       }.each do |method_name|
-        eval(<<-EOM, binding, __FILE__, __LINE__+1)
+        eval(<<-EOM, binding, __FILE__, __LINE__ + 1)
           def #{method_name}(*args, &block)
             Chef::DSL::ChefProvisioning.load_chef_provisioning
             self.#{method_name}(*args, &block)

@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Knife::NodeList do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     Chef::Config[:environment] = nil # reset this value each time, as it is not reloaded
     @knife = Chef::Knife::NodeList.new
     allow(@knife).to receive(:output).and_return(true)
@@ -60,4 +60,3 @@ describe Chef::Knife::NodeList do
     end
   end
 end
-

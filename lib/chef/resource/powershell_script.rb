@@ -22,12 +22,12 @@ class Chef
     class PowershellScript < Chef::Resource::WindowsScript
       provides :powershell_script, os: "windows"
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super(name, run_context, nil, "powershell.exe")
         @convert_boolean_return = false
       end
 
-      def convert_boolean_return(arg=nil)
+      def convert_boolean_return(arg = nil)
         set_or_return(
           :convert_boolean_return,
           arg,
@@ -43,7 +43,7 @@ class Chef
       # guard context and recipe resource context will have the
       # same behavior.
       def self.get_default_attributes(opts)
-        {:convert_boolean_return => true}
+        { :convert_boolean_return => true }
       end
     end
   end

@@ -49,7 +49,7 @@ class Chef
     class ControlGroupData
       attr_reader :name, :status, :number_succeeded, :number_failed, :controls, :metadata
 
-      def initialize(name, metadata={})
+      def initialize(name, metadata = {})
         @status = "success"
         @controls = []
         @number_succeeded = 0
@@ -57,7 +57,6 @@ class Chef
         @name = name
         @metadata = metadata
       end
-
 
       def example_success(control_data)
         @number_succeeded += 1
@@ -80,7 +79,7 @@ class Chef
       def to_hash
         # We sort it so the examples appear in the output in the same order
         # they appeared in the recipe
-        controls.sort! {|x,y| x.line_number <=> y.line_number}
+        controls.sort! { |x, y| x.line_number <=> y.line_number }
         h = {
               :name => name,
               :status => status,
@@ -105,7 +104,7 @@ class Chef
         group[:id] = SecureRandom.uuid
         group[:controls].collect!.with_index do |c, i|
           # i is zero-indexed, and we want the display one-indexed
-          c[:sequence_number] = i+1
+          c[:sequence_number] = i + 1
           c
         end
         group
@@ -117,7 +116,7 @@ class Chef
       attr_reader :name, :resource_type, :resource_name, :context, :line_number
       attr_accessor :status, :details
 
-      def initialize(control_data={})
+      def initialize(control_data = {})
         control_data.each do |k, v|
           self.instance_variable_set("@#{k}", v)
         end

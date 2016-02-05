@@ -21,7 +21,7 @@ require "tmpdir"
 
 describe Chef::Knife::CookbookCreate do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::CookbookCreate.new
     @knife.config = {}
     @knife.name_args = ["foobar"]
@@ -34,7 +34,7 @@ describe Chef::Knife::CookbookCreate do
     # Fixes CHEF-2579
     it "should expand the path of the cookbook directory" do
       expect(File).to receive(:expand_path).with("~/tmp/monkeypants")
-      @knife.config = {:cookbook_path => "~/tmp/monkeypants"}
+      @knife.config = { :cookbook_path => "~/tmp/monkeypants" }
       allow(@knife).to receive(:create_cookbook)
       allow(@knife).to receive(:create_readme)
       allow(@knife).to receive(:create_changelog)
@@ -44,7 +44,7 @@ describe Chef::Knife::CookbookCreate do
 
     it "should create a new cookbook with default values to copyright name, email, readme format and license if those are not supplied" do
       @dir = Dir.tmpdir
-      @knife.config = {:cookbook_path => @dir}
+      @knife.config = { :cookbook_path => @dir }
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "YOUR_COMPANY_NAME", "none")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -58,7 +58,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_path => @dir,
         :cookbook_copyright => "Opscode, Inc",
       }
-      @knife.name_args=["foobar"]
+      @knife.name_args = ["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -73,7 +73,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_copyright => "Opscode, Inc",
         :cookbook_email => "nuo@opscode.com",
       }
-      @knife.name_args=["foobar"]
+      @knife.name_args = ["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -89,7 +89,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_email => "nuo@opscode.com",
         :cookbook_license => "apachev2",
       }
-      @knife.name_args=["foobar"]
+      @knife.name_args = ["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "apachev2")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -105,7 +105,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_email => "nuo@opscode.com",
         :cookbook_license => false,
       }
-      @knife.name_args=["foobar"]
+      @knife.name_args = ["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -121,7 +121,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_email => "nuo@opscode.com",
         :cookbook_license => "false",
       }
-      @knife.name_args=["foobar"]
+      @knife.name_args = ["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -137,7 +137,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_email => "nuo@opscode.com",
         :cookbook_license => "gplv2",
       }
-      @knife.name_args=["foobar"]
+      @knife.name_args = ["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv2")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -153,7 +153,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_email => "nuo@opscode.com",
         :cookbook_license => "gplv3",
       }
-      @knife.name_args=["foobar"]
+      @knife.name_args = ["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv3")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -169,7 +169,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_email => "nuo@opscode.com",
         :cookbook_license => "mit",
       }
-      @knife.name_args=["foobar"]
+      @knife.name_args = ["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "md")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -186,7 +186,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_license => "mit",
         :readme_format => "rdoc",
       }
-      @knife.name_args=["foobar"]
+      @knife.name_args = ["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "rdoc")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -203,7 +203,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_license => "mit",
         :readme_format => "mkd",
       }
-      @knife.name_args=["foobar"]
+      @knife.name_args = ["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "mkd")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -220,7 +220,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_license => "mit",
         :readme_format => "txt",
       }
-      @knife.name_args=["foobar"]
+      @knife.name_args = ["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "txt")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -237,7 +237,7 @@ describe Chef::Knife::CookbookCreate do
         :cookbook_license => "mit",
         :readme_format => "foo",
       }
-      @knife.name_args=["foobar"]
+      @knife.name_args = ["foobar"]
       expect(@knife).to receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
       expect(@knife).to receive(:create_readme).with(@dir, @knife.name_args.first, "foo")
       expect(@knife).to receive(:create_changelog).with(@dir, @knife.name_args.first)
@@ -252,7 +252,7 @@ describe Chef::Knife::CookbookCreate do
 
       it "should throw an argument error" do
         @dir = Dir.tmpdir
-        expect{@knife.run}.to raise_error(ArgumentError)
+        expect { @knife.run }.to raise_error(ArgumentError)
       end
     end
 

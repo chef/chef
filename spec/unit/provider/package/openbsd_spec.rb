@@ -23,7 +23,7 @@ describe Chef::Provider::Package::Openbsd do
 
   let(:node) do
     node = Chef::Node.new
-    node.default["kernel"] = {"name" => "OpenBSD", "release" => "5.5", "machine" => "amd64"}
+    node.default["kernel"] = { "name" => "OpenBSD", "release" => "5.5", "machine" => "amd64" }
     node
   end
 
@@ -33,7 +33,7 @@ describe Chef::Provider::Package::Openbsd do
     Chef::Provider::Package::Openbsd.new(new_resource, run_context)
   end
 
-  let(:new_resource) { Chef::Resource::Package.new(name)}
+  let(:new_resource) { Chef::Resource::Package.new(name) }
 
   before(:each) do
     ENV["PKG_PATH"] = nil
@@ -41,7 +41,7 @@ describe Chef::Provider::Package::Openbsd do
 
   describe "install a package" do
     let(:name) { "ihavetoes" }
-    let(:version) {"0.0"}
+    let(:version) { "0.0" }
 
     context "when not already installed" do
       before do
@@ -56,8 +56,8 @@ describe Chef::Provider::Package::Openbsd do
               instance_double("shellout", :stdout => "#{name}-#{version}\n"))
             expect(provider).to receive(:shell_out!).with(
               "pkg_add -r #{name}-#{version}",
-              {:env => {"PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/"}, timeout: 900}
-            ) {OpenStruct.new :status => true}
+              { :env => { "PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/" }, timeout: 900 }
+            ) { OpenStruct.new :status => true }
             provider.run_action(:install)
           end
         end
@@ -78,7 +78,7 @@ describe Chef::Provider::Package::Openbsd do
         context "if a flavor is specified" do
 
           let(:flavor) { "flavora" }
-          let(:package_name) {"ihavetoes" }
+          let(:package_name) { "ihavetoes" }
           let(:name) { "#{package_name}--#{flavor}" }
 
           context "if no version is specified" do
@@ -88,8 +88,8 @@ describe Chef::Provider::Package::Openbsd do
                 instance_double("shellout", :stdout => "#{name}-#{version}-#{flavor}\n"))
               expect(provider).to receive(:shell_out!).with(
                 "pkg_add -r #{name}-#{version}-#{flavor}",
-                {env: {"PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/"}, timeout: 900}
-              ) {OpenStruct.new :status => true}
+                { env: { "PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/" }, timeout: 900 }
+              ) { OpenStruct.new :status => true }
               provider.run_action(:install)
             end
           end
@@ -104,8 +104,8 @@ describe Chef::Provider::Package::Openbsd do
             new_resource.version("#{version}-#{flavor_b}")
             expect(provider).to receive(:shell_out!).with(
               "pkg_add -r #{name}-#{version}-#{flavor_b}",
-              {env: {"PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/"}, timeout: 900}
-            ) {OpenStruct.new :status => true}
+              { env: { "PKG_PATH" => "http://ftp.OpenBSD.org/pub/OpenBSD/5.5/packages/amd64/" }, timeout: 900 }
+            ) { OpenStruct.new :status => true }
             provider.run_action(:install)
           end
         end
@@ -124,7 +124,7 @@ describe Chef::Provider::Package::Openbsd do
     it "should run the command to delete the installed package" do
       expect(@provider).to receive(:shell_out!).with(
         "pkg_delete #{@name}", env: nil, timeout: 900
-      ) {OpenStruct.new :status => true}
+      ) { OpenStruct.new :status => true }
       @provider.remove_package(@name, nil)
     end
   end

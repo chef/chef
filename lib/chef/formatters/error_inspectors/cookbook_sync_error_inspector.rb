@@ -48,7 +48,7 @@ class Chef
           when *NETWORK_ERROR_CLASSES
             describe_network_errors(error_description)
           else
-            error_description.section("Unexpected Error:","#{exception.class.name}: #{exception.message}")
+            error_description.section("Unexpected Error:", "#{exception.class.name}: #{exception.message}")
           end
         end
 

@@ -29,7 +29,7 @@ describe Chef::HTTP::ValidateContentLength do
   let(:headers) { {} }
   let(:data) { false }
 
-  let(:request) { }
+  let(:request) {}
   let(:return_value) { "200" }
 
   # Test Variables
@@ -105,7 +105,7 @@ describe Chef::HTTP::ValidateContentLength do
   end
 
   describe "without Content-Length header" do
-    let(:response_headers) { { } }
+    let(:response_headers) { {} }
 
     [ "direct", "streaming" ].each do |req_type|
       describe "when running #{req_type} request" do
@@ -180,7 +180,7 @@ describe Chef::HTTP::ValidateContentLength do
     end
 
     it "should reset internal counter" do
-        expect(middleware.instance_variable_get(:@content_length_counter)).to be_nil
+      expect(middleware.instance_variable_get(:@content_length_counter)).to be_nil
     end
 
     it "should validate correctly second time" do

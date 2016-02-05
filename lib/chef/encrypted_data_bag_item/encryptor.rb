@@ -35,7 +35,7 @@ class Chef::EncryptedDataBagItem
     # for the desired encrypted data bag format version.
     #
     # +Chef::Config[:data_bag_encrypt_version]+ determines which version is used.
-    def self.new(value, secret, iv=nil)
+    def self.new(value, secret, iv = nil)
       format_version = Chef::Config[:data_bag_encrypt_version]
       case format_version
       when 1
@@ -65,7 +65,7 @@ class Chef::EncryptedDataBagItem
       # * iv: The optional +iv+ parameter is intended for testing use only. When
       # *not* supplied, Encryptor will use OpenSSL to generate a secure random
       # IV, which is what you want.
-      def initialize(plaintext_data, key, iv=nil)
+      def initialize(plaintext_data, key, iv = nil)
         @plaintext_data = plaintext_data
         @key = key
         @iv = iv && Base64.decode64(iv)
@@ -162,7 +162,7 @@ class Chef::EncryptedDataBagItem
     class Version3Encryptor < Version1Encryptor
       include Chef::EncryptedDataBagItem::Assertions
 
-      def initialize(plaintext_data, key, iv=nil)
+      def initialize(plaintext_data, key, iv = nil)
         super
         assert_aead_requirements_met!(algorithm)
         @auth_tag = nil

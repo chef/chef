@@ -32,7 +32,7 @@ describe Chef::EncryptedDataBagItem::CheckEncrypted do
   end
 
   it "detects the item is not encrypted when the data only contains an id" do
-    expect(tester.encrypted?({id: "foo"})).to eq(false)
+    expect(tester.encrypted?({ id: "foo" })).to eq(false)
   end
 
   context "when the item is encrypted" do

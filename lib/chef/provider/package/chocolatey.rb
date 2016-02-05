@@ -63,7 +63,7 @@ EOS
           # and not a package specific alternate source like other providers
           # so we want to assert candidates exist for the alternate source
           requirements.assert(:upgrade, :install) do |a|
-            a.assertion  { candidates_exist_for_all_uninstalled? }
+            a.assertion { candidates_exist_for_all_uninstalled? }
             a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
             a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
           end
@@ -84,8 +84,8 @@ EOS
         def install_package(names, versions)
           name_versions_to_install = desired_name_versions.select { |n, v| lowercase_names(names).include?(n) }
 
-          name_nil_versions = name_versions_to_install.select { |n,v| v.nil? }
-          name_has_versions = name_versions_to_install.reject { |n,v| v.nil? }
+          name_nil_versions = name_versions_to_install.select { |n, v| v.nil? }
+          name_has_versions = name_versions_to_install.reject { |n, v| v.nil? }
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
@@ -106,8 +106,8 @@ EOS
         def upgrade_package(names, versions)
           name_versions_to_install = desired_name_versions.select { |n, v| lowercase_names(names).include?(n) }
 
-          name_nil_versions = name_versions_to_install.select { |n,v| v.nil? }
-          name_has_versions = name_versions_to_install.reject { |n,v| v.nil? }
+          name_nil_versions = name_versions_to_install.select { |n, v| v.nil? }
+          name_has_versions = name_versions_to_install.reject { |n, v| v.nil? }
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
@@ -220,7 +220,7 @@ EOS
         # @param args [String] variable number of string arguments
         # @return [String] nicely concatenated string or empty string
         def args_to_string(*args)
-          args.reject {|i| i.nil? || i == "" }.join(" ")
+          args.reject { |i| i.nil? || i == "" }.join(" ")
         end
 
         # Available packages in chocolatey as a Hash of names mapped to versions

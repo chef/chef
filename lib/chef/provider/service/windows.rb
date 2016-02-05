@@ -45,7 +45,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   START_PENDING = "start pending"
   STOP_PENDING  = "stop pending"
 
-  TIMEOUT  = 60
+  TIMEOUT = 60
 
   SERVICE_RIGHT = "SeServiceLogonRight"
 
@@ -75,7 +75,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         service_name: @new_resource.service_name,
         service_start_name: @new_resource.run_as_user,
         password: @new_resource.run_as_password,
-      }.reject { |k,v| v.nil? || v.length == 0 }
+      }.reject { |k, v| v.nil? || v.length == 0 }
 
       Win32::Service.configure(new_config)
       Chef::Log.info "#{@new_resource} configured with #{new_config.inspect}"
@@ -238,6 +238,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   private
+
   def grant_service_logon(username)
     begin
       Chef::ReservedNames::Win32::Security.add_account_right(canonicalize_username(username), SERVICE_RIGHT)

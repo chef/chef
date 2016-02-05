@@ -24,7 +24,7 @@ describe Chef::Key do
   # whether user or client irrelevent to these tests
   let(:key) { Chef::Key.new("original_actor", "user") }
   let(:public_key_string) do
-     <<EOS
+    <<EOS
 -----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvPo+oNPB7uuNkws0fC02
 KxSwdyqPLu0fhI1pOweNKAZeEIiEz2PkybathHWy8snSXGNxsITkf3eyvIIKa8OZ
@@ -70,7 +70,6 @@ EOS
       end
     end
   end
-
 
   describe "when a new Chef::Key object is initialized with invalid input" do
     it "should raise an InvalidKeyArgument" do
@@ -306,7 +305,7 @@ EOS
                 "name" => "key_name",
                 "public_key" => public_key_string,
                 "private_key" => "some_private_key",
-                "expiration_date" => "infinity"}
+                "expiration_date" => "infinity" }
           Chef::Key.from_json(o.to_json)
         end
         let(:key_with_create_key_field) do
@@ -324,7 +323,7 @@ EOS
                 "name" => "key_name",
                 "public_key" => public_key_string,
                 "private_key" => "some_private_key",
-                "expiration_date" => "infinity"}
+                "expiration_date" => "infinity" }
           Chef::Key.from_json(o.to_json)
         end
         let(:key_with_create_key_field) do
@@ -335,7 +334,6 @@ EOS
       end
     end
   end # when deserializing from JSON
-
 
   describe "API Interactions" do
     let(:rest) do
@@ -358,8 +356,8 @@ EOS
 
     describe "list" do
       context "when listing keys for a user" do
-        let(:response) { [{"uri" => "http://www.example.com/users/keys/foobar", "name"=>"foobar", "expired"=>false}] }
-        let(:inflated_response) { {"foobar" => user_key} }
+        let(:response) { [{ "uri" => "http://www.example.com/users/keys/foobar", "name" => "foobar", "expired" => false }] }
+        let(:inflated_response) { { "foobar" => user_key } }
 
         it "lists all keys" do
           expect(rest).to receive(:get).with("users/#{user_key.actor}/keys").and_return(response)
@@ -375,8 +373,8 @@ EOS
       end
 
       context "when listing keys for a client" do
-        let(:response) { [{"uri" => "http://www.example.com/users/keys/foobar", "name"=>"foobar", "expired"=>false}] }
-        let(:inflated_response) { {"foobar" => client_key} }
+        let(:response) { [{ "uri" => "http://www.example.com/users/keys/foobar", "name" => "foobar", "expired" => false }] }
+        let(:inflated_response) { { "foobar" => client_key } }
 
         it "lists all keys" do
           expect(rest).to receive(:get).with("clients/#{client_key.actor}/keys").and_return(response)
@@ -391,7 +389,6 @@ EOS
 
       end
     end
-
 
     describe "create" do
       shared_examples_for "create key" do
@@ -409,9 +406,9 @@ EOS
 
           it "creates a new key via the API with the fingerprint as the name" do
             expect(rest).to receive(:post).with(url,
-                                                     {"name" => "12:3e:33:73:0b:f4:ec:72:dc:f0:4c:51:62:27:08:76:96:24:f4:4a",
-                                                      "public_key" => key.public_key,
-                                                      "expiration_date" => key.expiration_date}).and_return({})
+                                                     { "name" => "12:3e:33:73:0b:f4:ec:72:dc:f0:4c:51:62:27:08:76:96:24:f4:4a",
+                                                       "public_key" => key.public_key,
+                                                       "expiration_date" => key.expiration_date }).and_return({})
             key.create
           end
         end
@@ -427,9 +424,9 @@ EOS
           context "when create_key is false" do
             it "creates a new key via the API" do
               expect(rest).to receive(:post).with(url,
-                                                       {"name" => key.name,
-                                                        "public_key" => key.public_key,
-                                                        "expiration_date" => key.expiration_date}).and_return({})
+                                                       { "name" => key.name,
+                                                         "public_key" => key.public_key,
+                                                         "expiration_date" => key.expiration_date }).and_return({})
               key.create
             end
           end
@@ -459,11 +456,11 @@ EOS
 
             context "when the server returns the private_key via key.create" do
               before do
-                allow(rest).to receive(:post).with(url, $expected_input).and_return({"private_key" => "this_private_key"})
+                allow(rest).to receive(:post).with(url, $expected_input).and_return({ "private_key" => "this_private_key" })
               end
 
               it "key.create returns the original key plus the private_key" do
-                expect(key.create.to_hash).to eq($expected_output.merge({"private_key" => "this_private_key"}))
+                expect(key.create.to_hash).to eq($expected_output.merge({ "private_key" => "this_private_key" }))
               end
             end
           end
@@ -572,7 +569,7 @@ EOS
     describe "load" do
       shared_examples_for "load" do
         it "should load a named key from the API" do
-          expect(rest).to receive(:get).with(url).and_return({"user" => "foobar", "name" => "test_key_name", "public_key" => public_key_string, "expiration_date" => "infinity"})
+          expect(rest).to receive(:get).with(url).and_return({ "user" => "foobar", "name" => "test_key_name", "public_key" => public_key_string, "expiration_date" => "infinity" })
           key = Chef::Key.send(load_method, "foobar", "test_key_name")
           expect(key.actor).to eq("foobar")
           expect(key.name).to eq("test_key_name")

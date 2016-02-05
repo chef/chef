@@ -24,7 +24,7 @@ describe Chef::Provider::Service::Upstart do
   end
 
   before(:each) do
-    @node =Chef::Node.new
+    @node = Chef::Node.new
     @node.name("upstarter")
     @node.automatic_attrs[:platform] = "ubuntu"
     @node.automatic_attrs[:platform_version] = "9.10"
@@ -66,7 +66,7 @@ describe Chef::Provider::Service::Upstart do
 
   describe "load_current_resource" do
     before(:each) do
-      @node.automatic_attrs[:command] = {:ps => "ps -ax"}
+      @node.automatic_attrs[:command] = { :ps => "ps -ax" }
 
       @current_resource = Chef::Resource::Service.new("rsyslog")
       allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)

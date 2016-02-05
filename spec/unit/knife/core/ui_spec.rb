@@ -46,7 +46,7 @@ describe Chef::Knife::UI do
     context "when editing is disabled" do
       before do
         @ui.config[:disable_editing] = true
-        stub_const("Tempfile", double)  # Tempfiles should never be invoked
+        stub_const("Tempfile", double) # Tempfiles should never be invoked
       end
       context "when parse_output is false" do
         it "returns pretty json string" do
@@ -97,7 +97,7 @@ describe Chef::Knife::UI do
           expect(IO).not_to receive(:read)
         end
         it "throws an exception" do
-          expect{ subject }.to raise_error(RuntimeError)
+          expect { subject }.to raise_error(RuntimeError)
         end
       end
       context "when running the editor fails with false" do
@@ -106,7 +106,7 @@ describe Chef::Knife::UI do
           expect(IO).not_to receive(:read)
         end
         it "throws an exception" do
-          expect{ subject }.to raise_error(RuntimeError)
+          expect { subject }.to raise_error(RuntimeError)
         end
       end
     end
@@ -166,20 +166,20 @@ describe Chef::Knife::UI do
     it "should throw Errno::EIO exceptions" do
       allow(@out).to receive(:puts).and_raise(Errno::EIO)
       allow(@err).to receive(:puts).and_raise(Errno::EIO)
-      expect {@ui.send(method, "hi")}.to raise_error(Errno::EIO)
+      expect { @ui.send(method, "hi") }.to raise_error(Errno::EIO)
     end
 
     it "should ignore Errno::EPIPE exceptions (CHEF-3516)" do
       allow(@out).to receive(:puts).and_raise(Errno::EPIPE)
       allow(@err).to receive(:puts).and_raise(Errno::EPIPE)
-      expect {@ui.send(method, "hi")}.to raise_error(SystemExit)
+      expect { @ui.send(method, "hi") }.to raise_error(SystemExit)
     end
 
     it "should throw Errno::EPIPE exceptions with -VV (CHEF-3516)" do
       @config[:verbosity] = 2
       allow(@out).to receive(:puts).and_raise(Errno::EPIPE)
       allow(@err).to receive(:puts).and_raise(Errno::EPIPE)
-      expect {@ui.send(method, "hi")}.to raise_error(Errno::EPIPE)
+      expect { @ui.send(method, "hi") }.to raise_error(Errno::EPIPE)
     end
   end
 
@@ -192,7 +192,7 @@ describe Chef::Knife::UI do
     end
 
     it "formats hashes appropriately" do
-      @ui.output({"hi" => "a", "lo" => "b" })
+      @ui.output({ "hi" => "a", "lo" => "b" })
       expect(@out.string).to eq <<EOM
 hi: a
 lo: b
@@ -318,7 +318,7 @@ EOM
     end
 
     it "formats hashes with empty hash values appropriately" do
-      @ui.output({ "a" => { }, "b" => "c" })
+      @ui.output({ "a" => {}, "b" => "c" })
       expect(@out.string).to eq <<EOM
 a:
 b: c
@@ -354,7 +354,7 @@ EOM
       it "should return multiple attributes" do
         input = { "gi" =>  "go", "hi" => "ho", "id" => "sample-data-bag-item" }
         @ui.config[:attribute] = ["gi", "hi"]
-        expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { "gi" => "go", "hi"=> "ho" } })
+        expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { "gi" => "go", "hi" => "ho" } })
       end
 
       it "should handle attributes named the same as methods" do
@@ -364,7 +364,7 @@ EOM
       end
 
       it "should handle nested attributes named the same as methods" do
-        input = { "keys" =>  {"keys" => "values"}, "hi" => "ho", "id" => "sample-data-bag-item" }
+        input = { "keys" =>  { "keys" => "values" }, "hi" => "ho", "id" => "sample-data-bag-item" }
         @ui.config[:attribute] = "keys.keys"
         expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { "keys.keys" => "values" } })
       end
@@ -373,11 +373,11 @@ EOM
         allow_any_instance_of(Chef::Node).to receive(:name).and_return("chef.localdomain")
         input = Chef::Node.new
         @ui.config[:attribute] = "name"
-        expect(@ui.format_for_display(input)).to eq( {"chef.localdomain"=>{"name"=>"chef.localdomain"} })
+        expect(@ui.format_for_display(input)).to eq( { "chef.localdomain" => { "name" => "chef.localdomain" } })
       end
 
       it "returns nil when given an attribute path that isn't a name or attribute" do
-        input = { "keys" =>  {"keys" => "values"}, "hi" => "ho", "id" => "sample-data-bag-item" }
+        input = { "keys" =>  { "keys" => "values" }, "hi" => "ho", "id" => "sample-data-bag-item" }
         non_existing_path = "nope.nada.nothingtoseehere"
         @ui.config[:attribute] = non_existing_path
         expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { non_existing_path => nil } })
@@ -420,10 +420,10 @@ EOM
     describe "with --with-uri" do
       it "should return the URIs" do
         response = {
-          "cookbook_name"=>{
+          "cookbook_name" => {
             "1.0.0" => "http://url/cookbooks/1.0.0",
             "2.0.0" => "http://url/cookbooks/2.0.0",
-            "3.0.0" => "http://url/cookbooks/3.0.0"}
+            "3.0.0" => "http://url/cookbooks/3.0.0" }
         }
         @ui.config[:with_uri] = true
         expect(@ui.format_cookbook_list_for_display(@item)).to eq(response)
@@ -460,8 +460,8 @@ EOM
   end
 
   describe "confirm" do
-    let(:stdout) {StringIO.new}
-    let(:output) {stdout.string}
+    let(:stdout) { StringIO.new }
+    let(:output) { stdout.string }
 
     let(:question) { "monkeys rule" }
     let(:answer) { "y" }

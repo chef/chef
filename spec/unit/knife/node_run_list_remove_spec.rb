@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Knife::NodeRunListRemove do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeRunListRemove.new
     @knife.config[:print_after] = nil
     @knife.name_args = [ "adam", "role[monkey]" ]

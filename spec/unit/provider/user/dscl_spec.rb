@@ -230,7 +230,6 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       provider.dscl_set_home
     end
 
-
     it "raises InvalidHomeDirectory when the resource's home directory doesn't look right" do
       new_resource.home("epic-fail")
       expect { provider.dscl_set_home }.to raise_error(Chef::Exceptions::InvalidHomeDirectory)
@@ -248,16 +247,16 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
       expect(FileUtils).to receive(:mkdir_p).with("/Users/toor").and_return(true)
       expect(FileUtils).to receive(:rmdir).with(current_home)
-      expect(::Dir).to receive(:glob).with("#{CHEF_SPEC_DATA}/old_home_dir/*",::File::FNM_DOTMATCH).and_return(current_home_files)
+      expect(::Dir).to receive(:glob).with("#{CHEF_SPEC_DATA}/old_home_dir/*", ::File::FNM_DOTMATCH).and_return(current_home_files)
       expect(FileUtils).to receive(:mv).with(current_home_files, "/Users/toor", :force => true)
-      expect(FileUtils).to receive(:chown_R).with("toor","23","/Users/toor")
+      expect(FileUtils).to receive(:chown_R).with("toor", "23", "/Users/toor")
 
       expect(provider).to receive(:run_dscl).with("create /Users/toor NFSHomeDirectory '/Users/toor'")
       provider.dscl_set_home
     end
 
     it "should raise an exception when the systems user template dir (skel) cannot be found" do
-      allow(::File).to receive(:exists?).and_return(false,false,false)
+      allow(::File).to receive(:exists?).and_return(false, false, false)
       expect { provider.dscl_set_home }.to raise_error(Chef::Exceptions::User)
     end
 
@@ -720,7 +719,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
     end
 
     it "should sleep and flush the dscl cache before saving the password" do
-      expect(provider).to receive(:prepare_password_shadow_info).and_return({ })
+      expect(provider).to receive(:prepare_password_shadow_info).and_return({})
       mock_shellout = double("Mock::Shellout")
       allow(mock_shellout).to receive(:run_command)
       expect(Mixlib::ShellOut).to receive(:new).and_return(mock_shellout)

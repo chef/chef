@@ -46,7 +46,7 @@ class Chef
 
         config[:attribute] = "chef_environment"
 
-        output(format_for_display(node))   
+        output(format_for_display(node))
       end
 
     end

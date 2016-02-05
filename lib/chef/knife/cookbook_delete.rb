@@ -86,7 +86,7 @@ class Chef
 
       def available_versions
         @available_versions ||= rest.get("cookbooks/#{@cookbook_name}").map do |name, url_and_version|
-          url_and_version["versions"].map {|url_by_version| url_by_version["version"]}
+          url_and_version["versions"].map { |url_by_version| url_by_version["version"] }
         end.flatten
       rescue Net::HTTPServerException => e
         if e.to_s =~ /^404/

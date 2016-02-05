@@ -99,5 +99,3 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
 
   end
 end
-
-

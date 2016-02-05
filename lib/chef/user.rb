@@ -49,30 +49,30 @@ class Chef
     end
 
     def chef_rest_v0
-      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"})
+      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "0" })
     end
 
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(:name, arg,
                     :regex => /^[a-z0-9\-_]+$/)
     end
 
-    def admin(arg=nil)
+    def admin(arg = nil)
       set_or_return(:admin,
                     arg, :kind_of => [TrueClass, FalseClass])
     end
 
-    def public_key(arg=nil)
+    def public_key(arg = nil)
       set_or_return(:public_key,
                     arg, :kind_of => String)
     end
 
-    def private_key(arg=nil)
+    def private_key(arg = nil)
       set_or_return(:private_key,
                     arg, :kind_of => String)
     end
 
-    def password(arg=nil)
+    def password(arg = nil)
       set_or_return(:password,
                     arg, :kind_of => String)
     end
@@ -97,21 +97,21 @@ class Chef
     end
 
     def create
-      payload = {:name => self.name, :admin => self.admin, :password => self.password }
+      payload = { :name => self.name, :admin => self.admin, :password => self.password }
       payload[:public_key] = public_key if public_key
       new_user = chef_rest_v0.post("users", payload)
       Chef::User.from_hash(self.to_hash.merge(new_user))
     end
 
-    def update(new_key=false)
-      payload = {:name => name, :admin => admin}
+    def update(new_key = false)
+      payload = { :name => name, :admin => admin }
       payload[:private_key] = new_key if new_key
       payload[:password] = password if password
       updated_user = chef_rest_v0.put("users/#{name}", payload)
       Chef::User.from_hash(self.to_hash.merge(updated_user))
     end
 
-    def save(new_key=false)
+    def save(new_key = false)
       begin
         create
       rescue Net::HTTPServerException => e
@@ -159,8 +159,8 @@ class Chef
       Chef::User.from_json(json)
     end
 
-    def self.list(inflate=false)
-      response =  Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"}).get("users")
+    def self.list(inflate = false)
+      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "0" }).get("users")
       users = if response.is_a?(Array)
                 transform_ohc_list_response(response) # OHC/OPC
               else
@@ -177,7 +177,7 @@ class Chef
     end
 
     def self.load(name)
-      response =  Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0"}).get("users/#{name}")
+      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "0" }).get("users/#{name}")
       Chef::User.from_hash(response)
     end
 

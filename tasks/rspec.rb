@@ -25,7 +25,6 @@ CHEF_ROOT = File.join(File.dirname(__FILE__), "..")
 begin
   require "rspec/core/rake_task"
 
-
   desc "Run specs for Chef's Components"
   task :component_specs do
     Dir.chdir("chef-config") do
@@ -55,7 +54,7 @@ begin
       t.pattern = FileList["spec/**/*_spec.rb"]
       t.rcov = true
       t.rcov_opts = lambda do
-        IO.readlines("#{CHEF_ROOT}/spec/rcov.opts").map {|l| l.chomp.split " "}.flatten
+        IO.readlines("#{CHEF_ROOT}/spec/rcov.opts").map { |l| l.chomp.split " " }.flatten
       end
     end
 

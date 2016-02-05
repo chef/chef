@@ -48,13 +48,13 @@ class Chef
       # name<String>:: Message to log
       # collection<Array>:: Collection of included recipes
       # node<Chef::Node>:: Node where resource will be used
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @level = :info
         @message = name
       end
 
-      def message(arg=nil)
+      def message(arg = nil)
         set_or_return(
           :message,
           arg,
@@ -63,7 +63,7 @@ class Chef
       end
 
       # <Symbol> Log level, one of :debug, :info, :warn, :error or :fatal
-      def level(arg=nil)
+      def level(arg = nil)
         set_or_return(
           :level,
           arg,

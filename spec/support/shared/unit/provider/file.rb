@@ -117,7 +117,7 @@ class BasicTempfile < ::File
   end
 
   def self.new(basename)
-    super(make_tmp_path(basename), File::RDWR|File::CREAT|File::EXCL, 0600)
+    super(make_tmp_path(basename), File::RDWR | File::CREAT | File::EXCL, 0600)
   end
 
   def unlink
@@ -419,12 +419,12 @@ shared_examples_for Chef::Provider::File do
       [:create, :create_if_missing, :touch].each do |action|
         context "action #{action}" do
           it "raises EnclosingDirectoryDoesNotExist" do
-            expect {provider.run_action(action)}.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+            expect { provider.run_action(action) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
           end
 
           it "does not raise an exception in why-run mode" do
             Chef::Config[:why_run] = true
-            expect {provider.run_action(action)}.not_to raise_error
+            expect { provider.run_action(action) }.not_to raise_error
             Chef::Config[:why_run] = false
           end
         end
@@ -435,19 +435,19 @@ shared_examples_for Chef::Provider::File do
       before { setup_unwritable_file }
 
       it "action delete raises InsufficientPermissions" do
-        expect {provider.run_action(:delete)}.to raise_error(Chef::Exceptions::InsufficientPermissions)
+        expect { provider.run_action(:delete) }.to raise_error(Chef::Exceptions::InsufficientPermissions)
       end
 
       it "action delete also raises InsufficientPermissions in why-run mode" do
         Chef::Config[:why_run] = true
-        expect {provider.run_action(:delete)}.to raise_error(Chef::Exceptions::InsufficientPermissions)
+        expect { provider.run_action(:delete) }.to raise_error(Chef::Exceptions::InsufficientPermissions)
         Chef::Config[:why_run] = false
       end
     end
   end
 
   context "action create" do
-    it "should create the file, update its contents and then set the acls on the file"  do
+    it "should create the file, update its contents and then set the acls on the file" do
       setup_missing_file
       expect(provider).to receive(:do_create_file)
       expect(provider).to receive(:do_contents_changes)
@@ -476,7 +476,7 @@ shared_examples_for Chef::Provider::File do
           allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
           provider.new_resource.verify windows? ? "REM" : "true"
           provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
-          expect{provider.send(:do_validate_content)}.to raise_error(Chef::Exceptions::ValidationFailed)
+          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed)
         end
       end
     end
@@ -520,14 +520,14 @@ shared_examples_for Chef::Provider::File do
           let(:diff_for_reporting) { "+++\n---\n+foo\n-bar\n" }
           before do
             allow(provider).to receive(:contents_changed?).and_return(true)
-            diff = double("Diff", :for_output => ["+++","---","+foo","-bar"],
+            diff = double("Diff", :for_output => ["+++", "---", "+foo", "-bar"],
                                   :for_reporting => diff_for_reporting )
             allow(diff).to receive(:diff).with(resource_path, tempfile_path).and_return(true)
             expect(provider).to receive(:diff).at_least(:once).and_return(diff)
             expect(provider).to receive(:checksum).with(tempfile_path).and_return(tempfile_sha256)
             allow(provider).to receive(:managing_content?).and_return(true)
             allow(provider).to receive(:checksum).with(resource_path).and_return(tempfile_sha256)
-            expect(resource).not_to receive(:checksum).with(tempfile_sha256)  # do not mutate the new resource
+            expect(resource).not_to receive(:checksum).with(tempfile_sha256) # do not mutate the new resource
             expect(provider.deployment_strategy).to receive(:deploy).with(tempfile_path, normalized_path)
           end
           context "when the file was created" do
@@ -549,7 +549,7 @@ shared_examples_for Chef::Provider::File do
           end
           context "when the file was not created" do
             before do
-              allow(provider).to receive(:do_backup)  # stub do_backup
+              allow(provider).to receive(:do_backup) # stub do_backup
               expect(provider).to receive(:needs_creating?).at_least(:once).and_return(false)
             end
 
@@ -570,7 +570,7 @@ shared_examples_for Chef::Provider::File do
           end
         end
 
-        it "does nothing when the contents have not changed"  do
+        it "does nothing when the contents have not changed" do
           allow(provider).to receive(:contents_changed?).and_return(false)
           expect(provider).not_to receive(:diff)
           provider.send(:do_contents_changes)
@@ -580,20 +580,20 @@ shared_examples_for Chef::Provider::File do
       it "does nothing when there is no content to deploy (tempfile returned from contents is nil)" do
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(nil)
         expect(provider).not_to receive(:diff)
-        expect{ provider.send(:do_contents_changes) }.not_to raise_error
+        expect { provider.send(:do_contents_changes) }.not_to raise_error
       end
 
       it "raises an exception when the content object returns a tempfile with a nil path" do
         tempfile = double("Tempfile", :path => nil)
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(tempfile)
-        expect{ provider.send(:do_contents_changes) }.to raise_error
+        expect { provider.send(:do_contents_changes) }.to raise_error
       end
 
       it "raises an exception when the content object returns a tempfile that does not exist" do
         tempfile = double("Tempfile", :path => "/tmp/foo-bar-baz")
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(tempfile)
         expect(File).to receive(:exists?).with("/tmp/foo-bar-baz").and_return(false)
-        expect{ provider.send(:do_contents_changes) }.to raise_error
+        expect { provider.send(:do_contents_changes) }.to raise_error
       end
     end
 

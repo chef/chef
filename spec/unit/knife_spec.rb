@@ -42,7 +42,7 @@ describe Chef::Knife do
   before(:each) do
     Chef::Log.logger = Logger.new(StringIO.new)
 
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
 
     allow(Chef::WorkstationConfigLoader).to receive(:new).and_return(config_loader)
     allow(config_loader).to receive(:explicit_config_file=)
@@ -152,14 +152,14 @@ describe Chef::Knife do
 
   describe "the headers include X-Remote-Request-Id" do
 
-    let(:headers) {{"Accept"=>"application/json",
-                    "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
-                    "X-Chef-Version" => Chef::VERSION,
-                    "Host"=>"api.opscode.piab",
-                    "X-REMOTE-REQUEST-ID"=>request_id,
+    let(:headers) {{ "Accept" => "application/json",
+                     "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+                     "X-Chef-Version" => Chef::VERSION,
+                     "Host" => "api.opscode.piab",
+                     "X-REMOTE-REQUEST-ID" => request_id,
     }}
 
-    let(:request_id) {"1234"}
+    let(:request_id) { "1234" }
 
     let(:request_mock) { {} }
 
@@ -216,10 +216,10 @@ describe Chef::Knife do
 
     it "merges the global knife CLI options" do
       extra_opts = {}
-      extra_opts[:editor] = {:long=>"--editor EDITOR",
-                             :description=>"Set the editor to use for interactive commands",
-                             :short=>"-e EDITOR",
-                             :default=>"/usr/bin/vim"}
+      extra_opts[:editor] = { :long => "--editor EDITOR",
+                              :description => "Set the editor to use for interactive commands",
+                              :short => "-e EDITOR",
+                              :default => "/usr/bin/vim" }
 
       # there is special hackery to return the subcommand instance going on here.
       command = Chef::Knife.run(%w{test yourself}, extra_opts)
@@ -252,7 +252,7 @@ describe Chef::Knife do
       allow(Chef::Knife.ui).to receive(:stderr).and_return(stderr)
       allow(Chef::Knife.ui).to receive(:stdout).and_return(stdout)
       expect(Chef::Knife.ui).to receive(:fatal)
-      expect {Chef::Knife.run(%w{fuuu uuuu fuuuu})}.to raise_error(SystemExit) { |e| expect(e.status).not_to eq(0) }
+      expect { Chef::Knife.run(%w{fuuu uuuu fuuuu}) }.to raise_error(SystemExit) { |e| expect(e.status).not_to eq(0) }
     end
 
     it "loads lazy dependencies" do
@@ -508,7 +508,7 @@ describe Chef::Knife do
 
       knife.run_with_pretty_exceptions
 
-      expected_message=<<-MSG
+      expected_message = <<-MSG
 ERROR: Could not establish a secure connection to the server.
 Use `knife ssl check` to troubleshoot your SSL configuration.
 If your Chef Server uses a self-signed certificate, you can use

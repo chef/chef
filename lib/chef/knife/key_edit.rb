@@ -41,7 +41,7 @@ class Chef
       end
 
       def public_key_and_create_key_error_msg
-<<EOS
+        <<EOS
 You passed both --public-key and --create-key. Only pass one, or the other, or neither.
 Do not pass either if you do not want to change the public_key field of your key.
 Pass --public-key if you want to update the public_key field of your key from a specific public key.

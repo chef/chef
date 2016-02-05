@@ -51,6 +51,7 @@ class Chef
       end
 
       private
+
       # Determines whether we need to run `apt-get update`
       #
       # @return [Boolean]

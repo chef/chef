@@ -40,14 +40,14 @@ describe Chef::Knife::RoleShow do
       knife.config[:format] = "json"
       stdout = StringIO.new
       allow(knife.ui).to receive(:stdout).and_return(stdout)
-      fake_role_contents = {"foo"=>"bar", "baz"=>"qux"}
+      fake_role_contents = { "foo" => "bar", "baz" => "qux" }
       expect(Chef::Role).to receive(:load).with("base").and_return(fake_role_contents)
       knife.run
       expect(stdout.string).to eql("{\n  \"foo\": \"bar\",\n  \"baz\": \"qux\"\n}\n")
     end
 
     context "without a role name" do
-      let(:role) { }
+      let(:role) {}
 
       it "should print usage and exit when a role name is not provided" do
         expect(knife).to receive(:show_usage)

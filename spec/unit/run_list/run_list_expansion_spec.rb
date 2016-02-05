@@ -84,17 +84,17 @@ describe Chef::RunList::RunListExpansion do
       @first_role = Chef::Role.new
       @first_role.name("rage")
       @first_role.run_list("role[mollusk]")
-      @first_role.default_attributes({"foo" => "bar"})
-      @first_role.override_attributes({"baz" => "qux"})
+      @first_role.default_attributes({ "foo" => "bar" })
+      @first_role.override_attributes({ "baz" => "qux" })
       @second_role = Chef::Role.new
       @second_role.name("rage")
       @second_role.run_list("recipe[crabrevenge]")
-      @second_role.default_attributes({"foo" => "boo"})
-      @second_role.override_attributes({"baz" => "bux"})
+      @second_role.default_attributes({ "foo" => "boo" })
+      @second_role.override_attributes({ "baz" => "bux" })
       allow(@expansion).to receive(:fetch_role).and_return(@first_role, @second_role)
       @expansion.expand
       @json = '{"id":"_default","run_list":[{"type":"recipe","name":"lobster::mastercookbook","version":"0.1.0",'
-      .concat(
+              .concat(
 '"skipped":false},{"type":"role","name":"rage","children":[{"type":"role","name":"mollusk","children":[],"missing":null,'
       .concat(
 '"error":null,"skipped":null},{"type":"recipe","name":"crabrevenge","version":null,"skipped":false}],"missing":null,'
@@ -113,8 +113,8 @@ describe Chef::RunList::RunListExpansion do
     end
 
     it "has the merged attributes from the roles with outer roles overriding inner" do
-      expect(@expansion.default_attrs).to eq({"foo" => "bar"})
-      expect(@expansion.override_attrs).to eq({"baz" => "qux"})
+      expect(@expansion.default_attrs).to eq({ "foo" => "bar" })
+      expect(@expansion.override_attrs).to eq({ "baz" => "qux" })
     end
 
     it "has the list of all roles applied" do

@@ -32,7 +32,7 @@ describe Chef::ApiClient::Registration do
   subject(:registration) { Chef::ApiClient::Registration.new(client_name, key_location) }
 
   let(:private_key_data) do
-    File.open(Chef::Config[:validation_key], "r") {|f| f.read.chomp }
+    File.open(Chef::Config[:validation_key], "r") { |f| f.read.chomp }
   end
 
   let(:http_mock) { double("Chef::ServerAPI mock") }
@@ -67,7 +67,6 @@ describe Chef::ApiClient::Registration do
   let(:generated_private_key) { OpenSSL::PKey::RSA.new(generated_private_key_pem) }
   let(:generated_public_key) { generated_private_key.public_key }
 
-
   let(:create_with_pkey_response) do
     {
       "uri" => "",
@@ -78,12 +77,12 @@ describe Chef::ApiClient::Registration do
   end
 
   let(:update_with_pkey_response) do
-    {"name"=>client_name,
-     "admin"=>false,
-     "public_key"=> generated_public_key,
-     "validator"=>false,
-     "private_key"=>false,
-     "clientname"=>client_name}
+    { "name" => client_name,
+      "admin" => false,
+      "public_key" => generated_public_key,
+      "validator" => false,
+      "private_key" => false,
+      "clientname" => client_name }
   end
 
   before do
@@ -217,7 +216,7 @@ describe Chef::ApiClient::Registration do
 
     context "when the client key location is a symlink" do
       it "does not follow the symlink", :unix_only do
-        expected_flags = (File::CREAT|File::TRUNC|File::RDWR)
+        expected_flags = (File::CREAT | File::TRUNC | File::RDWR)
 
         if defined?(File::NOFOLLOW)
           expected_flags |= File::NOFOLLOW
@@ -232,7 +231,7 @@ describe Chef::ApiClient::Registration do
         end
 
         it "follows the symlink", :unix_only do
-          expect(registration.file_flags).to eq(File::CREAT|File::TRUNC|File::RDWR)
+          expect(registration.file_flags).to eq(File::CREAT | File::TRUNC | File::RDWR)
         end
       end
     end
@@ -271,7 +270,7 @@ describe Chef::ApiClient::Registration do
 
       expect(http_mock).to receive(:post).exactly(6).times.and_raise(exception_500)
 
-      expect {registration.run}.to raise_error(Net::HTTPFatalError)
+      expect { registration.run }.to raise_error(Net::HTTPFatalError)
     end
 
   end

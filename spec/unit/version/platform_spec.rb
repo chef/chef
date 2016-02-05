@@ -58,4 +58,3 @@ describe Chef::Version::Platform do
   end
 
 end
-

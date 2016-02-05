@@ -95,7 +95,7 @@ class Chef
         end
 
         def http_client_opts
-          opts={}
+          opts = {}
           # CHEF-3140
           # 1. If it's already compressed, trying to compress it more will
           # probably be counter-productive.

@@ -88,7 +88,7 @@ class Chef
             mapped_hash
           end
         when Array
-          json_obj.map {|e| map_to_rb_obj(e) }
+          json_obj.map { |e| map_to_rb_obj(e) }
         else
           json_obj
         end

@@ -98,7 +98,6 @@ class Chef
       end
 
       def determine_version
-
         if available_versions.nil?
           nil
         elsif available_versions.size == 1

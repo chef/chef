@@ -71,7 +71,7 @@ class Chef
         begin
           method = config[:method].to_sym
 
-          headers = {"Content-Type" => "application/json"}
+          headers = { "Content-Type" => "application/json" }
 
           if config[:proxy_auth]
             headers["x-ops-request-source"] = "web"

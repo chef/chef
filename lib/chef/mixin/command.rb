@@ -75,7 +75,7 @@ class Chef
       #
       # === Returns
       # Returns the exit status of args[:command]
-      def run_command(args={})
+      def run_command(args = {})
         status, stdout, stderr = run_command_and_return_stdout_stderr(args)
 
         status
@@ -84,7 +84,7 @@ class Chef
       # works same as above, except that it returns stdout and stderr
       # requirement => platforms like solaris 9,10 has weird issues where
       # even in command failure the exit code is zero, so we need to lookup stderr.
-      def run_command_and_return_stdout_stderr(args={})
+      def run_command_and_return_stdout_stderr(args = {})
         command_output = ""
 
         args[:ignore_failure] ||= false
@@ -143,7 +143,7 @@ class Chef
         return status, stdout_string, stderr_string
       end
 
-      def handle_command_failures(status, command_output, opts={})
+      def handle_command_failures(status, command_output, opts = {})
         return if opts[:ignore_failure]
         opts[:returns] ||= 0
         return if Array(opts[:returns]).include?(status.exitstatus)
@@ -165,7 +165,7 @@ class Chef
       #
       # === Returns
       # Returns the result of #run_command
-      def run_command_with_systems_locale(args={})
+      def run_command_with_systems_locale(args = {})
         args[:environment] ||= {}
         args[:environment]["LC_ALL"] = ENV["LC_ALL"]
         run_command args

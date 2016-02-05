@@ -41,7 +41,7 @@ class Chef
       @description = ""
       @default_attributes = Mash.new
       @override_attributes = Mash.new
-      @env_run_lists = {"_default" => Chef::RunList.new}
+      @env_run_lists = { "_default" => Chef::RunList.new }
       @chef_server_rest = chef_server_rest
     end
 
@@ -53,7 +53,7 @@ class Chef
       Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(
         :name,
         arg,
@@ -61,7 +61,7 @@ class Chef
       )
     end
 
-    def description(arg=nil)
+    def description(arg = nil)
       set_or_return(
         :description,
         arg,
@@ -92,7 +92,7 @@ class Chef
     end
 
     # Per environment run lists
-    def env_run_lists(env_run_lists=nil)
+    def env_run_lists(env_run_lists = nil)
       if (!env_run_lists.nil?)
         unless env_run_lists.key?("_default")
           msg = "_default key is required in env_run_lists.\n"
@@ -100,24 +100,23 @@ class Chef
           raise Chef::Exceptions::InvalidEnvironmentRunListSpecification, msg
         end
         @env_run_lists.clear
-        env_run_lists.each { |k,v| @env_run_lists[k] = Chef::RunList.new(*Array(v))}
+        env_run_lists.each { |k, v| @env_run_lists[k] = Chef::RunList.new(*Array(v)) }
       end
       @env_run_lists
     end
 
     alias :env_run_list :env_run_lists
 
-    def env_run_lists_add(env_run_lists=nil)
+    def env_run_lists_add(env_run_lists = nil)
       if (!env_run_lists.nil?)
-        env_run_lists.each { |k,v| @env_run_lists[k] = Chef::RunList.new(*Array(v))}
+        env_run_lists.each { |k, v| @env_run_lists[k] = Chef::RunList.new(*Array(v)) }
       end
       @env_run_lists
     end
 
     alias :env_run_list_add :env_run_lists_add
 
-
-    def default_attributes(arg=nil)
+    def default_attributes(arg = nil)
       set_or_return(
         :default_attributes,
         arg,
@@ -125,7 +124,7 @@ class Chef
       )
     end
 
-    def override_attributes(arg=nil)
+    def override_attributes(arg = nil)
       set_or_return(
         :override_attributes,
         arg,
@@ -184,7 +183,7 @@ class Chef
 
       # _default run_list is in 'run_list' for newer clients, and
       # 'recipes' for older clients.
-      env_run_list_hash = {"_default" => (o.has_key?("run_list") ? o["run_list"] : o["recipes"])}
+      env_run_list_hash = { "_default" => (o.has_key?("run_list") ? o["run_list"] : o["recipes"]) }
 
       # Clients before 0.10 do not include env_run_lists, so only
       # merge if it's there.
@@ -197,7 +196,7 @@ class Chef
     end
 
     # Get the list of all roles from the API.
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:role) do |n|

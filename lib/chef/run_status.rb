@@ -113,7 +113,7 @@ class Chef::RunStatus
       :updated_resources => updated_resources,
       :exception => formatted_exception,
       :backtrace => backtrace,
-      :run_id => run_id}
+      :run_id => run_id }
   end
 
   # Returns a string of the format "ExceptionClass: message" or +nil+ if no

@@ -42,7 +42,7 @@ class Chef
     def debug(message, &block)
     end
 
-    def add(severity, message=nil, progname=nil)
+    def add(severity, message = nil, progname = nil)
     end
 
     def <<(message)

@@ -66,7 +66,7 @@ describe Chef::Resource::RemoteFile do
     end
 
     it "should accept a delayed evalutator (string) for the remote file source" do
-      @resource.source Chef::DelayedEvaluator.new {"http://opscode.com/"}
+      @resource.source Chef::DelayedEvaluator.new { "http://opscode.com/" }
       expect(@resource.source).to eql([ "http://opscode.com/" ])
     end
 
@@ -87,13 +87,13 @@ describe Chef::Resource::RemoteFile do
 
     it "should only accept a single argument if a delayed evalutor is used" do
       expect {
-        @resource.source("http://opscode.com/", Chef::DelayedEvaluator.new {"http://opscode.com/"})
+        @resource.source("http://opscode.com/", Chef::DelayedEvaluator.new { "http://opscode.com/" })
       }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
     it "should only accept a single array item if a delayed evalutor is used" do
       expect {
-        @resource.source(["http://opscode.com/", Chef::DelayedEvaluator.new {"http://opscode.com/"}])
+        @resource.source(["http://opscode.com/", Chef::DelayedEvaluator.new { "http://opscode.com/" }])
       }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
@@ -103,7 +103,7 @@ describe Chef::Resource::RemoteFile do
 
     it "does not accept a non-URI as the source when read from a delayed evaluator" do
       expect {
-        @resource.source(Chef::DelayedEvaluator.new {"not-a-uri"})
+        @resource.source(Chef::DelayedEvaluator.new { "not-a-uri" })
         @resource.source
       }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
@@ -179,20 +179,20 @@ describe Chef::Resource::RemoteFile do
         @resource.owner("root")
       end
       @resource.source("https://www.google.com/images/srpr/logo3w.png")
-      @resource.checksum("1"*26)
+      @resource.checksum("1" * 26)
     end
 
     it "describes its state" do
       state = @resource.state
       if Chef::Platform.windows?
         puts state
-        expect(state[:rights]).to eq([{:permissions => :read, :principals => "Everyone"}])
-        expect(state[:deny_rights]).to eq([{:permissions => :full_control, :principals => "Clumsy_Sam"}])
+        expect(state[:rights]).to eq([{ :permissions => :read, :principals => "Everyone" }])
+        expect(state[:deny_rights]).to eq([{ :permissions => :full_control, :principals => "Clumsy_Sam" }])
       else
         expect(state[:group]).to eq("pokemon")
         expect(state[:mode]).to eq("0664")
         expect(state[:owner]).to eq("root")
-        expect(state[:checksum]).to eq("1"*26)
+        expect(state[:checksum]).to eq("1" * 26)
       end
     end
 

@@ -33,7 +33,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
     Chef::RunContext.new(node, {}, events)
   }
 
-  let(:dpkg_package) { Chef::Resource::DpkgPackage.new(test1_0, run_context)}
+  let(:dpkg_package) { Chef::Resource::DpkgPackage.new(test1_0, run_context) }
 
   before(:each) do
     shell_out("dpkg -P chef-integration-test chef-integration-test2")
@@ -45,7 +45,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
     dpkg_package.package_name name
   end
 
-  def should_be_purged_or_removed(package, action=nil)
+  def should_be_purged_or_removed(package, action = nil)
     status = shell_out("dpkg -s #{package}")
     output = status.stdout + status.stderr
     if action.nil? || action == :purge
@@ -318,7 +318,7 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       set_dpkg_package_name "chef-integration-test2"
       dpkg_package.run_action(action)
       expect(dpkg_package).not_to be_updated_by_last_action
-      shell_out!("dpkg -s chef-integration-test2")  # its still 'installed'
+      shell_out!("dpkg -s chef-integration-test2") # its still 'installed'
     end
   end
 

@@ -55,7 +55,7 @@ module ChefConfig
     # Name of git remote used to push tags during a release.  Default is origin.
     attr_accessor :git_remote
 
-    def initialize(root_path=nil, module_name=nil)
+    def initialize(root_path = nil, module_name = nil)
       init(root_path, module_name)
       yield self if block_given?
       define unless root_path.nil? || module_name.nil?
@@ -72,7 +72,7 @@ module ChefConfig
     end
 
     def component_full_paths
-      component_paths.map { |path| File.expand_path(path, root_path)}
+      component_paths.map { |path| File.expand_path(path, root_path) }
     end
 
     def version_rb_path

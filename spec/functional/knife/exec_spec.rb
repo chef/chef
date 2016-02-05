@@ -44,7 +44,7 @@ describe Chef::Knife::Exec do
   it "executes a script in the context of the chef-shell main context" do
     @node = Chef::Node.new
     @node.name("ohai-world")
-    response = {"rows" => [@node],"start" => 0,"total" => 1}
+    response = { "rows" => [@node], "start" => 0, "total" => 1 }
     @api.get(%r{^/search/node}, 200, Chef::JSONCompat.to_json(response))
     code = "$output.puts nodes.all"
     @knife.config[:exec] = code

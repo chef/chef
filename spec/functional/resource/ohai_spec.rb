@@ -45,7 +45,7 @@ describe Chef::Resource::Ohai do
   end
 
   describe "when reloading all plugins" do
-    let(:ohai_resource) { Chef::Resource::Ohai.new("reload all", run_context)}
+    let(:ohai_resource) { Chef::Resource::Ohai.new("reload all", run_context) }
 
     it_behaves_like "reloaded :uptime"
   end
@@ -56,7 +56,6 @@ describe Chef::Resource::Ohai do
       r.plugin("uptime")
       r
     }
-
 
     it_behaves_like "reloaded :uptime"
   end

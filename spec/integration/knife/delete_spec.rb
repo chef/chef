@@ -916,7 +916,7 @@ EOM
 
     when_the_chef_server "has an earlier version for the cookbook" do
       before do
-        cookbook "x", "1.0.0", { "onlyin1.0.0.rb" => ""}
+        cookbook "x", "1.0.0", { "onlyin1.0.0.rb" => "" }
         cookbook "x", "0.9.9", { "onlyin0.9.9.rb" => "hi" }
       end
 

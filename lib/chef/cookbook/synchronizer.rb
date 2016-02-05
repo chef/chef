@@ -141,7 +141,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def sync_cookbooks
-      Chef::Log.info("Loading cookbooks [#{cookbooks.map {|ckbk| ckbk.name + '@' + ckbk.version}.join(', ')}]")
+      Chef::Log.info("Loading cookbooks [#{cookbooks.map { |ckbk| ckbk.name + '@' + ckbk.version }.join(', ')}]")
       Chef::Log.debug("Cookbooks detail: #{cookbooks.inspect}")
 
       clear_obsoleted_cookbooks
@@ -176,7 +176,7 @@ class Chef
     # Saves the full_path to the file of the cookbook to be updated
     # in the manifest later
     def save_full_file_path(file, full_path)
-      @cookbook_full_file_paths[file.cookbook] ||= { }
+      @cookbook_full_file_paths[file.cookbook] ||= {}
       @cookbook_full_file_paths[file.cookbook][file.segment] ||= [ ]
       @cookbook_full_file_paths[file.cookbook][file.segment] << full_path
     end

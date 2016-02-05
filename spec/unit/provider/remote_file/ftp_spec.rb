@@ -38,7 +38,7 @@ describe Chef::Provider::RemoteFile::FTP do
   end
 
   let(:ftp) do
-    ftp = double(Net::FTP, { })
+    ftp = double(Net::FTP, {})
     allow(ftp).to receive(:connect)
     allow(ftp).to receive(:login)
     allow(ftp).to receive(:voidcmd)

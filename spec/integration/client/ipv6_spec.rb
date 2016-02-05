@@ -22,7 +22,7 @@ describe "chef-client" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_zero_opts) { {:host => "::1"} }
+  let(:chef_zero_opts) { { :host => "::1" } }
 
   let(:validation_pem) do
     <<-END_VALIDATION_PEM
@@ -73,7 +73,6 @@ END_CLIENT_RB
     basic_config_file
   end
 
-
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
 
   let(:chef_client_cmd) { %Q{ruby '#{chef_dir}/chef-client' --minimal-ohai -c "#{path_to('config/client.rb')}" -lwarn} }
@@ -88,7 +87,7 @@ END_CLIENT_RB
 
     when_the_repository "has a cookbook with a no-op recipe" do
       before do
-        cookbook "noop", "1.0.0", { }, "recipes" => {"default.rb" => "#raise 'foo'"}
+        cookbook "noop", "1.0.0", {}, "recipes" => { "default.rb" => "#raise 'foo'" }
         file "config/client.rb", client_rb_content
         file "config/validator.pem", validation_pem
       end
@@ -103,7 +102,7 @@ END_CLIENT_RB
     when_the_repository "has a cookbook that hits server APIs" do
 
       before do
-        recipe=<<-END_RECIPE
+        recipe = <<-END_RECIPE
           actual_item = data_bag_item("expect_bag", "expect_item")
           if actual_item.key?("expect_key") and actual_item["expect_key"] == "expect_value"
             Chef::Log.info "lookin good"
@@ -115,9 +114,9 @@ END_CLIENT_RB
 
         END_RECIPE
 
-        data_bag("expect_bag", { "expect_item" => {"expect_key" => "expect_value"} })
+        data_bag("expect_bag", { "expect_item" => { "expect_key" => "expect_value" } })
 
-        cookbook "api-smoke-test", "1.0.0", { }, "recipes" => {"default.rb" => recipe}
+        cookbook "api-smoke-test", "1.0.0", {}, "recipes" => { "default.rb" => recipe }
       end
 
       before do

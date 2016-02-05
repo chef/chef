@@ -48,7 +48,7 @@ class Chef
       end
 
       def define_resource_requirements
-        requirements.assert(:all_actions)  do |a|
+        requirements.assert(:all_actions) do |a|
           # Make sure the parent dir exists, or else fail.
           # for why run, print a message explaining the potential error.
           parent_directory = ::File.dirname(@new_resource.destination)
@@ -115,7 +115,7 @@ class Chef
       def export_command
         args = ["--force"]
         args << @new_resource.svn_arguments << verbose << authentication <<
-            "-r#{revision_int}" << @new_resource.repository << @new_resource.destination
+          "-r#{revision_int}" << @new_resource.repository << @new_resource.destination
         c = scm :export, *args
         Chef::Log.info "#{@new_resource} exported #{@new_resource.repository} at revision #{@new_resource.revision} to #{@new_resource.destination}"
         c
@@ -130,7 +130,7 @@ class Chef
             @new_resource.revision
           else
             command = scm(:info, @new_resource.repository, @new_resource.svn_info_args, authentication, "-r#{@new_resource.revision}")
-            svn_info = shell_out!(command, run_options(:cwd => cwd, :returns => [0,1])).stdout
+            svn_info = shell_out!(command, run_options(:cwd => cwd, :returns => [0, 1])).stdout
 
             extract_revision_info(svn_info)
           end
@@ -142,7 +142,7 @@ class Chef
       def find_current_revision
         return nil unless ::File.exist?(::File.join(@new_resource.destination, ".svn"))
         command = scm(:info)
-        svn_info = shell_out!(command, run_options(:cwd => cwd, :returns => [0,1])).stdout
+        svn_info = shell_out!(command, run_options(:cwd => cwd, :returns => [0, 1])).stdout
 
         extract_revision_info(svn_info)
       end
@@ -151,7 +151,7 @@ class Chef
         (!@current_resource.revision.nil?) && (revision_int.strip.to_i == @current_resource.revision.strip.to_i)
       end
 
-      def run_options(run_opts={})
+      def run_options(run_opts = {})
         run_opts[:user] = @new_resource.user if @new_resource.user
         run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts[:timeout] = @new_resource.timeout if @new_resource.timeout
@@ -201,7 +201,7 @@ class Chef
       end
 
       def target_dir_non_existent_or_empty?
-        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == [".",".."]
+        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == [".", ".."]
       end
 
       def svn_binary

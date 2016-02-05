@@ -83,7 +83,7 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion {::File.exists?(@plist.to_s) }
+            a.assertion { ::File.exists?(@plist.to_s) }
             a.failure_message Chef::Exceptions::Service,
               "Could not find plist for #{@new_resource}"
           end

@@ -22,11 +22,11 @@ describe Chef::RunList::RunListItem do
 
   describe "when creating from a Hash" do
     it "raises an exception when the hash doesn't have a :type key" do
-      expect {Chef::RunList::RunListItem.new(:name => "tatft")}.to raise_error(ArgumentError)
+      expect { Chef::RunList::RunListItem.new(:name => "tatft") }.to raise_error(ArgumentError)
     end
 
     it "raises an exception when the hash doesn't have an :name key" do
-      expect {Chef::RunList::RunListItem.new(:type => "R") }.to raise_error(ArgumentError)
+      expect { Chef::RunList::RunListItem.new(:type => "R") }.to raise_error(ArgumentError)
     end
 
     it "sets the name and type as given in the hash" do
@@ -71,15 +71,15 @@ describe Chef::RunList::RunListItem do
     end
 
     it "raises an exception when the string has typo on the type part" do
-      expect {Chef::RunList::RunListItem.new("Recipe[lobster]") }.to raise_error(ArgumentError)
+      expect { Chef::RunList::RunListItem.new("Recipe[lobster]") }.to raise_error(ArgumentError)
     end
 
     it "raises an exception when the string has extra space between the type and the name" do
-      expect {Chef::RunList::RunListItem.new("recipe [lobster]") }.to raise_error(ArgumentError)
+      expect { Chef::RunList::RunListItem.new("recipe [lobster]") }.to raise_error(ArgumentError)
     end
 
     it "raises an exception when the string does not close the bracket" do
-      expect {Chef::RunList::RunListItem.new("recipe[lobster") }.to raise_error(ArgumentError)
+      expect { Chef::RunList::RunListItem.new("recipe[lobster") }.to raise_error(ArgumentError)
     end
   end
 

@@ -110,7 +110,7 @@ describe Chef::HTTP::SocketlessChefZeroClient do
       end
 
       it "does not fail when calling read_body with a block" do
-        expect(net_http_response.read_body {|chunk| chunk }).to eq("bunch o' JSON")
+        expect(net_http_response.read_body { |chunk| chunk }).to eq("bunch o' JSON")
       end
 
     end
@@ -148,7 +148,6 @@ describe Chef::HTTP::SocketlessChefZeroClient do
         "rack.input"      => an_instance_of(StringIO),
       }
     end
-
 
     let(:response_code) { 200 }
     let(:response_headers) { { "Content-Type" => "Application/JSON" } }

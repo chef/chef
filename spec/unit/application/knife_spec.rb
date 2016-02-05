@@ -182,7 +182,7 @@ describe Chef::Application::Knife do
     end
 
     it "should load the environment from the config file" do
-      config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
+      config_file = File.join(CHEF_SPEC_DATA, "environment-config.rb")
       with_argv(*%W{noop knife command -c #{config_file}}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
@@ -199,7 +199,7 @@ describe Chef::Application::Knife do
     end
 
     it "should override the config file environment with the CLI environment" do
-      config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
+      config_file = File.join(CHEF_SPEC_DATA, "environment-config.rb")
       with_argv(*%W{noop knife command -c #{config_file} -E override}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
@@ -208,7 +208,7 @@ describe Chef::Application::Knife do
     end
 
     it "should override the config file environment with the CLI environment regardless of order" do
-      config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
+      config_file = File.join(CHEF_SPEC_DATA, "environment-config.rb")
       with_argv(*%W{noop knife command -E override -c #{config_file}}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run

@@ -183,7 +183,7 @@ describe Chef::Provider::User do
         expect(@provider).to receive(:require).with("shadow") { raise LoadError }
         @provider.load_current_resource
         @provider.define_resource_requirements
-        expect {@provider.process_resource_requirements}.to raise_error Chef::Exceptions::MissingLibrary
+        expect { @provider.process_resource_requirements }.to raise_error Chef::Exceptions::MissingLibrary
       end
 
     end
@@ -197,8 +197,8 @@ describe Chef::Provider::User do
         "uid" => [1000, 1001],
         "gid" => [1000, 1001],
         "home" => ["/home/adam", "/Users/adam"],
-        "shell"=> ["/usr/bin/zsh", "/bin/bash"],
-        "password"=> ["abcd","12345"],
+        "shell" => ["/usr/bin/zsh", "/bin/bash"],
+        "password" => ["abcd", "12345"],
       }
     }
 
@@ -379,7 +379,6 @@ describe Chef::Provider::User do
       expect { @provider.action = :modify; @provider.run_action }.to raise_error(Chef::Exceptions::User)
     end
   end
-
 
   describe "action_lock" do
     before(:each) do

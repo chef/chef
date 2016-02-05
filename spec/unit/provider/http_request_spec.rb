@@ -138,7 +138,7 @@ describe Chef::Provider::HttpRequest do
       it "should not update a HEAD request if a not modified response (CHEF-4762)" do
         if_modified_since = File.mtime(__FILE__).httpdate
         @new_resource.headers "If-Modified-Since" => if_modified_since
-        expect(@http).to receive(:head).with("http://www.opscode.com/", {"If-Modified-Since" => if_modified_since}).and_return(false)
+        expect(@http).to receive(:head).with("http://www.opscode.com/", { "If-Modified-Since" => if_modified_since }).and_return(false)
         @provider.run_action(:head)
         expect(@new_resource).not_to be_updated
       end

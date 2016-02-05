@@ -78,6 +78,7 @@ class Chef
     def node
       run_status.node
     end
+
     def node=(value)
       run_status.node = value
     end
@@ -151,7 +152,7 @@ class Chef
     # @option args [Array<String>] :specific_recipes A list of recipe file paths
     #   to load after the run list has been loaded.
     #
-    def initialize(json_attribs=nil, args={})
+    def initialize(json_attribs = nil, args = {})
       @json_attribs = json_attribs || {}
       @ohai = Ohai::System.new
 
@@ -397,10 +398,10 @@ class Chef
     # it is fed non-UTF8 data.
     #
     # @api private
-    def rest_clean(client_name=node_name, config=Chef::Config)
+    def rest_clean(client_name = node_name, config = Chef::Config)
       @rest_clean ||=
         Chef::ServerAPI.new(config[:chef_server_url], client_name: client_name,
-                                  signing_key_filename: config[:client_key], validate_utf8: false)
+                                                      signing_key_filename: config[:client_key], validate_utf8: false)
     end
 
     # Resource reporters send event information back to the chef server for
@@ -605,7 +606,7 @@ class Chef
     #
     # @api private
     #
-    def register(client_name=node_name, config=Chef::Config)
+    def register(client_name = node_name, config = Chef::Config)
       if !config[:client_key]
         events.skipping_registration(client_name, config)
         Chef::Log.debug("Client key is unspecified - skipping registration")
@@ -620,7 +621,7 @@ class Chef
       end
       # We now have the client key, and should use it from now on.
       @rest = Chef::ServerAPI.new(config[:chef_server_url], client_name: client_name,
-                                  signing_key_filename: config[:client_key])
+                                                            signing_key_filename: config[:client_key])
       # force initialization of the rest_clean API object
       rest_clean(client_name, config)
       register_reporters
@@ -942,7 +943,7 @@ class Chef
         # if it's an array, go through it and check each one, raise error at the last one if no files are found
         cookbook_paths = Array(Chef::Config[:cookbook_path])
         Chef::Log.debug "Loading from cookbook_path: #{cookbook_paths.map { |path| File.expand_path(path) }.join(', ')}"
-        if cookbook_paths.all? {|path| empty_directory?(path) }
+        if cookbook_paths.all? { |path| empty_directory?(path) }
           msg = "None of the cookbook paths set in Chef::Config[:cookbook_path], #{cookbook_paths.inspect}, contain any cookbooks"
           Chef::Log.fatal(msg)
           raise Chef::Exceptions::CookbookNotFound, msg
@@ -950,7 +951,6 @@ class Chef
       else
         Chef::Log.warn("Node #{node_name} has an empty run list.") if run_context.node.run_list.empty?
       end
-
     end
 
     def has_admin_privileges?

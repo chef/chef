@@ -69,38 +69,38 @@ describe Chef::Util::Powershell::Cmdlet do
   describe '#command_switches_string' do
     it "raises an ArgumentError if the key is not a symbol" do
       expect {
-        @cmdlet.send(:command_switches_string, {"foo" => "bar"})
+        @cmdlet.send(:command_switches_string, { "foo" => "bar" })
       }.to raise_error(ArgumentError)
     end
 
     it "does not allow invalid switch names" do
       expect {
-        @cmdlet.send(:command_switches_string, {:foo! => "bar"})
+        @cmdlet.send(:command_switches_string, { :foo! => "bar" })
       }.to raise_error(ArgumentError)
     end
 
     it "ignores switches with a false value" do
-      expect(@cmdlet.send(:command_switches_string, {foo: false})).to eql("")
+      expect(@cmdlet.send(:command_switches_string, { foo: false })).to eql("")
     end
 
     it "should correctly handle a value type of string" do
-      expect(@cmdlet.send(:command_switches_string, {foo: "bar"})).to eql("-foo 'bar'")
+      expect(@cmdlet.send(:command_switches_string, { foo: "bar" })).to eql("-foo 'bar'")
     end
 
     it "should correctly handle a value type of string even when it is 0 length" do
-      expect(@cmdlet.send(:command_switches_string, {foo: ""})).to eql("-foo ''")
+      expect(@cmdlet.send(:command_switches_string, { foo: "" })).to eql("-foo ''")
     end
 
     it "should not quote integers" do
-      expect(@cmdlet.send(:command_switches_string, {foo: 1})).to eql("-foo 1")
+      expect(@cmdlet.send(:command_switches_string, { foo: 1 })).to eql("-foo 1")
     end
 
     it "should not quote floats" do
-      expect(@cmdlet.send(:command_switches_string, {foo: 1.0})).to eql("-foo 1.0")
+      expect(@cmdlet.send(:command_switches_string, { foo: 1.0 })).to eql("-foo 1.0")
     end
 
     it "has just the switch when the value is true" do
-      expect(@cmdlet.send(:command_switches_string, {foo: true})).to eql("-foo")
+      expect(@cmdlet.send(:command_switches_string, { foo: true })).to eql("-foo")
     end
   end
 end

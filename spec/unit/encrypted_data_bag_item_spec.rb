@@ -32,10 +32,10 @@ module Version0Encryptor
   end
 end
 
-describe Chef::EncryptedDataBagItem::Encryptor  do
+describe Chef::EncryptedDataBagItem::Encryptor do
 
   subject(:encryptor) { described_class.new(plaintext_data, key) }
-  let(:plaintext_data) { {"foo" => "bar"} }
+  let(:plaintext_data) { { "foo" => "bar" } }
   let(:key) { "passwd" }
 
   it "encrypts to format version 1 by default" do
@@ -149,10 +149,10 @@ end
 describe Chef::EncryptedDataBagItem::Decryptor do
 
   subject(:decryptor) { described_class.for(encrypted_value, decryption_key) }
-  let(:plaintext_data) { {"foo" => "bar"} }
+  let(:plaintext_data) { { "foo" => "bar" } }
   let(:encryption_key) { "passwd" }
   let(:decryption_key) { encryption_key }
-  let(:json_wrapped_data) {  Chef::JSONCompat.to_json({"json_wrapper" => plaintext_data}) }
+  let(:json_wrapped_data) { Chef::JSONCompat.to_json({ "json_wrapper" => plaintext_data }) }
 
   shared_examples "decryption examples" do
     it "decrypts the encrypted value" do
@@ -290,7 +290,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
   end
 
-  context "when decrypting a version 0 (YAML+aes-256-cbc+no iv) encrypted value", :not_supported_under_fips  do
+  context "when decrypting a version 0 (YAML+aes-256-cbc+no iv) encrypted value", :not_supported_under_fips do
     let(:encrypted_value) do
       Version0Encryptor.encrypt_value(plaintext_data, encryption_key)
     end
@@ -323,7 +323,7 @@ describe Chef::EncryptedDataBagItem do
   let(:plaintext_data) {{
       "id" => "item_name",
       "greeting" => "hello",
-      "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true }},
+      "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true } },
   }}
   let(:secret) { "abc123SECRET" }
   let(:encoded_data) { subject.encrypt_data_bag_item(plaintext_data, secret) }

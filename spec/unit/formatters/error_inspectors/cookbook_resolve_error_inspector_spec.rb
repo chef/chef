@@ -124,6 +124,3 @@ describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
 
   end
 end
-
-
-

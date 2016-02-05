@@ -23,14 +23,14 @@ class Chef
 
       def type_coercions
         @type_coercions ||= {
-          Fixnum => { :type => lambda { |x| x.to_s }},
-          Float => { :type => lambda { |x| x.to_s }},
-          FalseClass => { :type => lambda { |x| "$false" }},
-          TrueClass => { :type => lambda { |x| "$true" }},
-          Hash => {:type => Proc.new { |x| translate_hash(x)}},
-          Array => {:type => Proc.new { |x| translate_array(x)}},
-          Chef::Node::ImmutableMash => {:type => Proc.new { |x| translate_hash(x)}},
-          Chef::Node::ImmutableArray => {:type => Proc.new { |x| translate_array(x)}},
+          Fixnum => { :type => lambda { |x| x.to_s } },
+          Float => { :type => lambda { |x| x.to_s } },
+          FalseClass => { :type => lambda { |x| "$false" } },
+          TrueClass => { :type => lambda { |x| "$true" } },
+          Hash => { :type => Proc.new { |x| translate_hash(x) } },
+          Array => { :type => Proc.new { |x| translate_array(x) } },
+          Chef::Node::ImmutableMash => { :type => Proc.new { |x| translate_hash(x) } },
+          Chef::Node::ImmutableArray => { :type => Proc.new { |x| translate_array(x) } },
         }
       end
 
@@ -49,7 +49,7 @@ class Chef
       private
 
       def translate_hash(x)
-        translated = x.inject([]) do |memo, (k,v)|
+        translated = x.inject([]) do |memo, (k, v)|
           memo << "#{k}=#{translate_type(v)}"
         end
         "@{#{translated.join(';')}}"

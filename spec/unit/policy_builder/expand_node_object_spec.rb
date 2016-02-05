@@ -22,8 +22,8 @@ require "chef/policy_builder"
 describe Chef::PolicyBuilder::ExpandNodeObject do
 
   let(:node_name) { "joe_node" }
-  let(:ohai_data) { {"platform" => "ubuntu", "platform_version" => "13.04", "fqdn" => "joenode.example.com"} }
-  let(:json_attribs) { {"run_list" => []} }
+  let(:ohai_data) { { "platform" => "ubuntu", "platform_version" => "13.04", "fqdn" => "joenode.example.com" } }
+  let(:json_attribs) { { "run_list" => [] } }
   let(:override_runlist) { "recipe[foo::default]" }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:policy_builder) { Chef::PolicyBuilder::ExpandNodeObject.new(node_name, ohai_data, json_attribs, override_runlist, events) }
@@ -155,8 +155,8 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
     let(:override_runlist) { nil }
     let(:primary_runlist) { ["recipe[primary::default]"] }
 
-    let(:original_default_attrs) { {"default_key" => "default_value"} }
-    let(:original_override_attrs) { {"override_key" => "override_value"} }
+    let(:original_default_attrs) { { "default_key" => "default_value" } }
+    let(:original_override_attrs) { { "override_key" => "override_value" } }
 
     let(:node) do
       node = Chef::Node.new
@@ -227,7 +227,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
     context "when JSON attributes are given on the command line" do
 
-      let(:json_attribs) { {"run_list" => ["recipe[json_attribs::default]"], "json_attribs_key" => "json_attribs_value"  } }
+      let(:json_attribs) { { "run_list" => ["recipe[json_attribs::default]"], "json_attribs_key" => "json_attribs_value" } }
 
       it "sets the run list according to the given JSON" do
         expect(node.run_list).to eq(["recipe[json_attribs::default]"])
@@ -267,7 +267,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       let(:configured_environment) { environment.name }
 
       let(:environment) do
-        environment = Chef::Environment.new.tap {|e| e.name("prod") }
+        environment = Chef::Environment.new.tap { |e| e.name("prod") }
         expect(Chef::Environment).to receive(:load).with("prod").and_return(environment)
         environment
       end
@@ -293,7 +293,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
     let(:chef_http) { double("Chef::ServerAPI") }
 
     let(:cookbook_resolve_url) { "environments/#{node.chef_environment}/cookbook_versions" }
-    let(:cookbook_resolve_post_data) { {:run_list=>["first::default", "second::default"]} }
+    let(:cookbook_resolve_post_data) { { :run_list => ["first::default", "second::default"] } }
 
     # cookbook_hash is just a hash, but since we're passing it between mock
     # objects, we get a little better test strictness by using a double (which

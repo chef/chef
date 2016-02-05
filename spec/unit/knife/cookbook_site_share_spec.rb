@@ -145,8 +145,8 @@ describe Chef::Knife::CookbookSiteShare do
 
       it "should list files in the tarball" do
         allow(@knife).to receive(:tar_cmd).and_return("footar")
-        expect(@knife).to receive(:shell_out!).with("footar -czf #{@cookbook.name}.tgz #{@cookbook.name}", {:cwd => "/var/tmp/dummy"})
-        expect(@knife).to receive(:shell_out!).with("footar -tzf #{@cookbook.name}.tgz", {:cwd => "/var/tmp/dummy"})
+        expect(@knife).to receive(:shell_out!).with("footar -czf #{@cookbook.name}.tgz #{@cookbook.name}", { :cwd => "/var/tmp/dummy" })
+        expect(@knife).to receive(:shell_out!).with("footar -tzf #{@cookbook.name}.tgz", { :cwd => "/var/tmp/dummy" })
         @knife.run
       end
 
@@ -172,7 +172,7 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it 'should post the cookbook to "https://supermarket.chef.io"' do
-      response_text = Chef::JSONCompat.to_json({:uri => "https://supermarket.chef.io/cookbooks/cookbook_name"})
+      response_text = Chef::JSONCompat.to_json({ :uri => "https://supermarket.chef.io/cookbooks/cookbook_name" })
       allow(@upload_response).to receive(:body).and_return(response_text)
       allow(@upload_response).to receive(:code).and_return(201)
       expect(Chef::CookbookSiteStreamingUploader).to receive(:post).with(/supermarket\.chef\.io/, anything(), anything(), anything())
@@ -180,7 +180,7 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it "should alert the user when a version already exists" do
-      response_text = Chef::JSONCompat.to_json({:error_messages => ["Version already exists"]})
+      response_text = Chef::JSONCompat.to_json({ :error_messages => ["Version already exists"] })
       allow(@upload_response).to receive(:body).and_return(response_text)
       allow(@upload_response).to receive(:code).and_return(409)
       expect { @knife.run }.to raise_error(SystemExit)
@@ -188,7 +188,7 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it "should pass any errors on to the user" do
-      response_text = Chef::JSONCompat.to_json({:error_messages => ["You're holding it wrong"]})
+      response_text = Chef::JSONCompat.to_json({ :error_messages => ["You're holding it wrong"] })
       allow(@upload_response).to receive(:body).and_return(response_text)
       allow(@upload_response).to receive(:code).and_return(403)
       expect { @knife.run }.to raise_error(SystemExit)
@@ -196,7 +196,7 @@ describe Chef::Knife::CookbookSiteShare do
     end
 
     it "should print the body if no errors are exposed on failure" do
-      response_text = Chef::JSONCompat.to_json({:system_error => "Your call was dropped", :reason => "There's a map for that"})
+      response_text = Chef::JSONCompat.to_json({ :system_error => "Your call was dropped", :reason => "There's a map for that" })
       allow(@upload_response).to receive(:body).and_return(response_text)
       allow(@upload_response).to receive(:code).and_return(500)
       expect(@knife.ui).to receive(:error).with(/#{Regexp.escape(response_text)}/)#.ordered

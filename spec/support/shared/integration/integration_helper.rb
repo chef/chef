@@ -99,7 +99,7 @@ module IntegrationSupport
     File.expand_path(relative_path, (@parent_path || @repository_dir))
   end
 
-  def cb_metadata(name, version, extra_text="")
+  def cb_metadata(name, version, extra_text = "")
     "name #{name.inspect}; version #{version.inspect}#{extra_text}"
   end
 
@@ -128,7 +128,7 @@ module IntegrationSupport
           # TODO: "force" actually means "silence all exceptions". this
           # silences a weird permissions error on Windows that we should track
           # down, but for now there's no reason for it to blow up our CI.
-          FileUtils.remove_entry_secure(@repository_dir, force=Chef::Platform.windows?)
+          FileUtils.remove_entry_secure(@repository_dir, force = Chef::Platform.windows?)
         ensure
           @repository_dir = nil
         end

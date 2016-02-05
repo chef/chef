@@ -253,7 +253,7 @@ describe Chef::Mixin::Securable do
 
     it "should accept a principal as a string or an array" do
       expect { @securable.rights :read, "The Dude" }.not_to raise_error
-      expect { @securable.rights :read, ["The Dude","Donny"] }.not_to raise_error
+      expect { @securable.rights :read, ["The Dude", "Donny"] }.not_to raise_error
       expect { @securable.rights :read, 3 }.to raise_error(ArgumentError)
     end
 

@@ -111,7 +111,7 @@ EOH
 
     def save_configuration_document(configuration_document)
       ::FileUtils.mkdir_p(@configuration_path)
-      ::File.open(configuration_document_path, "wb") do | file |
+      ::File.open(configuration_document_path, "wb") do |file|
         file.write(configuration_document)
       end
     end
@@ -121,7 +121,7 @@ EOH
     end
 
     def configuration_document_path
-      File.join(@configuration_path,"..mof")
+      File.join(@configuration_path, "..mof")
     end
 
     def clear_execution_time

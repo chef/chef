@@ -32,7 +32,7 @@ describe Chef::Knife::EnvironmentFromFile do
     @environment = Chef::Environment.new
     @environment.name("spec")
     @environment.description("runs the unit tests")
-    @environment.cookbook_versions({"apt" => "= 1.2.3"})
+    @environment.cookbook_versions({ "apt" => "= 1.2.3" })
     allow(@environment).to receive(:save).and_return true
     allow(@knife.loader).to receive(:load_from).and_return @environment
   end
@@ -61,7 +61,7 @@ describe Chef::Knife::EnvironmentFromFile do
         allow(File).to receive(:expand_path).with("./environments/").and_return("/tmp/environments")
         allow(Dir).to receive(:glob).with("/tmp/environments/*.{json,rb}").and_return(["spec.rb", "apple.rb"])
         @knife.name_args = []
-        allow(@knife).to receive(:config).and_return({:all => true})
+        allow(@knife).to receive(:config).and_return({ :all => true })
         expect(@environment).to receive(:save).twice
         @knife.run
       end

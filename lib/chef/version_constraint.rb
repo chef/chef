@@ -26,7 +26,7 @@ class Chef
 
     attr_reader :op, :version
 
-    def initialize(constraint_spec=DEFAULT_CONSTRAINT)
+    def initialize(constraint_spec = DEFAULT_CONSTRAINT)
       case constraint_spec
       when nil
         parse(DEFAULT_CONSTRAINT)
@@ -46,7 +46,7 @@ class Chef
                 else
                   self.class::VERSION_CLASS.new(v.to_s)
                 end
-     do_op(version)
+      do_op(version)
     end
 
     def inspect
@@ -78,7 +78,7 @@ class Chef
            other_version.minor == @version.minor &&
            other_version.patch >= @version.patch)
         end
-      else                      # should never happen
+      else # should never happen
         raise "bad op #{@op}"
       end
     end

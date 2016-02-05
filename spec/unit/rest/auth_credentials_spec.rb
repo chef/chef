@@ -42,14 +42,14 @@ describe Chef::REST::AuthCredentials do
   describe "when loading the private key" do
     it "strips extra whitespace before checking the key" do
       key_file_fixture = CHEF_SPEC_DATA + "/ssl/private_key_with_whitespace.pem"
-      expect {Chef::REST::AuthCredentials.new("client-name", @key_file_fixture)}.not_to raise_error
+      expect { Chef::REST::AuthCredentials.new("client-name", @key_file_fixture) }.not_to raise_error
     end
   end
 
   describe "generating signature headers for a request" do
     before do
       @request_time = Time.at(1270920860)
-      @request_params = {:http_method => :POST, :path => "/clients", :body => '{"some":"json"}', :host => "localhost"}
+      @request_params = { :http_method => :POST, :path => "/clients", :body => '{"some":"json"}', :host => "localhost" }
       allow(Chef::Config).to(
         receive(:[]).with(:authentication_protocol_version).and_return(protocol_version))
     end
@@ -60,7 +60,7 @@ describe Chef::REST::AuthCredentials do
       it "generates signature headers for the request" do
         allow(Time).to receive(:now).and_return(@request_time)
         actual = @auth_credentials.signature_headers(@request_params)
-        expect(actual["HOST"]).to                    eq("localhost")
+        expect(actual["HOST"]).to eq("localhost")
         expect(actual["X-OPS-AUTHORIZATION-1"]).to eq("kBssX1ENEwKtNYFrHElN9vYGWS7OeowepN9EsYc9csWfh8oUovryPKDxytQ/")
         expect(actual["X-OPS-AUTHORIZATION-2"]).to eq("Wc2/nSSyxdWJjjfHzrE+YrqNQTaArOA7JkAf5p75eTUonCWcvNPjFrZVgKGS")
         expect(actual["X-OPS-AUTHORIZATION-3"]).to eq("yhzHJQh+lcVA9wwARg5Hu9q+ddS8xBOdm3Vp5atl5NGHiP0loiigMYvAvzPO")
@@ -80,7 +80,7 @@ describe Chef::REST::AuthCredentials do
       it "generates the correct signature for version 1.1" do
         allow(Time).to receive(:now).and_return(@request_time)
         actual = @auth_credentials.signature_headers(@request_params)
-        expect(actual["HOST"]).to                    eq("localhost")
+        expect(actual["HOST"]).to eq("localhost")
         expect(actual["X-OPS-CONTENT-HASH"]).to eq("1tuzs5XKztM1ANrkGNPah6rW9GY=")
         expect(actual["X-OPS-SIGN"]).to         eq("algorithm=sha1;version=1.1;")
         expect(actual["X-OPS-TIMESTAMP"]).to    eq("2010-04-10T17:34:20Z")
@@ -94,7 +94,7 @@ describe Chef::REST::AuthCredentials do
 end
 
 describe Chef::REST::RESTRequest do
-  def new_request(method=nil)
+  def new_request(method = nil)
     method ||= :POST
     Chef::REST::RESTRequest.new(method, @url, @req_body, @headers)
   end
@@ -103,8 +103,8 @@ describe Chef::REST::RESTRequest do
     @auth_credentials = Chef::REST::AuthCredentials.new("client-name", CHEF_SPEC_DATA + "/ssl/private_key.pem")
     @url = URI.parse("http://chef.example.com:4000/?q=chef_is_awesome")
     @req_body = '{"json_data":"as_a_string"}'
-    @headers = { "Content-type" =>"application/json",
-                 "Accept"=>"application/json",
+    @headers = { "Content-type" => "application/json",
+                 "Accept" => "application/json",
                  "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE,
                  "Host" => "chef.example.com:4000" }
     @request = Chef::REST::RESTRequest.new(:POST, @url, @req_body, @headers)

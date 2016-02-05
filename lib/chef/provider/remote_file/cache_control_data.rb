@@ -177,9 +177,8 @@ class Chef
 
         def sanitized_cache_file_basename
           uri_sha2 = Chef::Digester.instance.generate_checksum(StringIO.new(uri))
-          cache_file_basename(uri_sha2[0,32])
+          cache_file_basename(uri_sha2[0, 32])
         end
-
 
         def sanitized_cache_file_basename_md5
           # Old way of creating the file basename

@@ -37,4 +37,3 @@ describe Chef::Provider::CookbookFile::Content do
   end
 
 end
-

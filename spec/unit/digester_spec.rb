@@ -47,4 +47,3 @@ describe Chef::Digester do
   end
 
 end
-

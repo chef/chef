@@ -55,7 +55,7 @@ class Chef
         raise
       end
 
-      def data_bag_item(bag, item, secret=nil)
+      def data_bag_item(bag, item, secret = nil)
         DataBag.validate_name!(bag.to_s)
         DataBagItem.validate_id!(item)
 
@@ -73,7 +73,7 @@ class Chef
             raise
           end
         end
-        
+
         item
       rescue Exception
         Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")

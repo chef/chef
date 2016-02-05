@@ -25,7 +25,7 @@ end
 describe Chef::Resource::Link do
   let(:file_base) { "file_spec" }
 
-  let(:expect_updated?) {true}
+  let(:expect_updated?) { true }
 
   # We create the files in a different directory than tmp to exercise
   # different file deployment strategies more completely.
@@ -83,6 +83,7 @@ describe Chef::Resource::Link do
       File.symlink(a, b)
     end
   end
+
   def symlink?(file)
     if windows?
       Chef::ReservedNames::Win32::File.symlink?(file)
@@ -90,6 +91,7 @@ describe Chef::Resource::Link do
       File.symlink?(file)
     end
   end
+
   def readlink(file)
     if windows?
       Chef::ReservedNames::Win32::File.readlink(file)
@@ -97,6 +99,7 @@ describe Chef::Resource::Link do
       File.readlink(file)
     end
   end
+
   def link(a, b)
     if windows?
       Chef::ReservedNames::Win32::File.link(a, b)
@@ -354,9 +357,11 @@ describe Chef::Resource::Link do
           def allowed_acl(sid, expected_perms)
             [ ACE.access_allowed(sid, expected_perms[:specific]) ]
           end
+
           def denied_acl(sid, expected_perms)
             [ ACE.access_denied(sid, expected_perms[:specific]) ]
           end
+
           def parent_inheritable_acls
             dummy_file_path = File.join(test_file_dir, "dummy_file")
             FileUtils.touch(dummy_file_path)
@@ -602,7 +607,7 @@ describe Chef::Resource::Link do
 
   describe "when not supported on platform", :win2k3_only do
     it "raises error" do
-      expect {resource}.to raise_error(Chef::Exceptions::Win32APIFunctionNotImplemented)
+      expect { resource }.to raise_error(Chef::Exceptions::Win32APIFunctionNotImplemented)
     end
   end
 end

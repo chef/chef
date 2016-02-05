@@ -55,18 +55,18 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { @priority_success }
-            a.failure_message  Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{current_resource.service_name} failed - #{@rcd_status.inspect}"
+            a.failure_message Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{current_resource.service_name} failed - #{@rcd_status.inspect}"
             # This can happen if the service is not yet installed,so we'll fake it.
             a.whyrun ["Unable to determine priority of service, assuming service would have been correctly installed earlier in the run.",
                       "Assigning temporary priorities to continue.",
                       "If this service is not properly installed prior to this point, this will fail."] do
-              temp_priorities = {"6"=>[:stop, "20"],
-                "0"=>[:stop, "20"],
-                "1"=>[:stop, "20"],
-                "2"=>[:start, "20"],
-                "3"=>[:start, "20"],
-                "4"=>[:start, "20"],
-                "5"=>[:start, "20"]}
+              temp_priorities = { "6" => [:stop, "20"],
+                                  "0" => [:stop, "20"],
+                                  "1" => [:stop, "20"],
+                                  "2" => [:start, "20"],
+                                  "3" => [:start, "20"],
+                                  "4" => [:start, "20"],
+                                  "5" => [:start, "20"] }
               current_resource.priority(temp_priorities)
             end
           end
@@ -148,7 +148,6 @@ class Chef
             shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
             shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults")
           end
-
         end
 
         def disable_service

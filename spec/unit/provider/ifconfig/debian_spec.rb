@@ -37,7 +37,7 @@ describe Chef::Provider::Ifconfig::Debian do
     new_resource
   end
 
-  let(:current_resource) {  Chef::Resource::Ifconfig.new("10.0.0.1", run_context) }
+  let(:current_resource) { Chef::Resource::Ifconfig.new("10.0.0.1", run_context) }
 
   let(:provider) do
     status = double("Status", :exitstatus => 0)
@@ -120,7 +120,7 @@ iface eth0 inet static
   netmask 255.255.254.0
 EOF
         )
-        expect(File.exists?(tempdir_path)).to be_truthy  # since the file exists, the enclosing dir must also exist
+        expect(File.exists?(tempdir_path)).to be_truthy # since the file exists, the enclosing dir must also exist
       end
 
       context "when the /etc/network/interfaces file has the source line" do
@@ -253,7 +253,7 @@ iface eth0 inet static
                                            EOF
                                           )
           expect(File).not_to receive(:new).with(config_filename_ifcfg, "w")
-          expect(File.exists?(tempdir_path)).to be_truthy  # since the file exists, the enclosing dir must also exist
+          expect(File.exists?(tempdir_path)).to be_truthy # since the file exists, the enclosing dir must also exist
         end
 
         context "when the /etc/network/interfaces file has the source line" do

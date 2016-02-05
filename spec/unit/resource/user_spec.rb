@@ -68,7 +68,7 @@ describe Chef::Resource::User, "initialize" do
     expect { @resource.username "domain\@user" }.not_to raise_error
     expect(@resource.username).to eq("domain\@user")
     expect { @resource.username "domain\\user" }.not_to raise_error
-    expect(@resource.username).to  eq("domain\\user")
+    expect(@resource.username).to eq("domain\\user")
   end
 end
 

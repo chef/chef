@@ -21,9 +21,9 @@ require "chef/mixin/powershell_out"
 describe Chef::Mixin::PowershellOut do
   let(:shell_out_class) { Class.new { include Chef::Mixin::PowershellOut } }
   subject(:object) { shell_out_class.new }
-  let(:architecture) { "something"  }
+  let(:architecture) { "something" }
   let(:flags) {
-     "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy Unrestricted -InputFormat None"
+    "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy Unrestricted -InputFormat None"
   }
 
   describe "#powershell_out" do

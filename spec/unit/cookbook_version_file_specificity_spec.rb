@@ -202,7 +202,6 @@ describe Chef::CookbookVersion, "file specificity" do
 
   end
 
-
   it "should return a manifest record based on priority preference: host" do
     node = Chef::Node.new
     node.automatic_attrs[:platform] = "ubuntu"
@@ -314,7 +313,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records).not_to be_nil
       expect(manifest_records.size).to eq(2)
 
-      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
       expect(checksums.sort).to eq(["csum-host-1", "csum-host-2"])
     end
 
@@ -328,7 +327,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records).not_to be_nil
       expect(manifest_records.size).to eq(2)
 
-      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
       expect(checksums.sort).to eq(["csum-platver-full-1", "csum-platver-full-2"])
     end
 
@@ -342,7 +341,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records).not_to be_nil
       expect(manifest_records.size).to eq(2)
 
-      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
       expect(checksums.sort).to eq(["csum-platver-partial-1", "csum-platver-partial-2"])
     end
 
@@ -356,7 +355,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records).not_to be_nil
       expect(manifest_records.size).to eq(2)
 
-      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
       expect(checksums.sort).to eq(["csum-plat-1", "csum-plat-2"])
     end
 
@@ -370,7 +369,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records).not_to be_nil
       expect(manifest_records.size).to eq(2)
 
-      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
       expect(checksums.sort).to eq(["csum-default-1", "csum-default-2"])
     end
 
@@ -384,7 +383,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records).not_to be_nil
       expect(manifest_records.size).to eq(2)
 
-      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
       expect(checksums.sort).to eq(["csum2-platver-full-1", "csum2-platver-full-2"])
     end
 
@@ -398,7 +397,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records).not_to be_nil
       expect(manifest_records.size).to eq(2)
 
-      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
       expect(checksums.sort).to eq(["csum2-platver-partial-1", "csum2-platver-partial-2"])
     end
 
@@ -412,7 +411,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records).not_to be_nil
       expect(manifest_records.size).to eq(2)
 
-      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
       expect(checksums.sort).to eq(["csum3-platver-full-1", "csum3-platver-full-2"])
     end
 
@@ -426,7 +425,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records).not_to be_nil
       expect(manifest_records.size).to eq(2)
 
-      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
       expect(checksums.sort).to eq(["csum4-platver-full-1", "csum4-platver-full-2"])
     end
   end

@@ -64,7 +64,6 @@ module Shell
 
     init(irb.context.main)
 
-
     irb_conf[:IRB_RC].call(irb.context) if irb_conf[:IRB_RC]
     irb_conf[:MAIN_CONTEXT] = irb.context
 
@@ -186,7 +185,7 @@ module Shell
   class Options
     include Mixlib::CLI
 
-    def self.footer(text=nil)
+    def self.footer(text = nil)
       @footer = text if text
       @footer
     end
@@ -232,7 +231,7 @@ FOOTER
       :long         => "--solo",
       :description  => "chef-solo session",
       :boolean      => true,
-      :proc         => proc {Chef::Config[:solo] = true}
+      :proc         => proc { Chef::Config[:solo] = true }
 
     option :client,
       :short        => "-z",
@@ -257,14 +256,14 @@ FOOTER
       :long         => "--version",
       :description  => "Show chef version",
       :boolean      => true,
-      :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+      :proc         => lambda { |v| puts "Chef: #{::Chef::VERSION}" },
       :exit         => 0
 
     option :override_runlist,
       :short        => "-o RunlistItem,RunlistItem...",
       :long         => "--override-runlist RunlistItem,RunlistItem...",
       :description  => "Replace current run list with specified items",
-      :proc         => lambda { |items| items.split(",").map { |item| Chef::RunList::RunListItem.new(item) }}
+      :proc         => lambda { |items| items.split(",").map { |item| Chef::RunList::RunListItem.new(item) } }
 
     def self.print_help
       instance = new

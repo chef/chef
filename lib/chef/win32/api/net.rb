@@ -90,7 +90,6 @@ class Chef
           end
         end
 
-
         class USER_INFO_3 < FFI::Struct
           include StructHelpers
           layout :usri3_name, :LPWSTR,
@@ -158,7 +157,6 @@ class Chef
             :ui2_username, :LPWSTR,
             :ui2_domainname, :LMSTR
         end
-
 
         #NET_API_STATUS NetLocalGroupAdd(
         #_In_  LPCWSTR servername,

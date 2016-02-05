@@ -41,7 +41,7 @@ class Chef
                 Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
 
               when /^\//
-                shell_out_with_timeout!("pkg_add #{file_candidate_version_path}", :env => { "PKG_PATH" => @new_resource.source , "LC_ALL"=>nil}).status
+                shell_out_with_timeout!("pkg_add #{file_candidate_version_path}", :env => { "PKG_PATH" => @new_resource.source , "LC_ALL" => nil }).status
                 Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
 
               else
@@ -72,7 +72,7 @@ class Chef
           end
 
           def current_installed_version
-            pkg_info = shell_out_with_timeout!("pkg_info -E \"#{package_name}*\"", :env => nil, :returns => [0,1])
+            pkg_info = shell_out_with_timeout!("pkg_info -E \"#{package_name}*\"", :env => nil, :returns => [0, 1])
             pkg_info.stdout[/^#{Regexp.escape(package_name)}-(.+)/, 1]
           end
 

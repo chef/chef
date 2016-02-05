@@ -94,7 +94,6 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
       shell_out!("rmssys -s ctestsys")
     end
 
-
     let(:new_resource) do
       new_resource = Chef::Resource::Service.new("ctestsys", run_context)
       new_resource

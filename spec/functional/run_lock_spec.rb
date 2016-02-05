@@ -31,15 +31,16 @@ describe Chef::RunLock do
       "/tmp/#{Kernel.rand(Time.now.to_i + Process.pid)}"
     end
 
-    let(:lockfile){ "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
+    let(:lockfile) { "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
 
     # make sure to start with a clean slate.
-    before(:each){ log_event("rm -rf before"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
-    after(:each){ log_event("rm -rf after"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
+    before(:each) { log_event("rm -rf before"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
+    after(:each) { log_event("rm -rf after"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
 
-    def log_event(message, time=Time.now.strftime("%H:%M:%S.%L"))
+    def log_event(message, time = Time.now.strftime("%H:%M:%S.%L"))
       events << [ message, time ]
     end
+
     def events
       @events ||= []
     end

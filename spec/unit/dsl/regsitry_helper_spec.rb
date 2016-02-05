@@ -24,7 +24,7 @@ describe Chef::Resource::RegistryKey do
   before (:all) do
     events = Chef::EventDispatch::Dispatcher.new
     node = Chef::Node.new
-    node.consume_external_attrs(OHAI_SYSTEM.data,{})
+    node.consume_external_attrs(OHAI_SYSTEM.data, {})
     run_context = Chef::RunContext.new(node, {}, events)
     @resource = Chef::Resource::new("foo", run_context)
   end
@@ -50,4 +50,3 @@ describe Chef::Resource::RegistryKey do
     end
   end
 end
-

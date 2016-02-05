@@ -47,7 +47,6 @@ class Chef
       new(node, resource_name, canonical: canonical).list
     end
 
-
     include Chef::Mixin::ConvertToClassName
 
     # @api private

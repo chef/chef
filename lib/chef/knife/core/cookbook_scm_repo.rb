@@ -31,7 +31,7 @@ class Chef
       attr_reader :use_current_branch
       attr_reader :ui
 
-      def initialize(repo_path, ui, opts={})
+      def initialize(repo_path, ui, opts = {})
         @repo_path = repo_path
         @ui = ui
         @default_branch = "master"
@@ -119,7 +119,7 @@ class Chef
       end
 
       def branch_exists?(branch_name)
-        git("branch --no-color").stdout.lines.any? {|l| l =~ /\s#{Regexp.escape(branch_name)}(?:\s|$)/ }
+        git("branch --no-color").stdout.lines.any? { |l| l =~ /\s#{Regexp.escape(branch_name)}(?:\s|$)/ }
       end
 
       def get_current_branch()
@@ -157,4 +157,3 @@ class Chef
     end
   end
 end
-

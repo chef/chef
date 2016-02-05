@@ -42,7 +42,7 @@ class Chef
       attr_accessor :run_context
       attr_accessor :architecture
 
-      def initialize(run_context=nil, user_architecture=:machine)
+      def initialize(run_context = nil, user_architecture = :machine)
         @run_context = run_context
         self.architecture = user_architecture
       end
@@ -56,7 +56,7 @@ class Chef
         hive, key = get_hive_and_key(key_path)
         key_exists!(key_path)
         values = hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          reg.map { |name, type, data| {:name=>name, :type=>get_name_from_type(type), :data=>data} }
+          reg.map { |name, type, data| { :name => name, :type => get_name_from_type(type), :data => data } }
         end
       end
 
@@ -175,7 +175,7 @@ class Chef
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          reg.each_key{ |key| return true }
+          reg.each_key { |key| return true }
         end
         return false
       end
@@ -185,7 +185,7 @@ class Chef
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          reg.each_key{ |current_key| subkeys << current_key }
+          reg.each_key { |current_key| subkeys << current_key }
         end
         return subkeys
       end
@@ -200,7 +200,7 @@ class Chef
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          return true if reg.any? {|val| safely_downcase(val) == safely_downcase(value[:name]) }
+          return true if reg.any? { |val| safely_downcase(val) == safely_downcase(value[:name]) }
         end
         return false
       end
@@ -211,8 +211,8 @@ class Chef
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each do |val_name, val_type, val_data|
             if safely_downcase(val_name) == safely_downcase(value[:name]) &&
-              val_type == get_type_from_name(value[:type]) &&
-              val_data == value[:data]
+               val_type == get_type_from_name(value[:type]) &&
+               val_data == value[:data]
               return true
             end
           end
@@ -272,7 +272,6 @@ class Chef
       end
 
       private
-
 
       def safely_downcase(val)
         if val.is_a? String

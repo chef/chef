@@ -52,7 +52,7 @@ Conflicts: wget-ssl
 
   before(:each) do
     allow(provider).to receive(:shell_out!).with("dpkg-deb -W #{source}", timeout: 900).and_return(dpkg_deb_status)
-    allow(provider).to receive(:shell_out!).with("dpkg -s #{package}", timeout: 900, returns: [0,1]).and_return(double(stdout: "", exitstatus: 1))
+    allow(provider).to receive(:shell_out!).with("dpkg -s #{package}", timeout: 900, returns: [0, 1]).and_return(double(stdout: "", exitstatus: 1))
     allow(::File).to receive(:exist?).with(source).and_return(true)
   end
 
@@ -160,12 +160,12 @@ Conflicts: wget-ssl
       let(:source) { nil }
 
       it "should raise an exception if the source is not set but we are installing" do
-        expect { provider.run_action(:install)}.to raise_error(Chef::Exceptions::Package)
+        expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
       end
     end
 
     it "should return the current version installed if found by dpkg" do
-      allow(provider).to receive(:shell_out!).with("dpkg -s #{package}", timeout: 900, returns: [0,1]).and_return(dpkg_s_status)
+      allow(provider).to receive(:shell_out!).with("dpkg -s #{package}", timeout: 900, returns: [0, 1]).and_return(dpkg_s_status)
       provider.load_current_resource
       expect(provider.current_resource.version).to eq(["1.11.4-1ubuntu1"])
     end

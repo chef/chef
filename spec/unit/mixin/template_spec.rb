@@ -172,7 +172,7 @@ describe Chef::Mixin::Template, "render_template" do
       expect(output).to eq("before {super secret is } after")
 
       output = @template_context.render_template_from_string("before {<%= render 'openldap_variable_stuff.conf.erb' %>} after")
-    expect(output).to eq("before {super secret is } after")
+      expect(output).to eq("before {super secret is } after")
     end
 
     it "should render nested partials" do
@@ -199,10 +199,13 @@ describe Chef::Mixin::Template, "render_template" do
         mod = Module.new do
           def render
           end
+
           def node
           end
+
           def render_template
           end
+
           def render_template_from_string
           end
         end
@@ -225,7 +228,7 @@ describe Chef::Mixin::Template, "render_template" do
     end
 
     it "should raise an error if an attempt is made to access node but it is nil" do
-      expect {@context.render_template_from_string("<%= node %>") {|r| r}}.to raise_error(Chef::Mixin::Template::TemplateError)
+      expect { @context.render_template_from_string("<%= node %>") { |r| r } }.to raise_error(Chef::Mixin::Template::TemplateError)
     end
 
     describe "the raised TemplateError" do

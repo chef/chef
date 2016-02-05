@@ -74,7 +74,7 @@ class Chef
         # not, but as with the above comment, we don't yet enforce such a thing,
         # so we'll just leave things as-is for now.
         requirements.assert(:upgrade, :install) do |a|
-          a.assertion  { candidates_exist_for_all_uninstalled? || new_resource.source }
+          a.assertion { candidates_exist_for_all_uninstalled? || new_resource.source }
           a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
           a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
         end
@@ -147,7 +147,7 @@ class Chef
 
       def action_remove
         if removing_package?
-          description = @new_resource.version ? "version #{@new_resource.version} of " :  ""
+          description = @new_resource.version ? "version #{@new_resource.version} of " : ""
           converge_by("remove #{description}package #{@current_resource.package_name}") do
             multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
               remove_package(name, version)
@@ -558,7 +558,7 @@ class Chef
       # @param args [String] variable number of string arguments
       # @return [String] nicely concatenated string or empty string
       def a_to_s(*args)
-        args.reject {|i| i.nil? || i == "" }.join(" ")
+        args.reject { |i| i.nil? || i == "" }.join(" ")
       end
     end
   end

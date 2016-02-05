@@ -28,7 +28,7 @@ class Chef
     class RemoteFile < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @source = []
         @use_etag = true
@@ -52,7 +52,7 @@ class Chef
                             arg,
                             { :callbacks => {
                                 :validate_source => method(:validate_source)
-                              }})
+                              } })
         if ret.is_a? String
           Array(ret)
         else
@@ -65,14 +65,14 @@ class Chef
           nil
         elsif args[0].is_a?(Chef::DelayedEvaluator) && args.count == 1
           args[0]
-        elsif args.any? {|a| a.is_a?(Chef::DelayedEvaluator)} && args.count > 1
+        elsif args.any? { |a| a.is_a?(Chef::DelayedEvaluator) } && args.count > 1
           raise Exceptions::InvalidRemoteFileURI, "Only 1 source argument allowed when using a lazy evaluator"
         else
           Array(args).flatten
         end
       end
 
-      def checksum(args=nil)
+      def checksum(args = nil)
         set_or_return(
           :checksum,
           args,
@@ -88,7 +88,7 @@ class Chef
         use_last_modified(true_or_false)
       end
 
-      def use_etag(args=nil)
+      def use_etag(args = nil)
         set_or_return(
           :use_etag,
           args,
@@ -98,7 +98,7 @@ class Chef
 
       alias :use_etags :use_etag
 
-      def use_last_modified(args=nil)
+      def use_last_modified(args = nil)
         set_or_return(
           :use_last_modified,
           args,
@@ -106,7 +106,7 @@ class Chef
         )
       end
 
-      def ftp_active_mode(args=nil)
+      def ftp_active_mode(args = nil)
         set_or_return(
           :ftp_active_mode,
           args,
@@ -114,7 +114,7 @@ class Chef
         )
       end
 
-      def headers(args=nil)
+      def headers(args = nil)
         set_or_return(
           :headers,
           args,

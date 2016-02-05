@@ -36,7 +36,7 @@ class Chef
           # We clear desired state in the copy, because it is supposed to be actual state.
           # We keep identity properties and non-desired-state, which are assumed to be
           # "control" values like `recurse: true`
-          current_resource.class.properties.each do |name,property|
+          current_resource.class.properties.each do |name, property|
             if property.desired_state? && !property.identity? && !property.name_property?
               property.reset(current_resource)
             end

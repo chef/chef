@@ -73,7 +73,7 @@ class Chef
         end
 
         def self.lookup(name)
-          c = descendants.find {|d| d.provides?(name) }
+          c = descendants.find { |d| d.provides?(name) }
           if c.nil?
             raise Chef::Exceptions::VerificationNotFound.new "No file verification for #{name} found."
           end
@@ -86,7 +86,7 @@ class Chef
           @parent_resource = parent_resource
         end
 
-        def verify(path, opts={})
+        def verify(path, opts = {})
           Chef::Log.debug("Running verification[#{self}] on #{path}")
           if @block
             verify_block(path, opts)
@@ -112,7 +112,7 @@ class Chef
             "%{file} is deprecated in verify command and will not be "\
             "supported in Chef 13. Please use %{path} instead."
           ) if @command.include?("%{file}")
-          command = @command % {:file => path, :path => path}
+          command = @command % { :file => path, :path => path }
           interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)
           interpreter.evaluate
         end

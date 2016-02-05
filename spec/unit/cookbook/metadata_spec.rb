@@ -205,7 +205,7 @@ describe Chef::Cookbook::Metadata do
       :issues_url => "http://example.com/issues",
       :privacy => true,
     }
-    params.sort { |a,b| a.to_s <=> b.to_s }.each do |field, field_value|
+    params.sort { |a, b| a.to_s <=> b.to_s }.each do |field, field_value|
       describe field do
         it "should be set-able via #{field}" do
           expect(metadata.send(field, field_value)).to eql(field_value)
@@ -239,7 +239,7 @@ describe Chef::Cookbook::Metadata do
       :provides    => [ :providing, "foo::bar", "<= 0.2" ],
       :replaces    => [ :replacing, "foo::bar", "= 0.2.1" ],
     }
-    dep_types.sort { |a,b| a.to_s <=> b.to_s }.each do |dep, dep_args|
+    dep_types.sort { |a, b| a.to_s <=> b.to_s }.each do |dep, dep_args|
       check_with = dep_args.shift
       describe dep do
         it "should be set-able via #{dep}" do
@@ -260,7 +260,7 @@ describe Chef::Cookbook::Metadata do
       :provides    => [ :providing, "foo::bar", "<=0.2", "<= 0.2" ],
       :replaces    => [ :replacing, "foo::bar", "=0.2.1", "= 0.2.1" ],
     }
-    dep_types.sort { |a,b| a.to_s <=> b.to_s }.each do |dep, dep_args|
+    dep_types.sort { |a, b| a.to_s <=> b.to_s }.each do |dep, dep_args|
       check_with = dep_args.shift
       normalized_version = dep_args.pop
       describe dep do
@@ -274,7 +274,6 @@ describe Chef::Cookbook::Metadata do
       end
     end
 
-
     describe "in the obsoleted format" do
       dep_types = {
         :depends     => [ "foo::bar", "> 0.2", "< 1.0" ],
@@ -287,11 +286,10 @@ describe Chef::Cookbook::Metadata do
 
       dep_types.each do |dep, dep_args|
         it "for #{dep} raises an informative error instead of vomiting on your shoes" do
-          expect {metadata.send(dep, *dep_args)}.to raise_error(Chef::Exceptions::ObsoleteDependencySyntax)
+          expect { metadata.send(dep, *dep_args) }.to raise_error(Chef::Exceptions::ObsoleteDependencySyntax)
         end
       end
     end
-
 
     describe "with obsolete operators" do
       dep_types = {
@@ -305,7 +303,7 @@ describe Chef::Cookbook::Metadata do
 
       dep_types.each do |dep, dep_args|
         it "for #{dep} raises an informative error instead of vomiting on your shoes" do
-          expect {metadata.send(dep, *dep_args)}.to raise_error(Chef::Exceptions::InvalidVersionConstraint)
+          expect { metadata.send(dep, *dep_args) }.to raise_error(Chef::Exceptions::InvalidVersionConstraint)
         end
       end
     end
@@ -345,11 +343,11 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should work with multiple simple constraints" do
-      expect_chef_version_works(["~> 12.5.1"],["~> 11.18.10"])
+      expect_chef_version_works(["~> 12.5.1"], ["~> 11.18.10"])
     end
 
     it "should work with multiple complex constraints" do
-      expect_chef_version_works([">= 11.14.2", "< 11.18.10"],[">= 12.2.1", "< 12.5.1"])
+      expect_chef_version_works([">= 11.14.2", "< 11.18.10"], [">= 12.2.1", "< 12.5.1"])
     end
 
     it "should fail validation on a simple pessimistic constraint" do
@@ -368,12 +366,12 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should fail validation when all ranges fail" do
-      expect_chef_version_works([">= 999.0", "< 999.9"],[">= 0.0.1", "< 0.0.9"])
+      expect_chef_version_works([">= 999.0", "< 999.9"], [">= 0.0.1", "< 0.0.9"])
       expect { metadata.validate_chef_version! }.to raise_error(Chef::Exceptions::CookbookChefVersionMismatch)
     end
 
     it "should pass validation when one constraint passes" do
-      expect_chef_version_works([">= 999.0", "< 999.9"],["= #{Chef::VERSION}"])
+      expect_chef_version_works([">= 999.0", "< 999.9"], ["= #{Chef::VERSION}"])
       expect { metadata.validate_chef_version! }.not_to raise_error
     end
   end
@@ -397,11 +395,11 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should work with multiple simple constraints" do
-      expect_ohai_version_works(["~> 12.5.1"],["~> 11.18.10"])
+      expect_ohai_version_works(["~> 12.5.1"], ["~> 11.18.10"])
     end
 
     it "should work with multiple complex constraints" do
-      expect_ohai_version_works([">= 11.14.2", "< 11.18.10"],[">= 12.2.1", "< 12.5.1"])
+      expect_ohai_version_works([">= 11.14.2", "< 11.18.10"], [">= 12.2.1", "< 12.5.1"])
     end
 
     it "should fail validation on a simple pessimistic constraint" do
@@ -420,12 +418,12 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should fail validation when all ranges fail" do
-      expect_ohai_version_works([">= 999.0", "< 999.9"],[">= 0.0.1", "< 0.0.9"])
+      expect_ohai_version_works([">= 999.0", "< 999.9"], [">= 0.0.1", "< 0.0.9"])
       expect { metadata.validate_ohai_version! }.to raise_error(Chef::Exceptions::CookbookOhaiVersionMismatch)
     end
 
     it "should pass validation when one constraint passes" do
-      expect_ohai_version_works([">= 999.0", "< 999.9"],["= #{Ohai::VERSION}"])
+      expect_ohai_version_works([">= 999.0", "< 999.9"], ["= #{Ohai::VERSION}"])
       expect { metadata.validate_ohai_version! }.not_to raise_error
     end
   end
@@ -540,22 +538,22 @@ describe Chef::Cookbook::Metadata do
       expect(metadata.attributes["db/mysql/databases"][:choice]).to eq([])
     end
 
-     it "should let calculated be true or false" do
-       expect {
-         metadata.attribute("db/mysql/databases", :calculated => true)
-       }.not_to raise_error
-       expect {
-         metadata.attribute("db/mysql/databases", :calculated => false)
-       }.not_to raise_error
-       expect {
-         metadata.attribute("db/mysql/databases", :calculated => Hash.new)
-       }.to raise_error(ArgumentError)
-     end
+    it "should let calculated be true or false" do
+      expect {
+        metadata.attribute("db/mysql/databases", :calculated => true)
+      }.not_to raise_error
+      expect {
+        metadata.attribute("db/mysql/databases", :calculated => false)
+      }.not_to raise_error
+      expect {
+        metadata.attribute("db/mysql/databases", :calculated => Hash.new)
+      }.to raise_error(ArgumentError)
+    end
 
-     it "should set calculated to false by default" do
-       metadata.attribute("db/mysql/databases", {})
-       expect(metadata.attributes["db/mysql/databases"][:calculated]).to eq(false)
-     end
+    it "should set calculated to false by default" do
+      metadata.attribute("db/mysql/databases", {})
+      expect(metadata.attributes["db/mysql/databases"][:calculated]).to eq(false)
+    end
 
     it "accepts String for the attribute type" do
       expect {
@@ -578,11 +576,11 @@ describe Chef::Cookbook::Metadata do
       }.not_to raise_error
     end
 
-     it "should let type be hash (backwards compatibility only)" do
+    it "should let type be hash (backwards compatibility only)" do
       expect {
         metadata.attribute("db/mysql/databases", :type => "hash")
       }.not_to raise_error
-     end
+    end
 
     it "should let required be required, recommended or optional" do
       expect {
@@ -846,7 +844,6 @@ describe Chef::Cookbook::Metadata do
     describe "deserialize" do
 
       let(:deserialized_metadata) { Chef::Cookbook::Metadata.from_json(Chef::JSONCompat.to_json(metadata)) }
-
 
       it "should deserialize to a Chef::Cookbook::Metadata object" do
         expect(deserialized_metadata).to be_a_kind_of(Chef::Cookbook::Metadata)

@@ -46,7 +46,7 @@ describe Chef::Provider::Ohai do
                                       mock_ohai[:data2])
     allow(Ohai::System).to receive(:new).and_return(mock_ohai)
     allow(Chef::Platform).to receive(:find_platform_and_version).and_return({ "platform" => @platform,
-                                                                  "platform_version" => @platform_version})
+                                                                              "platform_version" => @platform_version })
     # Fake node with a dummy save
     @node = Chef::Node.new
     @node.name(@fqdn)
@@ -56,7 +56,7 @@ describe Chef::Provider::Ohai do
     @new_resource = Chef::Resource::Ohai.new("ohai_reload")
     ohai = Ohai::System.new
     ohai.all_plugins
-    @node.consume_external_attrs(ohai.data,{})
+    @node.consume_external_attrs(ohai.data, {})
 
     @provider = Chef::Provider::Ohai.new(@new_resource, @run_context)
   end

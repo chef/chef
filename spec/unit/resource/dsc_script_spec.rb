@@ -31,8 +31,8 @@ describe Chef::Resource::DscScript do
     let(:dsc_test_resource) {
       Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context)
     }
-    let(:configuration_code) {'echo "This is supposed to create a configuration document."'}
-    let(:configuration_path) {"c:/myconfigs/formatc.ps1"}
+    let(:configuration_code) { 'echo "This is supposed to create a configuration document."' }
+    let(:configuration_path) { "c:/myconfigs/formatc.ps1" }
     let(:configuration_name) { "formatme" }
     let(:configuration_data) { '@{AllNodes = @( @{ NodeName = "localhost"; PSDscAllowPlainTextPassword = $true })}' }
     let(:configuration_data_script) { "c:/myconfigs/data/safedata.psd1" }
@@ -42,7 +42,7 @@ describe Chef::Resource::DscScript do
     end
 
     it "has an allowed_actions attribute with only the `:run` and `:nothing` attributes" do
-      expect(dsc_test_resource.allowed_actions.to_set).to eq([:run,:nothing].to_set)
+      expect(dsc_test_resource.allowed_actions.to_set).to eq([:run, :nothing].to_set)
     end
 
     it "allows the code attribute to be set" do
