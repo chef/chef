@@ -57,19 +57,27 @@ class Chef
           end
 
           ##############################
-          # Inlined
+          # Inlined from ChefRepositoryFileSystemEntry
           ##############################
 
-          def write_pretty_json=(value)
-            @write_pretty_json = value
-          end
+          # Inherited from ChefRepositoryFileSystemEntry, but apparently unused
+          ## def write_pretty_json=(value)
+          ##   @write_pretty_json = value
+          ## end
 
-          def write_pretty_json
-            @write_pretty_json.nil? ? root.write_pretty_json : @write_pretty_json
-          end
+          # Inherited from ChefRepositoryFileSystemEntry, but apparently unused
+          ## def write_pretty_json
+          ##   @write_pretty_json.nil? ? root.write_pretty_json : @write_pretty_json
+          ## end
 
+          # Inherited from ChefRepositoryFileSystemEntry, but has different behavior here:
+          ## def data_handler
+          ##   @data_handler || parent.data_handler
+          ## end
+
+          # Inlined version of the above
           def data_handler
-            @data_handler || parent.data_handler
+            @data_handler
           end
 
           def chef_object
@@ -86,26 +94,30 @@ class Chef
           ##   !is_dir && name[-5..-1] == ".json"
           ## end
 
-          def write(file_contents)
-            if file_contents && write_pretty_json && name[-5..-1] == ".json"
-              file_contents = minimize(file_contents, self)
-            end
-            super(file_contents)
-          end
+          # Inherited from ChefRepositoryFileSystemEntry, but apparently unused
+          ## def write(file_contents)
+          ##   if file_contents && write_pretty_json && name[-5..-1] == ".json"
+          ##     file_contents = minimize(file_contents, self)
+          ##   end
+          ##   super(file_contents)
+          ## end
 
-          def minimize(file_contents, entry)
-            object = Chef::JSONCompat.parse(file_contents)
-            object = data_handler.normalize(object, entry)
-            object = data_handler.minimize(object, entry)
-            Chef::JSONCompat.to_json_pretty(object)
-          end
+          # Inherited from ChefRepositoryFileSystemEntry, but apparently unused
+          ## def minimize(file_contents, entry)
+          ##   object = Chef::JSONCompat.parse(file_contents)
+          ##   object = data_handler.normalize(object, entry)
+          ##   object = data_handler.minimize(object, entry)
+          ##   Chef::JSONCompat.to_json_pretty(object)
+          ## end
 
           protected
 
           def make_child_entry(child_name)
             ChefRepositoryFileSystemEntry.new(child_name, self)
           end
+
         end
+
       end
     end
   end
