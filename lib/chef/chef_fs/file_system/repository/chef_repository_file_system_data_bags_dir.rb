@@ -28,7 +28,10 @@ class Chef
         #class ChefRepositoryFileSystemDataBagsDir < ChefRepositoryFileSystemEntry
 
         # With ChefRepositoryFileSystemEntry inlined:
-        class ChefRepositoryFileSystemDataBagsDir < FileSystemEntry
+        #class ChefRepositoryFileSystemDataBagsDir < FileSystemEntry
+
+        # With FileSystemEntry inlined
+        class ChefRepositoryFileSystemDataBagsDir < BaseFSDir
 
           # Original
           ## def initialize(name, parent, path = nil)
@@ -41,9 +44,16 @@ class Chef
           ##   @data_handler = data_handler
           ## end
 
+          # FileSystemEntry#initialize
+          ## def initialize(name, parent, file_path = nil)
+          ##   super(name, parent)
+          ##   @file_path = file_path || "#{parent.file_path}/#{name}"
+          ## end
+
           # inlined initialize
-          def initialize(name, parent, path = nil)
-            super(name, parent, path)
+          def initialize(name, parent, file_path = nil)
+            super(name, parent)
+            @file_path = file_path || "#{parent.file_path}/#{name}"
             @data_handler = Chef::ChefFS::DataHandler::DataBagItemDataHandler.new
           end
 
@@ -116,6 +126,89 @@ class Chef
             ChefRepositoryFileSystemEntry.new(child_name, self)
           end
 
+          public
+
+          ##############################
+          # Inlined from FileSystemEntry
+          ##############################
+
+          attr_reader :file_path
+
+          def path_for_printing
+            file_path
+          end
+
+          def children
+            # Except cookbooks and data bag dirs, all things must be json files
+            begin
+              Dir.entries(file_path).sort.
+                  map { |child_name| make_child_entry(child_name) }.
+                  select { |child| child && can_have_child?(child.name, child.dir?) }
+            rescue Errno::ENOENT
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+            end
+          end
+
+          def create_child(child_name, file_contents=nil)
+            child = make_child_entry(child_name)
+            if child.exists?
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
+            end
+            if file_contents
+              child.write(file_contents)
+            else
+              begin
+                Dir.mkdir(child.file_path)
+              rescue Errno::EEXIST
+                raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
+              end
+            end
+            child
+          end
+
+          def dir?
+            File.directory?(file_path)
+          end
+
+          def delete(recurse)
+            begin
+              if dir?
+                if !recurse
+                  raise MustDeleteRecursivelyError.new(self, $!)
+                end
+                FileUtils.rm_r(file_path)
+              else
+                File.delete(file_path)
+              end
+            rescue Errno::ENOENT
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+            end
+          end
+
+          def exists?
+            File.exists?(file_path) && (parent.nil? || parent.can_have_child?(name, dir?))
+          end
+
+          def read
+            begin
+              File.open(file_path, "rb") {|f| f.read}
+            rescue Errno::ENOENT
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+            end
+          end
+
+          def write(content)
+            File.open(file_path, "wb") do |file|
+              file.write(content)
+            end
+          end
+
+          # Overridden in superclass (ChefRepositoryFileSystemEntry)
+          ## protected
+
+          ## def make_child_entry(child_name)
+          ##   FileSystemEntry.new(child_name, self)
+          ## end
         end
 
       end
