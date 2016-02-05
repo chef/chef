@@ -31,7 +31,10 @@ class Chef
         #class ChefRepositoryFileSystemDataBagsDir < FileSystemEntry
 
         # With FileSystemEntry inlined
-        class ChefRepositoryFileSystemDataBagsDir < BaseFSDir
+        # class ChefRepositoryFileSystemDataBagsDir < BaseFSDir
+
+        # With BaseFSDir inlined
+        class ChefRepositoryFileSystemDataBagsDir < BaseFSObject
 
           # Original
           ## def initialize(name, parent, path = nil)
@@ -259,6 +262,30 @@ class Chef
           ## def make_child_entry(child_name)
           ##   FileSystemEntry.new(child_name, self)
           ## end
+
+          ##############################
+          # Inlined from BaseFSDir
+          ##############################
+
+          # trivial initializer
+          ## def initialize(name, parent)
+          ##   super
+          ## end
+
+          # overridden in superclass
+          ## def dir?
+          ##   true
+          ## end
+
+          # overridden in superclass
+          ## def can_have_child?(name, is_dir)
+          ##   true
+          ## end
+
+          # An empty children array is an empty dir
+          def empty?
+            children.empty?
+          end
         end
 
       end
