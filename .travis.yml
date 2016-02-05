@@ -128,12 +128,12 @@ matrix:
     sudo: required
     dist: trusty
     before_install:
+      - gem install bundler
       - sudo apt-get update
       - sudo apt-get -y install squid3 git curl
     env:
-      global:
-        - PROXY_TESTS_DIR=proxy_tests/files/default/scripts
-        - PROXY_TESTS_REPO=$PROXY_TESTS_DIR/repo
+      - PROXY_TESTS_DIR=proxy_tests/files/default/scripts
+      - PROXY_TESTS_REPO=$PROXY_TESTS_DIR/repo
     script:
       - bundle exec chef-client --version
       - git clone https://github.com/chef/proxy_tests.git
