@@ -23,13 +23,87 @@ class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class ChefRepositoryFileSystemDataBagsDir < ChefRepositoryFileSystemEntry
+
+        # Original Class/superclass
+        #class ChefRepositoryFileSystemDataBagsDir < ChefRepositoryFileSystemEntry
+
+        # With ChefRepositoryFileSystemEntry inlined:
+        class ChefRepositoryFileSystemDataBagsDir < FileSystemEntry
+
+          # Original
+          ## def initialize(name, parent, path = nil)
+          ##   super(name, parent, path, Chef::ChefFS::DataHandler::DataBagItemDataHandler.new)
+          ## end
+
+          # ChefRepositoryFileSystemEntry#initialize
+          ## def initialize(name, parent, file_path = nil, data_handler = nil)
+          ##   super(name, parent, file_path)
+          ##   @data_handler = data_handler
+          ## end
+
+          # inlined initialize
           def initialize(name, parent, path = nil)
-            super(name, parent, path, Chef::ChefFS::DataHandler::DataBagItemDataHandler.new)
+            super(name, parent, path)
+            @data_handler = Chef::ChefFS::DataHandler::DataBagItemDataHandler.new
           end
+
+
+          ##############################
+          # Original
+          ##############################
 
           def can_have_child?(name, is_dir)
             is_dir && !name.start_with?(".")
+          end
+
+          ##############################
+          # Inlined
+          ##############################
+
+          def write_pretty_json=(value)
+            @write_pretty_json = value
+          end
+
+          def write_pretty_json
+            @write_pretty_json.nil? ? root.write_pretty_json : @write_pretty_json
+          end
+
+          def data_handler
+            @data_handler || parent.data_handler
+          end
+
+          def chef_object
+            begin
+              return data_handler.chef_object(Chef::JSONCompat.parse(read))
+            rescue
+              Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$!}")
+            end
+            nil
+          end
+
+          # Overridden by subclass
+          ## def can_have_child?(name, is_dir)
+          ##   !is_dir && name[-5..-1] == ".json"
+          ## end
+
+          def write(file_contents)
+            if file_contents && write_pretty_json && name[-5..-1] == ".json"
+              file_contents = minimize(file_contents, self)
+            end
+            super(file_contents)
+          end
+
+          def minimize(file_contents, entry)
+            object = Chef::JSONCompat.parse(file_contents)
+            object = data_handler.normalize(object, entry)
+            object = data_handler.minimize(object, entry)
+            Chef::JSONCompat.to_json_pretty(object)
+          end
+
+          protected
+
+          def make_child_entry(child_name)
+            ChefRepositoryFileSystemEntry.new(child_name, self)
           end
         end
       end
