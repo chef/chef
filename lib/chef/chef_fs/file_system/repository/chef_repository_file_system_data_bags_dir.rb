@@ -34,7 +34,12 @@ class Chef
         # class ChefRepositoryFileSystemDataBagsDir < BaseFSDir
 
         # With BaseFSDir inlined
-        class ChefRepositoryFileSystemDataBagsDir < BaseFSObject
+        # class ChefRepositoryFileSystemDataBagsDir < BaseFSObject
+
+        # With BaseFSObject inlined
+        class ChefRepositoryFileSystemDataBagsDir
+
+          attr_reader :data_handler
 
           # Original
           ## def initialize(name, parent, path = nil)
@@ -53,16 +58,39 @@ class Chef
           ##   @file_path = file_path || "#{parent.file_path}/#{name}"
           ## end
 
+          # BaseFSObject#initialize
+          ## def initialize(name, parent)
+          ##   @parent = parent
+          ##   @name = name
+          ##   if parent
+          ##     @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+          ##   else
+          ##     if name != ""
+          ##       raise ArgumentError, "Name of root object must be empty string: was '#{name}' instead"
+          ##     end
+          ##     @path = "/"
+          ##   end
+          ## end
+
           # inlined initialize
           #
           # original method signature: def initialize(name, parent, file_path = nil)
           #
           # the only caller of this should never give a nil path
           def initialize(name, parent, file_path)
-            super(name, parent)
+            @parent = parent
+            @name = name
+            # We are not root, don't need to handle that case
+            ##if parent
+              @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+            ##else
+            ##  if name != ""
+            ##    raise ArgumentError, "Name of root object must be empty string: was '#{name}' instead"
+            ##  end
+            ##  @path = "/"
+            ##end
             @file_path = file_path # || "#{parent.file_path}/#{name}"
-            # Seems like this has to be important, but where is it used?
-            #@data_handler = Chef::ChefFS::DataHandler::DataBagItemDataHandler.new
+            @data_handler = Chef::ChefFS::DataHandler::DataBagItemDataHandler.new
           end
 
 
@@ -286,6 +314,103 @@ class Chef
           def empty?
             children.empty?
           end
+
+          ##############################
+          # Inlined from BaseFSObject
+          ##############################
+
+          attr_reader :name
+          attr_reader :parent
+          attr_reader :path
+
+          # unused?
+          ## def compare_to(other)
+          ##   nil
+          ## end
+
+          # overridden in subclass
+          ## def can_have_child?(name, is_dir)
+          ##   false
+          ## end
+
+          def child(name)
+            if can_have_child?(name, true) || can_have_child?(name, false)
+              result = make_child_entry(name)
+            end
+            result || NonexistentFSObject.new(name, self)
+          end
+
+
+          # overridden in subclass
+          ## def children
+          ##   raise NotFoundError.new(self) if !exists?
+          ##   []
+          ## end
+
+          # Seems unused
+          ## def chef_object
+          ##   raise NotFoundError.new(self) if !exists?
+          ##   nil
+          ## end
+
+          # overridden in subclass
+          ##def create_child(name, file_contents)
+          ##  raise NotFoundError.new(self) if !exists?
+          ##  raise OperationNotAllowedError.new(:create_child, self)
+          ##end
+
+          # overridden in subclass
+          ## def delete(recurse)
+          ##   raise NotFoundError.new(self) if !exists?
+          ##   raise OperationNotAllowedError.new(:delete, self)
+          ## end
+
+          # overridden in subclass, seems unused?
+          ##def dir?
+          ##  false
+          ##end
+
+          # overridden in subclass
+          ## def exists?
+          ##   true
+          ## end
+
+          # overridden in subclass
+          ## def path_for_printing
+          ##   if parent
+          ##     parent_path = parent.path_for_printing
+          ##     if parent_path == "."
+          ##       name
+          ##     else
+          ##       Chef::ChefFS::PathUtils::join(parent.path_for_printing, name)
+          ##     end
+          ##   else
+          ##     name
+          ##   end
+          ## end
+
+          # Cannot hit all of these cases
+          ## def root
+          ##   parent ? parent.root : self
+          ## end
+
+          # the only branch we can hit
+          def root
+            parent.root
+          end
+
+          # unused
+          ## def read
+          ##   raise NotFoundError.new(self) if !exists?
+          ##   raise OperationNotAllowedError.new(:read, self)
+          ## end
+
+          # unused
+          ## def write(file_contents)
+          ##   raise NotFoundError.new(self) if !exists?
+          ##   raise OperationNotAllowedError.new(:write, self)
+          ## end
+
         end
 
       end
