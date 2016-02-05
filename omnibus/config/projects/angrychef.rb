@@ -19,6 +19,7 @@
 # test machines. As such this project definition is just a thin wrapper around
 # `config/project/chef.rb`.
 #
+current_file = __FILE__
 chef_project_contents = IO.read(File.expand_path("../chef.rb", __FILE__))
 self.instance_eval chef_project_contents
 
