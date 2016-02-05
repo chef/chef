@@ -31,7 +31,7 @@ module WEBrick
                                 Socket::AI_PASSIVE)  # flag
       last_error = nil
       sockets = []
-      res.each{|ai|
+      res.each {|ai|
         begin
           logger.debug("TCPServer.new(#{ai[3]}, #{port})") if logger
           sock = TCPServer.new(ai[3], port)
