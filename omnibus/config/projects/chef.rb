@@ -20,7 +20,8 @@ maintainer "Chef Software, Inc. <maintainers@chef.io>"
 homepage "https://www.chef.io"
 
 build_iteration 1
-version_file = File.expand_path("../../../../VERSION", __FILE__)
+current_file ||= __FILE__
+version_file = File.expand_path("../../../../VERSION", current_file)
 build_version IO.read(version_file).strip
 
 if windows?
