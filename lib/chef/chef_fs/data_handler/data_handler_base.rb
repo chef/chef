@@ -94,7 +94,7 @@ class Chef
         # name to recipe[name].  Then calls uniq on the result.
         #
         def normalize_run_list(run_list)
-          run_list.map{|item|
+          run_list.map {|item|
             case item.to_s
             when /^recipe\[.*\]$/
               item # explicit recipe

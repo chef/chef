@@ -71,7 +71,7 @@ describe Chef::Resource::DscResource do
       end
 
       it "raises a TypeError if property_name is not a symbol" do
-        expect{
+        expect {
           dsc_test_resource.property("Foo", dsc_test_property_value)
         }.to raise_error(TypeError)
       end
