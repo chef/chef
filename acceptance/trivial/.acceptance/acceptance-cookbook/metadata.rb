@@ -1,2 +1,2 @@
 name "acceptance-cookbook"
-depends "shared"
+depends "kitchen_acceptance"
