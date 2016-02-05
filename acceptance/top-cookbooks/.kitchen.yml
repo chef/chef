@@ -1,10 +1,12 @@
 suites:
-  - name: default
+  - name: git-default
     run_list: ["recipe[git]"]
     includes: [ubuntu-14.04]
-  - name: source
+  - name: git-source
     run_list: ["recipe[git::source]"]
     includes: [nonexistent]
-  - name: default-windows
+  - name: git-default-windows
     run_list: ["recipe[git]"]
     includes: [windows-2012r2]
+  # - name: learn-the-basics-windows
+  #   includes: [windows-2012r2]
