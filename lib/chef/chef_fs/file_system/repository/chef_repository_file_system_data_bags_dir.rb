@@ -26,7 +26,11 @@ class Chef
 
         class ChefRepositoryFileSystemDataBagsDir
 
+          attr_reader :name
+          attr_reader :parent
+          attr_reader :path
           attr_reader :data_handler
+          attr_reader :file_path
 
           def initialize(name, parent, file_path)
             @parent = parent
@@ -39,16 +43,6 @@ class Chef
           def can_have_child?(name, is_dir)
             is_dir && !name.start_with?(".")
           end
-
-          protected
-
-          def make_child_entry(child_name)
-            ChefRepositoryFileSystemEntry.new(child_name, self)
-          end
-
-          public
-
-          attr_reader :file_path
 
           def path_for_printing
             file_path
@@ -97,10 +91,6 @@ class Chef
             children.empty?
           end
 
-          attr_reader :name
-          attr_reader :parent
-          attr_reader :path
-
           def child(name)
             if can_have_child?(name, true) || can_have_child?(name, false)
               result = make_child_entry(name)
@@ -110,6 +100,12 @@ class Chef
 
           def root
             parent.root
+          end
+
+          protected
+
+          def make_child_entry(child_name)
+            ChefRepositoryFileSystemEntry.new(child_name, self)
           end
 
         end
