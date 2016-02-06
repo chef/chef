@@ -36,7 +36,10 @@ class Chef
         #class ChefRepositoryFileSystemCookbookEntry < FileSystemEntry
 
         # With FileSystemEntry inlined
-        class ChefRepositoryFileSystemCookbookEntry < BaseFSDir
+        #class ChefRepositoryFileSystemCookbookEntry < BaseFSDir
+
+        # With BaseFSDir inlined
+        class ChefRepositoryFileSystemCookbookEntry < BaseFSObject
           # Original initialize
           ##  def initialize(name, parent, file_path = nil, ruby_only = false, recursive = false)
           ##    super(name, parent, file_path)
@@ -260,6 +263,30 @@ class Chef
           ##  def make_child_entry(child_name)
           ##    FileSystemEntry.new(child_name, self)
           ##  end
+
+          ##############################
+          # inlined from BaseFSDir
+          ##############################
+
+          # trivial initializer
+          ##  def initialize(name, parent)
+          ##    super
+          ##  end
+
+          # overriden by subclass
+          ##  def dir?
+          ##    true
+          ##  end
+
+          # overriden by subclass
+          ##  def can_have_child?(name, is_dir)
+          ##    true
+          ##  end
+
+          # An empty children array is an empty dir
+          def empty?
+            children.empty?
+          end
 
         end
       end
