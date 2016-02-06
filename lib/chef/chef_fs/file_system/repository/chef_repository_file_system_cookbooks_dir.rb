@@ -35,7 +35,10 @@ class Chef
         #class ChefRepositoryFileSystemCookbooksDir < BaseFSDir
 
         # With BaseFSDir inlined
-        class ChefRepositoryFileSystemCookbooksDir < BaseFSObject
+        #class ChefRepositoryFileSystemCookbooksDir < BaseFSObject
+
+        # With BaseFSObject inlined
+        class ChefRepositoryFileSystemCookbooksDir
 
           # Original initialize
           ##  def initialize(name, parent, file_path)
@@ -60,9 +63,32 @@ class Chef
           ##    @file_path = file_path || "#{parent.file_path}/#{name}"
           ##  end
 
+          # BaseFSObject#initialize
+          ##  def initialize(name, parent)
+          ##    @parent = parent
+          ##    @name = name
+          ##    if parent
+          ##      @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+          ##    else
+          ##      if name != ""
+          ##        raise ArgumentError, "Name of root object must be empty string: was '#{name}' instead"
+          ##      end
+          ##      @path = "/"
+          ##    end
+          ##  end
+
           # inlined initialize
           def initialize(name, parent, file_path)
-            super(name, parent)
+            @parent = parent
+            @name = name
+            ##  if parent
+              @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+            ##  else
+            ##    if name != ""
+            ##      raise ArgumentError, "Name of root object must be empty string: was '#{name}' instead"
+            ##    end
+            ##    @path = "/"
+            ##  end
             @file_path = file_path || "#{parent.file_path}/#{name}"
             @data_handler = nil
             begin
@@ -291,6 +317,100 @@ class Chef
           def empty?
             children.empty?
           end
+
+          ##############################
+          # Inlined from BaseFSObject
+          ##############################
+
+          attr_reader :name
+          attr_reader :parent
+          attr_reader :path
+
+          # Unused?
+          ## def compare_to(other)
+          ##   nil
+          ## end
+
+          # overridden in subclass
+          ##  def can_have_child?(name, is_dir)
+          ##    false
+          ##  end
+
+          def child(name)
+            if can_have_child?(name, true) || can_have_child?(name, false)
+              result = make_child_entry(name)
+            end
+            result || NonexistentFSObject.new(name, self)
+          end
+
+          # overridden in subclass
+          ##  def children
+          ##    raise NotFoundError.new(self) if !exists?
+          ##    []
+          ##  end
+
+          # unused
+          ##  def chef_object
+          ##    raise NotFoundError.new(self) if !exists?
+          ##    nil
+          ##  end
+
+          # overridden in subclass
+          ##  def create_child(name, file_contents)
+          ##    raise NotFoundError.new(self) if !exists?
+          ##    raise OperationNotAllowedError.new(:create_child, self)
+          ##  end
+
+          # overridden in subclass
+          ##  def delete(recurse)
+          ##    raise NotFoundError.new(self) if !exists?
+          ##    raise OperationNotAllowedError.new(:delete, self)
+          ##  end
+
+          # overridden and also not used
+          ##  def dir?
+          ##    false
+          ##  end
+
+          # overridden
+          ## def exists?
+          ##   true
+          ## end
+
+          # overridden
+          ##  def path_for_printing
+          ##    if parent
+          ##      parent_path = parent.path_for_printing
+          ##      if parent_path == "."
+          ##        name
+          ##      else
+          ##        Chef::ChefFS::PathUtils::join(parent.path_for_printing, name)
+          ##      end
+          ##    else
+          ##      name
+          ##    end
+          ##  end
+
+          # we're never root, don't need to branch here
+          ## def root
+          ##   parent ? parent.root : self
+          ## end
+
+          def root
+            parent.root
+          end
+
+          # overridden and unused
+          ## def read
+          ##   raise NotFoundError.new(self) if !exists?
+          ##   raise OperationNotAllowedError.new(:read, self)
+          ## end
+
+          # overridden and unused
+          ##  def write(file_contents)
+          ##    raise NotFoundError.new(self) if !exists?
+          ##    raise OperationNotAllowedError.new(:write, self)
+          ##  end
 
         end
       end
