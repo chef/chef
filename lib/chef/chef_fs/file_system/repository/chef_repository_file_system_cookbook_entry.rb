@@ -30,6 +30,13 @@ class Chef
         # methods/if branches for each.
         class ChefRepositoryFileSystemCookbookEntry
 
+          attr_reader :name
+          attr_reader :parent
+          attr_reader :path
+          attr_reader :ruby_only
+          attr_reader :recursive
+          attr_reader :file_path
+
           def initialize(name, parent, file_path = nil, ruby_only = false, recursive = false)
             @parent = parent
             @name = name
@@ -39,9 +46,6 @@ class Chef
             @data_handler = nil
             @file_path = file_path || "#{parent.file_path}/#{name}"
           end
-
-          attr_reader :ruby_only
-          attr_reader :recursive
 
           def children
             begin
@@ -85,16 +89,6 @@ class Chef
           def write_pretty_json
             false
           end
-
-          protected
-
-          def make_child_entry(child_name)
-            ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, ruby_only, recursive)
-          end
-
-          public
-
-          attr_reader :file_path
 
           def path_for_printing
             file_path
@@ -154,10 +148,6 @@ class Chef
             end
           end
 
-          attr_reader :name
-          attr_reader :parent
-          attr_reader :path
-
           def child(name)
             if can_have_child?(name, true) || can_have_child?(name, false)
               result = make_child_entry(name)
@@ -180,6 +170,12 @@ class Chef
 
           def root
             parent.root
+          end
+
+          protected
+
+          def make_child_entry(child_name)
+            ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, ruby_only, recursive)
           end
 
         end
