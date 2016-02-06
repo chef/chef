@@ -215,54 +215,49 @@ class Chef
             if child.exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
             end
-            if file_contents
-              child.write(file_contents)
-            else
-              begin
-                Dir.mkdir(child.file_path)
-              rescue Errno::EEXIST
-                raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
-              end
+            begin
+              Dir.mkdir(child.file_path)
+            rescue Errno::EEXIST
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
             end
             child
           end
 
-          def dir?
-            File.directory?(file_path)
-          end
+          # this becomes unused when you remove code branches that we cannot hit
+          ## def dir?
+          ##   File.directory?(file_path)
+          ## end
 
           def delete(recurse)
-            begin
-              if dir?
-                if !recurse
-                  raise MustDeleteRecursivelyError.new(self, $!)
-                end
-                FileUtils.rm_r(file_path)
-              else
-                File.delete(file_path)
+            if exists?
+              if !recurse
+                raise MustDeleteRecursivelyError.new(self, $!)
               end
-            rescue Errno::ENOENT
+              FileUtils.rm_r(file_path)
+            else
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             end
           end
 
           def exists?
-            File.exists?(file_path) && (parent.nil? || parent.can_have_child?(name, dir?))
+            File.exists?(file_path) # && (parent.nil? || parent.can_have_child?(name, dir?))
           end
 
-          def read
-            begin
-              File.open(file_path, "rb") {|f| f.read}
-            rescue Errno::ENOENT
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-            end
-          end
+          # unused
+          ##  def read
+          ##    begin
+          ##      File.open(file_path, "rb") {|f| f.read}
+          ##    rescue Errno::ENOENT
+          ##      raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+          ##    end
+          ##  end
 
-          def write(content)
-            File.open(file_path, "wb") do |file|
-              file.write(content)
-            end
-          end
+          # unused
+          ##  def write(content)
+          ##    File.open(file_path, "wb") do |file|
+          ##      file.write(content)
+          ##    end
+          ##  end
 
           ##  protected
 
