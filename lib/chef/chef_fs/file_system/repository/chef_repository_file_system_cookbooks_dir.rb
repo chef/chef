@@ -27,12 +27,18 @@ class Chef
 
         class ChefRepositoryFileSystemCookbooksDir
 
+          attr_reader :name
+          attr_reader :parent
+          attr_reader :path
+          attr_reader :chefignore
+          attr_reader :file_path
+
           def initialize(name, parent, file_path)
             @parent = parent
             @name = name
             @path = Chef::ChefFS::PathUtils::join(parent.path, name)
             @file_path = file_path || "#{parent.file_path}/#{name}"
-            @data_handler = nil
+            #@data_handler = nil
             begin
               @chefignore = Chef::Cookbook::Chefignore.new(self.file_path)
             rescue Errno::EISDIR
@@ -40,8 +46,6 @@ class Chef
               # Work around a bug in Chefignore when chefignore is a directory
             end
           end
-
-          attr_reader :chefignore
 
           def children
             begin
@@ -85,19 +89,10 @@ class Chef
             end
           end
 
-          protected
-
-          def make_child_entry(child_name)
-            ChefRepositoryFileSystemCookbookDir.new(child_name, self)
-          end
-
-          public
-
-          def data_handler
-            @data_handler || parent.data_handler
-          end
-
-          attr_reader :file_path
+          # no data handler used here.
+          ## def data_handler
+          ##   @data_handler || parent.data_handler
+          ## end
 
           def path_for_printing
             file_path
@@ -136,10 +131,6 @@ class Chef
             children.empty?
           end
 
-          attr_reader :name
-          attr_reader :parent
-          attr_reader :path
-
           def child(name)
             if can_have_child?(name, true) || can_have_child?(name, false)
               result = make_child_entry(name)
@@ -149,6 +140,12 @@ class Chef
 
           def root
             parent.root
+          end
+
+          protected
+
+          def make_child_entry(child_name)
+            ChefRepositoryFileSystemCookbookDir.new(child_name, self)
           end
 
         end
