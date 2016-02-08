@@ -30,6 +30,8 @@ provisioner:
   product_name: <%= ENV["KITCHEN_CHEF_PRODUCT"] %>
   product_version: <%= ENV["KITCHEN_CHEF_VERSION"] %>
   channel: <%= ENV["KITCHEN_CHEF_CHANNEL"] %>
+  client_rb:
+    audit_mode: :enabled
 
 platforms:
   #

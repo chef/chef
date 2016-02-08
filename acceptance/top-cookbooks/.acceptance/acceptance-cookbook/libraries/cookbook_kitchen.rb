@@ -19,8 +19,8 @@ class CookbookKitchen < KitchenAcceptance::Kitchen
   property :env, default: lazy {
     {
       "BUNDLE_GEMFILE" => ::File.expand_path("../Gemfile", Chef.node["chef-acceptance"]["suite-dir"]),
-      "KITCHEN_GLOBAL_YAML" => ::File.join(kitchen_dir, ".kitchen.yml"),
-      "KITCHEN_YAML" => ::File.join(node["chef-acceptance"]["suite-dir"], ".kitchen.yml")
+#      "KITCHEN_GLOBAL_YAML" => ::File.join(kitchen_dir, ".kitchen.yml"),
+      "KITCHEN_YAML" => ::File.join(node["chef-acceptance"]["suite-dir"], ".kitchen.#{test_cookbook}.yml")
     }
   }
 
@@ -34,10 +34,10 @@ class CookbookKitchen < KitchenAcceptance::Kitchen
       # Grab the cookbook
       # TODO Grab the source URL from supermarket
       # TODO get git to include its kitchen tests in the cookbook.
-      # git repository_root do
-      #   repository new_resource.repository
-      #   branch new_resource.branch
-      # end
+      git repository_root do
+        repository new_resource.repository
+        branch new_resource.branch
+      end
     end
 
     super()
