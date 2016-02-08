@@ -147,6 +147,10 @@ matrix:
 
   allow_failures:
     - rvm: rbx
+    - rvm: 2.2
+      env: "GEMFILE_MOD=\"gem 'halite', github: 'poise/halite'\""
+      script: bundle exec rake halite_spec
+
 notifications:
   on_change: true
   on_failure: true
