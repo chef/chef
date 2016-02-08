@@ -62,15 +62,17 @@ module ChefConfig
     def load
       # Ignore it if there's no explicit_config_file and can't find one at a
       # default path.
-      return false if config_location.nil?
+      if !config_location.nil?
+        if explicit_config_file && !path_exists?(config_location)
+          raise ChefConfig::ConfigurationError, "Specified config file #{config_location} does not exist"
+        end
 
-      if explicit_config_file && !path_exists?(config_location)
-        raise ChefConfig::ConfigurationError, "Specified config file #{config_location} does not exist"
+        # Have to set Config.config_file b/c other config is derived from it.
+        Config.config_file = config_location
+        read_config(IO.read(config_location), config_location)
       end
 
-      # Have to set Config.config_file b/c other config is derived from it.
-      Config.config_file = config_location
-      read_config(IO.read(config_location), config_location)
+      load_conf_d_directory
     end
 
     # (Private API, public for test purposes)
@@ -122,6 +124,27 @@ module ChefConfig
       candidate_configs.find do |candidate_config|
         have_config?(candidate_config)
       end
+    end
+
+    def load_conf_d_directory
+      conf_d_files.sort.map do |conf|
+        read_config(IO.read(conf), conf)
+      end
+    end
+
+    def conf_d_files
+      @conf_d_files ||=
+        begin
+          entries = if Config[:conf_d_dir]
+                      Dir.glob(File.join(PathHelper.escape_glob(
+                        Config[:conf_d_dir]), "*.rb"))
+                    else
+                      []
+                    end
+          entries.select do |entry|
+            File.file?(entry)
+          end
+        end
     end
 
     def working_directory

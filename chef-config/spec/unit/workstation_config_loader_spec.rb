@@ -35,6 +35,12 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
     end
   end
 
+  before do
+    # We set this to nil so that a dev workstation will
+    # not interfere with the tests.
+    ChefConfig::Config[:conf_d_dir] = nil
+  end
+
   # Test methods that do I/O or reference external state which are stubbed out
   # elsewhere.
   describe "external dependencies" do
@@ -215,7 +221,8 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
 
       it "skips loading" do
         expect(config_loader.config_location).to be(nil)
-        expect(config_loader.load).to be(false)
+        expect(config_loader).not_to receive(:read_config)
+        config_loader.load
       end
 
     end
@@ -254,7 +261,8 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
         let(:config_content) { "config_file_evaluated(true)" }
 
         it "loads the config" do
-          expect(config_loader.load).to be(true)
+          expect(config_loader).to receive(:read_config).and_call_original
+          config_loader.load
           expect(ChefConfig::Config.config_file_evaluated).to be(true)
         end
 
@@ -286,4 +294,73 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
 
   end
 
+  describe "when loading config.d" do
+    context "when the conf.d directory exists" do
+      let(:config_content) { "" }
+
+      let(:tempdir) { Dir.mktmpdir("chef-workstation-test") }
+
+      let!(:confd_file) do
+        Tempfile.new(["Chef-WorkstationConfigLoader-rspec-test", ".rb"], tempdir).tap do |t|
+          t.print(config_content)
+          t.close
+        end
+      end
+
+      before do
+        ChefConfig::Config[:conf_d_dir] = tempdir
+        allow(config_loader).to receive(:path_exists?).with(
+          an_instance_of(String)).and_return(false)
+      end
+
+      after do
+        FileUtils.remove_entry_secure tempdir
+      end
+
+      context "and is valid" do
+        let(:config_content) { "config_d_file_evaluated(true)" }
+
+        it "loads the config" do
+          expect(config_loader).to receive(:read_config).and_call_original
+          config_loader.load
+          expect(ChefConfig::Config.config_d_file_evaluated).to be(true)
+        end
+      end
+
+      context "and has a syntax error" do
+        let(:config_content) { "{{{{{:{{" }
+
+        it "raises a ConfigurationError" do
+          expect { config_loader.load }.to raise_error(ChefConfig::ConfigurationError)
+        end
+      end
+
+      context "has a non rb file" do
+        let(:sytax_error_content) { "{{{{{:{{" }
+        let(:config_content) { "config_d_file_evaluated(true)" }
+
+        let!(:not_confd_file) do
+          Tempfile.new(["Chef-WorkstationConfigLoader-rspec-test", ".foorb"], tempdir).tap do |t|
+            t.print(sytax_error_content)
+            t.close
+          end
+        end
+
+        it "does not load the non rb file" do
+          expect { config_loader.load }.not_to raise_error
+          expect(ChefConfig::Config.config_d_file_evaluated).to be(true)
+        end
+      end
+    end
+
+    context "when the conf.d directory does not exist" do
+      before do
+        ChefConfig::Config[:conf_d_dir] = "/nope/nope/nope/nope/notdoingit"
+      end
+
+      it "does not load anything" do
+        expect(config_loader).not_to receive(:read_config)
+      end
+    end
+  end
 end
