@@ -51,12 +51,12 @@ class Chef
 
           def children
             dir_ls.sort.
-                map { |child_name| make_child_entry(child_name) }
+              map { |child_name| make_child_entry(child_name) }
           rescue Errno::ENOENT => e
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
           end
 
-          def create_child(child_name, file_contents=nil)
+          def create_child(child_name, file_contents = nil)
             make_child_entry(child_name).tap { |c| c.create }
           end
 
@@ -148,13 +148,13 @@ class Chef
           def children
             begin
               dir_ls.sort.
-                  map { |child_name| make_child_entry(child_name) }
+                map { |child_name| make_child_entry(child_name) }
             rescue Errno::ENOENT
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             end
           end
 
-          def create_child(child_name, file_contents=nil)
+          def create_child(child_name, file_contents = nil)
             make_child_entry(child_name).tap { |c| c.create(file_contents) }
           end
 
@@ -256,7 +256,7 @@ class Chef
 
           def read
             begin
-              File.open(file_path, "rb") {|f| f.read}
+              File.open(file_path, "rb") { |f| f.read }
             rescue Errno::ENOENT
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             end

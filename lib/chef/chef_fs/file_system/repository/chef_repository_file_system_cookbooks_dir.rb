@@ -50,8 +50,8 @@ class Chef
           def children
             begin
               cookbooks = Dir.entries(file_path).sort.
-                  map { |child_name| make_child_entry(child_name) }.
-                  select { |child| child && can_have_child?(child.name, child.dir?) }
+                          map { |child_name| make_child_entry(child_name) }.
+                          select { |child| child && can_have_child?(child.name, child.dir?) }
               # empty cookbooks and cookbook directories are ignored
               cookbooks.select do |entry|
                 if !entry.can_upload?
@@ -98,7 +98,7 @@ class Chef
             file_path
           end
 
-          def create_child(child_name, file_contents=nil)
+          def create_child(child_name, file_contents = nil)
             child = make_child_entry(child_name)
             if child.exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)

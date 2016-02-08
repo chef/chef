@@ -50,8 +50,8 @@ class Chef
           def children
             begin
               entries = Dir.entries(file_path).sort.
-                  map { |child_name| make_child_entry(child_name) }.
-                  select { |child| child && can_have_child?(child.name, child.dir?) }
+                        map { |child_name| make_child_entry(child_name) }.
+                        select { |child| child && can_have_child?(child.name, child.dir?) }
               entries.select { |entry| !(entry.dir? && entry.children.size == 0 ) }
             rescue Errno::ENOENT
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
@@ -94,7 +94,7 @@ class Chef
             file_path
           end
 
-          def create_child(child_name, file_contents=nil)
+          def create_child(child_name, file_contents = nil)
             child = make_child_entry(child_name)
             if child.exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
@@ -136,7 +136,7 @@ class Chef
 
           def read
             begin
-              File.open(file_path, "rb") {|f| f.read}
+              File.open(file_path, "rb") { |f| f.read }
             rescue Errno::ENOENT
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             end
@@ -153,19 +153,6 @@ class Chef
               result = make_child_entry(name)
             end
             result || NonexistentFSObject.new(name, self)
-          end
-
-          def path_for_printing
-            if parent
-              parent_path = parent.path_for_printing
-              if parent_path == "."
-                name
-              else
-                Chef::ChefFS::PathUtils::join(parent.path_for_printing, name)
-              end
-            else
-              name
-            end
           end
 
           def root
