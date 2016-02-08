@@ -48,7 +48,7 @@ class Chef
             inline_gemfile do
               source Chef::Config[:rubygems_url]
               cookbook_gems.each do |args|
-                gem *args
+                gem(*args)
               end
             end
           rescue Exception => e
@@ -109,7 +109,7 @@ class Chef
       def inline_gemfile(&block)
         # requires https://github.com/bundler/bundler/pull/4245
         gemfile(true, ui: ChefBundlerUI.new(events), &block)
-      rescue ArgumentError  # Method#arity doesn't inspect optional arguments, so we rescue
+      rescue ArgumentError # Method#arity doesn't inspect optional arguments, so we rescue
         # requires bundler 1.10.0
         gemfile(true, &block)
       end
