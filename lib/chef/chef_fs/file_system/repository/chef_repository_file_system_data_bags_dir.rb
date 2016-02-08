@@ -29,7 +29,6 @@ class Chef
           attr_reader :name
           attr_reader :parent
           attr_reader :path
-          attr_reader :data_handler
           attr_reader :file_path
 
           def initialize(name, parent, file_path)
@@ -37,11 +36,13 @@ class Chef
             @name = name
             @path = Chef::ChefFS::PathUtils::join(parent.path, name)
             @file_path = file_path
-            @data_handler = Chef::ChefFS::DataHandler::DataBagItemDataHandler.new
           end
 
+          # ChefFS API:
+
+          # Public api called by multiplexed_dir
           def can_have_child?(name, is_dir)
-            is_dir && !name.start_with?(".")
+            is_dir && make_child_entry(name).name_valid?
           end
 
           def path_for_printing
@@ -49,26 +50,38 @@ class Chef
           end
 
           def children
-            begin
-              Dir.entries(file_path).sort.
-                  map { |child_name| make_child_entry(child_name) }.
-                  select { |child| child && can_have_child?(child.name, child.dir?) }
-            rescue Errno::ENOENT
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-            end
+            dir_ls.sort.
+                map { |child_name| make_child_entry(child_name) }
+          rescue Errno::ENOENT => e
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
           end
 
           def create_child(child_name, file_contents=nil)
-            child = make_child_entry(child_name)
-            if child.exists?
-              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
+            make_child_entry(child_name).tap { |c| c.create }
+          end
+
+          # An empty children array is an empty dir
+          def empty?
+            children.empty?
+          end
+
+          def child(name)
+            possible_child = make_child_entry(name)
+            if possible_child.name_valid?
+              possible_child
+            else
+              NonexistentFSObject.new(name, self)
             end
-            begin
-              Dir.mkdir(child.file_path)
-            rescue Errno::EEXIST
-              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
-            end
-            child
+          end
+
+          def root
+            parent.root
+          end
+
+          # File system wrappers
+
+          def dir_ls
+            Dir.entries(file_path).select { |p| !p.start_with?(".") }
           end
 
           def delete(recurse)
@@ -84,6 +97,65 @@ class Chef
 
           def exists?
             File.exists?(file_path)
+          end
+
+          protected
+
+          def make_child_entry(child_name)
+            ChefRepositoryFileSystemDataBagEntry.new(child_name, self)
+          end
+
+        end
+
+        class ChefRepositoryFileSystemDataBagEntry
+
+          attr_reader :name
+          attr_reader :parent
+          attr_reader :path
+          attr_reader :data_handler
+          attr_reader :file_path
+
+          def initialize(name, parent)
+            @parent = parent
+            @name = name
+            @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+            @file_path = "#{parent.file_path}/#{name}"
+          end
+
+          def create
+            if exists?
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
+            end
+            begin
+              Dir.mkdir(file_path)
+            rescue Errno::EEXIST
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
+            end
+          end
+
+          def name_valid?
+            !name.start_with?(".")
+          end
+
+          def can_have_child?(name, is_dir)
+            !name.start_with?(".")
+          end
+
+          def path_for_printing
+            file_path
+          end
+
+          def children
+            begin
+              dir_ls.sort.
+                  map { |child_name| make_child_entry(child_name) }
+            rescue Errno::ENOENT
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+            end
+          end
+
+          def create_child(child_name, file_contents=nil)
+            make_child_entry(child_name).tap { |c| c.create(file_contents) }
           end
 
           # An empty children array is an empty dir
@@ -102,10 +174,102 @@ class Chef
             parent.root
           end
 
+          # File system wrappers
+
+          def dir_ls
+            Dir.entries(file_path).select { |p| !p.start_with?(".") }
+          end
+
+          def delete(recurse)
+            if exists?
+              if !recurse
+                raise MustDeleteRecursivelyError.new(self, $!)
+              end
+              FileUtils.rm_r(file_path)
+            else
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+            end
+          end
+
+          def exists?
+            File.exists?(file_path)
+          end
+
           protected
 
           def make_child_entry(child_name)
-            ChefRepositoryFileSystemEntry.new(child_name, self)
+            ChefRepositoryFileSystemDataBagItemEntry.new(child_name, self)
+          end
+
+        end
+
+        class ChefRepositoryFileSystemDataBagItemEntry
+
+          attr_reader :name
+          attr_reader :parent
+          attr_reader :path
+          attr_reader :ruby_only
+          attr_reader :recursive
+          attr_reader :file_path
+
+          def initialize(name, parent)
+            @parent = parent
+            @name = name
+            @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+            @data_handler = Chef::ChefFS::DataHandler::DataBagItemDataHandler.new
+            @file_path = "#{parent.file_path}/#{name}"
+          end
+
+          def create(file_contents)
+            if exists?
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self)
+            else
+              write(file_contents)
+            end
+          end
+
+          def can_have_child?(name, is_dir)
+            false
+          end
+
+          def write_pretty_json=(value)
+            @write_pretty_json = value
+          end
+
+          def write_pretty_json
+            @write_pretty_json.nil? ? root.write_pretty_json : @write_pretty_json
+          end
+
+          def path_for_printing
+            file_path
+          end
+
+          def delete(recurse)
+            File.delete(file_path)
+          rescue Errno::ENOENT
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+          end
+
+          def exists?
+            File.exists?(file_path)
+          end
+
+          def read
+            begin
+              File.open(file_path, "rb") {|f| f.read}
+            rescue Errno::ENOENT
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+            end
+          end
+
+          def write(content)
+            File.open(file_path, "wb") do |file|
+              file.write(content)
+            end
+          end
+
+          def root
+            parent.root
           end
 
         end
