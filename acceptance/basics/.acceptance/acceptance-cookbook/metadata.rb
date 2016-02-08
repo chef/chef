@@ -1,3 +1,3 @@
-name "acceptance-cookbook"
+name 'acceptance-cookbook'
 
 depends "kitchen_acceptance"

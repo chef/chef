@@ -1,0 +1,47 @@
+driver:
+  name: vagrant
+  forward_agent: yes
+  customize:
+    cpus: 2
+    memory: 1024
+
+provisioner:
+  name: chef_zero
+  product_name: <%= ENV["KITCHEN_CHEF_PRODUCT"] %>
+  product_version: <%= ENV["KITCHEN_CHEF_VERSION"] %>
+  channel: <%= ENV["KITCHEN_CHEF_CHANNEL"] %>
+
+platforms:
+<% %w(
+debian-8
+debian-7
+debian-6
+ubuntu-15.10
+ubuntu-14.04
+el-7
+el-6
+el-5
+freebsd-10
+freebsd-9
+fedora-21
+).each do |platform| %>
+  - name: <%= platform %>
+    driver:
+      box: opscode-<%= platform %>
+      box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_<%= platform %>_chef-provisionerless.box
+<% end %>
+# freebsd-8
+# ubuntu-12.04
+# centos-7
+# centos-6
+
+<% %w(
+2012r2
+2012
+2008r2
+).each do |version| %>
+  - name: windows-<%= version %>
+    driver:
+      box: chef/windows-server-<%= version %>-standard
+# URL is atlas
+<% end %>

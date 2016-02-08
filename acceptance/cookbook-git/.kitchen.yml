@@ -1,0 +1,10 @@
+suites:
+  - name: default
+    run_list: ["recipe[git]"]
+    includes: [ubuntu-14.04]
+  - name: source
+    run_list: ["recipe[git::source]"]
+    includes: [nonexistent]
+  - name: default-windows
+    run_list: ["recipe[git]"]
+    includes: [windows-2012r2]

@@ -15,5 +15,3 @@ module CookbookGit
     File.join(acceptance_path, "Gemfile")
   end
 end
-
-ENV["KITCHEN_LOCAL_YAML"] ||= File.join(Chef.node["chef-acceptance"]["suite-dir"], ".kitchen.#{ENV["KITCHEN_DRIVER"] || "ec2"}.yml")

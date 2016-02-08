@@ -1,26 +1,7 @@
-driver:
-  name: vagrant
-  forward_agent: yes
-  customize:
-    cpus: 2
-    memory: 1024
-
-provisioner:
-  name: chef_zero
-
 verifier:
   name: inspec
 
-platforms:
-  - name: windows-server-2012r2-standard
-    driver:
-      box: chef/windows-server-2012r2-standard # private
-    run_list:
-
 suites:
   - name: chef-windows-service
-    provisioner:
-      product_name: chef
-      product_version: latest
-      channel: current
+    includes: [windows-2012r2]
     run_list:
