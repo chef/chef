@@ -1,2 +1,4 @@
-# Run the test on the current platform
-cookbook_kitchen "converge git"
+cookbook_kitchen "converge learn-the-basics-rhel" do
+  repository "learn-chef/learn-chef-acceptance"
+  cookbook_relative_dir "cookbooks/learn-the-basics-rhel"
+end

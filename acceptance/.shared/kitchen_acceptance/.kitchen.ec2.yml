@@ -44,7 +44,7 @@ platforms:
     driver:
       image_search:
         name: debian-jessie-*
-        owner-id: 379101102735
+        owner-id: "379101102735"
         architecture: x86_64
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
@@ -55,7 +55,7 @@ platforms:
     driver:
       image_search:
         name: debian-wheezy-*
-        owner-id: 379101102735
+        owner-id: "379101102735"
         architecture: x86_64
         virtualization-type: hvm
         block-device-mapping.volume-type: standard
@@ -69,7 +69,7 @@ platforms:
     driver:
       image_search:
         name: ubuntu/images/*/ubuntu-*-15.10-amd64-server-*
-        owner-id: 099720109477
+        owner-id: "099720109477"
         architecture: x86_64
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
@@ -80,24 +80,24 @@ platforms:
     driver:
       image_search:
         name: ubuntu/images/*/ubuntu-*-14.04-*-server-*
-        owner-id: 099720109477
+        owner-id: "099720109477"
         architecture: x86_64
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
     transport:
       username: ubuntu
-  # - name: ubuntu-12.04
-  #   driver:
-  #     image_search:
-  #       name: ubuntu/images/*/ubuntu-*-12.04-*-server-*
-  #       owner-id: 099720109477
-  #       architecture: x86_64
-  #       virtualization-type: hvm
-  #       block-device-mapping.volume-type: gp2
-  #       image-type: machine
-  #   transport:
-  #     username: ubuntu
+  - name: ubuntu-12.04
+    driver:
+      image_search:
+        name: ubuntu/images/*/ubuntu-*-12.04-*-server-*
+        owner-id: "099720109477"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+    transport:
+      username: ubuntu
   #
   # Red Hat Enterprise Linux
   #
@@ -105,7 +105,7 @@ platforms:
     driver:
       image_search:
         name: RHEL-7.*
-        owner-id: 309956199498
+        owner-id: "309956199498"
         architecture: x86_64
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
@@ -116,7 +116,7 @@ platforms:
     driver:
       image_search:
         name: RHEL-6.*
-        owner-id: 309956199498
+        owner-id: "309956199498"
         architecture: x86_64
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
@@ -127,7 +127,7 @@ platforms:
     driver:
       image_search:
         name: RHEL-5.*
-        owner-id: 309956199498
+        owner-id: "309956199498"
         architecture: x86_64
         virtualization-type: paravirtual
         block-device-mapping.volume-type: gp2
@@ -141,7 +141,7 @@ platforms:
     driver:
       image_search:
         name: FreeBSD/EC2 10.*-RELEASE*
-        owner-id: 118940168514
+        owner-id: "118940168514"
         architecture: x86_64
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
@@ -152,24 +152,24 @@ platforms:
     driver:
       image_search:
         name: FreeBSD/EC2 9.*-RELEASE*
-        owner-id: 118940168514
+        owner-id: "118940168514"
         architecture: x86_64
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
         image-type: machine
     transport:
       username: ec2-user
-  # - name: freebsd-8
-  #   driver:
-  #     image_search:
-  #       name: FreeBSD/EC2 8.*-RELEASE*
-  #       owner-id: 118940168514
-  #       architecture: x86_64
-  #       virtualization-type: hvm
-  #       block-device-mapping.volume-type: standard
-  #       image-type: machine
-  #   transport:
-  #     username: ec2-user
+  - name: freebsd-8
+    driver:
+      image_search:
+        name: FreeBSD/EC2 8.*-RELEASE*
+        owner-id: "118940168514"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: standard
+        image-type: machine
+    transport:
+      username: ec2-user
   #
   # OS/X
   #
@@ -243,28 +243,28 @@ platforms:
   #
   # Centos
   #
-  # - name: centos-7
-  #   driver:
-  #     image_search:
-  #       name: CentOS Linux 7 *
-  #       owner-alias: aws-marketplace
-  #       architecture: x86_64
-  #       virtualization-type: hvm
-  #       block-device-mapping.volume-type: standard
-  #       image-type: machine
-  #   transport:
-  #     username: root
-  # - name: centos-6
-  #   driver:
-  #     image_search:
-  #       name: CentOS-6.5-GA-*
-  #       owner-alias: aws-marketplace
-  #       architecture: x86_64
-  #       virtualization-type: paravirtual
-  #       block-device-mapping.volume-type: standard
-  #       image-type: machine
-  #   transport:
-  #     username: root
+  - name: centos-7
+    driver:
+      image_search:
+        name: CentOS Linux 7 *
+        owner-alias: aws-marketplace
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: standard
+        image-type: machine
+    transport:
+      username: root
+  - name: centos-6
+    driver:
+      image_search:
+        name: CentOS-6.5-GA-*
+        owner-alias: aws-marketplace
+        architecture: x86_64
+        virtualization-type: paravirtual
+        block-device-mapping.volume-type: standard
+        image-type: machine
+    transport:
+      username: root
   #
   # Fedora
   #
@@ -272,7 +272,7 @@ platforms:
     driver:
       image_search:
         name: Fedora-Cloud-Base-21-*
-        owner-id: 125523088429
+        owner-id: "125523088429"
         architecture: x86_64
         virtualization-type: hvm
         block-device-mapping.volume-type: gp2
