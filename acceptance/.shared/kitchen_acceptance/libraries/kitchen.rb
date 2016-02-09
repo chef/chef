@@ -25,9 +25,10 @@ module KitchenAcceptance
     property :artifactory_username, String, default: lazy { ENV["ARTIFACTORY_USERNAME"] }
     property :artifactory_password, String, default: lazy { ENV["ARTIFACTORY_PASSWORD"] }
     property :env, Hash, default: {}
+    property :kitchen_options, String, default: "-l debug"
 
     action :run do
-      execute "bundle exec kitchen #{command}#{instances ? " #{instances}" : ""}" do
+      execute "bundle exec kitchen #{command}#{instances ? " #{instances}" : ""}#{kitchen_options ? " #{kitchen_options}" : ""}" do
         cwd kitchen_dir
         env({
           "KITCHEN_DRIVER" => driver,

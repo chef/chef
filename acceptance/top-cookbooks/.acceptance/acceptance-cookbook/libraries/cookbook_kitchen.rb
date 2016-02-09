@@ -25,19 +25,17 @@ class CookbookKitchen < KitchenAcceptance::Kitchen
   }
 
   action :run do
-    if command == "converge"
-      # Ensure the parent directory exists
-      directory ::File.expand_path("..", repository_root) do
-        recursive true
-      end
+    # Ensure the parent directory exists
+    directory ::File.expand_path("..", repository_root) do
+      recursive true
+    end
 
-      # Grab the cookbook
-      # TODO Grab the source URL from supermarket
-      # TODO get git to include its kitchen tests in the cookbook.
-      git repository_root do
-        repository new_resource.repository
-        branch new_resource.branch
-      end
+    # Grab the cookbook
+    # TODO Grab the source URL from supermarket
+    # TODO get git to include its kitchen tests in the cookbook.
+    git repository_root do
+      repository new_resource.repository
+      branch new_resource.branch
     end
 
     super()
