@@ -159,6 +159,10 @@ class Chef
             parent.root
           end
 
+          def compare_to(other)
+            nil
+          end
+
           protected
 
           def make_child_entry(child_name)

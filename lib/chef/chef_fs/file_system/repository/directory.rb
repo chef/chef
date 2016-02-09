@@ -39,11 +39,24 @@ class Chef
             !name.start_with?(".")
           end
 
+          # Whether or not the file system entry this object represents is
+          # valid. Mainly used to trim dotfiles/dotdirs and non directories
+          # from the list of children when enumerating items on the filesystem
+          def fs_entry_valid?
+            name_valid? && File.directory?(file_path)
+          end
+
           # ChefFS API:
 
-          # Public api called by multiplexed_dir
+          # Public API called by multiplexed_dir
           def can_have_child?(name, is_dir)
-            is_dir && make_child_entry(name).name_valid?
+            possible_child = make_child_entry(name)
+            possible_child.dir? == is_dir && possible_child.name_valid?
+          end
+
+          # Public API callied by chef_fs/file_system
+          def dir?
+            true
           end
 
           def path_for_printing
@@ -52,7 +65,8 @@ class Chef
 
           def children
             dir_ls.sort.
-              map { |child_name| make_child_entry(child_name) }
+              map { |child_name| make_child_entry(child_name) }.
+              select { |maybe_child| maybe_child.fs_entry_valid? }
           rescue Errno::ENOENT => e
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
           end
@@ -66,6 +80,7 @@ class Chef
             children.empty?
           end
 
+          # Public API callied by chef_fs/file_system
           def child(name)
             possible_child = make_child_entry(name)
             if possible_child.name_valid?
@@ -83,12 +98,12 @@ class Chef
 
           def create(file_contents = nil)
             if exists?
-              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self)
             end
             begin
               Dir.mkdir(file_path)
             rescue Errno::EEXIST
-              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self)
             end
           end
 
@@ -122,4 +137,3 @@ class Chef
     end
   end
 end
-

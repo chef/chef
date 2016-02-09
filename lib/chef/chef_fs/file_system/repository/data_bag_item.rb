@@ -28,8 +28,6 @@ class Chef
           attr_reader :name
           attr_reader :parent
           attr_reader :path
-          attr_reader :ruby_only
-          attr_reader :recursive
           attr_reader :file_path
 
           def initialize(name, parent)
@@ -40,8 +38,17 @@ class Chef
             @file_path = "#{parent.file_path}/#{name}"
           end
 
+          # Public API callied by chef_fs/file_system
+          def dir?
+            false
+          end
+
           def name_valid?
-            !name.start_with?(".")
+            !name.start_with?(".") && name.end_with?(".json")
+          end
+
+          def fs_entry_valid?
+            name_valid? && File.file?(file_path)
           end
 
           def create(file_contents)
@@ -96,10 +103,12 @@ class Chef
             parent.root
           end
 
+          def compare_to(other)
+            nil
+          end
         end
 
       end
     end
   end
 end
-
