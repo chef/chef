@@ -15,7 +15,7 @@ class CookbookKitchen < KitchenAcceptance::Kitchen
     }
   property :repository_root, String, default: lazy { ::File.join(Chef.node["chef-acceptance"]["suite-dir"], "test_run", test_cookbook) }
   property :branch, String, default: "master"
-  property :cookbook_relative_dir, String
+  property :cookbook_relative_dir, String, default: ""
   property :env, default: lazy {
     {
       "BUNDLE_GEMFILE" => ::File.expand_path("../Gemfile", Chef.node["chef-acceptance"]["suite-dir"]),
