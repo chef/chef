@@ -87,19 +87,19 @@ describe Chef::Resource::Mount do
   end
 
   it "should allow options attribute as an array" do
-    @resource.options %w(ro nosuid)
+    @resource.options %w{ro nosuid}
     expect(@resource.options).to be_a_kind_of(Array)
   end
 
   it "should allow options to be sent as a delayed evaluator" do
-    @resource.options Chef::DelayedEvaluator.new { %w(rw noexec) }
-    expect(@resource.options).to eql(%w(rw noexec))
+    @resource.options Chef::DelayedEvaluator.new { %w{rw noexec} }
+    expect(@resource.options).to eql(%w{rw noexec})
   end
 
   it "should allow options to be sent as a delayed evaluator, and convert to array" do
     @resource.options Chef::DelayedEvaluator.new { "rw,noexec" }
     expect(@resource.options).to be_a_kind_of(Array)
-    expect(@resource.options).to eql(%w(rw noexec))
+    expect(@resource.options).to eql(%w{rw noexec})
   end
 
   it "should accept true for mounted" do

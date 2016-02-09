@@ -45,7 +45,7 @@ describe Chef::Knife::CookbookTest do
 
     it "should test multiple cookbooks when provided" do
       allow(@knife).to receive(:test_cookbook).and_return(true)
-      @knife.name_args = %w(tats jimmy_johns)
+      @knife.name_args = %w{tats jimmy_johns}
       expect(@knife).to receive(:test_cookbook).with("tats")
       expect(@knife).to receive(:test_cookbook).with("jimmy_johns")
       expect(@knife).not_to receive(:test_cookbook).with("central_market")

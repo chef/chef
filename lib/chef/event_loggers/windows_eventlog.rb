@@ -83,7 +83,7 @@ class Chef
             [@run_status.run_id,
              @run_status.elapsed_time.to_s]
           else
-            %w(UNKNOWN UNKNOWN)
+            %w{UNKNOWN UNKNOWN}
           end
 
         @eventlog.report_event(

@@ -292,7 +292,7 @@ describe "Chef::Resource.property validation" do
 
     # Regex
     validation_test "is: /abc/",
-      %w(abc wowabcwow),
+      %w{abc wowabcwow},
       [ "", "abac" ]
 
     # Property
@@ -427,17 +427,17 @@ describe "Chef::Resource.property validation" do
       :nil_is_valid
 
     validation_test "regex: [ /abc/, /z/ ]",
-      %w(xabcy aza),
+      %w{xabcy aza},
       [ "gbh", 123 ],
       :nil_is_valid
 
     validation_test "regex: [ /z/, /abc/ ]",
-      %w(xabcy aza),
+      %w{xabcy aza},
       [ "gbh", 123 ],
       :nil_is_valid
 
     validation_test "regex: [ [ /z/, /abc/ ], [ /n/ ] ]",
-      %w(xabcy aza ana),
+      %w{xabcy aza ana},
       [ "gbh", 123 ],
       :nil_is_valid
 

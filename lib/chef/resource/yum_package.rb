@@ -23,7 +23,7 @@ class Chef
   class Resource
     class YumPackage < Chef::Resource::Package
       resource_name :yum_package
-      provides :package, os: "linux", platform_family: %w(rhel fedora)
+      provides :package, os: "linux", platform_family: %w{rhel fedora}
 
       # Install a specific arch
       property :arch, [ String, Array ]

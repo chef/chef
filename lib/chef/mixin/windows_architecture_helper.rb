@@ -98,13 +98,13 @@ class Chef
       end
 
       def disable_wow64_file_redirection( node )
-        if  ( node_windows_architecture(node) == :x86_64) && ::Chef::Platform.windows?
+        if ( node_windows_architecture(node) == :x86_64) && ::Chef::Platform.windows?
           Chef::ReservedNames::Win32::System.wow64_disable_wow64_fs_redirection
         end
       end
 
       def restore_wow64_file_redirection( node, original_redirection_state )
-        if  (node_windows_architecture(node) == :x86_64) && ::Chef::Platform.windows?
+        if (node_windows_architecture(node) == :x86_64) && ::Chef::Platform.windows?
           Chef::ReservedNames::Win32::System.wow64_revert_wow64_fs_redirection(original_redirection_state)
         end
       end

@@ -23,7 +23,7 @@ describe Chef::Knife::CookbookList do
     @knife = Chef::Knife::CookbookList.new
     @rest_mock = double("rest")
     allow(@knife).to receive(:rest).and_return(@rest_mock)
-    @cookbook_names = %w(apache2 mysql)
+    @cookbook_names = %w{apache2 mysql}
     @base_url = "https://server.example.com/cookbooks"
     @cookbook_data = {}
     @cookbook_names.each do |item|

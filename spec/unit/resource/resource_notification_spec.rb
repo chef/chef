@@ -100,7 +100,7 @@ describe Chef::Resource::Notification do
   end
 
   it "raises a RuntimeError if you try to reference multiple resources" do
-    notification.resource = { :cat => %w(keyboard_cat cheez_cat) }
+    notification.resource = { :cat => %w{keyboard_cat cheez_cat} }
     @keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     @cheez_cat = Chef::Resource::Cat.new("cheez_cat")
     @resource_collection = Chef::ResourceCollection.new
@@ -112,7 +112,7 @@ describe Chef::Resource::Notification do
   end
 
   it "raises a RuntimeError if you try to reference multiple notifying resources" do
-    notification.notifying_resource = { :cat => %w(long_cat cheez_cat) }
+    notification.notifying_resource = { :cat => %w{long_cat cheez_cat} }
     @long_cat = Chef::Resource::Cat.new("long_cat")
     @cheez_cat = Chef::Resource::Cat.new("cheez_cat")
     @resource_collection = Chef::ResourceCollection.new

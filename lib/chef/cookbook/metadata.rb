@@ -485,7 +485,7 @@ class Chef
             :description => { :kind_of => String },
             :choice => { :kind_of => [ Array ], :default => [] },
             :calculated => { :equal_to => [ true, false ], :default => false },
-            :type => { :equal_to => %w(string array hash symbol boolean numeric), :default => "string" },
+            :type => { :equal_to => %w{string array hash symbol boolean numeric}, :default => "string" },
             :required => { :equal_to => [ "required", "recommended", "optional", true, false ], :default => "optional" },
             :recipes => { :kind_of => [ Array ], :default => [] },
             :default => { :kind_of => [ String, Array, Hash, Symbol, Numeric, TrueClass, FalseClass ] },

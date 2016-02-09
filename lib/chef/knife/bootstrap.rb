@@ -220,7 +220,7 @@ class Chef
         :long        => "--node-ssl-verify-mode [peer|none]",
         :description => "Whether or not to verify the SSL cert for all HTTPS requests.",
         :proc        => Proc.new { |v|
-          valid_values = %w(none peer)
+          valid_values = %w{none peer}
           unless valid_values.include?(v)
             raise "Invalid value '#{v}' for --node-ssl-verify-mode. Valid values are: #{valid_values.join(", ")}"
           end

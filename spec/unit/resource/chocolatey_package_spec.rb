@@ -42,13 +42,13 @@ describe Chef::Resource::ChocolateyPackage do
   end
 
   it "the package_name setter should accept arrays" do
-    resource.package_name(%w(git unzip))
-    expect(resource.package_name).to eql(%w(git unzip))
+    resource.package_name(%w{git unzip})
+    expect(resource.package_name).to eql(%w{git unzip})
   end
 
   it "the name should accept arrays" do
-    resource = Chef::Resource::ChocolateyPackage.new(%w(git unzip))
-    expect(resource.package_name).to eql(%w(git unzip))
+    resource = Chef::Resource::ChocolateyPackage.new(%w{git unzip})
+    expect(resource.package_name).to eql(%w{git unzip})
   end
 
   it "the default version should be nil" do

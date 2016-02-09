@@ -30,7 +30,7 @@ describe Chef::Search::Query do
     let(:filter_hash) {
       {
         "env" => [ "chef_environment" ],
-        "ruby_plat" => %w(languages ruby platform),
+        "ruby_plat" => %w{languages ruby platform},
       }
     }
     let(:response) {

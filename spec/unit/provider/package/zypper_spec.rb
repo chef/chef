@@ -254,7 +254,7 @@ describe Chef::Provider::Package::Zypper do
       shell_out_expectation!(
         "zypper --non-interactive --no-gpg-checks install " + "--auto-agree-with-licenses emacs=1.0 vim=2.0"
       )
-      provider.install_package(%w(emacs vim), ["1.0", "2.0"])
+      provider.install_package(%w{emacs vim}, ["1.0", "2.0"])
     end
 
     it "should remove an array of package names and versions" do
@@ -262,7 +262,7 @@ describe Chef::Provider::Package::Zypper do
       shell_out_expectation!(
         "zypper --non-interactive --no-gpg-checks remove emacs=1.0 vim=2.0"
       )
-      provider.remove_package(%w(emacs vim), ["1.0", "2.0"])
+      provider.remove_package(%w{emacs vim}, ["1.0", "2.0"])
     end
   end
 end

@@ -660,7 +660,7 @@ describe Chef::PolicyBuilder::Policyfile do
               expect_any_instance_of(Chef::CookbookCollection).to receive(:validate!)
               run_context = policy_builder.setup_run_context
               expect(run_context.node).to eq(node)
-              expect(run_context.cookbook_collection.keys).to match_array(%w(example1 example2))
+              expect(run_context.cookbook_collection.keys).to match_array(%w{example1 example2})
             end
 
             it "makes the run context available via static method on Chef" do

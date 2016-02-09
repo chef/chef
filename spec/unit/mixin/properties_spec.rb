@@ -9,8 +9,8 @@ module ChefMixinPropertiesSpec
       class A
         include Chef::Mixin::Properties
         property :a, "a", default: "a"
-        property :ab, %w(a b), default: "a"
-        property :ac, %w(a c), default: "a"
+        property :ab, %w{a b}, default: "a"
+        property :ac, %w{a c}, default: "a"
       end
 
       context "and a module B with properties b, ab and bc" do
@@ -18,7 +18,7 @@ module ChefMixinPropertiesSpec
           include Chef::Mixin::Properties
           property :b, "b", default: "b"
           property :ab, default: "b"
-          property :bc, %w(b c), default: "c"
+          property :bc, %w{b c}, default: "c"
         end
 
         context "and a derived class C < A with properties c, ac and bc" do
@@ -32,22 +32,22 @@ module ChefMixinPropertiesSpec
           it "A.properties has a, ab, and ac with types 'a', ['a', 'b'], and ['b', 'c']" do
             expect(A.properties.keys).to eq [ :a, :ab, :ac ]
             expect(A.properties[:a].validation_options[:is]).to eq "a"
-            expect(A.properties[:ab].validation_options[:is]).to eq %w(a b)
-            expect(A.properties[:ac].validation_options[:is]).to eq %w(a c)
+            expect(A.properties[:ab].validation_options[:is]).to eq %w{a b}
+            expect(A.properties[:ac].validation_options[:is]).to eq %w{a c}
           end
           it "B.properties has b, ab, and bc with types 'b', nil and ['b', 'c']" do
             expect(B.properties.keys).to eq [ :b, :ab, :bc ]
             expect(B.properties[:b].validation_options[:is]).to eq "b"
             expect(B.properties[:ab].validation_options[:is]).to be_nil
-            expect(B.properties[:bc].validation_options[:is]).to eq %w(b c)
+            expect(B.properties[:bc].validation_options[:is]).to eq %w{b c}
           end
           it "C.properties has a, b, c, ac and bc with merged types" do
             expect(C.properties.keys).to eq [ :a, :ab, :ac, :b, :bc, :c ]
             expect(C.properties[:a].validation_options[:is]).to eq "a"
             expect(C.properties[:b].validation_options[:is]).to eq "b"
             expect(C.properties[:c].validation_options[:is]).to eq "c"
-            expect(C.properties[:ac].validation_options[:is]).to eq %w(a c)
-            expect(C.properties[:bc].validation_options[:is]).to eq %w(b c)
+            expect(C.properties[:ac].validation_options[:is]).to eq %w{a c}
+            expect(C.properties[:bc].validation_options[:is]).to eq %w{b c}
           end
           it "C.properties has ab with a non-merged type (from B)" do
             expect(C.properties[:ab].validation_options[:is]).to be_nil

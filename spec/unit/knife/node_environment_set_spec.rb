@@ -22,7 +22,7 @@ describe Chef::Knife::NodeEnvironmentSet do
   before(:each) do
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeEnvironmentSet.new
-    @knife.name_args = %w(adam bar)
+    @knife.name_args = %w{adam bar}
     allow(@knife).to receive(:output).and_return(true)
     @node = Chef::Node.new()
     @node.name("knifetest-node")

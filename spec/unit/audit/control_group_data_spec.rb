@@ -360,19 +360,19 @@ describe Chef::Audit::ControlGroupData do
 
     context "and it's the first audit" do
       include_examples "mixed audit results" do
-        let(:audit_results) { %w(failure success success) }
+        let(:audit_results) { %w{failure success success} }
       end
     end
 
     context "and it's an audit in the middle" do
       include_examples "mixed audit results" do
-        let(:audit_results) { %w(success failure success) }
+        let(:audit_results) { %w{success failure success} }
       end
     end
 
     context "and it's the last audit" do
       include_examples "mixed audit results" do
-        let(:audit_results) { %w(success success failure) }
+        let(:audit_results) { %w{success success failure} }
       end
     end
   end

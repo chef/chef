@@ -75,7 +75,7 @@ class Chef
 
           unless passwd_s.exitstatus == 0
             raise_lock_error = false
-            if %w(redhat centos).include?(node[:platform])
+            if %w{redhat centos}.include?(node[:platform])
               passwd_version_check = shell_out!("rpm -q passwd")
               passwd_version = passwd_version_check.stdout.chomp
 

@@ -59,8 +59,8 @@ describe Chef::Mixin::WindowsArchitectureHelper do
 
   it "returns true only for supported desired architecture passed to node_supports_windows_architecture" do
     with_node_architecture_combinations do |node, desired_arch|
-      expect(node_supports_windows_architecture?(node, desired_arch)).to be true if node_windows_architecture(node) == :x86_64 || desired_arch == :i386 
-      expect(node_supports_windows_architecture?(node, desired_arch)).to be false if node_windows_architecture(node) == :i386 && desired_arch == :x86_64 
+      expect(node_supports_windows_architecture?(node, desired_arch)).to be true if node_windows_architecture(node) == :x86_64 || desired_arch == :i386
+      expect(node_supports_windows_architecture?(node, desired_arch)).to be false if node_windows_architecture(node) == :i386 && desired_arch == :x86_64
     end
   end
 

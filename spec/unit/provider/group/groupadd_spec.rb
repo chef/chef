@@ -25,12 +25,12 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("aj")
     @new_resource.gid(50)
-    @new_resource.members(%w(root aj))
+    @new_resource.members(%w{root aj})
     @new_resource.system false
     @new_resource.non_unique false
     @current_resource = Chef::Resource::Group.new("aj")
     @current_resource.gid(50)
-    @current_resource.members(%w(root aj))
+    @current_resource.members(%w{root aj})
     @current_resource.system false
     @current_resource.non_unique false
     @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context)

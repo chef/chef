@@ -42,7 +42,7 @@ describe Chef::Knife::EnvironmentCompare do
 
     @rest_double = double("rest")
     allow(@knife).to receive(:rest).and_return(@rest_double)
-    @cookbook_names = %w(apache2 mysql foo bar dummy chef_handler)
+    @cookbook_names = %w{apache2 mysql foo bar dummy chef_handler}
     @base_url = "https://server.example.com/cookbooks"
     @cookbook_data = {}
     @cookbook_names.each do |item|

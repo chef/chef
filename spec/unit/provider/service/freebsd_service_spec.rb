@@ -495,7 +495,7 @@ EOF
         allow(provider).to receive(:service_enable_variable_name).and_return("#{new_resource.service_name}_enable")
       end
 
-      %w(start reload restart enable).each do |action|
+      %w{start reload restart enable}.each do |action|
         it "should raise an exception when the action is #{action}" do
           provider.define_resource_requirements
           provider.action = action
@@ -503,7 +503,7 @@ EOF
         end
       end
 
-      %w(stop disable).each do |action|
+      %w{stop disable}.each do |action|
         it "should not raise an error when the action is #{action}" do
           provider.define_resource_requirements
           provider.action = action
@@ -518,7 +518,7 @@ EOF
         allow(provider).to receive(:service_enable_variable_name).and_return(nil)
       end
 
-      %w(start reload restart enable).each do |action|
+      %w{start reload restart enable}.each do |action|
         it "should raise an exception when the action is #{action}" do
           provider.action = action
           provider.define_resource_requirements
@@ -526,7 +526,7 @@ EOF
         end
       end
 
-      %w(stop disable).each do |action|
+      %w{stop disable}.each do |action|
         it "should not raise an error when the action is #{action}" do
           provider.action = action
           provider.define_resource_requirements
@@ -558,7 +558,7 @@ EOF
 
     it "should enable the service if it is not enabled and not already specified in the rc.conf file" do
       allow(current_resource).to receive(:enabled).and_return(false)
-      expect(provider).to receive(:read_rc_conf).and_return(%w(foo bar))
+      expect(provider).to receive(:read_rc_conf).and_return(%w{foo bar})
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"YES\""])
       provider.enable_service()
     end

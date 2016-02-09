@@ -106,19 +106,19 @@ describe Chef::Resource::Cron do
   end
 
   it "should allow * for all time and date values" do
-    %w(minute hour day month weekday).each do |x|
+    %w{minute hour day month weekday}.each do |x|
       expect(@resource.send(x, "*")).to eql("*")
     end
   end
 
   it "should allow ranges for all time and date values" do
-    %w(minute hour day month weekday).each do |x|
+    %w{minute hour day month weekday}.each do |x|
       expect(@resource.send(x, "1-2,5")).to eql("1-2,5")
     end
   end
 
   it "should have a default value of * for all time and date values" do
-    %w(minute hour day month weekday).each do |x|
+    %w{minute hour day month weekday}.each do |x|
       expect(@resource.send(x)).to eql("*")
     end
   end
@@ -153,7 +153,7 @@ describe Chef::Resource::Cron do
   end
 
   it "should convert integer schedule values to a string" do
-    %w(minute hour day month weekday).each do |x|
+    %w{minute hour day month weekday}.each do |x|
       expect(@resource.send(x, 5)).to eql("5")
     end
   end

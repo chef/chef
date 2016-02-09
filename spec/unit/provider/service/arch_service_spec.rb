@@ -180,7 +180,7 @@ RUNNING_PS
 
       it "should add chef to DAEMONS array" do
         allow(::File).to receive(:read).with("/etc/rc.conf").and_return("DAEMONS=(network)")
-        expect(@provider).to receive(:update_daemons).with(%w(network chef))
+        expect(@provider).to receive(:update_daemons).with(%w{network chef})
         @provider.enable_service()
       end
     end

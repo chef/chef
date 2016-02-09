@@ -361,7 +361,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group modify action", :not_supported_on_solaris do
-    let(:spec_members) { %w(mnou5sdz htulrvwq x4c3g1lu) }
+    let(:spec_members) { %w{mnou5sdz htulrvwq x4c3g1lu} }
     let(:included_members) { [spec_members[0], spec_members[1]] }
     let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :modify }
@@ -389,7 +389,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group manage action", :not_supported_on_solaris do
-    let(:spec_members) { %w(mnou5sdz htulrvwq x4c3g1lu) }
+    let(:spec_members) { %w{mnou5sdz htulrvwq x4c3g1lu} }
     let(:included_members) { [spec_members[0], spec_members[1]] }
     let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :manage }
@@ -443,7 +443,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     end
 
     describe "when append is not set" do
-      let(:included_members) { %w(gordon eric) }
+      let(:included_members) { %w{gordon eric} }
 
       before(:each) do
         group_resource.append(false)

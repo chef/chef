@@ -79,7 +79,7 @@ describe Chef::Knife::UserCreate do
   context "when FIRST_NAME isn't specified" do
     # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
-      let(:name_args) { %w(some_user some_display_name) }
+      let(:name_args) { %w{some_user some_display_name} }
       let(:fieldname) { "first name" }
     end
   end
@@ -87,7 +87,7 @@ describe Chef::Knife::UserCreate do
   context "when LAST_NAME isn't specified" do
     # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
-      let(:name_args) { %w(some_user some_display_name some_first_name) }
+      let(:name_args) { %w{some_user some_display_name some_first_name} }
       let(:fieldname) { "last name" }
     end
   end
@@ -95,7 +95,7 @@ describe Chef::Knife::UserCreate do
   context "when EMAIL isn't specified" do
     # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
-      let(:name_args) { %w(some_user some_display_name some_first_name some_last_name) }
+      let(:name_args) { %w{some_user some_display_name some_first_name some_last_name} }
       let(:fieldname) { "email" }
     end
   end
@@ -103,14 +103,14 @@ describe Chef::Knife::UserCreate do
   context "when PASSWORD isn't specified" do
     # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
-      let(:name_args) { %w(some_user some_display_name some_first_name some_last_name some_email) }
+      let(:name_args) { %w{some_user some_display_name some_first_name some_last_name some_email} }
       let(:fieldname) { "password" }
     end
   end
 
   context "when all mandatory fields are validly specified" do
     before do
-      knife.name_args = %w(some_user some_display_name some_first_name some_last_name some_email some_password)
+      knife.name_args = %w{some_user some_display_name some_first_name some_last_name some_email some_password}
       allow(knife).to receive(:edit_data).and_return(knife.user.to_hash)
       allow(knife).to receive(:create_user_from_hash).and_return(knife.user)
     end

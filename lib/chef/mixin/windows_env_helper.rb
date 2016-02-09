@@ -43,12 +43,12 @@ class Chef
         flags = SMTO_BLOCK | SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG
         # for why two calls, see:
         # http://stackoverflow.com/questions/4968373/why-doesnt-sendmessagetimeout-update-the-environment-variables
-        if  SendMessageTimeoutA(HWND_BROADCAST, WM_SETTINGCHANGE, 0, FFI::MemoryPointer.from_string("Environment").address, flags, 5000, nil) == 0 
+        if SendMessageTimeoutA(HWND_BROADCAST, WM_SETTINGCHANGE, 0, FFI::MemoryPointer.from_string("Environment").address, flags, 5000, nil) == 0
           Chef::ReservedNames::Win32::Error.raise!
         end
         if  SendMessageTimeoutW(HWND_BROADCAST, WM_SETTINGCHANGE, 0, FFI::MemoryPointer.from_string(
             utf8_to_wide("Environment")
-        ).address, flags, 5000, nil) == 0 
+        ).address, flags, 5000, nil) == 0
           Chef::ReservedNames::Win32::Error.raise!
         end
       end

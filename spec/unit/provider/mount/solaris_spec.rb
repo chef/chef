@@ -316,7 +316,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       end
 
       it "should set the options field on the current_resource" do
-        expect(provider.current_resource.options).to eql(%w(rw soft))
+        expect(provider.current_resource.options).to eql(%w{rw soft})
       end
 
       it "should set the pass field on the current_resource" do

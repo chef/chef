@@ -151,7 +151,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
       allow(File).to receive(:join) do |a, b|
         [a, b].join("++")
       end
-      allow(Dir).to receive(:entries).with("tmp++hello") { %w(f1 f2 f3) }
+      allow(Dir).to receive(:entries).with("tmp++hello") { %w{f1 f2 f3} }
       expect(conf_man.send(:find_configuration_document, "hello")).to be_nil
     end
   end
@@ -179,12 +179,12 @@ describe Chef::Util::DSC::ConfigurationGenerator do
       end
 
       it "should import specific resources when a module has list without * that is not empty" do
-        dsc = conf_man.send(:configuration_code, "archive{}", "hello", { "FooModule" => %w(FooResource BarResource) })
+        dsc = conf_man.send(:configuration_code, "archive{}", "hello", { "FooModule" => %w{FooResource BarResource} })
         expect(dsc).to match(/Import-DscResource -ModuleName FooModule -Name FooResource,BarResource/)
       end
 
       it "should import multiple modules with multiple import statements" do
-        dsc = conf_man.send(:configuration_code, "archive{}", "hello", { "FooModule" => %w(FooResource BarResource), "BazModule" => [] })
+        dsc = conf_man.send(:configuration_code, "archive{}", "hello", { "FooModule" => %w{FooResource BarResource}, "BazModule" => [] })
         expect(dsc).to match(/Import-DscResource -ModuleName FooModule -Name FooResource,BarResource/)
         expect(dsc).to match(/Import-DscResource -ModuleName BazModule\s*\n/)
       end

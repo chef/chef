@@ -291,9 +291,9 @@ describe Chef::Node do
       end
 
       it "should let you use tag as a convience method for the tags attribute" do
-        node.normal["tags"] = %w(one two)
+        node.normal["tags"] = %w{one two}
         node.tag("three", "four")
-        expect(node["tags"]).to eq(%w(one two three four))
+        expect(node["tags"]).to eq(%w{one two three four})
       end
     end
 
@@ -766,15 +766,15 @@ describe Chef::Node do
     end
 
     it "should overwrites the run list with the run list it consumes" do
-      node.consume_run_list "recipes" => %w(one two)
+      node.consume_run_list "recipes" => %w{one two}
       node.consume_run_list "recipes" => [ "three" ]
       expect(node.run_list).to eq([ "three" ])
     end
 
     it "should not add duplicate recipes from the json attributes" do
       node.run_list << "one"
-      node.consume_run_list "recipes" => %w(one two three)
-      expect(node.run_list).to eq(%w(one two three))
+      node.consume_run_list "recipes" => %w{one two three}
+      expect(node.run_list).to eq(%w{one two three})
     end
 
     it "doesn't change the run list if no run_list is specified in the json" do
@@ -887,7 +887,7 @@ describe Chef::Node do
     it "sets the 'roles' automatic attribute to the expanded role list" do
       @expansion.instance_variable_set(:@applied_roles, { "arf" => nil, "countersnark" => nil })
       node.expand!
-      expect(node.automatic_attrs[:roles].sort).to eq(%w(arf countersnark))
+      expect(node.automatic_attrs[:roles].sort).to eq(%w{arf countersnark})
     end
 
     it "applies default attributes from the environment as environment defaults" do
