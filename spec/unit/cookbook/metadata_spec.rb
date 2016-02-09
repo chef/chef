@@ -429,6 +429,29 @@ describe Chef::Cookbook::Metadata do
     end
   end
 
+  describe "gem" do
+    def expect_gem_works(*args)
+      ret = []
+      args.each do |arg|
+        metadata.send(:gem, *arg)
+        ret << arg
+      end
+      expect(metadata.send(:gems)).to eql(ret)
+    end
+
+    it "works on a simple case" do
+      expect_gem_works(["foo", "~> 1.2"])
+    end
+
+    it "works if there's two gems" do
+      expect_gem_works(["foo", "~> 1.2"], ["bar", "~> 2.0"])
+    end
+
+    it "works if there's a more complicated constraint" do
+      expect_gem_works(["foo", "~> 1.2"], ["bar", ">= 2.4", "< 4.0"])
+    end
+  end
+
   describe "attribute groupings" do
     it "should allow you set a grouping" do
       group = {
@@ -787,6 +810,8 @@ describe Chef::Cookbook::Metadata do
       metadata.attribute "bizspark/has_login",
         :display_name => "You have nothing"
       metadata.version "1.2.3"
+      metadata.gem "foo", "~> 1.2"
+      metadata.gem "bar", ">= 2.2", "< 4.0"
       metadata.chef_version ">= 11.14.2", "< 11.18.10"
       metadata.chef_version ">= 12.2.1", "< 12.5.1"
       metadata.ohai_version ">= 7.1.0", "< 7.5.0"
@@ -826,6 +851,7 @@ describe Chef::Cookbook::Metadata do
         source_url
         issues_url
         privacy
+        gems
       }.each do |t|
         it "should include '#{t}'" do
           expect(deserialized_metadata[t]).to eq(metadata.send(t.to_sym))
@@ -872,6 +898,7 @@ describe Chef::Cookbook::Metadata do
         privacy
         chef_versions
         ohai_versions
+        gems
       }.each do |t|
         it "should match '#{t}'" do
           expect(deserialized_metadata.send(t.to_sym)).to eq(metadata.send(t.to_sym))
