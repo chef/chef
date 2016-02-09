@@ -60,8 +60,6 @@ describe Chef::Knife::CookbookSiteDownload do
                            "file"    => "http://example.com/apache2_#{@version_us}.tgz" }
         @temp_file     = double( :path => "/tmp/apache2_#{@version_us}.tgz" )
         @file          = File.join(Dir.pwd, "apache2-#{@version}.tar.gz")
-
-        expect(@noauth_rest).to receive(:sign_on_redirect=).with(false)
       end
 
       context "downloading the latest version" do
@@ -69,8 +67,8 @@ describe Chef::Knife::CookbookSiteDownload do
           expect(@noauth_rest).to receive(:get).
             with(@current_data["latest_version"]).
             and_return(@cookbook_data)
-          expect(@noauth_rest).to receive(:get).
-            with(@cookbook_data["file"], true).
+          expect(@noauth_rest).to receive(:streaming_request).
+            with(@cookbook_data["file"]).
             and_return(@temp_file)
         end
 
@@ -134,8 +132,8 @@ describe Chef::Knife::CookbookSiteDownload do
           expect(@noauth_rest).to receive(:get).
             with("#{@cookbook_api_url}/apache2/versions/#{@version_us}").
             and_return(@cookbook_data)
-          expect(@noauth_rest).to receive(:get).
-            with(@cookbook_data["file"], true).
+          expect(@noauth_rest).to receive(:streaming_request).
+            with(@cookbook_data["file"]).
             and_return(@temp_file)
           expect(FileUtils).to receive(:cp).with(@temp_file.path, @file)
           @knife.run

@@ -86,8 +86,7 @@ class Chef
 
       def download_cookbook
         ui.info "Downloading #{@name_args[0]} from Supermarket at version #{version} to #{download_location}"
-        noauth_rest.sign_on_redirect = false
-        tf = noauth_rest.get desired_cookbook_data["file"], true
+        tf = noauth_rest.streaming_request(desired_cookbook_data["file"])
 
         ::FileUtils.cp tf.path, download_location
         ui.info "Cookbook saved: #{download_location}"
