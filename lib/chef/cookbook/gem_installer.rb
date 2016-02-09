@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-require "tmpdir"
 require "bundler/inline"
 
 class Chef
