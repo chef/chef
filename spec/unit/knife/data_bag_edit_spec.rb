@@ -55,7 +55,7 @@ describe Chef::Knife::DataBagEdit do
     it "correctly edits then uploads the data bag" do
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(db)
       expect(knife).to receive(:encrypted?).with(db.raw_data).and_return(is_encrypted?)
-      expect(knife).to receive(:edit_data).with(data_to_edit).and_return(raw_edited_hash)
+      expect(knife).to receive(:edit_hash).with(data_to_edit).and_return(raw_edited_hash)
       expect(rest).to receive(:put).with("data/#{bag_name}/#{item_name}", transmitted_hash).ordered
 
       knife.run

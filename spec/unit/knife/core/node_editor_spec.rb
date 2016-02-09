@@ -165,7 +165,7 @@ describe Chef::Knife::NodeEditor do
 
         context "and changes affect only editable properties" do
           before(:each) do
-            allow(ui).to receive(:edit_data)
+            allow(ui).to receive(:edit_hash)
               .with(subject.view)
               .and_return(updated_data)
 
@@ -181,7 +181,7 @@ describe Chef::Knife::NodeEditor do
           before(:each) do
             data = updated_data.merge("bad_property" => "bad_value")
 
-            allow(ui).to receive(:edit_data)
+            allow(ui).to receive(:edit_hash)
               .with(subject.view)
               .and_return(data)
 
@@ -197,7 +197,7 @@ describe Chef::Knife::NodeEditor do
 
       context "and changes were not made" do
         before(:each) do
-          allow(ui).to receive(:edit_data)
+          allow(ui).to receive(:edit_hash)
             .with(subject.view)
             .and_return(subject.view.dup)
 

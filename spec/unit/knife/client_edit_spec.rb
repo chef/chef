@@ -39,7 +39,7 @@ describe Chef::Knife::ClientEdit do
 
     it "should edit the client" do
       allow(Chef::ApiClientV1).to receive(:load).with("adam").and_return(data)
-      expect(@knife).to receive(:edit_data).with(data).and_return(data)
+      expect(@knife).to receive(:edit_hash).with(data).and_return(data)
       @knife.run
     end
 

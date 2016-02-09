@@ -78,7 +78,7 @@ class Chef
           user.public_key File.read(File.expand_path(config[:user_key]))
         end
 
-        output = edit_data(user)
+        output = edit_hash(user)
         user = Chef::User.from_hash(output).create
 
         ui.info("Created #{user}")

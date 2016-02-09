@@ -165,13 +165,13 @@ class Chef
 
       # Hash -> Hash
       # Works the same as edit_data but
-      # returns a hash rather than a JSON string/Fully infated object
+      # returns a hash rather than a JSON string/Fully inflated object
       def edit_hash(hash)
         raw = edit_data(hash, false)
         Chef::JSONCompat.parse(raw)
       end
 
-      def edit_data(data, parse_output = true)
+      def edit_data(data, parse_output = true, object_class: nil)
         output = Chef::JSONCompat.to_json_pretty(data)
         if !config[:disable_editing]
           Tempfile.open([ "knife-edit-", ".json" ]) do |tf|
@@ -184,13 +184,22 @@ class Chef
           end
         end
 
-        parse_output ? Chef::JSONCompat.from_json(output) : output
+        if parse_output
+          if object_class.nil?
+            Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please pass in the class to inflate or use #edit_hash")
+            Chef::JSONCompat.from_json(output)
+          else
+            object_class.from_hash(Chef::JSONCompat.parse(output))
+          end
+        else
+          output
+        end
       end
 
       def edit_object(klass, name)
         object = klass.load(name)
 
-        output = edit_data(object)
+        output = edit_data(object, object_class: klass)
 
         # Only make the save if the user changed the object.
         #

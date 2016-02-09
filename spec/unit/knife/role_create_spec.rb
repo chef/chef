@@ -52,7 +52,7 @@ describe Chef::Knife::RoleCreate do
     end
 
     it "should allow you to edit the data" do
-      expect(@knife).to receive(:edit_data).with(@role)
+      expect(@knife).to receive(:edit_data).with(@role, object_class: Chef::Role)
       @knife.run
     end
 

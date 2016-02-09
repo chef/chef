@@ -91,7 +91,7 @@ class Chef
           client.public_key File.read(File.expand_path(config[:public_key]))
         end
 
-        output = edit_data(client)
+        output = edit_hash(client)
         final_client = create_client(output)
         ui.info("Created #{final_client}")
 

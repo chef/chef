@@ -40,7 +40,7 @@ class Chef
 
         node = Chef::Node.new
         node.name(@node_name)
-        create_object(node)
+        create_object(node, object_class: Chef::Node)
       end
     end
   end

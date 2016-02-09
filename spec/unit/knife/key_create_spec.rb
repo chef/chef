@@ -112,7 +112,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
 
         allow(key_create_object).to receive(:output_private_key_to_file)
         allow(key_create_object).to receive(:display_private_key)
-        allow(key_create_object).to receive(:edit_data).and_return(expected_hash)
+        allow(key_create_object).to receive(:edit_hash).and_return(expected_hash)
         allow(key_create_object).to receive(:create_key_from_hash).and_return(Chef::Key.from_hash(expected_hash))
         allow(key_create_object).to receive(:display_info)
       end

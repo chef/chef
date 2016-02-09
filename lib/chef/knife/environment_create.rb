@@ -46,7 +46,7 @@ class Chef
         env = Chef::Environment.new
         env.name(env_name)
         env.description(config[:description]) if config[:description]
-        create_object(env)
+        create_object(env, object_class: Chef::Environment)
       end
     end
   end

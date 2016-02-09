@@ -40,7 +40,7 @@ describe Chef::Knife::EnvironmentEdit do
   end
 
   it "should let you edit the environment" do
-    expect(@knife.ui).to receive(:edit_data).with(@environment)
+    expect(@knife.ui).to receive(:edit_data).with(@environment, object_class: Chef::Environment)
     @knife.run
   end
 
@@ -48,7 +48,7 @@ describe Chef::Knife::EnvironmentEdit do
     pansy = Chef::Environment.new
 
     @environment.name("new_environment_name")
-    expect(@knife.ui).to receive(:edit_data).with(@environment).and_return(pansy)
+    expect(@knife.ui).to receive(:edit_data).with(@environment, object_class: Chef::Environment).and_return(pansy)
     expect(pansy).to receive(:save)
     @knife.run
   end

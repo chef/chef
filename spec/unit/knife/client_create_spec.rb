@@ -40,7 +40,7 @@ describe Chef::Knife::ClientCreate do
     k = Chef::Knife::ClientCreate.new
     k.name_args = []
     allow(k).to receive(:client).and_return(client)
-    allow(k).to receive(:edit_data).with(client).and_return(client)
+    allow(k).to receive(:edit_hash).with(client).and_return(client)
     allow(k.ui).to receive(:stderr).and_return(stderr)
     allow(k.ui).to receive(:stdout).and_return(stdout)
     k
@@ -118,7 +118,7 @@ describe Chef::Knife::ClientCreate do
       end
 
       it "should allow you to edit the data" do
-        expect(knife).to receive(:edit_data).with(client).and_return(client)
+        expect(knife).to receive(:edit_hash).with(client).and_return(client)
         knife.run
       end
 

@@ -130,7 +130,7 @@ EOF
             user.public_key File.read(File.expand_path(config[:user_key]))
           end
 
-          output = edit_data(user)
+          output = edit_hash(user)
           final_user = create_user_from_hash(output)
 
           ui.info("Created #{user}")

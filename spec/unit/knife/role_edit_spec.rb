@@ -39,7 +39,7 @@ describe Chef::Knife::RoleEdit do
     end
 
     it "should edit the role data" do
-      expect(@knife.ui).to receive(:edit_data).with(@role)
+      expect(@knife.ui).to receive(:edit_data).with(@role, object_class: Chef::Role)
       @knife.run
     end
 
@@ -47,7 +47,7 @@ describe Chef::Knife::RoleEdit do
       pansy = Chef::Role.new
 
       @role.name("new_role_name")
-      expect(@knife.ui).to receive(:edit_data).with(@role).and_return(pansy)
+      expect(@knife.ui).to receive(:edit_data).with(@role, object_class: Chef::Role).and_return(pansy)
       expect(pansy).to receive(:save)
       @knife.run
     end
@@ -55,7 +55,7 @@ describe Chef::Knife::RoleEdit do
     it "should not save the unedited role data" do
       pansy = Chef::Role.new
 
-      expect(@knife.ui).to receive(:edit_data).with(@role).and_return(pansy)
+      expect(@knife.ui).to receive(:edit_data).with(@role, object_class: Chef::Role).and_return(pansy)
       expect(pansy).not_to receive(:save)
       @knife.run
 
