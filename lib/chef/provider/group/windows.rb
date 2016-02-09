@@ -39,7 +39,9 @@ class Chef
 
           members = nil
           begin
-            members = @net_group.local_get_members
+            members = current_group_user_sids.map do |sid|
+              sid.account_name
+            end
           rescue => e
             @group_exists = false
             Chef::Log.debug("#{@new_resource} group does not exist")
@@ -81,7 +83,7 @@ class Chef
 
         def has_current_group_member?(member)
           member_sid = local_group_name_to_sid(member)
-          @current_resource.members.include?(member_sid)
+          current_group_user_sids.any?{|s| s.to_s == member_sid}
         end
 
         def remove_group
@@ -91,6 +93,12 @@ class Chef
         def local_group_name_to_sid(group_name)
           locally_qualified_name = group_name.include?("\\") ? group_name : "#{ENV['COMPUTERNAME']}\\#{group_name}"
           Chef::ReservedNames::Win32::Security.lookup_account_name(locally_qualified_name)[1].to_s
+        end
+
+        def current_group_user_sids
+          @sids ||= @net_group.local_get_members.map do |member|
+            Chef::ReservedNames::Win32::Security::SID.from_string_sid(member)
+          end
         end
       end
     end

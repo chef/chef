@@ -50,15 +50,16 @@ describe Chef::Provider::Group::Windows do
     before do
       @new_resource.members([ "us" ])
       @current_resource = Chef::Resource::Group.new("staff")
-      @current_resource.members [ "all", "your", "base" ]
 
       allow(Chef::Util::Windows::NetGroup).to receive(:new).and_return(@net_group)
       allow(@net_group).to receive(:local_add_members)
       allow(@net_group).to receive(:local_set_members)
       allow(@provider).to receive(:local_group_name_to_sid)
+      allow(@provider).to receive(:current_group_user_sids)
       @provider.current_resource = @current_resource
     end
 
+    let(:members) { [ "all", "your", "base" ] }
     it "should call @net_group.local_set_members" do
       allow(@new_resource).to receive(:append).and_return(false)
       expect(@net_group).to receive(:local_set_members).with(@new_resource.members)
@@ -68,7 +69,16 @@ describe Chef::Provider::Group::Windows do
     it "should call @net_group.local_add_members" do
       allow(@new_resource).to receive(:append).and_return(true)
       expect(@net_group).to receive(:local_add_members).with(@new_resource.members)
+      expect(@provider).to receive(:current_group_user_sids).and_return(
+        members.map do |member|
+          instance_double("SID", :to_s => "S-1-#{member}", :account_name => member)
+        end
+      )
       @provider.manage_group
+      
+      members.each do |member|
+        expect(@provider.current_resource.members.include?(member))
+      end
     end
 
   end
