@@ -92,7 +92,7 @@ describe Chef::DSL::RebootPending do
 
     describe "in a resource" do
       it "responds to reboot_pending?" do
-        resource = Chef::Resource::new("Crackerjack::Timing", nil)
+        resource = Chef::Resource.new("Crackerjack::Timing", nil)
         expect(resource).to respond_to(:reboot_pending?)
       end
     end # describe in a resource

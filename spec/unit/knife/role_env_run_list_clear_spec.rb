@@ -30,7 +30,7 @@ describe Chef::Knife::RoleEnvRunListClear do
     @knife.config = {
       :print_after => nil
     }
-    @knife.name_args = [ "will", "QA" ]
+    @knife.name_args = %w(will QA)
     allow(@knife).to receive(:output).and_return(true)
 
     @role = Chef::Role.new()
@@ -79,7 +79,7 @@ describe Chef::Knife::RoleEnvRunListClear do
         @setup.run
         @setup.name_args = [ "will", "PRD", "recipe[orange::chicken]", "role[monkey]", "recipe[duck::type]", "role[person]", "role[bird]", "role[town]" ]
         @setup.run
-        @knife.name_args = [ "will", "QA" ]
+        @knife.name_args = %w(will QA)
         @knife.run
         expect(@role.run_list_for("QA")[0]).to be_nil
         expect(@role.run_list_for("PRD")[0]).to eq("recipe[orange::chicken]")

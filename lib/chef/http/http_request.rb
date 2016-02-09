@@ -169,7 +169,7 @@ class Chef
                           raise ArgumentError, "You must provide :GET, :PUT, :POST, :DELETE or :HEAD as the method"
                         end
 
-        @http_request.body = request_body if (request_body && @http_request.request_body_permitted?)
+        @http_request.body = request_body if request_body && @http_request.request_body_permitted?
         # Optionally handle HTTP Basic Authentication
         if url.user
           user = URI.unescape(url.user)

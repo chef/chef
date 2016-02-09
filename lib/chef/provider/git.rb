@@ -126,7 +126,7 @@ class Chef
       end
 
       def add_remotes
-        if (@new_resource.additional_remotes.length > 0)
+        if @new_resource.additional_remotes.length > 0
           @new_resource.additional_remotes.each_pair do |remote_name, remote_url|
             converge_by("add remote #{remote_name} from #{remote_url}") do
               Chef::Log.info "#{@new_resource} adding git remote #{remote_name} = #{remote_url}"

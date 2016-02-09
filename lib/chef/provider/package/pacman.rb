@@ -52,7 +52,7 @@ class Chef
         def candidate_version
           return @candidate_version if @candidate_version
 
-          repos = ["extra", "core", "community"]
+          repos = %w(extra core community)
 
           if(::File.exists?("/etc/pacman.conf"))
             pacman = ::File.read("/etc/pacman.conf")

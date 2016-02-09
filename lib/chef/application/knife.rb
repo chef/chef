@@ -167,7 +167,7 @@ class Chef::Application::Knife < Chef::Application
     if no_command_given?
       print_help_and_exit(1, NO_COMMAND_GIVEN)
     elsif no_subcommand_given?
-      if (want_help? || want_version?)
+      if want_help? || want_version?
         print_help_and_exit(0)
       else
         print_help_and_exit(2, NO_COMMAND_GIVEN)

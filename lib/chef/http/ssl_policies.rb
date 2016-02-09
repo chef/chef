@@ -86,8 +86,8 @@ class Chef
       end
 
       def set_client_credentials
-        if (config[:ssl_client_cert] || config[:ssl_client_key])
-          unless (config[:ssl_client_cert] && config[:ssl_client_key])
+        if config[:ssl_client_cert] || config[:ssl_client_key]
+          unless config[:ssl_client_cert] && config[:ssl_client_key]
             raise Chef::Exceptions::ConfigurationError, "You must configure ssl_client_cert and ssl_client_key together"
           end
           unless ::File.exists?(config[:ssl_client_cert])

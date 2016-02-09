@@ -84,7 +84,7 @@ describe Chef::ResourceCollection::ResourceSet do
     it "should find a resource by type symbol and array of names with custom names" do
       collection.insert_as(zen_master, :zzz, "name1")
       collection.insert_as(zen_master2, :zzz, "name2")
-      check_by_names(collection.find( :zzz => ["name1", "name2"]), zen_master_name, zen_master2_name)
+      check_by_names(collection.find( :zzz => %w(name1 name2)), zen_master_name, zen_master2_name)
     end
 
     it "should find resources of multiple kinds (:zen_master => a, :zen_follower => b)" do
@@ -98,7 +98,7 @@ describe Chef::ResourceCollection::ResourceSet do
       collection.insert_as(zen_master, :zzz, "name1")
       collection.insert_as(zen_master2, :zzz, "name2")
       collection.insert_as(zen_follower, :yyy, "name3")
-      check_by_names(collection.find(:zzz => ["name1", "name2"], :yyy => ["name3"]),
+      check_by_names(collection.find(:zzz => %w(name1 name2), :yyy => ["name3"]),
                      zen_master_name, zen_follower_name, zen_master2_name)
     end
 

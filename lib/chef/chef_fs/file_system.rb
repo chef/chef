@@ -72,7 +72,7 @@ class Chef
 
             # Otherwise, go through all children and find any matches
             elsif entry.dir?
-              results = Parallelizer::parallelize(entry.children) { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
+              results = Parallelizer.parallelize(entry.children) { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
               results.flatten(1).each(&block)
             end
           end
@@ -101,7 +101,7 @@ class Chef
         end
 
         result = entry
-        Chef::ChefFS::PathUtils::split(path).each do |part|
+        Chef::ChefFS::PathUtils.split(path).each do |part|
           result = result.child(part)
         end
         result

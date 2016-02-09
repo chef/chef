@@ -26,7 +26,7 @@ shared_examples_for "a platform introspector" do
         "1.2.3" => "#{x}-1.2.3",
       }
     end
-    @platform_hash["debian"] = { ["5", "6"] => "debian-5/6", "default" => "debian" }
+    @platform_hash["debian"] = { %w(5 6) => "debian-5/6", "default" => "debian" }
     @platform_hash["default"] = "default"
     # The following @platform_hash keys are used for testing version constraints
     @platform_hash["exact_match"] = { "1.2.3" => "exact", ">= 1.0" => "not exact" }
@@ -130,7 +130,7 @@ shared_examples_for "a platform introspector" do
 
     it "returns true if the node is a provided platform and platforms are provided as strings" do
       node.automatic_attrs[:platform] = "ubuntu"
-      expect(platform_introspector.platform?(["redhat", "ubuntu"])).to eq(true)
+      expect(platform_introspector.platform?(%w(redhat ubuntu))).to eq(true)
     end
 
     it "returns false if the node is not of the provided platforms" do
@@ -148,7 +148,7 @@ shared_examples_for "a platform introspector" do
 
     it "returns true if the node is a provided platform and platforms are provided as strings" do
       node.automatic_attrs[:platform_family] = "rhel"
-      expect(platform_introspector.platform_family?(["rhel", "debian"])).to eq(true)
+      expect(platform_introspector.platform_family?(%w(rhel debian))).to eq(true)
     end
 
     it "returns false if the node is not of the provided platforms" do

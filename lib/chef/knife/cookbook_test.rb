@@ -69,7 +69,7 @@ class Chef
 
       def test_cookbook(cookbook)
         ui.info("Running syntax check on #{cookbook}")
-        Array(config[:cookbook_path]).reverse.each do |path|
+        Array(config[:cookbook_path]).reverse_each do |path|
           syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cookbook, path)
           test_ruby(syntax_checker)
           test_templates(syntax_checker)

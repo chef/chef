@@ -38,7 +38,7 @@ describe Chef::Knife::RoleList do
 
     it "should pretty print the list" do
       expect(Chef::Role).to receive(:list).and_return(@list)
-      expect(@knife).to receive(:output).with([ "bar", "foo" ])
+      expect(@knife).to receive(:output).with(%w(bar foo))
       @knife.run
     end
 

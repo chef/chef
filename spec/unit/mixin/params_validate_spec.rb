@@ -144,7 +144,7 @@ describe Chef::Mixin::ParamsValidate do
         { :one => @vo },
         {
           :one => {
-            :respond_to => ["validate", "music"]
+            :respond_to => %w(validate music)
           }
         },
       )
@@ -155,7 +155,7 @@ describe Chef::Mixin::ParamsValidate do
         { :one => @vo },
         {
           :one => {
-            :respond_to => ["monkey", "validate"]
+            :respond_to => %w(monkey validate)
           }
         },
       )

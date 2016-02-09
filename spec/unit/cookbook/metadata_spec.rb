@@ -460,7 +460,7 @@ describe Chef::Cookbook::Metadata do
       attrs = {
         "display_name" => "MySQL Databases",
         "description" => "Description of MySQL",
-        "choice" => ["dedicated", "shared"],
+        "choice" => %w(dedicated shared),
         "calculated" => false,
         "type" => "string",
         "required" => "recommended",
@@ -523,7 +523,7 @@ describe Chef::Cookbook::Metadata do
 
     it "should not accept anything but an array of strings for choice" do
       expect {
-        metadata.attribute("db/mysql/databases", :choice => ["dedicated", "shared"])
+        metadata.attribute("db/mysql/databases", :choice => %w(dedicated shared))
       }.not_to raise_error
       expect {
         metadata.attribute("db/mysql/databases", :choice => [10, "shared"])
@@ -651,7 +651,7 @@ describe Chef::Cookbook::Metadata do
     it "should limit the types allowed in the choice array" do
       options = {
         :type => "string",
-        :choice => [ "test1", "test2" ],
+        :choice => %w(test1 test2),
         :default => "test1",
       }
       expect {
@@ -706,15 +706,15 @@ describe Chef::Cookbook::Metadata do
     it "should allow a default that is a choice" do
       expect {
         attrs = {
-          :choice => [ "a", "b", "c"],
+          :choice => %w(a b c),
           :default => "b",
         }
         metadata.attribute("db/mysql/databases", attrs)
       }.not_to raise_error
       expect {
         attrs = {
-          :choice => [ "a", "b", "c", "d", "e"],
-          :default => ["b", "d"],
+          :choice => %w(a b c d e),
+          :default => %w(b d),
         }
         metadata.attribute("db/mysql/databases", attrs)
       }.not_to raise_error
@@ -723,15 +723,15 @@ describe Chef::Cookbook::Metadata do
     it "should error if default is not a choice" do
       expect {
         attrs = {
-          :choice => [ "a", "b", "c"],
+          :choice => %w(a b c),
           :default => "d",
         }
         metadata.attribute("db/mysql/databases", attrs)
       }.to raise_error(ArgumentError)
       expect {
         attrs = {
-          :choice => [ "a", "b", "c", "d", "e"],
-          :default => ["b", "z"],
+          :choice => %w(a b c d e),
+          :default => %w(b z),
         }
         metadata.attribute("db/mysql/databases", attrs)
       }.to raise_error(ArgumentError)

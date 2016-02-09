@@ -46,7 +46,7 @@ class Chef
         end
 
         def self.from_string_sid(string_sid)
-          Chef::ReservedNames::Win32::Security::convert_string_sid_to_sid(string_sid)
+          Chef::ReservedNames::Win32::Security.convert_string_sid_to_sid(string_sid)
         end
 
         def ==(other)
@@ -275,10 +275,10 @@ class Chef
 
             status = ERROR_MORE_DATA
 
-            while(status == ERROR_MORE_DATA) do
+            while(status == ERROR_MORE_DATA)
               status = NetUserEnum(servername, level, filter, bufptr, prefmaxlen, entriesread, totalentries, resume_handle)
 
-              if (status == NERR_Success || status == ERROR_MORE_DATA)
+              if status == NERR_Success || status == ERROR_MORE_DATA
                 entriesread.read_long.times.collect do |i|
                   user_info = USER_INFO_3.new(bufptr.read_pointer + i * USER_INFO_3.size)
                   # Check if the account is the Administrator account

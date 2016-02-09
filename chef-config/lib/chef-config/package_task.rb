@@ -189,7 +189,7 @@ end
         IO.write(version_rb_path, contents)
       end
 
-      Dir[File.expand_path("*gemspec", root_path)].reverse.each do |gemspec_path|
+      Dir[File.expand_path("*gemspec", root_path)].reverse_each do |gemspec_path|
         gemspec = eval(IO.read(gemspec_path))
         Gem::PackageTask.new(gemspec) do |task|
           task.package_dir = full_package_dir
@@ -212,7 +212,7 @@ end
       task :ship => [:clobber_package, :gem] do
         sh("git tag #{version}")
         sh("git push #{git_remote} --tags")
-        Dir[File.expand_path("*.gem", full_package_dir)].reverse.each do |built_gem|
+        Dir[File.expand_path("*.gem", full_package_dir)].reverse_each do |built_gem|
           sh("gem push #{built_gem}")
         end
       end

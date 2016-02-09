@@ -79,7 +79,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def set_info(args)
     begin
-      rc = NetUser::net_user_set_info_l3(nil, @username, transform_usri3(args))
+      rc = NetUser.net_user_set_info_l3(nil, @username, transform_usri3(args))
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
@@ -96,7 +96,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   #XXX for an extra painful alternative, see: http://support.microsoft.com/kb/180548
   def validate_credentials(passwd)
     begin
-      token = Security::logon_user(@username, nil, passwd,
+      token = Security.logon_user(@username, nil, passwd,
                  LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
       return true
     rescue Chef::Exceptions::Win32APIError
@@ -106,7 +106,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def get_info
     begin
-      ui3 = NetUser::net_user_get_info_l3(nil, @username)
+      ui3 = NetUser.net_user_get_info_l3(nil, @username)
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
@@ -115,8 +115,8 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def add(args)
     transformed_args = transform_usri3(args)
-    NetUser::net_user_add_l3(nil, transformed_args)
-    NetUser::net_local_group_add_member(nil, "Users", args[:name])
+    NetUser.net_user_add_l3(nil, transformed_args)
+    NetUser.net_local_group_add_member(nil, "Users", args[:name])
   end
 
   def user_modify(&proc)
@@ -137,7 +137,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def delete
     begin
-      NetUser::net_user_del(nil, @username)
+      NetUser.net_user_del(nil, @username)
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end

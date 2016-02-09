@@ -21,7 +21,7 @@ require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
-exclude_test = !["aix", "centos", "redhat", "suse"].include?(ohai[:platform])
+exclude_test = !%w(aix centos redhat suse).include?(ohai[:platform])
 describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test do
   include Chef::Mixin::ShellOut
 

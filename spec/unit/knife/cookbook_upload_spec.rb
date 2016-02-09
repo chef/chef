@@ -96,7 +96,7 @@ describe Chef::Knife::CookbookUpload do
 
     describe "when specifying the same cookbook name twice" do
       it "should upload the cookbook only once" do
-        knife.name_args = ["test_cookbook", "test_cookbook"]
+        knife.name_args = %w(test_cookbook test_cookbook)
         expect(knife).to receive(:upload).once
         knife.run
       end
@@ -181,10 +181,10 @@ E
 
       it "should upload all dependencies once" do
         knife.config[:depends] = true
-        allow(knife).to receive(:cookbook_names).and_return(["test_cookbook1", "test_cookbook2", "test_cookbook3"])
+        allow(knife).to receive(:cookbook_names).and_return(%w(test_cookbook1 test_cookbook2 test_cookbook3))
         expect(knife).to receive(:upload).exactly(3).times
         expect do
-          Timeout::timeout(5) do
+          Timeout.timeout(5) do
             knife.run
           end
         end.not_to raise_error
@@ -200,7 +200,7 @@ E
           { "test_cookbook" =>  cookbook,
             "dependency" => cookbook_dependency }[ckbk]
         end
-        allow(knife).to receive(:cookbook_names).and_return(["cookbook_dependency", "test_cookbook"])
+        allow(knife).to receive(:cookbook_names).and_return(%w(cookbook_dependency test_cookbook))
         @stdout, @stderr, @stdin = StringIO.new, StringIO.new, StringIO.new
         knife.ui = Chef::Knife::UI.new(@stdout, @stderr, @stdin, {})
       end
@@ -227,7 +227,7 @@ E
             "dependency" => cookbook_dependency,
             "dependency2" => cookbook_dependency2 }[ckbk]
         end
-        allow(knife).to receive(:cookbook_names).and_return(["dependency", "dependency2", "test_cookbook"])
+        allow(knife).to receive(:cookbook_names).and_return(%w(dependency dependency2 test_cookbook))
         expect { knife.run }.to raise_error(SystemExit)
         expect(@stderr.string).to include("Cookbook test_cookbook depends on cookbooks which are not currently")
         expect(@stderr.string).to include("being uploaded and cannot be found on the server.")
@@ -253,7 +253,7 @@ E
           @test_cookbook1 = Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah")
           @test_cookbook2 = Chef::CookbookVersion.new("test_cookbook2", "/tmp/blah")
           allow(cookbook_loader).to receive(:each).and_yield("test_cookbook1", @test_cookbook1).and_yield("test_cookbook2", @test_cookbook2)
-          allow(cookbook_loader).to receive(:cookbook_names).and_return(["test_cookbook1", "test_cookbook2"])
+          allow(cookbook_loader).to receive(:cookbook_names).and_return(%w(test_cookbook1 test_cookbook2))
         end
 
         it "should upload all cookbooks" do

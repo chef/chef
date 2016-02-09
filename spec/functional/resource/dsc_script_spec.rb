@@ -280,7 +280,7 @@ EOH
       end
 
       let(:test_registry_data) { test_registry_data1 }
-      let(:dsc_parameterized_env_param_value) { "val" + Random::rand.to_s }
+      let(:dsc_parameterized_env_param_value) { "val" + Random.rand.to_s }
 
       it "should have a default value of nil for the configuration_data attribute" do
         expect(dsc_test_resource.configuration_data).to eql(nil)

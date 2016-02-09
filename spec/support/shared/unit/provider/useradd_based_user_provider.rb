@@ -315,7 +315,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       expect { provider.check_lock }.to raise_error(Chef::Exceptions::User)
     end
 
-    ["redhat", "centos"].each do |os|
+    %w(redhat centos).each do |os|
       it "should not raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is version 0.73-1" do
         @node.automatic_attrs[:platform] = os
         expect(passwd_s_status).to receive(:exitstatus).and_return(1)

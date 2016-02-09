@@ -71,7 +71,7 @@ describe Chef::Knife::CookbookSiteInstall do
     end
 
     it "raises an error if more than two arguments are given" do
-      knife.name_args = ["foo", "bar", "baz"]
+      knife.name_args = %w(foo bar baz)
       expect(knife.ui).to receive(:error).with("Installing multiple cookbooks at once is not supported.")
       expect { knife.run }.to raise_error(SystemExit)
     end

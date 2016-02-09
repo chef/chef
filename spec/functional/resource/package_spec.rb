@@ -66,7 +66,7 @@ module AptServer
     @apt_server_thread = Thread.new do
       run_apt_server
     end
-    until tcp_test_port("localhost", 9000) do
+    until tcp_test_port("localhost", 9000)
       if @apt_server_thread.alive?
         sleep 1
       else

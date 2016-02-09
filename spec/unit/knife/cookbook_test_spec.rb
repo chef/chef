@@ -45,7 +45,7 @@ describe Chef::Knife::CookbookTest do
 
     it "should test multiple cookbooks when provided" do
       allow(@knife).to receive(:test_cookbook).and_return(true)
-      @knife.name_args = ["tats", "jimmy_johns"]
+      @knife.name_args = %w(tats jimmy_johns)
       expect(@knife).to receive(:test_cookbook).with("tats")
       expect(@knife).to receive(:test_cookbook).with("jimmy_johns")
       expect(@knife).not_to receive(:test_cookbook).with("central_market")
@@ -56,7 +56,7 @@ describe Chef::Knife::CookbookTest do
     it "should test both ruby and templates" do
       @knife.name_args = ["example"]
       expect(@knife.config[:cookbook_path]).not_to be_empty
-      Array(@knife.config[:cookbook_path]).reverse.each do |path|
+      Array(@knife.config[:cookbook_path]).reverse_each do |path|
         expect(@knife).to receive(:test_ruby).with(an_instance_of(Chef::Cookbook::SyntaxCheck))
         expect(@knife).to receive(:test_templates).with(an_instance_of(Chef::Cookbook::SyntaxCheck))
       end

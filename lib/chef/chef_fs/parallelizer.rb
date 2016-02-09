@@ -87,7 +87,7 @@ class Chef
 
       def worker_loop
         begin
-          while !@stop_thread[Thread.current]
+          until @stop_thread[Thread.current]
             begin
               task = @tasks.pop
               task.call

@@ -78,7 +78,7 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
       hive_class.create(key_parent + '\Opscode', Win32::Registry::KEY_WRITE | flag)
       hive_class.open(key_parent + '\Opscode', Win32::Registry::KEY_ALL_ACCESS | flag) do |reg|
         reg["Color", Win32::Registry::REG_SZ] = "Orange"
-        reg.write("Opscode", Win32::Registry::REG_MULTI_SZ, ["Seattle", "Washington"])
+        reg.write("Opscode", Win32::Registry::REG_MULTI_SZ, %w(Seattle Washington))
         reg["AKA", Win32::Registry::REG_SZ] = "OC"
       end
       hive_class.create(key_parent + '\ReportKey', Win32::Registry::KEY_WRITE | flag)
@@ -179,12 +179,12 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
 
     it "creates subkey if parent exists" do
       @new_resource.key(reg_child + '\OpscodeTest')
-      @new_resource.values([{ :name => "Chef", :type => :multi_string, :data => ["OpscodeOrange", "Rules"] }])
+      @new_resource.values([{ :name => "Chef", :type => :multi_string, :data => %w(OpscodeOrange Rules) }])
       @new_resource.recursive(false)
       @new_resource.run_action(:create)
 
       expect(@registry.key_exists?(reg_child + '\OpscodeTest')).to eq(true)
-      expect(@registry.value_exists?(reg_child + '\OpscodeTest', { :name => "Chef", :type => :multi_string, :data => ["OpscodeOrange", "Rules"] })).to eq(true)
+      expect(@registry.value_exists?(reg_child + '\OpscodeTest', { :name => "Chef", :type => :multi_string, :data => %w(OpscodeOrange Rules) })).to eq(true)
     end
 
     it "gives error if action create and parent does not exist and recursive is set to false" do
@@ -312,12 +312,12 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
 
     it "creates subkey if parent exists" do
       @new_resource.key(reg_child + '\Pyrovile')
-      @new_resource.values([{ :name => "Chef", :type => :multi_string, :data => ["OpscodeOrange", "Rules"] }])
+      @new_resource.values([{ :name => "Chef", :type => :multi_string, :data => %w(OpscodeOrange Rules) }])
       @new_resource.recursive(false)
       @new_resource.run_action(:create_if_missing)
 
       expect(@registry.key_exists?(reg_child + '\Pyrovile')).to eq(true)
-      expect(@registry.value_exists?(reg_child + '\Pyrovile', { :name => "Chef", :type => :multi_string, :data => ["OpscodeOrange", "Rules"] })).to eq(true)
+      expect(@registry.value_exists?(reg_child + '\Pyrovile', { :name => "Chef", :type => :multi_string, :data => %w(OpscodeOrange Rules) })).to eq(true)
     end
 
     it "gives error if action create and parent does not exist and recursive is set to false" do
@@ -409,7 +409,7 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
       expect(@registry.data_exists?(reg_parent + '\Opscode', { :name => "Color", :type => :string, :data => "Orange" })).to eq(true)
 
       @new_resource.key(reg_parent + '\Opscode')
-      @new_resource.values([{ :name => "LooksLike", :type => :multi_string, :data => ["SeattleGrey", "OCOrange"] }])
+      @new_resource.values([{ :name => "LooksLike", :type => :multi_string, :data => %w(SeattleGrey OCOrange) }])
       @new_resource.recursive(false)
       @new_resource.run_action(:delete)
 
@@ -418,18 +418,18 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
 
     it "deletes only specified values under a key path" do
       @new_resource.key(reg_parent + '\Opscode')
-      @new_resource.values([{ :name => "Opscode", :type => :multi_string, :data => ["Seattle", "Washington"] }, { :name => "AKA", :type => :string, :data => "OC" }])
+      @new_resource.values([{ :name => "Opscode", :type => :multi_string, :data => %w(Seattle Washington) }, { :name => "AKA", :type => :string, :data => "OC" }])
       @new_resource.recursive(false)
       @new_resource.run_action(:delete)
 
       expect(@registry.data_exists?(reg_parent + '\Opscode', { :name => "Color", :type => :string, :data => "Orange" })).to eq(true)
       expect(@registry.value_exists?(reg_parent + '\Opscode', { :name => "AKA", :type => :string, :data => "OC" })).to eq(false)
-      expect(@registry.value_exists?(reg_parent + '\Opscode', { :name => "Opscode", :type => :multi_string, :data => ["Seattle", "Washington"] })).to eq(false)
+      expect(@registry.value_exists?(reg_parent + '\Opscode', { :name => "Opscode", :type => :multi_string, :data => %w(Seattle Washington) })).to eq(false)
     end
 
     it "it deletes the values with the same name irrespective of it type and data" do
       @new_resource.key(reg_parent + '\Opscode')
-      @new_resource.values([{ :name => "Color", :type => :multi_string, :data => ["Black", "Orange"] }])
+      @new_resource.values([{ :name => "Color", :type => :multi_string, :data => %w(Black Orange) }])
       @new_resource.recursive(false)
       @new_resource.run_action(:delete)
 

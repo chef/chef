@@ -327,7 +327,7 @@ class Chef
                       relative << path[1]
                     end
                     relative = relative + file[:path].split("/")
-                    file["url"] = ChefZero::RestBase::build_uri(request.base_uri, relative)
+                    file["url"] = ChefZero::RestBase.build_uri(request.base_uri, relative)
                   end
                 end
               end
@@ -610,7 +610,7 @@ class Chef
       private
 
       def use_memory_store?(path)
-        return path[0] == "sandboxes" || path[0] == "file_store" && path[1] == "checksums" || path == [ "environments", "_default" ]
+        return path[0] == "sandboxes" || path[0] == "file_store" && path[1] == "checksums" || path == %w(environments _default)
       end
 
       def write_cookbook(path, data, *options)
@@ -704,7 +704,7 @@ class Chef
 
           # /acls/containers|nodes|.../x.json
           # /acls/organization.json
-          if path.length == 3 || path == [ "acls", "organization" ]
+          if path.length == 3 || path == %w(acls organization)
             path = path.dup
             path[-1] = "#{path[-1]}.json"
           end

@@ -119,7 +119,7 @@ describe Chef::RunList::RunListExpansion do
 
     it "has the list of all roles applied" do
       # this is the correct order, but 1.8 hash order is not stable
-      expect(@expansion.roles).to match_array(["rage", "mollusk"])
+      expect(@expansion.roles).to match_array(%w(rage mollusk))
     end
 
   end

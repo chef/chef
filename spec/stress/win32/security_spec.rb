@@ -31,7 +31,7 @@ describe "Chef::ReservedNames::Win32::Security", :windows_only do
   end
 
   before :all do
-    @test_tempdir = File.join(Dir::tmpdir, "cheftests", "chef_win32_security")
+    @test_tempdir = File.join(Dir.tmpdir, "cheftests", "chef_win32_security")
     FileUtils.mkdir_p(@test_tempdir)
     @monkeyfoo = File.join(@test_tempdir, "monkeyfoo.txt")
   end

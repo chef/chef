@@ -171,7 +171,7 @@ describe Chef::ResourceCollection do
 
     it "should find a resource by symbol and array of names (:zen_master => [a,b])" do
       load_up_resources
-      results = rc.resources(:zen_master => [ "monkey", "dog" ])
+      results = rc.resources(:zen_master => %w(monkey dog))
       expect(results.length).to eql(2)
       check_by_names(results, "monkey", "dog")
     end

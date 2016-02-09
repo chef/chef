@@ -338,7 +338,7 @@ describe Chef::Provider::Service::Openbsd do
         allow(provider).to receive(:builtin_service_enable_variable_name).and_return("#{new_resource.service_name}_enable")
       end
 
-      [ "start", "reload", "restart", "enable" ].each do |action|
+      %w(start reload restart enable).each do |action|
         it "should raise an exception when the action is #{action}" do
           provider.define_resource_requirements
           provider.action = action
@@ -346,7 +346,7 @@ describe Chef::Provider::Service::Openbsd do
         end
       end
 
-      [ "stop", "disable" ].each do |action|
+      %w(stop disable).each do |action|
         it "should not raise an error when the action is #{action}" do
           provider.define_resource_requirements
           provider.action = action
@@ -360,7 +360,7 @@ describe Chef::Provider::Service::Openbsd do
         allow(provider).to receive(:builtin_service_enable_variable_name).and_return(nil)
       end
 
-      [ "start", "reload", "restart", "enable" ].each do |action|
+      %w(start reload restart enable).each do |action|
         it "should raise an exception when the action is #{action}" do
           provider.action = action
           provider.define_resource_requirements
@@ -368,7 +368,7 @@ describe Chef::Provider::Service::Openbsd do
         end
       end
 
-      [ "stop", "disable" ].each do |action|
+      %w(stop disable).each do |action|
         it "should not raise an error when the action is #{action}" do
           provider.action = action
           provider.define_resource_requirements

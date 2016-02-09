@@ -24,7 +24,7 @@ module WEBrick
       unless port
         raise ArgumentError, "must specify port"
       end
-      res = Socket::getaddrinfo(address, port,
+      res = Socket.getaddrinfo(address, port,
                                 Socket::AF_UNSPEC,   # address family
                                 Socket::SOCK_STREAM, # socket type
                                 0,                   # protocol
@@ -36,7 +36,7 @@ module WEBrick
           logger.debug("TCPServer.new(#{ai[3]}, #{port})") if logger
           sock = TCPServer.new(ai[3], port)
           port = sock.addr[1] if port == 0
-          Utils::set_close_on_exec(sock)
+          Utils.set_close_on_exec(sock)
           sockets << sock
         rescue => ex
           logger.warn("TCPServer Error: #{ex}") if logger

@@ -70,7 +70,7 @@ class Chef
         # If the innermost block has a resource instead of a string, don't include it in context
         describe_groups.unshift(group[:description]) if described_class.nil?
         group = group[:parent_example_group]
-        while !group.nil?
+        until group.nil?
           describe_groups.unshift(group[:description])
           group = group[:parent_example_group]
         end

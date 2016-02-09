@@ -23,7 +23,7 @@ class Chef
   class Resource
     class RpmPackage < Chef::Resource::Package
       resource_name :rpm_package
-      provides :rpm_package, os: [ "linux", "aix" ]
+      provides :rpm_package, os: %w(linux aix)
 
       property :allow_downgrade, [ true, false ], default: false, desired_state: false
 

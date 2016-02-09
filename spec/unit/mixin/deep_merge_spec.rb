@@ -41,7 +41,7 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
   end
 
   it "tests merging an hash w/array into blank hash" do
-    hash_src = { "region" => { "id" => ["227", "2"] } }
+    hash_src = { "region" => { "id" => %w(227 2) } }
     hash_dst = {}
     @dm.deep_merge!(hash_src, hash_dst)
     expect(hash_dst).to eq(hash_src)
@@ -49,16 +49,16 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
 
   it "tests merge from empty hash" do
     hash_src = {}
-    hash_dst = { "property" => ["2", "4"] }
+    hash_dst = { "property" => %w(2 4) }
     @dm.deep_merge!(hash_src, hash_dst)
-    expect(hash_dst).to eq({ "property" => ["2", "4"] })
+    expect(hash_dst).to eq({ "property" => %w(2 4) })
   end
 
   it "tests merge to empty hash" do
-    hash_src = { "property" => ["2", "4"] }
+    hash_src = { "property" => %w(2 4) }
     hash_dst = {}
     @dm.deep_merge!(hash_src, hash_dst)
-    expect(hash_dst).to eq({ "property" => ["2", "4"] })
+    expect(hash_dst).to eq({ "property" => %w(2 4) })
   end
 
   it "tests simple string overwrite" do
@@ -76,36 +76,36 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
   end
 
   it "tests hashes holding array" do
-    hash_src = { "property" => ["1", "3"] }
-    hash_dst = { "property" => ["2", "4"] }
+    hash_src = { "property" => %w(1 3) }
+    hash_dst = { "property" => %w(2 4) }
     @dm.deep_merge!(hash_src, hash_dst)
-    expect(hash_dst).to eq({ "property" => ["2", "4", "1", "3"] })
+    expect(hash_dst).to eq({ "property" => %w(2 4 1 3) })
   end
 
   it "tests hashes holding hashes holding arrays (array with duplicate elements is merged with dest then src" do
-    hash_src = { "property" => { "bedroom_count" => ["1", "2"], "bathroom_count" => ["1", "4+"] } }
-    hash_dst = { "property" => { "bedroom_count" => ["3", "2"], "bathroom_count" => ["2"] } }
+    hash_src = { "property" => { "bedroom_count" => %w(1 2), "bathroom_count" => ["1", "4+"] } }
+    hash_dst = { "property" => { "bedroom_count" => %w(3 2), "bathroom_count" => ["2"] } }
     @dm.deep_merge!(hash_src, hash_dst)
-    expect(hash_dst).to eq({ "property" => { "bedroom_count" => ["3", "2", "1"], "bathroom_count" => ["2", "1", "4+"] } })
+    expect(hash_dst).to eq({ "property" => { "bedroom_count" => %w(3 2 1), "bathroom_count" => ["2", "1", "4+"] } })
   end
 
   it "tests hash holding hash holding array v string (string is overwritten by array)" do
-    hash_src = { "property" => { "bedroom_count" => ["1", "2"], "bathroom_count" => ["1", "4+"] } }
+    hash_src = { "property" => { "bedroom_count" => %w(1 2), "bathroom_count" => ["1", "4+"] } }
     hash_dst = { "property" => { "bedroom_count" => "3", "bathroom_count" => ["2"] } }
     @dm.deep_merge!(hash_src, hash_dst)
-    expect(hash_dst).to eq({ "property" => { "bedroom_count" => ["1", "2"], "bathroom_count" => ["2", "1", "4+"] } })
+    expect(hash_dst).to eq({ "property" => { "bedroom_count" => %w(1 2), "bathroom_count" => ["2", "1", "4+"] } })
   end
 
   it "tests hash holding hash holding string v array (array is overwritten by string)" do
     hash_src = { "property" => { "bedroom_count" => "3", "bathroom_count" => ["1", "4+"] } }
-    hash_dst = { "property" => { "bedroom_count" => ["1", "2"], "bathroom_count" => ["2"] } }
+    hash_dst = { "property" => { "bedroom_count" => %w(1 2), "bathroom_count" => ["2"] } }
     @dm.deep_merge!(hash_src, hash_dst)
     expect(hash_dst).to eq({ "property" => { "bedroom_count" => "3", "bathroom_count" => ["2", "1", "4+"] } })
   end
 
   it "tests hash holding hash holding hash v array (array is overwritten by hash)" do
     hash_src = { "property" => { "bedroom_count" => { "king_bed" => 3, "queen_bed" => 1 }, "bathroom_count" => ["1", "4+"] } }
-    hash_dst = { "property" => { "bedroom_count" => ["1", "2"], "bathroom_count" => ["2"] } }
+    hash_dst = { "property" => { "bedroom_count" => %w(1 2), "bathroom_count" => ["2"] } }
     @dm.deep_merge!(hash_src, hash_dst)
     expect(hash_dst).to eq({ "property" => { "bedroom_count" => { "king_bed" => 3, "queen_bed" => 1 }, "bathroom_count" => ["2", "1", "4+"] } })
   end
@@ -142,21 +142,21 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     hash_src = { "property" => { "bedroom_count" => { "king_bed" => 3, "queen_bed" => [1] }, "bathroom_count" => ["1"] } }
     hash_dst = { "property" => { "bedroom_count" => { "king_bed" => [2], "queen_bed" => [4] }, "bathroom_count" => ["2"] } }
     @dm.deep_merge!(hash_src, hash_dst)
-    expect(hash_dst).to eq({ "property" => { "bedroom_count" => { "king_bed" => 3, "queen_bed" => [4, 1] }, "bathroom_count" => ["2", "1"] } })
+    expect(hash_dst).to eq({ "property" => { "bedroom_count" => { "king_bed" => 3, "queen_bed" => [4, 1] }, "bathroom_count" => %w(2 1) } })
   end
 
   it "tests 3 hash layers holding arrays of int, but source is incomplete." do
     hash_src = { "property" => { "bedroom_count" => { "king_bed" => [3] }, "bathroom_count" => ["1"] } }
     hash_dst = { "property" => { "bedroom_count" => { "king_bed" => [2], "queen_bed" => [4] }, "bathroom_count" => ["2"] } }
     @dm.deep_merge!(hash_src, hash_dst)
-    expect(hash_dst).to eq({ "property" => { "bedroom_count" => { "king_bed" => [2, 3], "queen_bed" => [4] }, "bathroom_count" => ["2", "1"] } })
+    expect(hash_dst).to eq({ "property" => { "bedroom_count" => { "king_bed" => [2, 3], "queen_bed" => [4] }, "bathroom_count" => %w(2 1) } })
   end
 
   it "tests 3 hash layers holding arrays of int, but source is shorter and has new 2nd level ints." do
     hash_src = { "property" => { "bedroom_count" => { 2 => 3, "king_bed" => [3] }, "bathroom_count" => ["1"] } }
     hash_dst = { "property" => { "bedroom_count" => { "king_bed" => [2], "queen_bed" => [4] }, "bathroom_count" => ["2"] } }
     @dm.deep_merge!(hash_src, hash_dst)
-    expect(hash_dst).to eq({ "property" => { "bedroom_count" => { 2 => 3, "king_bed" => [2, 3], "queen_bed" => [4] }, "bathroom_count" => ["2", "1"] } })
+    expect(hash_dst).to eq({ "property" => { "bedroom_count" => { 2 => 3, "king_bed" => [2, 3], "queen_bed" => [4] }, "bathroom_count" => %w(2 1) } })
   end
 
   it "tests 3 hash layers holding arrays of int, but source is empty" do
@@ -174,10 +174,10 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
   end
 
   it "tests hash holding arrays of arrays" do
-    hash_src = { ["1", "2", "3"] => ["1", "2"] }
-    hash_dst = { ["4", "5"] => ["3"] }
+    hash_src = { %w(1 2 3) => %w(1 2) }
+    hash_dst = { %w(4 5) => ["3"] }
     @dm.deep_merge!(hash_src, hash_dst)
-    expect(hash_dst).to eq({ ["1", "2", "3"] => ["1", "2"], ["4", "5"] => ["3"] })
+    expect(hash_dst).to eq({ %w(1 2 3) => %w(1 2), %w(4 5) => ["3"] })
   end
 
   it "tests merging of hash with blank hash, and make sure that source array split does not function when turned off" do
@@ -253,7 +253,7 @@ describe Chef::Mixin::DeepMerge do
 
     it "should merge a nested hash into an empty hash" do
       hash_dst = {}
-      hash_src = { "region" => { "id" => ["227", "2"] } }
+      hash_src = { "region" => { "id" => %w(227 2) } }
       expect(@dm.merge(hash_dst, hash_src)).to eq(hash_src)
     end
 
@@ -264,9 +264,9 @@ describe Chef::Mixin::DeepMerge do
     end
 
     it "should merge arrays within hashes" do
-      hash_dst = { "property" => ["2", "4"] }
-      hash_src = { "property" => ["1", "3"] }
-      expect(@dm.merge(hash_dst, hash_src)).to eq({ "property" => ["2", "4", "1", "3"] })
+      hash_dst = { "property" => %w(2 4) }
+      hash_src = { "property" => %w(1 3) }
+      expect(@dm.merge(hash_dst, hash_src)).to eq({ "property" => %w(2 4 1 3) })
     end
 
     it "should merge deeply nested hashes" do
@@ -276,12 +276,12 @@ describe Chef::Mixin::DeepMerge do
     end
 
     it "should not modify the source or destination during the merge" do
-      hash_dst = { "property" => ["1", "2", "3"] }
-      hash_src = { "property" => ["4", "5", "6"] }
+      hash_dst = { "property" => %w(1 2 3) }
+      hash_src = { "property" => %w(4 5 6) }
       ret = @dm.merge(hash_dst, hash_src)
-      expect(hash_dst).to eq({ "property" => ["1", "2", "3"] })
-      expect(hash_src).to eq({ "property" => ["4", "5", "6"] })
-      expect(ret).to eq({ "property" => ["1", "2", "3", "4", "5", "6"] })
+      expect(hash_dst).to eq({ "property" => %w(1 2 3) })
+      expect(hash_src).to eq({ "property" => %w(4 5 6) })
+      expect(ret).to eq({ "property" => %w(1 2 3 4 5 6) })
     end
 
     it "should not error merging un-dupable objects" do

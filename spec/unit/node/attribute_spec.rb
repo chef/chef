@@ -29,7 +29,7 @@ describe Chef::Node::Attribute do
         "platform" => "mac_os_x",
         "ipaddress" => "192.168.0.117",
         "network" =>     { "default_interface" => "en1",
-                           "interfaces" =>     { "vmnet1" =>       { "flags" =>         ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
+                           "interfaces" =>     { "vmnet1" =>       { "flags" =>         %w(UP BROADCAST SMART RUNNING SIMPLEX MULTICAST),
                                                                      "number" => "1",
                                                                      "addresses" =>         { "00:50:56:c0:00:01" => { "family" => "lladdr" },
                                                                                               "192.168.110.1" =>         { "broadcast" => "192.168.110.255",
@@ -45,7 +45,7 @@ describe Chef::Node::Attribute do
                                                                      "mtu" => "1280",
                                                                      "type" => "stf",
                                                                      "encapsulation" => "6to4" },
-                                                 "lo0" =>         { "flags" => ["UP", "LOOPBACK", "RUNNING", "MULTICAST"],
+                                                 "lo0" =>         { "flags" => %w(UP LOOPBACK RUNNING MULTICAST),
                                                                     "number" => "0",
                                                                     "addresses" =>         { "::1" => { "scope" => "Node", "prefixlen" => "128", "family" => "inet6" },
                                                                                              "127.0.0.1" => { "netmask" => "255.0.0.0", "family" => "inet" },
@@ -53,13 +53,13 @@ describe Chef::Node::Attribute do
                                                                     "mtu" => "16384",
                                                                     "type" => "lo",
                                                                     "encapsulation" => "Loopback" },
-                                                 "gif0" =>         { "flags" => ["POINTOPOINT", "MULTICAST"],
+                                                 "gif0" =>         { "flags" => %w(POINTOPOINT MULTICAST),
                                                                      "number" => "0",
                                                                      "addresses" => {},
                                                                      "mtu" => "1280",
                                                                      "type" => "gif",
                                                                      "encapsulation" => "IPIP" },
-                                                 "vmnet8" =>         { "flags" =>           ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
+                                                 "vmnet8" =>         { "flags" =>           %w(UP BROADCAST SMART RUNNING SIMPLEX MULTICAST),
                                                                        "number" => "8",
                                                                        "addresses" =>           { "192.168.4.1" =>             { "broadcast" => "192.168.4.255",
                                                                                                                                  "netmask" => "255.255.255.0",
@@ -70,7 +70,7 @@ describe Chef::Node::Attribute do
                                                                        "arp" => { "192.168.4.255" => "ff:ff:ff:ff:ff:ff" },
                                                                        "encapsulation" => "Ethernet" },
                                                  "en0" =>             { "status" => "inactive",
-                                                                        "flags" =>             ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
+                                                                        "flags" =>             %w(UP BROADCAST SMART RUNNING SIMPLEX MULTICAST),
                                                                         "number" => "0",
                                                                         "addresses" => { "00:23:32:b0:32:f2" => { "family" => "lladdr" } },
                                                                         "mtu" => "1500",
@@ -83,7 +83,7 @@ describe Chef::Node::Attribute do
                                                                         "type" => "en",
                                                                         "encapsulation" => "Ethernet" },
                                                  "en1" =>                   { "status" => "active",
-                                                                              "flags" =>                   ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
+                                                                              "flags" =>                   %w(UP BROADCAST SMART RUNNING SIMPLEX MULTICAST),
                                                                               "number" => "1",
                                                                               "addresses" =>                   { "fe80::223:6cff:fe7f:676c" =>                     { "scope" => "Link", "prefixlen" => "64", "family" => "inet6" },
                                                                                                                  "00:23:6c:7f:67:6c" => { "family" => "lladdr" },
@@ -102,7 +102,7 @@ describe Chef::Node::Attribute do
                                                                                                              "192.168.0.152" => "0:26:8:7d:2:4c" },
                                                                               "encapsulation" => "Ethernet" },
                                                  "en2" =>                     { "status" => "active",
-                                                                                "flags" =>                     ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
+                                                                                "flags" =>                     %w(UP BROADCAST SMART RUNNING SIMPLEX MULTICAST),
                                                                                 "number" => "2",
                                                                                 "addresses" =>                     { "169.254.206.152" =>                       { "broadcast" => "169.254.255.255",
                                                                                                                                                                   "netmask" => "255.255.0.0",
@@ -115,7 +115,7 @@ describe Chef::Node::Attribute do
                                                                                 "type" => "en",
                                                                                 "encapsulation" => "Ethernet" },
                                                  "fw0" =>                       { "status" => "inactive",
-                                                                                  "flags" => ["BROADCAST", "SIMPLEX", "MULTICAST"],
+                                                                                  "flags" => %w(BROADCAST SIMPLEX MULTICAST),
                                                                                   "number" => "0",
                                                                                   "addresses" => { "00:23:32:ff:fe:b0:32:f2" => { "family" => "lladdr" } },
                                                                                   "mtu" => "4078",
@@ -124,7 +124,7 @@ describe Chef::Node::Attribute do
                                                                                   "type" => "fw",
                                                                                   "encapsulation" => "1394" },
                                                  "en3" =>                       { "status" => "active",
-                                                                                  "flags" =>                       ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
+                                                                                  "flags" =>                       %w(UP BROADCAST SMART RUNNING SIMPLEX MULTICAST),
                                                                                   "number" => "3",
                                                                                   "addresses" =>                       { "169.254.206.152" =>                         { "broadcast" => "169.254.255.255",
                                                                                                                                                                         "netmask" => "255.255.0.0",
@@ -219,16 +219,16 @@ describe Chef::Node::Attribute do
 
     it "gives the value at each level of precedence for a path spec" do
       expected = [["set_unless_enabled?", false],
-        ["default", "default"],
-        ["env_default", "env_default"],
-        ["role_default", "role_default"],
-        ["force_default", "force_default"],
-        ["normal", "normal"],
-        ["override", "override"],
-        ["role_override", "role_override"],
-        ["env_override", "env_override"],
-        ["force_override", "force_override"],
-        ["automatic", "automatic"],
+        %w(default default),
+        %w(env_default env_default),
+        %w(role_default role_default),
+        %w(force_default force_default),
+        %w(normal normal),
+        %w(override override),
+        %w(role_override role_override),
+        %w(env_override env_override),
+        %w(force_override force_override),
+        %w(automatic automatic),
       ]
       expect(@attributes.debug_value(:foo, :bar)).to eq(expected)
     end
@@ -457,7 +457,7 @@ describe Chef::Node::Attribute do
       hash = @attributes["foo"].to_hash
       expect(hash).to eql({ "bar" => [ "fizz" ] })
       hash["bar"].push("buzz")
-      expect(hash).to eql({ "bar" => [ "fizz", "buzz" ] })
+      expect(hash).to eql({ "bar" => %w(fizz buzz) })
       expect(@attributes.default["foo"]).to eql({ "bar" => [ "fizz" ] })
     end
 
@@ -537,8 +537,8 @@ describe Chef::Node::Attribute do
     end
 
     it "should allow the last method to set a value if it has an = sign on the end" do
-      @attributes.normal.music.mastodon = [ "dream", "still", "shining" ]
-      expect(@attributes.normal.music.mastodon).to eq([ "dream", "still", "shining" ])
+      @attributes.normal.music.mastodon = %w(dream still shining)
+      expect(@attributes.normal.music.mastodon).to eq(%w(dream still shining))
     end
   end
 
@@ -999,9 +999,9 @@ describe Chef::Node::Attribute do
     it "should return a new array of k,v pairs for which the block returns true" do
       expect(@attributes.select { true }.sort).to eq(
         [
-          ["hut", "three"],
-          ["one", "six"],
-          ["snack", "cookies"],
+          %w(hut three),
+          %w(one six),
+          %w(snack cookies),
           ["snakes", "on a plane"],
         ]
       )

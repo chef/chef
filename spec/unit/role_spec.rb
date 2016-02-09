@@ -85,12 +85,12 @@ describe Chef::Role do
 
     describe "using the old #recipes API" do
       it "should let you set the recipe array" do
-        expect(@role.recipes([ "one", "two" ])).to eq([ "one", "two" ])
+        expect(@role.recipes(%w(one two))).to eq(%w(one two))
       end
 
       it "should let you return the recipe array" do
-        @role.recipes([ "one", "two" ])
-        expect(@role.recipes).to eq([ "one", "two" ])
+        @role.recipes(%w(one two))
+        expect(@role.recipes).to eq(%w(one two))
       end
 
       it "should not list roles in the recipe array" do

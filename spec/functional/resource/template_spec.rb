@@ -191,7 +191,7 @@ describe Chef::Resource::Template do
   describe "when template source contains windows style line endings" do
     include_context "diff disabled"
 
-    ["all", "some", "no"].each do |test_case|
+    %w(all some no).each do |test_case|
       context "for #{test_case} lines" do
         let(:resource) do
           r = create_resource

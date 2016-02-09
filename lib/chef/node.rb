@@ -685,7 +685,7 @@ class Chef
 
     def data_for_save
       data = for_json
-      ["automatic", "default", "normal", "override"].each do |level|
+      %w(automatic default normal override).each do |level|
         whitelist_config_option = "#{level}_attribute_whitelist".to_sym
         whitelist = Chef::Config[whitelist_config_option]
         unless whitelist.nil? # nil => save everything

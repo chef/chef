@@ -131,7 +131,7 @@ class Chef
           ui.error("Current working directory is '#{@chef_fs_config.cwd}'.")
           exit(1)
         else
-          inferred_path = Chef::ChefFS::PathUtils::join(@chef_fs_config.base_path, arg)
+          inferred_path = Chef::ChefFS::PathUtils.join(@chef_fs_config.base_path, arg)
         end
         Chef::ChefFS::FilePattern.new(inferred_path)
       end

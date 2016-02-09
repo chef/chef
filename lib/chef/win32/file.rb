@@ -76,7 +76,7 @@ class Chef
         is_symlink = false
         path = encode_path(file_name)
         if ::File.exists?(file_name)
-          if ((GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0)
+          if (GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0
             file_search_handle(file_name) do |handle, find_data|
               if find_data[:dw_reserved_0] == IO_REPARSE_TAG_SYMLINK
                 is_symlink = true

@@ -27,7 +27,7 @@ class Chef
           @parent = parent
           @name = name
           if parent
-            @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+            @path = Chef::ChefFS::PathUtils.join(parent.path, name)
           else
             if name != ""
               raise ArgumentError, "Name of root object must be empty string: was '#{name}' instead"
@@ -149,7 +149,7 @@ class Chef
             if parent_path == "."
               name
             else
-              Chef::ChefFS::PathUtils::join(parent.path_for_printing, name)
+              Chef::ChefFS::PathUtils.join(parent.path_for_printing, name)
             end
           else
             name

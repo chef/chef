@@ -64,7 +64,7 @@ class MonoLogger < Logger
   private
 
     def open_logfile(filename)
-      if (FileTest.exist?(filename))
+      if FileTest.exist?(filename)
         open(filename, (File::WRONLY | File::APPEND))
       else
         create_logfile(filename)

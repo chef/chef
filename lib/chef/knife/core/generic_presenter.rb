@@ -81,7 +81,7 @@ class Chef
             Chef::JSONCompat.to_json_pretty(data)
           when :yaml
             require "yaml"
-            YAML::dump(data)
+            YAML.dump(data)
           when :pp
             require "stringio"
             # If you were looking for some attribute and there is only one match

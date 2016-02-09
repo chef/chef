@@ -38,11 +38,11 @@ class Chef
       SOURCE = "Chef"
 
       def self.available?
-        return Chef::Platform::windows?
+        return Chef::Platform.windows?
       end
 
       def initialize
-        @eventlog = ::Win32::EventLog::open("Application")
+        @eventlog = ::Win32::EventLog.open("Application")
       end
 
       def run_start(version)
@@ -83,7 +83,7 @@ class Chef
             [@run_status.run_id,
              @run_status.elapsed_time.to_s]
           else
-            ["UNKNOWN", "UNKNOWN"]
+            %w(UNKNOWN UNKNOWN)
           end
 
         @eventlog.report_event(

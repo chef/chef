@@ -128,7 +128,7 @@ class Chef
               y_pos_max = y.length - 1
               y_comp = nil
 
-              while (x_pos <= x_pos_max and y_pos <= y_pos_max)
+              while x_pos <= x_pos_max and y_pos <= y_pos_max
                 # first we skip over anything non alphanumeric
                 while (x_pos <= x_pos_max) and (isalnum(x[x_pos]) == false)
                   x_pos += 1 # +1 over pos_max if end of string

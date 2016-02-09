@@ -57,7 +57,7 @@ class Chef
       end
 
       def self.regexp_path_separator
-        Chef::ChefFS::windows? ? '[\/\\\\]' : "/"
+        Chef::ChefFS.windows? ? '[\/\\\\]' : "/"
       end
 
       # Given a server path, determines if it is absolute.
@@ -83,7 +83,7 @@ class Chef
 
         # File.dirname happens to return the path as its own dirname if you're
         # at the root (such as at \\foo\bar, C:\ or /)
-        until parent_path == path do
+        until parent_path == path
           # This can occur if a path such as "C:" is given.  Ruby gives the parent as "C:."
           # for reasons only it knows.
           raise ArgumentError "Invalid path segment #{path}" if parent_path.length > path.length
@@ -101,7 +101,7 @@ class Chef
 
       # Compares two path fragments according to the case-sentitivity of the host platform.
       def self.os_path_eq?(left, right)
-        Chef::ChefFS::windows? ? left.casecmp(right) == 0 : left == right
+        Chef::ChefFS.windows? ? left.casecmp(right) == 0 : left == right
       end
 
       # Given two general OS-dependent file paths, determines the relative path of the

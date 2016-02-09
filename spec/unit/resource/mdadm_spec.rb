@@ -82,14 +82,14 @@ describe Chef::Resource::Mdadm do
   describe "when it has devices, level, and chunk" do
     before do
       @resource.raid_device("raider")
-      @resource.devices(["device1", "device2"])
+      @resource.devices(%w(device1 device2))
       @resource.level(1)
       @resource.chunk(42)
     end
 
     it "describes its state" do
       state = @resource.state
-      expect(state[:devices]).to eql(["device1", "device2"])
+      expect(state[:devices]).to eql(%w(device1 device2))
       expect(state[:level]).to eq(1)
       expect(state[:chunk]).to eq(42)
     end

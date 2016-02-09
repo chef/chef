@@ -95,7 +95,7 @@ describe Chef::RunList do
     it "should believe a RunList is equal to an array named after it's members" do
       @run_list << "foo"
       @run_list << "baz"
-      expect(@run_list).to eq([ "foo", "baz" ])
+      expect(@run_list).to eq(%w(foo baz))
     end
   end
 
@@ -199,7 +199,7 @@ describe Chef::RunList do
       it "should load the role from the chef server" do
         #@rest.should_receive(:get).with("roles/stubby")
         expansion = @run_list.expand("_default", "server")
-        expect(expansion.recipes).to eq(["one", "two", "kitty"])
+        expect(expansion.recipes).to eq(%w(one two kitty))
       end
 
       it "should default to expanding from the server" do

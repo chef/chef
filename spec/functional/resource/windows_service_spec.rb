@@ -68,7 +68,7 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
 
     # the service executable has to be outside the current user's home
     # directory in order for the logon user to execute it.
-    FileUtils::copy_file(test_service[:service_file_path], global_service_file_path)
+    FileUtils.copy_file(test_service[:service_file_path], global_service_file_path)
 
     # if you don't make the file executable by the service user, you'll get
     # the not-very-helpful "service did not respond fast enough" error.

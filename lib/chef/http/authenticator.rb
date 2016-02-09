@@ -73,9 +73,9 @@ class Chef
       end
 
       def load_signing_key(key_file, raw_key = nil)
-        if (!!key_file)
+        if !!key_file
           @raw_key = IO.read(key_file).strip
-        elsif (!!raw_key)
+        elsif !!raw_key
           @raw_key = raw_key.strip
         else
           return nil

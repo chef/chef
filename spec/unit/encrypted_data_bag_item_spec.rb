@@ -112,7 +112,7 @@ describe Chef::EncryptedDataBagItem::Encryptor do
 
       it "includes the auth_tag in the envelope" do
         final_data = encryptor.for_encrypted_item
-        expect(final_data["auth_tag"]).to eq(Base64::encode64(encryptor.auth_tag))
+        expect(final_data["auth_tag"]).to eq(Base64.encode64(encryptor.auth_tag))
       end
 
       it "throws an error if auth tag is read before encrypting the data" do
