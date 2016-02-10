@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# Set up a custom tmpdir, and clean it up before and after the tests
+TMPDIR="${TMPDIR:-/tmp}/cheftest"
+export TMPDIR
+rm -rf $TMPDIR
+mkdir -p $TMPDIR
+
 # $PROJECT_NAME is set by Jenkins, this allows us to use the same script to verify
 # Chef and Angry Chef
 PATH=/opt/$PROJECT_NAME/bin:$PATH
@@ -107,3 +113,6 @@ else
   fi
   sudo env PATH=$PATH TERM=xterm CHEF_FIPS=$CHEF_FIPS bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec/functional spec/unit
 fi
+
+# Clean up the tmpdir at the end for good measure.
+rm -rf $TMPDIR

@@ -11,6 +11,18 @@ SET EMBEDDED_BIN_DIR=C:\opscode\%PROJECT_NAME%\embedded\bin
 
 ECHO.
 
+REM ; Set the temporary directory to a custom location, and wipe it before
+REM ; and after the tests run.
+IF %TEMP% (
+  SET TEMP=%TEMP%\cheftest
+  SET TMP=%TMP%\cheftest
+) ELSE (
+  SET TEMP=%TEMP%\cheftest
+  SET TMP=%TMP%\cheftest
+)
+RMDIR /S /Q %TEMP%
+MKDIR %TEMP%
+
 FOR %%b IN (
   chef-client
   knife
@@ -51,3 +63,7 @@ IF "%PIPELINE_NAME%" == "chef-fips" (
 	set CHEF_FIPS=1
 )
 call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/unit spec/functional
+
+REM ; Destroy everything at the end for good measure.
+RMDIR /S /Q %TEMP%
+MKDIR %TEMP%
