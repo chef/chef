@@ -19,7 +19,7 @@
 require "chef/chef_fs/file_system/base_fs_dir"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_acls_dir"
 require "chef/chef_fs/file_system/repository/cookbooks_dir"
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_artifacts_dir"
+require "chef/chef_fs/file_system/repository/cookbook_artifacts_dir"
 require "chef/chef_fs/file_system/repository/data_bags_dir"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_policies_dir"
@@ -171,7 +171,7 @@ class Chef
                 dirs = paths.map { |path| CookbooksDir.new(name, self, path) }
               end
             when "cookbook_artifacts"
-              dirs = paths.map { |path| ChefRepositoryFileSystemCookbookArtifactsDir.new(name, self, path) }
+              dirs = paths.map { |path| CookbookArtifactsDir.new(name, self, path) }
             when "policies"
               dirs = paths.map { |path| ChefRepositoryFileSystemPoliciesDir.new(name, self, path) }
             when "data_bags"

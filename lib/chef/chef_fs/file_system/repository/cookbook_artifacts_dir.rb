@@ -23,7 +23,9 @@ class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class ChefRepositoryFileSystemCookbookArtifactsDir < CookbooksDir
+
+        # Represents ROOT/cookbook_artifacts
+        class CookbookArtifactsDir < CookbooksDir
           def make_child_entry(child_name)
             ChefRepositoryFileSystemCookbookArtifactDir.new(child_name, self)
           end
