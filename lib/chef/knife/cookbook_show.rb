@@ -69,7 +69,7 @@ class Chef
 
           cookbook = rest.get("cookbooks/#{cookbook_name}/#{cookbook_version}")
           manifest_entry = cookbook.preferred_manifest_record(node, segment, filename)
-          temp_file = rest.get(manifest_entry[:url], true)
+          temp_file = rest.streaming_request(manifest_entry[:url])
 
           # the temp file is cleaned up elsewhere
           temp_file.open if temp_file.closed?
