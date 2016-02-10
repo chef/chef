@@ -23,7 +23,7 @@ class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class ChefRepositoryFileSystemVersionedCookbooksDir < CookbooksDir
+        class VersionedCookbooksDir < CookbooksDir
           def make_child_entry(child_name)
             ChefRepositoryFileSystemVersionedCookbookDir.new(child_name, self)
           end

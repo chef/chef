@@ -23,7 +23,7 @@ require "chef/chef_fs/file_system/repository/cookbook_artifacts_dir"
 require "chef/chef_fs/file_system/repository/data_bags_dir"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_policies_dir"
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_versioned_cookbooks_dir"
+require "chef/chef_fs/file_system/repository/versioned_cookbooks_dir"
 require "chef/chef_fs/file_system/multiplexed_dir"
 require "chef/chef_fs/data_handler/client_data_handler"
 require "chef/chef_fs/data_handler/environment_data_handler"
@@ -166,7 +166,7 @@ class Chef
             case name
             when "cookbooks"
               if versioned_cookbooks
-                dirs = paths.map { |path| ChefRepositoryFileSystemVersionedCookbooksDir.new(name, self, path) }
+                dirs = paths.map { |path| VersionedCookbooksDir.new(name, self, path) }
               else
                 dirs = paths.map { |path| CookbooksDir.new(name, self, path) }
               end
