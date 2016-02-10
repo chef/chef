@@ -13,13 +13,8 @@ ECHO.
 
 REM ; Set the temporary directory to a custom location, and wipe it before
 REM ; and after the tests run.
-IF %TEMP% (
-  SET TEMP=%TEMP%\cheftest
-  SET TMP=%TMP%\cheftest
-) ELSE (
-  SET TEMP=%TEMP%\cheftest
-  SET TMP=%TMP%\cheftest
-)
+SET TEMP=%TEMP%\cheftest
+SET TMP=%TMP%\cheftest
 RMDIR /S /Q %TEMP%
 MKDIR %TEMP%
 
