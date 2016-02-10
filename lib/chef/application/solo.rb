@@ -219,7 +219,7 @@ class Chef::Application::Solo < Chef::Application
     Chef::Log.deprecation("-r MUST be changed to --recipe-url, the -r option will be changed in Chef 13.0") if ARGV.include?("-r")
 
     if Chef::Config[:recipe_url]
-      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /#{Chef::Config.platform_path_separator_escaped}cookbooks#{Chef::Config.platform_path_separator_escaped}*$/ }
+      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| Pathname.cleanpath(e) =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, ".."))
 
       if Chef::Config[:delete_entire_chef_repo]
