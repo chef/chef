@@ -28,9 +28,12 @@ describe Chef::Application::Solo do
     allow(app).to receive(:configure_logging).and_return(true)
     allow(app).to receive(:trap)
 
-    Chef::Config[:recipe_url] = false
     Chef::Config[:json_attribs] = false
     Chef::Config[:solo] = true
+
+    # protect the unit tests against accidental --delete-entire-chef-repo from firing
+    # for real during tests.  DO NOT delete this line.
+    expect(FileUtils).not_to receive(:rm_rf)
   end
 
   describe "configuring the application" do
@@ -103,61 +106,39 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       end
     end
 
-    describe "when the recipe_url configuration option is specified" do
-      let(:tarfile) { StringIO.new("remote_tarball_content") }
-      let(:target_file) { StringIO.new }
-      let(:shellout) { double(run_command: nil, error!: nil, stdout: "") }
+    it "downloads a tarball when the recipe_url configuration option is specified" do
+      Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"
+      Chef::Config[:recipe_url] = "http://junglist.gen.nz/recipes.tgz"
 
-      before do
-        Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"
-        Chef::Config[:recipe_url] = "http://junglist.gen.nz/recipes.tgz"
+      expect(FileUtils).to receive(:mkdir_p).with("#{Dir.tmpdir}/chef-solo").and_return(true)
 
-        allow(FileUtils).to receive(:rm_rf).and_return(true)
-        allow(FileUtils).to receive(:mkdir_p).and_return(true)
+      tarfile = StringIO.new("remote_tarball_content")
+      target_file = StringIO.new
 
-        allow(app).to receive(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(tarfile)
-        allow(File).to receive(:open).with("#{Dir.tmpdir}/chef-solo/recipes.tgz", "wb").and_yield(target_file)
+      expect(app).to receive(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(tarfile)
+      expect(File).to receive(:open).with("#{Dir.tmpdir}/chef-solo/recipes.tgz", "wb").and_yield(target_file)
 
-        allow(Mixlib::ShellOut).to receive(:new).and_return(shellout)
-      end
+      shellout = instance_double("Mixlib::ShellOut", run_command: nil, error!: nil, stdout: "")
 
-      it "should create the recipes path based on the parent of the cookbook path" do
-        expect(FileUtils).to receive(:mkdir_p).with("#{Dir.tmpdir}/chef-solo").and_return(true)
-        app.reconfigure
-      end
-
-      it "should download the recipes" do
-        expect(app).to receive(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(tarfile)
-        app.reconfigure
-      end
-
-      it "should write the recipes to the target path" do
-        app.reconfigure
-        expect(target_file.string).to eq("remote_tarball_content")
-      end
-
-      it "should untar the target file to the parent of the cookbook path" do
-        expect(Mixlib::ShellOut).to receive(:new).with("tar zxvf #{Dir.tmpdir}/chef-solo/recipes.tgz -C #{Dir.tmpdir}/chef-solo")
-        app.reconfigure
-      end
+      expect(app).to receive(:shell_out!).with("tar zxvf #{Dir.tmpdir}/chef-solo/recipes.tgz -C #{Dir.tmpdir}/chef-solo").and_return(shellout)
+      app.reconfigure
+      expect(target_file.string).to eq("remote_tarball_content")
     end
-  end
 
-  describe "when the json_attribs and recipe_url configuration options are both specified" do
-    let(:json_attribs) { { "a" => "b" } }
-    let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
-    let(:json_source) { "https://foo.com/foo.json" }
+    it "fetches the recipe_url first when both json_attribs and recipe_url are specified" do
+      json_attribs = { "a" => "b" }
+      config_fetcher = instance_double("Chef::ConfigFetcher", :fetch_json => json_attribs)
 
-    before do
-      Chef::Config[:json_attribs] = json_source
+      Chef::Config[:json_attribs] = "https://foo.com/foo.json"
       Chef::Config[:recipe_url] = "http://icanhas.cheezburger.com/lolcats"
       Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"
-      allow(FileUtils).to receive(:rm_rf).and_return(true)
-      allow(FileUtils).to receive(:mkdir_p).and_return(true)
-      allow(Chef::Mixin::Command).to receive(:run_command).and_return(true)
-    end
+      expect(FileUtils).to receive(:mkdir_p).with("#{Dir.tmpdir}/chef-solo").and_return(true)
 
-    it "should fetch the recipe_url first" do
+      allow(Chef::Mixin::Command).to receive(:run_command).and_return(true)
+
+      shellout = instance_double("Mixlib::ShellOut", run_command: nil, error!: nil, stdout: "")
+
+      expect(app).to receive(:shell_out!).with("tar zxvf #{Dir.tmpdir}/chef-solo/recipes.tgz -C #{Dir.tmpdir}/chef-solo").and_return(shellout)
       expect(app).to receive(:fetch_recipe_tarball).ordered
       expect(Chef::ConfigFetcher).to receive(:new).ordered.and_return(config_fetcher)
       app.reconfigure

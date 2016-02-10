@@ -36,6 +36,10 @@ describe Chef::Application::Client, "reconfigure" do
     Chef::Config[:interval] = 10
 
     Chef::Config[:once] = false
+
+    # protect the unit tests against accidental --delete-entire-chef-repo from firing
+    # for real during tests.  DO NOT delete this line.
+    expect(FileUtils).not_to receive(:rm_rf)
   end
 
   after do

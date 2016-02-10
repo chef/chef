@@ -25,8 +25,11 @@ require "chef/log"
 require "chef/rest"
 require "chef/config_fetcher"
 require "fileutils"
+require "chef/mixin/shell_out"
+require "pathname"
 
 class Chef::Application::Solo < Chef::Application
+  include Chef::Mixin::ShellOut
 
   option :config_file,
     :short => "-c CONFIG",
@@ -135,10 +138,9 @@ class Chef::Application::Solo < Chef::Application
     :proc => lambda { |s| s.to_i }
 
   option :recipe_url,
-      :short => "-r RECIPE_URL",
-      :long => "--recipe-url RECIPE_URL",
-      :description => "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache.",
-      :proc => nil
+    :short        => "-r RECIPE_URL",
+    :long         => "--recipe-url RECIPE_URL",
+    :description  => "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache."
 
   option :version,
     :short        => "-v",
@@ -191,6 +193,11 @@ class Chef::Application::Solo < Chef::Application
     :description    => "Only run the bare minimum ohai plugins chef needs to function",
     :boolean        => true
 
+  option :delete_entire_chef_repo,
+    :long           => "--delete-entire-chef-repo",
+    :description    => "DANGEROUS: does what it says, only useful with --recipe-url",
+    :boolean        => true
+
   attr_reader :chef_client_json
 
   def initialize
@@ -210,17 +217,22 @@ class Chef::Application::Solo < Chef::Application
 
     Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
 
+    Chef::Log.deprecation("-r MUST be changed to --recipe-url, the -r option will be changed in Chef 13.0") if ARGV.include?("-r")
+
     if Chef::Config[:recipe_url]
-      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| e =~ /\/cookbooks\/*$/ }
+      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| Pathname.new(e).cleanpath.to_s =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, ".."))
 
-      Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
-      FileUtils.rm_rf(recipes_path, :secure => true)
+      if Chef::Config[:delete_entire_chef_repo]
+        Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
+        FileUtils.rm_rf(recipes_path, :secure => true)
+      end
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p(recipes_path)
       tarball_path = File.join(recipes_path, "recipes.tgz")
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      Mixlib::ShellOut.new("tar zxvf #{tarball_path} -C #{recipes_path}").run_command
+      result = shell_out!("tar zxvf #{tarball_path} -C #{recipes_path}")
+      Chef::Log.debug "#{result.stdout}"
     end
 
     # json_attribs shuld be fetched after recipe_url tarball is unpacked.
