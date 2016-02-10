@@ -1,0 +1,4 @@
+suites:
+  - name: learn-the-basics-windows-default
+    run_list: ["recipe[learn-the-basics-windows::default]"]
+    includes: [windows-2012r2]

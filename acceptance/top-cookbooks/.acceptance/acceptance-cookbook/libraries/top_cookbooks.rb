@@ -11,5 +11,10 @@ class TopCookbooks < Chef::Resource
       repository "learn-chef/learn-chef-acceptance"
       cookbook_relative_dir "cookbooks/learn-the-basics-ubuntu"
     end
+
+    cookbook_kitchen "#{command} learn-the-basics-windows" do
+      repository "learn-chef/learn-chef-acceptance"
+      cookbook_relative_dir "cookbooks/learn-the-basics-windows"
+    end
   end
 end
