@@ -41,7 +41,7 @@ describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform
 
   before(:all) do
     @pkg_name = "PkgA.rte"
-    @pkg_path = "/tmp/PkgA.1.0.0.0.bff"
+    @pkg_path = "#{Dir.tmpdir}/PkgA.1.0.0.0.bff"
     FileUtils.cp "spec/functional/assets/PkgA.1.0.0.0.bff" , @pkg_path
   end
 
@@ -69,14 +69,14 @@ describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform
 
     after(:each) do
       shell_out("installp -u #{@pkg_name}")
-      FileUtils.rm "/tmp/installp.log"
+      FileUtils.rm "#{Dir.tmpdir}/installp.log"
     end
   end
 
   context "package upgrade action" do
     before(:each) do
       shell_out("installp -aYF -d #{@pkg_path} #{@pkg_name}")
-      @pkg_path = "/tmp/PkgA.2.0.0.0.bff"
+      @pkg_path = "#{Dir.tmpdir}/PkgA.2.0.0.0.bff"
       FileUtils.cp "spec/functional/assets/PkgA.2.0.0.0.bff" , @pkg_path
     end
 
@@ -114,7 +114,7 @@ describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform
     end
 
     after(:each) do
-      FileUtils.rm "/tmp/installp.log"
+      FileUtils.rm "#{Dir.tmpdir}/installp.log"
     end
   end
 end
