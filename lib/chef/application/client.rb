@@ -25,6 +25,7 @@ require "chef/log"
 require "chef/config_fetcher"
 require "chef/handler/error_report"
 require "chef/workstation_config_loader"
+require "chef/mixin/shell_out"
 
 class Chef::Application::Client < Chef::Application
   include Chef::Mixin::ShellOut
@@ -279,6 +280,11 @@ class Chef::Application::Client < Chef::Application
     :description  => "Enable fips mode",
     :boolean      => true
 
+  option :delete_entire_chef_repo,
+    :long           => "--delete-entire-chef-repo",
+    :description    => "DANGEROUS: does what it says, only useful with --recipe-url",
+    :boolean        => true
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
 
   attr_reader :chef_client_json
@@ -307,15 +313,21 @@ class Chef::Application::Client < Chef::Application
       Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
     end
 
-    if !Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
-      Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode", 1)
-    elsif Chef::Config.local_mode && Chef::Config.has_key?(:recipe_url)
-      Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
-      FileUtils.mkdir_p(Chef::Config.chef_repo_path)
-      tarball_path = File.join(Chef::Config.chef_repo_path, "recipes.tgz")
-      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
-      Chef::Log.debug "#{result.stdout}"
+    if Chef::Config[:recipe_url]
+      if !Chef::Config.local_mode
+        Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode", 1)
+      else
+        if Chef::Config[:delete_entire_chef_repo]
+          Chef::Log.debug "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
+          FileUtils.rm_rf(recipes_path, :secure => true)
+        end
+        Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
+        FileUtils.mkdir_p(Chef::Config.chef_repo_path)
+        tarball_path = File.join(Chef::Config.chef_repo_path, "recipes.tgz")
+        fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
+        result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
+        Chef::Log.debug "#{result.stdout}"
+      end
     end
 
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
