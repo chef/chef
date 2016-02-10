@@ -17,7 +17,7 @@
 #
 
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbooks_dir"
+require "chef/chef_fs/file_system/repository/cookbooks_dir"
 require "chef/chef_fs/file_system/not_found_error"
 
 class Chef
@@ -68,7 +68,7 @@ class Chef
             # Check chefignore
             ignorer = parent
             loop do
-              if ignorer.is_a?(ChefRepositoryFileSystemCookbooksDir)
+              if ignorer.is_a?(CookbooksDir)
                 # Grab the path from entry to child
                 path_to_child = name
                 child = self

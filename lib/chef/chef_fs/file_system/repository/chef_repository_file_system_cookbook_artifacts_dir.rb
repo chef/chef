@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbooks_dir"
+require "chef/chef_fs/file_system/repository/cookbooks_dir"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_artifact_dir"
 
 class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class ChefRepositoryFileSystemCookbookArtifactsDir < ChefRepositoryFileSystemCookbooksDir
+        class ChefRepositoryFileSystemCookbookArtifactsDir < CookbooksDir
           def make_child_entry(child_name)
             ChefRepositoryFileSystemCookbookArtifactDir.new(child_name, self)
           end

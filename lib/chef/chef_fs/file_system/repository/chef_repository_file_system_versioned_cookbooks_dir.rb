@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbooks_dir"
+require "chef/chef_fs/file_system/repository/cookbooks_dir"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_versioned_cookbook_dir"
 
 class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class ChefRepositoryFileSystemVersionedCookbooksDir < ChefRepositoryFileSystemCookbooksDir
+        class ChefRepositoryFileSystemVersionedCookbooksDir < CookbooksDir
           def make_child_entry(child_name)
             ChefRepositoryFileSystemVersionedCookbookDir.new(child_name, self)
           end

@@ -26,7 +26,7 @@ class Chef
     module FileSystem
       module Repository
 
-        class ChefRepositoryFileSystemCookbooksDir < Repository::Directory
+        class CookbooksDir < Repository::Directory
 
           def chefignore
             @chefignore ||= Chef::Cookbook::Chefignore.new(self.file_path)
