@@ -27,7 +27,59 @@ class Chef
   module ChefFS
     module FileSystem
       module Repository
+
+        # Represents ROOT/cookbooks/:cookbook
         class ChefRepositoryFileSystemCookbookDir < ChefRepositoryFileSystemCookbookEntry
+
+          # API Required by Respository::Directory
+
+          def fs_entry_valid?
+            return false unless File.directory?(file_path) && name_valid?
+            if can_upload?
+              true
+            else
+              Chef::Log.warn("Cookbook '#{name}' is empty or entirely chefignored at #{path_for_printing}")
+              false
+            end
+          end
+
+          def name_valid?
+            !name.start_with?(".")
+          end
+
+          def dir?
+            true
+          end
+
+          def create(file_contents = nil)
+            if exists?
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self)
+            end
+            begin
+              Dir.mkdir(file_path)
+            rescue Errno::EEXIST
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self)
+            end
+          end
+
+          def write(cookbook_path, cookbook_version_json, from_fs)
+            # Use the copy/diff algorithm to copy it down so we don't destroy
+            # chefignored data.  This is terribly un-thread-safe.
+            Chef::ChefFS::FileSystem.copy_to(Chef::ChefFS::FilePattern.new("/#{cookbook_path}"), from_fs, self, nil, { :purge => true })
+
+            # Write out .uploaded-cookbook-version.json
+            # cookbook_file_path = File.join(file_path, cookbook_name) <- this should be the same as self.file_path
+            if !File.exists?(file_path)
+              FileUtils.mkdir_p(file_path)
+            end
+            uploaded_cookbook_version_path = File.join(file_path, Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE)
+            File.open(uploaded_cookbook_version_path, "w") do |file|
+              file.write(cookbook_version_json)
+            end
+          end
+
+          # Customizations of base class
+
           def chef_object
             begin
               cb = cookbook_version
@@ -86,7 +138,7 @@ class Chef
           def cookbook_version
             loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
             loader.load_cookbooks
-            cb = loader.cookbook_version
+            loader.cookbook_version
           end
         end
       end
