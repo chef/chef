@@ -21,11 +21,13 @@ require "chef/chef_fs/file_system/repository/chef_repository_file_system_acls_di
 require "chef/chef_fs/file_system/repository/cookbooks_dir"
 require "chef/chef_fs/file_system/repository/cookbook_artifacts_dir"
 require "chef/chef_fs/file_system/repository/data_bags_dir"
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_client_keys_dir"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_policies_dir"
 require "chef/chef_fs/file_system/repository/versioned_cookbooks_dir"
 require "chef/chef_fs/file_system/multiplexed_dir"
 require "chef/chef_fs/data_handler/client_data_handler"
+require "chef/chef_fs/data_handler/client_key_data_handler"
 require "chef/chef_fs/data_handler/environment_data_handler"
 require "chef/chef_fs/data_handler/node_data_handler"
 require "chef/chef_fs/data_handler/policy_data_handler"
@@ -178,6 +180,8 @@ class Chef
               dirs = paths.map { |path| DataBagsDir.new(name, self, path) }
             when "acls"
               dirs = paths.map { |path| ChefRepositoryFileSystemAclsDir.new(name, self, path) }
+            when "client_keys"
+              dirs = paths.map { |path| ChefRepositoryFileSystemClientKeysDir.new(name, self, path) }
             else
               data_handler = case name
                              when "clients"

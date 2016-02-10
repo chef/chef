@@ -663,14 +663,23 @@ class Chef
       end
 
       def _to_chef_fs_path(path)
+        path = path.dup
+
         # /data -> /data_bags
         # /data/BAG -> /data_bags/BAG
         # /data/BAG/ITEM -> /data_bags/BAG/ITEM.json
         if path[0] == "data"
-          path = path.dup
           path[0] = "data_bags"
           if path.length >= 3
             path[2] = "#{path[2]}.json"
+          end
+
+        # /client_keys/CLIENT/keys -> /client_keys/CLIENT
+        # /client_keys/CLIENT/keys/KEYNAME -> /client_keys/CLIENT/KEYNAME.json
+        elsif path[0] == "client_keys"
+          path.delete_at(2)
+          if path.length >= 3
+            path[-1] += ".json"
           end
 
         # /policies/POLICY/revisions/REVISION -> /policies/POLICY-REVISION.json
@@ -698,14 +707,12 @@ class Chef
         elsif path[0] == "acls"
           # /acls/data -> /acls/data_bags
           if path[1] == "data"
-            path = path.dup
             path[1] = "data_bags"
           end
 
           # /acls/containers|nodes|.../x.json
           # /acls/organization.json
           if path.length == 3 || path == %w{acls organization}
-            path = path.dup
             path[-1] = "#{path[-1]}.json"
           end
 
@@ -714,7 +721,6 @@ class Chef
 
         # /nodes|clients|.../x.json
         elsif path.length == 2
-          path = path.dup
           path[-1] = "#{path[-1]}.json"
         end
         path
@@ -722,11 +728,20 @@ class Chef
 
       def to_zero_path(entry)
         path = entry.path.split("/")[1..-1]
+
         if path[0] == "data_bags"
-          path = path.dup
           path[0] = "data"
           if path.length >= 3
             path[2] = path[2][0..-6]
+          end
+
+        # /client_keys/CLIENT -> /client_keys/CLIENT/keys
+        # /client_keys/CLIENT/KEYNAME.json -> /client_keys/CLIENT/keys/KEYNAME
+        elsif path[0] == "client_keys"
+          if path.size == 2
+            path << "keys"
+          elsif path.size > 2
+            path[2..-1] = [ "keys", path[-1][0..-6] ]
           end
 
         elsif %w{cookbooks cookbook_artifacts}.include?(path[0])
@@ -752,9 +767,9 @@ class Chef
           end
 
         elsif path.length == 2 && path[0] != "cookbooks"
-          path = path.dup
           path[1] = path[1][0..-6]
         end
+
         path
       end
 

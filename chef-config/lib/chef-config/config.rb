@@ -150,8 +150,12 @@ module ChefConfig
     default(:acl_path) { derive_path_from_chef_repo_path("acls") }
 
     # Location of clients on disk. String or array of strings.
-    # Defaults to <chef_repo_path>/acls.
+    # Defaults to <chef_repo_path>/clients.
     default(:client_path) { derive_path_from_chef_repo_path("clients") }
+
+    # Location of client keys on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/client_keys.
+    default(:client_key_path) { derive_path_from_chef_repo_path("client_keys") }
 
     # Location of containers on disk. String or array of strings.
     # Defaults to <chef_repo_path>/containers.
