@@ -28,7 +28,7 @@ describe Chef::RunLock do
 
     let(:random_temp_root) do
       Kernel.srand(Time.now.to_i + Process.pid)
-      "/tmp/#{Kernel.rand(Time.now.to_i + Process.pid)}"
+      "#{Dir.tmpdir}/#{Kernel.rand(Time.now.to_i + Process.pid)}"
     end
 
     let(:lockfile) { "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }

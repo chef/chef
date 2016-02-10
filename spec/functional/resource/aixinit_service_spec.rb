@@ -29,11 +29,11 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
   # Platform specific validation routines.
   def service_should_be_started(file_name)
     # The existence of this file indicates that the service was started.
-    expect(File.exists?("/tmp/#{file_name}")).to be_truthy
+    expect(File.exists?("#{Dir.tmpdir}/#{file_name}")).to be_truthy
   end
 
   def service_should_be_stopped(file_name)
-    expect(File.exists?("/tmp/#{file_name}")).to be_falsey
+    expect(File.exists?("#{Dir.tmpdir}/#{file_name}")).to be_falsey
   end
 
   def valide_symlinks(expected_output, run_level = nil, status = nil, priority = nil)
@@ -51,7 +51,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
   end
 
   def delete_test_files
-    files = Dir.glob("/tmp/chefinit[a-z_]*.txt")
+    files = Dir.glob("#{Dir.tmpdir}/chefinit[a-z_]*.txt")
     File.delete(*files)
   end
 
