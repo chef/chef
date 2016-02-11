@@ -1,3 +1,8 @@
+## 12.7.2
+
+* [pr#4559](https://github.com/chef/chef/pull/4559) Remove learnchef acceptance tests until we make them more reliable
+* [pr#4545](https://github.com/chef/chef/pull/4545) Removing rm -rf in chef-solo recipe_url
+
 ## 12.7.1
 * [**Daniel Steen**](https://github.com/dansteen)
   * [pr#3183](https://github.com/chef/chef/pull/3183) Provide more helpful error message when accidentally using --secret instead of --secret-file

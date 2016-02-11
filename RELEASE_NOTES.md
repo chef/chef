@@ -41,6 +41,10 @@ EMEA customers in particular, and those customers who need reliable UTF-8 suppor
 extremely bad UTF-8 handling bug in them which corrupted all UTF-8 data in the node.  In 12.7.0 that bug was fixed, along with another fix to make resource and audit reporting more reliable when fed
 non-UTF-8 (e.g. Latin-1/ISO-8859-1) characters.
 
+## Deleting folders with Chef Solo and the recipe_url config
+
+Providing the `:recipe_url` config to Chef Solo would attempt to `rm -rf` the existing local Chef repo.  This was a dangerous folder delete that trolled a few people so we removed the behavior.  If you would like to keep this behavior you can provide the `:delete_entire_chef_repo` configuration and it will continue attempting to destroy the existing local Chef repo.  This configuration only applies if you are using `:recipe_url`
+
 ## Chef::REST
 
 We recently completed moving our internal API calls from `Chef::REST` to
