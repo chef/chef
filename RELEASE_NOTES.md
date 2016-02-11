@@ -41,9 +41,24 @@ EMEA customers in particular, and those customers who need reliable UTF-8 suppor
 extremely bad UTF-8 handling bug in them which corrupted all UTF-8 data in the node.  In 12.7.0 that bug was fixed, along with another fix to make resource and audit reporting more reliable when fed
 non-UTF-8 (e.g. Latin-1/ISO-8859-1) characters.
 
-## Deleting folders with Chef Solo and the recipe_url config
+## Chef Solo -r (--recipe-url) changes
 
-Providing the `:recipe_url` config to Chef Solo would attempt to `rm -rf` the existing local Chef repo.  This was a dangerous folder delete that trolled a few people so we removed the behavior.  If you would like to keep this behavior you can provide the `:delete_entire_chef_repo` configuration and it will continue attempting to destroy the existing local Chef repo.  This configuration only applies if you are using `:recipe_url`
+The use of the `-r` option to chef-client result in setting the `--run-list`:
+
+```
+chef-client -r 'role[foo]'
+```
+
+Passing the same argument to chef-solo:
+
+```
+chef-solo -r 'role[foo]'
+```
+
+Instead invokes the `--recipe-url` code, which had the side effect of running an immediate unprompted `rm -rf *` in the current working directory of the user.   Due to this problem and other issues
+around this `rm -rf *` behavior it has been removed from the `--recipe-url` code in chef-solo.  The use of `-r` in chef-solo to mean `--recipe-url` has also been deprecated.
+
+The `rm -rf *` behavior has been moved to a `--delete-entire-chef-repo` option.  Users of chef-solo who want the old pre-12.7 behavior of `-r XXX` should therefore use `--recipe-url XXX --delete-entire-chef-repo`.
 
 ## Chef::REST
 
