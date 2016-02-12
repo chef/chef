@@ -85,6 +85,8 @@ class Chef
     def load_cookbook(cookbook_name)
       preload_cookbooks
 
+      return @cookbooks_by_name[cookbook_name] if @cookbooks_by_name.has_key?(cookbook_name)
+
       return nil unless @loaders_by_name.key?(cookbook_name.to_s)
 
       cookbook_loaders_for(cookbook_name).each do |loader|

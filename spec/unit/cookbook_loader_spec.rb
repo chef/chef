@@ -45,12 +45,21 @@ describe Chef::CookbookLoader do
         once.
         and_call_original
     end
+    expect(Chef::Log).to receive(:deprecation).with(/The cookbook\(s\): openldap exist in multiple places in your cookbook_path./)
     cookbook_loader.load_cookbooks
   end
 
   context "after loading all cookbooks" do
     before(:each) do
+      expect(Chef::Log).to receive(:deprecation).with(/The cookbook\(s\): openldap exist in multiple places in your cookbook_path./)
       cookbook_loader.load_cookbooks
+    end
+
+    it "should be possible to reload all the cookbooks without triggering deprecation warnings on all of them" do
+      start_merged_cookbooks = cookbook_loader.merged_cookbooks
+      expect(Chef::Log).to receive(:deprecation).with(/The cookbook\(s\): openldap exist in multiple places in your cookbook_path./)
+      cookbook_loader.load_cookbooks
+      expect(cookbook_loader.merged_cookbooks).to eql(start_merged_cookbooks)
     end
 
     describe "[]" do
@@ -98,7 +107,6 @@ describe Chef::CookbookLoader do
 
     describe "referencing cookbook files" do
       it "should find all the cookbooks in the cookbook path" do
-        cookbook_loader.load_cookbooks
         expect(cookbook_loader).to have_key(:openldap)
         expect(cookbook_loader).to have_key(:apache2)
       end
@@ -260,6 +268,7 @@ describe Chef::CookbookLoader do
 
     describe "loading all cookbooks after loading only one cookbook" do
       before(:each) do
+        expect(Chef::Log).to receive(:deprecation).with(/The cookbook\(s\): openldap exist in multiple places in your cookbook_path./)
         cookbook_loader.load_cookbooks
       end
 
