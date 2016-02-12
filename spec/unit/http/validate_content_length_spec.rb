@@ -107,7 +107,7 @@ describe Chef::HTTP::ValidateContentLength do
   describe "without Content-Length header" do
     let(:response_headers) { {} }
 
-    [ "direct", "streaming" ].each do |req_type|
+    %w{direct streaming}.each do |req_type|
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
@@ -120,7 +120,7 @@ describe Chef::HTTP::ValidateContentLength do
   end
 
   describe "with correct Content-Length header" do
-    [ "direct", "streaming" ].each do |req_type|
+    %w{direct streaming}.each do |req_type|
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
@@ -134,7 +134,7 @@ describe Chef::HTTP::ValidateContentLength do
 
   describe "with wrong Content-Length header" do
     let(:content_length_value) { 25 }
-    [ "direct", "streaming" ].each do |req_type|
+    %w{direct streaming}.each do |req_type|
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
@@ -161,7 +161,7 @@ describe Chef::HTTP::ValidateContentLength do
       }
     }
 
-    [ "direct", "streaming" ].each do |req_type|
+    %w{direct streaming}.each do |req_type|
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 

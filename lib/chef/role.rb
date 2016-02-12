@@ -70,7 +70,7 @@ class Chef
     end
 
     def run_list(*args)
-      if (args.length > 0)
+      if args.length > 0
         @env_run_lists["_default"].reset!(args)
       end
       @env_run_lists["_default"]
@@ -93,7 +93,7 @@ class Chef
 
     # Per environment run lists
     def env_run_lists(env_run_lists = nil)
-      if (!env_run_lists.nil?)
+      if !env_run_lists.nil?
         unless env_run_lists.key?("_default")
           msg = "_default key is required in env_run_lists.\n"
           msg << "(env_run_lists: #{env_run_lists.inspect})"
@@ -108,7 +108,7 @@ class Chef
     alias :env_run_list :env_run_lists
 
     def env_run_lists_add(env_run_lists = nil)
-      if (!env_run_lists.nil?)
+      if !env_run_lists.nil?
         env_run_lists.each { |k, v| @env_run_lists[k] = Chef::RunList.new(*Array(v)) }
       end
       @env_run_lists

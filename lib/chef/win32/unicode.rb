@@ -38,7 +38,7 @@ module FFI
         # Find the length of the string
         length = 0
         last_char = nil
-        while last_char != "\000\000" do
+        while last_char != "\000\000"
           length += 1
           last_char = self.get_bytes(0, length * 2)[-2..-1]
         end

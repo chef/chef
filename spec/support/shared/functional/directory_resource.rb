@@ -163,11 +163,11 @@ shared_context Chef::Resource::Directory do
   end
 
   before do
-    FileUtils::mkdir_p(test_file_dir)
+    FileUtils.mkdir_p(test_file_dir)
   end
 
   after do
-    FileUtils::rm_rf(test_file_dir)
+    FileUtils.rm_rf(test_file_dir)
   end
 
   after(:each) do

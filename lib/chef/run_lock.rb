@@ -63,7 +63,7 @@ class Chef
     def acquire
       if timeout_given?
         begin
-          Timeout::timeout(time_to_wait) do
+          Timeout.timeout(time_to_wait) do
             unless test
               if time_to_wait > 0.0
                 wait

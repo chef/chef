@@ -119,7 +119,7 @@ describe Chef::Knife::CookbookDownload do
           it "should download the cookbook when the cookbook download directory doesn't exist" do
             expect(File).to receive(:exists?).with("/var/tmp/chef/foobar-1.0.0").and_return(false)
             @knife.run
-            ["attributes", "recipes", "templates"].each do |segment|
+            %w{attributes recipes templates}.each do |segment|
               expect(@stderr.string).to match /downloading #{segment}/im
             end
             expect(@stderr.string).to match /downloading foobar cookbook version 1\.0\.0/im

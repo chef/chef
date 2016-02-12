@@ -31,8 +31,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
   def group_should_exist(group)
     case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
-      expect { Etc::getgrnam(group) }.not_to raise_error
-      expect(group).to eq(Etc::getgrnam(group).name)
+      expect { Etc.getgrnam(group) }.not_to raise_error
+      expect(group).to eq(Etc.getgrnam(group).name)
     when "windows"
       expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.not_to raise_error
     end
@@ -49,21 +49,21 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
       members.shift # Get rid of GroupMembership: string
       members.include?(user)
     else
-      Etc::getgrnam(group_name).mem.include?(user)
+      Etc.getgrnam(group_name).mem.include?(user)
     end
   end
 
   def group_should_not_exist(group)
     case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
-      expect { Etc::getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
+      expect { Etc.getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
     when "windows"
       expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to raise_error(ArgumentError, /The group name could not be found./)
     end
   end
 
   def compare_gid(resource, gid)
-    return resource.gid == Etc::getgrnam(resource.name).gid if unix?
+    return resource.gid == Etc.getgrnam(resource.name).gid if unix?
   end
 
   def sid_string_from_user(user)
@@ -361,7 +361,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group modify action", :not_supported_on_solaris do
-    let(:spec_members) { ["mnou5sdz", "htulrvwq", "x4c3g1lu"] }
+    let(:spec_members) { %w{mnou5sdz htulrvwq x4c3g1lu} }
     let(:included_members) { [spec_members[0], spec_members[1]] }
     let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :modify }
@@ -389,7 +389,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group manage action", :not_supported_on_solaris do
-    let(:spec_members) { ["mnou5sdz", "htulrvwq", "x4c3g1lu"] }
+    let(:spec_members) { %w{mnou5sdz htulrvwq x4c3g1lu} }
     let(:included_members) { [spec_members[0], spec_members[1]] }
     let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :manage }
@@ -443,7 +443,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
     end
 
     describe "when append is not set" do
-      let(:included_members) { ["gordon", "eric"] }
+      let(:included_members) { %w{gordon eric} }
 
       before(:each) do
         group_resource.append(false)

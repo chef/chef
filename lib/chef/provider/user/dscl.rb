@@ -130,7 +130,7 @@ user password using shadow hash.")
 
               # Calling shell_out directly since we want to give an input stream
               shadow_hash_xml = convert_binary_plist_to_xml(shadow_hash_binary.string)
-              shadow_hash = Plist::parse_xml(shadow_hash_xml)
+              shadow_hash = Plist.parse_xml(shadow_hash_xml)
 
               if shadow_hash["SALTED-SHA512"]
                 # Convert the shadow value from Base64 encoding to hex before consuming them
@@ -212,7 +212,7 @@ user password using shadow hash.")
         #
         def dscl_set_uid
           # XXX: mutates the new resource
-          new_resource.uid(get_free_uid) if (new_resource.uid.nil? || new_resource.uid == "")
+          new_resource.uid(get_free_uid) if new_resource.uid.nil? || new_resource.uid == ""
 
           if uid_used?(new_resource.uid)
             raise(Chef::Exceptions::RequestedUIDUnavailable, "uid #{new_resource.uid} is already in use")
@@ -410,7 +410,7 @@ user password using shadow hash.")
               salt = OpenSSL::Random.random_bytes(32)
               iterations = new_resource.iterations # Use the default if not specified by the user
 
-              entropy = OpenSSL::PKCS5::pbkdf2_hmac(
+              entropy = OpenSSL::PKCS5.pbkdf2_hmac(
                 new_resource.password,
                 salt,
                 iterations,
@@ -589,7 +589,7 @@ user password using shadow hash.")
           begin
             user_plist_file = "#{USER_PLIST_DIRECTORY}/#{new_resource.username}.plist"
             user_plist_info = run_plutil("convert xml1 -o - #{user_plist_file}")
-            user_info = Plist::parse_xml(user_plist_info)
+            user_info = Plist.parse_xml(user_plist_info)
           rescue Chef::Exceptions::PlistUtilCommandFailed
           end
 
@@ -695,7 +695,7 @@ user password using shadow hash.")
         def salted_sha512_pbkdf2_password_match?
           salt = convert_to_binary(current_resource.salt)
 
-          OpenSSL::PKCS5::pbkdf2_hmac(
+          OpenSSL::PKCS5.pbkdf2_hmac(
             new_resource.password,
             salt,
             current_resource.iterations,

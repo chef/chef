@@ -24,7 +24,7 @@ describe Chef::Provider::Group::Usermod do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("wheel")
-    @new_resource.members [ "all", "your", "base" ]
+    @new_resource.members %w{all your base}
     @new_resource.excluded_members [ ]
     @provider = Chef::Provider::Group::Usermod.new(@new_resource, @run_context)
     allow(@provider).to receive(:run_command)
@@ -56,7 +56,7 @@ describe Chef::Provider::Group::Usermod do
       }
 
       before do
-        allow(@new_resource).to receive(:members).and_return(["all", "your", "base"])
+        allow(@new_resource).to receive(:members).and_return(%w{all your base})
         allow(File).to receive(:exists?).and_return(true)
       end
 

@@ -111,8 +111,8 @@ describe Chef::Resource::Group, "members" do
     end
 
     it "(#{method}) should allow an array" do
-      @resource.send(method, [ "aj", "adam" ])
-      expect(@resource.send(method)).to eql( ["aj", "adam"] )
+      @resource.send(method, %w{aj adam})
+      expect(@resource.send(method)).to eql( %w{aj adam} )
     end
 
     it "(#{method}) should not allow a hash" do
@@ -142,12 +142,12 @@ describe Chef::Resource::Group, "append" do
   describe "when it has members" do
     before do
       @resource.group_name("pokemon")
-      @resource.members(["blastoise", "pikachu"])
+      @resource.members(%w{blastoise pikachu})
     end
 
     it "describes its state" do
       state = @resource.state
-      expect(state[:members]).to eql(["blastoise", "pikachu"])
+      expect(state[:members]).to eql(%w{blastoise pikachu})
     end
 
     it "returns the group name as its identity" do

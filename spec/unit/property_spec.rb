@@ -985,7 +985,7 @@ describe "Chef::Resource.property" do
     end
   end
 
-  [ "name_attribute", "name_property" ].each do |name|
+  %w{name_attribute name_property}.each do |name|
     context "Chef::Resource::Property##{name}" do
       with_property ":x, #{name}: true" do
         it "defaults x to resource.name" do

@@ -81,11 +81,11 @@ EOH
     def log_what_if_exception(what_if_exception_output)
       if whatif_not_supported?(what_if_exception_output)
         # LCM returns an error if any of the resources do not support the opptional What-If
-        Chef::Log::warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
+        Chef::Log.warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
       elsif dsc_module_import_failure?(what_if_exception_output)
-        Chef::Log::warn("Received error while testing configuration due to a module for an imported resource possibly not being fully installed:\n#{what_if_exception_output.gsub(/\s+/, ' ')}")
+        Chef::Log.warn("Received error while testing configuration due to a module for an imported resource possibly not being fully installed:\n#{what_if_exception_output.gsub(/\s+/, ' ')}")
       else
-        Chef::Log::warn("Received error while testing configuration:\n#{what_if_exception_output.gsub(/\s+/, ' ')}")
+        Chef::Log.warn("Received error while testing configuration:\n#{what_if_exception_output.gsub(/\s+/, ' ')}")
       end
     end
 
@@ -102,9 +102,9 @@ EOH
     def configuration_update_required?(what_if_output)
       Chef::Log.debug("DSC: DSC returned the following '-whatif' output from test operation:\n#{what_if_output}")
       begin
-        Parser::parse(what_if_output)
+        Parser.parse(what_if_output)
       rescue Chef::Exceptions::LCMParser => e
-        Chef::Log::warn("Could not parse LCM output: #{e}")
+        Chef::Log.warn("Could not parse LCM output: #{e}")
         [Chef::Util::DSC::ResourceInfo.new("Unknown DSC Resources", true, ["Unknown changes because LCM output was not parsable."])]
       end
     end

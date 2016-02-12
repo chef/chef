@@ -26,11 +26,11 @@ describe Chef::Provider::Group::Pw do
 
     @new_resource = Chef::Resource::Group.new("wheel")
     @new_resource.gid 50
-    @new_resource.members [ "root", "aj"]
+    @new_resource.members %w{root aj}
 
     @current_resource = Chef::Resource::Group.new("aj")
     @current_resource.gid 50
-    @current_resource.members [ "root", "aj"]
+    @current_resource.members %w{root aj}
     @provider = Chef::Provider::Group::Pw.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
@@ -89,7 +89,7 @@ describe Chef::Provider::Group::Pw do
     describe "with an empty members array in the new resource and existing members in the current resource" do
       before do
         allow(@new_resource).to receive(:members).and_return([])
-        allow(@current_resource).to receive(:members).and_return(["all", "your", "base"])
+        allow(@current_resource).to receive(:members).and_return(%w{all your base})
       end
 
       it "should log an appropriate message" do
@@ -104,7 +104,7 @@ describe Chef::Provider::Group::Pw do
 
     describe "with supplied members array in the new resource and an empty members array in the current resource" do
       before do
-        allow(@new_resource).to receive(:members).and_return(["all", "your", "base"])
+        allow(@new_resource).to receive(:members).and_return(%w{all your base})
         allow(@current_resource).to receive(:members).and_return([])
       end
 

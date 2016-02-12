@@ -168,7 +168,7 @@ c5adbbac718b7eb99463a7b679571e0f\
   end
 
   describe "when a user is member of some groups" do
-    let(:groups) { ["staff", "operator"] }
+    let(:groups) { %w{staff operator} }
 
     before do
       existing_resource = user_resource.dup

@@ -72,11 +72,11 @@ class Chef
       def could_match_children?(path)
         return false if path == "" # Empty string is not a path
 
-        argument_is_absolute = Chef::ChefFS::PathUtils::is_absolute?(path)
+        argument_is_absolute = Chef::ChefFS::PathUtils.is_absolute?(path)
         return false if is_absolute != argument_is_absolute
         path = path[1, path.length - 1] if argument_is_absolute
 
-        path_parts = Chef::ChefFS::PathUtils::split(path)
+        path_parts = Chef::ChefFS::PathUtils.split(path)
         # If the pattern is shorter than the path (or same size), children will be larger than the pattern, and will not match.
         return false if regexp_parts.length <= path_parts.length && !has_double_star
         # If the path doesn't match up to this point, children won't match either.
@@ -111,8 +111,8 @@ class Chef
       #
       # This method assumes +could_match_children?(path)+ is +true+.
       def exact_child_name_under(path)
-        path = path[1, path.length - 1] if Chef::ChefFS::PathUtils::is_absolute?(path)
-        dirs_in_path = Chef::ChefFS::PathUtils::split(path).length
+        path = path[1, path.length - 1] if Chef::ChefFS::PathUtils.is_absolute?(path)
+        dirs_in_path = Chef::ChefFS::PathUtils.split(path).length
         return nil if exact_parts.length <= dirs_in_path
         return exact_parts[dirs_in_path]
       end
@@ -124,8 +124,8 @@ class Chef
       #   abc/x\\yz.exact_path == 'abc/xyz'
       def exact_path
         return nil if has_double_star || exact_parts.any? { |part| part.nil? }
-        result = Chef::ChefFS::PathUtils::join(*exact_parts)
-        is_absolute ? Chef::ChefFS::PathUtils::join("", result) : result
+        result = Chef::ChefFS::PathUtils.join(*exact_parts)
+        is_absolute ? Chef::ChefFS::PathUtils.join("", result) : result
       end
 
       # Returns the normalized version of the pattern, with / as the directory
@@ -149,7 +149,7 @@ class Chef
       #   abc/*/def.match?('abc/foo/def') == true
       #   abc/*/def.match?('abc/foo') == false
       def match?(path)
-        argument_is_absolute = Chef::ChefFS::PathUtils::is_absolute?(path)
+        argument_is_absolute = Chef::ChefFS::PathUtils.is_absolute?(path)
         return false if is_absolute != argument_is_absolute
         path = path[1, path.length - 1] if argument_is_absolute
         !!regexp.match(path)
@@ -184,7 +184,7 @@ class Chef
 
       def calculate
         if !@regexp
-          @is_absolute = Chef::ChefFS::PathUtils::is_absolute?(@pattern)
+          @is_absolute = Chef::ChefFS::PathUtils.is_absolute?(@pattern)
 
           full_regexp_parts = []
           normalized_parts = []
@@ -192,8 +192,8 @@ class Chef
           @exact_parts = []
           @has_double_star = false
 
-          Chef::ChefFS::PathUtils::split(pattern).each do |part|
-            regexp, exact, has_double_star = FilePattern::pattern_to_regexp(part)
+          Chef::ChefFS::PathUtils.split(pattern).each do |part|
+            regexp, exact, has_double_star = FilePattern.pattern_to_regexp(part)
             if has_double_star
               @has_double_star = true
             end
@@ -232,14 +232,14 @@ class Chef
             end
           end
 
-          @regexp = Regexp.new("^#{full_regexp_parts.join(Chef::ChefFS::PathUtils::regexp_path_separator)}$")
+          @regexp = Regexp.new("^#{full_regexp_parts.join(Chef::ChefFS::PathUtils.regexp_path_separator)}$")
           @normalized_pattern = Chef::ChefFS::PathUtils.join(*normalized_parts)
           @normalized_pattern = Chef::ChefFS::PathUtils.join("", @normalized_pattern) if @is_absolute
         end
       end
 
       def self.pattern_special_characters
-        if Chef::ChefFS::windows?
+        if Chef::ChefFS.windows?
           @pattern_special_characters ||= /(\*\*|\*|\?|[\*\?\.\|\(\)\[\]\{\}\+\\\\\^\$])/
         else
           # Unix also supports character regexes and backslashes

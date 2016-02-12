@@ -27,7 +27,7 @@ describe Chef::Knife::CookbookSiteShare do
     @knife = Chef::Knife::CookbookSiteShare.new
     # Merge default settings in.
     @knife.merge_configs
-    @knife.name_args = ["cookbook_name", "AwesomeSausage"]
+    @knife.name_args = %w{cookbook_name AwesomeSausage}
 
     @cookbook = Chef::CookbookVersion.new("cookbook_name")
 

@@ -205,7 +205,7 @@ EOM
     end
 
     it "formats arrays appropriately" do
-      @ui.output([ "a", "b" ])
+      @ui.output(%w{a b})
       expect(@out.string).to eq <<EOM
 a
 b
@@ -228,7 +228,7 @@ EOM
     end
 
     it "formats nested arrays appropriately" do
-      @ui.output([ [ "a", "b" ], [ "c", "d" ]])
+      @ui.output([ %w{a b}, %w{c d}])
       expect(@out.string).to eq <<EOM
 a
 b
@@ -239,7 +239,7 @@ EOM
     end
 
     it "formats nested arrays with single- and empty subarrays appropriately" do
-      @ui.output([ [ "a", "b" ], [ "c" ], [], [ "d", "e" ]])
+      @ui.output([ %w{a b}, [ "c" ], [], %w{d e}])
       expect(@out.string).to eq <<EOM
 a
 b
@@ -282,7 +282,7 @@ EOM
     end
 
     it "formats hashes with array members appropriately" do
-      @ui.output({ "a" => [ "foo", "bar" ], "b" => "c" })
+      @ui.output({ "a" => %w{foo bar}, "b" => "c" })
       expect(@out.string).to eq <<EOM
 a:
   foo
@@ -301,7 +301,7 @@ EOM
     end
 
     it "formats hashes with nested array values appropriately" do
-      @ui.output({ "a" => [ [ "foo", "bar" ], [ "baz", "bjork" ] ], "b" => "c" })
+      @ui.output({ "a" => [ %w{foo bar}, %w{baz bjork} ], "b" => "c" })
       # XXX: using a HEREDOC at this point results in a line with required spaces which auto-whitespace removal settings
       # on editors will remove and will break this test.
       expect(@out.string).to eq("a:\n  foo\n  bar\n  \n  baz\n  bjork\nb: c\n")
@@ -353,7 +353,7 @@ EOM
 
       it "should return multiple attributes" do
         input = { "gi" =>  "go", "hi" => "ho", "id" => "sample-data-bag-item" }
-        @ui.config[:attribute] = ["gi", "hi"]
+        @ui.config[:attribute] = %w{gi hi}
         expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { "gi" => "go", "hi" => "ho" } })
       end
 
@@ -545,7 +545,7 @@ EOM
       end
     end
 
-    ["Y", "y"].each do |answer|
+    %w{Y y}.each do |answer|
       describe "with answer #{answer}" do
         let(:answer) { answer }
 
@@ -553,7 +553,7 @@ EOM
       end
     end
 
-    ["N", "n"].each do |answer|
+    %w{N n}.each do |answer|
       describe "with answer #{answer}" do
         let(:answer) { answer }
 

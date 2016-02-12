@@ -25,7 +25,7 @@ class Chef
 
         def load_current_resource
           super
-          [ "group", "user" ].each do |binary|
+          %w{group user}.each do |binary|
             raise Chef::Exceptions::Group, "Could not find binary /usr/sbin/#{binary} for #{@new_resource}" unless ::File.exists?("/usr/sbin/#{binary}")
           end
         end

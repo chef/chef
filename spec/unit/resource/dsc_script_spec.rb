@@ -77,7 +77,7 @@ describe Chef::Resource::DscScript do
     context "when calling imports" do
       let(:module_name)   { "FooModule" }
       let(:module_name_b)   { "BarModule" }
-      let(:dsc_resources) { ["ResourceA", "ResourceB"] }
+      let(:dsc_resources) { %w{ResourceA ResourceB} }
 
       it "allows an arbitrary number of resources to be set for a module to be set" do
         dsc_test_resource.imports module_name, *dsc_resources

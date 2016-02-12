@@ -35,7 +35,7 @@ describe "Chef::Win32::Registry", :windows_only do
       reg["Strong", Win32::Registry::REG_SZ] = "bird nest"
     end
     ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Branch\\Flower', Win32::Registry::KEY_ALL_ACCESS) do |reg|
-      reg["Petals", Win32::Registry::REG_MULTI_SZ] = ["Pink", "Delicate"]
+      reg["Petals", Win32::Registry::REG_MULTI_SZ] = %w{Pink Delicate}
     end
 
     #Create the node with ohai data
@@ -137,49 +137,49 @@ describe "Chef::Win32::Registry", :windows_only do
 
   describe "data_exists?" do
     it "throws an exception if the hive does not exist" do
-      expect { @registry.data_exists?("JKLM\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Pink", "Delicate"] }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
+      expect { @registry.data_exists?("JKLM\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
     it "throws an exception if the key does not exist" do
-      expect { @registry.data_exists?("HKCU\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Pink", "Delicate"] }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { @registry.data_exists?("HKCU\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
     it "returns true if all the data matches" do
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Pink", "Delicate"] })).to eq(true)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Pink Delicate} })).to eq(true)
     end
     it "returns true if all the data matches with a case mismatch on the data name" do
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "petals", :type => :multi_string, :data => ["Pink", "Delicate"] })).to eq(true)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "petals", :type => :multi_string, :data => %w{Pink Delicate} })).to eq(true)
     end
     it "returns false if the name does not exist" do
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "slateP", :type => :multi_string, :data => ["Pink", "Delicate"] })).to eq(false)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "slateP", :type => :multi_string, :data => %w{Pink Delicate} })).to eq(false)
     end
     it "returns false if the types do not match" do
       expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :string, :data => "Pink" })).to eq(false)
     end
     it "returns false if the data does not match" do
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Mauve", "Delicate"] })).to eq(false)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Mauve Delicate} })).to eq(false)
     end
   end
 
   describe "data_exists!" do
     it "throws an exception if the hive does not exist" do
-      expect { @registry.data_exists!("JKLM\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Pink", "Delicate"] }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
+      expect { @registry.data_exists!("JKLM\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
     it "throws an exception if the key does not exist" do
-      expect { @registry.data_exists!("HKCU\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Pink", "Delicate"] }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { @registry.data_exists!("HKCU\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
     it "returns true if all the data matches" do
-      expect(@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Pink", "Delicate"] })).to eq(true)
+      expect(@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Pink Delicate} })).to eq(true)
     end
     it "returns true if all the data matches with a case mismatch on the data name" do
-      expect(@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "petals", :type => :multi_string, :data => ["Pink", "Delicate"] })).to eq(true)
+      expect(@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "petals", :type => :multi_string, :data => %w{Pink Delicate} })).to eq(true)
     end
     it "throws an exception if the name does not exist" do
-      expect { @registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "slateP", :type => :multi_string, :data => ["Pink", "Delicate"] }) }.to raise_error(Chef::Exceptions::Win32RegDataMissing)
+      expect { @registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "slateP", :type => :multi_string, :data => %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegDataMissing)
     end
     it "throws an exception if the types do not match" do
       expect { @registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :string, :data => "Pink" }) }.to raise_error(Chef::Exceptions::Win32RegDataMissing)
     end
     it "throws an exception if the data does not match" do
-      expect { @registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Mauve", "Delicate"] }) }.to raise_error(Chef::Exceptions::Win32RegDataMissing)
+      expect { @registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Mauve Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegDataMissing)
     end
   end
 
@@ -243,13 +243,13 @@ describe "Chef::Win32::Registry", :windows_only do
     end
 
     it "throws an exception when trying to cast an array to an int for a dword" do
-      expect { @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldThrow", :type => :dword, :data => ["one", "two"] }) }.to raise_error
+      expect { @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldThrow", :type => :dword, :data => %w{one two} }) }.to raise_error
     end
 
     # we are validating that the data gets .to_s called on it when type is a :string
 
     it "stores the string representation of an array into a string if you pass it an array" do
-      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldBePainful", :type => :string, :data => ["one", "two"] })).to eq(true)
+      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldBePainful", :type => :string, :data => %w{one two} })).to eq(true)
       expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldBePainful", :type => :string, :data => '["one", "two"]' })).to eq(true)
     end
 
@@ -330,7 +330,7 @@ describe "Chef::Win32::Registry", :windows_only do
     before (:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch\\Fruit"
       ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Branch\\Fruit', Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg["Apple", Win32::Registry::REG_MULTI_SZ] = ["Red", "Juicy"]
+        reg["Apple", Win32::Registry::REG_MULTI_SZ] = %w{Red Juicy}
       end
       ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Trunk\\Peck\\Woodpecker"
       ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Trunk\\Peck\\Woodpecker', Win32::Registry::KEY_ALL_ACCESS) do |reg|

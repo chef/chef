@@ -47,7 +47,7 @@ describe Chef::RunLock do
 
     WAIT_ON_LOCK_TIME = 1.0
     def wait_on_lock
-      Timeout::timeout(WAIT_ON_LOCK_TIME) do
+      Timeout.timeout(WAIT_ON_LOCK_TIME) do
         until File.exist?(lockfile)
           sleep 0.1
         end
@@ -346,7 +346,7 @@ describe Chef::RunLock do
       background_block.call if background_block
 
       # Wait until it gets there
-      Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+      Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
         until @last_event == "after #{to_event}"
           got_event, time = read_from_process.gets.split("@")
           example.log_event("#{name}.last_event got #{got_event}")
@@ -373,7 +373,7 @@ describe Chef::RunLock do
 
     def wait_for_exit
       example.log_event("#{name}.wait_for_exit (pid #{pid})")
-      Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+      Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
         Process.wait(pid) if pid
       end
       example.log_event("#{name}.wait_for_exit finished (pid #{pid})")
@@ -384,9 +384,9 @@ describe Chef::RunLock do
         example.log_event("#{name}.stop (pid #{pid})")
         begin
           # Send it the kill signal over and over until it dies
-          Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+          Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
             Process.kill(:KILL, pid)
-            while !Process.waitpid2(pid, Process::WNOHANG)
+            until Process.waitpid2(pid, Process::WNOHANG)
               sleep(0.05)
             end
           end
@@ -431,7 +431,7 @@ describe Chef::RunLock do
       example.log_event("#{name}.start")
       @pid = fork do
         begin
-          Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+          Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
             run_lock = TestRunLock.new(example.lockfile)
             run_lock.client_process = self
             fire_event("started")

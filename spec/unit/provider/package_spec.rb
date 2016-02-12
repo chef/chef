@@ -44,7 +44,7 @@ describe Chef::Provider::Package do
     end
 
     it "raises a Chef::Exceptions::InvalidResourceSpecification if both multipackage and source are provided" do
-      new_resource.package_name(["a", "b"])
+      new_resource.package_name(%w{a b})
       new_resource.source("foo")
       expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
     end
@@ -563,8 +563,8 @@ describe "Chef::Provider::Package - Multi" do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:new_resource) { Chef::Resource::Package.new(["emacs", "vi"]) }
-  let(:current_resource) { Chef::Resource::Package.new(["emacs", "vi"]) }
+  let(:new_resource) { Chef::Resource::Package.new(%w{emacs vi}) }
+  let(:current_resource) { Chef::Resource::Package.new(%w{emacs vi}) }
   let(:candidate_version) { [ "1.0", "6.2" ] }
   let(:provider) do
     provider = Chef::Provider::Package.new(new_resource, run_context)
@@ -581,7 +581,7 @@ describe "Chef::Provider::Package - Multi" do
 
     it "installs the candidate versions when none are installed" do
       expect(provider).to receive(:install_package).with(
-        ["emacs", "vi"],
+        %w{emacs vi},
         ["1.0", "6.2"],
       ).and_return(true)
       provider.run_action(:install)
@@ -731,7 +731,7 @@ describe "Chef::Provider::Package - Multi" do
 
     it "should remove the packages if all are installed" do
       expect(provider).to be_removing_package
-      expect(provider).to receive(:remove_package).with(["emacs", "vi"], nil)
+      expect(provider).to receive(:remove_package).with(%w{emacs vi}, nil)
       provider.run_action(:remove)
       expect(new_resource).to be_updated
       expect(new_resource).to be_updated_by_last_action
@@ -740,7 +740,7 @@ describe "Chef::Provider::Package - Multi" do
     it "should remove the packages if some are installed" do
       current_resource.version ["1.0", nil]
       expect(provider).to be_removing_package
-      expect(provider).to receive(:remove_package).with(["emacs", "vi"], nil)
+      expect(provider).to receive(:remove_package).with(%w{emacs vi}, nil)
       provider.run_action(:remove)
       expect(new_resource).to be_updated
       expect(new_resource).to be_updated_by_last_action
@@ -749,7 +749,7 @@ describe "Chef::Provider::Package - Multi" do
     it "should remove the packages at a specific version if they are installed at that version" do
       new_resource.version ["1.0", "6.2"]
       expect(provider).to be_removing_package
-      expect(provider).to receive(:remove_package).with(["emacs", "vi"], ["1.0", "6.2"])
+      expect(provider).to receive(:remove_package).with(%w{emacs vi}, ["1.0", "6.2"])
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -757,7 +757,7 @@ describe "Chef::Provider::Package - Multi" do
     it "should remove the packages at a specific version any are is installed at that version" do
       new_resource.version ["0.5", "6.2"]
       expect(provider).to be_removing_package
-      expect(provider).to receive(:remove_package).with(["emacs", "vi"], ["0.5", "6.2"])
+      expect(provider).to receive(:remove_package).with(%w{emacs vi}, ["0.5", "6.2"])
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -787,7 +787,7 @@ describe "Chef::Provider::Package - Multi" do
 
     it "should purge the packages if all are installed" do
       expect(provider).to be_removing_package
-      expect(provider).to receive(:purge_package).with(["emacs", "vi"], nil)
+      expect(provider).to receive(:purge_package).with(%w{emacs vi}, nil)
       provider.run_action(:purge)
       expect(new_resource).to be_updated
       expect(new_resource).to be_updated_by_last_action
@@ -796,7 +796,7 @@ describe "Chef::Provider::Package - Multi" do
     it "should purge the packages if some are installed" do
       current_resource.version ["1.0", nil]
       expect(provider).to be_removing_package
-      expect(provider).to receive(:purge_package).with(["emacs", "vi"], nil)
+      expect(provider).to receive(:purge_package).with(%w{emacs vi}, nil)
       provider.run_action(:purge)
       expect(new_resource).to be_updated
       expect(new_resource).to be_updated_by_last_action
@@ -805,7 +805,7 @@ describe "Chef::Provider::Package - Multi" do
     it "should purge the packages at a specific version if they are installed at that version" do
       new_resource.version ["1.0", "6.2"]
       expect(provider).to be_removing_package
-      expect(provider).to receive(:purge_package).with(["emacs", "vi"], ["1.0", "6.2"])
+      expect(provider).to receive(:purge_package).with(%w{emacs vi}, ["1.0", "6.2"])
       provider.run_action(:purge)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -813,7 +813,7 @@ describe "Chef::Provider::Package - Multi" do
     it "should purge the packages at a specific version any are is installed at that version" do
       new_resource.version ["0.5", "6.2"]
       expect(provider).to be_removing_package
-      expect(provider).to receive(:purge_package).with(["emacs", "vi"], ["0.5", "6.2"])
+      expect(provider).to receive(:purge_package).with(%w{emacs vi}, ["0.5", "6.2"])
       provider.run_action(:purge)
       expect(new_resource).to be_updated_by_last_action
     end

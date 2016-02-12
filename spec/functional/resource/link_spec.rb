@@ -38,11 +38,11 @@ describe Chef::Resource::Link do
   end
 
   before do
-    FileUtils::mkdir_p(test_file_dir)
+    FileUtils.mkdir_p(test_file_dir)
   end
 
   after do
-    FileUtils::rm_rf(test_file_dir)
+    FileUtils.rm_rf(test_file_dir)
   end
 
   let(:to) do
@@ -559,7 +559,7 @@ describe Chef::Resource::Link do
           end
           context "and the link does not yet exist" do
             it "links to the target file" do
-              skip("OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks") if (os_x? or freebsd? or aix?)
+              skip("OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks") if os_x? or freebsd? or aix?
               resource.run_action(:create)
               expect(File.exists?(target_file)).to be_truthy
               # OS X gets angry about this sort of link.  Bug in OS X, IMO.
@@ -578,7 +578,7 @@ describe Chef::Resource::Link do
           end
           context "and the link does not yet exist" do
             it "links to the target file" do
-              skip("OS X/FreeBSD/AIX fails to create hardlinks to broken symlinks") if (os_x? or freebsd? or aix?)
+              skip("OS X/FreeBSD/AIX fails to create hardlinks to broken symlinks") if os_x? or freebsd? or aix?
               resource.run_action(:create)
               # Windows and Unix have different definitions of exists? here, and that's OK.
               if windows?

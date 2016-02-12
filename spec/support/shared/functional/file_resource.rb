@@ -781,11 +781,11 @@ shared_examples_for "a configured file resource" do
     let(:test_socket_dir) { File.join(Dir.tmpdir, "sockets") }
 
     before do
-      FileUtils::mkdir_p(test_socket_dir)
+      FileUtils.mkdir_p(test_socket_dir)
     end
 
     after do
-      FileUtils::rm_rf(test_socket_dir)
+      FileUtils.rm_rf(test_socket_dir)
     end
 
     let(:path) do
@@ -1035,7 +1035,7 @@ shared_context Chef::Resource::File do
   end
 
   before do
-    FileUtils::mkdir_p(test_file_dir)
+    FileUtils.mkdir_p(test_file_dir)
   end
 
   after(:each) do
@@ -1044,6 +1044,6 @@ shared_context Chef::Resource::File do
   end
 
   after do
-    FileUtils::rm_rf(test_file_dir)
+    FileUtils.rm_rf(test_file_dir)
   end
 end

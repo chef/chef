@@ -22,7 +22,7 @@ require "chef/mixin/shell_out"
 require "tmpdir"
 
 # run this test only for following platforms.
-include_flag = !(["ubuntu", "centos", "aix", "solaris2"].include?(ohai[:platform]))
+include_flag = !(%w{ubuntu centos aix solaris2}.include?(ohai[:platform]))
 
 describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => include_flag do
   # Disabled in travis because it refuses to let us mount a ramdisk. /dev/ramX does not

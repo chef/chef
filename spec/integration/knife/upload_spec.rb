@@ -280,7 +280,7 @@ Created /data_bags/x/y.json
 EOM
           knife("diff --name-status /data_bags").should_succeed <<EOM
 EOM
-          expect(Chef::JSONCompat.parse(knife("raw /data/x/y").stdout, :create_additions => false).keys.sort).to eq([ "foo", "id" ])
+          expect(Chef::JSONCompat.parse(knife("raw /data/x/y").stdout, :create_additions => false).keys.sort).to eq(%w{foo id})
         end
 
         it "knife upload /data_bags/x /data_bags/x/y.json uploads x once" do
@@ -304,7 +304,7 @@ Created /data_bags/x/y.json
 EOM
           knife("diff --name-status /data_bags").should_succeed ""
           result = Chef::JSONCompat.parse(knife("raw /data/x/y").stdout, :create_additions => false)
-          expect(result.keys.sort).to eq([ "chef_type", "data_bag", "id" ])
+          expect(result.keys.sort).to eq(%w{chef_type data_bag id})
           expect(result["chef_type"]).to eq("aaa")
           expect(result["data_bag"]).to eq("bbb")
         end
@@ -1457,25 +1457,25 @@ EOM
 
         when_the_repository "wants to invite foo, bar and foobar" do
           before do
-            file "invitations.json", [ "foo", "bar", "foobar" ]
+            file "invitations.json", %w{foo bar foobar}
           end
 
           it "knife upload / emits a warning for bar and invites foobar" do
             knife("upload /").should_succeed "Updated /invitations.json\n", :stderr => "WARN: Could not invite bar to organization foo: User bar is already in organization foo\n"
-            expect(api.get("association_requests").map { |a| a["username"] }).to eq([ "foo", "foobar" ])
+            expect(api.get("association_requests").map { |a| a["username"] }).to eq(%w{foo foobar})
             expect(api.get("users").map { |a| a["user"]["username"] }).to eq([ "bar" ])
           end
         end
 
         when_the_repository "wants to make foo, bar and foobar members" do
           before do
-            file "members.json", [ "foo", "bar", "foobar" ]
+            file "members.json", %w{foo bar foobar}
           end
 
           it "knife upload / emits a warning for bar and adds foo and foobar" do
             knife("upload /").should_succeed "Updated /members.json\n"
             expect(api.get("association_requests").map { |a| a["username"] }).to eq([ ])
-            expect(api.get("users").map { |a| a["user"]["username"] }).to eq([ "bar", "foo", "foobar" ])
+            expect(api.get("users").map { |a| a["user"]["username"] }).to eq(%w{bar foo foobar})
           end
         end
 
@@ -1498,12 +1498,12 @@ EOM
 
         when_the_repository "wants to invite foo and bar (different order)" do
           before do
-            file "invitations.json", [ "foo", "bar" ]
+            file "invitations.json", %w{foo bar}
           end
 
           it "knife upload / does nothing" do
             knife("upload /").should_succeed ""
-            expect(api.get("association_requests").map { |a| a["username"] }).to eq([ "bar", "foo" ])
+            expect(api.get("association_requests").map { |a| a["username"] }).to eq(%w{bar foo})
             expect(api.get("users").map { |a| a["user"]["username"] }).to eq([ ])
           end
         end
@@ -1514,13 +1514,13 @@ EOM
 
         when_the_repository "wants to add foo and bar (different order)" do
           before do
-            file "members.json", [ "foo", "bar" ]
+            file "members.json", %w{foo bar}
           end
 
           it "knife upload / does nothing" do
             knife("upload /").should_succeed ""
             expect(api.get("association_requests").map { |a| a["username"] }).to eq([ ])
-            expect(api.get("users").map { |a| a["user"]["username"] }).to eq([ "bar", "foo" ])
+            expect(api.get("users").map { |a| a["user"]["username"] }).to eq(%w{bar foo})
           end
         end
       end

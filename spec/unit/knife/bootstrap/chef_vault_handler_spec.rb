@@ -69,14 +69,14 @@ describe Chef::Knife::Bootstrap::ChefVaultHandler do
       end
 
       it "sets two items as an array" do
-        knife_config[:bootstrap_vault_item] = { "vault" => [ "item1", "item2" ] }
+        knife_config[:bootstrap_vault_item] = { "vault" => %w{item1 item2} }
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item1").and_return(bootstrap_vault_item)
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item2").and_return(bootstrap_vault_item)
         chef_vault_handler.run(client)
       end
 
       it "sets two vaults from different hash keys" do
-        knife_config[:bootstrap_vault_item] = { "vault" => [ "item1", "item2" ], "vault2" => [ "item3" ] }
+        knife_config[:bootstrap_vault_item] = { "vault" => %w{item1 item2}, "vault2" => [ "item3" ] }
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item1").and_return(bootstrap_vault_item)
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item2").and_return(bootstrap_vault_item)
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault2", "item3").and_return(bootstrap_vault_item)

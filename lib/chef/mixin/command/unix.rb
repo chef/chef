@@ -109,7 +109,7 @@ class Chef
                 Marshal.dump(e, ps.last)
                 ps.last.flush
               end
-              ps.last.close unless (ps.last.closed?)
+              ps.last.close unless ps.last.closed?
               exit!
             }
           ensure

@@ -205,7 +205,7 @@ describe Chef::Resource do
     end
 
     it "coerces arrays to names" do
-      expect(resource.name ["a", "b"]).to eql("a, b")
+      expect(resource.name %w{a b}).to eql("a, b")
     end
 
     it "should coerce objects to a string" do
@@ -270,7 +270,7 @@ describe Chef::Resource do
     end
 
     it "notifies a resource with an array for its name via its prettified string name" do
-      run_context.resource_collection << Chef::Resource::ZenMaster.new(["coffee", "tea"])
+      run_context.resource_collection << Chef::Resource::ZenMaster.new(%w{coffee tea})
       resource.notifies :reload, run_context.resource_collection.find(:zen_master => "coffee, tea")
       expect(resource.delayed_notifications.detect { |e| e.resource.name == "coffee, tea" && e.action == :reload }).not_to be_nil
     end
@@ -859,9 +859,9 @@ describe Chef::Resource do
 
     it "adds mappings for multiple platforms" do
       expect(Chef.resource_handler_map).to receive(:set).with(
-        :energy, Chef::Resource::Klz, { platform: ["autobots", "decepticons"] }
+        :energy, Chef::Resource::Klz, { platform: %w{autobots decepticons} }
       )
-      klz.provides :energy, platform: ["autobots", "decepticons"]
+      klz.provides :energy, platform: %w{autobots decepticons}
     end
 
     it "adds mappings for all platforms" do

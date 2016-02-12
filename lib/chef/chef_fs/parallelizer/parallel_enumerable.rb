@@ -157,7 +157,7 @@ class Chef
                 @parent_task_queue.push(method(:process_one))
 
                 stop_processing_input = false
-                while !@unconsumed_output.empty?
+                until @unconsumed_output.empty?
                   output, index, input, type = @unconsumed_output.pop
                   yield output, index, input, type
                   if type == :exception && @options[:stop_on_exception]
@@ -178,13 +178,13 @@ class Chef
               end
             end
 
-            while !finished?
+            until finished?
               # yield thread to others (for 1.8.7)
               if @unconsumed_output.empty?
                 sleep(0.01)
               end
 
-              while !@unconsumed_output.empty?
+              until @unconsumed_output.empty?
                 yield @unconsumed_output.pop
               end
 

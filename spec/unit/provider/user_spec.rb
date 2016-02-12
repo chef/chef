@@ -192,13 +192,13 @@ describe Chef::Provider::User do
   describe "compare_user" do
     let(:mapping) {
       {
-        "username" => ["adam", "Adam"],
+        "username" => %w{adam Adam},
         "comment" => ["Adam Jacob", "adam jacob"],
         "uid" => [1000, 1001],
         "gid" => [1000, 1001],
         "home" => ["/home/adam", "/Users/adam"],
         "shell" => ["/usr/bin/zsh", "/bin/bash"],
-        "password" => ["abcd", "12345"],
+        "password" => %w{abcd 12345},
       }
     }
 

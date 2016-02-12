@@ -987,7 +987,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
     end
 
     it "tests isalnum good input" do
-      [ "a", "z", "A", "Z", "0", "9" ].each do |t|
+      %w{a z A Z 0 9}.each do |t|
         expect(@rpmutils.isalnum(t)).to eq(true)
       end
     end
@@ -999,7 +999,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
     end
 
     it "tests isalpha good input" do
-      [ "a", "z", "A", "Z" ].each do |t|
+      %w{a z A Z}.each do |t|
         expect(@rpmutils.isalpha(t)).to eq(true)
       end
     end
@@ -1011,7 +1011,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
     end
 
     it "tests isdigit good input" do
-      [ "0", "9" ].each do |t|
+      %w{0 9}.each do |t|
         expect(@rpmutils.isdigit(t)).to eq(true)
       end
     end
@@ -1119,8 +1119,8 @@ describe Chef::Provider::Package::Yum::RPMVersion do
           "3.3-15.el5" ],
         [ "alpha9.8",
           "beta9.8" ],
-        [ "14jpp",
-          "15jpp" ],
+        %w{14jpp
+15jpp},
         [ "0.9.0-0.6",
           "0.9.0-0.7" ],
         [ "0:1.9",
@@ -1297,8 +1297,8 @@ describe Chef::Provider::Package::Yum::RPMPackage do
           "B-test" ],
         [ "Aa-test",
           "aA-test" ],
-        [ "1test",
-          "2test" ],
+        %w{1test
+2test},
       ].each do |smaller, larger|
         sm = Chef::Provider::Package::Yum::RPMPackage.new(smaller, "0:0.0.1-1", "x86_64", [])
         lg = Chef::Provider::Package::Yum::RPMPackage.new(larger, "0:0.0.1-1", "x86_64", [])
@@ -1310,12 +1310,12 @@ describe Chef::Provider::Package::Yum::RPMPackage do
 
     it "should sort alphabetically based on package arch" do
       [
-        [ "i386",
-          "x86_64" ],
-        [ "i386",
-          "noarch" ],
-        [ "noarch",
-          "x86_64" ],
+        %w{i386
+x86_64},
+        %w{i386
+noarch},
+        %w{noarch
+x86_64},
       ].each do |smaller, larger|
         sm = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "0:0.0.1-1", smaller, [])
         lg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "0:0.0.1-1", larger, [])
@@ -2113,7 +2113,7 @@ describe "Chef::Provider::Package::Yum - Multi" do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Package.new(["cups", "vim"])
+    @new_resource = Chef::Resource::Package.new(%w{cups vim})
     @status = double("Status", :exitstatus => 0)
     @yum_cache = double(
       "Chef::Provider::Yum::YumCache",
@@ -2142,7 +2142,7 @@ describe "Chef::Provider::Package::Yum - Multi" do
 
     it "should set the current resources package name to the new resources package name" do
       @provider.load_current_resource
-      expect(@provider.current_resource.package_name).to eq(["cups", "vim"])
+      expect(@provider.current_resource.package_name).to eq(%w{cups vim})
     end
 
     it "should set the installed version to nil on the current resource if no installed package" do
@@ -2196,9 +2196,9 @@ describe "Chef::Provider::Package::Yum - Multi" do
         expect(Chef::Log).to receive(:debug).exactly(1).times.with(%r{candidate version: \["1.2.4-11.18.el5_2.3", "24.4"\]})
         expect(Chef::Log).to receive(:debug).at_least(2).times.with(%r{checking yum info})
         @provider.load_current_resource
-        expect(@provider.new_resource.package_name).to eq(["cups", "emacs"])
+        expect(@provider.new_resource.package_name).to eq(%w{cups emacs})
         expect(@provider.new_resource.version).to eq(["1.2.4-11.18.el5_2.3", "24.4"])
-        expect(@provider.send(:package_name_array)).to eq(["cups", "emacs"])
+        expect(@provider.send(:package_name_array)).to eq(%w{cups emacs})
         expect(@provider.send(:new_version_array)).to eq(["1.2.4-11.18.el5_2.3", "24.4"])
       end
     end
@@ -2213,7 +2213,7 @@ describe "Chef::Provider::Package::Yum - Multi" do
       expect(@provider).to receive(:yum_command).with(
         "-d0 -e0 -y install cups-1.2.4-11.19.el5 vim-1.0"
       )
-      @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", "1.0"])
+      @provider.install_package(%w{cups vim}, ["1.2.4-11.19.el5", "1.0"])
     end
 
     it "should run yum install with the package name, version and arch" do
@@ -2223,7 +2223,7 @@ describe "Chef::Provider::Package::Yum - Multi" do
       expect(@provider).to receive(:yum_command).with(
         "-d0 -e0 -y install cups-1.2.4-11.19.el5.i386 vim-1.0.i386"
       )
-      @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", "1.0"])
+      @provider.install_package(%w{cups vim}, ["1.2.4-11.19.el5", "1.0"])
     end
 
     it "installs the package with the options given in the resource" do
@@ -2235,7 +2235,7 @@ describe "Chef::Provider::Package::Yum - Multi" do
         "-d0 -e0 -y --disablerepo epmd install cups-1.2.4-11.19.el5 vim-1.0"
       )
       allow(@new_resource).to receive(:options).and_return("--disablerepo epmd")
-      @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", "1.0"])
+      @provider.install_package(%w{cups vim}, ["1.2.4-11.19.el5", "1.0"])
     end
 
     it "should run yum install with the package name and version when name has arch" do
@@ -2260,7 +2260,7 @@ describe "Chef::Provider::Package::Yum - Multi" do
       expect(@provider).to receive(:yum_command).with(
         "-d0 -e0 -y install cups-1.2.4-11.19.el5.x86_64 vim-1.0"
       )
-      @provider.install_package(["cups", "vim"], ["1.2.4-11.19.el5", "1.0"])
+      @provider.install_package(%w{cups vim}, ["1.2.4-11.19.el5", "1.0"])
     end
 
   end

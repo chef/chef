@@ -26,7 +26,7 @@ describe Chef::Resource::RegistryKey do
     node = Chef::Node.new
     node.consume_external_attrs(OHAI_SYSTEM.data, {})
     run_context = Chef::RunContext.new(node, {}, events)
-    @resource = Chef::Resource::new("foo", run_context)
+    @resource = Chef::Resource.new("foo", run_context)
   end
 
   context "tests registry dsl" do

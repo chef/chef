@@ -27,7 +27,7 @@ class Chef
 
         attr_reader :enabled_state_found
 
-        provides :service, os: [ "freebsd", "netbsd" ]
+        provides :service, os: %w{freebsd netbsd}
 
         include Chef::Mixin::ShellOut
 

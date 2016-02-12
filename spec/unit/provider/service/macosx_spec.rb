@@ -58,7 +58,7 @@ describe Chef::Provider::Service::Macosx do
 </plist>
 XML
 
-    ["Daemon", "Agent"].each do |service_type|
+    %w{Daemon Agent}.each do |service_type|
       ["redis-server", "io.redis.redis-server"].each do |service_name|
         ["10.9", "10.10", "10.11"].each do |platform_version|
           let(:plist) { "/Library/LaunchDaemons/io.redis.redis-server.plist" }

@@ -76,7 +76,7 @@ describe Chef::Util::Backup do
       end
 
       it "should keep only 1 backup copy" do
-        expect(@backup).to receive(:sorted_backup_files).and_return(["a", "b", "c"])
+        expect(@backup).to receive(:sorted_backup_files).and_return(%w{a b c})
         expect(@backup).to receive(:delete_backup).with("b")
         expect(@backup).to receive(:delete_backup).with("c")
         @backup.backup!
@@ -89,13 +89,13 @@ describe Chef::Util::Backup do
       end
 
       it "should not delete anything if we only have one other backup" do
-        expect(@backup).to receive(:sorted_backup_files).and_return(["a", "b"])
+        expect(@backup).to receive(:sorted_backup_files).and_return(%w{a b})
         expect(@backup).not_to receive(:delete_backup)
         @backup.backup!
       end
 
       it "should keep only 2 backup copies" do
-        expect(@backup).to receive(:sorted_backup_files).and_return(["a", "b", "c", "d"])
+        expect(@backup).to receive(:sorted_backup_files).and_return(%w{a b c d})
         expect(@backup).to receive(:delete_backup).with("c")
         expect(@backup).to receive(:delete_backup).with("d")
         @backup.backup!

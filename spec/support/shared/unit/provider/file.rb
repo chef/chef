@@ -142,7 +142,7 @@ shared_examples_for Chef::Provider::File do
   end
 
   after do
-    tempfile.close if (tempfile && !tempfile.closed?)
+    tempfile.close if tempfile && !tempfile.closed?
     File.unlink(tempfile.path) rescue nil
   end
 

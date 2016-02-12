@@ -43,23 +43,23 @@ describe Chef::RunList::VersionedRecipeList do
 
     it "should append the recipe to the end of the list" do
       list.add_recipe "rails"
-      expect(list).to eq(["apt", "god", "apache2", "rails"])
+      expect(list).to eq(%w{apt god apache2 rails})
     end
 
     it "should not duplicate entries" do
       list.add_recipe "apt"
-      expect(list).to eq(["apt", "god", "apache2"])
+      expect(list).to eq(%w{apt god apache2})
     end
 
     it "should allow you to specify a version" do
       list.add_recipe "rails", "1.0.0"
-      expect(list).to eq(["apt", "god", "apache2", "rails"])
+      expect(list).to eq(%w{apt god apache2 rails})
       expect(list.with_versions).to include({ :name => "rails", :version => "1.0.0" })
     end
 
     it "should allow you to specify a version for a recipe that already exists" do
       list.add_recipe "apt", "1.2.3"
-      expect(list).to eq(["apt", "god", "apache2"])
+      expect(list).to eq(%w{apt god apache2})
       expect(list.with_versions).to include({ :name => "apt", :version => "1.2.3" })
     end
 

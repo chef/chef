@@ -95,26 +95,26 @@ munin-node|1.6.1.20130823
     end
 
     it "should set the candidate_version correctly when there are two packages to install" do
-      allow_remote_list(["ConEmu", "chocolatey"])
-      new_resource.package_name(["ConEmu", "chocolatey"])
+      allow_remote_list(%w{ConEmu chocolatey})
+      new_resource.package_name(%w{ConEmu chocolatey})
       expect(provider.candidate_version).to eql(["15.10.25.1", "0.9.9.11"])
     end
 
     it "should set the candidate_version correctly when only the first is installable" do
-      allow_remote_list(["ConEmu", "vim"])
-      new_resource.package_name(["ConEmu", "vim"])
+      allow_remote_list(%w{ConEmu vim})
+      new_resource.package_name(%w{ConEmu vim})
       expect(provider.candidate_version).to eql(["15.10.25.1", nil])
     end
 
     it "should set the candidate_version correctly when only the last is installable" do
-      allow_remote_list(["vim", "chocolatey"])
-      new_resource.package_name(["vim", "chocolatey"])
+      allow_remote_list(%w{vim chocolatey})
+      new_resource.package_name(%w{vim chocolatey})
       expect(provider.candidate_version).to eql([nil, "0.9.9.11"])
     end
 
     it "should set the candidate_version correctly when neither are is installable" do
-      allow_remote_list(["vim", "ruby"])
-      new_resource.package_name(["vim", "ruby"])
+      allow_remote_list(%w{vim ruby})
+      new_resource.package_name(%w{vim ruby})
       expect(provider.candidate_version).to eql([nil, nil])
     end
   end
@@ -156,25 +156,25 @@ munin-node|1.6.1.20130823
     end
 
     it "should set the current_resource.version when there are two packages that are installed" do
-      new_resource.package_name(["ConEmu", "chocolatey"])
+      new_resource.package_name(%w{ConEmu chocolatey})
       provider.load_current_resource
       expect(provider.current_resource.version).to eql(["15.10.25.0", "0.9.9.11"])
     end
 
     it "should set the current_resource.version correctly when only the first is installed" do
-      new_resource.package_name(["ConEmu", "git"])
+      new_resource.package_name(%w{ConEmu git})
       provider.load_current_resource
       expect(provider.current_resource.version).to eql(["15.10.25.0", nil])
     end
 
     it "should set the current_resource.version correctly when only the last is installed" do
-      new_resource.package_name(["git", "chocolatey"])
+      new_resource.package_name(%w{git chocolatey})
       provider.load_current_resource
       expect(provider.current_resource.version).to eql([nil, "0.9.9.11"])
     end
 
     it "should set the current_resource.version correctly when none are installed" do
-      new_resource.package_name(["git", "vim"])
+      new_resource.package_name(%w{git vim})
       provider.load_current_resource
       expect(provider.current_resource.version).to eql([nil, nil])
     end
@@ -233,8 +233,8 @@ munin-node|1.6.1.20130823
       # chocolatey will be pruned by the superclass out of the args to install_package and we
       # implicitly test that we correctly pick up new_resource.version[1] instead of
       # new_version.resource[0]
-      allow_remote_list(["chocolatey", "ConEmu"])
-      new_resource.package_name(["chocolatey", "ConEmu"])
+      allow_remote_list(%w{chocolatey ConEmu})
+      new_resource.package_name(%w{chocolatey ConEmu})
       new_resource.version([nil, "15.10.25.1"])
       provider.load_current_resource
       expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -version 15.10.25.1 conemu", { :timeout => timeout }).and_return(double)
@@ -253,8 +253,8 @@ munin-node|1.6.1.20130823
     end
 
     it "should split up commands when given two packages, one with a version pin" do
-      allow_remote_list(["ConEmu", "git"])
-      new_resource.package_name(["ConEmu", "git"])
+      allow_remote_list(%w{ConEmu git})
+      new_resource.package_name(%w{ConEmu git})
       new_resource.version(["15.10.25.1", nil])
       provider.load_current_resource
       expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -version 15.10.25.1 conemu", { :timeout => timeout }).and_return(double)
@@ -371,8 +371,8 @@ munin-node|1.6.1.20130823
     end
 
     it "upgrading multiple packages uses a single command" do
-      allow_remote_list(["conemu", "git"])
-      new_resource.package_name(["conemu", "git"])
+      allow_remote_list(%w{conemu git})
+      new_resource.package_name(%w{conemu git})
       expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y conemu git", { :timeout => timeout }).and_return(double)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
@@ -441,8 +441,8 @@ munin-node|1.6.1.20130823
 
     it "removes a single package when its the only one installed" do
       pending "this is a bug in the superclass"
-      allow_remote_list(["git", "conemu"])
-      new_resource.package_name(["git", "conemu"])
+      allow_remote_list(%w{git conemu})
+      new_resource.package_name(%w{git conemu})
       provider.load_current_resource
       expect(provider).to receive(:shell_out!).with("#{choco_exe} uninstall -y conemu", { :timeout => timeout }).and_return(double)
       provider.run_action(:remove)

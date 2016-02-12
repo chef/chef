@@ -24,11 +24,11 @@ describe Chef::Util::DSC::LocalConfigurationManager::Parser do
       str = <<-EOF
 
       EOF
-      expect { Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str) }.to raise_error(Chef::Exceptions::LCMParser)
+      expect { Chef::Util::DSC::LocalConfigurationManager::Parser.parse(str) }.to raise_error(Chef::Exceptions::LCMParser)
     end
 
     it "raises an exception for a nil input" do
-      expect { Chef::Util::DSC::LocalConfigurationManager::Parser::parse(nil) }.to raise_error(Chef::Exceptions::LCMParser)
+      expect { Chef::Util::DSC::LocalConfigurationManager::Parser.parse(nil) }.to raise_error(Chef::Exceptions::LCMParser)
     end
   end
 
@@ -40,7 +40,7 @@ logtype: [machinename]: LCM:  [ Start  Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser.parse(str)
       expect(resources.length).to eq(1)
       expect(resources[0].name).to eq("[name]")
     end
@@ -54,7 +54,7 @@ logtype: [machinename]: LCM:  [ End    Set      ] [name]
 logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser.parse(str)
       expect(resources[0].changes_state?).to be_truthy
     end
 
@@ -68,7 +68,7 @@ logtype: [machinename]: LCM:  [ End    Set      ] [name]
 logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser.parse(str)
       expect(resources[0].change_log).to match_array(["[name]", "[message]", "[name]"])
     end
 
@@ -80,7 +80,7 @@ logtype: [machinename]: LCM:  [ Skip   Set      ] [name]
 logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser.parse(str)
       expect(resources[0].changes_state?).to be_falsey
     end
 
@@ -92,7 +92,7 @@ logtype: [machinename]: LCM:  [ Skip   Set      ] [name]
 logtype: [machinename]: LCM:  [ End    Resource ] [name]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser.parse(str)
       expect(resources[0].change_log).to be_empty
     end
   end
@@ -114,7 +114,7 @@ logtype: [machinename]: LCM:  [ End    Set      ]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
 
-      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser.parse(str)
       expect(resources[0].changes_state?).to be_falsey
       expect(resources[1].changes_state?).to be_truthy
     end
@@ -135,7 +135,7 @@ logtype: [machinename]: LCM:  [ End    Resource ]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
 
-      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser.parse(str)
       expect(resources[0].changes_state?).to be_falsey
       expect(resources[1].changes_state?).to be_truthy
     end
@@ -154,7 +154,7 @@ logtype: [machinename]: LCM:  [ End    Set      ]
 logtype: [machinename]: LCM:  [ End    Resource ]
 logtype: [machinename]: LCM:  [ End    Set      ]
 EOF
-      resources = Chef::Util::DSC::LocalConfigurationManager::Parser::parse(str)
+      resources = Chef::Util::DSC::LocalConfigurationManager::Parser.parse(str)
       expect(resources[0].changes_state?).to be_truthy
       expect(resources[0].name).to eql("[name]")
       expect(resources[1].changes_state?).to be_truthy

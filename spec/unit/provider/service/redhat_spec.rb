@@ -150,14 +150,14 @@ describe "Chef::Provider::Service::Redhat" do
           @provider.define_resource_requirements
         end
 
-        [ "start", "reload", "restart", "enable" ].each do |action|
+        %w{start reload restart enable}.each do |action|
           it "should raise an error when the action is #{action}" do
             @provider.action = action
             expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
           end
         end
 
-        [ "stop", "disable" ].each do |action|
+        %w{stop disable}.each do |action|
           it "should not raise an error when the action is #{action}" do
             @provider.action = action
             expect { @provider.process_resource_requirements }.not_to raise_error

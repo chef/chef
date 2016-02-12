@@ -74,7 +74,7 @@ class Chef
         # Set the initial timeout to splay sleep time
         timeout = rand Chef::Config[:splay]
 
-        while running? do
+        while running?
           # Grab the service_action_mutex to make a chef-client run
           @service_action_mutex.synchronize do
             begin
@@ -310,7 +310,7 @@ class Chef
           when /^(http|https):\/\//
             Chef::HTTP.new("").streaming_request(config[:config_file]) { |f| apply_config(f.path) }
           else
-            ::File::open(config[:config_file]) { |f| apply_config(f.path) }
+            ::File.open(config[:config_file]) { |f| apply_config(f.path) }
           end
         rescue Errno::ENOENT => error
           Chef::Log.warn("*****************************************")

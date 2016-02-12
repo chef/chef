@@ -211,7 +211,7 @@ describe Chef::ChefFS::Parallelizer do
             occupying_job_finished[0] = true
           end.wait
         end
-        while !started
+        until started
           sleep(0.01)
         end
       end

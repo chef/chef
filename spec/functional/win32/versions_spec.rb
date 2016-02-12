@@ -36,7 +36,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
     # from WMI contain extended characters such as registered
     # trademark on Win2k8 and Win2k3 that we're not using in our
     # library, so we have to set the expectation statically.
-    if Chef::Platform::windows_server_2003?
+    if Chef::Platform.windows_server_2003?
       @current_os_version = "Windows Server 2003 R2"
     elsif is_windows_server_2008?(host)
       @current_os_version = "Windows Server 2008"

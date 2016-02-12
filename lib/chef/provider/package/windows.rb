@@ -105,7 +105,7 @@ class Chef
                       return :nsis
                     end
 
-                    if (io.tell() < filesize)
+                    if io.tell() < filesize
                       io.seek(io.tell() - overlap)
                     end
                   end

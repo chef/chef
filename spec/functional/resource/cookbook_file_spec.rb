@@ -70,7 +70,7 @@ describe Chef::Resource::CookbookFile do
     let(:path) { File.join(windows_non_temp_dir, make_tmpname(file_base)) }
 
     before do
-      FileUtils::mkdir_p(windows_non_temp_dir) if Chef::Platform.windows?
+      FileUtils.mkdir_p(windows_non_temp_dir) if Chef::Platform.windows?
     end
 
     after do

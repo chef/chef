@@ -83,7 +83,7 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
     end
 
     it "finds the right subcommand even when _'s are elided" do
-      expect(loader.subcommand_for_args(["cooler", "b"])).to eq("cooler_b")
+      expect(loader.subcommand_for_args(%w{cooler b})).to eq("cooler_b")
     end
 
     it "returns nil if the the subcommand isn't in our manifest" do

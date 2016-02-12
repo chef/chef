@@ -50,7 +50,7 @@ class Chef
       end
 
       def edit_text(text, extension)
-        if (!config[:disable_editing])
+        if !config[:disable_editing]
           Tempfile.open([ "knife-edit-", extension ]) do |file|
             # Write the text to a temporary file
             file.write(text)

@@ -97,7 +97,7 @@ class Chef
           priority = {}
 
           files.each do |file|
-            if (RC_D_SCRIPT_NAME =~ file)
+            if RC_D_SCRIPT_NAME =~ file
               priority[2] = [($1 == "S" ? :start : :stop), ($2.empty? ? "" : $2.to_i)]
               if $1 == "S"
                 is_enabled = true

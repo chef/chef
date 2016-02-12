@@ -27,12 +27,12 @@ module AppServerSupport
       Rack::Handler::WEBrick.run(app,
         :Port => 9018,
         :AccessLog => [],
-        :Logger => WEBrick::Log::new(StringIO.new, 7),
+        :Logger => WEBrick::Log.new(StringIO.new, 7),
       ) do |found_server|
         server = found_server
       end
     end
-    Timeout::timeout(30) do
+    Timeout.timeout(30) do
       until server && server.status == :Running
         sleep(0.01)
       end

@@ -50,7 +50,7 @@ describe Chef::Provider::Group::Windows do
     before do
       @new_resource.members([ "us" ])
       @current_resource = Chef::Resource::Group.new("staff")
-      @current_resource.members [ "all", "your", "base" ]
+      @current_resource.members %w{all your base}
 
       allow(Chef::Util::Windows::NetGroup).to receive(:new).and_return(@net_group)
       allow(@net_group).to receive(:local_add_members)

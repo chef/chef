@@ -50,10 +50,10 @@ class Chef
       # XXX?: the #nil? check below will likely fail if this is a cloned resource or if
       # we just run multiple actions.
       def load_new_resource_state
-        if ( @new_resource.enabled.nil? )
+        if @new_resource.enabled.nil?
           @new_resource.enabled(@current_resource.enabled)
         end
-        if ( @new_resource.running.nil? )
+        if @new_resource.running.nil?
           @new_resource.running(@current_resource.running)
         end
       end

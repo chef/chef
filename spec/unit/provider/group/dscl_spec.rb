@@ -184,7 +184,7 @@ describe Chef::Provider::Group::Dscl do
       before do
         allow(@new_resource).to receive(:members).and_return([])
         allow(@new_resource).to receive(:append).and_return(false)
-        allow(@current_resource).to receive(:members).and_return(["all", "your", "base"])
+        allow(@current_resource).to receive(:members).and_return(%w{all your base})
       end
 
       it "should log an appropriate message" do
@@ -201,7 +201,7 @@ describe Chef::Provider::Group::Dscl do
 
     describe "with supplied members in the new resource" do
       before do
-        @new_resource.members(["all", "your", "base"])
+        @new_resource.members(%w{all your base})
         @current_resource.members([])
       end
 
@@ -326,6 +326,6 @@ EOF
   end
   it "should parse members properly" do
     allow(File).to receive(:exists?).and_return(true)
-    expect(@current_resource.members).to eq(["waka", "bar"])
+    expect(@current_resource.members).to eq(%w{waka bar})
   end
 end
