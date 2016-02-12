@@ -126,7 +126,7 @@ EOS
         # @param names [Array<String>] array of package names to install
         # @param versions [Array<String>] array of versions to install
         def remove_package(names, versions)
-          choco_command("uninstall -y", cmd_args, *names)
+          choco_command("uninstall -y", cmd_args(include_source: false), *names)
         end
 
         # Support :uninstall as an action in order for users to easily convert
@@ -206,10 +206,11 @@ EOS
 
         # Helper to construct optional args out of new_resource
         #
+        # @param include_source [Boolean] should the source parameter be added
         # @return [String] options from new_resource or empty string
-        def cmd_args
+        def cmd_args(include_source: true)
           cmd_args = [ new_resource.options ]
-          cmd_args.push( "-source #{new_resource.source}" ) if new_resource.source
+          cmd_args.push( "-source #{new_resource.source}" ) if new_resource.source && include_source
           args_to_string(*cmd_args)
         end
 

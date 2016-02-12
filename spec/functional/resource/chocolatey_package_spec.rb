@@ -35,12 +35,12 @@ describe Chef::Resource::ChocolateyPackage, :windows_only do
   subject do
     new_resource = Chef::Resource::ChocolateyPackage.new("test choco package", run_context)
     new_resource.package_name package_name
-    new_resource.source package_source if package_source
+    new_resource.source package_source
     new_resource
   end
 
   context "installing a package" do
-    after { Chef::Resource::ChocolateyPackage.new(package_name, run_context).run_action(:remove) }
+    after { remove_package }
 
     it "installs the latest version" do
       subject.run_action(:install)
@@ -90,7 +90,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only do
   end
 
   context "upgrading a package" do
-    after { Chef::Resource::ChocolateyPackage.new(package_name, run_context).run_action(:remove) }
+    after { remove_package }
 
     it "upgrades to a specific version" do
       subject.version "1.0"
@@ -117,8 +117,14 @@ describe Chef::Resource::ChocolateyPackage, :windows_only do
   context "removing a package" do
     it "removes an installed package" do
       subject.run_action(:install)
-      Chef::Resource::ChocolateyPackage.new(package_name, run_context).run_action(:remove)
+      remove_package
       expect(package_list.call).to eq("")
     end
+  end
+
+  def remove_package
+    pkg_to_remove = Chef::Resource::ChocolateyPackage.new(package_name, run_context)
+    pkg_to_remove.source = package_source
+    pkg_to_remove.run_action(:remove)
   end
 end
