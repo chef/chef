@@ -70,11 +70,6 @@ XML
       expect(new_resource.label).to eql(label)
     end
 
-    it 'path should be /Library/LaunchDaemons/call.mom.weekly.plist' do
-      expect(new_resource.path).
-        to eq('/Library/LaunchDaemons/call.mom.weekly.plist')
-    end
-
     def run_resource_setup_for_action(action)
       new_resource.action(action)
       provider.action = action
@@ -87,8 +82,14 @@ XML
       describe 'agent' do
         it 'path should be /Library/LaunchAgents/call.mom.weekly.plist' do
           new_resource.type 'agent'
-          expect(new_resource.path).
+          expect(provider.gen_path_from_type).
             to eq('/Library/LaunchAgents/call.mom.weekly.plist')
+        end
+      end
+      describe 'daemon' do
+        it 'path should be /Library/LaunchDaemons/call.mom.weekly.plist' do
+          expect(provider.gen_path_from_type).
+            to eq('/Library/LaunchDaemons/call.mom.weekly.plist')
         end
       end
     end
@@ -99,14 +100,16 @@ XML
           new_resource.program '/Library/scripts/call_mom.sh'
           new_resource.time_out 300
           new_resource.start_calendar_interval 'Hourly' => 10, 'Weekday' => 7
-          expect(provider.content?).to eql(test_plist)
+          expect(provider.content?).to be_truthy
+          expect(provider.content).to eql(test_plist)
         end
       end
 
       describe 'hash is passed' do
         it 'should produce the test_plist from the hash' do
           new_resource.hash test_hash
-          expect(provider.content?).to eql(test_plist)
+          expect(provider.content?).to be_truthy
+          expect(provider.content).to eql(test_plist)
         end
       end
     end
