@@ -98,7 +98,7 @@ class Chef
       #adapted from buildr/lib/buildr/core/transports.rb
       def proxy_uri
         proxy = Chef::Config["#{url.scheme}_proxy"] ||
-                env["#{url.scheme.upcase}_PROXY"] || env["#{url.scheme}_proxy"]
+          env["#{url.scheme.upcase}_PROXY"] || env["#{url.scheme}_proxy"]
 
         # Check if the proxy string contains a scheme. If not, add the url's scheme to the
         # proxy before parsing. The regex /^.*:\/\// matches, for example, http://. Reusing proxy

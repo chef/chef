@@ -211,8 +211,8 @@ class Chef
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each do |val_name, val_type, val_data|
             if safely_downcase(val_name) == safely_downcase(value[:name]) &&
-               val_type == get_type_from_name(value[:type]) &&
-               val_data == value[:data]
+                val_type == get_type_from_name(value[:type]) &&
+                val_data == value[:data]
               return true
             end
           end

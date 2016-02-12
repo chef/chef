@@ -383,7 +383,7 @@ class Chef
     end
 
     def build_headers(method, url, headers = {}, json_body = false)
-      headers                 = @default_headers.merge(headers)
+      headers = @default_headers.merge(headers)
       headers["Content-Length"] = json_body.bytesize.to_s if json_body
       headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
       headers

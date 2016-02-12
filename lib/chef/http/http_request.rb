@@ -60,7 +60,7 @@ class Chef
 
       HOST_LOWER = "host".freeze
 
-      URI_SCHEME_DEFAULT_PORT = { "http"  => 80, "https" => 443 }.freeze
+      URI_SCHEME_DEFAULT_PORT = { "http" => 80, "https" => 443 }.freeze
 
       def self.user_agent=(ua)
         @user_agent = ua

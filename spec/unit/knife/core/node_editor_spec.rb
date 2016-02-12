@@ -74,7 +74,7 @@ describe Chef::Knife::NodeEditor do
 
         expect(ui).to have_received(:warn)
           .with "Changing the name of a node results in a new node being " +
-            "created, test_node will not be modified or removed."
+          "created, test_node will not be modified or removed."
 
         expect(ui).to have_received(:confirm)
           .with("Proceed with creation of new node")
@@ -123,7 +123,7 @@ describe Chef::Knife::NodeEditor do
           "override"  => { "alpha" => { "bravo" => "foxtrot2", "delta" => "golf2" } },
           "policy_name" => "mypolicy",
           "policy_group" => "prod",
-          "run_list"  => %w{role[drama] recipe[mystery]},
+          "run_list" => %w{role[drama] recipe[mystery]},
         )
       end
 
@@ -159,7 +159,7 @@ describe Chef::Knife::NodeEditor do
             "override"  => { "alpha" => { "bravo" => "foxtrot2", "delta" => "golf2" } },
             "policy_name"  => "mypolicy",
             "policy_group" => "prod",
-            "run_list"  => %w{role[drama] recipe[mystery]},
+            "run_list" => %w{role[drama] recipe[mystery]},
           )
         end
 

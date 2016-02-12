@@ -133,11 +133,11 @@ class Chef
         FILE_READ_ATTRIBUTES       =  0x0080
         FILE_WRITE_ATTRIBUTES      =  0x0100
         FILE_ALL_ACCESS            = STANDARD_RIGHTS_REQUIRED |
-                                     SYNCHRONIZE |
-                                     0x1FF
+          SYNCHRONIZE |
+          0x1FF
         FILE_GENERIC_READ          = STANDARD_RIGHTS_READ |
-                                     FILE_READ_DATA | FILE_READ_ATTRIBUTES |
-                                     FILE_READ_EA | SYNCHRONIZE
+          FILE_READ_DATA | FILE_READ_ATTRIBUTES |
+          FILE_READ_EA | SYNCHRONIZE
         FILE_GENERIC_WRITE         = STANDARD_RIGHTS_WRITE | FILE_WRITE_DATA | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA | FILE_APPEND_DATA | SYNCHRONIZE
         FILE_GENERIC_EXECUTE       = STANDARD_RIGHTS_EXECUTE | FILE_READ_ATTRIBUTES | FILE_EXECUTE | SYNCHRONIZE
         # Access Token Rights (for OpenProcessToken)
@@ -163,7 +163,7 @@ class Chef
         SE_PRIVILEGE_REMOVED = 0X00000004
         SE_PRIVILEGE_USED_FOR_ACCESS = 0x80000000
         SE_PRIVILEGE_VALID_ATTRIBUTES = SE_PRIVILEGE_ENABLED_BY_DEFAULT |
-                                        SE_PRIVILEGE_ENABLED | SE_PRIVILEGE_REMOVED | SE_PRIVILEGE_USED_FOR_ACCESS
+          SE_PRIVILEGE_ENABLED | SE_PRIVILEGE_REMOVED | SE_PRIVILEGE_USED_FOR_ACCESS
 
         # Minimum size of a SECURITY_DESCRIPTOR.  TODO: this is probably platform dependent.
         # Make it work on 64 bit.

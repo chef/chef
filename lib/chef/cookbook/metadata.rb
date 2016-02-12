@@ -828,7 +828,7 @@ INVALID
       def validate_calculated_default_rule(options)
         calculated_conflict = ((options[:default].is_a?(Array) && !options[:default].empty?) ||
                                (options[:default].is_a?(String) && !options[:default] != "")) &&
-                              options[:calculated] == true
+          options[:calculated] == true
         raise ArgumentError, "Default cannot be specified if calculated is true!" if calculated_conflict
       end
 

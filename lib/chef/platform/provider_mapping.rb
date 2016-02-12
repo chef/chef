@@ -173,8 +173,8 @@ class Chef
 
       def find_provider(platform, version, resource_type)
         provider_klass = explicit_provider(platform, version, resource_type) ||
-                         platform_provider(platform, version, resource_type) ||
-                         resource_matching_provider(platform, version, resource_type)
+          platform_provider(platform, version, resource_type) ||
+          resource_matching_provider(platform, version, resource_type)
 
         raise Chef::Exceptions::ProviderNotFound, "Cannot find a provider for #{resource_type} on #{platform} version #{version}" if provider_klass.nil?
 

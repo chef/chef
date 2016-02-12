@@ -36,7 +36,7 @@ class Chef
 
     attr_accessor :chef_server_rest
 
-    COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/.freeze
+    COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/
 
     def initialize(chef_server_rest: nil)
       @name = ""
@@ -123,7 +123,7 @@ class Chef
       result = {
         "name" => @name,
         "description" => @description,
-        "cookbook_versions" =>  @cookbook_versions,
+        "cookbook_versions" => @cookbook_versions,
         "json_class" => self.class.name,
         "chef_type" => "environment",
         "default_attributes" => @default_attributes,

@@ -52,7 +52,7 @@ describe Chef::Provider::Route do
       before do
         @node.automatic_attrs[:os] = "linux"
         routing_table = "Iface	Destination	Gateway 	Flags	RefCnt	Use	Metric	Mask		MTU	Window	IRTT\n" +
-                        "eth0	0064A8C0	0984A8C0	0003	0	0	0	00FFFFFF	0	0	0\n"
+          "eth0	0064A8C0	0984A8C0	0003	0	0	0	00FFFFFF	0	0	0\n"
         route_file = StringIO.new(routing_table)
         allow(File).to receive(:open).with("/proc/net/route", "r").and_return(route_file)
       end

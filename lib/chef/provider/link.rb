@@ -58,8 +58,8 @@ class Chef
           @current_resource.link_type(:hard)
           if ::File.exists?(@current_resource.target_file)
             if ::File.exists?(@new_resource.to) &&
-               file_class.stat(@current_resource.target_file).ino ==
-               file_class.stat(@new_resource.to).ino
+                file_class.stat(@current_resource.target_file).ino ==
+                    file_class.stat(@new_resource.to).ino
               @current_resource.to(canonicalize(@new_resource.to))
             else
               @current_resource.to("")
@@ -96,7 +96,7 @@ class Chef
         #   target_file - the name of the link
 
         if @current_resource.to != canonicalize(@new_resource.to) ||
-           @current_resource.link_type != @new_resource.link_type
+            @current_resource.link_type != @new_resource.link_type
           # Handle the case where the symlink already exists and is pointing at a valid to_file
           if @current_resource.to
             # On Windows, to fix a symlink already pointing at a directory we must first
@@ -106,7 +106,7 @@ class Chef
             # directory we want to throw an exception and calling ::File.unlink on the directory symlink
             # will throw the correct ones.
             if Chef::Platform.windows? && ::File.directory?(@new_resource.to) &&
-               ::File.directory?(@current_resource.target_file)
+                ::File.directory?(@current_resource.target_file)
               converge_by("unlink existing windows symlink to dir at #{@new_resource.target_file}") do
                 ::Dir.unlink(@new_resource.target_file)
               end

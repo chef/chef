@@ -336,11 +336,11 @@ class Chef
         # It won't do what they expect. This checks whether you try to *read*
         # `content` while we are compiling the resource.
         if resource.respond_to?(:resource_initializing) &&
-           resource.resource_initializing &&
-           resource.respond_to?(:enclosing_provider) &&
-           resource.enclosing_provider &&
-           resource.enclosing_provider.new_resource &&
-           resource.enclosing_provider.new_resource.respond_to?(name)
+            resource.resource_initializing &&
+            resource.respond_to?(:enclosing_provider) &&
+            resource.enclosing_provider &&
+            resource.enclosing_provider.new_resource &&
+            resource.enclosing_provider.new_resource.respond_to?(name)
           Chef::Log.warn("#{Chef::Log.caller_location}: property #{name} is declared in both #{resource} and #{resource.enclosing_provider}. Use new_resource.#{name} instead. At #{Chef::Log.caller_location}")
         end
 
@@ -486,8 +486,8 @@ class Chef
       # the original options.
       options = self.options
       if modified_options.has_key?(:name_property) ||
-         modified_options.has_key?(:name_attribute) ||
-         modified_options.has_key?(:default)
+          modified_options.has_key?(:name_attribute) ||
+          modified_options.has_key?(:default)
         options = options.reject { |k, v| k == :name_attribute || k == :name_property || k == :default }
       end
       self.class.new(options.merge(modified_options))

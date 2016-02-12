@@ -458,7 +458,7 @@ configuration LCM
       end
 
       it "evaluates a successful cmdlet exit status for not_if as true" do
-        resource.not_if  "cd ."
+        resource.not_if "cd ."
         expect(resource.should_skip?(:run)).to be_truthy
       end
 

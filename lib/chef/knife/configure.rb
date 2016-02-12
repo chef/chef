@@ -97,7 +97,7 @@ EOH
           user_create = Chef::Knife::UserCreate.new
           user_create.name_args = [ new_client_name ]
           user_create.config[:user_password] = config[:user_password] ||
-                                               ui.ask("Please enter a password for the new user: ") { |q| q.echo = false }
+            ui.ask("Please enter a password for the new user: ") { |q| q.echo = false }
           user_create.config[:admin] = true
           user_create.config[:file] = new_client_key
           user_create.config[:yes] = true

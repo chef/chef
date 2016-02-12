@@ -34,7 +34,7 @@ describe Chef::Knife::NodeShow do
   end
 
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
   end
 
   describe "run" do
