@@ -497,7 +497,7 @@ class Chef
       def compat_mode_manifest_for(cookbook_name, lock_data)
         xyz_version = lock_data["dotted_decimal_identifier"]
         rel_url = "cookbooks/#{cookbook_name}/#{xyz_version}"
-        http_api.get(rel_url)
+        inflate_cbv_object(http_api.get(rel_url))
       rescue Exception => e
         message = "Error loading cookbook #{cookbook_name} at version #{xyz_version} from #{rel_url}: #{e.class} - #{e.message}"
         err = Chef::Exceptions::CookbookNotFound.new(message)
