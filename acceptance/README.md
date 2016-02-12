@@ -60,7 +60,7 @@ The steps you will need to do are:
    Add this to your shell profile or startup script as needed.
 7. **Connect to Chef VPN**. The instances you create will not have public IPs!
 
-### Setting up and running a test suite
+## Setting up and running a test suite
 To get started, do a bundle install from the acceptance directory:
 ```shell
 chef/acceptance$ bundle install --binstubs
@@ -84,3 +84,49 @@ chef/acceptance$ bin/chef-acceptance test cookbook-git
 ```
 
 If KITCHEN_INSTANCES is not specified, the default instances are default-ubuntu-1404 and default-windows-windows-2012r2. All selected instances will be run in *parallel* if the driver supports it (ec2 does, vagrant doesn't).
+
+## Optional Settings
+
+In addition to the environment settings above, there are a number of
+key values that are available to set for changing the way the acceptance
+tests are run.
+
+### KITCHEN_CHEF_CHANNEL
+
+Use this setting to specify which channel we will pull the chef build from.
+The default is to use the "current" channel, unless the ARTIFACTORY_USERNAME is set
+(which normally happens when running under Jenkins), in which case the default is
+changed to "unstable".
+
+```shell
+export KITCHEN_CHEF_CHANNEL=name-of-channel
+```
+
+
+### KITCHEN_CHEF_VERSION
+
+Use this setting to override the version of the Chef client that is installed. The default is to get the latest version in the desired channel.
+
+```shell
+export KITCHEN_CHEF_VERSION=version-of-chef-client
+```
+
+### ARTIFACTORY_USERNAME / ARTIFACTORY_PASSWORD
+
+If the desired channel to get the Chef client from is "unstable", the following settings need to be exported:
+
+```shell
+export ARTIFACTORY_USERNAME=username
+export ARTIFACTORY_PASSWORD=password
+```
+
+## Future Work
+
+Currently, there is no simple mechanism for chef-acceptance
+to build an Omnibus package of the developers local chef
+instance and run acceptance tests on it - the only packages
+that can be exercised are ones that come from one of the
+pipeline channels (unstable, current or stable).
+
+This is not an issue when adding acceptance tests for pre-existing functionality (as that functionality is presumed
+to already be in a build in one of the pipeline channels).
