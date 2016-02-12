@@ -518,9 +518,9 @@ class Chef::Application::Client < Chef::Application
   end
 
   def load_config_d_file(f)
-    config_fetcher = Chef::ConfigFetcher.new(conf)
+    config_fetcher = Chef::ConfigFetcher.new(f)
     config_fetcher.read_local_config.tap do |config_content|
-      apply_config(config_content, conf)
+      apply_config(config_content, f)
     end
   end
 
