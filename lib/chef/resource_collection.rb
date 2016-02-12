@@ -78,8 +78,8 @@ class Chef
     # Read-only methods are simple to delegate - doing that below
 
     resource_list_methods = Enumerable.instance_methods +
-                            [:iterator, :all_resources, :[], :each, :execute_each_resource, :each_index, :empty?] -
-                            [:find] # find needs to run on the set
+      [:iterator, :all_resources, :[], :each, :execute_each_resource, :each_index, :empty?] -
+      [:find] # find needs to run on the set
     resource_set_methods = [:lookup, :find, :resources, :keys, :validate_lookup_spec!]
 
     def_delegators :resource_list, *resource_list_methods

@@ -240,7 +240,7 @@ class Chef
               @r = args[2]
             else
               raise ArgumentError, "Expecting either 'epoch-version-release' or 'epoch, " +
-                                   "version, release'"
+                "version, release'"
             end
           end
           attr_reader :e, :v, :r
@@ -349,7 +349,7 @@ class Chef
               @provides = args[5]
             else
               raise ArgumentError, "Expecting either 'name, epoch-version-release, arch, provides' " +
-                                   "or 'name, epoch, version, release, arch, provides'"
+                "or 'name, epoch, version, release, arch, provides'"
             end
 
             # We always have one, ourselves!
@@ -433,7 +433,7 @@ class Chef
               @flag = args[4] || :==
             else
               raise ArgumentError, "Expecting either 'name, epoch-version-release, flag' or " +
-                                   "'name, epoch, version, release, flag'"
+                "'name, epoch, version, release, flag'"
             end
           end
           attr_reader :name, :version, :flag
@@ -1224,7 +1224,7 @@ class Chef
                   else
                     # we bail like yum when the package is older
                     raise Chef::Exceptions::Package, "Installed package #{n}-#{current_version_array[idx]} is newer " +
-                                                     "than candidate package #{n}-#{v}"
+                      "than candidate package #{n}-#{v}"
                   end
                 end
               end
@@ -1257,7 +1257,7 @@ class Chef
             yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{pkg_string}")
           else
             raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version " +
-                                             "and release? (version-release, e.g. 1.84-10.fc6)"
+              "and release? (version-release, e.g. 1.84-10.fc6)"
           end
         end
 

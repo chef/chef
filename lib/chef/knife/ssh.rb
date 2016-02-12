@@ -186,8 +186,8 @@ class Chef
           Chef::Log.debug("Using node attribute #{Chef::Config[:knife][:ssh_attribute]}")
           attribute = Chef::Config[:knife][:ssh_attribute]
         elsif node[:cloud] &&
-              node[:cloud][:public_hostname] &&
-              !node[:cloud][:public_hostname].empty?
+            node[:cloud][:public_hostname] &&
+            !node[:cloud][:public_hostname].empty?
           Chef::Log.debug("Using node attribute 'cloud[:public_hostname]' automatically as the ssh target")
           attribute = "cloud.public_hostname"
         else

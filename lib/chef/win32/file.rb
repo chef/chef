@@ -167,9 +167,9 @@ class Chef
       def self.file_access_check(path, desired_access)
         security_descriptor = Chef::ReservedNames::Win32::Security.get_file_security(path)
         token_rights = Chef::ReservedNames::Win32::Security::TOKEN_IMPERSONATE |
-                       Chef::ReservedNames::Win32::Security::TOKEN_QUERY |
-                       Chef::ReservedNames::Win32::Security::TOKEN_DUPLICATE |
-                       Chef::ReservedNames::Win32::Security::STANDARD_RIGHTS_READ
+          Chef::ReservedNames::Win32::Security::TOKEN_QUERY |
+          Chef::ReservedNames::Win32::Security::TOKEN_DUPLICATE |
+          Chef::ReservedNames::Win32::Security::STANDARD_RIGHTS_READ
         token = Chef::ReservedNames::Win32::Security.open_process_token(
           Chef::ReservedNames::Win32::Process.get_current_process,
           token_rights)

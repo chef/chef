@@ -51,7 +51,7 @@ class Chef
           @new_profile_identifier = @new_profile_hash["PayloadIdentifier"]
         else
           @new_profile_identifier = @new_resource.identifier ||
-                                    @new_resource.profile_name
+            @new_resource.profile_name
         end
 
         if all_profiles.empty?

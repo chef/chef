@@ -43,7 +43,7 @@ describe Shell do
         end
         if Time.new - start > TIMEOUT
           raise "did not read expected value `#{expected_value}' within #{TIMEOUT}s\n" +
-                "Buffer so far: `#{buffer}'"
+            "Buffer so far: `#{buffer}'"
         end
       end
       buffer

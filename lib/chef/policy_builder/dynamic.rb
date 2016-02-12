@@ -149,9 +149,9 @@ class Chef
       # testing purposes; production code should call #load_node instead.
       def select_implementation(node)
         if policyfile_set_in_config? ||
-           policyfile_attribs_in_node_json? ||
-           node_has_policyfile_attrs?(node) ||
-           policyfile_compat_mode_config?
+            policyfile_attribs_in_node_json? ||
+            node_has_policyfile_attrs?(node) ||
+            policyfile_compat_mode_config?
           @implementation = Policyfile.new(node_name, ohai_data, json_attribs, override_runlist, events)
         else
           @implementation = ExpandNodeObject.new(node_name, ohai_data, json_attribs, override_runlist, events)

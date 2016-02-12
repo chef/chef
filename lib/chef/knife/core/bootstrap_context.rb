@@ -188,7 +188,7 @@ validation_client_name "#{@chef_config[:validation_client_name]}"
           if @chef_config[:trusted_certs_dir]
             Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(@chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
               content << "cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
-                         IO.read(File.expand_path(cert)) + "\nEOP\n"
+                IO.read(File.expand_path(cert)) + "\nEOP\n"
             end
           end
           content

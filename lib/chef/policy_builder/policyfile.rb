@@ -257,7 +257,7 @@ class Chef
           named_run_list or
             raise ConfigurationError,
             "Policy '#{retrieved_policy_name}' revision '#{revision_id}' does not have named_run_list '#{named_run_list_name}'" +
-            "(available named_run_lists: [#{available_named_run_lists.join(', ')}])"
+              "(available named_run_lists: [#{available_named_run_lists.join(', ')}])"
         else
           policy["run_list"]
         end
