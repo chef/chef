@@ -81,7 +81,7 @@ module ChefHTTPShared
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat_content_length.png", 200, nil,
       {
-        "Content-Length"   => nyan_uncompressed_size.to_s
+        "Content-Length" => nyan_uncompressed_size.to_s
       }
     ) {
       File.open(nyan_uncompressed_filename, "rb") do |f|
@@ -109,7 +109,7 @@ module ChefHTTPShared
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat_truncated.png", 200, nil,
       {
-        "Content-Length"   => (nyan_uncompressed_size + 1).to_s
+        "Content-Length" => (nyan_uncompressed_size + 1).to_s
       }
     ) {
       File.open(nyan_uncompressed_filename, "rb") do |f|

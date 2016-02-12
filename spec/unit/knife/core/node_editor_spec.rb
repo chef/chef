@@ -43,7 +43,7 @@ describe Chef::Knife::NodeEditor do
 
   describe '#view' do
     it "returns a Hash with only the name, chef_environment, normal, " +
-      "policy_name, policy_group, and run_list properties" do
+       "policy_name, policy_group, and run_list properties" do
       expected = node_data.select do |key,|
         %w{ name chef_environment normal
             policy_name policy_group run_list }.include?(key)
@@ -74,7 +74,7 @@ describe Chef::Knife::NodeEditor do
 
         expect(ui).to have_received(:warn)
           .with "Changing the name of a node results in a new node being " +
-            "created, test_node will not be modified or removed."
+                "created, test_node will not be modified or removed."
 
         expect(ui).to have_received(:confirm)
           .with("Proceed with creation of new node")
@@ -123,7 +123,7 @@ describe Chef::Knife::NodeEditor do
           "override"  => { "alpha" => { "bravo" => "foxtrot2", "delta" => "golf2" } },
           "policy_name" => "mypolicy",
           "policy_group" => "prod",
-          "run_list"  => %w{role[drama] recipe[mystery]},
+          "run_list" => %w{role[drama] recipe[mystery]},
         )
       end
 
@@ -159,7 +159,7 @@ describe Chef::Knife::NodeEditor do
             "override"  => { "alpha" => { "bravo" => "foxtrot2", "delta" => "golf2" } },
             "policy_name"  => "mypolicy",
             "policy_group" => "prod",
-            "run_list"  => %w{role[drama] recipe[mystery]},
+            "run_list" => %w{role[drama] recipe[mystery]},
           )
         end
 
@@ -189,7 +189,7 @@ describe Chef::Knife::NodeEditor do
           end
 
           it 'returns an array of property names that doesn\'t include ' +
-            "the non-editable properties" do
+             "the non-editable properties" do
             expect(subject.updated?).to eql %w{ normal policy_name policy_group run_list }
           end
         end

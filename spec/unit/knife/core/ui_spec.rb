@@ -352,19 +352,19 @@ EOM
       end
 
       it "should return multiple attributes" do
-        input = { "gi" =>  "go", "hi" => "ho", "id" => "sample-data-bag-item" }
+        input = { "gi" => "go", "hi" => "ho", "id" => "sample-data-bag-item" }
         @ui.config[:attribute] = %w{gi hi}
         expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { "gi" => "go", "hi" => "ho" } })
       end
 
       it "should handle attributes named the same as methods" do
-        input = { "keys" =>  "values", "hi" => "ho", "id" => "sample-data-bag-item" }
+        input = { "keys" => "values", "hi" => "ho", "id" => "sample-data-bag-item" }
         @ui.config[:attribute] = "keys"
         expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { "keys" => "values" } })
       end
 
       it "should handle nested attributes named the same as methods" do
-        input = { "keys" =>  { "keys" => "values" }, "hi" => "ho", "id" => "sample-data-bag-item" }
+        input = { "keys" => { "keys" => "values" }, "hi" => "ho", "id" => "sample-data-bag-item" }
         @ui.config[:attribute] = "keys.keys"
         expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { "keys.keys" => "values" } })
       end
@@ -377,7 +377,7 @@ EOM
       end
 
       it "returns nil when given an attribute path that isn't a name or attribute" do
-        input = { "keys" =>  { "keys" => "values" }, "hi" => "ho", "id" => "sample-data-bag-item" }
+        input = { "keys" => { "keys" => "values" }, "hi" => "ho", "id" => "sample-data-bag-item" }
         non_existing_path = "nope.nada.nothingtoseehere"
         @ui.config[:attribute] = non_existing_path
         expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { non_existing_path => nil } })

@@ -38,7 +38,7 @@ class Chef
 
       option :user_key,
         :long => "--user-key FILENAME",
-        :description =>  "Set the initial default key for the user from a file on disk (cannot pass with --prevent-keygen)."
+        :description => "Set the initial default key for the user from a file on disk (cannot pass with --prevent-keygen)."
 
       option :prevent_keygen,
         :short => "-k",

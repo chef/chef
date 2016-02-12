@@ -39,7 +39,7 @@ class Chef
              :boolean => true
 
       option :validator,
-             :long  => "--validator",
+             :long => "--validator",
              :description => "Create the client as a validator.",
              :boolean => true
 

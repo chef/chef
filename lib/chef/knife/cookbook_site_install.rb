@@ -53,7 +53,7 @@ class Chef
         :default => "master"
 
       option :use_current_branch,
-        :short =>  "-b",
+        :short => "-b",
         :long => "--use-current-branch",
         :description => "Use the current branch",
         :boolean => true,
@@ -172,7 +172,7 @@ class Chef
       def preferred_metadata
         md = Chef::Cookbook::Metadata.new
 
-        rb   = File.join(@install_path, @cookbook_name, "metadata.rb")
+        rb = File.join(@install_path, @cookbook_name, "metadata.rb")
         if File.exist?(rb)
           md.from_file(rb)
           return md

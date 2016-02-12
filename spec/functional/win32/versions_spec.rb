@@ -107,7 +107,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
 
     if os_version_components.length < 2
       raise "WMI returned a Windows version from Win32_OperatingSystem.Version " +
-        "with an unexpected format. The Windows version could not be determined."
+            "with an unexpected format. The Windows version could not be determined."
     end
 
     # Windows 6.0 is Windows Server 2008, so test the major and

@@ -151,7 +151,7 @@ class Chef
             ui.info "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""}."
           elsif upload_failures > 0 && upload_ok > 0
             ui.warn "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""} ok but #{upload_failures} " +
-              "cookbook#{upload_failures > 1 ? "s" : ""} upload failed."
+                    "cookbook#{upload_failures > 1 ? "s" : ""} upload failed."
           elsif upload_failures > 0 && upload_ok == 0
             ui.error "Failed to upload #{upload_failures} cookbook#{upload_failures > 1 ? "s" : ""}."
             exit 1

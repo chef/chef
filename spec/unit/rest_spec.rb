@@ -327,7 +327,7 @@ describe Chef::REST do
       context "when configured to disable compression" do
         let(:rest) do
           allow(Net::HTTP).to receive(:new).and_return(http_client)
-          Chef::REST.new(base_url, nil, nil,  :disable_gzip => true)
+          Chef::REST.new(base_url, nil, nil, :disable_gzip => true)
         end
 
         it "does not accept encoding gzip" do
