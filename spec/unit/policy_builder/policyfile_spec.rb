@@ -686,14 +686,18 @@ describe Chef::PolicyBuilder::Policyfile do
 
             before do
               expect(http_api).to receive(:get).with(cookbook1_url).
-                and_return(example1_cookbook_object)
+                and_return(example1_cookbook_data)
               expect(http_api).to receive(:get).with(cookbook2_url).
+                and_return(example2_cookbook_data)
+
+              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example1_cookbook_data).
+                and_return(example1_cookbook_object)
+              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example2_cookbook_data).
                 and_return(example2_cookbook_object)
             end
 
             include_examples "fetching cookbooks when they exist"
           end
-
         end
 
         context "when using native API mode (policy_document_native_api == true)" do
