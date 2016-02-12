@@ -12,6 +12,9 @@ provisioner:
   channel: <%= ENV["KITCHEN_CHEF_CHANNEL"] %>
   client_rb:
     audit_mode: :enabled
+  attributes:
+     chef_acceptance: "true"
+     use_system_chef: "true"
 
 platforms:
 <% %w(
