@@ -33,6 +33,7 @@ class Chef
       def initialize(name, run_context = nil)
         super
 
+        @mdadm_defaults = false
         @chunk = 16
         @devices = []
         @exists = false
@@ -40,14 +41,19 @@ class Chef
         @metadata = "0.90"
         @bitmap = nil
         @raid_device = name
-        
+
         # Can be removed once the chunk member defaults to nil
         @user_set_chunk = false
         # Can be removed once the metadata member defaults to nil
         @user_set_metadata = false
+      end
 
-        @action = :create
-        @allowed_actions.push(:create, :assemble, :stop)
+      def mdadm_defaults(arg = nil)
+        set_or_return(
+          :mdadm_defaults,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
       end
 
       def chunk(arg = nil)
@@ -125,8 +131,13 @@ class Chef
           :kind_of => [ TrueClass, FalseClass ]
         )
       end
-      
+
       def after_created
+        if @mdadm_defaults
+          @chunk = nil unless @user_set_chunk
+          @metadata = nil unless @user_set_metadata
+        end
+
         metadata_warn_msg = "#{self} the default metadata version of 0.90 "\
           "will be removed in a future release. To maintain backwards "\
           "compatibility please explicitly specify the metadata version that "\
