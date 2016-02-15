@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/user_identity'
+require "spec_helper"
+require "chef/mixin/user_identity"
 
 shared_examples_for "it received valid credentials" do
   describe "the validation method" do
     it "should not raise an error" do
-      expect {instance_with_identity.validate(username, password, domain)}.not_to raise_error
+      expect { instance_with_identity.validate(username, password, domain) }.not_to raise_error
     end
   end
 
@@ -39,7 +39,7 @@ end
 shared_examples_for "it received invalid credentials" do
   describe "the validation method" do
     it "should raise an error" do
-      expect { instance_with_identity.validate(username, password, domain)}.to raise_error(ArgumentError)
+      expect { instance_with_identity.validate(username, password, domain) }.to raise_error(ArgumentError)
     end
   end
 end
@@ -47,7 +47,7 @@ end
 shared_examples_for "it received credentials that are not valid on the platform" do
   describe "the validation method" do
     it "should raise an error" do
-      expect { instance_with_identity.validate(username, password, domain)}.to raise_error(Chef::Exceptions::UnsupportedPlatform)
+      expect { instance_with_identity.validate(username, password, domain) }.to raise_error(Chef::Exceptions::UnsupportedPlatform)
     end
   end
 end
@@ -66,9 +66,9 @@ shared_examples_for "a consumer of the ::Chef::Mixin::UserIdentity mixin" do
     end
 
     context "when a valid username is specified" do
-      let(:username) { 'starchild' }
+      let(:username) { "starchild" }
       context "when a valid domain is specified" do
-        let(:domain) { 'mothership' }
+        let(:domain) { "mothership" }
 
         context "when the password is not specified" do
           let(:password) { nil }
@@ -76,7 +76,7 @@ shared_examples_for "a consumer of the ::Chef::Mixin::UserIdentity mixin" do
         end
 
         context "when the password is specified" do
-          let(:password) { 'we.funk!' }
+          let(:password) { "we.funk!" }
           it_behaves_like "it received valid credentials"
         end
       end
@@ -90,7 +90,7 @@ shared_examples_for "a consumer of the ::Chef::Mixin::UserIdentity mixin" do
         end
 
         context "when the password is specified" do
-          let(:password) { 'we.funk!' }
+          let(:password) { "we.funk!" }
           it_behaves_like "it received valid credentials"
         end
       end
@@ -100,20 +100,20 @@ shared_examples_for "a consumer of the ::Chef::Mixin::UserIdentity mixin" do
       let(:username) { nil }
 
       context "when the password is specified and the domain is not" do
-        let(:password) { 'we.funk!' }
+        let(:password) { "we.funk!" }
         let(:domain) { nil }
         it_behaves_like "it received invalid credentials"
       end
 
       context "when the domain is specified and the password is not" do
-        let(:domain) { 'mothership' }
+        let(:domain) { "mothership" }
         let(:password) { nil }
         it_behaves_like "it received invalid credentials"
       end
 
       context "when the domain and password are specified" do
-        let(:domain) { 'mothership' }
-        let(:password) { 'we.funk!' }
+        let(:domain) { "mothership" }
+        let(:password) { "we.funk!" }
         it_behaves_like "it received invalid credentials"
       end
     end
@@ -132,26 +132,26 @@ shared_examples_for "a consumer of the ::Chef::Mixin::UserIdentity mixin" do
     end
 
     context "when the user is specified and the domain and password are not" do
-      let(:username) { 'starchild' }
+      let(:username) { "starchild" }
       let(:domain) { nil }
       let(:password) { nil }
       it_behaves_like "it received valid credentials"
 
       context "when the password is specified and the domain is not" do
-        let(:password) { 'we.funk!' }
+        let(:password) { "we.funk!" }
         let(:domain) { nil }
         it_behaves_like "it received credentials that are not valid on the platform"
       end
 
       context "when the domain is specified and the password is not" do
-        let(:domain) { 'mothership' }
+        let(:domain) { "mothership" }
         let(:password) { nil }
         it_behaves_like "it received credentials that are not valid on the platform"
       end
 
       context "when the domain and password are specified" do
-        let(:domain) { 'mothership' }
-        let(:password) { 'we.funk!' }
+        let(:domain) { "mothership" }
+        let(:password) { "we.funk!" }
         it_behaves_like "it received credentials that are not valid on the platform"
       end
     end
@@ -159,9 +159,9 @@ shared_examples_for "a consumer of the ::Chef::Mixin::UserIdentity mixin" do
     context "when the user is not specified" do
       let(:username) { nil }
       context "when the domain is specified" do
-        let(:domain) { 'mothership' }
+        let(:domain) { "mothership" }
         context "when the password is specified" do
-          let(:password) { 'we.funk!' }
+          let(:password) { "we.funk!" }
           it_behaves_like "it received credentials that are not valid on the platform"
         end
 
@@ -174,7 +174,7 @@ shared_examples_for "a consumer of the ::Chef::Mixin::UserIdentity mixin" do
       context "when the domain is not specified" do
         let(:domain) { nil }
         context "when the password is specified" do
-          let(:password) { 'we.funk!' }
+          let(:password) { "we.funk!" }
           it_behaves_like "it received credentials that are not valid on the platform"
         end
       end
