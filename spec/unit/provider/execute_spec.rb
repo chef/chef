@@ -251,12 +251,12 @@ describe Chef::Provider::Execute do
 
         context "when the username is specified" do
           before do
-            new_resource.user('starchild')
+            new_resource.user("starchild")
           end
 
           context "when the domain is specified" do
             before do
-              new_resource.domain('mydomain')
+              new_resource.domain("mydomain")
             end
 
             it "should raise an error if the password is not specified" do
@@ -265,7 +265,7 @@ describe Chef::Provider::Execute do
             end
 
             it "should not raise an error if the password is specified" do
-              expect(new_resource).to receive(:password).at_least(1).times.and_return('we.funk!')
+              expect(new_resource).to receive(:password).at_least(1).times.and_return("we.funk!")
               expect { provider.run_action(:run) }.not_to raise_error
             end
           end
@@ -281,7 +281,7 @@ describe Chef::Provider::Execute do
             end
 
             it "should not raise an error if the password is specified" do
-              expect(new_resource).to receive(:password).at_least(1).times.and_return('we.funk!')
+              expect(new_resource).to receive(:password).at_least(1).times.and_return("we.funk!")
               expect { provider.run_action(:run) }.not_to raise_error
 
             end
@@ -294,18 +294,18 @@ describe Chef::Provider::Execute do
           end
 
           it "should raise an error if the password is specified" do
-            expect(new_resource).to receive(:password).at_least(1).times.and_return('we.funk!')
+            expect(new_resource).to receive(:password).at_least(1).times.and_return("we.funk!")
             expect { provider.run_action(:run) }.to raise_error(ArgumentError)
           end
 
           it "should raise an error if the domain is specified" do
-            expect(new_resource).to receive(:domain).at_least(1).times.and_return('mothership')
+            expect(new_resource).to receive(:domain).at_least(1).times.and_return("mothership")
             expect { provider.run_action(:run) }.to raise_error(ArgumentError)
           end
 
           it "should raise an error if the domain and password are specified" do
-            expect(new_resource).to receive(:password).at_least(1).times.and_return('we.funk!')
-            expect(new_resource).to receive(:domain).at_least(1).times.and_return('mothership')
+            expect(new_resource).to receive(:password).at_least(1).times.and_return("we.funk!")
+            expect(new_resource).to receive(:domain).at_least(1).times.and_return("mothership")
             expect { provider.run_action(:run) }.to raise_error(ArgumentError)
           end
         end
@@ -317,16 +317,16 @@ describe Chef::Provider::Execute do
         end
 
         it "should not raise an error if the user is specified" do
-          new_resource.user('starchild')
+          new_resource.user("starchild")
         end
 
         it "should raise an error if the password is specified" do
-          expect(new_resource).to receive(:password).and_return('we.funk!')
+          expect(new_resource).to receive(:password).and_return("we.funk!")
           expect { provider.run_action(:run) }.to raise_error(Chef::Exceptions::UnsupportedPlatform)
         end
 
         it "should raise an error if the domain is specified" do
-          expect(new_resource).to receive(:domain).and_return('we.funk!')
+          expect(new_resource).to receive(:domain).and_return("we.funk!")
           expect { provider.run_action(:run) }.to raise_error(Chef::Exceptions::UnsupportedPlatform)
         end
       end
