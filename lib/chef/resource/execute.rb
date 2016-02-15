@@ -143,7 +143,7 @@ class Chef
         )
       end
 
-      def domain(arg=nil)
+      def domain(arg = nil)
         set_or_return(
           :domain,
           arg,
@@ -151,7 +151,7 @@ class Chef
         )
       end
 
-      def password(arg=nil)
+      def password(arg = nil)
         set_or_return(
           :password,
           arg,
@@ -159,7 +159,7 @@ class Chef
         )
       end
 
-      def sensitive(args=nil)
+      def sensitive(args = nil)
         if ! password.nil?
           true
         else
