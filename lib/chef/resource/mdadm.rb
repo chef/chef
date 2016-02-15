@@ -52,7 +52,7 @@ class Chef
         set_or_return(
           :mdadm_defaults,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
@@ -115,20 +115,20 @@ class Chef
       end
 
       # Can be removed once metadata and chunk defaults are set to nil
-      def user_set_metadata(arg=nil)
+      def user_set_metadata(arg = nil)
         set_or_return(
           :exists,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
       # Can be removed once metadata and chunk defaults are set to nil
-      def user_set_chunk(arg=nil)
+      def user_set_chunk(arg = nil)
         set_or_return(
           :exists,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ TrueClass, FalseClass ],
         )
       end
 
