@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/provider'
-require 'chef/resource/launchd'
-require 'chef/resource/file'
-require 'chef/resource/cookbook_file'
-require 'chef/resource/macosx_service'
-require 'plist'
+require "chef/provider"
+require "chef/resource/launchd"
+require "chef/resource/file"
+require "chef/resource/cookbook_file"
+require "chef/resource/macosx_service"
+require "plist"
 require "forwardable"
 
 class Chef
@@ -50,8 +50,8 @@ class Chef
 
       def gen_path_from_type
         types = {
-          'daemon' => "/Library/LaunchDaemons/#{label}.plist",
-          'agent' => "/Library/LaunchAgents/#{label}.plist"
+          "daemon" => "/Library/LaunchDaemons/#{label}.plist",
+          "agent" => "/Library/LaunchAgents/#{label}.plist"
         }
         types[type]
       end
@@ -139,8 +139,8 @@ class Chef
           :create, :create_if_missing, :delete, :enable, :disable
         ) do |a|
           type = new_resource.type
-          a.assertion { ['daemon', 'agent'].include?(type.to_s) }
-          error_msg = 'type must be daemon or agent.'
+          a.assertion { %w{daemon agent}.include?(type.to_s) }
+          error_msg = "type must be daemon or agent."
           a.failure_message Chef::Exceptions::ValidationFailed, error_msg
         end
       end
@@ -157,48 +157,48 @@ class Chef
       def gen_hash
         return nil unless new_resource.program || new_resource.program_arguments
         {
-          'label' => 'Label',
-          'program' => 'Program',
-          'program_arguments' => 'ProgramArguments',
-          'abandon_process_group' => 'AbandonProcessGroup',
-          'debug' => 'Debug',
-          'disabled' => 'Disabled',
-          'enable_globbing' => 'EnableGlobbing',
-          'enable_transactions' => 'EnableTransactions',
-          'environment_variables' => 'EnvironmentVariables',
-          'exit_timeout' => 'ExitTimeout',
-          'ld_group' => 'GroupName',
-          'hard_resource_limits' => 'HardreSourceLimits',
-          'inetd_compatibility' => 'inetdCompatibility',
-          'init_groups' => 'InitGroups',
-          'keep_alive' => 'KeepAlive',
-          'launch_only_once' => 'LaunchOnlyOnce',
-          'limit_load_from_hosts' => 'LimitLoadFromHosts',
-          'limit_load_to_hosts' => 'LimitLoadToHosts',
-          'limit_load_to_session_type' => 'LimitLoadToSessionType',
-          'low_priority_io' => 'LowPriorityIO',
-          'mach_services' => 'MachServices',
-          'nice' => 'Nice',
-          'on_demand' => 'OnDemand',
-          'process_type' => 'ProcessType',
-          'queue_directories' => 'QueueDirectories',
-          'root_directory' => 'RootDirectory',
-          'run_at_load' => 'RunAtLoad',
-          'sockets' => 'Sockets',
-          'soft_resource_limits' => 'SoftResourceLimits',
-          'standard_error_path' => 'StandardErrorPath',
-          'standard_in_path' => 'StandardInPath',
-          'standard_out_path' => 'StandardOutPath',
-          'start_calendar_interval' => 'StartCalendarInterval',
-          'start_interval' => 'StartInterval',
-          'start_on_mount' => 'StartOnMount',
-          'throttle_interval' => 'ThrottleInterval',
-          'time_out' => 'TimeOut',
-          'umask' => 'Umask',
-          'username' => 'UserName',
-          'wait_for_debugger' => 'WaitForDebugger',
-          'watch_paths' => 'WatchPaths',
-          'working_directory' => 'WorkingDirectory',
+          "label" => "Label",
+          "program" => "Program",
+          "program_arguments" => "ProgramArguments",
+          "abandon_process_group" => "AbandonProcessGroup",
+          "debug" => "Debug",
+          "disabled" => "Disabled",
+          "enable_globbing" => "EnableGlobbing",
+          "enable_transactions" => "EnableTransactions",
+          "environment_variables" => "EnvironmentVariables",
+          "exit_timeout" => "ExitTimeout",
+          "ld_group" => "GroupName",
+          "hard_resource_limits" => "HardreSourceLimits",
+          "inetd_compatibility" => "inetdCompatibility",
+          "init_groups" => "InitGroups",
+          "keep_alive" => "KeepAlive",
+          "launch_only_once" => "LaunchOnlyOnce",
+          "limit_load_from_hosts" => "LimitLoadFromHosts",
+          "limit_load_to_hosts" => "LimitLoadToHosts",
+          "limit_load_to_session_type" => "LimitLoadToSessionType",
+          "low_priority_io" => "LowPriorityIO",
+          "mach_services" => "MachServices",
+          "nice" => "Nice",
+          "on_demand" => "OnDemand",
+          "process_type" => "ProcessType",
+          "queue_directories" => "QueueDirectories",
+          "root_directory" => "RootDirectory",
+          "run_at_load" => "RunAtLoad",
+          "sockets" => "Sockets",
+          "soft_resource_limits" => "SoftResourceLimits",
+          "standard_error_path" => "StandardErrorPath",
+          "standard_in_path" => "StandardInPath",
+          "standard_out_path" => "StandardOutPath",
+          "start_calendar_interval" => "StartCalendarInterval",
+          "start_interval" => "StartInterval",
+          "start_on_mount" => "StartOnMount",
+          "throttle_interval" => "ThrottleInterval",
+          "time_out" => "TimeOut",
+          "umask" => "Umask",
+          "username" => "UserName",
+          "wait_for_debugger" => "WaitForDebugger",
+          "watch_paths" => "WatchPaths",
+          "working_directory" => "WorkingDirectory",
         }.each_with_object({}) do |(key, val), memo|
           memo[val] = new_resource.send(key) if new_resource.send(key)
         end

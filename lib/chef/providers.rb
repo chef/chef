@@ -35,7 +35,7 @@ require "chef/provider/git"
 require "chef/provider/group"
 require "chef/provider/http_request"
 require "chef/provider/ifconfig"
-require 'chef/provider/launchd'
+require "chef/provider/launchd"
 require "chef/provider/link"
 require "chef/provider/log"
 require "chef/provider/ohai"

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/launchd'
+require "chef/resource"
+require "chef/provider/launchd"
 
 class Chef
   class Resource
@@ -46,12 +46,12 @@ class Chef
       property :source, String
       property :session_type, String
 
-      property :type, String, default: 'daemon', coerce: proc { |type|
-        type = type ? type.downcase : 'daemon'
-        types = [ 'daemon', 'agent' ]
+      property :type, String, default: "daemon", coerce: proc { |type|
+        type = type ? type.downcase : "daemon"
+        types = %w{daemon agent}
 
         unless types.include?(type)
-          error_msg = 'type must be daemon or agent'
+          error_msg = "type must be daemon or agent"
           raise Chef::Exceptions::ValidationFailed, error_msg
         end
         type

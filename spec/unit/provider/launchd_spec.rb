@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Launchd do
 
@@ -26,9 +26,9 @@ describe Chef::Provider::Launchd do
     let(:run_context) { Chef::RunContext.new(node, {}, events) }
     let(:provider) { Chef::Provider::Launchd.new(new_resource, run_context) }
 
-    let(:label) {'call.mom.weekly'}
-    let(:new_resource) { Chef::Resource::Launchd.new(label)}
-    let!(:current_resource) { Chef::Resource::Launchd.new(label)}
+    let(:label) { "call.mom.weekly" }
+    let(:new_resource) { Chef::Resource::Launchd.new(label) }
+    let!(:current_resource) { Chef::Resource::Launchd.new(label) }
     let(:test_plist) { String.new <<-XML }
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -52,20 +52,20 @@ describe Chef::Provider::Launchd do
 XML
 
     let(:test_hash) do {
-      'Label' => 'call.mom.weekly',
-      'Program' => '/Library/scripts/call_mom.sh',
-      'StartCalendarInterval' => {
-        'Hourly' => 10,
-        'Weekday' => 7,
+      "Label" => "call.mom.weekly",
+      "Program" => "/Library/scripts/call_mom.sh",
+      "StartCalendarInterval" => {
+        "Hourly" => 10,
+        "Weekday" => 7,
       },
-      'TimeOut' => 300
+      "TimeOut" => 300
     } end
 
     before(:each) do
       provider.load_current_resource
     end
 
-    it 'resource name and label should be call.mom.weekly' do
+    it "resource name and label should be call.mom.weekly" do
       expect(new_resource.name).to eql(label)
       expect(new_resource.label).to eql(label)
     end
@@ -78,35 +78,35 @@ XML
       provider.process_resource_requirements
     end
 
-    describe 'with type is set to' do
-      describe 'agent' do
-        it 'path should be /Library/LaunchAgents/call.mom.weekly.plist' do
-          new_resource.type 'agent'
+    describe "with type is set to" do
+      describe "agent" do
+        it "path should be /Library/LaunchAgents/call.mom.weekly.plist" do
+          new_resource.type "agent"
           expect(provider.gen_path_from_type).
-            to eq('/Library/LaunchAgents/call.mom.weekly.plist')
+            to eq("/Library/LaunchAgents/call.mom.weekly.plist")
         end
       end
-      describe 'daemon' do
-        it 'path should be /Library/LaunchDaemons/call.mom.weekly.plist' do
+      describe "daemon" do
+        it "path should be /Library/LaunchDaemons/call.mom.weekly.plist" do
           expect(provider.gen_path_from_type).
-            to eq('/Library/LaunchDaemons/call.mom.weekly.plist')
+            to eq("/Library/LaunchDaemons/call.mom.weekly.plist")
         end
       end
     end
 
-    describe 'with a :create action and' do
-      describe 'program is passed' do
-        it 'should produce the test_plist from properties' do
-          new_resource.program '/Library/scripts/call_mom.sh'
+    describe "with a :create action and" do
+      describe "program is passed" do
+        it "should produce the test_plist from properties" do
+          new_resource.program "/Library/scripts/call_mom.sh"
           new_resource.time_out 300
-          new_resource.start_calendar_interval 'Hourly' => 10, 'Weekday' => 7
+          new_resource.start_calendar_interval "Hourly" => 10, "Weekday" => 7
           expect(provider.content?).to be_truthy
           expect(provider.content).to eql(test_plist)
         end
       end
 
-      describe 'hash is passed' do
-        it 'should produce the test_plist from the hash' do
+      describe "hash is passed" do
+        it "should produce the test_plist from the hash" do
           new_resource.hash test_hash
           expect(provider.content?).to be_truthy
           expect(provider.content).to eql(test_plist)
@@ -114,8 +114,8 @@ XML
       end
     end
 
-    describe 'with an :enable action' do
-      describe 'and the file has been updated' do
+    describe "with an :enable action" do
+      describe "and the file has been updated" do
         before(:each) do
           allow(provider).to receive(
             :manage_plist).with(:create).and_return(true)
@@ -123,17 +123,17 @@ XML
             :manage_service).with(:restart).and_return(true)
         end
 
-        it 'should call manage_service with a :restart action' do
+        it "should call manage_service with a :restart action" do
           expect(provider.manage_service(:restart)).to be_truthy
         end
 
-        it 'works with action enable' do
+        it "works with action enable" do
           expect(run_resource_setup_for_action(:enable)).to be_truthy
           provider.action_enable
         end
       end
 
-      describe 'and the file has not been updated' do
+      describe "and the file has not been updated" do
         before(:each) do
           allow(provider).to receive(
             :manage_plist).with(:create).and_return(nil)
@@ -141,45 +141,45 @@ XML
             :manage_service).with(:enable).and_return(true)
         end
 
-        it 'should call manage_service with a :enable action' do
-         expect(provider.manage_service(:enable)).to be_truthy
+        it "should call manage_service with a :enable action" do
+          expect(provider.manage_service(:enable)).to be_truthy
         end
 
-        it 'works with action enable' do
+        it "works with action enable" do
           expect(run_resource_setup_for_action(:enable)).to be_truthy
           provider.action_enable
         end
       end
     end
 
-    describe 'with an :delete action' do
-      describe 'and the ld file is present' do
+    describe "with an :delete action" do
+      describe "and the ld file is present" do
         before(:each) do
           allow(File).to receive(:exists?).and_return(true)
           allow(provider).to receive(
             :manage_service).with(:disable).and_return(true)
           allow(provider).to receive(
             :manage_plist).with(:delete).and_return(true)
-         end
-
-        it 'should call manage_service with a :disable action' do
-         expect(provider.manage_service(:disable)).to be_truthy
         end
 
-        it 'works with action :delete' do
+        it "should call manage_service with a :disable action" do
+          expect(provider.manage_service(:disable)).to be_truthy
+        end
+
+        it "works with action :delete" do
           expect(run_resource_setup_for_action(:delete)).to be_truthy
           provider.action_delete
         end
       end
 
-      describe 'and the ld file is not present' do
+      describe "and the ld file is not present" do
         before(:each) do
           allow(File).to receive(:exists?).and_return(false)
           allow(provider).to receive(
             :manage_plist).with(:delete).and_return(true)
-         end
+        end
 
-        it 'works with action :delete' do
+        it "works with action :delete" do
           expect(run_resource_setup_for_action(:delete)).to be_truthy
           provider.action_delete
         end

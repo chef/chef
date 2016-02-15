@@ -46,7 +46,7 @@ require "chef/resource/http_request"
 require "chef/resource/homebrew_package"
 require "chef/resource/ifconfig"
 require "chef/resource/ksh"
-require 'chef/resource/launchd'
+require "chef/resource/launchd"
 require "chef/resource/link"
 require "chef/resource/log"
 require "chef/resource/macports_package"
