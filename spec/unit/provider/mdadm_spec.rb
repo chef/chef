@@ -85,6 +85,28 @@ describe Chef::Provider::Mdadm do
         expect(@new_resource).to be_updated_by_last_action
       end
 
+      it "should not specify a chunksize or metadata version if mdadm_defaults is true and user hasn't explicity set them" do
+        @current_resource.exists(false)
+        @new_resource.mdadm_defaults(true)
+        @new_resource.after_created
+        expected_command = "yes | mdadm --create /dev/md1 --level 5 --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
+        expect(@provider).to receive(:shell_out!).with(expected_command)
+        @provider.run_action(:create)
+        expect(@new_resource).to be_updated_by_last_action
+      end
+
+      it "should include chunksize and metadata version if mdadm_defaults is true and user has explicity set them" do
+        @current_resource.exists(false)
+        @new_resource.mdadm_defaults(true)
+        @new_resource.metadata "1.2"
+        @new_resource.chunk 256
+        @new_resource.after_created
+        expected_command = "yes | mdadm --create /dev/md1 --level 5 --chunk=256 --metadata=1.2 --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
+        expect(@provider).to receive(:shell_out!).with(expected_command)
+        @provider.run_action(:create)
+        expect(@new_resource).to be_updated_by_last_action
+      end
+
       it "should not create the raid device if it does exist" do
         @current_resource.exists(true)
         expect(@provider).not_to receive(:shell_out!)
