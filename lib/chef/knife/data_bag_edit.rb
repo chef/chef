@@ -55,7 +55,7 @@ class Chef
         end
 
         item, was_encrypted = load_item(@name_args[0], @name_args[1])
-        edited_item = edit_data(item)
+        edited_item = edit_hash(item)
 
         if was_encrypted || encryption_secret_provided?
           ui.info("Encrypting data bag using provided secret.")

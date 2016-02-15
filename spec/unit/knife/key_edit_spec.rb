@@ -110,7 +110,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
 
         allow(key_edit_object).to receive(:output_private_key_to_file)
         allow(key_edit_object).to receive(:display_private_key)
-        allow(key_edit_object).to receive(:edit_data).and_return(expected_hash)
+        allow(key_edit_object).to receive(:edit_hash).and_return(expected_hash)
         allow(key_edit_object).to receive(:display_info)
       end
 

@@ -51,6 +51,10 @@ EOS
         @ui.edit_data(key)
       end
 
+      def edit_hash(key)
+        @ui.edit_hash(key)
+      end
+
       def display_info(input)
         @ui.info(input)
       end
@@ -91,7 +95,7 @@ EOS
           key.expiration_date("infinity")
         end
 
-        output = edit_data(key)
+        output = edit_hash(key)
         key = create_key_from_hash(output)
 
         display_info("Created key: #{key.name}")

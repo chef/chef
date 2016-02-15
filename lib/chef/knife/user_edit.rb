@@ -66,7 +66,7 @@ EOF
           ui.warn(osc_11_warning)
           run_osc_11_user_edit
         else # EC / CS 12 user create
-          edited_user = edit_data(original_user)
+          edited_user = edit_hash(original_user)
           if original_user != edited_user
             user = Chef::UserV1.from_hash(edited_user)
             user.update

@@ -510,8 +510,8 @@ class Chef
       response.body
     end
 
-    def create_object(object, pretty_name = nil, &block)
-      output = edit_data(object)
+    def create_object(object, pretty_name = nil, object_class: nil, &block)
+      output = edit_data(object, object_class: object_class)
 
       if Kernel.block_given?
         output = block.call(output)

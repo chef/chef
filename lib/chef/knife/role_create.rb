@@ -46,7 +46,7 @@ class Chef
         role = Chef::Role.new
         role.name(@role_name)
         role.description(config[:description]) if config[:description]
-        create_object(role)
+        create_object(role, object_class: Chef::Role)
       end
     end
   end

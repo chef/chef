@@ -39,7 +39,7 @@ class Chef
         end
 
         original_data = Chef::ApiClientV1.load(@client_name).to_hash
-        edited_client = edit_data(original_data)
+        edited_client = edit_hash(original_data)
         if original_data != edited_client
           client = Chef::ApiClientV1.from_hash(edited_client)
           client.save

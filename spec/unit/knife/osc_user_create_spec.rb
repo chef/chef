@@ -44,7 +44,7 @@ describe Chef::Knife::OscUserCreate do
     allow(@user).to receive(:create).and_return(@user_with_private_key)
     allow(Chef::User).to receive(:new).and_return(@user)
     allow(Chef::User).to receive(:from_hash).and_return(@user)
-    allow(@knife).to receive(:edit_data).and_return(@user.to_hash)
+    allow(@knife).to receive(:edit_hash).and_return(@user.to_hash)
   end
 
   it "creates a new user" do
@@ -79,7 +79,7 @@ describe Chef::Knife::OscUserCreate do
   end
 
   it "allows you to edit the data" do
-    expect(@knife).to receive(:edit_data).with(@user)
+    expect(@knife).to receive(:edit_hash).with(@user)
     @knife.run
   end
 

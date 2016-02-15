@@ -53,6 +53,10 @@ EOS
         @ui.edit_data(key)
       end
 
+      def edit_hash(key)
+        @ui.edit_hash(key)
+      end
+
       def display_info(input)
         @ui.info(input)
       end
@@ -95,7 +99,7 @@ EOS
           key.expiration_date(@config[:expiration_date])
         end
 
-        output = edit_data(key)
+        output = edit_hash(key)
         key = update_key_from_hash(output)
 
         to_display = "Updated key: #{key.name}"

@@ -30,6 +30,7 @@ describe Chef::Knife::UI do
       :format => "summary",
     }
     @ui = Chef::Knife::UI.new(@out, @err, @in, @config)
+    Chef::Config[:treat_deprecation_warnings_as_errors] = false
   end
 
   describe "edit" do
@@ -57,6 +58,12 @@ describe Chef::Knife::UI do
         let(:parse_output) { true }
         it "returns a ruby object" do
           expect(subject).to eql(ruby_for_json)
+        end
+
+        it "gives a deprecation error" do
+          Chef::Config[:treat_deprecation_warnings_as_errors] = true
+          expect { subject }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /Auto inflation of JSON data is deprecated./
         end
       end
 

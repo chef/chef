@@ -53,7 +53,7 @@ describe Chef::Knife::UserEdit do
   it "loads and edits the user" do
     data = { "username" => "my_user" }
     allow(Chef::UserV1).to receive(:load).with("my_user").and_return(data)
-    expect(knife).to receive(:edit_data).with(data).and_return(data)
+    expect(knife).to receive(:edit_hash).with(data).and_return(data)
     knife.run
   end
 

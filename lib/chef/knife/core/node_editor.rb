@@ -41,7 +41,7 @@ class Chef
         abort "You specified the --disable_editing option, nothing to edit" if config[:disable_editing]
         assert_editor_set!
 
-        updated_node_data = ui.edit_data(view)
+        updated_node_data = ui.edit_hash(view)
         apply_updates(updated_node_data)
         @updated_node
       end

@@ -50,7 +50,7 @@ describe Chef::Knife::EnvironmentCreate do
     end
 
     it "should prompt you to edit the data" do
-      expect(@knife).to receive(:edit_data).with(@environment)
+      expect(@knife).to receive(:edit_data).with(@environment, object_class: Chef::Environment)
       @knife.run
     end
 

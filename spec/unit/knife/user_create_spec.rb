@@ -111,7 +111,7 @@ describe Chef::Knife::UserCreate do
   context "when all mandatory fields are validly specified" do
     before do
       knife.name_args = %w{some_user some_display_name some_first_name some_last_name some_email some_password}
-      allow(knife).to receive(:edit_data).and_return(knife.user.to_hash)
+      allow(knife).to receive(:edit_hash).and_return(knife.user.to_hash)
       allow(knife).to receive(:create_user_from_hash).and_return(knife.user)
     end
 

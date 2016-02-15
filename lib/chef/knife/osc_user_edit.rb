@@ -44,7 +44,7 @@ class Chef
         end
 
         original_user = Chef::User.load(@user_name).to_hash
-        edited_user = edit_data(original_user)
+        edited_user = edit_hash(original_user)
         if original_user != edited_user
           user = Chef::User.from_hash(edited_user)
           user.update
