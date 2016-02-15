@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'chef/provider/execute'
-require 'chef/win32/security' if Chef::Platform.windows?
-require 'forwardable'
+require "tempfile"
+require "chef/provider/execute"
+require "chef/win32/security" if Chef::Platform.windows?
+require "forwardable"
 
 class Chef
   class Provider
@@ -83,7 +83,7 @@ class Chef
         # Duplicate the script file's existing DACL
         # so we can add an ACE later
         securable_object = Chef::ReservedNames::Win32::Security::SecurableObject.new(script_file.path)
-        aces = securable_object.security_descriptor.dacl.reduce([]) { | result, current | result.push(current) }
+        aces = securable_object.security_descriptor.dacl.reduce([]) { |result, current| result.push(current) }
 
         username = new_resource.user
 
@@ -99,7 +99,9 @@ class Chef
         acl = Chef::ReservedNames::Win32::Security::ACL.create(aces)
 
         # This actually applies the modified DACL to the file
-        securable_object.dacl = acl
+        # Use parentheses to bypass RuboCop / ChefStyle warning
+        # about useless setter
+        (securable_object.dacl = acl)
       end
 
       def script_file

@@ -142,7 +142,7 @@ shared_context Chef::Resource::WindowsScript do
 
       before do
         expect(script_provider).to receive(:unlink_script_file)
-        resource.code('echo hi')
+        resource.code("echo hi")
         script_provider.action_run
       end
 
