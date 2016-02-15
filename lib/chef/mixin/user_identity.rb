@@ -57,7 +57,7 @@ class Chef
           domain_and_user = user.split('\\')
 
           if domain_and_user.length == 1
-            domain_and_user = user.split('@')
+            domain_and_user = user.split("@")
           end
 
           if domain_and_user.length == 2
