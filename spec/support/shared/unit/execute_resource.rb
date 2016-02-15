@@ -107,13 +107,13 @@ shared_examples_for "an execute resource" do
   end
 
   it "should accept a string for the domain" do
-    @resource.domain 'mothership'
-    expect(@resource.domain).to eql('mothership')
+    @resource.domain "mothership"
+    expect(@resource.domain).to eql("mothership")
   end
 
   it "should accept a string for the password" do
-    @resource.password 'we.funk!'
-    expect(@resource.password).to eql('we.funk!')
+    @resource.password "we.funk!"
+    expect(@resource.password).to eql("we.funk!")
   end
 
   it "should accept a string for creates" do
@@ -139,13 +139,13 @@ shared_examples_for "an execute resource" do
 
     it "should be true if the password is non-nil" do
       expect(@resource.sensitive).to eq(false)
-      @resource.password('we.funk!')
+      @resource.password("we.funk!")
       expect(@resource.sensitive).to eq(true)
     end
 
     it "should be true if the password is non-nil but the value is explicitly set to false" do
       expect(@resource.sensitive).to eq(false)
-      @resource.password('we.funk!')
+      @resource.password("we.funk!")
       expect(@resource.sensitive).to eq(true)
       @resource.sensitive false
       expect(@resource.sensitive).to eq(true)
@@ -153,7 +153,7 @@ shared_examples_for "an execute resource" do
 
   end
 
-  describe "when it has cwd, environment, group, path, return value, and a user" do 
+  describe "when it has cwd, environment, group, path, return value, and a user" do
     before do
       @resource.command("grep")
       @resource.cwd("/tmp/")
