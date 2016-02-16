@@ -103,7 +103,7 @@ class Chef
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
         justify_width = @server_side_cookbooks.map { |name| name.size }.max.to_i + 2
         if config[:all]
-          cookbook_repo.load_cookbooks
+          cookbook_repo.load_cookbooks_without_shadow_warning
           cookbooks_for_upload = []
           cookbook_repo.each do |cookbook_name, cookbook|
             cookbooks_for_upload << cookbook
@@ -166,7 +166,7 @@ class Chef
       def cookbooks_to_upload
         @cookbooks_to_upload ||=
           if config[:all]
-            cookbook_repo.load_cookbooks
+            cookbook_repo.load_cookbooks_without_shadow_warning
           else
             upload_set = {}
             @name_args.each do |cookbook_name|

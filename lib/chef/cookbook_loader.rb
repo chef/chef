@@ -73,13 +73,21 @@ class Chef
       end
     end
 
-    def load_cookbooks
+    # Will be removed when cookbook shadowing is removed, do NOT create new consumers of this API.
+    #
+    # @api private
+    def load_cookbooks_without_shadow_warning
       preload_cookbooks
       @loaders_by_name.each do |cookbook_name, _loaders|
         load_cookbook(cookbook_name)
       end
-      warn_about_cookbook_shadowing
       @cookbooks_by_name
+    end
+
+    def load_cookbooks
+      ret = load_cookbooks_without_shadow_warning
+      warn_about_cookbook_shadowing
+      ret
     end
 
     def load_cookbook(cookbook_name)
