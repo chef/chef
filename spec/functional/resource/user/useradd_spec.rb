@@ -627,7 +627,7 @@ describe Chef::Provider::User::Useradd, metadata do
     context "when the user exists" do
 
       include_context "user exists for lock/unlock"
-      let(:shell) { "/bin/bash" }
+      let(:shell) { "/bin/sh" }
 
       before do
         begin
