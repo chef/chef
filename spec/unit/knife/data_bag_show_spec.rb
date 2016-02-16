@@ -95,7 +95,7 @@ qux: http://localhost:4000/data/bag_o_data/qux}
 
     it "displays the data bag" do
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(data_bag)
-      expect(knife.ui).to receive(:info).with("Unencrypted data bag detected, ignoring any provided secret options.")
+      expect(knife.ui).to receive(:warn).with("Unencrypted data bag detected, ignoring any provided secret options.")
 
       expected = %q{baz: http://localhost:4000/data/bag_o_data/baz
 id:  id
