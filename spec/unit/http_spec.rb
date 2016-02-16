@@ -28,6 +28,8 @@ end
 
 describe Chef::HTTP do
 
+  let(:uri) { "https://chef.example/organizations/default/" }
+
   context "when given a chefzero:// URL" do
 
     let(:uri) { URI("chefzero://localhost:1") }
@@ -67,6 +69,18 @@ describe Chef::HTTP do
 
   end # create_url
 
+  describe "#stream_to_tempfile" do
+
+    it "should only close an existing Tempfile" do
+      resp = Net::HTTPOK.new("1.1", 200, "OK")
+      http = Chef::HTTP.new(uri)
+      expect(Tempfile).to receive(:open).and_raise("TestError")
+      expect_any_instance_of(Tempfile).not_to receive(:close!)
+      expect { http.send(:stream_to_tempfile, uri, resp) }.to raise_error("TestError")
+    end
+
+  end
+
   describe "head" do
 
     it 'should return nil for a "200 Success" response (CHEF-4762)' do
@@ -90,8 +104,6 @@ describe Chef::HTTP do
   end # head
 
   describe "retrying connection errors" do
-
-    let(:uri) { "https://chef.example/organizations/default/" }
 
     subject(:http) { Chef::HTTP.new(uri) }
 
