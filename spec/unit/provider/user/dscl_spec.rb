@@ -24,7 +24,7 @@ describe Chef::Provider::User::Dscl do
   before do
     allow(ChefConfig).to receive(:windows?) { false }
   end
-  let(:shellcmdresult) { 
+  let(:shellcmdresult) {
     Struct.new(:stdout, :stderr, :exitstatus)
   }
   let(:node) {
