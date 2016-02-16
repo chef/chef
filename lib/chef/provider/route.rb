@@ -176,7 +176,7 @@ class Chef::Provider::Route < Chef::Provider
           conf[dev] = String.new if conf[dev].nil?
           case @action
           when :add
-            conf[dev] << config_file_contents(:add, :target => resource.target, :netmask => resource.netmask, :gateway => resource.gateway)
+            conf[dev] << config_file_contents(:add, :target => resource.target, :netmask => resource.netmask, :gateway => resource.gateway) if resource.action == [:add]
           when :delete
             # need to do this for the case when the last route on an int
             # is removed
