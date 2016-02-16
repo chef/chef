@@ -50,7 +50,7 @@ override :rubygems,     version: "2.5.2"
 
 # Chef Release version pinning
 override :chef, version: "local_source"
-override :ohai, version: "v8.10.0"
+override :ohai, version: "master"
 
 dependency "preparation"
 dependency "chef"

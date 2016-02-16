@@ -1,3 +1,5 @@
+## 12.8.0
+
 ## 12.7.2
 
 * [pr#4559](https://github.com/chef/chef/pull/4559) Remove learnchef acceptance tests until we make them more reliable

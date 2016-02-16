@@ -1,3 +1,5 @@
+# Chef Client Release Notes 12.8:
+
 # Chef Client Release Notes 12.7:
 
 ## Updates to versioning strategy
