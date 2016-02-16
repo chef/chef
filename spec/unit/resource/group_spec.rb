@@ -110,6 +110,11 @@ describe Chef::Resource::Group, "members" do
       expect(@resource.send(method)).to eql(["aj"])
     end
 
+    it "(#{method}) should split a string on commas" do
+      @resource.send(method, "aj,adam")
+      expect(@resource.send(method)).to eql( %w{aj adam} )
+    end
+
     it "(#{method}) should allow an array" do
       @resource.send(method, %w{aj adam})
       expect(@resource.send(method)).to eql( %w{aj adam} )
