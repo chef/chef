@@ -135,13 +135,10 @@ module ChefConfig
     def conf_d_files
       @conf_d_files ||=
         begin
-          entries = if Config[:conf_d_dir]
-                      Dir.glob(File.join(PathHelper.escape_glob(
-                        Config[:conf_d_dir]), "*.rb"))
-                    else
-                      []
-                    end
-          entries.select do |entry|
+          entries = Array.new
+          entries << Dir.glob(File.join(PathHelper.escape_glob(
+            Config[:conf_d_dir]), "*.rb")) if Config[:conf_d_dir]
+          entries.flatten.select do |entry|
             File.file?(entry)
           end
         end
