@@ -145,8 +145,6 @@ class Chef
             end
           end
 
-          upload_failures += @name_args.length - @cookbooks_to_upload.length
-
           if upload_failures == 0
             ui.info "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""}."
           elsif upload_failures > 0 && upload_ok > 0
