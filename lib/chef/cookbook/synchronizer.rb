@@ -263,7 +263,10 @@ class Chef
     end
 
     def cached_copy_up_to_date?(local_path, expected_checksum)
-      return true if Chef::Config[:skip_cookbook_sync]
+      if Chef::Config[:skip_cookbook_sync]
+        Chef::Log.warn "skipping cookbook synchronization!  DO NOT LEAVE THIS ENABLED IN PRODUCTION!!!"
+        return true
+      end
       if cache.has_key?(local_path)
         current_checksum = CookbookVersion.checksum_cookbook_file(cache.load(local_path, false))
         expected_checksum == current_checksum
