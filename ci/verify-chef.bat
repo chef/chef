@@ -58,7 +58,3 @@ IF "%PIPELINE_NAME%" == "chef-fips" (
 	set CHEF_FIPS=1
 )
 call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional
-
-REM ; Destroy everything at the end for good measure.
-RMDIR /S /Q %TEMP%
-MKDIR %TEMP%
