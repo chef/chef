@@ -154,7 +154,7 @@ module ChefConfig
     # This is because only forwardslashes should be used with dir (even for windows)
     def self.escape_glob_dir(*parts)
       path = Pathname.new(join(*parts)).cleanpath.to_s
-      path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\"+x }
+      path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\" + x }
     end
 
     def self.relative_path_from(from, to)
