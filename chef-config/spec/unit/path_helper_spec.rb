@@ -267,9 +267,9 @@ RSpec.describe ChefConfig::PathHelper do
   end
 
   describe "escape_glob_dir" do
-    it "escapes characters reserved by glob" do
-      path = "C:\\this\\*path\\[needs]\\escaping?"
-      escaped_path = "C:\\\\this\\\\\\*path\\\\\\[needs\\]\\\\escaping\\?"
+    it "escapes characters reserved by glob without using backslashes for path separators" do
+      path = "C:/this/*path/[needs]/escaping?"
+      escaped_path = "C:/this/\\*path/\\[needs\\]/escaping\\?"
       expect(path_helper.escape_glob_dir(path)).to eq(escaped_path)
     end
 
@@ -281,7 +281,7 @@ RSpec.describe ChefConfig::PathHelper do
         expect(path_helper.escape_glob_dir(*args)).to eq(escaped_path)
       end
     end
-  end  
+  end
 
   describe "all_homes" do
     before do
