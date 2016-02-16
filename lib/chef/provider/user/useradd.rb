@@ -93,11 +93,11 @@ class Chef
         end
 
         def lock_user
-          shell_out!("usermod", "-L", new_resource.username)
+          shell_out!("usermod", "-L", "-s", "/bin/false", new_resource.username)
         end
 
         def unlock_user
-          shell_out!("usermod", "-U", new_resource.username)
+          shell_out!("usermod", "-U", "-s", new_resource.shell, new_resource.username)
         end
 
         def compile_command(base_command)
