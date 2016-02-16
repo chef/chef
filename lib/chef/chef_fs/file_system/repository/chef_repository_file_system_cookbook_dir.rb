@@ -20,7 +20,6 @@ require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookboo
 require "chef/chef_fs/file_system/chef_server/cookbook_dir"
 require "chef/chef_fs/file_system/chef_server/versioned_cookbook_dir"
 require "chef/chef_fs/file_system/not_found_error"
-require "chef/cookbook/chefignore"
 require "chef/cookbook/cookbook_version_loader"
 
 class Chef
