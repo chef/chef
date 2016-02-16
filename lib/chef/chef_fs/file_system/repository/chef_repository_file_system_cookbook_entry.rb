@@ -40,7 +40,7 @@ class Chef
           def initialize(name, parent, file_path = nil, ruby_only = false, recursive = false)
             @parent = parent
             @name = name
-            @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+            @path = Chef::ChefFS::PathUtils.join(parent.path, name)
             @ruby_only = ruby_only
             @recursive = recursive
             @data_handler = nil

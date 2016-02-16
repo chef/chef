@@ -33,7 +33,7 @@ class Chef
           def initialize(name, parent)
             @parent = parent
             @name = name
-            @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+            @path = Chef::ChefFS::PathUtils.join(parent.path, name)
             @data_handler = Chef::ChefFS::DataHandler::DataBagItemDataHandler.new
             @file_path = "#{parent.file_path}/#{name}"
           end

@@ -31,7 +31,7 @@ class Chef
           def initialize(name, parent, file_path = nil)
             @parent = parent
             @name = name
-            @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+            @path = Chef::ChefFS::PathUtils.join(parent.path, name)
             @file_path = file_path || "#{parent.file_path}/#{name}"
           end
 
