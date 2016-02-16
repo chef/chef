@@ -32,11 +32,9 @@ require "chef/resource/action_class"
 require "chef/resource_collection"
 require "chef/node_map"
 require "chef/node"
-require "chef/platform"
 require "chef/resource/resource_notification"
 require "chef/provider_resolver"
 require "chef/resource_resolver"
-require "chef/provider"
 require "set"
 
 require "chef/mixin/deprecation"
@@ -46,6 +44,12 @@ require "chef/mixin/shell_out"
 require "chef/mixin/powershell_out"
 
 class Chef
+  class Provider
+    # this breaks require loops so we don't have to require 'chef/provider' in this
+    # file.  when the magic of the resource computing its provider name goes away
+    # and this file no longer references Chef::Provider then this class definition
+    # can be deleted.
+  end
   class Resource
 
     #
