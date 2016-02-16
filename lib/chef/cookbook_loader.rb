@@ -69,7 +69,7 @@ class Chef
     def warn_about_cookbook_shadowing
       unless merged_cookbooks.empty?
         Chef::Log.deprecation "The cookbook(s): #{merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path. " +
-          "A composite version has been compiled.  In a future version of Chef this behavior will be removed."
+          "A composite version has been compiled.  This has been deprecated since 0.10.4, in Chef 13 this behavior will be REMOVED."
       end
     end
 
