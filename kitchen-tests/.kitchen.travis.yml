@@ -11,6 +11,8 @@ driver:
 
 provisioner:
   name: chef_github
+  chef_omnibus_url: "https://omnitruck.chef.io/current/install.sh"
+  chef_omnibus_install_options: "-n"
   github_owner: "chef"
   github_repo: "chef"
   refname: <%= ENV['TRAVIS_COMMIT'] %>
