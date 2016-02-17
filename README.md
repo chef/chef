@@ -1,4 +1,8 @@
 # Mixlib::ShellOut
+[![Build Status Master](https://travis-ci.org/chef/mixlib-shellout.svg?branch=master)](https://travis-ci.org/chef/mixlib-shellout)
+[![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/mixlib-shellout?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/mixlib-shellout/branch/master)
+[![Gem Version](https://badge.fury.io/rb/mixlib-shellout.svg)](https://badge.fury.io/rb/mixlib-shellout)
+
 Provides a simplified interface to shelling out while still collecting both standard out and standard error and providing full control over environment, working directory, uid, gid, etc.
 
 No means for passing input to the subprocess is provided.
@@ -62,7 +66,7 @@ Mixlib::ShellOut does a standard fork/exec on Unix, and uses the Win32 API on Wi
 - `Process.spawn` in Ruby 1.9
 - [https://github.com/rtomayko/posix-spawn](https://github.com/rtomayko/posix-spawn)
 
-# LICENSE:
+## License
 
 * Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
 * License:: Apache License, Version 2.0
