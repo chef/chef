@@ -34,11 +34,7 @@ Raise an exception if it didn't exit with 0
 ```
 
 ### Advanced Shellout
-In addition to the command to run there are other attributes that can be set to change the shellout behavior:
-- `env`: set environmental variables before shelling out
-- `user`: execute the shellout as this user
-- `cwd`: execute the shellout from this directory
-- `timeout`: set a command timeout (defaul 600s)
+In addition to the command to run there are other options that can be set to change the shellout behavior. The complete list of options can be found here: https://github.com/chef/mixlib-shellout/blob/master/lib/mixlib/shellout.rb
 
 Run a command as the `www` user with no extra ENV settings from `/tmp` with a 1s timeout
 
