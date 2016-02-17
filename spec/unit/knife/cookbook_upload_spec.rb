@@ -32,7 +32,7 @@ describe Chef::Knife::CookbookUpload do
   let(:cookbook_loader) do
     cookbook_loader = cookbooks_by_name.dup
     allow(cookbook_loader).to receive(:merged_cookbooks).and_return([])
-    allow(cookbook_loader).to receive(:load_cookbooks).and_return(cookbook_loader)
+    allow(cookbook_loader).to receive(:load_cookbooks_without_shadow_warning).and_return(cookbook_loader)
     cookbook_loader
   end
 
@@ -145,6 +145,7 @@ E
 
       it "should not read all cookbooks" do
         expect(cookbook_loader).not_to receive(:load_cookbooks)
+        expect(cookbook_loader).not_to receive(:load_cookbooks_without_shadow_warning)
         knife.run
       end
 
@@ -208,6 +209,7 @@ E
       it "should exit and not upload the cookbook" do
         expect(cookbook_loader).to receive(:[]).once.with("test_cookbook")
         expect(cookbook_loader).not_to receive(:load_cookbooks)
+        expect(cookbook_loader).not_to receive(:load_cookbooks_without_shadow_warning)
         expect(cookbook_uploader).not_to receive(:upload_cookbooks)
         expect { knife.run }.to raise_error(SystemExit)
       end

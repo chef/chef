@@ -66,7 +66,17 @@ class Chef
       merged_cookbook_paths
     end
 
-    def load_cookbooks
+    def warn_about_cookbook_shadowing
+      unless merged_cookbooks.empty?
+        Chef::Log.deprecation "The cookbook(s): #{merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path. " +
+          "A composite version has been compiled.  This has been deprecated since 0.10.4, in Chef 13 this behavior will be REMOVED."
+      end
+    end
+
+    # Will be removed when cookbook shadowing is removed, do NOT create new consumers of this API.
+    #
+    # @api private
+    def load_cookbooks_without_shadow_warning
       preload_cookbooks
       @loaders_by_name.each do |cookbook_name, _loaders|
         load_cookbook(cookbook_name)
@@ -74,8 +84,16 @@ class Chef
       @cookbooks_by_name
     end
 
+    def load_cookbooks
+      ret = load_cookbooks_without_shadow_warning
+      warn_about_cookbook_shadowing
+      ret
+    end
+
     def load_cookbook(cookbook_name)
       preload_cookbooks
+
+      return @cookbooks_by_name[cookbook_name] if @cookbooks_by_name.has_key?(cookbook_name)
 
       return nil unless @loaders_by_name.key?(cookbook_name.to_s)
 
