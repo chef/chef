@@ -279,10 +279,10 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
       it "loads the configuration in order" do
 
-        expect(::File).to receive(:read).with(Chef::Config.platform_specific_path("#{client_d_dir}/00-foo.rb")).and_return("")
-        expect(::File).to receive(:read).with(Chef::Config.platform_specific_path("#{client_d_dir}/01-bar.rb")).and_return("")
-        expect(app).to receive(:load_config_d_file).with("#{client_d_dir}/00-foo.rb").and_call_original.ordered
-        expect(app).to receive(:load_config_d_file).with("#{client_d_dir}/01-bar.rb").and_call_original.ordered
+        expect(::File).to receive(:read).with(Pathname.new("#{client_d_dir}/00-foo.rb").cleanpath.to_s).and_return("")
+        expect(::File).to receive(:read).with(Pathname.new("#{client_d_dir}/01-bar.rb").cleanpath.to_s).and_return("")
+        expect(app).to receive(:load_config_d_file).with(Pathname.new("#{client_d_dir}/00-foo.rb").cleanpath.to_s).and_call_original.ordered
+        expect(app).to receive(:load_config_d_file).with(Pathname.new("#{client_d_dir}/01-bar.rb").cleanpath.to_s).and_call_original.ordered
         app.reconfigure
       end
     end

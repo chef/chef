@@ -526,7 +526,7 @@ class Chef::Application::Client < Chef::Application
 
   def list_config_d_files
     if Chef::Config[:client_d_dir]
-      Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(
+      Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(
         Chef::Config[:client_d_dir]), "*.rb"))
     else
       []
