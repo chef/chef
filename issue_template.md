@@ -19,6 +19,8 @@ for information on how to create a good replication case.
 
 The complete output of the chef-client run or a link to a gist of it, if there is one.
 
+The debug output (chef-client -l debug) may be useful, but please link to a gist, or truncate it.
+
 ## Stacktrace
 
 Please include the stacktrace.out output or link to a gist of it, if there is one.
