@@ -58,9 +58,25 @@ Invoke "whoami.exe" to demonstrate running a command as another user:
 ## Platform Support
 Mixlib::ShellOut does a standard fork/exec on Unix, and uses the Win32 API on Windows. There is not currently support for JRuby.
 
-## License
-Apache 2 Licensed. See LICENSE for full details.
-
 ## See Also
 - `Process.spawn` in Ruby 1.9
 - [https://github.com/rtomayko/posix-spawn](https://github.com/rtomayko/posix-spawn)
+
+# LICENSE:
+
+* Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
+* License:: Apache License, Version 2.0
+
+```text
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
