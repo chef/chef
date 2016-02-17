@@ -287,7 +287,7 @@ class Chef::Application::Client < Chef::Application
 
   option :skip_cookbook_sync,
     :long           => "--[no-]skip-cookbook-sync",
-    :description    => "Whether to skip cookbook synchronization",
+    :description    => "Use cached cookbooks without overwriting local differences from the server",
     :boolean        => false
 
   IMMEDIATE_RUN_SIGNAL = "1".freeze
