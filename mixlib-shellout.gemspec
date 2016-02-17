@@ -8,9 +8,9 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ["README.md", "LICENSE" ]
   s.summary = "Run external commands on Unix or Windows"
   s.description = s.summary
-  s.author = "Opscode"
-  s.email = "info@opscode.com"
-  s.homepage = "http://wiki.opscode.com/"
+  s.author = "Chef Software Inc."
+  s.email = "info@chef.io"
+  s.homepage = "https://www.chef.io/"
 
   s.required_ruby_version = ">= 1.9.3"
 
