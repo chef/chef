@@ -1,13 +1,12 @@
 # Mixlib::ShellOut
-[![Build Status Master](https://travis-ci.org/chef/mixlib-shellout.svg?branch=master)](https://travis-ci.org/chef/mixlib-shellout)
-[![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/mixlib-shellout?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/mixlib-shellout/branch/master)
-[![Gem Version](https://badge.fury.io/rb/mixlib-shellout.svg)](https://badge.fury.io/rb/mixlib-shellout)
+[![Build Status Master](https://travis-ci.org/chef/mixlib-shellout.svg?branch=master)](https://travis-ci.org/chef/mixlib-shellout) [![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/mixlib-shellout?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/mixlib-shellout/branch/master) [![Gem Version](https://badge.fury.io/rb/mixlib-shellout.svg)](https://badge.fury.io/rb/mixlib-shellout)
 
 Provides a simplified interface to shelling out while still collecting both standard out and standard error and providing full control over environment, working directory, uid, gid, etc.
 
 No means for passing input to the subprocess is provided.
 
 ## Example
+### Simple Shellout
 Invoke find(1) to search for .rb files:
 
 ```ruby
@@ -34,14 +33,21 @@ Raise an exception if it didn't exit with 0
   find.error!
 ```
 
-Run a command as the `www` user with no extra ENV settings from `/tmp`
+### Advanced Shellout
+In addition to the command to run there are other attributes that can be set to change the shellout behavior:
+- `env`: set environmental variables before shelling out
+- `user`: execute the shellout as this user
+- `cwd`: execute the shellout from this directory
+- `timeout`: set a command timeout (defaul 600s)
+
+Run a command as the `www` user with no extra ENV settings from `/tmp` with a 1s timeout
 
 ```ruby
-  cmd = Mixlib::ShellOut.new("apachectl", "start", :user => 'www', :env => nil, :cwd => '/tmp')
+  cmd = Mixlib::ShellOut.new("apachectl", "start", :user => 'www', :env => nil, :cwd => '/tmp', :timeout => 1)
   cmd.run_command # etc.
 ```
 
-## STDIN Example
+### STDIN Example
 Invoke crontab to edit user cron:
 
 ```ruby
@@ -51,7 +57,7 @@ Invoke crontab to edit user cron:
   crontab.run_command
 ```
 
-## Windows Impersonation Example
+### Windows Impersonation Example
 Invoke "whoami.exe" to demonstrate running a command as another user:
 
 ```ruby
@@ -67,9 +73,8 @@ Mixlib::ShellOut does a standard fork/exec on Unix, and uses the Win32 API on Wi
 - [https://github.com/rtomayko/posix-spawn](https://github.com/rtomayko/posix-spawn)
 
 ## License
-
-* Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
-* License:: Apache License, Version 2.0
+- Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
+- License:: Apache License, Version 2.0
 
 ```text
 Licensed under the Apache License, Version 2.0 (the "License");
