@@ -38,6 +38,11 @@ override :bundler,      version: "1.11.2"
 
 if windows?
   override :ruby, version: "2.0.0-p645"
+  # Leave dev-kit pinned to 4.5 because 4.7 is 20MB larger and we don't want
+  # to unnecessarily make the client any fatter.
+  if windows_arch_i386?
+    override :'ruby-windows-devkit', version: "4.5.2-20111229-1559"
+  end
 else
   override :ruby, version: "2.1.6"
 end
@@ -51,6 +56,8 @@ override :chef, version: "local_source"
 override :ohai, version: "master"
 
 dependency "rb-readline"
+dependency "ruby-windows-devkit"
+dependency "ruby-windows-devkit-bash"
 
 msi_upgrade_code = "819F5DB3-B818-4358-BB2B-54B8171D0A26"
 project_location_dir = "chef-fips"
