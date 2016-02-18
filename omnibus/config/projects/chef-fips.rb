@@ -42,7 +42,12 @@ end
 # Delete this once all dlls we generate are appropriately relocated.
 override :bundler, version: "1.10.6"
 
-override :ruby, version: "2.1.7"
+if windows?
+  override :ruby, version: "2.0.0-p645"
+else
+  override :ruby, version: "2.1.6"
+end
+
 override :"rb-readline", version: "v0.5.3"
 
 # Global FIPS override flag.
