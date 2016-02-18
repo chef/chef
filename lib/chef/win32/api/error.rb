@@ -874,6 +874,20 @@ class Chef
         SEM_NOGPFAULTERRORBOX      = 0x0002
         SEM_NOOPENFILEERRORBOX     = 0x8000
 
+        # Flags for LoadLibraryEx
+
+        DONT_RESOLVE_DLL_REFERENCES = 0x00000001
+        LOAD_IGNORE_CODE_AUTHZ_LEVEL = 0x00000010
+        LOAD_LIBRARY_AS_DATAFILE = 0x00000002
+        LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE = 0x00000040
+        LOAD_LIBRARY_AS_IMAGE_RESOURCE = 0x00000020
+        LOAD_LIBRARY_SEARCH_APPLICATION_DIR = 0x00000200
+        LOAD_LIBRARY_SEARCH_DEFAULT_DIRS = 0x00001000
+        LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR = 0x00000100
+        LOAD_LIBRARY_SEARCH_SYSTEM32 = 0x00000800
+        LOAD_LIBRARY_SEARCH_USER_DIRS = 0x00000400
+        LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008
+
         ###############################################
         # Win32 API Bindings
         ###############################################
@@ -891,8 +905,8 @@ DWORD WINAPI FormatMessage(
   __in_opt  va_list *Arguments
 );
 =end
-        safe_attach_function :FormatMessageA, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPTSTR, :DWORD, :varargs], :DWORD
-        safe_attach_function :FormatMessageW, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPWSTR, :DWORD, :varargs], :DWORD
+        safe_attach_function :FormatMessageA, [:DWORD, :HANDLE, :DWORD, :DWORD, :LPTSTR, :DWORD, :varargs], :DWORD
+        safe_attach_function :FormatMessageW, [:DWORD, :HANDLE, :DWORD, :DWORD, :LPWSTR, :DWORD, :varargs], :DWORD
 
 =begin
 DWORD WINAPI GetLastError(void);
@@ -916,6 +930,23 @@ UINT WINAPI SetErrorMode(
 =end
         safe_attach_function :SetErrorMode, [:UINT], :UINT
 
+=begin
+https://msdn.microsoft.com/en-us/library/windows/desktop/ms684179(v=vs.85).aspx
+HMODULE WINAPI LoadLibraryEx(
+  _In_       LPCTSTR lpFileName,
+  _Reserved_ HANDLE  hFile,
+  _In_       DWORD   dwFlags
+);
+=end
+        safe_attach_function :LoadLibraryExW, [:LPCTSTR, :HANDLE, :DWORD], :HANDLE
+
+=begin
+https://msdn.microsoft.com/en-us/library/windows/desktop/ms683152(v=vs.85).aspx
+BOOL WINAPI FreeLibrary(
+  _In_ HMODULE hModule
+);
+=end
+        safe_attach_function :FreeLibrary, [:HANDLE], :BOOL
       end
     end
   end

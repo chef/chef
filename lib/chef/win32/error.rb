@@ -29,11 +29,21 @@ class Chef
 
       def self.format_message(message_id = 0, args = {})
         flags = args[:flags] || FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY
-        source = args[:source]
+        flags |= FORMAT_MESSAGE_ALLOCATE_BUFFER
+        source = args[:source] || 0
         language_id = args[:language_id] || 0
         varargs = args[:varargs] || [:int, 0]
         buffer = FFI::MemoryPointer.new :pointer
-        num_chars = FormatMessageW(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, source, message_id, language_id, buffer, 0, *varargs)
+        num_chars = FormatMessageW(flags, source, message_id, language_id, buffer, 0, *varargs)
+        if num_chars == 0
+          source = LoadLibraryExW("netmsg.dll".to_wstring, 0, LOAD_LIBRARY_AS_DATAFILE)
+          begin
+            num_chars = FormatMessageW(flags | FORMAT_MESSAGE_FROM_HMODULE, source, message_id, language_id, buffer, 0, *varargs)
+          ensure
+            FreeLibrary(source)
+          end
+        end
+
         if num_chars == 0
           raise!
         end
