@@ -1,5 +1,5 @@
-require 'chef/node/attribute_constants'
-require 'chef/node/vivid_mash'
+require "chef/node/attribute_constants"
+require "chef/node/vivid_mash"
 
 class Chef
   class Node
@@ -55,7 +55,6 @@ class Chef
       def for_json
         as_simple_object.for_json
       end
-
 
       def initialize(default: nil, env_default: nil, role_default: nil, force_default: nil,
                      normal: nil,
@@ -198,7 +197,6 @@ class Chef
         end
       end
 
-
       def method_missing(method, *args, &block)
         as_simple_object.public_send(method, *args, &block)
       end
@@ -211,7 +209,7 @@ class Chef
         if self.is_a?(Hash)
           merged_hash_key(key)
         elsif self.is_a?(Array)
-          merged_array[key]
+          merged_array_key(key)
         else
           return highest_precedence[key]
         end
@@ -265,7 +263,7 @@ class Chef
       end
 
       def merged_hash_has_key?(key)
-        COMPONENTS_AS_SYMBOLS.reverse.each do |component|
+        COMPONENTS_AS_SYMBOLS.reverse_each do |component|
           hash = instance_variable_get(:"@#{component}")
           next unless hash.is_a?(Hash)
           return true if hash.key?(key)
@@ -273,11 +271,16 @@ class Chef
         return false
       end
 
+      def merged_array_key(key)
+        # this is much faster than merged_array[key]
+        automatic_array_key(key) || override_array[key] || normal_array_key(key) || default_array[key]
+      end
+
       def merged_hash_key(key)
         # this is much faster than merged_hash[key]
         highest_value_found = false
         retval = nil
-        COMPONENTS_AS_SYMBOLS.reverse.each do |component|
+        COMPONENTS_AS_SYMBOLS.reverse_each do |component|
           hash = instance_variable_get(:"@#{component}")
           next unless hash.is_a?(Hash)
           next unless hash.key?(key)
@@ -353,6 +356,17 @@ class Chef
         end
       end
 
+      def normal_array_key(key)
+        value = @normal[key]
+        if value.is_a?(Hash) || value.is_a?(Array)
+          cell = self.class.allocate
+          cell.instance_variable_set(:@normal, value)
+          cell
+        else
+          value
+        end
+      end
+
       def override_array
         return nil unless OVERRIDE_COMPONENTS_AS_SYMBOLS.any? do |component|
           send(component).is_a?(Array)
@@ -388,9 +402,20 @@ class Chef
         end
       end
 
+      def automatic_array_key(key)
+        value = @automatic[key]
+        if value.is_a?(Hash) || value.is_a?(Array)
+          cell = self.class.allocate
+          cell.instance_variable_set(:@automatic, value)
+          cell
+        else
+          value
+        end
+      end
+
       # @return [Object] value of the highest precedence level
       def highest_precedence
-        COMPONENTS.reverse.each do |component|
+        COMPONENTS.reverse_each do |component|
           value = instance_variable_get(component)
           return value unless value.nil?
         end
