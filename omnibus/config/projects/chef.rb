@@ -60,7 +60,9 @@ override :ohai, version: "master"
 override :"rb-readline", version: "v0.5.3"
 
 # Global FIPS override flag.
-override :fips, enabled: true
+if windows? || rhel?
+  override :fips, enabled: true
+end
 
 dependency "preparation"
 dependency "chef"
