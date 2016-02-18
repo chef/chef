@@ -54,7 +54,7 @@ class Chef
         end
 
         def versions
-          @versions =
+          @versions ||=
             begin
               raw_versions = package_name_array.map do |package_name|
                 get_versions(package_name)
