@@ -27,6 +27,7 @@ require "chef/platform"
 require "mixlib/cli"
 require "tmpdir"
 require "rbconfig"
+require "chef/application/exit_code"
 
 class Chef
   class Application
@@ -60,11 +61,11 @@ class Chef
 
     def setup_signal_handlers
       trap("INT") do
-        Chef::Application.fatal!("SIGINT received, stopping", 2)
+        Chef::Application.fatal!("SIGINT received, stopping", Chef::Exceptions::SigInt.new)
       end
 
       trap("TERM") do
-        Chef::Application.fatal!("SIGTERM received, stopping", 3)
+        Chef::Application.fatal!("SIGTERM received, stopping", Chef::Exceptions::SigTerm.new)
       end
 
       unless Chef::Platform.windows?
@@ -149,7 +150,7 @@ class Chef
       Chef::Log.level = resolve_log_level
     rescue StandardError => error
       Chef::Log.fatal("Failed to open or create log file at #{Chef::Config[:log_location]}: #{error.class} (#{error.message})")
-      Chef::Application.fatal!("Aborting due to invalid 'log_location' configuration", 2)
+      Chef::Application.fatal!("Aborting due to invalid 'log_location' configuration", error)
     end
 
     # Turn `log_location :syslog` and `log_location :win_evt` into the
@@ -285,7 +286,7 @@ class Chef
           @chef_client.run
         rescue Exception => e
           Chef::Log.error(e.to_s)
-          exit 1
+          exit Chef::Application.normalize_exit_code(e)
         else
           exit 0
         end
@@ -314,7 +315,7 @@ class Chef
       Chef::Log.fatal("Configuration error #{error.class}: #{error.message}")
       filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
       filtered_trace.each { |line| Chef::Log.fatal("  " + line ) }
-      Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", 2)
+      Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", error)
     end
 
     # This is a hook for testing
@@ -341,15 +342,19 @@ class Chef
         true
       end
 
-      # Log a fatal error message to both STDERR and the Logger, exit the application
-      def fatal!(msg, err = -1)
-        Chef::Log.fatal(msg)
-        Process.exit err
+      def normalize_exit_code(exit_code)
+        Chef::Application::ExitCode.normalize_exit_code(exit_code)
       end
 
-      def exit!(msg, err = -1)
+      # Log a fatal error message to both STDERR and the Logger, exit the application
+      def fatal!(msg, err = nil)
+        Chef::Log.fatal(msg)
+        Process.exit(normalize_exit_code(err))
+      end
+
+      def exit!(msg, err = nil)
         Chef::Log.debug(msg)
-        Process.exit err
+        Process.exit(normalize_exit_code(err))
       end
     end
 

@@ -42,6 +42,8 @@ class Chef
     end
 
     class Application < RuntimeError; end
+    class SigInt < RuntimeError; end
+    class SigTerm < RuntimeError; end
     class Cron < RuntimeError; end
     class Env < RuntimeError; end
     class Exec < RuntimeError; end
@@ -56,6 +58,14 @@ class Chef
     class UnsupportedAction < RuntimeError; end
     class MissingLibrary < RuntimeError; end
 
+    class DeprecatedExitCode < RuntimeError
+      def initalize
+        super "Exiting with a non RFC 062 Exit Code."
+        require "chef/application/exit_code"
+        Chef::Application::ExitCode.notify_deprecated_exit_code
+      end
+    end
+
     class CannotDetermineNodeName < RuntimeError
       def initialize
         super "Unable to determine node name: configure node_name or configure the system's hostname and fqdn"
@@ -66,6 +76,9 @@ class Chef
     class Group < RuntimeError; end
     class Link < RuntimeError; end
     class Mount < RuntimeError; end
+    class Reboot < Exception; end
+    class RebootPending < Exception; end
+    class RebootFailed < Mixlib::ShellOut::ShellCommandFailed; end
     class PrivateKeyMissing < RuntimeError; end
     class CannotWritePrivateKey < RuntimeError; end
     class RoleNotFound < RuntimeError; end
@@ -426,18 +439,20 @@ This error is most often caused by network issues (proxies, etc) outside of chef
       end
     end
 
-    class AuditControlGroupDuplicate < RuntimeError
+    class AuditError < RuntimeError; end
+
+    class AuditControlGroupDuplicate < AuditError
       def initialize(name)
         super "Control group with name '#{name}' has already been defined"
       end
     end
-    class AuditNameMissing < RuntimeError; end
-    class NoAuditsProvided < RuntimeError
+    class AuditNameMissing < AuditError; end
+    class NoAuditsProvided < AuditError
       def initialize
         super "You must provide a block with controls"
       end
     end
-    class AuditsFailed < RuntimeError
+    class AuditsFailed < AuditError
       def initialize(num_failed, num_total)
         super "Audit phase found failures - #{num_failed}/#{num_total} controls failed"
       end
