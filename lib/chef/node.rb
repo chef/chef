@@ -18,21 +18,21 @@
 # limitations under the License.
 #
 
-require 'forwardable'
-require 'chef/config'
-require 'chef/nil_argument'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/mixin/deep_merge'
-require 'chef/dsl/include_attribute'
-require 'chef/dsl/platform_introspection'
-require 'chef/environment'
-require 'chef/rest'
-require 'chef/run_list'
-require 'chef/node/attribute'
-require 'chef/json_compat'
-require 'chef/search/query'
-require 'chef/whitelist'
+require "forwardable"
+require "chef/config"
+require "chef/nil_argument"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/mixin/deep_merge"
+require "chef/dsl/include_attribute"
+require "chef/dsl/platform_introspection"
+require "chef/environment"
+require "chef/rest"
+require "chef/run_list"
+require "chef/node/attribute"
+require "chef/json_compat"
+require "chef/search/query"
+require "chef/whitelist"
 
 class Chef
   class Node
@@ -68,7 +68,7 @@ class Chef
       @chef_server_rest = chef_server_rest
       @name = nil
 
-      @chef_environment = '_default'
+      @chef_environment = "_default"
       @primary_runlist = Chef::RunList.new
       @override_runlist = Chef::RunList.new
 
@@ -102,18 +102,18 @@ class Chef
         Chef::Config[:chef_server_url],
         Chef::Config[:node_name],
         Chef::Config[:client_key],
-        validate_utf8: false,
+        validate_utf8: false
       )
     end
 
     # Set the name of this Node, or return the current name.
-    def name(arg=nil)
+    def name(arg = nil)
       if arg != nil
         validate(
-                 {:name => arg },
-                 {:name => { :kind_of => String,
-                     :cannot_be => :blank,
-                     :regex => /^[\-[:alnum:]_:.]+$/}
+                 { :name => arg },
+                 { :name => { :kind_of => String,
+                              :cannot_be => :blank,
+                              :regex => /^[\-[:alnum:]_:.]+$/ },
                  })
         @name = arg
       else
@@ -121,7 +121,7 @@ class Chef
       end
     end
 
-    def chef_environment(arg=nil)
+    def chef_environment(arg = nil)
       set_or_return(
         :chef_environment,
         arg,
@@ -144,9 +144,9 @@ class Chef
     #
     # @param arg [String] the new policy_name value
     # @return [String] the current policy_name, or the one you just set
-    def policy_name(arg=NULL_ARG)
+    def policy_name(arg = NULL_ARG)
       return @policy_name if arg.equal?(NULL_ARG)
-      validate({policy_name: arg}, { policy_name: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
+      validate({ policy_name: arg }, { policy_name: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
       @policy_name = arg
     end
 
@@ -166,9 +166,9 @@ class Chef
     #
     # @param arg [String] the new policy_group value
     # @return [String] the current policy_group, or the one you just set
-    def policy_group(arg=NULL_ARG)
+    def policy_group(arg = NULL_ARG)
       return @policy_group if arg.equal?(NULL_ARG)
-      validate({policy_group: arg}, { policy_group: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
+      validate({ policy_group: arg }, { policy_group: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
       @policy_group = arg
     end
 
@@ -281,7 +281,7 @@ class Chef
       normal_attrs_to_merge = consume_run_list(attrs)
       normal_attrs_to_merge = consume_chef_environment(normal_attrs_to_merge)
       Chef::Log.debug("Applying attributes from json file")
-      self.normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs,normal_attrs_to_merge)
+      self.normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs, normal_attrs_to_merge)
       self.tags # make sure they're defined
     end
 
@@ -306,7 +306,7 @@ class Chef
         if attrs.key?("recipes") || attrs.key?("run_list")
           raise Chef::Exceptions::AmbiguousRunlistSpecification, "please set the node's run list using the 'run_list' attribute only."
         end
-        Chef::Log.info("Setting the run_list to #{new_run_list.to_s} from CLI options")
+        Chef::Log.info("Setting the run_list to #{new_run_list} from CLI options")
         run_list(new_run_list)
       end
       attrs
@@ -349,7 +349,7 @@ class Chef
     # run_list is mutated? Or perhaps do something smarter like
     # on-demand generation of default_attrs and override_attrs,
     # invalidated only when run_list is mutated?
-    def expand!(data_source = 'server')
+    def expand!(data_source = "server")
       expansion = run_list.expand(chef_environment, data_source)
       raise Chef::Exceptions::MissingRole, expansion if expansion.errors?
 
@@ -368,7 +368,7 @@ class Chef
     # passed in, which came from roles.
     def apply_expansion_attributes(expansion)
       loaded_environment = if chef_environment == "_default"
-                             Chef::Environment.new.tap {|e| e.name("_default")}
+                             Chef::Environment.new.tap { |e| e.name("_default") }
                            else
                              Chef::Environment.load(chef_environment)
                            end
@@ -413,14 +413,14 @@ class Chef
       result = {
         "name" => name,
         "chef_environment" => chef_environment,
-        'json_class' => self.class.name,
+        "json_class" => self.class.name,
         "automatic" => attributes.automatic,
         "normal" => attributes.normal,
         "chef_type" => "node",
         "default" => attributes.combined_default,
         "override" => attributes.combined_override,
         #Render correctly for run_list items so malformed json does not result
-        "run_list" => @primary_runlist.run_list.map { |item| item.to_s }
+        "run_list" => @primary_runlist.run_list.map { |item| item.to_s },
       }
       # Chef Server rejects node JSON with extra keys; prior to 12.3,
       # "policy_name" and "policy_group" are unknown; after 12.3 they are
@@ -468,17 +468,17 @@ class Chef
       node
     end
 
-    def self.list_by_environment(environment, inflate=false)
+    def self.list_by_environment(environment, inflate = false)
       if inflate
         response = Hash.new
-        Chef::Search::Query.new.search(:node, "chef_environment:#{environment}") {|n| response[n.name] = n unless n.nil?}
+        Chef::Search::Query.new.search(:node, "chef_environment:#{environment}") { |n| response[n.name] = n unless n.nil? }
         response
       else
         Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("environments/#{environment}/nodes")
       end
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:node) do |n|
@@ -493,7 +493,7 @@ class Chef
     def self.find_or_create(node_name)
       load(node_name)
     rescue Net::HTTPServerException => e
-      raise unless e.response.code == '404'
+      raise unless e.response.code == "404"
       node = build(node_name)
       node.create
     end
@@ -561,7 +561,7 @@ class Chef
 
     def ==(other)
       if other.kind_of?(self.class)
-         self.name == other.name
+        self.name == other.name
       else
         false
       end
@@ -591,7 +591,7 @@ class Chef
 
     def data_for_save
       data = for_json
-      ["automatic", "default", "normal", "override"].each do |level|
+      %w{automatic default normal override}.each do |level|
         whitelist_config_option = "#{level}_attribute_whitelist".to_sym
         whitelist = Chef::Config[whitelist_config_option]
         unless whitelist.nil? # nil => save everything

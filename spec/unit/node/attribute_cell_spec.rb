@@ -1,17 +1,17 @@
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/node/attribute_constants'
-require 'chef/node/attribute_cell'
+require "chef/node/attribute_constants"
+require "chef/node/attribute_cell"
 
 include Chef::Node::AttributeConstants
 
 def initializer_has_arg_for(precedence_level)
   describe "for precdence level #{precedence_level}" do
-    let(:cell) { Chef::Node::AttributeCell.new(precedence_level => 'foo') }
+    let(:cell) { Chef::Node::AttributeCell.new(precedence_level => "foo") }
 
     it "initializer should pass args for #{precedence_level} correctly" do
-      expect( cell.send(precedence_level) ).to eql('foo')
-      expect( cell.instance_variable_get(:"@#{precedence_level}") ).to eql('foo')
+      expect( cell.send(precedence_level) ).to eql("foo")
+      expect( cell.instance_variable_get(:"@#{precedence_level}") ).to eql("foo")
     end
 
     COMPONENTS_AS_SYMBOLS.reject { |c| c == precedence_level }.each do |level|
@@ -24,7 +24,7 @@ def initializer_has_arg_for(precedence_level)
 end
 
 def components_as_symbols_before(level)
-  COMPONENTS_AS_SYMBOLS[1,COMPONENTS_AS_SYMBOLS.index(level)-1] || []
+  COMPONENTS_AS_SYMBOLS[1, COMPONENTS_AS_SYMBOLS.index(level) - 1] || []
 end
 
 describe Chef::Node::AttributeCell do
@@ -40,9 +40,9 @@ describe Chef::Node::AttributeCell do
     let(:component) { Chef::Node::AttributeCell.new() }
     COMPONENTS_AS_SYMBOLS.each do |level|
       it "should set #{level} correctly" do
-        expect( cell.send(:"#{level}=", 'foo') ).to eql('foo')
-        expect( cell.send(level) ).to eql('foo')
-        expect( cell.instance_variable_get(:"@#{level}") ).to eql('foo')
+        expect( cell.send(:"#{level}=", "foo") ).to eql("foo")
+        expect( cell.send(level) ).to eql("foo")
+        expect( cell.instance_variable_get(:"@#{level}") ).to eql("foo")
       end
     end
   end
@@ -178,44 +178,44 @@ describe Chef::Node::AttributeCell do
 
   describe "#[] on Hash-like" do
     it "when multiple precedence levels have the key and contain containers, maintains them all" do
-      cell.default = { 'foo' => [ 'foo' ] }
-      cell.normal = { 'foo' => [ 'bar' ] }
-      cell.override = { 'foo' => [ 'baz' ] }
-      cell.automatic = { 'foo' => [ 'qux' ] }
-      expect( cell['foo'].default ).to eql( [ 'foo' ] )
-      expect( cell['foo'].normal ).to eql( [ 'bar' ] )
-      expect( cell['foo'].override ).to eql( [ 'baz' ] )
-      expect( cell['foo'].automatic ).to eql( [ 'qux' ] )
+      cell.default = { "foo" => [ "foo" ] }
+      cell.normal = { "foo" => [ "bar" ] }
+      cell.override = { "foo" => [ "baz" ] }
+      cell.automatic = { "foo" => [ "qux" ] }
+      expect( cell["foo"].default ).to eql( [ "foo" ] )
+      expect( cell["foo"].normal ).to eql( [ "bar" ] )
+      expect( cell["foo"].override ).to eql( [ "baz" ] )
+      expect( cell["foo"].automatic ).to eql( [ "qux" ] )
     end
 
     it "when the highest precedence level is a simple object, returns it" do
-      cell.default = { 'foo' => [ 'foo' ] }
-      cell.normal = { 'foo' => [ 'bar' ] }
-      cell.override = { 'foo' => [ 'baz' ] }
-      cell.automatic = { 'foo' => 'bar' }
-      expect( cell['foo'] ).to eql( 'bar' )
-      expect( cell['foo'] ).not_to be_a(Chef::Node::AttributeCell)
+      cell.default = { "foo" => [ "foo" ] }
+      cell.normal = { "foo" => [ "bar" ] }
+      cell.override = { "foo" => [ "baz" ] }
+      cell.automatic = { "foo" => "bar" }
+      expect( cell["foo"] ).to eql( "bar" )
+      expect( cell["foo"] ).not_to be_a(Chef::Node::AttributeCell)
     end
 
     it "when it doesn't exist" do
-      cell.default = { 'foo' => 'bar' }
-      expect( cell['baz'] ).to be nil
+      cell.default = { "foo" => "bar" }
+      expect( cell["baz"] ).to be nil
     end
 
     it "when you wander way off the end" do
       # this is a method trainwreck error, we can't fix this
-      cell.default = { 'foo' => 'bar' }
-      expect{ cell['baz']['qux'] }.to raise_error(NoMethodError)
+      cell.default = { "foo" => "bar" }
+      expect { cell["baz"]["qux"] }.to raise_error(NoMethodError)
     end
 
     it "when a lower precedence level has the key it finds it" do
-      cell.default = { 'foo' => 'bar' }
-      cell.override = { 'baz' => 'qux' }
-      expect( cell['foo'] ).to eql('bar')
+      cell.default = { "foo" => "bar" }
+      cell.override = { "baz" => "qux" }
+      expect( cell["foo"] ).to eql("bar")
     end
   end
 
- describe "#[] on Array-like" do
+  describe "#[] on Array-like" do
     it "preserves precedence order when merging default" do
       cell.default = [ 1 ]
       cell.env_default = [ 0 ]
@@ -296,15 +296,15 @@ describe Chef::Node::AttributeCell do
   describe "#each as a Hash" do
     COMPONENTS_AS_SYMBOLS.each do |component|
       it "returns a single #{component} value" do
-        cell.send(:"#{component}=", { 'foo' => 'bar' })
+        cell.send(:"#{component}=", { "foo" => "bar" })
         seen = {}
         cell.each { |key, value| seen[key] = value }
-        expect(seen).to eql({ 'foo' => 'bar' })
+        expect(seen).to eql({ "foo" => "bar" })
       end
 
       it "returns the merged hash as is return value" do
-        cell.send(:"#{component}=", { 'foo' => 'bar' })
-        expect(cell.each { |key, value| nil }).to eql({ 'foo' => 'bar' })
+        cell.send(:"#{component}=", { "foo" => "bar" })
+        expect(cell.each { |key, value| nil }).to eql({ "foo" => "bar" })
       end
     end
   end
@@ -312,41 +312,41 @@ describe Chef::Node::AttributeCell do
   describe "#map" do
     COMPONENTS_AS_SYMBOLS.each do |component|
       it "returns a single #{component} value" do
-        cell.send(:"#{component}=", { 'port' => [ 80 ] })
+        cell.send(:"#{component}=", { "port" => [ 80 ] })
 #        expect( cell['port'].send(:highest_precedence_zipped_array) ).to eql([
 #          {level: component, value: 80}
 #        ])
 #        expect( cell['port'].send(:highest_precedence_array) ).to eql([80])
-        expect( cell['port'].map { |p| p } ).to eql([80])
+        expect( cell["port"].map { |p| p } ).to eql([80])
       end
     end
 
     it "merges across defaults" do
-      cell.default = { 'port' => [ 80 ] }
-      cell.env_default = { 'port' => [ 443 ] }
-      cell.role_default = { 'port' => [ 8080 ] }
-      cell.force_default = { 'port' => [ 8443 ] }
+      cell.default = { "port" => [ 80 ] }
+      cell.env_default = { "port" => [ 443 ] }
+      cell.role_default = { "port" => [ 8080 ] }
+      cell.force_default = { "port" => [ 8443 ] }
 #      expect( cell['port'].send(:merged_default_zipped_array) ).to eql([
 #        {:level=>:default, :value=>80},
 #        {:level=>:env_default, :value=>443},
 #        {:level=>:role_default, :value=>8080},
 #        {:level=>:force_default, :value=>8443},
 #      ])
-      expect( cell['port'].map { |p| p } ).to eql([80, 443, 8080, 8443])
+      expect( cell["port"].map { |p| p } ).to eql([80, 443, 8080, 8443])
     end
 
     it "merges across overrides" do
-      cell.override = { 'port' => [ 80 ] }
-      cell.role_override = { 'port' => [ 8080 ] }
-      cell.env_override = { 'port' => [ 443 ] }
-      cell.force_override = { 'port' => [ 8443 ] }
+      cell.override = { "port" => [ 80 ] }
+      cell.role_override = { "port" => [ 8080 ] }
+      cell.env_override = { "port" => [ 443 ] }
+      cell.force_override = { "port" => [ 8443 ] }
 #      expect( cell['port'].send(:merged_override_zipped_array) ).to eql([
 #        {:level=>:override, :value=>80},
 #        {:level=>:role_override, :value=>8080},
 #        {:level=>:env_override, :value=>443},
 #        {:level=>:force_override, :value=>8443}
 #      ])
-      expect( cell['port'].map { |p| p } ).to eql([80, 8080, 443, 8443])
+      expect( cell["port"].map { |p| p } ).to eql([80, 8080, 443, 8443])
     end
   end
 
@@ -360,7 +360,7 @@ describe Chef::Node::AttributeCell do
     it "has a #zip method" do
       cell.default = [ 1 ]
       cell.role_default = [ 2, 3 ]
-      expect( cell.zip([4,5,6]) ).to eql([[1, 4], [2, 5], [3, 6]])
+      expect( cell.zip([4, 5, 6]) ).to eql([[1, 4], [2, 5], [3, 6]])
       expect( cell.respond_to?(:zip) ).to be true
     end
 
@@ -368,7 +368,7 @@ describe Chef::Node::AttributeCell do
 
     it "raises a useful exception when calling a method that does not exist" do
       cell.default = [ 1 ]
-      expect{ cell.supercalifragilisticexpealidocious }.to raise_error(NoMethodError)
+      expect { cell.supercalifragilisticexpealidocious }.to raise_error(NoMethodError)
       expect( cell.respond_to?(:supercalifragilisticexpealidocious) ).to be false
     end
   end
@@ -384,14 +384,14 @@ describe Chef::Node::AttributeCell do
   describe "#eql?" do
     it "works" do
       cell.default = [1, 2, 3]
-      expect(cell.eql?([1,2,3])).to be true
-      expect(cell).to eql([1,2,3])
+      expect(cell.eql?([1, 2, 3])).to be true
+      expect(cell).to eql([1, 2, 3])
     end
 
     it "also works" do
-      cell.default = { 'a' => 'b' }
-      expect(cell.eql?({ 'a' => 'b' })).to be true
-      expect(cell).to eql( { 'a' => 'b' } )
+      cell.default = { "a" => "b" }
+      expect(cell.eql?({ "a" => "b" })).to be true
+      expect(cell).to eql( { "a" => "b" } )
     end
   end
 
@@ -404,9 +404,9 @@ describe Chef::Node::AttributeCell do
   describe "converting values" do
     it "injesting decorated values removes the decorations" do
       ports = Chef::Node::AttributeCell.new(default: [ 80, 443 ])
-      cell.default = { 'ports' => ports }
-      expect(cell.default.wrapped_object['ports']).not_to be_a(Chef::Node::AttributeCell)
-      expect(cell.default.wrapped_object['ports']).not_to be_a(Chef::Node::VividMash)
+      cell.default = { "ports" => ports }
+      expect(cell.default.wrapped_object["ports"]).not_to be_a(Chef::Node::AttributeCell)
+      expect(cell.default.wrapped_object["ports"]).not_to be_a(Chef::Node::VividMash)
     end
   end
 end

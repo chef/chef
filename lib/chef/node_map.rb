@@ -49,7 +49,7 @@ class Chef
       # our place in it (just before the first value with the same preference level).
       insert_at = nil
       map[key] ||= []
-      map[key].each_with_index do |matcher,index|
+      map[key].each_with_index do |matcher, index|
         cmp = compare_matchers(key, new_matcher, matcher)
         insert_at ||= index if cmp && cmp <= 0
       end
@@ -128,7 +128,7 @@ class Chef
       value = node[attribute]
 
       # Split the blacklist and whitelist
-      blacklist, whitelist = filter_values.partition { |v| v.is_a?(String) && v.start_with?('!') }
+      blacklist, whitelist = filter_values.partition { |v| v.is_a?(String) && v.start_with?("!") }
 
       # If any blacklist value matches, we don't match
       return false if blacklist.any? { |v| v[1..-1] == value }
@@ -145,16 +145,16 @@ class Chef
       value = node[attribute]
 
       filter_values.empty? ||
-      Array(filter_values).any? do |v|
-        Chef::VersionConstraint::Platform.new(v).include?(value)
-      end
+        Array(filter_values).any? do |v|
+          Chef::VersionConstraint::Platform.new(v).include?(value)
+        end
     end
 
     def filters_match?(node, filters)
       matches_black_white_list?(node, filters, :os) &&
-      matches_black_white_list?(node, filters, :platform_family) &&
-      matches_black_white_list?(node, filters, :platform) &&
-      matches_version_list?(node, filters, :platform_version)
+        matches_black_white_list?(node, filters, :platform_family) &&
+        matches_black_white_list?(node, filters, :platform) &&
+        matches_version_list?(node, filters, :platform_version)
     end
 
     def block_matches?(node, block)
@@ -195,8 +195,8 @@ class Chef
 
       # Check for blcacklists ('!windows'). Those always come *after* positive
       # whitelists.
-      a_negated = Array(a).any? { |f| f.is_a?(String) && f.start_with?('!') }
-      b_negated = Array(b).any? { |f| f.is_a?(String) && f.start_with?('!') }
+      a_negated = Array(a).any? { |f| f.is_a?(String) && f.start_with?("!") }
+      b_negated = Array(b).any? { |f| f.is_a?(String) && f.start_with?("!") }
       if a_negated != b_negated
         return 1 if a_negated
         return -1 if b_negated

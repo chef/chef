@@ -17,178 +17,178 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/node/attribute'
+require "spec_helper"
+require "chef/node/attribute"
 
 describe Chef::Node::Attribute do
   before(:each) do
     @attribute_hash =
-      {"dmi"=>{},
-        "command"=>{"ps"=>"ps -ef"},
-        "platform_version"=>"10.5.7",
-        "platform"=>"mac_os_x",
-        "ipaddress"=>"192.168.0.117",
-        "network"=>
-    {"default_interface"=>"en1",
-      "interfaces"=>
-    {"vmnet1"=>
-      {"flags"=>
-        ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
-          "number"=>"1",
-          "addresses"=>
-        {"00:50:56:c0:00:01"=>{"family"=>"lladdr"},
-          "192.168.110.1"=>
-        {"broadcast"=>"192.168.110.255",
-          "netmask"=>"255.255.255.0",
-          "family"=>"inet"}},
-          "mtu"=>"1500",
-          "type"=>"vmnet",
-          "arp"=>{"192.168.110.255"=>"ff:ff:ff:ff:ff:ff"},
-          "encapsulation"=>"Ethernet"},
-          "stf0"=>
-        {"flags"=>[],
-          "number"=>"0",
-          "addresses"=>{},
-          "mtu"=>"1280",
-          "type"=>"stf",
-          "encapsulation"=>"6to4"},
-          "lo0"=>
-        {"flags"=>["UP", "LOOPBACK", "RUNNING", "MULTICAST"],
-          "number"=>"0",
-          "addresses"=>
-        {"::1"=>{"scope"=>"Node", "prefixlen"=>"128", "family"=>"inet6"},
-          "127.0.0.1"=>{"netmask"=>"255.0.0.0", "family"=>"inet"},
-          "fe80::1"=>{"scope"=>"Link", "prefixlen"=>"64", "family"=>"inet6"}},
-          "mtu"=>"16384",
-          "type"=>"lo",
-          "encapsulation"=>"Loopback"},
-          "gif0"=>
-        {"flags"=>["POINTOPOINT", "MULTICAST"],
-          "number"=>"0",
-          "addresses"=>{},
-          "mtu"=>"1280",
-          "type"=>"gif",
-          "encapsulation"=>"IPIP"},
-          "vmnet8"=>
-        {"flags"=>
-          ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
-            "number"=>"8",
-            "addresses"=>
-          {"192.168.4.1"=>
-            {"broadcast"=>"192.168.4.255",
-              "netmask"=>"255.255.255.0",
-              "family"=>"inet"},
-              "00:50:56:c0:00:08"=>{"family"=>"lladdr"}},
-              "mtu"=>"1500",
-              "type"=>"vmnet",
-              "arp"=>{"192.168.4.255"=>"ff:ff:ff:ff:ff:ff"},
-              "encapsulation"=>"Ethernet"},
-              "en0"=>
-            {"status"=>"inactive",
-              "flags"=>
-            ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
-              "number"=>"0",
-              "addresses"=>{"00:23:32:b0:32:f2"=>{"family"=>"lladdr"}},
-              "mtu"=>"1500",
-              "media"=>
-            {"supported"=>
-              {"autoselect"=>{"options"=>[]},
-                "none"=>{"options"=>[]},
-                "1000baseT"=>
-              {"options"=>["full-duplex", "flow-control", "hw-loopback"]},
-                "10baseT/UTP"=>
-              {"options"=>
-                ["half-duplex", "full-duplex", "flow-control", "hw-loopback"]},
-                  "100baseTX"=>
-                {"options"=>
-                  ["half-duplex", "full-duplex", "flow-control", "hw-loopback"]}},
-                    "selected"=>{"autoselect"=>{"options"=>[]}}},
-                    "type"=>"en",
-                    "encapsulation"=>"Ethernet"},
-                    "en1"=>
-                  {"status"=>"active",
-                    "flags"=>
-                  ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
-                    "number"=>"1",
-                    "addresses"=>
-                  {"fe80::223:6cff:fe7f:676c"=>
-                    {"scope"=>"Link", "prefixlen"=>"64", "family"=>"inet6"},
-                      "00:23:6c:7f:67:6c"=>{"family"=>"lladdr"},
-                      "192.168.0.117"=>
-                    {"broadcast"=>"192.168.0.255",
-                      "netmask"=>"255.255.255.0",
-                      "family"=>"inet"}},
-                      "mtu"=>"1500",
-                      "media"=>
-                    {"supported"=>{"autoselect"=>{"options"=>[]}},
-                      "selected"=>{"autoselect"=>{"options"=>[]}}},
-                      "type"=>"en",
-                      "arp"=>
-                    {"192.168.0.72"=>"0:f:ea:39:fa:d5",
-                      "192.168.0.1"=>"0:1c:fb:fc:6f:20",
-                      "192.168.0.255"=>"ff:ff:ff:ff:ff:ff",
-                      "192.168.0.3"=>"0:1f:33:ea:26:9b",
-                      "192.168.0.77"=>"0:23:12:70:f8:cf",
-                      "192.168.0.152"=>"0:26:8:7d:2:4c"},
-                      "encapsulation"=>"Ethernet"},
-                      "en2"=>
-                    {"status"=>"active",
-                      "flags"=>
-                    ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
-                      "number"=>"2",
-                      "addresses"=>
-                    {"169.254.206.152"=>
-                      {"broadcast"=>"169.254.255.255",
-                        "netmask"=>"255.255.0.0",
-                        "family"=>"inet"},
-                        "00:1c:42:00:00:01"=>{"family"=>"lladdr"},
-                        "fe80::21c:42ff:fe00:1"=>
-                      {"scope"=>"Link", "prefixlen"=>"64", "family"=>"inet6"}},
-                        "mtu"=>"1500",
-                        "media"=>
-                      {"supported"=>{"autoselect"=>{"options"=>[]}},
-                        "selected"=>{"autoselect"=>{"options"=>[]}}},
-                        "type"=>"en",
-                        "encapsulation"=>"Ethernet"},
-                        "fw0"=>
-                      {"status"=>"inactive",
-                        "flags"=>["BROADCAST", "SIMPLEX", "MULTICAST"],
-                        "number"=>"0",
-                        "addresses"=>{"00:23:32:ff:fe:b0:32:f2"=>{"family"=>"lladdr"}},
-                        "mtu"=>"4078",
-                        "media"=>
-                      {"supported"=>{"autoselect"=>{"options"=>["full-duplex"]}},
-                        "selected"=>{"autoselect"=>{"options"=>["full-duplex"]}}},
-                        "type"=>"fw",
-                        "encapsulation"=>"1394"},
-                        "en3"=>
-                      {"status"=>"active",
-                        "flags"=>
-                      ["UP", "BROADCAST", "SMART", "RUNNING", "SIMPLEX", "MULTICAST"],
-                        "number"=>"3",
-                        "addresses"=>
-                      {"169.254.206.152"=>
-                        {"broadcast"=>"169.254.255.255",
-                          "netmask"=>"255.255.0.0",
-                          "family"=>"inet"},
-                          "00:1c:42:00:00:00"=>{"family"=>"lladdr"},
-                          "fe80::21c:42ff:fe00:0"=>
-                        {"scope"=>"Link", "prefixlen"=>"64", "family"=>"inet6"}},
-                          "mtu"=>"1500",
-                          "media"=>
-                        {"supported"=>{"autoselect"=>{"options"=>[]}},
-                          "selected"=>{"autoselect"=>{"options"=>[]}}},
-                          "type"=>"en",
-                          "encapsulation"=>"Ethernet"}}},
-                          "fqdn"=>"latte.local",
-                          "ohai_time"=>1249065590.90391,
-                          "domain"=>"local",
-                          "os"=>"darwin",
-                          "platform_build"=>"9J61",
-                          "os_version"=>"9.7.0",
-                          "hostname"=>"latte",
-                          "macaddress"=>"00:23:6c:7f:67:6c",
-                          "music" => { "jimmy_eat_world" => "nice", "apophis" => false }
+      { "dmi" => {},
+        "command" => { "ps" => "ps -ef" },
+        "platform_version" => "10.5.7",
+        "platform" => "mac_os_x",
+        "ipaddress" => "192.168.0.117",
+        "network" =>
+    { "default_interface" => "en1",
+      "interfaces" =>
+    { "vmnet1" =>
+      { "flags" =>
+        %w{UP BROADCAST SMART RUNNING SIMPLEX MULTICAST},
+        "number" => "1",
+        "addresses" =>
+        { "00:50:56:c0:00:01" => { "family" => "lladdr" },
+          "192.168.110.1" =>
+        { "broadcast" => "192.168.110.255",
+          "netmask" => "255.255.255.0",
+          "family" => "inet" } },
+        "mtu" => "1500",
+        "type" => "vmnet",
+        "arp" => { "192.168.110.255" => "ff:ff:ff:ff:ff:ff" },
+        "encapsulation" => "Ethernet" },
+      "stf0" =>
+        { "flags" => [],
+          "number" => "0",
+          "addresses" => {},
+          "mtu" => "1280",
+          "type" => "stf",
+          "encapsulation" => "6to4" },
+      "lo0" =>
+        { "flags" => %w{UP LOOPBACK RUNNING MULTICAST},
+          "number" => "0",
+          "addresses" =>
+        { "::1" => { "scope" => "Node", "prefixlen" => "128", "family" => "inet6" },
+          "127.0.0.1" => { "netmask" => "255.0.0.0", "family" => "inet" },
+          "fe80::1" => { "scope" => "Link", "prefixlen" => "64", "family" => "inet6" } },
+          "mtu" => "16384",
+          "type" => "lo",
+          "encapsulation" => "Loopback" },
+      "gif0" =>
+        { "flags" => %w{POINTOPOINT MULTICAST},
+          "number" => "0",
+          "addresses" => {},
+          "mtu" => "1280",
+          "type" => "gif",
+          "encapsulation" => "IPIP" },
+      "vmnet8" =>
+        { "flags" =>
+          %w{UP BROADCAST SMART RUNNING SIMPLEX MULTICAST},
+          "number" => "8",
+          "addresses" =>
+          { "192.168.4.1" =>
+            { "broadcast" => "192.168.4.255",
+              "netmask" => "255.255.255.0",
+              "family" => "inet" },
+            "00:50:56:c0:00:08" => { "family" => "lladdr" } },
+          "mtu" => "1500",
+          "type" => "vmnet",
+          "arp" => { "192.168.4.255" => "ff:ff:ff:ff:ff:ff" },
+          "encapsulation" => "Ethernet" },
+      "en0" =>
+            { "status" => "inactive",
+              "flags" =>
+            %w{UP BROADCAST SMART RUNNING SIMPLEX MULTICAST},
+              "number" => "0",
+              "addresses" => { "00:23:32:b0:32:f2" => { "family" => "lladdr" } },
+              "mtu" => "1500",
+              "media" =>
+            { "supported" =>
+              { "autoselect" => { "options" => [] },
+                "none" => { "options" => [] },
+                "1000baseT" =>
+              { "options" => ["full-duplex", "flow-control", "hw-loopback"] },
+                "10baseT/UTP" =>
+              { "options" =>
+                ["half-duplex", "full-duplex", "flow-control", "hw-loopback"] },
+                "100baseTX" =>
+                { "options" =>
+                  ["half-duplex", "full-duplex", "flow-control", "hw-loopback"] } },
+              "selected" => { "autoselect" => { "options" => [] } } },
+              "type" => "en",
+              "encapsulation" => "Ethernet" },
+      "en1" =>
+                  { "status" => "active",
+                    "flags" =>
+                  %w{UP BROADCAST SMART RUNNING SIMPLEX MULTICAST},
+                    "number" => "1",
+                    "addresses" =>
+                  { "fe80::223:6cff:fe7f:676c" =>
+                    { "scope" => "Link", "prefixlen" => "64", "family" => "inet6" },
+                    "00:23:6c:7f:67:6c" => { "family" => "lladdr" },
+                    "192.168.0.117" =>
+                    { "broadcast" => "192.168.0.255",
+                      "netmask" => "255.255.255.0",
+                      "family" => "inet" } },
+                    "mtu" => "1500",
+                    "media" =>
+                    { "supported" => { "autoselect" => { "options" => [] } },
+                      "selected" => { "autoselect" => { "options" => [] } } },
+                    "type" => "en",
+                    "arp" =>
+                    { "192.168.0.72" => "0:f:ea:39:fa:d5",
+                      "192.168.0.1" => "0:1c:fb:fc:6f:20",
+                      "192.168.0.255" => "ff:ff:ff:ff:ff:ff",
+                      "192.168.0.3" => "0:1f:33:ea:26:9b",
+                      "192.168.0.77" => "0:23:12:70:f8:cf",
+                      "192.168.0.152" => "0:26:8:7d:2:4c" },
+                    "encapsulation" => "Ethernet" },
+      "en2" =>
+                    { "status" => "active",
+                      "flags" =>
+                    %w{UP BROADCAST SMART RUNNING SIMPLEX MULTICAST},
+                      "number" => "2",
+                      "addresses" =>
+                    { "169.254.206.152" =>
+                      { "broadcast" => "169.254.255.255",
+                        "netmask" => "255.255.0.0",
+                        "family" => "inet" },
+                      "00:1c:42:00:00:01" => { "family" => "lladdr" },
+                      "fe80::21c:42ff:fe00:1" =>
+                      { "scope" => "Link", "prefixlen" => "64", "family" => "inet6" } },
+                      "mtu" => "1500",
+                      "media" =>
+                      { "supported" => { "autoselect" => { "options" => [] } },
+                        "selected" => { "autoselect" => { "options" => [] } } },
+                      "type" => "en",
+                      "encapsulation" => "Ethernet" },
+      "fw0" =>
+                      { "status" => "inactive",
+                        "flags" => %w{BROADCAST SIMPLEX MULTICAST},
+                        "number" => "0",
+                        "addresses" => { "00:23:32:ff:fe:b0:32:f2" => { "family" => "lladdr" } },
+                        "mtu" => "4078",
+                        "media" =>
+                      { "supported" => { "autoselect" => { "options" => ["full-duplex"] } },
+                        "selected" => { "autoselect" => { "options" => ["full-duplex"] } } },
+                        "type" => "fw",
+                        "encapsulation" => "1394" },
+      "en3" =>
+                      { "status" => "active",
+                        "flags" =>
+                      %w{UP BROADCAST SMART RUNNING SIMPLEX MULTICAST},
+                        "number" => "3",
+                        "addresses" =>
+                      { "169.254.206.152" =>
+                        { "broadcast" => "169.254.255.255",
+                          "netmask" => "255.255.0.0",
+                          "family" => "inet" },
+                        "00:1c:42:00:00:00" => { "family" => "lladdr" },
+                        "fe80::21c:42ff:fe00:0" =>
+                        { "scope" => "Link", "prefixlen" => "64", "family" => "inet6" } },
+                        "mtu" => "1500",
+                        "media" =>
+                        { "supported" => { "autoselect" => { "options" => [] } },
+                          "selected" => { "autoselect" => { "options" => [] } } },
+                        "type" => "en",
+                        "encapsulation" => "Ethernet" } } },
+        "fqdn" => "latte.local",
+        "ohai_time" => 1249065590.90391,
+        "domain" => "local",
+        "os" => "darwin",
+        "platform_build" => "9J61",
+        "os_version" => "9.7.0",
+        "hostname" => "latte",
+        "macaddress" => "00:23:6c:7f:67:6c",
+        "music" => { "jimmy_eat_world" => "nice", "apophis" => false },
     }
     @default_hash = {
       "domain" => "opscode.com",
@@ -198,18 +198,18 @@ describe Chef::Node::Attribute do
         "mastodon" => "rocks",
         "mars_volta" => "is loud and nutty",
         "deeper" => { "gates_of_ishtar" => nil },
-        "this" => {"apparatus" => {"must" => "be unearthed"}}
-      }
+        "this" => { "apparatus" => { "must" => "be unearthed" } },
+      },
     }
     @override_hash = {
       "macaddress" => "00:00:00:00:00:00",
       "hot" => { "day" => "sunday" },
       "fire" => "still burn",
       "music" => {
-        "mars_volta" => "cicatriz"
-      }
+        "mars_volta" => "cicatriz",
+      },
     }
-    @automatic_hash = {"week" => "friday"}
+    @automatic_hash = { "week" => "friday" }
     @attributes = Chef::Node::Attribute.new(normal: @attribute_hash, default: @default_hash, override: @override_hash, automatic: @automatic_hash)
   end
 
@@ -247,15 +247,15 @@ describe Chef::Node::Attribute do
 
     it "acts like in array in puts when it is an array with values" do
       out = StringIO.new
-      @attributes.default['honey'] = [ 'diary', 'arithmetic' ]
-      out.puts @attributes['honey']
+      @attributes.default["honey"] = %w{diary arithmetic}
+      out.puts @attributes["honey"]
       expect(out.string).to eql("diary\narithmetic\n")
     end
 
     it "acts like an array in puts when its the empty array" do
       out = StringIO.new
-      @attributes.default['toes'] = []
-      out.puts @attributes['toes']
+      @attributes.default["toes"] = []
+      out.puts @attributes["toes"]
       expect(out.string).to eql("")
     end
 
@@ -277,16 +277,16 @@ describe Chef::Node::Attribute do
 
     it "gives the value at each level of precedence for a path spec" do
       expected = [
-        ["default", "default"],
-        ["env_default", "env_default"],
-        ["role_default", "role_default"],
-        ["force_default", "force_default"],
-        ["normal", "normal"],
-        ["override", "override"],
-        ["role_override", "role_override"],
-        ["env_override", "env_override"],
-        ["force_override", "force_override"],
-        ["automatic", "automatic"]
+        %w{default default},
+        %w{env_default env_default},
+        %w{role_default role_default},
+        %w{force_default force_default},
+        %w{normal normal},
+        %w{override override},
+        %w{role_override role_override},
+        %w{env_override env_override},
+        %w{force_override force_override},
+        %w{automatic automatic},
       ]
       expect(@attributes.debug_value(:foo, :bar)).to eq(expected)
     end
@@ -368,13 +368,13 @@ describe Chef::Node::Attribute do
 
     it "merges nested hashes between precedence levels" do
       @attributes = Chef::Node::Attribute.new
-      @attributes.env_default = {"a" => {"b" => {"default" => "default"}}}
-      @attributes.normal = {"a" => {"b" => {"normal" => "normal"}}}
-      @attributes.override = {"a" => {"override" => "role"}}
-      @attributes.automatic = {"a" => {"automatic" => "auto"}}
-      expect(@attributes["a"]).to eq({"b"=>{"default"=>"default", "normal"=>"normal"},
-                                  "override"=>"role",
-                                  "automatic"=>"auto"})
+      @attributes.env_default = { "a" => { "b" => { "default" => "default" } } }
+      @attributes.normal = { "a" => { "b" => { "normal" => "normal" } } }
+      @attributes.override = { "a" => { "override" => "role" } }
+      @attributes.automatic = { "a" => { "automatic" => "auto" } }
+      expect(@attributes["a"]).to eq({ "b" => { "default" => "default", "normal" => "normal" },
+                                       "override" => "role",
+                                       "automatic" => "auto" })
     end
   end
 
@@ -445,7 +445,7 @@ describe Chef::Node::Attribute do
 
   describe "[]=" do
     it "should error out when the type of attribute to set has not been specified" do
-      @attributes.normal["the_ghost"] = {  }
+      @attributes.normal["the_ghost"] = {}
       expect { @attributes["the_ghost"]["exterminate"] = false }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
@@ -506,67 +506,67 @@ describe Chef::Node::Attribute do
     end
 
     it "should create a deep copy of the node attribute" do
-      @attributes.default['foo']['bar']['baz'] = 'fizz'
-      hash = @attributes['foo'].to_hash
-      expect(hash).to eql({"bar"=>{"baz"=>"fizz"}})
-      hash['bar']['baz'] = 'buzz'
-      expect(hash).to eql({"bar"=>{"baz"=>"buzz"}})
-      expect(@attributes.default['foo']).to eql({"bar"=>{"baz"=>"fizz"}})
+      @attributes.default["foo"]["bar"]["baz"] = "fizz"
+      hash = @attributes["foo"].to_hash
+      expect(hash).to eql({ "bar" => { "baz" => "fizz" } })
+      hash["bar"]["baz"] = "buzz"
+      expect(hash).to eql({ "bar" => { "baz" => "buzz" } })
+      expect(@attributes.default["foo"]).to eql({ "bar" => { "baz" => "fizz" } })
     end
 
     it "should create a deep copy of arrays in the node attribute" do
-      @attributes.default['foo']['bar'] = ['fizz']
-      hash = @attributes['foo'].to_hash
-      expect(hash).to eql({"bar"=>[ 'fizz' ]})
-      hash['bar'].push('buzz')
-      expect(hash).to eql({"bar"=>[ 'fizz', 'buzz' ]})
-      expect(@attributes.default['foo']).to eql({"bar"=>[ 'fizz' ]})
+      @attributes.default["foo"]["bar"] = ["fizz"]
+      hash = @attributes["foo"].to_hash
+      expect(hash).to eql({ "bar" => [ "fizz" ] })
+      hash["bar"].push("buzz")
+      expect(hash).to eql({ "bar" => %w{fizz buzz} })
+      expect(@attributes.default["foo"]).to eql({ "bar" => [ "fizz" ] })
     end
 
     it "mutating strings should not mutate the attributes" do
-      @attributes.default['foo']['bar']['baz'] = 'fizz'
-      hash = @attributes['foo'].to_hash
-      expect(hash).to eql({"bar"=>{"baz"=>"fizz"}})
-      hash['bar']['baz'] << 'buzz'
-      expect(hash).to eql({"bar"=>{"baz"=>"fizzbuzz"}})
-      expect(@attributes.default['foo']).to eql({"bar"=>{"baz"=>"fizz"}})
+      @attributes.default["foo"]["bar"]["baz"] = "fizz"
+      hash = @attributes["foo"].to_hash
+      expect(hash).to eql({ "bar" => { "baz" => "fizz" } })
+      hash["bar"]["baz"] << "buzz"
+      expect(hash).to eql({ "bar" => { "baz" => "fizzbuzz" } })
+      expect(@attributes.default["foo"]).to eql({ "bar" => { "baz" => "fizz" } })
     end
 
     it "works on normal attributes" do
-      @attributes.normal['foo']['bar'] = [{'fizz'=>'buzz'},{'baz' => 'qux'}]
-      hash = @attributes['foo'].to_hash
-      expect(hash).to eql({"bar"=>[{'fizz'=>'buzz'},{'baz' => 'qux'}]})
+      @attributes.normal["foo"]["bar"] = [{ "fizz" => "buzz" }, { "baz" => "qux" }]
+      hash = @attributes["foo"].to_hash
+      expect(hash).to eql({ "bar" => [{ "fizz" => "buzz" }, { "baz" => "qux" }] })
     end
 
     it "works on override attributes" do
-      @attributes.override['foo']['bar'] = [{'fizz'=>'buzz'},{'baz' => 'qux'}]
-      hash = @attributes['foo'].to_hash
-      expect(hash).to eql({"bar"=>[{'fizz'=>'buzz'},{'baz' => 'qux'}]})
+      @attributes.override["foo"]["bar"] = [{ "fizz" => "buzz" }, { "baz" => "qux" }]
+      hash = @attributes["foo"].to_hash
+      expect(hash).to eql({ "bar" => [{ "fizz" => "buzz" }, { "baz" => "qux" }] })
     end
 
     it "works on automatic attributes" do
-      @attributes.automatic['foo']['bar'] = [{'fizz'=>'buzz'},{'baz' => 'qux'}]
-      hash = @attributes['foo'].to_hash
-      expect(hash).to eql({"bar"=>[{'fizz'=>'buzz'},{'baz' => 'qux'}]})
+      @attributes.automatic["foo"]["bar"] = [{ "fizz" => "buzz" }, { "baz" => "qux" }]
+      hash = @attributes["foo"].to_hash
+      expect(hash).to eql({ "bar" => [{ "fizz" => "buzz" }, { "baz" => "qux" }] })
     end
   end
 
   describe "dup" do
     it "array can be duped even if some elements can't" do
-      @attributes.default[:foo] = %w[foo bar baz] + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ]
+      @attributes.default[:foo] = %w{foo bar baz} + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ]
       @attributes.default[:foo].dup
     end
 
     it "allows modifications to dup'd data" do
-      @attributes.default['foo'] = %w[foo bar baz]
-      myarray = @attributes['foo'].dup
-      myarray << 'qux'
+      @attributes.default["foo"] = %w{foo bar baz}
+      myarray = @attributes["foo"].dup
+      myarray << "qux"
     end
 
     it "allows modifications to dup'd data" do
-      @attributes.default['foo'] = { "bar" => "baz" }
-      myhash = @attributes['foo'].dup
-      myhash['fizz'] = 'buzz'
+      @attributes.default["foo"] = { "bar" => "baz" }
+      myhash = @attributes["foo"].dup
+      myhash["fizz"] = "buzz"
     end
   end
 
@@ -628,8 +628,8 @@ describe Chef::Node::Attribute do
     end
 
     it "should allow the last method to set a value if it has an = sign on the end" do
-      @attributes.normal.music.mastodon = [ "dream", "still", "shining" ]
-      expect(@attributes.normal.music.mastodon).to eq([ "dream", "still", "shining" ])
+      @attributes.normal.music.mastodon = %w{dream still shining}
+      expect(@attributes.normal.music.mastodon).to eq(%w{dream still shining})
     end
   end
 
@@ -639,15 +639,15 @@ describe Chef::Node::Attribute do
         normal: {
           "one" =>  { "two" => "three" },
           "hut" =>  { "two" => "three" },
-          "place" => { }
+          "place" => {},
         },
         default: {
-          "one" =>  { "four" => "five" },
-          "snakes" => "on a plane"
+          "one" => { "four" => "five" },
+          "snakes" => "on a plane",
         },
         override: {
-          "one" =>  { "six" => "seven" },
-          "snack" => "cookies"
+          "one" => { "six" => "seven" },
+          "snack" => "cookies",
         },
         automatic: {}
       )
@@ -691,11 +691,11 @@ describe Chef::Node::Attribute do
         },
         default: {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         override: {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
         automatic: {}
       )
@@ -729,11 +729,11 @@ describe Chef::Node::Attribute do
         },
         default: {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         override: {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
         automatic: {}
       )
@@ -765,11 +765,11 @@ describe Chef::Node::Attribute do
         },
         default: {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         override: {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
         automatic: {}
       )
@@ -801,11 +801,11 @@ describe Chef::Node::Attribute do
         },
         default: {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         override: {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
         automatic: {}
       )
@@ -845,11 +845,11 @@ describe Chef::Node::Attribute do
         },
         default: {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         override: {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
         automatic: {}
       )
@@ -879,11 +879,11 @@ describe Chef::Node::Attribute do
         },
         default: {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         override: {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
         automatic: {}
       )
@@ -899,8 +899,8 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "hut" => "three",
           "snakes" => "on a plane",
-          "snack" => "cookies"
-        }.each do |k,v|
+          "snack" => "cookies",
+        }.each do |k, v|
           expect(@attributes.fetch(k)).to eq(v)
         end
       end
@@ -936,11 +936,11 @@ describe Chef::Node::Attribute do
         },
         default: {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         override: {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
         automatic: {}
       )
@@ -981,11 +981,11 @@ describe Chef::Node::Attribute do
         },
         default: {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         override: {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
         automatic: {}
       )
@@ -1022,11 +1022,11 @@ describe Chef::Node::Attribute do
         },
         default: {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         override: {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
         automatic: {}
       )
@@ -1058,11 +1058,11 @@ describe Chef::Node::Attribute do
         },
         default: {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         override: {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
         automatic: {}
       )
@@ -1078,7 +1078,7 @@ describe Chef::Node::Attribute do
       end
     else
       it "should raise a LocalJumpError if no block is given" do
-        expect{ @attributes.select }.to raise_error(LocalJumpError)
+        expect { @attributes.select }.to raise_error(LocalJumpError)
       end
     end
 
@@ -1090,10 +1090,10 @@ describe Chef::Node::Attribute do
     it "should return a new array of k,v pairs for which the block returns true" do
       expect(@attributes.select { true }.sort).to eq(
         [
-          ["hut", "three"],
-          ["one", "six"],
-          ["snack", "cookies"],
-          ["snakes", "on a plane"]
+          %w{hut three},
+          %w{one six},
+          %w{snack cookies},
+          ["snakes", "on a plane"],
         ]
       )
     end
@@ -1108,11 +1108,11 @@ describe Chef::Node::Attribute do
         },
         default: {
           "one" =>  "four",
-          "snakes" => "on a plane"
+          "snakes" => "on a plane",
         },
         override: {
           "one" => "six",
-          "snack" => "cookies"
+          "snack" => "cookies",
         },
         automatic: {}
       )
@@ -1165,11 +1165,11 @@ describe Chef::Node::Attribute do
     it "should output merged attributes" do
       default_hash = {
           "a" => 1,
-          "b" => 2
+          "b" => 2,
       }
       override_hash = {
           "b" => 3,
-          "c" => 4
+          "c" => 4,
       }
       attributes = Chef::Node::Attribute.new(default: default_hash, override: override_hash)
       expect(attributes.to_s).to eq('{"a"=>1, "b"=>3, "c"=>4}')
@@ -1185,7 +1185,6 @@ describe Chef::Node::Attribute do
 #      expect(@attributes.inspect).to match(/@normal=\S+: \{.*\}/)
 #    end
 #  end
-
 
   describe "when not mutated" do
 
@@ -1274,27 +1273,27 @@ describe Chef::Node::Attribute do
     end
 
     it "returns nil for a key that does not exist as a string" do
-      expect( @attributes['new_key'] ).to be nil
+      expect( @attributes["new_key"] ).to be nil
     end
 
     it "suffers an early trackwreck when we try to use method notation" do
-      expect{ @attributes.new_key }.to raise_error(NoMethodError)
+      expect { @attributes.new_key }.to raise_error(NoMethodError)
     end
 
     it "suffers a trainwreck when we try to past the nil" do
-      expect{ @attributes[:new_key][:trainwreck] }.to raise_error(NoMethodError)
+      expect { @attributes[:new_key][:trainwreck] }.to raise_error(NoMethodError)
     end
 
     it "suffers a trainwreck when we try to past the nil, using method notation" do
-      expect{ @attributes.new_key.trainwreck }.to raise_error(NoMethodError)
+      expect { @attributes.new_key.trainwreck }.to raise_error(NoMethodError)
     end
   end
 
   describe "when doing a case statement on the type" do
     it "works like an array on merged attributes" do
-      @attributes.default['blame'] = [ 'salt', 'satire' ]
+      @attributes.default["blame"] = %w{salt satire}
       expect(
-        case @attributes['blame']
+        case @attributes["blame"]
         when Array
           true
         end
@@ -1302,9 +1301,9 @@ describe Chef::Node::Attribute do
     end
 
     it "works like an array on individual attribute levels" do
-      @attributes.default['blame'] = [ 'salt', 'satire' ]
+      @attributes.default["blame"] = %w{salt satire}
       expect(
-        case @attributes.default['blame']
+        case @attributes.default["blame"]
         when Array
           true
         end
@@ -1312,9 +1311,9 @@ describe Chef::Node::Attribute do
     end
 
     it "works like a hash on merged attributes" do
-      @attributes.default['hook']['label'] = 'pension'
+      @attributes.default["hook"]["label"] = "pension"
       expect(
-        case @attributes['hook']
+        case @attributes["hook"]
         when Hash
           true
         end
@@ -1322,9 +1321,9 @@ describe Chef::Node::Attribute do
     end
 
     it "works like a hash on individual attribute levels" do
-      @attributes.default['hook']['label'] = 'pension'
+      @attributes.default["hook"]["label"] = "pension"
       expect(
-        case @attributes.default['hook']
+        case @attributes.default["hook"]
         when Hash
           true
         end
@@ -1336,106 +1335,106 @@ describe Chef::Node::Attribute do
     let(:attributes) { Chef::Node::Attribute.new() }
 
     it "is accessible through #__path" do
-      attributes.default['foo']['bar']['baz'] = 'qux'
-      expect(attributes['foo']['bar'].__path).to eql(['foo', 'bar'])
+      attributes.default["foo"]["bar"]["baz"] = "qux"
+      expect(attributes["foo"]["bar"].__path).to eql(%w{foo bar})
     end
 
     it "does not mutate the state of the top level" do
-      attributes.default['foo']['bar']['baz'] = 'qux'
-      expect(attributes['foo']['bar'].__path).to eql(['foo', 'bar'])
-      expect(attributes['foo'].__path).to eql(['foo'])
+      attributes.default["foo"]["bar"]["baz"] = "qux"
+      expect(attributes["foo"]["bar"].__path).to eql(%w{foo bar})
+      expect(attributes["foo"].__path).to eql(["foo"])
     end
 
     it "converts symbols" do
-      attributes.default['foo']['bar']['baz'] = 'qux'
-      expect(attributes[:foo][:bar].__path).to eql(['foo', 'bar'])
+      attributes.default["foo"]["bar"]["baz"] = "qux"
+      expect(attributes[:foo][:bar].__path).to eql(%w{foo bar})
     end
 
     it "works with arrays" do
-      attributes.default[:foo] = [ { bar: 'baz' } ]
-      expect(attributes[:foo][0].__path).to eql(['foo', 0])
+      attributes.default[:foo] = [ { bar: "baz" } ]
+      expect(attributes[:foo][0].__path).to eql(["foo", 0])
     end
 
     it "works through arrays" do
-      attributes.default[:foo] = [ { bar: { baz: 'qux' } } ]
-      expect(attributes[:foo][0]['bar'].__path).to eql(['foo', 0, 'bar'])
+      attributes.default[:foo] = [ { bar: { baz: "qux" } } ]
+      expect(attributes[:foo][0]["bar"].__path).to eql(["foo", 0, "bar"])
     end
 
     it "works through the default accessor" do
-      attributes.default['foo']['bar']['baz'] = 'qux'
-      expect(attributes.default['foo']['bar'].__path).to eql(['foo', 'bar'])
+      attributes.default["foo"]["bar"]["baz"] = "qux"
+      expect(attributes.default["foo"]["bar"].__path).to eql(%w{foo bar})
     end
 
     it "works through the normal accessor" do
-      attributes.normal['foo']['bar']['baz'] = 'qux'
-      expect(attributes.normal['foo']['bar'].__path).to eql(['foo', 'bar'])
+      attributes.normal["foo"]["bar"]["baz"] = "qux"
+      expect(attributes.normal["foo"]["bar"].__path).to eql(%w{foo bar})
     end
 
     it "works through the override accessor" do
-      attributes.override['foo']['bar']['baz'] = 'qux'
-      expect(attributes.override['foo']['bar'].__path).to eql(['foo', 'bar'])
+      attributes.override["foo"]["bar"]["baz"] = "qux"
+      expect(attributes.override["foo"]["bar"].__path).to eql(%w{foo bar})
     end
 
     it "works through an intermediate default accessor" do
-      attributes.default['foo']['bar']['baz'] = 'qux'
-      expect(attributes.default['foo']['bar'].__path).to eql(['foo', 'bar'])
-      expect(attributes['foo']['bar'].default.__path).to eql(['foo', 'bar'])
+      attributes.default["foo"]["bar"]["baz"] = "qux"
+      expect(attributes.default["foo"]["bar"].__path).to eql(%w{foo bar})
+      expect(attributes["foo"]["bar"].default.__path).to eql(%w{foo bar})
     end
 
     it "works through the normal accessor" do
-      attributes.normal['foo']['bar']['baz'] = 'qux'
-      expect(attributes.normal['foo']['bar'].__path).to eql(['foo', 'bar'])
-      expect(attributes['foo']['bar'].normal.__path).to eql(['foo', 'bar'])
+      attributes.normal["foo"]["bar"]["baz"] = "qux"
+      expect(attributes.normal["foo"]["bar"].__path).to eql(%w{foo bar})
+      expect(attributes["foo"]["bar"].normal.__path).to eql(%w{foo bar})
     end
 
     it "works through the override accessor" do
-      attributes.override['foo']['bar']['baz'] = 'qux'
-      expect(attributes.override['foo']['bar'].__path).to eql(['foo', 'bar'])
-      expect(attributes['foo']['bar'].override.__path).to eql(['foo', 'bar'])
+      attributes.override["foo"]["bar"]["baz"] = "qux"
+      expect(attributes.override["foo"]["bar"].__path).to eql(%w{foo bar})
+      expect(attributes["foo"]["bar"].override.__path).to eql(%w{foo bar})
     end
   end
 
   describe "precedence tracking" do
     it "is not defined with merged attributes" do
-      @attributes.override['foo']['bar']['baz'] = 'qux'
-      expect(@attributes['foo']['bar'].__precedence).to be nil
+      @attributes.override["foo"]["bar"]["baz"] = "qux"
+      expect(@attributes["foo"]["bar"].__precedence).to be nil
     end
 
     [:normal, :override, :default, :automatic].each do |precedence|
       it "is defined for #{precedence} level" do
-        @attributes.send(precedence)['foo']['bar']['baz'] = 'qux'
-        expect(@attributes['foo'].send(precedence)['bar'].__precedence).to eql(precedence)
-        expect(@attributes['foo'].send(precedence).__precedence).to eql(precedence)
-        expect(@attributes.send(precedence)['foo'].__precedence).to eql(precedence)
+        @attributes.send(precedence)["foo"]["bar"]["baz"] = "qux"
+        expect(@attributes["foo"].send(precedence)["bar"].__precedence).to eql(precedence)
+        expect(@attributes["foo"].send(precedence).__precedence).to eql(precedence)
+        expect(@attributes.send(precedence)["foo"].__precedence).to eql(precedence)
       end
     end
   end
 
   describe "tracking the parent node" do
-    let(:node) { double('Chef::Node') }
+    let(:node) { double("Chef::Node") }
 
     let(:attributes) { Chef::Node::Attribute.new(node: node) }
 
     it "is accessible via attributes" do
-      attributes.default['foo']['bar']['baz'] = 'qux'
-      expect(attributes['foo']['bar'].__node).to eq(node)
+      attributes.default["foo"]["bar"]["baz"] = "qux"
+      expect(attributes["foo"]["bar"].__node).to eq(node)
     end
 
     it "is accessible at precedence levels" do
-      attributes.default['foo']['bar']['baz'] = 'qux'
-      expect(attributes.default['foo']['bar'].__node).to eq(node)
+      attributes.default["foo"]["bar"]["baz"] = "qux"
+      expect(attributes.default["foo"]["bar"].__node).to eq(node)
     end
   end
 
   describe "deep_merge_cache invalidation" do
     it "correctly invalidates autovivized interior nodes" do
-      @attributes.automatic['foo']['bar'] = 'baz'
+      @attributes.automatic["foo"]["bar"] = "baz"
       # next line creates cache for @attributes['foo'] and @attributes['foo']['bar']
-      expect(@attributes['foo']['bar']).to eql('baz')
+      expect(@attributes["foo"]["bar"]).to eql("baz")
       # this will autovivize @attributes.default['foo'] and must invalidate the @attributes['foo'] cache
-      @attributes.default['foo']['baz'] = 'qux'
+      @attributes.default["foo"]["baz"] = "qux"
       # this will fail if @attributes['foo'] is still cached and only has the automatic level
-      expect(@attributes['foo']['baz']).to eql('qux')
+      expect(@attributes["foo"]["baz"]).to eql("qux")
     end
   end
 end

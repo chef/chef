@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'chef/node/attribute_constants'
-require 'chef/node/attribute_cell'
-require 'chef/node/un_method_chain'
-require 'chef/node/attribute_traits'
+require "chef/node/attribute_constants"
+require "chef/node/attribute_cell"
+require "chef/node/un_method_chain"
+require "chef/node/attribute_traits"
 
 class Chef
   class Node

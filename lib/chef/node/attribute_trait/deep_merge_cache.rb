@@ -1,4 +1,4 @@
-require 'chef/node/attribute_trait/path_tracking'
+require "chef/node/attribute_trait/path_tracking"
 
 class Chef
   class Node
@@ -35,7 +35,7 @@ class Chef
           :sort!,
           :sort_by!,
           :uniq!,
-          :unshift
+          :unshift,
         ]
 
         MUTATOR_METHODS.each do |method|
@@ -61,7 +61,7 @@ class Chef
         def __deep_merge_cache
           @__deep_merge_cache ||=
             begin
-              require 'chef/node/mash'
+              require "chef/node/mash"
               Chef::Node::Mash.new(wrapped_object: {})
             end
         end

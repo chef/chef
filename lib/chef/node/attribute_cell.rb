@@ -1,5 +1,6 @@
 require "chef/node/attribute_constants"
 require "chef/node/vivid_mash"
+require "chef/node/immutable_mash"
 
 class Chef
   class Node
@@ -94,6 +95,13 @@ class Chef
         end
       end
 
+      # This method is used to take the Mash that ohai gives us
+      # and wrap it with a VividMash and bypass convert_value'ing the
+      # Mash which is already converted.  If ohai internally used
+      # VividMashes we could avoid wrapping entirely and just wire up
+      # the deep_merge_cache and node objects for tracking.
+      #
+      # @api private
       def wrap_automatic_attrs(value)
         @automatic = Chef::Node::VividMash.new(
           wrapped_object: value,
@@ -104,7 +112,23 @@ class Chef
         )
       end
 
-      # for performance we delegate Enumerable methods rather than implementing it
+      # This function takes the same arguments as the constructor, but by-passes the
+      # accessors and short-cricuits calling convert_value on the arguments which
+      # are passed.
+      #
+      # @api private
+      def new_cell(node, deep_merge_cache, **args)
+        cell = self.class.allocate
+        cell.__node = node
+        cell.__deep_merge_cache = deep_merge_cache
+        args.each do |key, value|
+          cell.instance_variable_set(:"@#{key}", value)
+        end
+        cell
+      end
+
+      # For performance reasons we do not mixin the Enumerable class, but instead
+      # delegate Enumerable methods to the constructed deep merged object.
       Enumerable.instance_methods.each do |method|
         define_method method do |*args, &block|
           as_simple_object.public_send(method, *args, &block)
@@ -209,28 +233,18 @@ class Chef
         if self.is_a?(Hash)
           merged_hash_key(key)
         elsif self.is_a?(Array)
-          merged_array_key(key)
+          merged_array[key]
         else
           return highest_precedence[key]
         end
       end
 
       def combined_default
-        cell = self.class.allocate
-        cell.instance_variable_set(:@default, @default)
-        cell.instance_variable_set(:@env_default, @env_default)
-        cell.instance_variable_set(:@role_default, @role_default)
-        cell.instance_variable_set(:@force_default, @force_default)
-        cell
+        new_cell(nil, nil, default: @default, env_default: @env_default, role_default: @role_default, force_default: @force_default)
       end
 
       def combined_override
-        cell = self.class.allocate
-        cell.instance_variable_set(:@override, @override)
-        cell.instance_variable_set(:@role_override, @role_override)
-        cell.instance_variable_set(:@env_override, @env_override)
-        cell.instance_variable_set(:@force_override, @force_override)
-        cell
+        new_cell(nil, nil, override: @override, role_override: @role_override, env_override: @env_override, force_override: @force_override)
       end
 
       def each(&block)
@@ -269,11 +283,6 @@ class Chef
           return true if hash.key?(key)
         end
         return false
-      end
-
-      def merged_array_key(key)
-        # this is much faster than merged_array[key]
-        automatic_array_key(key) || override_array_key(key) || normal_array_key(key) || default_array_key(key)
       end
 
       def merged_hash_key(key)
@@ -330,63 +339,14 @@ class Chef
         DEFAULT_COMPONENTS_AS_SYMBOLS.each do |component|
           array = instance_variable_get(:"@#{component}")
           next unless array.is_a?(Array)
-          default_array += array.map do |value|
-            if value.is_a?(Hash) || value.is_a?(Array)
-              cell = self.class.allocate
-              cell.instance_variable_set(:"@#{component}", value)
-              cell
-            else
-              value
-            end
-          end
-        end
-        default_array
-      end
-
-      def default_array_key(key)
-        return nil unless DEFAULT_COMPONENTS_AS_SYMBOLS.any? do |component|
-          send(component).is_a?(Array)
-        end
-        # this is a one level deep deep_merge
-        default_array = []
-        DEFAULT_COMPONENTS_AS_SYMBOLS.each do |component|
-          array = instance_variable_get(:"@#{component}")
-          next unless array.is_a?(Array)
           default_array += array
         end
-        value = default_array[key]
-        if value.is_a?(Hash) || value.is_a?(Array)
-          cell = self.class.allocate
-          cell.instance_variable_set(:@default, value) # XXX? set to default since we forgot where it came from
-          cell
-        else
-          value
-        end
+        ImmutableMash.new(wrapped_object: default_array) # FIXME: precedence for tracking?
       end
 
       def normal_array
         return nil unless @normal.is_a?(Array)
-        @normal.map do |value|
-          if value.is_a?(Hash) || value.is_a?(Array)
-            cell = self.class.allocate
-            cell.instance_variable_set(:@normal, value)
-            cell
-          else
-            value
-          end
-        end
-      end
-
-      def normal_array_key(key)
-        return nil unless @normal.is_a?(Array)
-        value = @normal[key]
-        if value.is_a?(Hash) || value.is_a?(Array)
-          cell = self.class.allocate
-          cell.instance_variable_set(:@normal, value)
-          cell
-        else
-          value
-        end
+        ImmutableMash.new(wrapped_object: @normal.wrapped_object) # FIXME: precedence for tracking
       end
 
       def override_array
@@ -398,63 +358,14 @@ class Chef
         OVERRIDE_COMPONENTS_AS_SYMBOLS.each do |component|
           array = instance_variable_get(:"@#{component}")
           next unless array.is_a?(Array)
-          override_array += array.map do |value|
-            if value.is_a?(Hash) || value.is_a?(Array)
-              cell = self.class.allocate
-              cell.instance_variable_set(:"@#{component}", value)
-              cell
-            else
-              value
-            end
-          end
-        end
-        override_array
-      end
-
-      def override_array_key(key)
-        return nil unless OVERRIDE_COMPONENTS_AS_SYMBOLS.any? do |component|
-          send(component).is_a?(Array)
-        end
-        # this is a one level deep deep_merge
-        override_array = []
-        OVERRIDE_COMPONENTS_AS_SYMBOLS.each do |component|
-          array = instance_variable_get(:"@#{component}")
-          next unless array.is_a?(Array)
           override_array += array
         end
-        value = override_array[key]
-        if value.is_a?(Hash) || value.is_a?(Array)
-          cell = self.class.allocate
-          cell.instance_variable_set(:@override, value) # XXX? set to override since we forgot where it came from
-          cell
-        else
-          value
-        end
+        ImmutableMash.new(wrapped_object: override_array) # FIXME: precedence for tracking?
       end
 
       def automatic_array
         return nil unless @automatic.is_a?(Array)
-        @automatic.map do |value|
-          if value.is_a?(Hash) || value.is_a?(Array)
-            cell = self.class.allocate
-            cell.instance_variable_set(:@automatic, value)
-            cell
-          else
-            value
-          end
-        end
-      end
-
-      def automatic_array_key(key)
-        return nil unless @automatic.is_a?(Array)
-        value = @automatic[key]
-        if value.is_a?(Hash) || value.is_a?(Array)
-          cell = self.class.allocate
-          cell.instance_variable_set(:@automatic, value)
-          cell
-        else
-          value
-        end
+        ImmutableMash.new(wrapped_object: @automatic.wrapped_object) # FIXME: precedence for tracking
       end
 
       # @return [Object] value of the highest precedence level

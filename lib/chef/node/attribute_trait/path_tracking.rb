@@ -40,7 +40,7 @@ class Chef
         end
 
         def __have_valid_events?
-          __node && __node.respond_to?(:run_context) && __node.run_context  && __node.run_context.events
+          __node && __node.respond_to?(:run_context) && __node.run_context && __node.run_context.events
         end
 
         def new_decorator(**args)

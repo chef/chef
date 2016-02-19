@@ -5,7 +5,7 @@
 
 # since they were converted from ruby's internal minitest spec suit into rspec, these will look somewhat gross.
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Node::AttributeTrait::Decorator do
 
@@ -24,22 +24,22 @@ describe Chef::Node::AttributeTrait::Decorator do
   end
 
   it "Hash" do
-    x = hash_bracket(1=>2, 2=>4, 3=>6)
-    y = hash_bracket(1=>2, 2=>4, 3=>6)
+    x = hash_bracket(1 => 2, 2 => 4, 3 => 6)
+    y = hash_bracket(1 => 2, 2 => 4, 3 => 6)
 
     expect(2).to eql(x[1])
 
     expect {
-         for k,v in y
-           raise if k*2 != v
-         end
+      for k, v in y
+        raise if k * 2 != v
+      end
     }.not_to raise_error
 
     expect(3).to eql(x.length)
     expect(x.send(:has_key?, 1)).to be true
     expect(x.send(:has_value?, 4)).to be true
-    expect([4,6]).to eql(x.values_at(2,3))
-    expect({1=>2, 2=>4, 3=>6}).to eql(x)
+    expect([4, 6]).to eql(x.values_at(2, 3))
+    expect({ 1 => 2, 2 => 4, 3 => 6 }).to eql(x)
 
     z = y.keys.join(":")
     expect("1:2:3").to eql(z)
@@ -51,7 +51,7 @@ describe Chef::Node::AttributeTrait::Decorator do
     y.shift
     expect(2).to eql(y.length)
 
-    z = [1,2]
+    z = [1, 2]
     y[z] = 256
     expect(256).to eql(y[z])
 
@@ -93,9 +93,9 @@ describe Chef::Node::AttributeTrait::Decorator do
 
   before do
     @h = hash_bracket(
-      1 => 'one', 2 => 'two', 3 => 'three',
-      self => 'self', true => 'true', nil => 'nil',
-      'nil' => nil
+      1 => "one", 2 => "two", 3 => "three",
+      self => "self", true => "true", nil => "nil",
+      "nil" => nil
     )
   end
 
@@ -109,16 +109,16 @@ describe Chef::Node::AttributeTrait::Decorator do
 #  end
 
   it "#initialize_copy clear" do
-    h = hash_bracket(1=>2)
+    h = hash_bracket(1 => 2)
     d = Test.new
     d.wrapped_object = {}
-    h.instance_eval {initialize_copy(d)}
+    h.instance_eval { initialize_copy(d) }
     expect(h.empty?).to be true
   end
 
   it "#initialize_copy self" do
-    h = hash_bracket(1=>2)
-    h.instance_eval {initialize_copy(h)}
+    h = hash_bracket(1 => 2)
+    h.instance_eval { initialize_copy(h) }
     expect(2).to eql(h[1])
   end
 
@@ -134,85 +134,85 @@ describe Chef::Node::AttributeTrait::Decorator do
 
   it "test_s_AREF" do
     h = hash_bracket("a" => 100, "b" => 200)
-    expect(100).to eql(h['a'])
-    expect(200).to eql(h['b'])
-    expect(h['c']).to be nil
+    expect(100).to eql(h["a"])
+    expect(200).to eql(h["b"])
+    expect(h["c"]).to be nil
   end
 
   it "#new" do
     h = hash_new
     expect(h.kind_of?(Hash)).to be true
     expect(h.default).to be nil
-    expect(h['spurious']).to be nil
+    expect(h["spurious"]).to be nil
 
-    h = hash_new('default')
+    h = hash_new("default")
     expect(h.kind_of?(Hash)).to be true
-    expect(h.default).to eql('default')
-    expect(h['spurious']).to eql('default')
+    expect(h.default).to eql("default")
+    expect(h["spurious"]).to eql("default")
   end
 
   it "#[]" do # '[]'
     t = Time.now
     h = hash_bracket(
-      1 => 'one', 2 => 'two', 3 => 'three',
-      self => 'self', t => 'time', nil => 'nil',
-      'nil' => nil
+      1 => "one", 2 => "two", 3 => "three",
+      self => "self", t => "time", nil => "nil",
+      "nil" => nil
     )
 
-    expect('one').to eql(  h[1])
-    expect('two').to eql(  h[2])
-    expect('three').to eql(h[3])
-    expect('self').to eql( h[self])
-    expect('time').to eql( h[t])
-    expect('nil').to eql(  h[nil])
-    expect(nil).to eql(    h['nil'])
-    expect(nil).to eql(    h['koala'])
+    expect("one").to eql(  h[1])
+    expect("two").to eql(  h[2])
+    expect("three").to eql(h[3])
+    expect("self").to eql( h[self])
+    expect("time").to eql( h[t])
+    expect("nil").to eql(  h[nil])
+    expect(nil).to eql(    h["nil"])
+    expect(nil).to eql(    h["koala"])
 
     h1 = h.dup
     h1.default = :default
 
-    expect('one').to eql(   h1[1])
-    expect('two').to eql(   h1[2])
-    expect('three').to eql( h1[3])
+    expect("one").to eql(   h1[1])
+    expect("two").to eql(   h1[2])
+    expect("three").to eql( h1[3])
     #expect('self').to eql(  h1[self])
-    expect('time').to eql(  h1[t])
-    expect('nil').to eql(   h1[nil])
-    expect(nil).to eql(     h1['nil'])
-    expect(:default).to eql(h1['koala'])
+    expect("time").to eql(  h1[t])
+    expect("nil").to eql(   h1[nil])
+    expect(nil).to eql(     h1["nil"])
+    expect(:default).to eql(h1["koala"])
   end
 
   it "#[]=" do
     t = Time.now
     h = hash_new
-    h[1]     = 'one'
-    h[2]     = 'two'
-    h[3]     = 'three'
-    h[self]  = 'self'
-    h[t]     = 'time'
-    h[nil]   = 'nil'
-    h['nil'] = nil
-    expect('one').to eql(  h[1])
-    expect('two').to eql(  h[2])
-    expect('three').to eql(h[3])
-    expect('self').to eql( h[self])
-    expect('time').to eql( h[t])
-    expect('nil').to eql(  h[nil])
-    expect(nil).to eql(    h['nil'])
-    expect(nil).to eql(    h['koala'])
+    h[1]     = "one"
+    h[2]     = "two"
+    h[3]     = "three"
+    h[self]  = "self"
+    h[t]     = "time"
+    h[nil]   = "nil"
+    h["nil"] = nil
+    expect("one").to eql(  h[1])
+    expect("two").to eql(  h[2])
+    expect("three").to eql(h[3])
+    expect("self").to eql( h[self])
+    expect("time").to eql( h[t])
+    expect("nil").to eql(  h[nil])
+    expect(nil).to eql(    h["nil"])
+    expect(nil).to eql(    h["koala"])
 
     h[1] = 1
     h[nil] = 99
-    h['nil'] = nil
-    z = [1,2]
+    h["nil"] = nil
+    z = [1, 2]
     h[z] = 256
     expect(1).to eql(      h[1])
-    expect('two').to eql(  h[2])
-    expect('three').to eql(h[3])
-    expect('self').to eql( h[self])
-    expect('time').to eql( h[t])
+    expect("two").to eql(  h[2])
+    expect("three").to eql(h[3])
+    expect("self").to eql( h[self])
+    expect("time").to eql( h[t])
     expect(99).to eql(     h[nil])
-    expect(nil).to eql(    h['nil'])
-    expect(nil).to eql(    h['koala'])
+    expect(nil).to eql(    h["nil"])
+    expect(nil).to eql(    h["koala"])
     expect(256).to eql(    h[z])
   end
 
@@ -289,29 +289,29 @@ describe Chef::Node::AttributeTrait::Decorator do
   end
 
   it "#delete" do
-    h1 = hash_bracket( 1 => 'one', 2 => 'two', true => 'true' )
-    h2 = hash_bracket( 1 => 'one', 2 => 'two' )
-    h3 = hash_bracket( 2 => 'two' )
+    h1 = hash_bracket( 1 => "one", 2 => "two", true => "true" )
+    h2 = hash_bracket( 1 => "one", 2 => "two" )
+    h3 = hash_bracket( 2 => "two" )
 
-    expect('true').to eql(h1.delete(true))
+    expect("true").to eql(h1.delete(true))
     expect(h2).to eql(h1)
 
-    expect('one').to eql(h1.delete(1))
+    expect("one").to eql(h1.delete(1))
     expect(h3).to eql(h1)
 
-    expect('two').to eql(h1.delete(2))
+    expect("two").to eql(h1.delete(2))
     expect(hash_bracket()).to eql(h1)
 
     expect(h1.delete(99)).to be nil
     expect(hash_bracket()).to eql(h1)
 
-    expect('default 99').to eql(h1.delete(99) {|i| "default #{i}" })
+    expect("default 99").to eql(h1.delete(99) { |i| "default #{i}" })
   end
 
   it "#delete_if" do
-    base = hash_bracket( 1 => 'one', 2 => false, true => 'true', 'cat' => 99 )
-    h1   = hash_bracket( 1 => 'one', 2 => false, true => 'true' )
-    h2   = hash_bracket( 2 => false, 'cat' => 99 )
+    base = hash_bracket( 1 => "one", 2 => false, true => "true", "cat" => 99 )
+    h1   = hash_bracket( 1 => "one", 2 => false, true => "true" )
+    h2   = hash_bracket( 2 => false, "cat" => 99 )
     h3   = hash_bracket( 2 => false )
 
     h = base.dup
@@ -319,15 +319,15 @@ describe Chef::Node::AttributeTrait::Decorator do
     expect(hash_bracket()).to eql(h.delete_if { true })
 
     h = base.dup
-    expect(h1).to eql(h.delete_if {|k,v| k.instance_of?(String) })
+    expect(h1).to eql(h.delete_if { |k, v| k.instance_of?(String) })
     expect(h1).to eql(h)
 
     h = base.dup
-    expect(h2).to eql(h.delete_if {|k,v| v.instance_of?(String) })
+    expect(h2).to eql(h.delete_if { |k, v| v.instance_of?(String) })
     expect(h2).to eql(h)
 
     h = base.dup
-    expect(h3).to eql(h.delete_if {|k,v| v })
+    expect(h3).to eql(h.delete_if { |k, v| v })
     expect(h3).to eql(h)
 
     h = base.dup
@@ -343,10 +343,10 @@ describe Chef::Node::AttributeTrait::Decorator do
   end
 
   it "#keep_if" do
-    h = hash_bracket(1=>2,3=>4,5=>6)
-    expect({3=>4,5=>6}).to eql(h.keep_if {|k,v| k + v >= 7 })
-    h = hash_bracket(1=>2,3=>4,5=>6)
-    expect({1=>2,3=>4,5=>6}).to eql(h.keep_if{true})
+    h = hash_bracket(1 => 2, 3 => 4, 5 => 6)
+    expect({ 3 => 4, 5 => 6 }).to eql(h.keep_if { |k, v| k + v >= 7 })
+    h = hash_bracket(1 => 2, 3 => 4, 5 => 6)
+    expect({ 1 => 2, 3 => 4, 5 => 6 }).to eql(h.keep_if { true })
   end
 
 #  def test_dup
@@ -367,7 +367,7 @@ describe Chef::Node::AttributeTrait::Decorator do
 
   it "test_dup_equality" do
     skip "we deep-dup which breaks this"
-    h = hash_bracket('k' => 'v')
+    h = hash_bracket("k" => "v")
     expect(h).to eql(h.dup)
     h1 = hash_bracket(h => 1)
     expect(h1).to eql(h1.dup)
@@ -389,7 +389,7 @@ describe Chef::Node::AttributeTrait::Decorator do
     h = hash_bracket()
     h[1] = 1
     h[2] = 2
-    expect([[1,1],[2,2]]).to eql(h.each.to_a)
+    expect([[1, 1], [2, 2]]).to eql(h.each.to_a)
   end
 
   it "#each_key" do
@@ -437,18 +437,18 @@ describe Chef::Node::AttributeTrait::Decorator do
   end
 
   it "#fetch" do
-    expect('gumbygumby').to eql(@h.fetch('gumby') {|k| k * 2 })
-    expect('pokey').to eql(@h.fetch('gumby', 'pokey'))
+    expect("gumbygumby").to eql(@h.fetch("gumby") { |k| k * 2 })
+    expect("pokey").to eql(@h.fetch("gumby", "pokey"))
 
-    expect('one').to eql(@h.fetch(1))
-    expect(nil).to eql(@h.fetch('nil'))
-    expect('nil').to eql(@h.fetch(nil))
+    expect("one").to eql(@h.fetch(1))
+    expect(nil).to eql(@h.fetch("nil"))
+    expect("nil").to eql(@h.fetch(nil))
   end
 
   it "#fetch error" do
     expect { hash_bracket().fetch(1) }.to raise_error(KeyError)
-    expect { @h.fetch('gumby') }.to raise_error(KeyError)
-    expect { @h.fetch('gumby'*20) }.to raise_error(
+    expect { @h.fetch("gumby") }.to raise_error(KeyError)
+    expect { @h.fetch("gumby" * 20) }.to raise_error(
       KeyError,
       /key not found: "gumbygumby.*\.\.\.\z/
     )
@@ -459,15 +459,15 @@ describe Chef::Node::AttributeTrait::Decorator do
     expect(hash_bracket().key?(nil)).to be false
     expect(@h.send(:key?, nil)).to be true
     expect(@h.send(:key?, 1)).to be true
-    expect(@h.key?('gumby')).to be false
+    expect(@h.key?("gumby")).to be false
   end
 
   it "#value?" do
     expect(hash_bracket().value?(1)).to be false
     expect(hash_bracket().value?(nil)).to be false
-    expect(@h.value?('one')).to be true
+    expect(@h.value?("one")).to be true
     expect(@h.value?(nil)).to be true
-    expect(@h.value?('gumby')).to be false
+    expect(@h.value?("gumby")).to be false
   end
 
   it "#include?" do
@@ -475,20 +475,20 @@ describe Chef::Node::AttributeTrait::Decorator do
     expect(hash_bracket().include?(1)).to be false
     expect(@h.send(:include?, nil)).to be true
     expect(@h.send(:include?, 1)).to be true
-    expect(@h.send(:include?, 'gumby')).to be false
+    expect(@h.send(:include?, "gumby")).to be false
   end
 
   it "#key" do
-    expect(1).to eql(    @h.key('one'))
-    expect(nil).to eql(  @h.key('nil'))
-    expect('nil').to eql(@h.key(nil))
+    expect(1).to eql(    @h.key("one"))
+    expect(nil).to eql(  @h.key("nil"))
+    expect("nil").to eql(@h.key(nil))
 
-    expect(nil).to eql(  @h.key('gumby'))
-    expect(nil).to eql(  hash_bracket().key('gumby'))
+    expect(nil).to eql(  @h.key("gumby"))
+    expect(nil).to eql(  hash_bracket().key("gumby"))
   end
 
   it "#values_at" do
-    res = @h.values_at('dog', 'cat', 'horse')
+    res = @h.values_at("dog", "cat", "horse")
     expect(3).to eql(res.length)
     expect([nil, nil, nil]).to eql(res)
 
@@ -497,11 +497,11 @@ describe Chef::Node::AttributeTrait::Decorator do
 
     res = @h.values_at(3, 2, 1, nil)
     expect(res.length).to eql(4)
-    expect(res).to eql(%w( three two one nil ))
+    expect(res).to eql(%w{ three two one nil })
 
     res = @h.values_at(3, 99, 1, nil)
     expect(res.length).to eql(4)
-    expect(res).to eql(['three', nil, 'one', 'nil'])
+    expect(res).to eql(["three", nil, "one", "nil"])
   end
 
   it "#fetch_values" do
@@ -511,28 +511,28 @@ describe Chef::Node::AttributeTrait::Decorator do
 
     res = @h.fetch_values(3, 2, 1, nil)
     expect(4).to eql(res.length)
-    expect(%w( three two one nil )).to eql(res)
+    expect(%w{ three two one nil }).to eql(res)
 
-    expect { @h.fetch_values(3, 'invalid') }.to raise_error(KeyError)
+    expect { @h.fetch_values(3, "invalid") }.to raise_error(KeyError)
 
-    res = @h.fetch_values(3, 'invalid') { |k| k.upcase }
-    expect(%w( three INVALID )).to eql(res)
+    res = @h.fetch_values(3, "invalid") { |k| k.upcase }
+    expect(%w{ three INVALID }).to eql(res)
   end
 
   it "#invert" do
     h = @h.invert
-    expect(1).to eql(h['one'])
-    expect(true).to eql(h['true'])
-    expect(nil).to eql( h['nil'])
+    expect(1).to eql(h["one"])
+    expect(true).to eql(h["true"])
+    expect(nil).to eql( h["nil"])
 
     h.each do |k, v|
-      expect(@h.send(:key?, v)).to be true    # not true in general, but works here
+      expect(@h.send(:key?, v)).to be true # not true in general, but works here
     end
 
-    h = hash_bracket('a' => 1, 'b' => 2, 'c' => 1).invert
+    h = hash_bracket("a" => 1, "b" => 2, "c" => 1).invert
     expect(2).to eql(h.length)
-    expect(%w[a c].include?(h[1])).to be true
-    expect('b').to eql(h[2])
+    expect(%w{a c}.include?(h[1])).to be true
+    expect("b").to eql(h[2])
   end
 
   it "#key?" do
@@ -540,7 +540,7 @@ describe Chef::Node::AttributeTrait::Decorator do
     expect(hash_bracket().key?(nil)).to be false
     expect(@h.send(:key?, nil)).to be true
     expect(@h.send(:key?, 1)).to be true
-    expect(@h.key?('gumby')).to be false
+    expect(@h.key?("gumby")).to be false
   end
 
   it "#keys" do
@@ -563,12 +563,12 @@ describe Chef::Node::AttributeTrait::Decorator do
     expect(hash_bracket().member?(nil)).to be false
     expect(@h.send(:member?, nil)).to be true
     expect(@h.send(:member?, 1)).to be true
-    expect(@h.member?('gumby')).to be false
+    expect(@h.member?("gumby")).to be false
   end
 
   it "#rehash" do
-    a = [ "a", "b" ]
-    c = [ "c", "d" ]
+    a = %w{a b}
+    c = %w{c d}
     h = hash_bracket( a => 100, c => 300 )
     expect(100).to eql(h[a])
     a[0] = "z"
@@ -578,11 +578,11 @@ describe Chef::Node::AttributeTrait::Decorator do
   end
 
   it "#reject" do
-    expect({3=>4,5=>6}).to eql(hash_bracket(1=>2,3=>4,5=>6).reject {|k, v| k + v < 7 })
+    expect({ 3 => 4, 5 => 6 }).to eql(hash_bracket(1 => 2, 3 => 4, 5 => 6).reject { |k, v| k + v < 7 })
 
-    base = hash_bracket( 1 => 'one', 2 => false, true => 'true', 'cat' => 99 )
-    h1   = hash_bracket( 1 => 'one', 2 => false, true => 'true' )
-    h2   = hash_bracket( 2 => false, 'cat' => 99 )
+    base = hash_bracket( 1 => "one", 2 => false, true => "true", "cat" => 99 )
+    h1   = hash_bracket( 1 => "one", 2 => false, true => "true" )
+    h2   = hash_bracket( 2 => false, "cat" => 99 )
     h3   = hash_bracket( 2 => false )
 
     h = base.dup
@@ -590,11 +590,11 @@ describe Chef::Node::AttributeTrait::Decorator do
     expect(hash_bracket()).to eql(h.reject { true })
 
     h = base.dup
-    expect(h1).to eql(h.reject {|k,v| k.instance_of?(String) })
+    expect(h1).to eql(h.reject { |k, v| k.instance_of?(String) })
 
-    expect(h2).to eql(h.reject {|k,v| v.instance_of?(String) })
+    expect(h2).to eql(h.reject { |k, v| v.instance_of?(String) })
 
-    expect(h3).to eql(h.reject {|k,v| v })
+    expect(h3).to eql(h.reject { |k, v| v })
     expect(base).to eql(h)
 
     h.instance_variable_set(:@foo, :foo)
@@ -608,9 +608,9 @@ describe Chef::Node::AttributeTrait::Decorator do
   end
 
   it "#reject!" do
-    base = hash_bracket( 1 => 'one', 2 => false, true => 'true', 'cat' => 99 )
-    h1   = hash_bracket( 1 => 'one', 2 => false, true => 'true' )
-    h2   = hash_bracket( 2 => false, 'cat' => 99 )
+    base = hash_bracket( 1 => "one", 2 => false, true => "true", "cat" => 99 )
+    h1   = hash_bracket( 1 => "one", 2 => false, true => "true" )
+    h2   = hash_bracket( 2 => false, "cat" => 99 )
     h3   = hash_bracket( 2 => false )
 
     h = base.dup
@@ -618,15 +618,15 @@ describe Chef::Node::AttributeTrait::Decorator do
     expect(hash_bracket()).to eql( h.reject! { true })
 
     h = base.dup
-    expect(h1).to eql(h.reject! {|k,v| k.instance_of?(String) })
+    expect(h1).to eql(h.reject! { |k, v| k.instance_of?(String) })
     expect(h1).to eql(h)
 
     h = base.dup
-    expect(h2).to eql(h.reject! {|k,v| v.instance_of?(String) })
+    expect(h2).to eql(h.reject! { |k, v| v.instance_of?(String) })
     expect(h2).to eql(h)
 
     h = base.dup
-    expect(h3).to eql(h.reject! {|k,v| v })
+    expect(h3).to eql(h.reject! { |k, v| v })
     expect(h3).to eql(h)
   end
 
@@ -655,7 +655,7 @@ describe Chef::Node::AttributeTrait::Decorator do
 
     @h.length.times {
       k, v = h.shift
-      next if v == 'self'   # FIXME: related to other failures with 'self'
+      next if v == "self" # FIXME: related to other failures with 'self'
       expect(@h.send(:key?, k)).to be true
       expect(@h[k]).to eql(v)
     }
@@ -673,43 +673,43 @@ describe Chef::Node::AttributeTrait::Decorator do
     expect([]).to eql(h)
 
     h = hash_bracket( 1 => 1, 2 => 1 ).sort
-    expect([[1,1], [2,1]]).to eql(h)
+    expect([[1, 1], [2, 1]]).to eql(h)
 
-    h = hash_bracket( 'cat' => 'feline', 'ass' => 'asinine', 'bee' => 'beeline' )
+    h = hash_bracket( "cat" => "feline", "ass" => "asinine", "bee" => "beeline" )
     h1 = h.sort
-    expect([ %w(ass asinine), %w(bee beeline), %w(cat feline)]).to eql(h1)
+    expect([ %w{ass asinine}, %w{bee beeline}, %w{cat feline}]).to eql(h1)
   end
 
   it "test_store" do
     t = Time.now
     h = hash_new
-    h.store(1, 'one')
-    h.store(2, 'two')
-    h.store(3, 'three')
-    h.store(self, 'self')
-    h.store(t,  'time')
-    h.store(nil, 'nil')
-    h.store('nil', nil)
-    expect('one').to eql(  h[1])
-    expect('two').to eql(  h[2])
-    expect('three').to eql(h[3])
-    expect('self').to eql( h[self])
-    expect('time').to eql( h[t])
-    expect('nil').to eql(  h[nil])
-    expect(nil).to eql(    h['nil'])
-    expect(nil).to eql(    h['koala'])
+    h.store(1, "one")
+    h.store(2, "two")
+    h.store(3, "three")
+    h.store(self, "self")
+    h.store(t, "time")
+    h.store(nil, "nil")
+    h.store("nil", nil)
+    expect("one").to eql(  h[1])
+    expect("two").to eql(  h[2])
+    expect("three").to eql(h[3])
+    expect("self").to eql( h[self])
+    expect("time").to eql( h[t])
+    expect("nil").to eql(  h[nil])
+    expect(nil).to eql(    h["nil"])
+    expect(nil).to eql(    h["koala"])
 
     h.store(1, 1)
-    h.store(nil,  99)
-    h.store('nil', nil)
+    h.store(nil, 99)
+    h.store("nil", nil)
     expect(1).to eql(      h[1])
-    expect('two').to eql(  h[2])
-    expect('three').to eql(h[3])
-    expect('self').to eql( h[self])
-    expect('time').to eql( h[t])
+    expect("two").to eql(  h[2])
+    expect("three").to eql(h[3])
+    expect("self").to eql( h[self])
+    expect("time").to eql( h[t])
     expect(99).to eql(     h[nil])
-    expect(nil).to eql(    h['nil'])
-    expect(nil).to eql(    h['koala'])
+    expect(nil).to eql(    h["nil"])
+    expect(nil).to eql(    h["koala"])
   end
 
 #  def test_to_a
@@ -762,16 +762,16 @@ describe Chef::Node::AttributeTrait::Decorator do
 
   def test_update
     h1 = hash_bracket( 1 => 2, 2 => 3, 3 => 4 )
-    h2 = hash_bracket( 2 => 'two', 4 => 'four' )
+    h2 = hash_bracket( 2 => "two", 4 => "four" )
 
-    ha = hash_bracket( 1 => 2, 2 => 'two', 3 => 4, 4 => 'four' )
-    hb = hash_bracket( 1 => 2, 2 => 3, 3 => 4, 4 => 'four' )
+    ha = hash_bracket( 1 => 2, 2 => "two", 3 => 4, 4 => "four" )
+    hb = hash_bracket( 1 => 2, 2 => 3, 3 => 4, 4 => "four" )
 
     expect(ha).to eql(h1.update(h2))
     expect(ha).to eql(h1)
 
     h1 = hash_bracket( 1 => 2, 2 => 3, 3 => 4 )
-    h2 = hash_bracket( 2 => 'two', 4 => 'four' )
+    h2 = hash_bracket( 2 => "two", 4 => "four" )
 
     expect(hb).to eql(h2.update(h1))
     expect(hb).to eql(h2)
@@ -867,29 +867,29 @@ describe Chef::Node::AttributeTrait::Decorator do
 #  end
 #
   it "test_select" do
-    expect(hash_bracket(1=>2,3=>4,5=>6).select {|k,v| k + v >= 7 }).to eql({3=>4,5=>6})
+    expect(hash_bracket(1 => 2, 3 => 4, 5 => 6).select { |k, v| k + v >= 7 }).to eql({ 3 => 4, 5 => 6 })
 
-    base = hash_bracket( 1 => 'one', '2' => false, true => 'true', 'cat' => 99 )
-    h1   = hash_bracket( '2' => false, 'cat' => 99 )
-    h2   = hash_bracket( 1 => 'one', true => 'true' )
-    h3   = hash_bracket( 1 => 'one', true => 'true', 'cat' => 99 )
+    base = hash_bracket( 1 => "one", "2" => false, true => "true", "cat" => 99 )
+    h1   = hash_bracket( "2" => false, "cat" => 99 )
+    h2   = hash_bracket( 1 => "one", true => "true" )
+    h3   = hash_bracket( 1 => "one", true => "true", "cat" => 99 )
 
     h = base.dup
     expect(h).to eql(h.select { true })
     expect(hash_bracket()).to eql(h.select { false })
 
     h = base.dup
-    expect(h1).to eql(h.select {|k,v| k.instance_of?(String) })
+    expect(h1).to eql(h.select { |k, v| k.instance_of?(String) })
 
-    expect(h2).to eql(h.select {|k,v| v.instance_of?(String) })
+    expect(h2).to eql(h.select { |k, v| v.instance_of?(String) })
 
-    expect(h3).to eql(h.select {|k,v| v })
+    expect(h3).to eql(h.select { |k, v| v })
     expect(base).to eql(h)
 
     h.instance_variable_set(:@foo, :foo)
     h.default = 42
     h.taint
-    h = h.select {true}
+    h = h.select { true }
     expect(h).to be_instance_of(Hash)
     expect(h.tainted?).to be false
     expect(h.default).to be nil
@@ -897,15 +897,15 @@ describe Chef::Node::AttributeTrait::Decorator do
   end
 
   it "test_select!" do
-    h = hash_bracket(1=>2,3=>4,5=>6)
-    expect(h).to eql(h.select! {|k, v| k + v >= 7 })
-    expect({3=>4,5=>6}).to eql(h)
-    h = hash_bracket(1=>2,3=>4,5=>6)
-    expect(nil).to eql(h.select!{true})
+    h = hash_bracket(1 => 2, 3 => 4, 5 => 6)
+    expect(h).to eql(h.select! { |k, v| k + v >= 7 })
+    expect({ 3 => 4, 5 => 6 }).to eql(h)
+    h = hash_bracket(1 => 2, 3 => 4, 5 => 6)
+    expect(nil).to eql(h.select! { true })
   end
 
   it "test_clear2" do
-    h = hash_bracket(1=>2,3=>4,5=>6)
+    h = hash_bracket(1 => 2, 3 => 4, 5 => 6)
     h.each { h.clear }
     expect({}).to eql(h)
   end
@@ -916,10 +916,10 @@ describe Chef::Node::AttributeTrait::Decorator do
     h2.replace h1
     expect(h2[0]).to eql(:foo)
 
-    expect{ h2.replace() }.to raise_error(ArgumentError)
-    expect{ h2.replace(1) }.to raise_error(TypeError)
+    expect { h2.replace() }.to raise_error(ArgumentError)
+    expect { h2.replace(1) }.to raise_error(TypeError)
     h2.freeze
-    expect{ h2.replace() }.to raise_error(ArgumentError)
+    expect { h2.replace() }.to raise_error(ArgumentError)
     # @todo fix these
   #  expect{ h2.replace(h1) }.to raise_error(RuntimeError)
   #  expect{ h2.replace(42) }.to raise_error(RuntimeError)
@@ -932,9 +932,9 @@ describe Chef::Node::AttributeTrait::Decorator do
   it "test_equal2" do
     expect(hash_bracket).not_to eql(0)
 
-    h1 = hash_bracket(1=>2); h2 = hash_bracket(3=>4)
+    h1 = hash_bracket(1 => 2); h2 = hash_bracket(3 => 4)
     expect(h2).not_to eql(h1)
-    h1 = hash_bracket(1=>2); h2 = hash_bracket(1=>4)
+    h1 = hash_bracket(1 => 2); h2 = hash_bracket(1 => 4)
     expect(h2).not_to eql(h1)
   end
 
@@ -943,6 +943,7 @@ describe Chef::Node::AttributeTrait::Decorator do
     o = Object.new
     o.instance_variable_set(:@cls, Hash)
     def o.to_hash; hash_bracket(); end
+
     def o.eql?(x); true; end
     expect(hash_bracket().send(:eql?, o)).to be true
     def o.eql?(x); false; end
@@ -951,7 +952,7 @@ describe Chef::Node::AttributeTrait::Decorator do
 
   it "test_hash2" do
     expect(hash_bracket().hash).to be_kind_of(Integer)
-    h = hash_bracket(1=>2)
+    h = hash_bracket(1 => 2)
     h.shift
     expect({}).to eql(h)
     expect({}.hash).to eql(h.hash)
@@ -959,23 +960,23 @@ describe Chef::Node::AttributeTrait::Decorator do
   end
 
   it "test_update2" do
-    h1 = hash_bracket(1=>2, 3=>4)
-    h2 = hash_bracket(1=>3, 5=>7)
-    h1.update(h2) {|k, v1, v2| k + v1 + v2 }
-    expect(hash_bracket(1=>6, 3=>4, 5=>7)).to eql(h1)
+    h1 = hash_bracket(1 => 2, 3 => 4)
+    h2 = hash_bracket(1 => 3, 5 => 7)
+    h1.update(h2) { |k, v1, v2| k + v1 + v2 }
+    expect(hash_bracket(1 => 6, 3 => 4, 5 => 7)).to eql(h1)
   end
 
   it "#merge" do
-    h1 = hash_bracket(1=>2, 3=>4)
-    h2 = hash_bracket({1=>3, 5=>7})
-    expect({1=>3, 3=>4, 5=>7}).to eql(h1.merge(h2))
-    expect({1=>6, 3=>4, 5=>7}).to eql(h1.merge(h2) {|k, v1, v2| k + v1 + v2 })
+    h1 = hash_bracket(1 => 2, 3 => 4)
+    h2 = hash_bracket({ 1 => 3, 5 => 7 })
+    expect({ 1 => 3, 3 => 4, 5 => 7 }).to eql(h1.merge(h2))
+    expect({ 1 => 6, 3 => 4, 5 => 7 }).to eql(h1.merge(h2) { |k, v1, v2| k + v1 + v2 })
   end
 
   it "#assoc" do
-    expect([3,4]).to eql(hash_bracket(1=>2, 3=>4, 5=>6).assoc(3))
-    expect(hash_bracket(1=>2, 3=>4, 5=>6).assoc(4)).to be nil
-    expect([1.0,1]).to eql(hash_bracket(1.0=>1).assoc(1))
+    expect([3, 4]).to eql(hash_bracket(1 => 2, 3 => 4, 5 => 6).assoc(3))
+    expect(hash_bracket(1 => 2, 3 => 4, 5 => 6).assoc(4)).to be nil
+    expect([1.0, 1]).to eql(hash_bracket(1.0 => 1).assoc(1))
   end
 
   it "test_assoc_compare_by_identity" do
@@ -983,18 +984,18 @@ describe Chef::Node::AttributeTrait::Decorator do
     h.compare_by_identity
     h["a"] = 1
     h["a".dup] = 2
-    expect(["a",1]).to eql(h.assoc("a"))
+    expect(["a", 1]).to eql(h.assoc("a"))
   end
 
   it "#rassoc" do
-    expect([3,4]).to eql(hash_bracket(1=>2, 3=>4, 5=>6).rassoc(4))
-    expect({1=>2, 3=>4, 5=>6}.rassoc(3)).to be nil
+    expect([3, 4]).to eql(hash_bracket(1 => 2, 3 => 4, 5 => 6).rassoc(4))
+    expect({ 1 => 2, 3 => 4, 5 => 6 }.rassoc(3)).to be nil
   end
 
   it "#flatten" do
     expect([[1], [2]]).to eql(hash_bracket([1] => [2]).flatten)
 
-    a =  hash_bracket(1=> "one", 2 => [2,"two"], 3 => [3, ["three"]])
+    a = hash_bracket(1 => "one", 2 => [2, "two"], 3 => [3, ["three"]])
     expect([1, "one", 2, [2, "two"], 3, [3, ["three"]]]).to eql(a.flatten)
     expect([[1, "one"], [2, [2, "two"]], [3, [3, ["three"]]]]).to eql(a.flatten(0))
     expect([1, "one", 2, [2, "two"], 3, [3, ["three"]]]).to eql(a.flatten(1))
@@ -1105,12 +1106,12 @@ describe Chef::Node::AttributeTrait::Decorator do
 #  end
 
   it "test_same_key" do
-    h = hash_bracket(a=[], 1)
+    h = hash_bracket(a = [], 1)
     a << 1
     h[[]] = 2
     a.clear
     cnt = 0
-    r = h.each{ break nil if (cnt+=1) > 100 }
+    r = h.each { break nil if (cnt += 1) > 100 }
     expect(r).not_to be nil
   end
 
@@ -1134,14 +1135,14 @@ describe Chef::Node::AttributeTrait::Decorator do
 #  end
 
   it "test_hash_bignum_hash" do
-    x = 2<<(32-3)-1
-    expect({x=>1}.hash).to eql(hash_bracket(x=>1).hash)
-    x = 2<<(64-3)-1
-    expect({x=>1}.hash).to eql(hash_bracket(x=>1).hash)
+    x = 2 << (32 - 3) - 1
+    expect({ x => 1 }.hash).to eql(hash_bracket(x => 1).hash)
+    x = 2 << (64 - 3) - 1
+    expect({ x => 1 }.hash).to eql(hash_bracket(x => 1).hash)
 
     o = Object.new
     def o.hash; 2 << 100; end
-    expect({o=>1}.hash).to eql(hash_bracket(o=>1).hash)
+    expect({ o => 1 }.hash).to eql(hash_bracket(o => 1).hash)
   end
 
   it "test_hash_poped" do
@@ -1156,7 +1157,7 @@ describe Chef::Node::AttributeTrait::Decorator do
   end
 
   it "test_inverse_hash" do
-    [hash_bracket(1=>2), hash_bracket(123=>"abc")].each do |h|
+    [hash_bracket(1 => 2), hash_bracket(123 => "abc")].each do |h|
       expect(h.hash).not_to eql(h.invert.hash)
     end
   end

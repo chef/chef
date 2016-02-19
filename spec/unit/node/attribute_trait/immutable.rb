@@ -1,6 +1,6 @@
 
-require 'spec_helper'
-require 'bigdecimal'
+require "spec_helper"
+require "bigdecimal"
 
 describe Chef::Node::AttributeTrait::Immutable do
   class Test
@@ -12,34 +12,34 @@ describe Chef::Node::AttributeTrait::Immutable do
 
   context "#dup" do
     it "deep dup's correctly to a mutable Array from an Array" do
-      test.wrapped_object = [1,[2,3]]
+      test.wrapped_object = [1, [2, 3]]
       dup = test.dup
-      expect(dup).to eql([1,[2,3]])
+      expect(dup).to eql([1, [2, 3]])
       expect(dup).to be_instance_of(Array)
       expect(dup[1]).to be_instance_of(Array)
       dup[1][2] = 4
-      expect(dup).to eql([1,[2,3,4]])
-      expect(test).to eql([1,[2,3]])
+      expect(dup).to eql([1, [2, 3, 4]])
+      expect(test).to eql([1, [2, 3]])
     end
 
     it "deep dup's correctly to a mutable Hash from a Hash" do
-      test.wrapped_object = { a: { b: 'b' } }
+      test.wrapped_object = { a: { b: "b" } }
       dup = test.dup
-      expect(dup).to eql({ a: { b: 'b' } })
+      expect(dup).to eql({ a: { b: "b" } })
       expect(dup).to be_instance_of(Hash)
       expect(dup[:a]).to be_instance_of(Hash)
-      dup[:a][:c] = 'c'
-      expect(dup).to eql({ a: { b: 'b', c: 'c' } })
-      expect(test).to eql({ a: { b: 'b' } })
+      dup[:a][:c] = "c"
+      expect(dup).to eql({ a: { b: "b", c: "c" } })
+      expect(test).to eql({ a: { b: "b" } })
     end
 
     it "handles undupable values without an Exception" do
       test.wrapped_object = {
         nil: nil,
-        false: 'false',
-        true: 'true',
-        fixnum: '1',
-        float: '1.1',
+        false: "false",
+        true: "true",
+        fixnum: "1",
+        float: "1.1",
         symbol: :foo,
         method: method(:puts),
         big_decimal: BigDecimal.new("1.2"),
@@ -50,7 +50,7 @@ describe Chef::Node::AttributeTrait::Immutable do
 
   context "#to_hash" do
     context "when the wrapped_object is an Array" do
-      before { test.wrapped_object =  [ 1, 2 ] }
+      before { test.wrapped_object = [ 1, 2 ] }
 
       it "throws NoMethodError" do
         expect { test.to_hash }.to raise_error(NoMethodError)
@@ -67,7 +67,7 @@ describe Chef::Node::AttributeTrait::Immutable do
     end
 
     context "when the wrapped_object is a Hash" do
-      before { test.wrapped_object = { a: 'a' } }
+      before { test.wrapped_object = { a: "a" } }
 
       it "will respond_to #to_hash" do
         expect(test.respond_to?(:to_hash)).to be true
@@ -85,7 +85,7 @@ describe Chef::Node::AttributeTrait::Immutable do
 
   context "#to_ary" do
     context "when the wrapped_object is a Hash" do
-      before { test.wrapped_object = { a: 'a' } }
+      before { test.wrapped_object = { a: "a" } }
 
       it "throws NoMethodError" do
         expect { test.to_ary }.to raise_error(NoMethodError)
@@ -102,7 +102,7 @@ describe Chef::Node::AttributeTrait::Immutable do
     end
 
     context "when the wrapped_object is an Array" do
-      before { test.wrapped_object =  [ 1, 2 ] }
+      before { test.wrapped_object = [ 1, 2 ] }
 
       it "will respond_to #to_ary" do
         expect(test.respond_to?(:to_ary)).to be true

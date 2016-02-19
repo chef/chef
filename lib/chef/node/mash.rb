@@ -1,4 +1,4 @@
-require 'chef/node/attribute_traits'
+require "chef/node/attribute_traits"
 
 class Chef
   class Node

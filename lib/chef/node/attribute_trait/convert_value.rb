@@ -56,7 +56,7 @@ class Chef
         end
 
         def except(*keys)
-          super(*keys.map {|k| convert_key(k)})
+          super(*keys.map { |k| convert_key(k) })
         end
 
         def self.from_hash(hash)
