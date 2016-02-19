@@ -56,7 +56,7 @@ class Chef
         set_or_return(
           :umask,
           arg,
-          :kind_of => [ String, Integer ],
+          :kind_of => [ String, Integer ]
         )
       end
 
@@ -64,7 +64,7 @@ class Chef
         set_or_return(
           :command,
           arg,
-          :kind_of => [ String, Array ],
+          :kind_of => [ String, Array ]
         )
       end
 
@@ -72,7 +72,7 @@ class Chef
         set_or_return(
           :creates,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -80,7 +80,7 @@ class Chef
         set_or_return(
           :cwd,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -88,7 +88,7 @@ class Chef
         set_or_return(
           :environment,
           arg,
-          :kind_of => [ Hash ],
+          :kind_of => [ Hash ]
         )
       end
 
@@ -98,7 +98,7 @@ class Chef
         set_or_return(
           :group,
           arg,
-          :kind_of => [ String, Integer ],
+          :kind_of => [ String, Integer ]
         )
       end
 
@@ -115,7 +115,7 @@ class Chef
         set_or_return(
           :path,
           arg,
-          :kind_of => [ Array ],
+          :kind_of => [ Array ]
         )
       end
 
@@ -123,7 +123,7 @@ class Chef
         set_or_return(
           :returns,
           arg,
-          :kind_of => [ Integer, Array ],
+          :kind_of => [ Integer, Array ]
         )
       end
 
@@ -131,7 +131,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => [ Integer, Float ],
+          :kind_of => [ Integer, Float ]
         )
       end
 
@@ -139,7 +139,7 @@ class Chef
         set_or_return(
           :user,
           arg,
-          :kind_of => [ String, Integer ],
+          :kind_of => [ String, Integer ]
         )
       end
 
@@ -164,7 +164,7 @@ class Chef
         :environment,
         :group,
         :user,
-        :umask,
+        :umask
       )
 
     end

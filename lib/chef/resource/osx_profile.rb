@@ -41,7 +41,7 @@ class Chef
         set_or_return(
           :profile_name,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -49,7 +49,7 @@ class Chef
         set_or_return(
           :profile,
           arg,
-          :kind_of => [ String, Hash ],
+          :kind_of => [ String, Hash ]
         )
       end
 
@@ -57,7 +57,7 @@ class Chef
         set_or_return(
           :identifier,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -65,7 +65,7 @@ class Chef
         set_or_return(
           :path,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 

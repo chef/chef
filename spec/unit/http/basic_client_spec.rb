@@ -113,7 +113,7 @@ describe "HTTP Connection" do
     context "when an empty proxy is set by the environment" do
       let(:env) do
         {
-          "https_proxy" => ""
+          "https_proxy" => "",
         }
       end
 

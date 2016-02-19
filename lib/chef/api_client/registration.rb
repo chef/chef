@@ -152,7 +152,7 @@ class Chef
                                             :api_version => "0",
                                             :client_name => Chef::Config[:validation_client_name],
                                             :signing_key_filename => Chef::Config[:validation_key],
-                                          },
+                                          }
                                          )
       end
 

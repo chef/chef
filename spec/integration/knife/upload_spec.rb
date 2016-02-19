@@ -162,7 +162,7 @@ EOM
           it "should warn", :chef_lt_13_only do
             knife("upload /cookbooks").should_succeed(
               stdout: "Updated /cookbooks/x\n",
-              stderr: "WARN: Ignoring self-dependency in cookbook x, please remove it (in the future this will be fatal).\n",
+              stderr: "WARN: Ignoring self-dependency in cookbook x, please remove it (in the future this will be fatal).\n"
             )
             knife("diff --name-status /").should_succeed ""
           end
@@ -1349,7 +1349,7 @@ EOM
               "policies" => {
                 "x" => { "revision_id" => "1.0.0" },
                 "blah" => { "revision_id" => "1.0.0" },
-              }
+              },
             }
             role "x", {}
           end
@@ -1403,7 +1403,7 @@ EOM
               "policies" => {
                 "x" => { "revision_id" => "1.0.1" },
                 "y" => { "revision_id" => "1.0.0" },
-              }
+              },
             }
             role "x", { "run_list" => [ "blah" ] }
           end

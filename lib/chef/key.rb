@@ -117,7 +117,7 @@ class Chef
 
     def to_hash
       result = {
-        @actor_field_name => @actor
+        @actor_field_name => @actor,
       }
       result["name"] = @name if @name
       result["public_key"] = @public_key if @public_key

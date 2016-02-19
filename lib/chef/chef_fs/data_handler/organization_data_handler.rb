@@ -11,7 +11,7 @@ class Chef
             "org_type" => "Business",
             "clientname" => "#{entry.org}-validator",
             "billing_plan" => "platform-free",
-          },)
+          })
           result
         end
 

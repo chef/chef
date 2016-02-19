@@ -417,8 +417,8 @@ describe Chef::Environment do
           "name" => "foo",
           "default_attributes" => {
             "foo" => {
-              "bar" => 1
-            }
+              "bar" => 1,
+            },
           },
           "json_class" => "Chef::Environment",
           "description" => "desc",

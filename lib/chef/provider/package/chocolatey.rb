@@ -155,7 +155,7 @@ EOS
           @choco_exe ||= ::File.join(
             choco_install_path,
             "bin",
-            "choco.exe",
+            "choco.exe"
             )
         end
 

@@ -72,7 +72,7 @@ class Chef
         def get_free_gid(search_limit = 1000)
           gid = nil; next_gid_guess = 200
           groups_gids = safe_dscl("list /Groups gid")
-          while(next_gid_guess < search_limit + 200)
+          while next_gid_guess < search_limit + 200
             if groups_gids =~ Regexp.new("#{Regexp.escape(next_gid_guess.to_s)}\n")
               next_gid_guess += 1
             else

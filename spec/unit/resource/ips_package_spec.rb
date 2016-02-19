@@ -26,7 +26,7 @@ describe Chef::Resource::IpsPackage, "initialize" do
     provider: Chef::Provider::Package::Ips,
     name: :ips_package,
     action: :install,
-    os: "solaris2",
+    os: "solaris2"
   )
 
   before(:each) do

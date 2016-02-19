@@ -60,7 +60,7 @@ describe Chef::Knife::CookbookSiteShare do
       @bad_category_response = {
         "error_code" => "NOT_FOUND",
         "error_messages" => [
-            "Resource does not exist."
+            "Resource does not exist.",
         ],
       }
     end

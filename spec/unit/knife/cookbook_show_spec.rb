@@ -51,7 +51,7 @@ describe Chef::Knife::CookbookShow do
               { "version" => "0.9.0", "url" => "http://url/cookbookx/cookbook_name/0.9.0" },
               { "version" => "0.8.0", "url" => "http://url/cookbooks/cookbook_name/0.8.0" },
             ],
-          }
+          },
         }
       end
 
@@ -94,7 +94,7 @@ describe Chef::Knife::CookbookShow do
               :checksum => "1234",
               :url => "http://example.org/files/default.rb",
             },
-          ]
+          ],
         }
         @cookbook_response.manifest = @manifest
         @response = { "name" => "default.rb", "url" => "http://example.org/files/default.rb", "checksum" => "1234", "path" => "recipes/default.rb" }
@@ -119,7 +119,7 @@ describe Chef::Knife::CookbookShow do
               :checksum => "1234",
               :url => "http://example.org/files/default.rb",
             },
-          ]
+          ],
         }
         @response = "Example recipe text"
       end
@@ -166,7 +166,7 @@ describe Chef::Knife::CookbookShow do
               :specificity => "default",
               :url => "http://example.org/files/4444",
             },
-          ]
+          ],
         }
 
         @response = "Example recipe text"

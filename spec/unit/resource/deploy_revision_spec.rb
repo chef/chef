@@ -25,7 +25,7 @@ describe Chef::Resource::DeployRevision do
     resource: Chef::Resource::DeployRevision,
     provider: Chef::Provider::Deploy::Revision,
     name: :deploy_revision,
-    action: :deploy,
+    action: :deploy
   )
 
 end
@@ -36,7 +36,7 @@ describe Chef::Resource::DeployBranch do
     resource: Chef::Resource::DeployBranch,
     provider: Chef::Provider::Deploy::Revision,
     name: :deploy_branch,
-    action: :deploy,
+    action: :deploy
   )
 
 end

@@ -26,7 +26,7 @@ describe Chef::Resource::AptPackage, "initialize" do
     provider: Chef::Provider::Package::Apt,
     name: :apt_package,
     action: :install,
-    os: "linux",
+    os: "linux"
   )
 
   let(:resource) { Chef::Resource::AptPackage.new("foo") }

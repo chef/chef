@@ -25,7 +25,7 @@ describe Chef::Resource::EasyInstallPackage, "initialize" do
     resource: Chef::Resource::EasyInstallPackage,
     provider: Chef::Provider::Package::EasyInstall,
     name: :easy_install_package,
-    action: :install,
+    action: :install
   )
 
   before(:each) do

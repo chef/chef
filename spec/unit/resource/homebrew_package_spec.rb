@@ -25,7 +25,7 @@ describe Chef::Resource::HomebrewPackage, "initialize" do
     provider: Chef::Provider::Package::Homebrew,
     name: :homebrew_package,
     action: :install,
-    os: "mac_os_x",
+    os: "mac_os_x"
   )
 
   let(:resource) { Chef::Resource::HomebrewPackage.new("emacs") }

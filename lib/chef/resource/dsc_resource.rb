@@ -103,7 +103,7 @@ class Chef
         set_or_return(
           :timeout,
           arg,
-          :kind_of => [ Integer ],
+          :kind_of => [ Integer ]
         )
       end
 

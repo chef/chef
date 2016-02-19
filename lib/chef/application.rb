@@ -215,7 +215,7 @@ class Chef
           @chef_client_json,
           override_runlist: override_runlist,
           specific_recipes: specific_recipes,
-          runlist: config[:runlist],
+          runlist: config[:runlist]
         )
         @chef_client_json = nil
 

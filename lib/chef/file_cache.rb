@@ -48,7 +48,7 @@ class Chef
           {
             :path => { :kind_of => String },
             :contents => { :kind_of => String },
-          },
+          }
         )
 
         file_path_array = File.split(path)
@@ -74,7 +74,7 @@ class Chef
           {
             :file => { :kind_of => String },
             :path => { :kind_of => String },
-          },
+          }
         )
 
         file_path_array = File.split(path)
@@ -82,7 +82,7 @@ class Chef
         if File.exists?(file) && File.writable?(file)
           FileUtils.mv(
             file,
-            File.join(create_cache_path(File.join(file_path_array), true), file_name),
+            File.join(create_cache_path(File.join(file_path_array), true), file_name)
           )
         else
           raise RuntimeError, "Cannot move #{file} to #{path}!"
@@ -105,11 +105,11 @@ class Chef
       def load(path, read = true)
         validate(
           {
-            :path => path
+            :path => path,
           },
           {
-            :path => { :kind_of => String }
-          },
+            :path => { :kind_of => String },
+          }
         )
         cache_path = create_cache_path(path, false)
         raise Chef::Exceptions::FileNotFound, "Cannot find #{cache_path} for #{path}!" unless File.exists?(cache_path)
@@ -131,11 +131,11 @@ class Chef
       def delete(path)
         validate(
           {
-            :path => path
+            :path => path,
           },
           {
-            :path => { :kind_of => String }
-          },
+            :path => { :kind_of => String },
+          }
         )
         cache_path = create_cache_path(path, false)
         if File.exists?(cache_path)
@@ -178,11 +178,11 @@ class Chef
       def has_key?(path)
         validate(
           {
-            :path => path
+            :path => path,
           },
           {
-            :path => { :kind_of => String }
-          },
+            :path => { :kind_of => String },
+          }
         )
         full_path = create_cache_path(path, false)
         if File.exists?(full_path)

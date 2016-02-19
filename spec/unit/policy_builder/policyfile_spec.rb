@@ -560,7 +560,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:parsed_policyfile_json) do
               basic_valid_policy_data.dup.tap do |p|
                 p["named_run_lists"] = {
-                  "deploy-app" => [ "recipe[example1::default]" ]
+                  "deploy-app" => [ "recipe[example1::default]" ],
                 }
               end
             end

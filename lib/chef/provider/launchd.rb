@@ -40,7 +40,7 @@ class Chef
         :path,
         :source,
         :session_type,
-        :type
+        :type,
       ]
 
       def load_current_resource
@@ -51,7 +51,7 @@ class Chef
       def gen_path_from_type
         types = {
           "daemon" => "/Library/LaunchDaemons/#{label}.plist",
-          "agent" => "/Library/LaunchAgents/#{label}.plist"
+          "agent" => "/Library/LaunchAgents/#{label}.plist",
         }
         types[type]
       end

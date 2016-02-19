@@ -119,12 +119,12 @@ class Chef
               :required => false,
             },
             :resource => {
-              :kind_of => Symbol
+              :kind_of => Symbol,
             },
             :provider => {
-              :kind_of => [ String, Symbol, Class ]
+              :kind_of => [ String, Symbol, Class ],
             },
-          },
+          }
         )
         if args.has_key?(:platform)
           if args.has_key?(:version)
@@ -133,14 +133,14 @@ class Chef
                 platforms[args[:platform]][args[:version]][args[:resource].to_sym] = args[:provider]
               else
                 platforms[args[:platform]][args[:version]] = {
-                  args[:resource].to_sym => args[:provider]
+                  args[:resource].to_sym => args[:provider],
                 }
               end
             else
               platforms[args[:platform]] = {
                 args[:version] => {
-                  args[:resource].to_sym => args[:provider]
-                }
+                  args[:resource].to_sym => args[:provider],
+                },
               }
             end
           else
@@ -155,8 +155,8 @@ class Chef
             else
               platforms[args[:platform]] = {
                 :default => {
-                  args[:resource].to_sym => args[:provider]
-                }
+                  args[:resource].to_sym => args[:provider],
+                },
               }
             end
           end
@@ -165,7 +165,7 @@ class Chef
             platforms[:default][args[:resource].to_sym] = args[:provider]
           else
             platforms[:default] = {
-              args[:resource].to_sym => args[:provider]
+              args[:resource].to_sym => args[:provider],
             }
           end
         end

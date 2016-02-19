@@ -15,7 +15,7 @@ class Chef
             "salt" => nil,
             "password" => nil,
             "openid" => nil,
-          },)
+          })
         end
 
         def preserve_key?(key)

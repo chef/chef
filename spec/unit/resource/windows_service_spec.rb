@@ -24,7 +24,7 @@ describe Chef::Resource::WindowsService, "initialize" do
     provider: Chef::Provider::Service::Windows,
     os: "windows",
     name: :windows_service,
-    action: :start,
+    action: :start
   )
 
   let(:resource) { Chef::Resource::WindowsService.new("BITS") }

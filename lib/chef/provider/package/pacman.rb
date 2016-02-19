@@ -54,7 +54,7 @@ class Chef
 
           repos = %w{extra core community}
 
-          if(::File.exists?("/etc/pacman.conf"))
+          if ::File.exists?("/etc/pacman.conf")
             pacman = ::File.read("/etc/pacman.conf")
             repos = pacman.scan(/\[(.+)\]/).flatten
           end

@@ -23,10 +23,10 @@ describe Chef::Knife::SubcommandLoader::CustomManifestLoader do
     { "plugins" => {
         "knife-ec2" => {
           "paths" => [
-                      ec2_server_create_plugin
-                     ]
-        }
-      }
+                      ec2_server_create_plugin,
+                     ],
+        },
+      },
     }
   end
   let(:loader) do

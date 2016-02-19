@@ -508,7 +508,7 @@ describe Chef::UserV1 do
     describe "reregister" do
       let(:payload) {
         {
-          "username" => "some_username"
+          "username" => "some_username",
         }
       }
 

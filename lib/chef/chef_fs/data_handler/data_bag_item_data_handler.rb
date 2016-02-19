@@ -13,8 +13,8 @@ class Chef
           # chef_type and data_bag come back in PUT and POST results, but we don't
           # use those in knife-essentials.
           normalize_hash(data_bag_item, {
-            "id" => remove_dot_json(entry.name)
-          },)
+            "id" => remove_dot_json(entry.name),
+          })
         end
 
         def normalize_for_post(data_bag_item, entry)

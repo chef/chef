@@ -1192,7 +1192,7 @@ EOM
             "policies" => {
               "x" => { "revision_id" => "1.0.0" },
               "blah" => { "revision_id" => "1.0.0" },
-            }
+            },
           }
           role "x", {}
         end
@@ -1283,7 +1283,7 @@ EOM
               "policies" => {
                 "x" => { "revision_id" => "1.0.1" },
                 "y" => { "revision_id" => "1.0.0" },
-              }
+              },
             }
             file "roles/x.json", { "run_list" => [ "blah" ] }
           end

@@ -98,8 +98,8 @@ describe Chef::Search::Query do
                 "platform" => "nudibranch",
                 "version" => "1.9.3",
                 "target" => "ming-the-merciless",
-              }
-            }
+              },
+            },
           },
         },
         { "name" => "my-name-is-jonas",
@@ -112,8 +112,8 @@ describe Chef::Search::Query do
                 "platform" => "i386-mingw32",
                 "version" => "1.9.3",
                 "target" => "bilbo",
-              }
-            }
+              },
+            },
           },
         },
         { "name" => "my-name-is-flipper",
@@ -126,8 +126,8 @@ describe Chef::Search::Query do
                 "platform" => "centos",
                 "version" => "2.0.0",
                 "target" => "uno",
-              }
-            }
+              },
+            },
           },
         },
         { "name" => "my-name-is-butters",
@@ -140,8 +140,8 @@ describe Chef::Search::Query do
                 "platform" => "solaris2",
                 "version" => "2.1.2",
                 "target" => "random",
-              }
-            }
+              },
+            },
           },
         },
       ],

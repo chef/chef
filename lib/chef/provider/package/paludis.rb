@@ -54,7 +54,7 @@ class Chef
         end
 
         def install_package(name, version)
-          if(version)
+          if version
             pkg = "=#{name}-#{version}"
           else
             pkg = "#{@new_resource.package_name}"
@@ -67,7 +67,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          if(version)
+          if version
             pkg = "=#{@new_resource.package_name}-#{version}"
           else
             pkg = "#{@new_resource.package_name}"

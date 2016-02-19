@@ -27,7 +27,7 @@ describe Chef::Resource::RpmPackage, "initialize" do
       provider: Chef::Provider::Package::Rpm,
       name: :rpm_package,
       action: :install,
-      os: os,
+      os: os
     )
   end
 

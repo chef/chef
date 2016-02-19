@@ -8,7 +8,7 @@ class Chef
           normalize_hash(container, {
             "containername" => remove_dot_json(entry.name),
             "containerpath" => remove_dot_json(entry.name),
-          },)
+          })
         end
 
         def preserve_key?(key)

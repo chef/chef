@@ -28,7 +28,7 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     provider: Chef::Provider::Package::Windows,
     os: "windows",
     name: :windows_package,
-    action: :start,
+    action: :start
   )
 
   let(:resource) { Chef::Resource::WindowsPackage.new("solitaire.msi") }

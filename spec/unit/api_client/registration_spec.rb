@@ -71,7 +71,7 @@ describe Chef::ApiClient::Registration do
     {
       "uri" => "",
       "chef_key" => {
-        "public_key" => generated_public_key.to_pem
+        "public_key" => generated_public_key.to_pem,
       },
     }
   end

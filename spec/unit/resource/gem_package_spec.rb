@@ -25,7 +25,7 @@ describe Chef::Resource::GemPackage, "initialize" do
     resource: Chef::Resource::GemPackage,
     provider: Chef::Provider::Package::Rubygems,
     name: :gem_package,
-    action: :install,
+    action: :install
   )
 
 end

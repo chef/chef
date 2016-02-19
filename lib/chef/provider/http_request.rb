@@ -42,7 +42,7 @@ class Chef
         # and false for a "304 Not Modified" response
         modified = @http.head(
           "#{@new_resource.url}",
-          @new_resource.headers,
+          @new_resource.headers
         )
         Chef::Log.info("#{@new_resource} HEAD to #{@new_resource.url} successful")
         Chef::Log.debug("#{@new_resource} HEAD request response: #{modified}")
@@ -59,7 +59,7 @@ class Chef
           message = check_message(@new_resource.message)
           body = @http.get(
             "#{@new_resource.url}",
-            @new_resource.headers,
+            @new_resource.headers
           )
           Chef::Log.info("#{@new_resource} GET to #{@new_resource.url} successful")
           Chef::Log.debug("#{@new_resource} GET request response: #{body}")
@@ -73,7 +73,7 @@ class Chef
           body = @http.put(
             "#{@new_resource.url}",
             message,
-            @new_resource.headers,
+            @new_resource.headers
           )
           Chef::Log.info("#{@new_resource} PUT to #{@new_resource.url} successful")
           Chef::Log.debug("#{@new_resource} PUT request response: #{body}")
@@ -87,7 +87,7 @@ class Chef
           body = @http.post(
             "#{@new_resource.url}",
             message,
-            @new_resource.headers,
+            @new_resource.headers
           )
           Chef::Log.info("#{@new_resource} POST to #{@new_resource.url} message: #{message.inspect} successful")
           Chef::Log.debug("#{@new_resource} POST request response: #{body}")
@@ -99,7 +99,7 @@ class Chef
         converge_by("#{@new_resource} DELETE to #{@new_resource.url}") do
           body = @http.delete(
             "#{@new_resource.url}",
-            @new_resource.headers,
+            @new_resource.headers
           )
           @new_resource.updated_by_last_action(true)
           Chef::Log.info("#{@new_resource} DELETE to #{@new_resource.url} successful")

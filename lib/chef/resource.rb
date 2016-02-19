@@ -173,7 +173,7 @@ class Chef
         arg.each do |action|
           validate(
             { action: action },
-            { action: { kind_of: Symbol, equal_to: allowed_actions } },
+            { action: { kind_of: Symbol, equal_to: allowed_actions } }
           )
         end
         @action = arg

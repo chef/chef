@@ -63,12 +63,12 @@ describe Chef::ChefFS::FileSystem do
             :zz => "",
           },
           :ab => {
-            :c => ""
+            :c => "",
           },
         },
         :x => "",
         :y => {},
-      },)
+      })
     }
     context "list" do
       it "/**" do

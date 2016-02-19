@@ -36,7 +36,7 @@ describe Chef::Provider::Package::Yum do
       :version_available? => true,
       :allow_multi_install => [ "kernel" ],
       :package_repository => "base",
-      :disable_extra_repo_control => true,
+      :disable_extra_repo_control => true
     )
     allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
     allow(@yum_cache).to receive(:yum_binary=).with("yum")
@@ -320,7 +320,7 @@ describe Chef::Provider::Package::Yum do
           :candidate_version => "2.0.1.el5",
           :package_available? => false,
           :version_available? => true,
-          :disable_extra_repo_control => true,
+          :disable_extra_repo_control => true
       )
       }
 
@@ -393,7 +393,7 @@ describe Chef::Provider::Package::Yum do
           :candidate_version => "2.0.1.el5",
           :package_available? => false,
           :version_available? => true,
-          :disable_extra_repo_control => true,
+          :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       allow(@yum_cache).to receive(:yum_binary=).with("yum")
@@ -415,7 +415,7 @@ describe Chef::Provider::Package::Yum do
         :candidate_version => "1.2.4-11.18.el5",
         :package_available? => false,
         :version_available? => true,
-        :disable_extra_repo_control => true,
+        :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       allow(@yum_cache).to receive(:yum_binary=).with("yum")
@@ -438,7 +438,7 @@ describe Chef::Provider::Package::Yum do
           :candidate_version => "2.0.1.el5",
           :package_available? => false,
           :version_available? => true,
-          :disable_extra_repo_control => true,
+          :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       allow(@yum_cache).to receive(:yum_binary=).with("yum")
@@ -463,7 +463,7 @@ describe Chef::Provider::Package::Yum do
         :candidate_version => "1.2.4-11.18.el5",
         :package_available? => false,
         :version_available? => true,
-        :disable_extra_repo_control => true,
+        :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       allow(@yum_cache).to receive(:yum_binary=).with("yum")
@@ -483,7 +483,7 @@ describe Chef::Provider::Package::Yum do
         :candidate_version => "1.2.4-11.18.el5",
         :package_available? => false,
         :version_available? => true,
-        :disable_extra_repo_control => true,
+        :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       allow(@yum_cache).to receive(:yum_binary=).with("yum")
@@ -508,7 +508,7 @@ describe Chef::Provider::Package::Yum do
         :candidate_version => "1.2.4-11.18.el5",
         :package_available? => false,
         :version_available? => true,
-        :disable_extra_repo_control => true,
+        :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       allow(@yum_cache).to receive(:yum_binary=).with("yum")
@@ -578,7 +578,7 @@ describe Chef::Provider::Package::Yum do
         :candidate_version => "1.2.4-11.18.el5_2.3",
         :package_available? => true,
         :version_available? => nil,
-        :disable_extra_repo_control => true,
+        :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       allow(@yum_cache).to receive(:yum_binary=).with("yum")
@@ -597,7 +597,7 @@ describe Chef::Provider::Package::Yum do
         :package_available? => true,
         :version_available? => true,
         :allow_multi_install => [ "kernel" ],
-        :disable_extra_repo_control => true,
+        :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       allow(@yum_cache).to receive(:yum_binary=).with("yum")
@@ -617,7 +617,7 @@ describe Chef::Provider::Package::Yum do
         :version_available? => true,
         :allow_multi_install => [ "cups" ],
         :package_repository => "base",
-        :disable_extra_repo_control => true,
+        :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       allow(@yum_cache).to receive(:yum_binary=).with("yum")
@@ -641,7 +641,7 @@ describe Chef::Provider::Package::Yum do
         :version_available? => true,
         :allow_multi_install => [],
         :package_repository => "base",
-        :disable_extra_repo_control => true,
+        :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       allow(@yum_cache).to receive(:yum_binary=).with("yum")
@@ -708,7 +708,7 @@ describe Chef::Provider::Package::Yum do
         :package_available? => true,
         :version_available? => true,
         :allow_multi_install => [ "kernel" ],
-        :disable_extra_repo_control => true,
+        :disable_extra_repo_control => true
       )
       allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
       allow(@yum_cache).to receive(:yum_binary=).with("yum")
@@ -724,7 +724,7 @@ describe Chef::Provider::Package::Yum do
       allow(@provider).to receive(:candidate_version).and_return("11")
       expect(@provider).to receive(:upgrade_package).with(
         "cups",
-        "11",
+        "11"
       )
       @provider.run_action(:upgrade)
     end
@@ -743,7 +743,7 @@ describe Chef::Provider::Package::Yum do
       allow(@provider).to receive(:candidate_version).and_return("11")
       expect(@provider).to receive(:upgrade_package).with(
         "cups",
-        "11",
+        "11"
       )
       @provider.run_action(:upgrade)
     end
@@ -790,7 +790,7 @@ describe Chef::Provider::Package::Yum do
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        { :timeout => Chef::Config[:yum_timeout] },
+        { :timeout => Chef::Config[:yum_timeout] }
       )
       @provider.yum_command("-d0 -e0 -y install emacs-1.0")
     end
@@ -800,7 +800,7 @@ describe Chef::Provider::Package::Yum do
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        { :timeout => Chef::Config[:yum_timeout] },
+        { :timeout => Chef::Config[:yum_timeout] }
       )
       expect { @provider.yum_command("-d0 -e0 -y install emacs-1.0") }.to raise_error(Chef::Exceptions::Exec)
     end
@@ -811,7 +811,7 @@ describe Chef::Provider::Package::Yum do
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        { :timeout => Chef::Config[:yum_timeout] },
+        { :timeout => Chef::Config[:yum_timeout] }
       )
       # will still raise an exception, can't stub out the subsequent call
       expect { @provider.yum_command("-d0 -e0 -y install emacs-1.0") }.to raise_error(Chef::Exceptions::Exec)
@@ -823,7 +823,7 @@ describe Chef::Provider::Package::Yum do
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).twice.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        { :timeout => Chef::Config[:yum_timeout] },
+        { :timeout => Chef::Config[:yum_timeout] }
       )
       # will still raise an exception, can't stub out the subsequent call
       expect { @provider.yum_command("-d0 -e0 -y install emacs-1.0") }.to raise_error(Chef::Exceptions::Exec)
@@ -837,7 +837,7 @@ describe Chef::Provider::Package::Yum do
       allow(@provider).to receive(:shell_out).and_return(@status)
       expect(@provider).to receive(:shell_out).once.with(
         "yum-deprecated -d0 -e0 -y install emacs-1.0",
-        { :timeout => Chef::Config[:yum_timeout] },
+        { :timeout => Chef::Config[:yum_timeout] }
       )
       @provider.yum_command("-d0 -e0 -y install emacs-1.0")
     end
@@ -2125,7 +2125,7 @@ describe "Chef::Provider::Package::Yum - Multi" do
       :version_available? => true,
       :allow_multi_install => [ "kernel" ],
       :package_repository => "base",
-      :disable_extra_repo_control => true,
+      :disable_extra_repo_control => true
     )
     allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
     allow(@yum_cache).to receive(:yum_binary=).with("yum")

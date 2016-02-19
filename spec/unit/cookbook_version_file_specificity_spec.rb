@@ -197,7 +197,7 @@ describe Chef::CookbookVersion, "file specificity" do
          :checksum => "csum4-platver-full-2",
          :specificity => "fakeos-1",
        },
-      ]
+      ],
     }
 
   end

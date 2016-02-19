@@ -275,7 +275,7 @@ class Chef
 
             status = ERROR_MORE_DATA
 
-            while(status == ERROR_MORE_DATA)
+            while status == ERROR_MORE_DATA
               status = NetUserEnum(servername, level, filter, bufptr, prefmaxlen, entriesread, totalentries, resume_handle)
 
               if status == NERR_Success || status == ERROR_MORE_DATA

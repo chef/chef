@@ -103,7 +103,7 @@ class Chef
         Chef::Config[:chef_server_url],
         client_name: Chef::Config[:node_name],
         signing_key_filename: Chef::Config[:client_key],
-        validate_utf8: false,
+        validate_utf8: false
       )
     end
 
@@ -114,8 +114,8 @@ class Chef
                  { :name => arg },
                  { :name => { :kind_of => String,
                               :cannot_be => :blank,
-                              :regex => /^[\-[:alnum:]_:.]+$/ }
-                 },)
+                              :regex => /^[\-[:alnum:]_:.]+$/ },
+                 })
         @name = arg
       else
         @name

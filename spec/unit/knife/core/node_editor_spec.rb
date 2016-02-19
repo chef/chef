@@ -91,7 +91,7 @@ describe Chef::Knife::NodeEditor do
           "normal" => { "alpha" => { "bravo" => "hotel2" }, "tags" => [ "xyz" ] },
           "policy_name" => "mypolicy",
           "policy_group" => "prod",
-          "run_list" => %w{role[drama] recipe[mystery]},
+          "run_list" => %w{role[drama] recipe[mystery]}
         )
       end
 
@@ -123,7 +123,7 @@ describe Chef::Knife::NodeEditor do
           "override"  => { "alpha" => { "bravo" => "foxtrot2", "delta" => "golf2" } },
           "policy_name" => "mypolicy",
           "policy_group" => "prod",
-          "run_list" => %w{role[drama] recipe[mystery]},
+          "run_list" => %w{role[drama] recipe[mystery]}
         )
       end
 
@@ -159,7 +159,7 @@ describe Chef::Knife::NodeEditor do
             "override"  => { "alpha" => { "bravo" => "foxtrot2", "delta" => "golf2" } },
             "policy_name"  => "mypolicy",
             "policy_group" => "prod",
-            "run_list" => %w{role[drama] recipe[mystery]},
+            "run_list" => %w{role[drama] recipe[mystery]}
           )
         end
 

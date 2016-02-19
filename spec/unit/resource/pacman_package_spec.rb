@@ -26,7 +26,7 @@ describe Chef::Resource::PacmanPackage, "initialize" do
     provider: Chef::Provider::Package::Pacman,
     name: :pacman_package,
     action: :install,
-    os: "linux",
+    os: "linux"
   )
 
 end

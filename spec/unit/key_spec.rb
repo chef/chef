@@ -532,7 +532,7 @@ EOS
             allow(rest).to receive(:put).with(url, key.to_hash).and_return({
                                                                                   "key" => "key_name",
                                                                                   "public_key" => public_key_string,
-                                                                                },)
+                                                                                })
 
           end
 

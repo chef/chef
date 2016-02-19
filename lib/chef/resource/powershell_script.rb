@@ -31,7 +31,7 @@ class Chef
         set_or_return(
           :convert_boolean_return,
           arg,
-          :kind_of => [ FalseClass, TrueClass ],
+          :kind_of => [ FalseClass, TrueClass ]
         )
       end
 

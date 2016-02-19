@@ -25,7 +25,7 @@ describe Chef::Resource::Subversion do
     resource: Chef::Resource::Subversion,
     provider: Chef::Provider::Subversion,
     name: :subversion,
-    action: :install,
+    action: :install
   )
 
   before do

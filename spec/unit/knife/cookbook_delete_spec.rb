@@ -129,7 +129,7 @@ describe Chef::Knife::CookbookDelete do
       expect(@knife).to receive(:rest).and_return(@rest_mock)
       @cookbook_data = { "foobar" => { "versions" => [{ "version" => "1.0.0" },
                                                       { "version" => "1.1.0" },
-                                                      { "version" => "2.0.0" } ] }
+                                                      { "version" => "2.0.0" } ] },
       }
     end
 

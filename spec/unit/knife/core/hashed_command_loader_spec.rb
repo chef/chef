@@ -31,13 +31,13 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
         },
         "plugins_by_category" => {
           "cool" => [
-            "cool_a"
+            "cool_a",
           ],
           "cooler" => [
-            "cooler_b"
+            "cooler_b",
           ],
         },
-      }
+      },
     }
   }
 

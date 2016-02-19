@@ -34,7 +34,7 @@ describe Chef::Platform do
       Chef::Platform.platforms = {
         :darwin => {
           ">= 10.11" => {
-            :file => "new_darwinian"
+            :file => "new_darwinian",
           },
           "9.2.2" => {
             :file => "darwinian",
@@ -183,18 +183,18 @@ describe Chef::Platform do
            :platform => :darwin,
            :version => "9.2.2",
            :resource => :file,
-           :provider => "masterful",
+           :provider => "masterful"
       )
       expect(Chef::Platform.platforms[:darwin]["9.2.2"][:file]).to eql("masterful")
       Chef::Platform.set(
            :platform => :darwin,
            :resource => :file,
-           :provider => "masterful",
+           :provider => "masterful"
       )
       expect(Chef::Platform.platforms[:darwin][:default][:file]).to eql("masterful")
       Chef::Platform.set(
            :resource => :file,
-           :provider => "masterful",
+           :provider => "masterful"
       )
       expect(Chef::Platform.platforms[:default][:file]).to eql("masterful")
 
@@ -202,13 +202,13 @@ describe Chef::Platform do
            :platform => :hero,
            :version => "9.2.2",
            :resource => :file,
-           :provider => "masterful",
+           :provider => "masterful"
       )
       expect(Chef::Platform.platforms[:hero]["9.2.2"][:file]).to eql("masterful")
 
       Chef::Platform.set(
            :resource => :file,
-           :provider => "masterful",
+           :provider => "masterful"
       )
       expect(Chef::Platform.platforms[:default][:file]).to eql("masterful")
 
@@ -216,7 +216,7 @@ describe Chef::Platform do
 
       Chef::Platform.set(
            :resource => :file,
-           :provider => "masterful",
+           :provider => "masterful"
       )
       expect(Chef::Platform.platforms[:default][:file]).to eql("masterful")
 
@@ -230,7 +230,7 @@ describe Chef::Platform do
       Chef::Platform.set(
         :resource => :file,
         :platform => :default,
-        :provider => "new school",
+        :provider => "new school"
       )
       expect(Chef::Platform.platforms[:default][:file]).to eql("new school")
       expect(Chef::Platform.platforms[:default][:cat]).to eql("nice")

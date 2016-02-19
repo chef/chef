@@ -24,7 +24,7 @@ class Chef
         set_or_return(
           :owner,
           arg,
-          :regex => Chef::Config[:user_valid_regex],
+          :regex => Chef::Config[:user_valid_regex]
         )
       end
 
@@ -34,7 +34,7 @@ class Chef
         set_or_return(
           :group,
           arg,
-          :regex => Chef::Config[:group_valid_regex],
+          :regex => Chef::Config[:group_valid_regex]
         )
       end
 
@@ -54,8 +54,8 @@ class Chef
               else
                 Integer(m) <= 07777 && Integer(m) >= 0
               end
-            }
-          },
+            },
+          }
         )
       end
 
@@ -156,7 +156,7 @@ class Chef
             set_or_return(
               name,
               rights,
-              {},
+              {}
             )
           end
         end
@@ -171,7 +171,7 @@ class Chef
           set_or_return(
             :inherits,
             arg,
-            :kind_of => [ TrueClass, FalseClass ],
+            :kind_of => [ TrueClass, FalseClass ]
           )
         end
       end

@@ -73,7 +73,7 @@ describe Chef::Knife::CookbookDownload do
           and_return(@cookbook_mock)
       end
 
-      it "should determine which version if one was not explicitly specified"do
+      it "should determine which version if one was not explicitly specified" do
         allow(@cookbook_mock).to receive(:manifest).and_return({})
         expect(@knife).to receive(:determine_version).and_return("1.0.0")
         expect(File).to receive(:exists?).with("/var/tmp/chef/foobar-1.0.0").and_return(false)
