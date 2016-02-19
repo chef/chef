@@ -102,7 +102,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
     context "when the command is run" do
       let(:expected_hash) {
         {
-          actor_field_name => "charmander"
+          actor_field_name => "charmander",
         }
       }
 

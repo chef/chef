@@ -230,7 +230,7 @@ user password using shadow hash.")
           base_uid = new_resource.system ? 200 : 500
           next_uid_guess = base_uid
           users_uids = run_dscl("list /Users uid")
-          while(next_uid_guess < search_limit + base_uid)
+          while next_uid_guess < search_limit + base_uid
             if users_uids =~ Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n")
               next_uid_guess += 1
             else

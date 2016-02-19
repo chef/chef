@@ -38,7 +38,7 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
   end
 
   field_list = {
-    :gid => "-g"
+    :gid => "-g",
   }
 
   field_list.each do |attribute, option|

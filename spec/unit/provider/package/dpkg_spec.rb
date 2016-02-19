@@ -199,7 +199,7 @@ Section: ruby
 
     it "and we should raise if we get any other exit codes from dpkg -s" do
       dpkg_s_status = double(
-        exitstatus: 3, stderr: "i am very, very angry with you.  i'm very, very cross.  go to your room.", stdout: ""
+        exitstatus: 3, stderr: "i am very, very angry with you.  i'm very, very cross.  go to your room.", stdout: "",
       )
       expect(provider).to receive(:shell_out!).with("dpkg -s #{package}", returns: [0, 1], timeout: 900).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       expect { provider.load_current_resource }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)

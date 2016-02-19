@@ -90,7 +90,7 @@ class Chef
           @change_desc << "change gid #{@current_resource.gid} to #{@new_resource.gid}"
         end
 
-        if(@new_resource.append)
+        if @new_resource.append
           missing_members = []
           @new_resource.members.each do |member|
             next if has_current_group_member?(member)

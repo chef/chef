@@ -114,7 +114,7 @@ class Chef
                  { :name => arg },
                  { :name => { :kind_of => String,
                               :cannot_be => :blank,
-                              :regex => /^[\-[:alnum:]_:.]+$/ }
+                              :regex => /^[\-[:alnum:]_:.]+$/ },
                  },)
         @name = arg
       else
@@ -126,7 +126,7 @@ class Chef
       set_or_return(
         :chef_environment,
         arg,
-        { :regex => /^[\-[:alnum:]_]+$/, :kind_of => String }
+        { :regex => /^[\-[:alnum:]_]+$/, :kind_of => String },
       )
     end
 

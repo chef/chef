@@ -162,7 +162,7 @@ describe Chef::Node::Attribute do
       "hot" => { "day" => "sunday" },
       "fire" => "still burn",
       "music" => {
-        "mars_volta" => "cicatriz"
+        "mars_volta" => "cicatriz",
       },
     }
     @automatic_hash = { "week" => "friday" }
@@ -1003,7 +1003,7 @@ describe Chef::Node::Attribute do
           %w{one six},
           %w{snack cookies},
           ["snakes", "on a plane"],
-        ]
+        ],
       )
     end
   end

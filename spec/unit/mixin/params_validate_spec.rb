@@ -61,8 +61,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => "string" },
         {
           :one => {
-            :kind_of => String
-          }
+            :kind_of => String,
+          },
         },
       )
     }.not_to raise_error
@@ -72,8 +72,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => "string" },
         {
           :one => {
-            :kind_of => Array
-          }
+            :kind_of => Array,
+          },
         },
       )
     }.to raise_error(ArgumentError)
@@ -85,8 +85,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => "string" },
         {
           :one => {
-            :required => true
-          }
+            :required => true,
+          },
         },
       )
     }.not_to raise_error
@@ -96,8 +96,8 @@ describe Chef::Mixin::ParamsValidate do
         { :two => "string" },
         {
           :one => {
-            :required => true
-          }
+            :required => true,
+          },
         },
       )
     }.to raise_error(ArgumentError)
@@ -107,8 +107,8 @@ describe Chef::Mixin::ParamsValidate do
         { :two => "string" },
         {
           :one => {
-            :required => false
-          }
+            :required => false,
+          },
         },
       )
     }.not_to raise_error
@@ -120,8 +120,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => @vo },
         {
           :one => {
-            :respond_to => "validate"
-          }
+            :respond_to => "validate",
+          },
         },
       )
     }.not_to raise_error
@@ -131,8 +131,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => @vo },
         {
           :one => {
-            :respond_to => "monkey"
-          }
+            :respond_to => "monkey",
+          },
         },
       )
     }.to raise_error(ArgumentError)
@@ -144,8 +144,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => @vo },
         {
           :one => {
-            :respond_to => %w{validate music}
-          }
+            :respond_to => %w{validate music},
+          },
         },
       )
     }.not_to raise_error
@@ -155,8 +155,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => @vo },
         {
           :one => {
-            :respond_to => %w{monkey validate}
-          }
+            :respond_to => %w{monkey validate},
+          },
         },
       )
     }.to raise_error(ArgumentError)
@@ -166,8 +166,8 @@ describe Chef::Mixin::ParamsValidate do
     arguments = Hash.new
     @vo.validate(arguments, {
       :one => {
-        :default => "is the loneliest number"
-      }
+        :default => "is the loneliest number",
+      },
     },)
     expect(arguments[:one]).to eq("is the loneliest number")
   end
@@ -178,8 +178,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => "is good" },
         {
           :one => {
-            :regex => /^is good$/
-          }
+            :regex => /^is good$/,
+          },
         },
       )
     }.not_to raise_error
@@ -189,8 +189,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => "is good" },
         {
           :one => {
-            :regex => /^is bad$/
-          }
+            :regex => /^is bad$/,
+          },
         },
       )
     }.to raise_error(ArgumentError)
@@ -205,9 +205,9 @@ describe Chef::Mixin::ParamsValidate do
             :callbacks => {
               "should be equal to is good" => lambda { |a|
                 a == "is good"
-              }
-            }
-          }
+              },
+            },
+          },
         },
       )
     }.not_to raise_error
@@ -220,9 +220,9 @@ describe Chef::Mixin::ParamsValidate do
             :callbacks => {
               "should be equal to 'is good'" => lambda { |a|
                 a == "is good"
-              }
-            }
-          }
+              },
+            },
+          },
         },
       )
     }.to raise_error(ArgumentError)
@@ -241,7 +241,7 @@ describe Chef::Mixin::ParamsValidate do
             :callbacks => {
               "should be your friend" => lambda { |a|
                 a == "is good"
-              }
+              },
             },
             :required => true,
           },
@@ -265,7 +265,7 @@ describe Chef::Mixin::ParamsValidate do
             :callbacks => {
               "should be your friend" => lambda { |a|
                 a == "is good"
-              }
+              },
             },
             :required => true,
           },
@@ -284,8 +284,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => "two" },
         {
           :one => {
-            :busted => "check"
-          }
+            :busted => "check",
+          },
         },
       )
     }.to raise_error(ArgumentError)
@@ -303,8 +303,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => "string" },
         {
           :one => {
-            :kind_of => [ String, Array ]
-          }
+            :kind_of => [ String, Array ],
+          },
         },
       )
     }.not_to raise_error
@@ -313,8 +313,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => ["string"] },
         {
           :one => {
-            :kind_of => [ String, Array ]
-          }
+            :kind_of => [ String, Array ],
+          },
         },
       )
     }.not_to raise_error
@@ -323,8 +323,8 @@ describe Chef::Mixin::ParamsValidate do
         { :one => Hash.new },
         {
           :one => {
-            :kind_of => [ String, Array ]
-          }
+            :kind_of => [ String, Array ],
+          },
         },
       )
     }.to raise_error(ArgumentError)

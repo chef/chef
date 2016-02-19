@@ -109,7 +109,7 @@ describe Chef::CookbookSynchronizer do
 
   let(:cookbook_manifest) do
     {
-      "cookbook_a" => cookbook_a
+      "cookbook_a" => cookbook_a,
     }
   end
 

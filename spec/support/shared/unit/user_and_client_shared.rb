@@ -58,8 +58,8 @@ shared_examples_for "user or client create" do
       let(:chef_key) {
         {
           "chef_key" => {
-            "public_key" => "some_public_key"
-          }
+            "public_key" => "some_public_key",
+          },
         }
       }
 
@@ -75,7 +75,7 @@ shared_examples_for "user or client create" do
             "chef_key" => {
               "public_key" => "some_public_key",
               "private_key" => "some_private_key",
-            }
+            },
           }
         }
 

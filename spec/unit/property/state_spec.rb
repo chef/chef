@@ -228,7 +228,7 @@ describe "Chef::Resource#identity and #state" do
           expect(resource.state_for_resource_reporter).to eq(custom_property: 6)
           expect(resource_class.properties[:custom_property].desired_state?).to be_truthy
           expect(resource_class.state_properties).to eq [
-            resource_class.properties[:custom_property]
+            resource_class.properties[:custom_property],
           ]
         end
         it "identity_properties does not change custom_property's getter or setter" do
@@ -393,7 +393,7 @@ describe "Chef::Resource#identity and #state" do
 
         expect(resource_class.properties[:x].desired_state?).to be_truthy
         expect(resource_class.state_properties).to eq [
-          resource_class.properties[:x]
+          resource_class.properties[:x],
         ]
         expect(resource.state_for_resource_reporter).to eq(x: 10)
       end
@@ -430,11 +430,11 @@ describe "Chef::Resource#identity and #state" do
         expect(resource_class.properties[:x].desired_state?).to be_truthy
         expect(resource_class.properties[:x].identity?).to be_truthy
         expect(resource_class.identity_properties).to eq [
-          resource_class.properties[:x]
+          resource_class.properties[:x],
         ]
         expect(resource.identity).to eq(10)
         expect(resource_class.state_properties).to eq [
-          resource_class.properties[:x]
+          resource_class.properties[:x],
         ]
         expect(resource.state_for_resource_reporter).to eq(x: 10)
       end
@@ -448,7 +448,7 @@ describe "Chef::Resource#identity and #state" do
         expect(resource_class.properties[:x].desired_state?).to be_falsey
         expect(resource_class.properties[:y].desired_state?).to be_truthy
         expect(resource_class.state_properties).to eq [
-          resource_class.properties[:y]
+          resource_class.properties[:y],
         ]
         expect(resource.state_for_resource_reporter).to eq(y: 20)
       end
@@ -474,11 +474,11 @@ describe "Chef::Resource#identity and #state" do
           expect(subresource_class.properties[:x].desired_state?).to be_truthy
           expect(subresource_class.properties[:x].identity?).to be_truthy
           expect(subresource_class.identity_properties).to eq [
-            subresource_class.properties[:x]
+            subresource_class.properties[:x],
           ]
           expect(subresource.identity).to eq(10)
           expect(subresource_class.state_properties).to eq [
-            subresource_class.properties[:x]
+            subresource_class.properties[:x],
           ]
           expect(subresource.state_for_resource_reporter).to eq(x: 10)
         end
@@ -491,13 +491,13 @@ describe "Chef::Resource#identity and #state" do
           expect(subresource_class.properties[:x].object_id).to eq old_value.object_id
           expect(subresource_class.properties[:y].desired_state?).to be_truthy
           expect(subresource_class.state_properties).to eq [
-            subresource_class.properties[:y]
+            subresource_class.properties[:y],
           ]
           expect(subresource.state_for_resource_reporter).to eq(y: 20)
 
           expect(subresource_class.properties[:x].identity?).to be_truthy
           expect(subresource_class.identity_properties).to eq [
-            subresource_class.properties[:x]
+            subresource_class.properties[:x],
           ]
           expect(subresource.identity).to eq(10)
         end

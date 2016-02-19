@@ -52,7 +52,7 @@ class Chef
         if file_class.symlink?(@current_resource.target_file)
           @current_resource.link_type(:symbolic)
           @current_resource.to(
-            canonicalize(file_class.readlink(@current_resource.target_file))
+            canonicalize(file_class.readlink(@current_resource.target_file)),
           )
         else
           @current_resource.link_type(:hard)

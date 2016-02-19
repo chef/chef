@@ -40,7 +40,7 @@ class Chef
         all_profiles = get_installed_profiles
         @new_resource.profile(
           @new_resource.profile ||
-          @new_resource.profile_name
+          @new_resource.profile_name,
         )
 
         @new_profile_hash = get_profile_hash(@new_resource.profile)
@@ -141,7 +141,7 @@ class Chef
 
       def get_cache_dir
         cache_dir = Chef::FileCache.create_cache_path(
-          "profiles/#{@new_resource.cookbook_name}"
+          "profiles/#{@new_resource.cookbook_name}",
         )
       end
 
@@ -151,7 +151,7 @@ class Chef
             "profiles",
             @new_resource.cookbook_name,
             ::File.dirname(cookbook_file),
-          )
+          ),
         )
         remote_file = Chef::Resource::CookbookFile.new(
           ::File.join(

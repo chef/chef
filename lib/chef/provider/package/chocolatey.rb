@@ -162,7 +162,7 @@ EOS
         # lets us mock out an incorrect value for testing.
         def choco_install_path
           @choco_install_path ||= powershell_out!(
-            PATHFINDING_POWERSHELL_COMMAND
+            PATHFINDING_POWERSHELL_COMMAND,
             ).stdout.chomp
         end
 

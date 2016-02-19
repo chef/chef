@@ -186,7 +186,7 @@ c5adbbac718b7eb99463a7b679571e0f\
       end
     end
 
-    it ":remove action removes the user from the groups and deletes the user"do
+    it ":remove action removes the user from the groups and deletes the user" do
       user_resource.run_action(:remove)
       groups.each do |group|
         # Do not raise an error when group is empty

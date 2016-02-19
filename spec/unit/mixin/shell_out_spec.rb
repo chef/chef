@@ -143,7 +143,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
-              }
+              },
             },).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
@@ -156,7 +156,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
-              }
+              },
             },).and_return(true)
             shell_out_obj.shell_out(cmd, options)
             expect(options[:environment].has_key?("LC_ALL")).to be false
@@ -184,7 +184,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
-              }
+              },
             },).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
@@ -197,7 +197,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
-              }
+              },
             },).and_return(true)
             shell_out_obj.shell_out(cmd, options)
             expect(options[:env].has_key?("LC_ALL")).to be false
@@ -227,7 +227,7 @@ describe Chef::Mixin::ShellOut do
               "LC_ALL"   => Chef::Config[:internal_locale],
               "LANG"     => Chef::Config[:internal_locale],
               "LANGUAGE" => Chef::Config[:internal_locale],
-            }
+            },
           },).and_return(true)
           shell_out_obj.shell_out(cmd)
         end

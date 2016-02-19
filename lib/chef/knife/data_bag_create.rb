@@ -66,7 +66,7 @@ class Chef
                 Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
               else
                 output
-              end
+              end,
             )
             item.data_bag(@data_bag_name)
             rest.post("data/#{@data_bag_name}", item)

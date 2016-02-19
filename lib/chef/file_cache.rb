@@ -105,10 +105,10 @@ class Chef
       def load(path, read = true)
         validate(
           {
-            :path => path
+            :path => path,
           },
           {
-            :path => { :kind_of => String }
+            :path => { :kind_of => String },
           },
         )
         cache_path = create_cache_path(path, false)
@@ -131,10 +131,10 @@ class Chef
       def delete(path)
         validate(
           {
-            :path => path
+            :path => path,
           },
           {
-            :path => { :kind_of => String }
+            :path => { :kind_of => String },
           },
         )
         cache_path = create_cache_path(path, false)
@@ -178,10 +178,10 @@ class Chef
       def has_key?(path)
         validate(
           {
-            :path => path
+            :path => path,
           },
           {
-            :path => { :kind_of => String }
+            :path => { :kind_of => String },
           },
         )
         full_path = create_cache_path(path, false)

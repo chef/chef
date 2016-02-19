@@ -34,7 +34,7 @@ describe Chef::Platform do
       Chef::Platform.platforms = {
         :darwin => {
           ">= 10.11" => {
-            :file => "new_darwinian"
+            :file => "new_darwinian",
           },
           "9.2.2" => {
             :file => "darwinian",

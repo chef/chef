@@ -114,7 +114,7 @@ class Chef
 
     def to_hash
       result = {
-        "username" => @username
+        "username" => @username,
       }
       result["display_name"] = @display_name unless @display_name.nil?
       result["first_name"] = @first_name unless @first_name.nil?

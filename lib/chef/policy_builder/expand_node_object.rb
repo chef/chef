@@ -237,7 +237,7 @@ class Chef
 
       def setup_run_list_override
         runlist_override_sanity_check!
-        unless(override_runlist.empty?)
+        unless override_runlist.empty?
           node.override_runlist(*override_runlist)
           Chef::Log.warn "Run List override has been provided."
           Chef::Log.warn "Original Run List: [#{node.primary_runlist}]"
@@ -253,7 +253,7 @@ class Chef
         end
         @override_runlist = [override_runlist].flatten.compact
         override_runlist.map! do |item|
-          if(item.is_a?(Chef::RunList::RunListItem))
+          if item.is_a?(Chef::RunList::RunListItem)
             item
           else
             Chef::RunList::RunListItem.new(item)

@@ -259,7 +259,7 @@ describe Chef::ProviderResolver do
               Chef::Provider::Service::Invokercd,
             )
             expect(provider_resolver.supported_handlers).to_not include(
-              Chef::Provider::Service::Upstart
+              Chef::Provider::Service::Upstart,
             )
           end
 
@@ -314,7 +314,7 @@ describe Chef::ProviderResolver do
 
           it "supports only the upstart handler" do
             expect(provider_resolver.supported_handlers).to include(
-              Chef::Provider::Service::Upstart
+              Chef::Provider::Service::Upstart,
             )
             expect(provider_resolver.supported_handlers).to_not include(
               Chef::Provider::Service::Debian,
@@ -591,35 +591,35 @@ describe Chef::ProviderResolver do
   #            service: [ Chef::Resource::InsservService, Chef::Provider::Service::Insserv ],
             },
             "5.0" => {
-              ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ]
+              ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ],
             },
           },
           "gcel" => {
             "3.1.4" => {
-              ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ]
-            }
+              ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ],
+            },
           },
           "linaro" => {
             "3.1.4" => {
-              ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ]
-            }
+              ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ],
+            },
           },
           "linuxmint" => {
             "3.1.4" => {
               ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ],
   #            service: [ Chef::Resource::UpstartService, Chef::Provider::Service::Upstart ],
-            }
+            },
           },
           "raspbian" => {
             "3.1.4" => {
-              ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ]
-            }
+              ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ],
+            },
           },
           "ubuntu" => {
             "11.10" => {
             },
             "10.04" => {
-              ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ]
+              ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ],
             },
           },
         },
@@ -630,7 +630,7 @@ describe Chef::ProviderResolver do
 
           "arch" => {
             "3.1.4" => {
-            }
+            },
           },
         },
 
@@ -640,7 +640,7 @@ describe Chef::ProviderResolver do
 
           "freebsd" => {
             "3.1.4" => {
-            }
+            },
           },
         },
         "suse" => {
@@ -649,7 +649,7 @@ describe Chef::ProviderResolver do
             "12.0" => {
             },
             %w{11.1 11.2 11.3} => {
-              group: [ Chef::Resource::Group, Chef::Provider::Group::Suse ]
+              group: [ Chef::Resource::Group, Chef::Provider::Group::Suse ],
             },
           },
           "opensuse" => {
@@ -659,7 +659,7 @@ describe Chef::ProviderResolver do
             "12.3" => {
             },
             "12.2" => {
-              group: [ Chef::Resource::Group, Chef::Provider::Group::Suse ]
+              group: [ Chef::Resource::Group, Chef::Provider::Group::Suse ],
             },
           },
         },
@@ -672,7 +672,7 @@ describe Chef::ProviderResolver do
 
           "gentoo" => {
             "3.1.4" => {
-            }
+            },
           },
         },
 
@@ -684,7 +684,7 @@ describe Chef::ProviderResolver do
           %w{amazon xcp xenserver ibm_powerkvm cloudlinux parallels} => {
             "3.1.4" => {
   #            service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
-            }
+            },
           },
           %w{redhat centos scientific oracle} => {
             "7.0" => {
@@ -713,9 +713,9 @@ describe Chef::ProviderResolver do
 
           "mac_os_x" => {
             "10.9.2" => {
-            }
+            },
           },
-        }
+        },
       },
 
       "windows" => {
@@ -734,8 +734,8 @@ describe Chef::ProviderResolver do
         "windows" => {
           %w{mswin mingw32 windows} => {
             "10.9.2" => {
-            }
-          }
+            },
+          },
         },
       },
 
@@ -754,8 +754,8 @@ describe Chef::ProviderResolver do
         "aix" => {
           "aix" => {
             "5.6" => {
-            }
-          }
+            },
+          },
         },
       },
 
@@ -763,20 +763,20 @@ describe Chef::ProviderResolver do
         "hpux" => {
           "hpux" => {
             "3.1.4" => {
-              group: [ Chef::Resource::Group, Chef::Provider::Group::Usermod ]
-            }
-          }
-        }
+              group: [ Chef::Resource::Group, Chef::Provider::Group::Usermod ],
+            },
+          },
+        },
       },
 
       "netbsd" => {
         "netbsd" => {
           "netbsd" => {
             "3.1.4" => {
-              group: [ Chef::Resource::Group, Chef::Provider::Group::Groupmod ]
-            }
-          }
-        }
+              group: [ Chef::Resource::Group, Chef::Provider::Group::Groupmod ],
+            },
+          },
+        },
       },
 
       "openbsd" => {
@@ -786,8 +786,8 @@ describe Chef::ProviderResolver do
         "openbsd" => {
           "openbsd" => {
             "3.1.4" => {
-            }
-          }
+            },
+          },
         },
       },
 
@@ -804,32 +804,32 @@ describe Chef::ProviderResolver do
 
           "smartos" => {
             "3.1.4" => {
-            }
+            },
           },
         },
 
         "solaris2" => {
           "nexentacore" => {
             "3.1.4" => {
-            }
+            },
           },
           "omnios" => {
             "3.1.4" => {
-              user: [ Chef::Resource::User, Chef::Provider::User::Solaris ]
-            }
+              user: [ Chef::Resource::User, Chef::Provider::User::Solaris ],
+            },
           },
           "openindiana" => {
             "3.1.4" => {
-            }
+            },
           },
           "opensolaris" => {
             "3.1.4" => {
-            }
+            },
           },
           "solaris2" => {
             user: [ Chef::Resource::User, Chef::Provider::User::Solaris ],
             "5.11" => {
-              package: [ Chef::Resource::IpsPackage, Chef::Provider::Package::Ips ]
+              package: [ Chef::Resource::IpsPackage, Chef::Provider::Package::Ips ],
             },
             "5.9" => {
             },
@@ -842,9 +842,9 @@ describe Chef::ProviderResolver do
         "solaris" => {
           "solaris" => {
             "3.1.4" => {
-            }
-          }
-        }
+            },
+          },
+        },
       },
 
       "exherbo" => {
@@ -852,10 +852,10 @@ describe Chef::ProviderResolver do
           "exherbo" => {
             "3.1.4" => {
               # TODO should be Chef::Resource::PaludisPackage
-              package: [ Chef::Resource::Package, Chef::Provider::Package::Paludis ]
-            }
-          }
-        }
+              package: [ Chef::Resource::Package, Chef::Provider::Package::Paludis ],
+            },
+          },
+        },
       },
     }
 

@@ -62,7 +62,7 @@ describe Chef::Provider::Package do
       ).and_return("/var/cache/preseed-test")
 
       expect(provider).to receive(:preseed_package).with(
-        "/var/cache/preseed-test"
+        "/var/cache/preseed-test",
       ).and_return(true)
       provider.run_action(:install)
     end

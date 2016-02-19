@@ -224,7 +224,7 @@ class Chef
           # plist files can come in XML or Binary formats. this command
           # will make sure we get XML every time.
           plist_xml = shell_out_with_systems_locale!(
-            "plutil -convert xml1 -o - #{@plist}"
+            "plutil -convert xml1 -o - #{@plist}",
           ).stdout
 
           plist_doc = REXML::Document.new(plist_xml)
@@ -236,7 +236,7 @@ class Chef
           plists = PLIST_DIRS.inject([]) do |results, dir|
             edir = ::File.expand_path(dir)
             entries = Dir.glob(
-              "#{edir}/*#{Chef::Util::PathHelper.escape_glob(@current_resource.service_name)}*.plist"
+              "#{edir}/*#{Chef::Util::PathHelper.escape_glob(@current_resource.service_name)}*.plist",
             )
             entries.any? ? results << entries : results
           end

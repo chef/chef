@@ -85,7 +85,7 @@ describe Chef::Application::Client, "reconfigure" do
 "Unforked chef-client interval runs are disabled in Chef 12.
 Configuration settings:
   interval  = 600 seconds
-Enable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+Enable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options.",
         )
         app.reconfigure
       end

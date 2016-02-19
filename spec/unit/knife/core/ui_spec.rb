@@ -414,7 +414,7 @@ EOM
             { "version" => "2.0.0", "url" => "http://url/cookbooks/2.0.0" },
             { "version" => "1.0.0", "url" => "http://url/cookbooks/1.0.0" },
           ],
-        }
+        },
       }
     end
 
@@ -430,7 +430,7 @@ EOM
           "cookbook_name" => {
             "1.0.0" => "http://url/cookbooks/1.0.0",
             "2.0.0" => "http://url/cookbooks/2.0.0",
-            "3.0.0" => "http://url/cookbooks/3.0.0" }
+            "3.0.0" => "http://url/cookbooks/3.0.0" },
         }
         @ui.config[:with_uri] = true
         expect(@ui.format_cookbook_list_for_display(@item)).to eq(response)

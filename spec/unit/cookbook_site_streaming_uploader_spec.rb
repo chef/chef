@@ -108,7 +108,7 @@ describe Chef::CookbookSiteStreamingUploader do
 
     it "should be able to receive strings to attach as argument" do
       Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
-        :mystring => "Lorem ipsum"
+        :mystring => "Lorem ipsum",
       })
     end
 

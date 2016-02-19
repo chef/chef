@@ -54,7 +54,7 @@ class Chef
               else
                 Integer(m) <= 07777 && Integer(m) >= 0
               end
-            }
+            },
           },
         )
       end

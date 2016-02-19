@@ -39,7 +39,7 @@ describe Chef::HTTP::ValidateContentLength do
   let(:response_body) { "Thanks for checking in." }
   let(:response_headers) {
     {
-      "content-length" => content_length_value
+      "content-length" => content_length_value,
     }
   }
 

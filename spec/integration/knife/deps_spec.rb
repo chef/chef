@@ -357,7 +357,7 @@ EOM
         before { file "cookbooks/blah/metadata.rb", 'name "blah"' }
         it "knife deps on a cookbook file shows no dependencies" do
           knife("deps /cookbooks/blah/metadata.rb").should_succeed(
-            "/cookbooks/blah/metadata.rb\n"
+            "/cookbooks/blah/metadata.rb\n",
           )
         end
       end
@@ -693,7 +693,7 @@ EOM
         end
         it "knife deps on a cookbook file shows no dependencies" do
           knife("deps --remote /cookbooks/blah/metadata.rb").should_succeed(
-            "/cookbooks/blah/metadata.rb\n"
+            "/cookbooks/blah/metadata.rb\n",
           )
         end
       end

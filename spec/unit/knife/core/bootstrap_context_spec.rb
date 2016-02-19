@@ -160,7 +160,7 @@ EXPECTED
   describe "when a bootstrap_version is specified" do
     let(:chef_config) do
       {
-        :knife => { :bootstrap_version => "11.12.4" }
+        :knife => { :bootstrap_version => "11.12.4" },
       }
     end
 
@@ -172,7 +172,7 @@ EXPECTED
   describe "when a pre-release bootstrap_version is specified" do
     let(:chef_config) do
       {
-        :knife => { :bootstrap_version => "11.12.4.rc.0" }
+        :knife => { :bootstrap_version => "11.12.4.rc.0" },
       }
     end
 
@@ -196,7 +196,7 @@ EXPECTED
     describe "when configured in config" do
       let(:chef_config) do
         {
-          :knife => { :ssl_verify_mode => :verify_peer }
+          :knife => { :ssl_verify_mode => :verify_peer },
         }
       end
 
@@ -222,7 +222,7 @@ EXPECTED
     describe "when configured in config" do
       let(:chef_config) do
         {
-          :knife => { :verify_api_cert => :false }
+          :knife => { :verify_api_cert => :false },
         }
       end
 

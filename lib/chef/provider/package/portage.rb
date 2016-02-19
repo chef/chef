@@ -41,7 +41,7 @@ class Chef
           globsafe_pkg = Chef::Util::PathHelper.escape_glob(pkg)
           possibilities = Dir["/var/db/pkg/#{globsafe_category || "*"}/#{globsafe_pkg}-*"].map { |d| d.sub(%r{/var/db/pkg/}, "") }
           versions = possibilities.map do |entry|
-            if(entry =~ %r{[^/]+/#{Regexp.escape(pkg)}\-(\d[\.\d]*((_(alpha|beta|pre|rc|p)\d*)*)?(-r\d+)?)})
+            if entry =~ %r{[^/]+/#{Regexp.escape(pkg)}\-(\d[\.\d]*((_(alpha|beta|pre|rc|p)\d*)*)?(-r\d+)?)}
               [$&, $1]
             end
           end.compact
@@ -108,7 +108,7 @@ class Chef
         def install_package(name, version)
           pkg = "=#{name}-#{version}"
 
-          if(version =~ /^\~(.+)/)
+          if version =~ /^\~(.+)/
             # If we start with a tilde
             pkg = "~#{name}-#{$1}"
           end
@@ -121,7 +121,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          if(version)
+          if version
             pkg = "=#{@new_resource.package_name}-#{version}"
           else
             pkg = "#{@new_resource.package_name}"

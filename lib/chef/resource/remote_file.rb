@@ -51,7 +51,7 @@ class Chef
         ret = set_or_return(:source,
                             arg,
                             { :callbacks => {
-                                :validate_source => method(:validate_source)
+                                :validate_source => method(:validate_source),
                               } })
         if ret.is_a? String
           Array(ret)

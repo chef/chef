@@ -63,7 +63,7 @@ describe Chef::ChefFS::FileSystem do
             :zz => "",
           },
           :ab => {
-            :c => ""
+            :c => "",
           },
         },
         :x => "",

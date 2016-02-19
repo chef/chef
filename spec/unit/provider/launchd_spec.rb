@@ -58,7 +58,7 @@ XML
         "Hourly" => 10,
         "Weekday" => 7,
       },
-      "TimeOut" => 300
+      "TimeOut" => 300,
     } end
 
     before(:each) do
