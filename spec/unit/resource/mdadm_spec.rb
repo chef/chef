@@ -79,6 +79,14 @@ describe Chef::Resource::Mdadm do
     expect(resource.exists).to eql(true)
   end
 
+  it "should have default mdadm_defaults of false" do
+    expect(resource.mdadm_defaults).to eq(false)
+  end
+
+  it "should have default mdadm_defaults of true", :chef_gte_13_only do
+    expect(resource.mdadm_defaults).to eq(true)
+  end
+
   describe "when it has devices, level, and chunk" do
     before do
       resource.raid_device("raider")
