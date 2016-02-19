@@ -114,7 +114,8 @@ class Chef
         )
       end
 
-      # Can be removed once metadata and chunk defaults are set to nil
+      # Track if user set metadata attribute which is used in after_create
+      # method to facilitate proper behavior of the mdadm_defaults attribute
       def user_set_metadata(arg = nil)
         set_or_return(
           :exists,
@@ -123,7 +124,8 @@ class Chef
         )
       end
 
-      # Can be removed once metadata and chunk defaults are set to nil
+      # Track if user set chunk attribute which is used in after_create
+      # method to facilitate proper behavior of the mdadm_defaults attribute
       def user_set_chunk(arg = nil)
         set_or_return(
           :exists,
@@ -133,6 +135,8 @@ class Chef
       end
 
       def after_created
+        # Once the mdadm_defaults defaults to true the nil's below will need
+        # to be replaced with 16 and "0.90"
         if @mdadm_defaults
           @chunk = nil unless @user_set_chunk
           @metadata = nil unless @user_set_metadata
