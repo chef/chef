@@ -341,12 +341,12 @@ class Chef
           next unless array.is_a?(Array)
           default_array += array
         end
-        ImmutableMash.new(wrapped_object: default_array) # FIXME: precedence for tracking?
+        ImmutableMash.new(wrapped_object: default_array, convert_value: false) # FIXME: precedence for tracking?
       end
 
       def normal_array
         return nil unless @normal.is_a?(Array)
-        ImmutableMash.new(wrapped_object: @normal.wrapped_object) # FIXME: precedence for tracking
+        ImmutableMash.new(wrapped_object: @normal.wrapped_object, convert_value: false) # FIXME: precedence for tracking
       end
 
       def override_array
@@ -360,12 +360,12 @@ class Chef
           next unless array.is_a?(Array)
           override_array += array
         end
-        ImmutableMash.new(wrapped_object: override_array) # FIXME: precedence for tracking?
+        ImmutableMash.new(wrapped_object: override_array, convert_value: false) # FIXME: precedence for tracking?
       end
 
       def automatic_array
         return nil unless @automatic.is_a?(Array)
-        ImmutableMash.new(wrapped_object: @automatic.wrapped_object) # FIXME: precedence for tracking
+        ImmutableMash.new(wrapped_object: @automatic.wrapped_object, convert_value: false) # FIXME: precedence for tracking
       end
 
       # @return [Object] value of the highest precedence level
