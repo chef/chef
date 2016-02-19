@@ -415,7 +415,7 @@ user password using shadow hash.")
                 salt,
                 iterations,
                 128,
-                OpenSSL::Digest::SHA512.new,
+                OpenSSL::Digest::SHA512.new
               )
             end
 
@@ -700,7 +700,7 @@ user password using shadow hash.")
             salt,
             current_resource.iterations,
             128,
-            OpenSSL::Digest::SHA512.new,
+            OpenSSL::Digest::SHA512.new
           ).unpack("H*").first == current_resource.password
         end
 

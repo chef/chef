@@ -105,7 +105,7 @@ class Chef
         def has_systemd_service_unit?(svc_name)
           %w{ /etc /usr/lib /lib /run }.any? do |load_path|
             ::File.exist?(
-              Chef.path_to("#{load_path}/systemd/system/#{svc_name.gsub(/@.*$/, '@')}.service"),
+              Chef.path_to("#{load_path}/systemd/system/#{svc_name.gsub(/@.*$/, '@')}.service")
             )
           end
         end

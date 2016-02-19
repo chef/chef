@@ -615,7 +615,7 @@ describe Chef::Node do
 
         expect( node["mysql"]["server"] ).to eql({
           "data_dir" => "/my_raid_volume/lib/mysql",
-        },)
+        })
       end
 
       it "removes all values from the precedence level when setting" do
@@ -631,7 +631,7 @@ describe Chef::Node do
         expect( node["mysql"]["server"]["data_dir"] ).to eql("/my_raid_volume/lib/mysql")
         expect( node["mysql"]["server"] ).to eql({
           "data_dir" => "/my_raid_volume/lib/mysql",
-        },)
+        })
       end
 
       it "higher precedence levels are not removed" do
@@ -649,7 +649,7 @@ describe Chef::Node do
         expect( node["mysql"]["server"] ).to eql({
           "service_name" => "fancypants-sql",
           "data_dir" => "/my_raid_volume/lib/mysql",
-        },)
+        })
       end
 
       it "will autovivify" do
@@ -674,7 +674,7 @@ describe Chef::Node do
         expect( node["mysql"]["server"] ).to eql({
           "service_name" => "fancypants-sql",
           "data_dir" => "/my_raid_volume/lib/mysql",
-        },)
+        })
       end
 
       it "when overwriting a non-hash/array" do
@@ -693,7 +693,7 @@ describe Chef::Node do
         }
         expect( node["mysql"]["server"] ).to eql({
           "data_dir" => "/my_raid_volume/lib/mysql",
-        },)
+        })
       end
     end
 

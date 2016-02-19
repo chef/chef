@@ -54,7 +54,7 @@ module AptServer
       :DocumentRoot => apt_data_dir + "/var/www/apt",
       # Make WEBrick quiet, comment out for debug.
       :Logger       => Logger.new(StringIO.new),
-      :AccessLog    => [ StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT ],
+      :AccessLog    => [ StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT ]
     )
   end
 

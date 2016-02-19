@@ -131,7 +131,7 @@ describe Chef::Provider::OsxProfile do
       new_resource.profile test_profile
       provider.load_current_resource
       expect(
-        provider.instance_variable_get(:@new_profile_identifier),
+        provider.instance_variable_get(:@new_profile_identifier)
         ).to eql(test_profile["PayloadIdentifier"])
     end
 
@@ -226,7 +226,7 @@ describe Chef::Provider::OsxProfile do
       new_resource.profile_name "com.testprofile.screensaver"
       new_resource.action(:remove)
       provider.load_current_resource
-      expect(provider.instance_variable_get(:@new_profile_identifier),
+      expect(provider.instance_variable_get(:@new_profile_identifier)
         ).to eql(new_resource.profile_name)
     end
 
@@ -234,7 +234,7 @@ describe Chef::Provider::OsxProfile do
       new_resource.identifier "com.testprofile.screensaver"
       new_resource.action(:remove)
       provider.load_current_resource
-      expect(provider.instance_variable_get(:@new_profile_identifier),
+      expect(provider.instance_variable_get(:@new_profile_identifier)
         ).to eql(new_resource.identifier)
     end
 

@@ -26,7 +26,7 @@ describe Chef::Resource::TimestampedDeploy, "initialize" do
     name: :timestamped_deploy,
     action: :deploy,
     os: "linux",
-    platform_family: "rhel",
+    platform_family: "rhel"
   )
 
 end

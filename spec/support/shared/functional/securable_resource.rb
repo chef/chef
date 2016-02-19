@@ -409,7 +409,7 @@ shared_examples_for "a securable resource without existing target" do
 
         expect(explicit_aces).to eq(
           allowed_acl(SID.Everyone, expected_read_perms) +
-          allowed_acl(SID.Guest, expected_modify_perms),
+          allowed_acl(SID.Guest, expected_modify_perms)
         )
       end
 
@@ -420,7 +420,7 @@ shared_examples_for "a securable resource without existing target" do
 
         expect(explicit_aces).to eq(
           denied_acl(SID.Guest, expected_modify_perms) +
-          allowed_acl(SID.Everyone, expected_read_perms),
+          allowed_acl(SID.Everyone, expected_read_perms)
         )
       end
 
@@ -431,7 +431,7 @@ shared_examples_for "a securable resource without existing target" do
 
         expect(explicit_aces).to eq(
           denied_acl(SID.Guest, expected_modify_perms) +
-          allowed_acl(SID.Everyone, expected_read_perms),
+          allowed_acl(SID.Everyone, expected_read_perms)
         )
       end
 

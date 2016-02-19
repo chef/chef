@@ -132,7 +132,7 @@ munin-node|1.6.1.20130823
     it "should load and downcase names in the installed_packages hash" do
       provider.load_current_resource
       expect(provider.send(:installed_packages)).to eql(
-        { "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.0" },
+        { "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.0" }
       )
     end
 
@@ -140,7 +140,7 @@ munin-node|1.6.1.20130823
       allow_remote_list(["git"])
       provider.load_current_resource
       expect(provider.send(:available_packages)).to eql(
-        { "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.1", "git" => "2.6.2", "munin-node" => "1.6.1.20130823" },
+        { "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.1", "git" => "2.6.2", "munin-node" => "1.6.1.20130823" }
       )
     end
 

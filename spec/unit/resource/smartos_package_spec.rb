@@ -27,7 +27,7 @@ describe Chef::Resource::SmartosPackage, "initialize" do
     name: :smartos_package,
     action: :install,
     os: "solaris2",
-    platform_family: "smartos",
+    platform_family: "smartos"
   )
 
 end

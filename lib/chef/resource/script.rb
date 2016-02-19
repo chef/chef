@@ -49,7 +49,7 @@ class Chef
         set_or_return(
           :code,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -57,7 +57,7 @@ class Chef
         set_or_return(
           :interpreter,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -65,7 +65,7 @@ class Chef
         set_or_return(
           :flags,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 

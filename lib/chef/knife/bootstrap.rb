@@ -255,11 +255,11 @@ class Chef
         @client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(
           chef_config: Chef::Config,
           knife_config: config,
-          ui: ui,
+          ui: ui
         )
         @chef_vault_handler = Chef::Knife::Bootstrap::ChefVaultHandler.new(
           knife_config: config,
-          ui: ui,
+          ui: ui
         )
       end
 
@@ -340,7 +340,7 @@ class Chef
           config,
           config[:run_list],
           Chef::Config,
-          secret,
+          secret
         )
       end
 

@@ -40,7 +40,7 @@ class Chef
         all_profiles = get_installed_profiles
         @new_resource.profile(
           @new_resource.profile ||
-          @new_resource.profile_name,
+          @new_resource.profile_name
         )
 
         @new_profile_hash = get_profile_hash(@new_resource.profile)
@@ -141,7 +141,7 @@ class Chef
 
       def get_cache_dir
         cache_dir = Chef::FileCache.create_cache_path(
-          "profiles/#{@new_resource.cookbook_name}",
+          "profiles/#{@new_resource.cookbook_name}"
         )
       end
 
@@ -150,15 +150,15 @@ class Chef
           ::File.join(
             "profiles",
             @new_resource.cookbook_name,
-            ::File.dirname(cookbook_file),
-          ),
+            ::File.dirname(cookbook_file)
+          )
         )
         remote_file = Chef::Resource::CookbookFile.new(
           ::File.join(
             get_cache_dir,
-            "#{cookbook_file}.remote",
+            "#{cookbook_file}.remote"
           ),
-          run_context,
+          run_context
         )
         remote_file.cookbook_name = @new_resource.cookbook_name
         remote_file.source(cookbook_file)
@@ -179,7 +179,7 @@ class Chef
         # Make a UUID of the profile contents and return as string
         UUIDTools::UUID.sha1_create(
           UUIDTools::UUID_DNS_NAMESPACE,
-          profile.to_s,
+          profile.to_s
         ).to_s
       end
 

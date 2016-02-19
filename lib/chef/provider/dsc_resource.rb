@@ -72,7 +72,7 @@ class Chef
       def local_configuration_manager
         @local_configuration_manager ||= Chef::Util::DSC::LocalConfigurationManager.new(
           node,
-          nil,
+          nil
         )
       end
 
@@ -158,7 +158,7 @@ class Chef
         cmdlet = Chef::Util::Powershell::Cmdlet.new(
           node,
           "Invoke-DscResource #{switches}",
-          output_format,
+          output_format
         )
         cmdlet.run!({}, { :timeout => new_resource.timeout })
       end
@@ -176,7 +176,7 @@ class Chef
       def create_reboot_resource
         @reboot_resource = Chef::Resource::Reboot.new(
           "Reboot for #{@new_resource.name}",
-          run_context,
+          run_context
         ).tap do |r|
           r.reason("Reboot for #{@new_resource.resource}.")
         end

@@ -83,7 +83,7 @@ describe Chef::RunContext do
         "test-with-deps" => {
           "version" => "0.0.0",
         },
-      },
+      }
     )
   end
 

@@ -248,7 +248,7 @@ describe Chef::ProviderResolver do
               Chef::Provider::Service::Debian,
               Chef::Provider::Service::Init,
               Chef::Provider::Service::Invokercd,
-              Chef::Provider::Service::Upstart,
+              Chef::Provider::Service::Upstart
             )
           end
 
@@ -256,10 +256,10 @@ describe Chef::ProviderResolver do
             expect(provider_resolver.supported_handlers).to include(
               Chef::Provider::Service::Debian,
               Chef::Provider::Service::Init,
-              Chef::Provider::Service::Invokercd,
+              Chef::Provider::Service::Invokercd
             )
             expect(provider_resolver.supported_handlers).to_not include(
-              Chef::Provider::Service::Upstart,
+              Chef::Provider::Service::Upstart
             )
           end
 
@@ -279,7 +279,7 @@ describe Chef::ProviderResolver do
               Chef::Provider::Service::Debian,
               Chef::Provider::Service::Init,
               Chef::Provider::Service::Invokercd,
-              Chef::Provider::Service::Upstart,
+              Chef::Provider::Service::Upstart
             )
           end
 
@@ -288,7 +288,7 @@ describe Chef::ProviderResolver do
               Chef::Provider::Service::Debian,
               Chef::Provider::Service::Init,
               Chef::Provider::Service::Invokercd,
-              Chef::Provider::Service::Upstart,
+              Chef::Provider::Service::Upstart
             )
           end
 
@@ -308,18 +308,18 @@ describe Chef::ProviderResolver do
               Chef::Provider::Service::Debian,
               Chef::Provider::Service::Init,
               Chef::Provider::Service::Invokercd,
-              Chef::Provider::Service::Upstart,
+              Chef::Provider::Service::Upstart
             )
           end
 
           it "supports only the upstart handler" do
             expect(provider_resolver.supported_handlers).to include(
-              Chef::Provider::Service::Upstart,
+              Chef::Provider::Service::Upstart
             )
             expect(provider_resolver.supported_handlers).to_not include(
               Chef::Provider::Service::Debian,
               Chef::Provider::Service::Init,
-              Chef::Provider::Service::Invokercd,
+              Chef::Provider::Service::Invokercd
             )
           end
 
@@ -339,7 +339,7 @@ describe Chef::ProviderResolver do
               Chef::Provider::Service::Debian,
               Chef::Provider::Service::Init,
               Chef::Provider::Service::Invokercd,
-              Chef::Provider::Service::Upstart,
+              Chef::Provider::Service::Upstart
             )
           end
 
@@ -348,7 +348,7 @@ describe Chef::ProviderResolver do
               Chef::Provider::Service::Upstart,
               Chef::Provider::Service::Debian,
               Chef::Provider::Service::Init,
-              Chef::Provider::Service::Invokercd,
+              Chef::Provider::Service::Invokercd
             )
           end
 

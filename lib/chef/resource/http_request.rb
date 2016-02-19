@@ -40,7 +40,7 @@ class Chef
         set_or_return(
           :url,
           args,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -49,7 +49,7 @@ class Chef
         set_or_return(
           :message,
           args,
-          :kind_of => Object,
+          :kind_of => Object
         )
       end
 
@@ -57,7 +57,7 @@ class Chef
         set_or_return(
           :headers,
           args,
-          :kind_of => Hash,
+          :kind_of => Hash
         )
       end
 

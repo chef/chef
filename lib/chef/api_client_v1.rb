@@ -76,7 +76,7 @@ class Chef
       set_or_return(
         :name,
         arg,
-        :regex => /^[\-[:alnum:]_\.]+$/,
+        :regex => /^[\-[:alnum:]_\.]+$/
       )
     end
 
@@ -88,7 +88,7 @@ class Chef
       set_or_return(
         :admin,
         arg,
-        :kind_of => [ TrueClass, FalseClass ],
+        :kind_of => [ TrueClass, FalseClass ]
       )
     end
 
@@ -100,7 +100,7 @@ class Chef
       set_or_return(
         :public_key,
         arg,
-        :kind_of => String,
+        :kind_of => String
       )
     end
 
@@ -113,7 +113,7 @@ class Chef
       set_or_return(
         :validator,
         arg,
-        :kind_of => [TrueClass, FalseClass],
+        :kind_of => [TrueClass, FalseClass]
       )
     end
 
@@ -126,7 +126,7 @@ class Chef
       set_or_return(
         :private_key,
         arg,
-        :kind_of => [String, TrueClass, FalseClass],
+        :kind_of => [String, TrueClass, FalseClass]
       )
     end
 
@@ -138,7 +138,7 @@ class Chef
       set_or_return(
         :create_key,
         arg,
-        :kind_of => [ TrueClass, FalseClass ],
+        :kind_of => [ TrueClass, FalseClass ]
       )
     end
 

@@ -311,7 +311,7 @@ describe Chef::Cookbook::Metadata do
     it "strips out self-dependencies", :chef_lt_13_only do
       metadata.name("foo")
       expect(Chef::Log).to receive(:warn).with(
-        "Ignoring self-dependency in cookbook foo, please remove it (in the future this will be fatal).",
+        "Ignoring self-dependency in cookbook foo, please remove it (in the future this will be fatal)."
       )
       metadata.depends("foo")
       expect(metadata.dependencies).to eql({})

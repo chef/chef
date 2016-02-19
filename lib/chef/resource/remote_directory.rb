@@ -57,7 +57,7 @@ class Chef
         set_or_return(
           :source,
           args,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -65,7 +65,7 @@ class Chef
         set_or_return(
           :files_backup,
           arg,
-          :kind_of => [ Integer, FalseClass ],
+          :kind_of => [ Integer, FalseClass ]
         )
       end
 
@@ -73,7 +73,7 @@ class Chef
         set_or_return(
           :purge,
           arg,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
@@ -81,7 +81,7 @@ class Chef
         set_or_return(
           :files_group,
           arg,
-          :regex => Chef::Config[:group_valid_regex],
+          :regex => Chef::Config[:group_valid_regex]
         )
       end
 
@@ -89,7 +89,7 @@ class Chef
         set_or_return(
           :files_mode,
           arg,
-          :regex => /^\d{3,4}$/,
+          :regex => /^\d{3,4}$/
         )
       end
 
@@ -97,7 +97,7 @@ class Chef
         set_or_return(
           :files_owner,
           arg,
-          :regex => Chef::Config[:user_valid_regex],
+          :regex => Chef::Config[:user_valid_regex]
         )
       end
 
@@ -105,7 +105,7 @@ class Chef
         set_or_return(
           :overwrite,
           arg,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
@@ -113,7 +113,7 @@ class Chef
         set_or_return(
           :cookbook,
           args,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 

@@ -16,7 +16,7 @@ class Chef
             "default" => {},
             "automatic" => {},
             "run_list" => [],
-          },)
+          })
           result["run_list"] = normalize_run_list(result["run_list"])
           result
         end

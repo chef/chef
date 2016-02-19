@@ -60,7 +60,7 @@ class Chef
         set_or_return(
           :minute,
           converted_arg,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -77,7 +77,7 @@ class Chef
         set_or_return(
           :hour,
           converted_arg,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -94,7 +94,7 @@ class Chef
         set_or_return(
           :day,
           converted_arg,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -111,7 +111,7 @@ class Chef
         set_or_return(
           :month,
           converted_arg,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -135,7 +135,7 @@ class Chef
         set_or_return(
           :weekday,
           converted_arg,
-          :kind_of => [String, Symbol],
+          :kind_of => [String, Symbol]
         )
       end
 
@@ -143,7 +143,7 @@ class Chef
         set_or_return(
           :time,
           arg,
-          :equal_to => Chef::Provider::Cron::SPECIAL_TIME_VALUES,
+          :equal_to => Chef::Provider::Cron::SPECIAL_TIME_VALUES
         )
       end
 
@@ -151,7 +151,7 @@ class Chef
         set_or_return(
           :mailto,
           arg,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -159,7 +159,7 @@ class Chef
         set_or_return(
           :path,
           arg,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -167,7 +167,7 @@ class Chef
         set_or_return(
           :home,
           arg,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -175,7 +175,7 @@ class Chef
         set_or_return(
           :shell,
           arg,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -183,7 +183,7 @@ class Chef
         set_or_return(
           :command,
           arg,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -191,7 +191,7 @@ class Chef
         set_or_return(
           :user,
           arg,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -199,7 +199,7 @@ class Chef
         set_or_return(
           :environment,
           arg,
-          :kind_of => Hash,
+          :kind_of => Hash
         )
       end
 

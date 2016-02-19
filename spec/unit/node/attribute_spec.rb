@@ -558,7 +558,7 @@ describe Chef::Node::Attribute do
           "one" => { "six" => "seven" },
           "snack" => "cookies",
         },
-        {},
+        {}
       )
     end
 
@@ -606,7 +606,7 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
+        {}
       )
     end
 
@@ -644,7 +644,7 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
+        {}
       )
     end
 
@@ -680,7 +680,7 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
+        {}
       )
     end
 
@@ -716,7 +716,7 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
+        {}
       )
     end
 
@@ -760,7 +760,7 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
+        {}
       )
       @empty = Chef::Node::Attribute.new({}, {}, {}, {})
     end
@@ -794,7 +794,7 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
+        {}
       )
     end
 
@@ -851,7 +851,7 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
+        {}
       )
     end
 
@@ -896,7 +896,7 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
+        {}
       )
     end
 
@@ -937,7 +937,7 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
+        {}
       )
     end
 
@@ -973,7 +973,7 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
+        {}
       )
     end
 
@@ -1003,7 +1003,7 @@ describe Chef::Node::Attribute do
           %w{one six},
           %w{snack cookies},
           ["snakes", "on a plane"],
-        ],
+        ]
       )
     end
   end
@@ -1023,7 +1023,7 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
+        {}
       )
 
       @empty = Chef::Node::Attribute.new({}, {}, {}, {})

@@ -25,7 +25,7 @@ describe Chef::Resource::Breakpoint do
     resource: Chef::Resource::Breakpoint,
     provider: Chef::Provider::Breakpoint,
     name: :breakpoint,
-    action: :break,
+    action: :break
   )
 
   before do

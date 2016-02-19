@@ -144,7 +144,7 @@ describe Chef::Mixin::ShellOut do
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
               },
-            },).and_return(true)
+            }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
 
@@ -157,7 +157,7 @@ describe Chef::Mixin::ShellOut do
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
               },
-            },).and_return(true)
+            }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
             expect(options[:environment].has_key?("LC_ALL")).to be false
           end
@@ -185,7 +185,7 @@ describe Chef::Mixin::ShellOut do
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
               },
-            },).and_return(true)
+            }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
 
@@ -198,7 +198,7 @@ describe Chef::Mixin::ShellOut do
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
               },
-            },).and_return(true)
+            }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
             expect(options[:env].has_key?("LC_ALL")).to be false
           end
@@ -214,7 +214,7 @@ describe Chef::Mixin::ShellOut do
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
               },
-            },).and_return(true)
+            }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
         end
@@ -228,7 +228,7 @@ describe Chef::Mixin::ShellOut do
               "LANG"     => Chef::Config[:internal_locale],
               "LANGUAGE" => Chef::Config[:internal_locale],
             },
-          },).and_return(true)
+          }).and_return(true)
           shell_out_obj.shell_out(cmd)
         end
       end

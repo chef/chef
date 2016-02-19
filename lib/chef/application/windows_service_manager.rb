@@ -124,11 +124,11 @@ class Chef
               :binary_path_name   => cmd,
               :service_start_name => @service_start_name,
               :password           => @password,
-              :dependencies       => @dependencies,
+              :dependencies       => @dependencies
             )
             ::Win32::Service.configure(
               :service_name     => @service_name,
-              :delayed_start    => @delayed_start,
+              :delayed_start    => @delayed_start
             ) unless @delayed_start.nil?
             puts "Service '#{@service_name}' has successfully been installed."
           end

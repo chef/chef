@@ -71,7 +71,7 @@ class Chef
         set_or_return(
           :key,
           arg,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -105,7 +105,7 @@ class Chef
         set_or_return(
           :recursive,
           arg,
-          :kind_of => [TrueClass, FalseClass],
+          :kind_of => [TrueClass, FalseClass]
         )
       end
 
@@ -113,7 +113,7 @@ class Chef
         set_or_return(
           :architecture,
           arg,
-          :kind_of => Symbol,
+          :kind_of => Symbol
         )
       end
 

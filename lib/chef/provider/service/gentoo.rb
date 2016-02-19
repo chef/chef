@@ -39,7 +39,7 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
         readable = ::File.readable? file
         Chef::Log.debug "#{@new_resource} exists: #{exists}, readable: #{readable}"
         exists and readable
-      end,
+      end
     )
     Chef::Log.debug "#{@new_resource} enabled: #{@current_resource.enabled}"
 

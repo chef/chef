@@ -79,7 +79,7 @@ class MonoLogger < Logger
 
     def add_log_header(file)
       file.write(
-        "# Logfile created on %s by %s\n" % [Time.now.to_s, Logger::ProgName],
+        "# Logfile created on %s by %s\n" % [Time.now.to_s, Logger::ProgName]
       )
     end
 

@@ -6,7 +6,7 @@ describe Chef::Resource::Launchd do
   @launchd = Chef::Resource::Launchd.new("io.chef.chef-client")
   let(:resource) { Chef::Resource::Launchd.new(
     "io.chef.chef-client",
-    run_context,
+    run_context
   )}
 
   it "should create a new Chef::Resource::Launchd" do

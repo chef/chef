@@ -26,7 +26,7 @@ describe Chef::Resource::DpkgPackage, "initialize" do
     provider: Chef::Provider::Package::Dpkg,
     name: :dpkg_package,
     action: :install,
-    os: "linux",
+    os: "linux"
   )
 
 end

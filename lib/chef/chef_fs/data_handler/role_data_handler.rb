@@ -15,7 +15,7 @@ class Chef
             "override_attributes" => {},
             "run_list" => [],
             "env_run_lists" => {},
-          },)
+          })
           result["run_list"] = normalize_run_list(result["run_list"])
           result["env_run_lists"].each_pair do |env, run_list|
             result["env_run_lists"][env] = normalize_run_list(run_list)

@@ -42,7 +42,7 @@ class Chef
         set_or_return(
           :group_name,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -50,7 +50,7 @@ class Chef
         set_or_return(
           :gid,
           arg,
-          :kind_of => [ String, Integer ],
+          :kind_of => [ String, Integer ]
         )
       end
 
@@ -59,7 +59,7 @@ class Chef
         set_or_return(
           :members,
           converted_members,
-          :kind_of => [ Array ],
+          :kind_of => [ Array ]
         )
       end
 
@@ -70,7 +70,7 @@ class Chef
         set_or_return(
           :excluded_members,
           converted_members,
-          :kind_of => [ Array ],
+          :kind_of => [ Array ]
         )
       end
 
@@ -78,7 +78,7 @@ class Chef
         set_or_return(
           :append,
           arg,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
@@ -86,7 +86,7 @@ class Chef
         set_or_return(
           :system,
           arg,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
@@ -94,7 +94,7 @@ class Chef
         set_or_return(
           :non_unique,
           arg,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
     end

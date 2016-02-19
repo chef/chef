@@ -52,7 +52,7 @@ class Chef
       set_or_return(
         :name,
         arg,
-        :regex => VALID_NAME,
+        :regex => VALID_NAME
       )
     end
 

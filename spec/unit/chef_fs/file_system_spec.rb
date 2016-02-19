@@ -68,7 +68,7 @@ describe Chef::ChefFS::FileSystem do
         },
         :x => "",
         :y => {},
-      },)
+      })
     }
     context "list" do
       it "/**" do

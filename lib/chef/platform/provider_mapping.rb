@@ -124,7 +124,7 @@ class Chef
             :provider => {
               :kind_of => [ String, Symbol, Class ],
             },
-          },
+          }
         )
         if args.has_key?(:platform)
           if args.has_key?(:version)

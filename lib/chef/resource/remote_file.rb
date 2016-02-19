@@ -76,7 +76,7 @@ class Chef
         set_or_return(
           :checksum,
           args,
-          :kind_of => String,
+          :kind_of => String
         )
       end
 
@@ -92,7 +92,7 @@ class Chef
         set_or_return(
           :use_etag,
           args,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
@@ -102,7 +102,7 @@ class Chef
         set_or_return(
           :use_last_modified,
           args,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
@@ -110,7 +110,7 @@ class Chef
         set_or_return(
           :ftp_active_mode,
           args,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
@@ -118,7 +118,7 @@ class Chef
         set_or_return(
           :headers,
           args,
-          :kind_of => Hash,
+          :kind_of => Hash
         )
       end
 

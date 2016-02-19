@@ -27,7 +27,7 @@ module AppServerSupport
       Rack::Handler::WEBrick.run(app,
         :Port => 9018,
         :AccessLog => [],
-        :Logger => WEBrick::Log.new(StringIO.new, 7),
+        :Logger => WEBrick::Log.new(StringIO.new, 7)
       ) do |found_server|
         server = found_server
       end

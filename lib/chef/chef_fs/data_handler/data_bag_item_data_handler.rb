@@ -14,7 +14,7 @@ class Chef
           # use those in knife-essentials.
           normalize_hash(data_bag_item, {
             "id" => remove_dot_json(entry.name),
-          },)
+          })
         end
 
         def normalize_for_post(data_bag_item, entry)

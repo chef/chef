@@ -25,7 +25,7 @@ describe Chef::Resource::Git do
     resource: Chef::Resource::Git,
     provider: Chef::Provider::Git,
     name: :git,
-    action: :sync,
+    action: :sync
   )
 
   before(:each) do

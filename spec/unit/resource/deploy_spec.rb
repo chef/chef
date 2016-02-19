@@ -25,7 +25,7 @@ describe Chef::Resource::Deploy do
     resource: Chef::Resource::Deploy,
     provider: Chef::Provider::Deploy::Timestamped,
     name: :deploy,
-    action: :deploy,
+    action: :deploy
   )
 
   class << self

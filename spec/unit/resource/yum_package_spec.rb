@@ -27,7 +27,7 @@ describe Chef::Resource::YumPackage, "initialize" do
     name: :yum_package,
     action: :install,
     os: "linux",
-    platform_family: "rhel",
+    platform_family: "rhel"
   )
 
 end

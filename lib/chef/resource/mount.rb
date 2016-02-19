@@ -52,7 +52,7 @@ class Chef
         set_or_return(
           :mount_point,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -60,7 +60,7 @@ class Chef
         set_or_return(
           :device,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -74,7 +74,7 @@ class Chef
         set_or_return(
           :device_type,
           real_arg,
-          :equal_to => valid_devices,
+          :equal_to => valid_devices
         )
       end
 
@@ -82,7 +82,7 @@ class Chef
         set_or_return(
           :fsck_device,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -90,7 +90,7 @@ class Chef
         set_or_return(
           :fstype,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -98,7 +98,7 @@ class Chef
         ret = set_or_return(
                             :options,
                             arg,
-                            :kind_of => [ Array, String ],
+                            :kind_of => [ Array, String ]
                             )
 
         if ret.is_a? String
@@ -112,7 +112,7 @@ class Chef
         set_or_return(
           :dump,
           arg,
-          :kind_of => [ Integer, FalseClass ],
+          :kind_of => [ Integer, FalseClass ]
         )
       end
 
@@ -120,7 +120,7 @@ class Chef
         set_or_return(
           :pass,
           arg,
-          :kind_of => [ Integer, FalseClass ],
+          :kind_of => [ Integer, FalseClass ]
         )
       end
 
@@ -128,7 +128,7 @@ class Chef
         set_or_return(
           :mounted,
           arg,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
@@ -136,7 +136,7 @@ class Chef
         set_or_return(
           :enabled,
           arg,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
@@ -154,7 +154,7 @@ class Chef
         set_or_return(
           :username,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -162,7 +162,7 @@ class Chef
         set_or_return(
           :password,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 
@@ -170,7 +170,7 @@ class Chef
         set_or_return(
           :domain,
           arg,
-          :kind_of => [ String ],
+          :kind_of => [ String ]
         )
       end
 

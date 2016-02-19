@@ -26,7 +26,7 @@ describe Chef::Resource::MacportsPackage, "initialize" do
     provider: Chef::Provider::Package::Macports,
     name: :macports_package,
     action: :install,
-    os: "mac_os_x",
+    os: "mac_os_x"
   )
 
 end

@@ -26,7 +26,7 @@ describe Chef::Resource::ChefGem, "initialize" do
     resource: Chef::Resource::ChefGem,
     provider: Chef::Provider::Package::Rubygems,
     name: :chef_gem,
-    action: :install,
+    action: :install
   )
 
 end
