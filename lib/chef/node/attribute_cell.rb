@@ -273,7 +273,7 @@ class Chef
 
       def merged_array_key(key)
         # this is much faster than merged_array[key]
-        automatic_array_key(key) || override_array[key] || normal_array_key(key) || default_array[key]
+        automatic_array_key(key) || override_array_key(key) || normal_array_key(key) || default_array_key(key)
       end
 
       def merged_hash_key(key)
@@ -343,6 +343,27 @@ class Chef
         default_array
       end
 
+      def default_array_key(key)
+        return nil unless DEFAULT_COMPONENTS_AS_SYMBOLS.any? do |component|
+          send(component).is_a?(Array)
+        end
+        # this is a one level deep deep_merge
+        default_array = []
+        DEFAULT_COMPONENTS_AS_SYMBOLS.each do |component|
+          array = instance_variable_get(:"@#{component}")
+          next unless array.is_a?(Array)
+          default_array += array
+        end
+        value = default_array[key]
+        if value.is_a?(Hash) || value.is_a?(Array)
+          cell = self.class.allocate
+          cell.instance_variable_set(:@default, value) # XXX? set to default since we forgot where it came from
+          cell
+        else
+          value
+        end
+      end
+
       def normal_array
         return nil unless @normal.is_a?(Array)
         @normal.map do |value|
@@ -357,6 +378,7 @@ class Chef
       end
 
       def normal_array_key(key)
+        return nil unless @normal.is_a?(Array)
         value = @normal[key]
         if value.is_a?(Hash) || value.is_a?(Array)
           cell = self.class.allocate
@@ -389,6 +411,27 @@ class Chef
         override_array
       end
 
+      def override_array_key(key)
+        return nil unless OVERRIDE_COMPONENTS_AS_SYMBOLS.any? do |component|
+          send(component).is_a?(Array)
+        end
+        # this is a one level deep deep_merge
+        override_array = []
+        OVERRIDE_COMPONENTS_AS_SYMBOLS.each do |component|
+          array = instance_variable_get(:"@#{component}")
+          next unless array.is_a?(Array)
+          override_array += array
+        end
+        value = override_array[key]
+        if value.is_a?(Hash) || value.is_a?(Array)
+          cell = self.class.allocate
+          cell.instance_variable_set(:@override, value) # XXX? set to override since we forgot where it came from
+          cell
+        else
+          value
+        end
+      end
+
       def automatic_array
         return nil unless @automatic.is_a?(Array)
         @automatic.map do |value|
@@ -403,6 +446,7 @@ class Chef
       end
 
       def automatic_array_key(key)
+        return nil unless @automatic.is_a?(Array)
         value = @automatic[key]
         if value.is_a?(Hash) || value.is_a?(Array)
           cell = self.class.allocate
