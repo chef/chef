@@ -99,23 +99,23 @@ describe Chef::Resource::Mdadm do
     end
   end
 
-  describe "warning messages about upcoming changes to defaults" do
+  describe "deprecation messages about upcoming changes to defaults" do
     it "should display the warning message for metadata" do
       resource.chunk(16)
-      expect(Chef::Log).to receive(:warn).with(/metadata/)
+      expect(Chef::Log).to receive(:deprecation).with(/metadata/)
       resource.after_created
     end
 
     it "should display the warning message for chunk size" do
       resource.metadata("1.2")
-      expect(Chef::Log).to receive(:warn).with(/chunk/)
+      expect(Chef::Log).to receive(:deprecation).with(/chunk/)
       resource.after_created
     end
 
     it "should not display any warning messages" do
       resource.chunk(16)
       resource.metadata("1.2")
-      expect(Chef::Log).to_not receive(:warn)
+      expect(Chef::Log).to_not receive(:deprecation)
       resource.after_created
     end
   end
@@ -128,12 +128,14 @@ describe Chef::Resource::Mdadm do
 
     it "should set chunk to return nil when not explicitly set and mdadm_defaults is true" do
       resource.mdadm_defaults(true)
+      expect(Chef::Log).to receive(:deprecation).exactly(2).times
       resource.after_created
       expect(resource.chunk).to eql(nil)
     end
 
     it "should set metadata to return nil when not explicitly set and mdadm_defaults is true" do
       resource.mdadm_defaults(true)
+      expect(Chef::Log).to receive(:deprecation).exactly(2).times
       resource.after_created
       expect(resource.metadata).to eql(nil)
     end
@@ -141,6 +143,7 @@ describe Chef::Resource::Mdadm do
     it "should allow chunk to be explicitly set when mdadm_defaults is true" do
       resource.mdadm_defaults(true)
       resource.chunk(256)
+      expect(Chef::Log).to receive(:deprecation).exactly(1).times
       resource.after_created
       expect(resource.chunk).to eql(256)
     end
@@ -148,6 +151,7 @@ describe Chef::Resource::Mdadm do
     it "should allow metadata to be explicitly set when mdadm_defaults is true" do
       resource.mdadm_defaults(true)
       resource.metadata("1.2")
+      expect(Chef::Log).to receive(:deprecation).exactly(1).times
       resource.after_created
       expect(resource.metadata).to eq("1.2")
     end

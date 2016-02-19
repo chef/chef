@@ -88,6 +88,7 @@ describe Chef::Provider::Mdadm do
       it "should not specify a chunksize or metadata version if mdadm_defaults is true and user hasn't explicity set them" do
         @current_resource.exists(false)
         @new_resource.mdadm_defaults(true)
+        expect(Chef::Log).to receive(:deprecation).exactly(2).times
         @new_resource.after_created
         expected_command = "yes | mdadm --create /dev/md1 --level 5 --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
         expect(@provider).to receive(:shell_out!).with(expected_command)
