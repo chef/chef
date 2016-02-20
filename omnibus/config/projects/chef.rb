@@ -35,7 +35,13 @@ else
 end
 
 if windows?
-  override :'ruby-windows', version: "2.0.0-p645"
+  #override :'ruby-windows', version: "2.0.0-p645"
+  ## Leave dev-kit pinned to 4.5 because 4.7 is 20MB larger and we don't want
+  ## to unnecessarily make the client any fatter.
+  #if windows_arch_i386?
+    #override :'ruby-windows-devkit', version: "4.5.2-20111229-1559"
+  #end
+  override :ruby, version: "2.0.0-p645"
   # Leave dev-kit pinned to 4.5 because 4.7 is 20MB larger and we don't want
   # to unnecessarily make the client any fatter.
   if windows_arch_i386?
@@ -51,6 +57,12 @@ override :rubygems,     version: "2.5.2"
 # Chef Release version pinning
 override :chef, version: "local_source"
 override :ohai, version: "master"
+override :"rb-readline", version: "v0.5.3"
+
+# Global FIPS override flag.
+if windows? || rhel?
+  override :fips, enabled: true
+end
 
 dependency "preparation"
 dependency "chef"
@@ -59,6 +71,12 @@ dependency "nokogiri"
 dependency "shebang-cleanup"
 dependency "version-manifest"
 dependency "openssl-customization"
+dependency "rb-readline"
+
+if windows?
+  dependency "ruby-windows-devkit"
+  dependency "ruby-windows-devkit-bash"
+end
 
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
