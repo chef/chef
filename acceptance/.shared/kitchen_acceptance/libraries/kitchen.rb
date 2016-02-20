@@ -4,7 +4,7 @@ module KitchenAcceptance
 
     property :command, String, name_property: true
     property :driver, %w(ec2 vagrant), coerce: proc { |v| v.to_s }, default: lazy { ENV["KITCHEN_DRIVER"] || :ec2 }
-    property :instances, String, default: lazy { ENV["KITCHEN_INSTANCES"] }
+    property :instances, String, default: lazy { ENV["KITCHEN_INSTANCES"] ? ENV["KITCHEN_INSTANCES"] : "" }
     property :kitchen_dir, String, default: Chef.node['chef-acceptance']['suite-dir']
     property :chef_product, String, default: lazy {
       ENV["KITCHEN_CHEF_PRODUCT"] ||
@@ -22,8 +22,8 @@ module KitchenAcceptance
       (ENV["PROJECT_NAME"] == chef_product ? ENV["OMNIBUS_BUILD_VERSION"] : nil) ||
       "latest"
     }
-    property :artifactory_username, String, default: lazy { ENV["ARTIFACTORY_USERNAME"] }
-    property :artifactory_password, String, default: lazy { ENV["ARTIFACTORY_PASSWORD"] }
+    property :artifactory_username, String, default: lazy { ENV["ARTIFACTORY_USERNAME"] ? ENV["ARTIFACTORY_USERNAME"] : "" }
+    property :artifactory_password, String, default: lazy { ENV["ARTIFACTORY_PASSWORD"] ? ENV["ARTIFACTORY_PASSWORD"] : "" }
     property :env, Hash, default: {}
     property :kitchen_options, String, default: lazy { ENV["PROJECT_NAME"] ? "-c -l debug" : "-c" }
 
