@@ -256,9 +256,16 @@ class Chef
         options ? " #{options}" : ""
       end
 
-      # this is public and overridden by subclasses (rubygems package implements '>=' and '~>' operators)
-      def target_version_already_installed?(current_version, new_version)
-        new_version == current_version
+      # this is public and overridden by subclasses
+      def target_version_already_installed?(current_version, target_version)
+        current_version && target_version &&
+          current_version == target_version
+      end
+
+      # this is public and overridden by subclasses
+      # (rubygems package implements '>=' and '~>' operators)
+      def version_requirement_satisfied?(current_version, version_requirement)
+        target_version_already_installed?(current_version, version_requirement)
       end
 
       # @todo: extract apt/dpkg specific preseeding to a helper class
@@ -355,11 +362,12 @@ class Chef
               case action
               when :upgrade
 
-                if !candidate_version
-                  Chef::Log.debug("#{new_resource} #{package_name} has no candidate_version to upgrade to")
+                if target_version_already_installed?(current_version, new_version) ||
+                    target_version_already_installed?(current_version, candidate_version)
+                  Chef::Log.debug("#{new_resource} #{package_name} #{new_version} is already installed")
                   target_version_array.push(nil)
-                elsif current_version == candidate_version
-                  Chef::Log.debug("#{new_resource} #{package_name} the #{candidate_version} is already installed")
+                elsif candidate_version.nil?
+                  Chef::Log.debug("#{new_resource} #{package_name} has no candidate_version to upgrade to")
                   target_version_array.push(nil)
                 else
                   Chef::Log.debug("#{new_resource} #{package_name} is out of date, will upgrade to #{candidate_version}")
@@ -369,7 +377,7 @@ class Chef
               when :install
 
                 if new_version
-                  if target_version_already_installed?(current_version, new_version)
+                  if version_requirement_satisfied?(current_version, new_version)
                     Chef::Log.debug("#{new_resource} #{package_name} #{current_version} satisifies #{new_version} requirement")
                     target_version_array.push(nil)
                   else
@@ -411,7 +419,7 @@ class Chef
           begin
             missing = []
             each_package do |package_name, new_version, current_version, candidate_version|
-              missing.push(package_name) if candidate_version.nil? && current_version.nil?
+              missing.push(package_name) if current_version.nil? && candidate_version.nil?
             end
             missing
           end
@@ -436,7 +444,7 @@ class Chef
             missing = []
             each_package do |package_name, new_version, current_version, candidate_version|
               next if new_version.nil? || current_version.nil?
-              if candidate_version.nil? && !target_version_already_installed?(current_version, new_version)
+              if !version_requirement_satisfied?(current_version, new_version) && candidate_version.nil?
                 missing.push(package_name)
               end
             end
@@ -468,7 +476,32 @@ class Chef
 
       # @return [Array] candidate_version(s) as an array
       def candidate_version_array
-        [ candidate_version ].flatten
+        use_multipackage_api? ?
+          [ candidate_version ].flatten :
+          [ LazyObject.new { candidate_version } ]
+      end
+
+      # Wrap single candidate_version in a lazy object to minimize unnecessary API queries.
+      class LazyObject < BasicObject
+        NULL = ::Object.new
+
+        def initialize(&block)
+          @block = block
+          @target = NULL
+        end
+
+        def __obj
+          @target = @block.call if @target == NULL
+          @target
+        end
+
+        def ==(other_object)
+          __obj == other_object
+        end
+
+        def method_missing(method_name, *args, &block)
+          __obj.send(method_name, *args, &block)
+        end
       end
 
       # @return [Array] current_version(s) as an array

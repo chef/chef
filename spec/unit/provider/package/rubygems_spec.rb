@@ -496,12 +496,35 @@ describe Chef::Provider::Package::Rubygems do
         provider.load_current_resource
       end
 
-      it "does not query for available versions when the current version is the target version" do
-        expect(provider.candidate_version).to be_nil
+      context "when the current version is the target version" do
+        it "does not query for available versions" do
+          expect(provider.gem_env).not_to receive(:candidate_version_from_remote)
+          expect(provider.gem_env).not_to receive(:install)
+          provider.run_action(:upgrade)
+          expect(new_resource).not_to be_updated_by_last_action
+        end
       end
 
-      context "when the current version is not the target version" do
-        let(:target_version) { "9000.0.2" }
+      context "when the current version satisfies the target version requirement" do
+        let(:target_version) { ">= 0" }
+
+        it "does not query for available versions on install" do
+          expect(provider.gem_env).not_to receive(:candidate_version_from_remote)
+          expect(provider.gem_env).not_to receive(:install)
+          provider.run_action(:install)
+          expect(new_resource).not_to be_updated_by_last_action
+        end
+
+        it "queries for available versions on upgrade" do
+          expect(provider.gem_env).to receive(:candidate_version_from_remote).
+            and_return(Gem::Version.new("9000.0.2"))
+          expect(provider.gem_env).to receive(:install)
+          provider.run_action(:upgrade)
+          expect(new_resource).to be_updated_by_last_action
+        end
+      end
+
+      context "when the requested source is a remote server" do
         let(:source) { "http://mygems.example.com" }
 
         it "determines the candidate version by querying the remote gem servers" do
@@ -669,6 +692,11 @@ describe Chef::Provider::Package::Rubygems do
               expect(provider.gem_env).not_to receive(:install)
               provider.run_action(:install)
             end
+
+            it "performs the upgrade" do
+              expect(provider.gem_env).to receive(:install)
+              provider.run_action(:upgrade)
+            end
           end
 
           context "if the fuzzy operator is used" do
@@ -678,6 +706,11 @@ describe Chef::Provider::Package::Rubygems do
             it "it matches an existing gem" do
               expect(provider.gem_env).not_to receive(:install)
               provider.run_action(:install)
+            end
+
+            it "it upgrades an existing gem" do
+              expect(provider.gem_env).to receive(:install)
+              provider.run_action(:upgrade)
             end
           end
         end
