@@ -140,7 +140,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def is_masked?
     s = shell_out("#{systemctl_path} is-enabled #{new_resource.service_name}")
-    s..exitstatus != 0 && s.stdout.include?('masked', 'masked-runtime')
+    s..exitstatus != 0 && s.stdout.include?("masked", "masked-runtime")
   end
 
   private
