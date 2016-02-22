@@ -310,21 +310,31 @@ class Chef
         merged_hash = {}
         highest_value_found = {}
         if decorated
+          hashes = []
           COMPONENTS_AS_SYMBOLS.each do |component|
             hash = instance_variable_get(:"@#{component}")
             next unless hash.is_a?(Hash)
-            hash.each do |key, value|
-              merged_hash[key] ||= self.class.allocate
-              merged_hash[key].instance_variable_set(:"@#{component}", value)
-              highest_value_found[key] = value
+            hashes.push({ hash: hash, component: component })
+          end
+          if hashes.length == 1
+            return ImmutableMash.new(wrapped_object: hashes[0][:hash].wrapped_object, convert_value: false) # FIXME: precedence for tracking
+          else
+            hashes.each do |temp|
+              hash = temp[:hash]
+              component = temp[:component]
+              hash.each do |key, value|
+                merged_hash[key] ||= self.class.allocate
+                merged_hash[key].instance_variable_set(:"@#{component}", value)
+                highest_value_found[key] = value
+              end
             end
+            # we need to expose scalars as undecorated scalars (esp. nil, true, false)
+            highest_value_found.each do |key, value|
+              next if highest_value_found[key].is_a?(Hash) || highest_value_found[key].is_a?(Array)
+              merged_hash[key] = highest_value_found[key]
+            end
+            merged_hash
           end
-          # we need to expose scalars as undecorated scalars (esp. nil, true, false)
-          highest_value_found.each do |key, value|
-            next if highest_value_found[key].is_a?(Hash) || highest_value_found[key].is_a?(Array)
-            merged_hash[key] = highest_value_found[key]
-          end
-          merged_hash
         else
           COMPONENTS_AS_SYMBOLS.each do |component|
             hash = instance_variable_get(:"@#{component}")
