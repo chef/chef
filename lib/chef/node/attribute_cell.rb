@@ -38,23 +38,23 @@ class Chef
       end
 
       def to_ary
-        as_simple_object.to_ary
+        merged_object(decorated: false).to_ary
       end
 
       def to_a
-        as_simple_object.to_a
+        merged_object(deocrated: false).to_a
       end
 
       def to_hash
-        as_simple_object.to_hash
+        merged_object(decorated: false).to_hash
       end
 
       def to_h
-        as_simple_object.to_h
+        merged_object(decorated: false).to_h
       end
 
       def for_json
-        as_simple_object.for_json
+        merged_object(decorated: false).for_json
       end
 
       def initialize(default: nil, env_default: nil, role_default: nil, force_default: nil,
@@ -131,7 +131,7 @@ class Chef
       # delegate Enumerable methods to the constructed deep merged object.
       Enumerable.instance_methods.each do |method|
         define_method method do |*args, &block|
-          as_simple_object.public_send(method, *args, &block)
+          merged_object.public_send(method, *args, &block)
         end
       end
 
@@ -178,11 +178,11 @@ class Chef
       end
 
       def ===(other)
-        as_simple_object === other
+        merged_object === other
       end
 
       def to_s
-        as_simple_object.to_s
+        merged_object(decorated: false).to_s
       end
 
       # perf
@@ -190,7 +190,7 @@ class Chef
         if self.is_a?(Hash)
           merged_hash_has_key?(key)
         else
-          as_simple_object.key?(key)
+          merged_object(decorated: false).key?(key)
         end
       end
 
@@ -199,7 +199,7 @@ class Chef
         if self.is_a?(Hash)
           merged_hash_has_key?(key)
         else
-          as_simple_object.include?(key)
+          merged_object(decorated: false).include?(key)
         end
       end
 
@@ -208,7 +208,7 @@ class Chef
         if self.is_a?(Hash)
           merged_hash_has_key?(key)
         else
-          as_simple_object.member?(key)
+          merged_object(decorated: false).member?(key)
         end
       end
 
@@ -217,16 +217,16 @@ class Chef
         if self.is_a?(Hash)
           merged_hash_has_key?(key)
         else
-          as_simple_object.has_key?(key)
+          merged_object(decorated: false).has_key?(key)
         end
       end
 
       def method_missing(method, *args, &block)
-        as_simple_object.public_send(method, *args, &block)
+        merged_object.public_send(method, *args, &block)
       end
 
       def respond_to?(method, include_private = false)
-        as_simple_object.respond_to?(method, include_private) || is_a?(Hash) && key?(method.to_s)
+        merged_object.respond_to?(method, include_private) || is_a?(Hash) && key?(method.to_s)
       end
 
       def [](key)
@@ -265,11 +265,11 @@ class Chef
 
       private
 
-      def as_simple_object
+      def merged_object(decorated: true)
         if self.is_a?(Hash)
-          merged_hash
+          merged_hash(decorated: decorated)
         elsif self.is_a?(Array)
-          merged_array
+          merged_array(decorated: decorated)
         else
           # in normal usage we never wrap non-containers, so this should never happen
           highest_precedence
@@ -305,32 +305,43 @@ class Chef
         return retval
       end
 
-      def merged_hash
+      def merged_hash(decorated: true)
         # this is a one level deep deep_merge
         merged_hash = {}
         highest_value_found = {}
-        COMPONENTS_AS_SYMBOLS.each do |component|
-          hash = instance_variable_get(:"@#{component}")
-          next unless hash.is_a?(Hash)
-          hash.each do |key, value|
-            merged_hash[key] ||= self.class.allocate
-            merged_hash[key].instance_variable_set(:"@#{component}", value)
-            highest_value_found[key] = value
+        if decorated
+          COMPONENTS_AS_SYMBOLS.each do |component|
+            hash = instance_variable_get(:"@#{component}")
+            next unless hash.is_a?(Hash)
+            hash.each do |key, value|
+              merged_hash[key] ||= self.class.allocate
+              merged_hash[key].instance_variable_set(:"@#{component}", value)
+              highest_value_found[key] = value
+            end
           end
+          # we need to expose scalars as undecorated scalars (esp. nil, true, false)
+          highest_value_found.each do |key, value|
+            next if highest_value_found[key].is_a?(Hash) || highest_value_found[key].is_a?(Array)
+            merged_hash[key] = highest_value_found[key]
+          end
+          merged_hash
+        else
+          COMPONENTS_AS_SYMBOLS.each do |component|
+            hash = instance_variable_get(:"@#{component}")
+            next unless hash.is_a?(Hash)
+            hash.each do |key, value|
+              merged_hash[key] = value
+            end
+          end
+          merged_hash
         end
-        # we need to expose scalars as undecorated scalars (esp. nil, true, false)
-        highest_value_found.each do |key, value|
-          next if highest_value_found[key].is_a?(Hash) || highest_value_found[key].is_a?(Array)
-          merged_hash[key] = highest_value_found[key]
-        end
-        merged_hash
       end
 
-      def merged_array
-        automatic_array || override_array || normal_array || default_array
+      def merged_array(decorated: true)
+        automatic_array(decorated: decorated) || override_array(decorated: decorated) || normal_array(decorated: decorated) || default_array(decorated: decorated)
       end
 
-      def default_array
+      def default_array(decorated: true)
         return nil unless DEFAULT_COMPONENTS_AS_SYMBOLS.any? do |component|
           send(component).is_a?(Array)
         end
@@ -341,15 +352,23 @@ class Chef
           next unless array.is_a?(Array)
           default_array += array
         end
-        ImmutableMash.new(wrapped_object: default_array, convert_value: false) # FIXME: precedence for tracking?
+        if decorated
+          ImmutableMash.new(wrapped_object: default_array, convert_value: false) # FIXME: precedence for tracking?
+        else
+          default_arrary
+        end
       end
 
-      def normal_array
+      def normal_array(decorated: true)
         return nil unless @normal.is_a?(Array)
-        ImmutableMash.new(wrapped_object: @normal.wrapped_object, convert_value: false) # FIXME: precedence for tracking
+        if decorated
+          ImmutableMash.new(wrapped_object: @normal.wrapped_object, convert_value: false) # FIXME: precedence for tracking
+        else
+          @normal.wrapped_object
+        end
       end
 
-      def override_array
+      def override_array(decorated: true)
         return nil unless OVERRIDE_COMPONENTS_AS_SYMBOLS.any? do |component|
           send(component).is_a?(Array)
         end
@@ -360,12 +379,20 @@ class Chef
           next unless array.is_a?(Array)
           override_array += array
         end
-        ImmutableMash.new(wrapped_object: override_array, convert_value: false) # FIXME: precedence for tracking?
+        if decorated
+          ImmutableMash.new(wrapped_object: override_array, convert_value: false) # FIXME: precedence for tracking?
+        else
+          override_array
+        end
       end
 
-      def automatic_array
+      def automatic_array(decorated: true)
         return nil unless @automatic.is_a?(Array)
-        ImmutableMash.new(wrapped_object: @automatic.wrapped_object, convert_value: false) # FIXME: precedence for tracking
+        if decorated
+          ImmutableMash.new(wrapped_object: @automatic.wrapped_object, convert_value: false) # FIXME: precedence for tracking
+        else
+          @automatic.is_a?(Array)
+        end
       end
 
       # @return [Object] value of the highest precedence level
