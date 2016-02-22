@@ -299,7 +299,7 @@ class Chef
         if values.length == 1
           value = values[0][:value]
           if value.is_a?(Hash) || value.is_a?(Array)
-            return ImmutableMash.new(wrapped_object: value, convert_value: false) # FIXME: precedence for tracking
+            return ImmutableMash.new(wrapped_object: value.wrapped_object, convert_value: false) # FIXME: precedence for tracking
           else
             return value
           end
