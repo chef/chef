@@ -1,5 +1,6 @@
 #
 # Author:: Stephen Haynes (<sh@nomitor.com>)
+# Author:: Davide Cavalca (<dcavalca@fb.com>)
 # Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -28,7 +29,7 @@ describe Chef::Provider::Service::Systemd do
 
   let(:service_name) { "rsyslog.service" }
 
-  let(:new_resource) { Chef::Resource::SystemdService.new(service_name) }
+  let(:new_resource) { Chef::Resource::Service.new(service_name) }
 
   let(:provider) { Chef::Provider::Service::Systemd.new(new_resource, run_context) }
 
