@@ -289,20 +289,34 @@ class Chef
         # this is much faster than merged_hash[key]
         highest_value_found = false
         retval = nil
-        COMPONENTS_AS_SYMBOLS.reverse_each do |component|
+        values = []
+        COMPONENTS_AS_SYMBOLS.each do |component|
           hash = instance_variable_get(:"@#{component}")
           next unless hash.is_a?(Hash)
           next unless hash.key?(key)
-          value = hash[key]
-          unless highest_value_found
-            highest_value_found = true
-            # this short-circuit is critical for performance
-            return value unless value.is_a?(Hash) || value.is_a?(Array)
-          end
-          retval ||= self.class.allocate
-          retval.instance_variable_set(:"@#{component}", value)
+          values.push({ value: hash[key], component: component })
         end
-        return retval
+        if values.length == 1
+          value = values[0][:value]
+          if value.is_a?(Hash) || value.is_a?(Array)
+            return ImmutableMash.new(wrapped_object: value, convert_value: false) # FIXME: precedence for tracking
+          else
+            return value
+          end
+        else
+          values.reverse_each do |temp|
+            value = temp[:value]
+            component = temp[:component]
+            unless highest_value_found
+              highest_value_found = true
+              # this short-circuit is critical for performance
+              return value unless value.is_a?(Hash) || value.is_a?(Array)
+            end
+            retval ||= self.class.allocate
+            retval.instance_variable_set(:"@#{component}", value)
+          end
+        end
+        retval
       end
 
       def merged_hash(decorated: true)
