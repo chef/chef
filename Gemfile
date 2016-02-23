@@ -30,7 +30,7 @@ group(:development, :test) do
   # gem 'chefstyle', github: 'chef/chefstyle'
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 
-  gem "ruby-shadow", platforms: :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
+  gem "ruby-shadow", platforms: :ruby unless RUBY_PLATFORM.downcase =~ /(aix|cygwin)/
 
   # For external tests
   #  gem 'chef-zero', github: 'chef/chef-zero'

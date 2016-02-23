@@ -25,7 +25,7 @@ class Chef
       module ChefServer
         class DataBagsDir < RestListDir
           def make_child_entry(name, exists = false)
-            result = @children.select { |child| child.name == name }.first if @children
+            result = @children.find { |child| child.name == name } if @children
             result || DataBagDir.new(name, self, exists)
           end
 

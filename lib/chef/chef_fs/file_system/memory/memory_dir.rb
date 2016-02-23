@@ -14,7 +14,7 @@ class Chef
           attr_reader :children
 
           def make_child_entry(name)
-            @children.select { |child| child.name == name }.first
+            @children.find { |child| child.name == name }
           end
 
           def add_child(child)

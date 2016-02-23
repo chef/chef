@@ -45,7 +45,7 @@ class Chef
         def verify_integrity(object, entry, &on_error)
           base_name = remove_dot_json(entry.name)
           if object["raw_data"]["id"] != base_name
-            on_error.call("ID in #{entry.path_for_printing} must be '#{base_name}' (is '#{object['raw_data']['id']}')")
+            yield("ID in #{entry.path_for_printing} must be '#{base_name}' (is '#{object['raw_data']['id']}')")
           end
         end
 

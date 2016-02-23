@@ -514,7 +514,7 @@ class Chef
       output = edit_data(object, object_class: object_class)
 
       if Kernel.block_given?
-        output = block.call(output)
+        output = yield(output)
       else
         output.save
       end
@@ -530,7 +530,7 @@ class Chef
       confirm("Do you really want to delete #{name}")
 
       if Kernel.block_given?
-        object = block.call
+        object = yield
       else
         object = klass.load(name)
         object.destroy

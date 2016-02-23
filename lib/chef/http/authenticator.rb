@@ -47,7 +47,7 @@ class Chef
       end
 
       def handle_request(method, url, headers = {}, data = false)
-        headers.merge!({ "X-Ops-Server-API-Version" => @api_version })
+        headers["X-Ops-Server-API-Version"] = @api_version
         headers.merge!(authentication_headers(method, url, data, headers)) if sign_requests?
         [method, url, headers, data]
       end

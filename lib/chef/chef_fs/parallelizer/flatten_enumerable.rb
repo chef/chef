@@ -26,7 +26,7 @@ class Chef
               flatten(child, levels.nil? ? levels : levels - 1, &block)
             end
           else
-            block.call(value)
+            yield(value)
           end
         end
       end

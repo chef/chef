@@ -99,7 +99,7 @@ module ChefConfig
       if defined?(Bundler)
         Bundler.with_clean_env(&block)
       else
-        block.call
+        yield
       end
     end
 

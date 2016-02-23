@@ -67,7 +67,7 @@ class Chef
           end
 
           if block_given?
-            block.call(@body)
+            yield(@body)
           else
             super
           end

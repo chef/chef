@@ -41,7 +41,7 @@ class Chef
         class VersionedCookbooksDir < CookbooksDir
 
           def make_child_entry(name)
-            result = @children.select { |child| child.name == name }.first if @children
+            result = @children.find { |child| child.name == name } if @children
             result || VersionedCookbookDir.new(name, self)
           end
 

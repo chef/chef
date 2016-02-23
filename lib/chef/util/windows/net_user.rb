@@ -123,7 +123,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     user = get_info
     user[:last_logon] = user[:units_per_week] = 0 #ignored as per USER_INFO_3 doc
     user[:logon_hours] = nil #PBYTE field; \0 == no changes
-    proc.call(user)
+    yield(user)
     set_info(user)
   end
 

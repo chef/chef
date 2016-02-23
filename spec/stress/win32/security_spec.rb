@@ -27,7 +27,7 @@ end
 describe "Chef::ReservedNames::Win32::Security", :windows_only do
 
   def monkeyfoo
-    File.join(CHEF_SPEC_DATA, "monkeyfoo").gsub("/", "\\")
+    File.join(CHEF_SPEC_DATA, "monkeyfoo").tr("/", "\\")
   end
 
   before :all do

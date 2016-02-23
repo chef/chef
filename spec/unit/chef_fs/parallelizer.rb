@@ -466,12 +466,12 @@ describe Chef::ChefFS::Parallelizer do
     def each(&each_block)
       @values.each do |value|
         @num_processed += 1
-        each_block.call(value)
+        yield(value)
       end
       if @block
         @block.call do |value|
           @num_processed += 1
-          each_block.call(value)
+          yield(value)
         end
       end
     end

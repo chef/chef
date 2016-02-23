@@ -30,7 +30,7 @@ class Chef
           end
 
           def make_child_entry(name, exists = nil)
-            result = @children.select { |child| child.name == name }.first if @children
+            result = @children.find { |child| child.name == name } if @children
             result || AclEntry.new(name, self, exists)
           end
 

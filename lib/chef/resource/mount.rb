@@ -102,7 +102,7 @@ class Chef
                             )
 
         if ret.is_a? String
-          ret.gsub(/,/, " ").split(/ /)
+          ret.tr(",", " ").split(/ /)
         else
           ret
         end

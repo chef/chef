@@ -98,7 +98,8 @@ class Chef
           options.each { |k, v| options[k.to_sym] = v if k.is_a?(String) }
 
           options[:instance_variable_name] = :"@#{name}" if !options.has_key?(:instance_variable_name)
-          options.merge!(name: name, declared_in: self)
+          options[:name] = name
+          options[:declared_in] = self
 
           if type == NOT_PASSED
             # If a type is not passed, the property derives from the

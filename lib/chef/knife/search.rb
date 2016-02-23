@@ -177,7 +177,7 @@ class Chef
       # See lib/chef/search/query.rb for more examples of this.
       def create_result_filter(filter_string)
         final_filter = Hash.new
-        filter_string.gsub!(" ", "")
+        filter_string.delete!(" ")
         filters = filter_string.split(",")
         filters.each do |f|
           return_id, attr_path = f.split("=")

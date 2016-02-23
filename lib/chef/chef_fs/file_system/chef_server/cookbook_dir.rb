@@ -74,7 +74,7 @@ class Chef
             # we need to make sure we don't rethrow the exception.  (child(name)
             # is not supposed to fail.)
             begin
-              children.select { |child| child.name == name }.first
+              children.find { |child| child.name == name }
             rescue Chef::ChefFS::FileSystem::NotFoundError
               nil
             end
@@ -101,7 +101,7 @@ class Chef
                   container = self
                   parts[0, parts.length - 1].each do |part|
                     old_container = container
-                    container = old_container.children.select { |child| part == child.name }.first
+                    container = old_container.children.find { |child| part == child.name }
                     if !container
                       container = CookbookSubdir.new(part, old_container, segment_info[:ruby_only], segment_info[:recursive])
                       old_container.add_child(container)

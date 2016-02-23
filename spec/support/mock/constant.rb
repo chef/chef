@@ -13,7 +13,7 @@ def mock_constants(constants, &block)
   end
 
   begin
-    block.call
+    yield
   ensure
     constants.each do |constant, val|
       source_object, const_name = parse_constant(constant)

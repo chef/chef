@@ -183,7 +183,7 @@ class Chef
           raise Chef::Exceptions::Exec, "#{dir} does not exist or is not a directory"
         end
         Dir.chdir(dir) do
-          block.call
+          yield
         end
       end
 

@@ -550,7 +550,7 @@ BOOL WINAPI VerQueryValue(
             if handle == INVALID_HANDLE_VALUE
               Chef::ReservedNames::Win32::Error.raise!
             end
-            block.call(handle, find_data)
+            yield(handle, find_data)
           ensure
             FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
           end
@@ -568,7 +568,7 @@ BOOL WINAPI VerQueryValue(
             if handle == INVALID_HANDLE_VALUE
               Chef::ReservedNames::Win32::Error.raise!
             end
-            block.call(handle)
+            yield(handle)
           ensure
             CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
           end
@@ -583,7 +583,7 @@ BOOL WINAPI VerQueryValue(
             if handle == INVALID_HANDLE_VALUE
               Chef::ReservedNames::Win32::Error.raise!
             end
-            block.call(handle)
+            yield(handle)
           ensure
             CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
           end

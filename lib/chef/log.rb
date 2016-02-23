@@ -48,7 +48,7 @@ class Chef
       # Pick the first caller that is *not* part of the Chef gem, that's the
       # thing the user wrote.
       chef_gem_path = File.expand_path("../..", __FILE__)
-      caller(0..20).select { |c| !c.start_with?(chef_gem_path) }.first
+      caller(0..20).find { |c| !c.start_with?(chef_gem_path) }
     end
 
     def self.deprecation(msg = nil, location = caller(2..2)[0], &block)

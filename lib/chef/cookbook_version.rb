@@ -493,7 +493,7 @@ class Chef
         if rendered_manifest.has_key?(segment)
           rendered_manifest[segment].each do |manifest_record|
             url_options = { :cookbook_name => name.to_s, :cookbook_version => version, :checksum => manifest_record["checksum"] }
-            manifest_record["url"] = url_generator.call(url_options)
+            manifest_record["url"] = yield(url_options)
           end
         end
       end

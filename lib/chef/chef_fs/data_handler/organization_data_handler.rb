@@ -21,7 +21,7 @@ class Chef
 
         def verify_integrity(object, entry, &on_error)
           if entry.org != object["name"]
-            on_error.call("Name must be '#{entry.org}' (is '#{object['name']}')")
+            yield("Name must be '#{entry.org}' (is '#{object['name']}')")
           end
         end
       end

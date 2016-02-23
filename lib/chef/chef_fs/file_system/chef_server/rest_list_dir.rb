@@ -168,7 +168,7 @@ class Chef
           end
 
           def make_child_entry(name, exists = nil)
-            @children.select { |child| child.name == name }.first if @children
+            @children.find { |child| child.name == name } if @children
             RestListEntry.new(name, self, exists)
           end
         end

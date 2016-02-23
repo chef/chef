@@ -29,11 +29,11 @@ class Chef
         def verify_integrity(object_data, entry, &on_error)
           name, revision = name_and_revision(entry.name)
           if object_data["name"] != name
-            on_error.call("Object name '#{object_data['name']}' doesn't match entry '#{entry.name}'.")
+            yield("Object name '#{object_data['name']}' doesn't match entry '#{entry.name}'.")
           end
 
           if object_data["revision_id"] != revision
-            on_error.call("Object revision ID '#{object_data['revision']}' doesn't match entry '#{entry.name}'.")
+            yield("Object revision ID '#{object_data['revision']}' doesn't match entry '#{entry.name}'.")
           end
         end
       end

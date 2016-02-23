@@ -106,11 +106,11 @@ class Chef
     end
 
     def each(&block)
-      @run_list_items.each { |i| block.call(i) }
+      @run_list_items.each { |i| yield(i) }
     end
 
     def each_index(&block)
-      @run_list_items.each_index { |i| block.call(i) }
+      @run_list_items.each_index { |i| yield(i) }
     end
 
     def include?(item)

@@ -508,7 +508,7 @@ describe Chef::Provider::User::Useradd, metadata do
     let(:user_locked_context?) { false }
 
     def shadow_entry
-      etc_shadow.lines.select { |l| l.include?(username) }.first
+      etc_shadow.lines.find { |l| l.include?(username) }
     end
 
     def shadow_password

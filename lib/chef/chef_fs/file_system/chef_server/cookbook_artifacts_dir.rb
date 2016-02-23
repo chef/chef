@@ -35,7 +35,7 @@ class Chef
         class CookbookArtifactsDir < CookbooksDir
 
           def make_child_entry(name)
-            result = @children.select { |child| child.name == name }.first if @children
+            result = @children.find { |child| child.name == name } if @children
             result || CookbookArtifactDir.new(name, self)
           end
 

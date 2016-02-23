@@ -86,7 +86,7 @@ class Chef
       end
 
       def canonicalize(path)
-        Chef::Platform.windows? ? path.gsub("/", '\\') : path
+        Chef::Platform.windows? ? path.tr("/", '\\') : path
       end
 
       def action_create

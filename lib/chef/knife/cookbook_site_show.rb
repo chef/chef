@@ -33,7 +33,7 @@ class Chef
         when 1
           noauth_rest.get("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}")
         when 2
-          noauth_rest.get("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}/versions/#{name_args[1].gsub('.', '_')}")
+          noauth_rest.get("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}/versions/#{name_args[1].tr('.', '_')}")
         end
       end
 
