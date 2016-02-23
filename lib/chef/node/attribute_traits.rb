@@ -1,5 +1,6 @@
 require "chef/node/attribute_trait/autovivify"
 require "chef/node/attribute_trait/convert_value"
+require "chef/node/attribute_trait/copy_on_write"
 require "chef/node/attribute_trait/decorator"
 require "chef/node/attribute_trait/deep_merge_cache"
 require "chef/node/attribute_trait/immutable"

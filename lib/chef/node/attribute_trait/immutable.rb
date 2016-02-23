@@ -1,4 +1,3 @@
-
 require "chef/exceptions"
 
 class Chef
@@ -86,12 +85,8 @@ class Chef
         end
 
         def to_hash
-          if is_a?(Hash)
-            dup
-          else
-            # should raise NoMethodError
-            wrapped_object.to_hash
-          end
+          require 'chef/node/cow_mash'
+          COWMash.new(wrapped_object: self)
         end
 
         def [](key)
