@@ -36,7 +36,7 @@ class Chef
 
         def define_resource_requirements
           requirements.assert(:install) do |a|
-            a.assertion { new_resource.source unless package_provider == :msi }
+            a.assertion { new_resource.source unless msi? }
             a.failure_message Chef::Exceptions::NoWindowsPackageSource, "Source for package #{new_resource.name} must be specified in the resource's source property for package to be installed because the package_name property is used to test for the package installation state for this package type."
           end
         end
@@ -76,6 +76,8 @@ class Chef
           # binary to determine the installer type for the user. Since the file
           # must be on disk to do so, we have to make this choice in the provider.
           @installer_type ||= begin
+            return :msi if msi?
+
             if new_resource.installer_type
               new_resource.installer_type
             elsif source_location.nil?
@@ -84,30 +86,26 @@ class Chef
               basename = ::File.basename(source_location)
               file_extension = basename.split(".").last.downcase
 
-              if file_extension == "msi"
-                :msi
-              else
-                # search the binary file for installer type
-                ::Kernel.open(::File.expand_path(source_location), "rb") do |io|
-                  filesize = io.size
-                  bufsize = 4096 # read 4K buffers
-                  overlap = 16 # bytes to overlap between buffer reads
+              # search the binary file for installer type
+              ::Kernel.open(::File.expand_path(source_location), "rb") do |io|
+                filesize = io.size
+                bufsize = 4096 # read 4K buffers
+                overlap = 16 # bytes to overlap between buffer reads
 
-                  until io.eof
-                    contents = io.read(bufsize)
+                until io.eof
+                  contents = io.read(bufsize)
 
-                    case contents
-                    when /inno/i # Inno Setup
-                      return :inno
-                    when /wise/i # Wise InstallMaster
-                      return :wise
-                    when /nullsoft/i # Nullsoft Scriptable Install System
-                      return :nsis
-                    end
+                  case contents
+                  when /inno/i # Inno Setup
+                    return :inno
+                  when /wise/i # Wise InstallMaster
+                    return :wise
+                  when /nullsoft/i # Nullsoft Scriptable Install System
+                    return :nsis
+                  end
 
-                    if io.tell() < filesize
-                      io.seek(io.tell() - overlap)
-                    end
+                  if io.tell() < filesize
+                    io.seek(io.tell() - overlap)
                   end
                 end
 
@@ -186,12 +184,14 @@ class Chef
         end
 
         def inferred_registry_type
-          uninstall_registry_entries.each do |entry|
-            return :inno if entry.key.end_with?("_is1")
-            return :msi if entry.uninstall_string.downcase.start_with?("msiexec.exe ")
-            return :nsis if entry.uninstall_string.downcase.end_with?("uninst.exe\"")
+          @inferred_registry_type ||= begin
+            uninstall_registry_entries.each do |entry|
+              return :inno if entry.key.end_with?("_is1")
+              return :msi if entry.uninstall_string.downcase.start_with?("msiexec.exe ")
+              return :nsis if entry.uninstall_string.downcase.end_with?("uninst.exe\"")
+            end
+            nil
           end
-          nil
         end
 
         def downloadable_file_missing?
@@ -254,6 +254,15 @@ class Chef
           end
         end
 
+        def msi?
+          return true if new_resource.installer_type == :msi
+
+          if source_location.nil?
+            inferred_registry_type == :msi
+          else
+            ::File.extname(source_location).downcase == ".msi"
+          end
+        end
       end
     end
   end

@@ -31,9 +31,11 @@ describe Chef::Provider::Package::Windows, :windows_only do
   let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
   let(:resource_source) { "calculator.msi" }
   let(:resource_name) { "calculator" }
+  let(:installer_type) { nil }
   let(:new_resource) do
     new_resource = Chef::Resource::WindowsPackage.new(resource_name)
     new_resource.source(resource_source) if resource_source
+    new_resource.installer_type(installer_type) if installer_type
     new_resource
   end
   let(:provider) { Chef::Provider::Package::Windows.new(new_resource, run_context) }
@@ -282,9 +284,9 @@ describe Chef::Provider::Package::Windows, :windows_only do
   describe "action_install" do
     let(:resource_name) { "blah" }
     let(:resource_source) { "blah.exe" }
+    let(:installer_type) { :inno }
 
     before do
-      new_resource.installer_type(:inno)
       allow_any_instance_of(Chef::Provider::Package::Windows::Exe).to receive(:package_version).and_return(new_resource.version)
     end
 
@@ -293,6 +295,16 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
       it "raises a NoWindowsPackageSource error" do
         expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::NoWindowsPackageSource)
+      end
+    end
+
+    context "http source given and no type given explicitly" do
+      let(:installer_type) { nil }
+      let(:resource_source) { "https://foo.bar/calculator.exe" }
+
+      it "downloads the http resource" do
+        expect(provider).to receive(:download_source_file)
+        provider.run_action(:install)
       end
     end
 
