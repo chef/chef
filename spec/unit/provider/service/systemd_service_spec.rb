@@ -319,12 +319,12 @@ describe Chef::Provider::Service::Systemd do
           allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
         end
 
-        it "should return true if '#{systemctl_path} is-enabled service_name' returns 'masked' and exits with anything except 0" do
+        it "should return true if '#{systemctl_path} is-enabled service_name' returns 'masked' and returns anything except 0" do
           expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name}").and_return(double(:stdout => "masked", :exitstatus => shell_out_failure))
           expect(provider.is_masked?).to be true
         end
 
-        it "should return true if '#{systemctl_path} is-enabled service_name' outputs 'masked-runtime' and returns with anything except 0" do
+        it "should return true if '#{systemctl_path} is-enabled service_name' outputs 'masked-runtime' and returns anything except 0" do
           expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name}").and_return(double(:stdout => "masked-runtime", :exitstatus => shell_out_failure))
           expect(provider.is_masked?).to be true
         end
@@ -334,8 +334,8 @@ describe Chef::Provider::Service::Systemd do
           expect(provider.is_masked?).to be false
         end
 
-        it "should return false if '#{systemctl_path} is-enabled service_name' returns with anything except 0 and outputs an error'" do
-          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name}").and_return(double(:stdout => "Failed to get unit file state for foo.service: No such file or directory", :exitstatus => shell_out_success))
+        it "should return false if '#{systemctl_path} is-enabled service_name' returns anything except 0 and outputs an error'" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name}").and_return(double(:stdout => "Failed to get unit file state for #{service_name}: No such file or directory", :exitstatus => shell_out_failure))
           expect(provider.is_masked?).to be false
         end
       end
