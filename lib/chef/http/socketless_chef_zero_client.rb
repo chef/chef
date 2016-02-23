@@ -148,7 +148,7 @@ class Chef
         @url.port
       end
 
-      def request(method, url, body, headers, &handler_block)
+      def request(method, url, body, headers)
         request = req_to_rack(method, url, body, headers)
         res = ChefZero::SocketlessServerMap.request(port, request)
 

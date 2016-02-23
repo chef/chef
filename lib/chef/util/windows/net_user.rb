@@ -119,7 +119,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
     NetUser.net_local_group_add_member(nil, "Users", args[:name])
   end
 
-  def user_modify(&proc)
+  def user_modify
     user = get_info
     user[:last_logon] = user[:units_per_week] = 0 #ignored as per USER_INFO_3 doc
     user[:logon_hours] = nil #PBYTE field; \0 == no changes

@@ -19,7 +19,7 @@ class Chef
           return key == "name"
         end
 
-        def verify_integrity(object, entry, &on_error)
+        def verify_integrity(object, entry)
           if entry.org != object["name"]
             yield("Name must be '#{entry.org}' (is '#{object['name']}')")
           end

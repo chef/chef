@@ -26,7 +26,7 @@ class Chef
           normalize_hash(policy, defaults)
         end
 
-        def verify_integrity(object_data, entry, &on_error)
+        def verify_integrity(object_data, entry)
           name, revision = name_and_revision(entry.name)
           if object_data["name"] != name
             yield("Object name '#{object_data['name']}' doesn't match entry '#{entry.name}'.")

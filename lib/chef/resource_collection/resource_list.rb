@@ -76,7 +76,7 @@ class Chef
         @resources
       end
 
-      def execute_each_resource(&resource_exec_block)
+      def execute_each_resource
         @iterator = ResourceCollection::StepableIterator.for_collection(@resources)
         @iterator.each_with_index do |resource, idx|
           @insert_after_idx = idx

@@ -159,7 +159,7 @@ class Chef
     #
     # If no block is given, the tempfile is returned, which means it's up to
     # you to unlink the tempfile when you're done with it.
-    def streaming_request(path, headers = {}, &block)
+    def streaming_request(path, headers = {})
       url = create_url(path)
       response, rest_request, return_value = nil, nil, nil
       tempfile = nil

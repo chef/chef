@@ -535,7 +535,7 @@ BOOL WINAPI VerQueryValue(
         # retrieves a file search handle and passes it
         # to +&block+ along with the find_data.  also
         # ensures the handle is closed on exit of the block
-        def file_search_handle(path, &block)
+        def file_search_handle(path)
           begin
             # Workaround for CHEF-4419:
             # Make sure paths starting with "/" has a drive letter
@@ -559,7 +559,7 @@ BOOL WINAPI VerQueryValue(
         # retrieves a file handle and passes it
         # to +&block+ along with the find_data.  also
         # ensures the handle is closed on exit of the block
-        def file_handle(path, &block)
+        def file_handle(path)
           begin
             path = canonical_encode_path(path)
             handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
@@ -574,7 +574,7 @@ BOOL WINAPI VerQueryValue(
           end
         end
 
-        def symlink_file_handle(path, &block)
+        def symlink_file_handle(path)
           begin
             path = encode_path(path)
             handle = CreateFileW(path, FILE_READ_EA, FILE_SHARE_READ,

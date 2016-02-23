@@ -4,7 +4,7 @@
 # http://missingbit.blogspot.com/2011/07/stubbing-constants-in-rspec_20.html
 # http://digitaldumptruck.jotabout.com/?p=551
 
-def mock_constants(constants, &block)
+def mock_constants(constants)
   saved_constants = {}
   constants.each do |constant, val|
     source_object, const_name = parse_constant(constant)

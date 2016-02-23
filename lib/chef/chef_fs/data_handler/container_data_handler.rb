@@ -15,7 +15,7 @@ class Chef
           return key == "containername"
         end
 
-        def verify_integrity(object, entry, &on_error)
+        def verify_integrity(object, entry)
           base_name = remove_dot_json(entry.name)
           if object["containername"] != base_name
             yield("Name in #{entry.path_for_printing} must be '#{base_name}' (is '#{object['name']}')")

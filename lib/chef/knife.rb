@@ -510,7 +510,7 @@ class Chef
       response.body
     end
 
-    def create_object(object, pretty_name = nil, object_class: nil, &block)
+    def create_object(object, pretty_name = nil, object_class: nil)
       output = edit_data(object, object_class: object_class)
 
       if Kernel.block_given?
@@ -526,7 +526,7 @@ class Chef
       output(output) if config[:print_after]
     end
 
-    def delete_object(klass, name, delete_name = nil, &block)
+    def delete_object(klass, name, delete_name = nil)
       confirm("Do you really want to delete #{name}")
 
       if Kernel.block_given?

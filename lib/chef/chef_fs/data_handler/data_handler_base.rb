@@ -189,7 +189,7 @@ class Chef
         # Verify that the JSON hash for this type has a key that matches its name.
         # Calls the on_error block with the error, if there is one.
         #
-        def verify_integrity(object, entry, &on_error)
+        def verify_integrity(object, entry)
           base_name = remove_dot_json(entry.name)
           if object["name"] != base_name
             yield("Name must be '#{base_name}' (is '#{object['name']}')")

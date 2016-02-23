@@ -15,7 +15,7 @@ class Chef
           result
         end
 
-        def verify_integrity(object_data, entry, &on_error)
+        def verify_integrity(object_data, entry)
           if object_data["policies"].empty?
             yield("Policy group #{object_data["name"]} does not have any policies in it.")
           end
