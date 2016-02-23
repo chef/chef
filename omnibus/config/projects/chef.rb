@@ -34,15 +34,25 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
+# Compile ruby on all platforms - including windows.
+override :ruby, version: "compiled"
+# Do not have rubygems pull down and package devkit - use the system compiler
+# when building all native gems. We do this because we intend to eventually
+# not ship devkit at all on windows. For now, we introduce an artificial
+# dependency on rubyinstaller devkit at the very end of the build process
+# to simply land those bits in place, even though they aren't being used during
+# the build process.
+override :"rubygems-native", version: "system-default"
+
 if windows?
-  override :'ruby-windows', version: "2.0.0-p645"
+  override :"ruby-compiled", version: "2.0.0-p645"
   # Leave dev-kit pinned to 4.5 because 4.7 is 20MB larger and we don't want
   # to unnecessarily make the client any fatter.
   if windows_arch_i386?
-    override :'ruby-windows-devkit', version: "4.5.2-20111229-1559"
+    override :"devkit-rubyinstaller", version: "4.5.2-20111229-1559"
   end
 else
-  override :ruby, version: "2.1.6"
+  override :"ruby-compiled", version: "2.1.6"
 end
 
 override :bundler,      version: "1.11.2"
@@ -51,14 +61,22 @@ override :rubygems,     version: "2.5.2"
 # Chef Release version pinning
 override :chef, version: "local_source"
 override :ohai, version: "master"
+override :"rb-readline", version: "v0.5.3"
+
+# Global FIPS override flag.
+if windows? || rhel?
+  override :fips, enabled: true
+end
 
 dependency "preparation"
-dependency "chef"
-dependency "pry"
 dependency "nokogiri"
+dependency "pry"
+dependency "chef"
 dependency "shebang-cleanup"
+# Manually tack on devkit on windows.
+# Delete this when we no longer want to ship devkit.
+dependency "rubygems-devkit-rubyinstaller" if windows?
 dependency "version-manifest"
-dependency "openssl-customization"
 
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
