@@ -129,6 +129,11 @@ describe Chef::Provider::Service::Systemd do
       expect(current_resource.enabled).to be false
     end
 
+    it "should check if the service is masked" do
+      expect(provider).to receive(:is_masked?)
+      provider.load_current_resource
+    end
+
     it "should set masked to true if the service is masked" do
       allow(provider).to receive(:is_masked?).and_return(true)
       provider.load_current_resource
@@ -304,6 +309,34 @@ describe Chef::Provider::Service::Systemd do
         it "should return false if '#{systemctl_path} is-enabled service_name' returns anything except 0" do
           expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name} --quiet").and_return(shell_out_failure)
           expect(provider.is_enabled?).to be false
+        end
+      end
+
+      describe "is_masked?" do
+        before(:each) do
+          provider.current_resource = current_resource
+          current_resource.service_name(service_name)
+          allow(provider).to receive(:which).with("systemctl").and_return("#{systemctl_path}")
+        end
+
+        it "should return true if '#{systemctl_path} is-enabled service_name' returns 'masked' and exits with anything except 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name}").and_return(double(:stdout => "masked", :exitstatus => shell_out_failure))
+          expect(provider.is_masked?).to be true
+        end
+
+        it "should return true if '#{systemctl_path} is-enabled service_name' outputs 'masked-runtime' and returns with anything except 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name}").and_return(double(:stdout => "masked-runtime", :exitstatus => shell_out_failure))
+          expect(provider.is_masked?).to be true
+        end
+
+        it "should return false if '#{systemctl_path} is-enabled service_name' returns 0" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name}").and_return(double(:stdout => "enabled", :exitstatus => shell_out_success))
+          expect(provider.is_masked?).to be false
+        end
+
+        it "should return false if '#{systemctl_path} is-enabled service_name' returns with anything except 0 and outputs an error'" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} is-enabled #{service_name}").and_return(double(:stdout => "Failed to get unit file state for foo.service: No such file or directory", :exitstatus => shell_out_success))
+          expect(provider.is_masked?).to be false
         end
       end
     end
