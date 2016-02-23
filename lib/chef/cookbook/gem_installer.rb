@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+require "bundler"
 require "bundler/inline"
 
 class Chef
