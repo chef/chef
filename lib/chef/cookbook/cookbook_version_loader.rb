@@ -86,7 +86,7 @@ class Chef
         load_as(:attribute_filenames, "attributes", "*.rb")
         load_as(:definition_filenames, "definitions", "*.rb")
         load_as(:recipe_filenames, "recipes", "*.rb")
-        load_recursively_as(:library_filenames, "libraries", "*.rb")
+        load_recursively_as(:library_filenames, "libraries", "*")
         load_recursively_as(:template_filenames, "templates", "*")
         load_recursively_as(:file_filenames, "files", "*")
         load_recursively_as(:resource_filenames, "resources", "*.rb")

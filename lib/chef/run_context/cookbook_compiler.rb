@@ -186,6 +186,7 @@ class Chef
 
       def load_libraries_from_cookbook(cookbook_name)
         files_in_cookbook_by_segment(cookbook_name, :libraries).each do |filename|
+          next unless File.extname(filename) == ".rb"
           begin
             Chef::Log.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
             Kernel.load(filename)
