@@ -912,7 +912,6 @@ module ChefConfig
     # sure Chef runs do not crash.
     # @api private
     def self.enable_fips_mode
-      ChefConfig.logger.warn "The `fips` feature is still a work in progress. This feature is incomplete."
       OpenSSL.fips_mode = true
       require "digest"
       require "digest/sha1"
