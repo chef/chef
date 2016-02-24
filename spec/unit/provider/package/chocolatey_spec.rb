@@ -475,16 +475,27 @@ describe "behavior when Chocolatey is not installed" do
   end
 
   before {
-    allow(provider).to receive(:choco_install_path).and_return("")
+    # the shellout sometimes returns "", but test nil to be safe.
+    allow(provider).to receive(:choco_install_path).and_return(nil)
     provider.instance_variable_set("@choco_install_path", nil)
 
     # we don't care what this returns, but we have to let it be called.
     allow(provider).to receive(:shell_out!).and_return(double(:stdout => ""))
   }
 
+  let(:error_regex) {
+    /Could not locate.*install.*cookbook.*PowerShell.*GetEnvironmentVariable/m
+  }
+
   context "#choco_exe" do
     it "triggers a MissingLibrary exception when Chocolatey is not installed" do
-      expect { provider.send(:choco_exe) }.to raise_error(Chef::Exceptions::MissingLibrary, /Could not locate.*install.*cookbook.*PowerShell.*GetEnvironmentVariable/m)
+      expect { provider.send(:choco_exe) }.to raise_error(Chef::Exceptions::MissingLibrary, error_regex)
+    end
+  end
+
+  context "#load_current_resource" do
+    it "triggers a MissingLibrary exception when Chocolatey is not installed" do
+      expect { provider.load_current_resource }.to raise_error(Chef::Exceptions::MissingLibrary, error_regex)
     end
   end
 end
