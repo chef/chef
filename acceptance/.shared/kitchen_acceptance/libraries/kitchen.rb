@@ -7,9 +7,14 @@ module KitchenAcceptance
     property :instances, String, default: lazy { ENV["KITCHEN_INSTANCES"] ? ENV["KITCHEN_INSTANCES"] : "" }
     property :kitchen_dir, String, default: Chef.node['chef-acceptance']['suite-dir']
     property :chef_product, String, default: lazy {
-      ENV["KITCHEN_CHEF_PRODUCT"] ||
-      # If we're running the chef or chefdk projects in jenkins, pick up the project name.
-      (%w(chef chefdk).include?(ENV["PROJECT_NAME"]) ? ENV["PROJECT_NAME"] : "chef")
+      ENV["KITCHEN_CHEF_PRODUCT"] || begin
+        # Figure out if we're in chefdk or chef
+        if ::File.exist?(::File.expand_path("../../chef-dk.gemspec", node['chef-acceptance']['suite-dir']))
+          "chefdk"
+        else
+          "chef"
+        end
+      end
     }
     property :chef_channel, String, default: lazy {
       ENV["KITCHEN_CHEF_CHANNEL"] ||
