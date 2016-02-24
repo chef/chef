@@ -17,14 +17,24 @@
 #
 
 require "spec_helper"
+require "chef/mixin/powershell_out"
 require "chef/mixin/shell_out"
 require "chef/mixin/windows_architecture_helper"
 require "support/shared/integration/integration_helper"
 
 describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   include Chef::Mixin::WindowsArchitectureHelper
+  include Chef::Mixin::PowershellOut
   before(:all) do
     @temp_dir = ::Dir.mktmpdir("dsc-functional-test")
+    # enable the HTTP listener if it is not already enabled needed by underlying DSC engine
+    winrm_code = <<-CODE
+      winrm get winrm/config/listener?Address=*+Transport=HTTP
+      if($LASTEXITCODE -ne 0) {
+        winrm create winrm/config/Listener?Address=*+Transport=HTTP
+      }
+    CODE
+    powershell_out!(winrm_code)
   end
 
   after(:all) do
