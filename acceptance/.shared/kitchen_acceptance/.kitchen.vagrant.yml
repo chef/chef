@@ -38,8 +38,10 @@ fedora-21
 # freebsd-8
 # ubuntu-12.04
 # centos-7
-# centos-6
-
+  - name: centos-6
+    driver:
+      box: opscode-centos-6.6
+      box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.6_chef-provisionerless.box
 <% %w(
 2012r2
 2012
