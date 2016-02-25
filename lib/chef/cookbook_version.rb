@@ -39,6 +39,7 @@ class Chef
 
     include Comparable
     include Chef::Mixin::FIPS
+    extend Chef::Mixin::FIPS
 
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
 
