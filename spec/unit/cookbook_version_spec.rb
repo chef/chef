@@ -19,57 +19,55 @@ require "spec_helper"
 
 describe Chef::CookbookVersion do
   describe "when first created" do
-    before do
-      @cookbook_version = Chef::CookbookVersion.new("tatft", "/tmp/blah")
-    end
+    let(:cookbook_version) { Chef::CookbookVersion.new("tatft", "/tmp/blah") }
 
     it "has a name" do
-      expect(@cookbook_version.name).to eq("tatft")
+      expect(cookbook_version.name).to eq("tatft")
     end
 
     it "has no attribute files" do
-      expect(@cookbook_version.attribute_filenames).to be_empty
+      expect(cookbook_version.attribute_filenames).to be_empty
     end
 
     it "has no resource definition files" do
-      expect(@cookbook_version.definition_filenames).to be_empty
+      expect(cookbook_version.definition_filenames).to be_empty
     end
 
     it "has no cookbook files" do
-      expect(@cookbook_version.file_filenames).to be_empty
+      expect(cookbook_version.file_filenames).to be_empty
     end
 
     it "has no recipe files" do
-      expect(@cookbook_version.recipe_filenames).to be_empty
+      expect(cookbook_version.recipe_filenames).to be_empty
     end
 
     it "has no library files" do
-      expect(@cookbook_version.library_filenames).to be_empty
+      expect(cookbook_version.library_filenames).to be_empty
     end
 
     it "has no LWRP resource files" do
-      expect(@cookbook_version.resource_filenames).to be_empty
+      expect(cookbook_version.resource_filenames).to be_empty
     end
 
     it "has no LWRP provider files" do
-      expect(@cookbook_version.provider_filenames).to be_empty
+      expect(cookbook_version.provider_filenames).to be_empty
     end
 
     it "has no metadata files" do
-      expect(@cookbook_version.metadata_filenames).to be_empty
+      expect(cookbook_version.metadata_filenames).to be_empty
     end
 
     it "is not frozen" do
-      expect(@cookbook_version).not_to be_frozen_version
+      expect(cookbook_version).not_to be_frozen_version
     end
 
     it "can be frozen" do
-      @cookbook_version.freeze_version
-      expect(@cookbook_version).to be_frozen_version
+      cookbook_version.freeze_version
+      expect(cookbook_version).to be_frozen_version
     end
 
     it "has empty metadata" do
-      expect(@cookbook_version.metadata).to eq(Chef::Cookbook::Metadata.new)
+      expect(cookbook_version.metadata).to eq(Chef::Cookbook::Metadata.new)
     end
 
   end
@@ -77,77 +75,84 @@ describe Chef::CookbookVersion do
   describe "with a cookbook directory named tatft" do
     MD5 = /[0-9a-f]{32}/
 
-    before do
-      @cookbook = Hash.new { |hash, key| hash[key] = [] }
-
-      @cookbook_root = File.join(CHEF_SPEC_DATA, "cb_version_cookbooks", "tatft")
-
-      # Dunno if the paths here are representitive of what is set by CookbookLoader...
-      @cookbook[:attribute_filenames]   = Dir[File.join(@cookbook_root, "attributes", "**", "*.rb")]
-      @cookbook[:definition_filenames]  = Dir[File.join(@cookbook_root, "definitions", "**", "*.rb")]
-      @cookbook[:file_filenames]        = Dir[File.join(@cookbook_root, "files", "**", "*.tgz")]
-      @cookbook[:recipe_filenames]      = Dir[File.join(@cookbook_root, "recipes", "**", "*.rb")]
-      @cookbook[:template_filenames]    = Dir[File.join(@cookbook_root, "templates", "**", "*.erb")]
-      @cookbook[:library_filenames]     = Dir[File.join(@cookbook_root, "libraries", "**", "*.rb")]
-      @cookbook[:resource_filenames]    = Dir[File.join(@cookbook_root, "resources", "**", "*.rb")]
-      @cookbook[:provider_filenames]    = Dir[File.join(@cookbook_root, "providers", "**", "*.rb")]
-      @cookbook[:root_filenames]        = Array(File.join(@cookbook_root, "README.rdoc"))
-      @cookbook[:metadata_filenames]    = Array(File.join(@cookbook_root, "metadata.json"))
+    let(:cookbook_paths_by_type) do
+      {
+        # Dunno if the paths here are representitive of what is set by CookbookLoader...
+        attribute_filenames:  Dir[File.join(cookbook_root, "attributes", "**", "*.rb")],
+        definition_filenames: Dir[File.join(cookbook_root, "definitions", "**", "*.rb")],
+        file_filenames:       Dir[File.join(cookbook_root, "files", "**", "*.tgz")],
+        recipe_filenames:     Dir[File.join(cookbook_root, "recipes", "**", "*.rb")],
+        template_filenames:   Dir[File.join(cookbook_root, "templates", "**", "*.erb")],
+        library_filenames:    Dir[File.join(cookbook_root, "libraries", "**", "*.rb")],
+        resource_filenames:   Dir[File.join(cookbook_root, "resources", "**", "*.rb")],
+        provider_filenames:   Dir[File.join(cookbook_root, "providers", "**", "*.rb")],
+        root_filenames:       Array(File.join(cookbook_root, "README.rdoc")),
+        metadata_filenames:   Array(File.join(cookbook_root, "metadata.json")),
+      }
     end
 
+    let(:cookbook_root) { File.join(CHEF_SPEC_DATA, "cb_version_cookbooks", "tatft") }
+
     describe "and a cookbook with the same name" do
-      before do
+
+      let(:cookbook_version) do
+        Chef::CookbookVersion.new("tatft", cookbook_root).tap do |c|
         # Currently the cookbook loader finds all the files then tells CookbookVersion
         # where they are.
-        @cookbook_version = Chef::CookbookVersion.new("tatft", @cookbook_root)
+          c.attribute_filenames  = cookbook_paths_by_type[:attribute_filenames]
+          c.definition_filenames = cookbook_paths_by_type[:definition_filenames]
+          c.recipe_filenames     = cookbook_paths_by_type[:recipe_filenames]
+          c.template_filenames   = cookbook_paths_by_type[:template_filenames]
+          c.file_filenames       = cookbook_paths_by_type[:file_filenames]
+          c.library_filenames    = cookbook_paths_by_type[:library_filenames]
+          c.resource_filenames   = cookbook_paths_by_type[:resource_filenames]
+          c.provider_filenames   = cookbook_paths_by_type[:provider_filenames]
+          c.root_filenames       = cookbook_paths_by_type[:root_filenames]
+          c.metadata_filenames   = cookbook_paths_by_type[:metadata_filenames]
+        end
+      end
 
-        @cookbook_version.attribute_filenames  = @cookbook[:attribute_filenames]
-        @cookbook_version.definition_filenames = @cookbook[:definition_filenames]
-        @cookbook_version.recipe_filenames     = @cookbook[:recipe_filenames]
-        @cookbook_version.template_filenames   = @cookbook[:template_filenames]
-        @cookbook_version.file_filenames       = @cookbook[:file_filenames]
-        @cookbook_version.library_filenames    = @cookbook[:library_filenames]
-        @cookbook_version.resource_filenames   = @cookbook[:resource_filenames]
-        @cookbook_version.provider_filenames   = @cookbook[:provider_filenames]
-        @cookbook_version.root_filenames       = @cookbook[:root_filenames]
-        @cookbook_version.metadata_filenames   = @cookbook[:metadata_filenames]
-
-        # Used to test file-specificity related file lookups
-        @node = Chef::Node.new
-        @node.set[:platform] = "ubuntu"
-        @node.set[:platform_version] = "13.04"
-        @node.name("testing")
+      # Used to test file-specificity related file lookups
+      let(:node) do
+        Chef::Node.new.tap do |n|
+          n.set[:platform] = "ubuntu"
+          n.set[:platform_version] = "13.04"
+          n.name("testing")
+        end
       end
 
       it "determines whether a template is available for a given node" do
-        expect(@cookbook_version).to have_template_for_node(@node, "configuration.erb")
-        expect(@cookbook_version).not_to have_template_for_node(@node, "missing.erb")
+        expect(cookbook_version).to have_template_for_node(node, "configuration.erb")
+        expect(cookbook_version).not_to have_template_for_node(node, "missing.erb")
       end
 
       it "determines whether a cookbook_file is available for a given node" do
-        expect(@cookbook_version).to have_cookbook_file_for_node(@node, "giant_blob.tgz")
-        expect(@cookbook_version).not_to have_cookbook_file_for_node(@node, "missing.txt")
+        expect(cookbook_version).to have_cookbook_file_for_node(node, "giant_blob.tgz")
+        expect(cookbook_version).not_to have_cookbook_file_for_node(node, "missing.txt")
       end
 
       describe "raises an error when attempting to load a missing cookbook_file and" do
-        before do
-          node = Chef::Node.new.tap do |n|
+        let(:node) do
+          Chef::Node.new.tap do |n|
             n.name("sample.node")
             n.automatic_attrs[:fqdn] = "sample.example.com"
             n.automatic_attrs[:platform] = "ubuntu"
             n.automatic_attrs[:platform_version] = "10.04"
           end
-          @attempt_to_load_file = lambda { @cookbook_version.preferred_manifest_record(node, :files, "no-such-thing.txt") }
+        end
+
+        def attempt_to_load_file
+          cookbook_version.preferred_manifest_record(node, :files, "no-such-thing.txt")
         end
 
         it "describes the cookbook and version" do
           useful_explanation = Regexp.new(Regexp.escape("Cookbook 'tatft' (0.0.0) does not contain"))
-          expect(@attempt_to_load_file).to raise_error(Chef::Exceptions::FileNotFound, useful_explanation)
+          expect { attempt_to_load_file }.to raise_error(Chef::Exceptions::FileNotFound, useful_explanation)
         end
 
         it "lists suggested places to look" do
           useful_explanation = Regexp.new(Regexp.escape("files/default/no-such-thing.txt"))
-          expect(@attempt_to_load_file).to raise_error(Chef::Exceptions::FileNotFound, useful_explanation)
+          expect { attempt_to_load_file }.to raise_error(Chef::Exceptions::FileNotFound, useful_explanation)
         end
       end
     end
@@ -155,80 +160,87 @@ describe Chef::CookbookVersion do
   end
 
   describe "with a cookbook directory named cookbook2 that has unscoped files" do
-    before do
-      @cookbook = Hash.new { |hash, key| hash[key] = [] }
 
-      @cookbook_root = File.join(CHEF_SPEC_DATA, "cb_version_cookbooks", "cookbook2")
+    let(:cookbook_paths_by_type) do
+      {
+        # Dunno if the paths here are representitive of what is set by CookbookLoader...
+        attribute_filenames:  Dir[File.join(cookbook_root, "attributes", "**", "*.rb")],
+        definition_filenames: Dir[File.join(cookbook_root, "definitions", "**", "*.rb")],
+        file_filenames:       Dir[File.join(cookbook_root, "files", "**", "*.*")],
+        recipe_filenames:     Dir[File.join(cookbook_root, "recipes", "**", "*.rb")],
+        template_filenames:   Dir[File.join(cookbook_root, "templates", "**", "*.*")],
+        library_filenames:    Dir[File.join(cookbook_root, "libraries", "**", "*.rb")],
+        resource_filenames:   Dir[File.join(cookbook_root, "resources", "**", "*.rb")],
+        provider_filenames:   Dir[File.join(cookbook_root, "providers", "**", "*.rb")],
+        root_filenames:       Array(File.join(cookbook_root, "README.rdoc")),
+        metadata_filenames:   Array(File.join(cookbook_root, "metadata.json")),
+      }
+    end
 
-      # Dunno if the paths here are representitive of what is set by CookbookLoader...
-      @cookbook[:attribute_filenames]   = Dir[File.join(@cookbook_root, "attributes", "**", "*.rb")]
-      @cookbook[:definition_filenames]  = Dir[File.join(@cookbook_root, "definitions", "**", "*.rb")]
-      @cookbook[:file_filenames]        = Dir[File.join(@cookbook_root, "files", "**", "*.*")]
-      @cookbook[:recipe_filenames]      = Dir[File.join(@cookbook_root, "recipes", "**", "*.rb")]
-      @cookbook[:template_filenames]    = Dir[File.join(@cookbook_root, "templates", "**", "*.*")]
-      @cookbook[:library_filenames]     = Dir[File.join(@cookbook_root, "libraries", "**", "*.rb")]
-      @cookbook[:resource_filenames]    = Dir[File.join(@cookbook_root, "resources", "**", "*.rb")]
-      @cookbook[:provider_filenames]    = Dir[File.join(@cookbook_root, "providers", "**", "*.rb")]
-      @cookbook[:root_filenames]        = Array(File.join(@cookbook_root, "README.rdoc"))
-      @cookbook[:metadata_filenames]    = Array(File.join(@cookbook_root, "metadata.json"))
+    let(:cookbook_root) { File.join(CHEF_SPEC_DATA, "cb_version_cookbooks", "cookbook2") }
 
-      @cookbook_version = Chef::CookbookVersion.new("cookbook2", @cookbook_root)
-      @cookbook_version.attribute_filenames  = @cookbook[:attribute_filenames]
-      @cookbook_version.definition_filenames = @cookbook[:definition_filenames]
-      @cookbook_version.recipe_filenames     = @cookbook[:recipe_filenames]
-      @cookbook_version.template_filenames   = @cookbook[:template_filenames]
-      @cookbook_version.file_filenames       = @cookbook[:file_filenames]
-      @cookbook_version.library_filenames    = @cookbook[:library_filenames]
-      @cookbook_version.resource_filenames   = @cookbook[:resource_filenames]
-      @cookbook_version.provider_filenames   = @cookbook[:provider_filenames]
-      @cookbook_version.root_filenames       = @cookbook[:root_filenames]
-      @cookbook_version.metadata_filenames   = @cookbook[:metadata_filenames]
+    let(:cookbook_version) do
+      Chef::CookbookVersion.new("cookbook2", cookbook_root).tap do |c|
+        c.attribute_filenames  = cookbook_paths_by_type[:attribute_filenames]
+        c.definition_filenames = cookbook_paths_by_type[:definition_filenames]
+        c.recipe_filenames     = cookbook_paths_by_type[:recipe_filenames]
+        c.template_filenames   = cookbook_paths_by_type[:template_filenames]
+        c.file_filenames       = cookbook_paths_by_type[:file_filenames]
+        c.library_filenames    = cookbook_paths_by_type[:library_filenames]
+        c.resource_filenames   = cookbook_paths_by_type[:resource_filenames]
+        c.provider_filenames   = cookbook_paths_by_type[:provider_filenames]
+        c.root_filenames       = cookbook_paths_by_type[:root_filenames]
+        c.metadata_filenames   = cookbook_paths_by_type[:metadata_filenames]
+      end
+    end
 
-      # Used to test file-specificity related file lookups
-      @node = Chef::Node.new
-      @node.set[:platform] = "ubuntu"
-      @node.set[:platform_version] = "13.04"
-      @node.name("testing")
+    # Used to test file-specificity related file lookups
+    let(:node) do
+      Chef::Node.new.tap do |n|
+        n.set[:platform] = "ubuntu"
+        n.set[:platform_version] = "13.04"
+        n.name("testing")
+      end
     end
 
     it "should see a template" do
-      expect(@cookbook_version).to have_template_for_node(@node, "test.erb")
+      expect(cookbook_version).to have_template_for_node(node, "test.erb")
     end
 
     it "should see a template using an array lookup" do
-      expect(@cookbook_version).to have_template_for_node(@node, ["test.erb"])
+      expect(cookbook_version).to have_template_for_node(node, ["test.erb"])
     end
 
     it "should see a template using an array lookup with non-existent elements" do
-      expect(@cookbook_version).to have_template_for_node(@node, ["missing.txt", "test.erb"])
+      expect(cookbook_version).to have_template_for_node(node, ["missing.txt", "test.erb"])
     end
 
     it "should see a file" do
-      expect(@cookbook_version).to have_cookbook_file_for_node(@node, "test.txt")
+      expect(cookbook_version).to have_cookbook_file_for_node(node, "test.txt")
     end
 
     it "should see a file using an array lookup" do
-      expect(@cookbook_version).to have_cookbook_file_for_node(@node, ["test.txt"])
+      expect(cookbook_version).to have_cookbook_file_for_node(node, ["test.txt"])
     end
 
     it "should see a file using an array lookup with non-existent elements" do
-      expect(@cookbook_version).to have_cookbook_file_for_node(@node, ["missing.txt", "test.txt"])
+      expect(cookbook_version).to have_cookbook_file_for_node(node, ["missing.txt", "test.txt"])
     end
 
     it "should not see a non-existent template" do
-      expect(@cookbook_version).not_to have_template_for_node(@node, "missing.erb")
+      expect(cookbook_version).not_to have_template_for_node(node, "missing.erb")
     end
 
     it "should not see a non-existent template using an array lookup" do
-      expect(@cookbook_version).not_to have_template_for_node(@node, ["missing.erb"])
+      expect(cookbook_version).not_to have_template_for_node(node, ["missing.erb"])
     end
 
     it "should not see a non-existent file" do
-      expect(@cookbook_version).not_to have_cookbook_file_for_node(@node, "missing.txt")
+      expect(cookbook_version).not_to have_cookbook_file_for_node(node, "missing.txt")
     end
 
     it "should not see a non-existent file using an array lookup" do
-      expect(@cookbook_version).not_to have_cookbook_file_for_node(@node, ["missing.txt"])
+      expect(cookbook_version).not_to have_cookbook_file_for_node(node, ["missing.txt"])
     end
 
   end
@@ -279,13 +291,13 @@ describe Chef::CookbookVersion do
   end
 
   describe "when you set a version" do
-    before do
-      @cbv = Chef::CookbookVersion.new("version validation", "/tmp/blah")
-    end
+
+    subject(:cbv) { Chef::CookbookVersion.new("version validation", "/tmp/blah") }
+
     it "should accept valid cookbook versions" do
       good_versions = %w{1.2 1.2.3 1000.80.50000 0.300.25}
       good_versions.each do |v|
-        @cbv.version = v
+        cbv.version = v
       end
     end
 
@@ -294,7 +306,7 @@ describe Chef::CookbookVersion do
                       "1 2 3", "1-2-3", "1_2_3", "1.2_3", "1.2-3"]
       the_error = Chef::Exceptions::InvalidCookbookVersion
       bad_versions.each do |v|
-        expect { @cbv.version = v }.to raise_error(the_error)
+        expect { cbv.version = v }.to raise_error(the_error)
       end
     end
 
