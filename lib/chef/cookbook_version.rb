@@ -40,6 +40,8 @@ class Chef
 
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
 
+    attr_accessor :all_unignored_files
+
     attr_accessor :root_paths
     attr_accessor :definition_filenames
     attr_accessor :template_filenames
@@ -127,6 +129,8 @@ class Chef
       @provider_filenames = Array.new
       @metadata_filenames = Array.new
       @root_filenames = Array.new
+
+      @all_unignored_files = Array.new
 
       # deprecated
       @status = :ready
