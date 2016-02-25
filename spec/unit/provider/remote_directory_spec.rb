@@ -17,7 +17,7 @@
 #
 
 require "spec_helper"
-require "digest/md5"
+require "openssl"
 require "tmpdir"
 require "chef/mixin/file_class"
 
@@ -136,13 +136,13 @@ describe Chef::Provider::RemoteDirectory do
 
         File.open(@destination_dir + "/remote_dir_file1.txt", "a") { |f| f.puts "blah blah blah" }
         File.open(@destination_dir + "/remotesubdir/remote_subdir_file1.txt", "a") { |f| f.puts "blah blah blah" }
-        file1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + "/remote_dir_file1.txt"))
-        subdirfile1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + "/remotesubdir/remote_subdir_file1.txt"))
+        file1sha256 = OpenSSL::Digest::SHA256.hexdigest(File.read(@destination_dir + "/remote_dir_file1.txt"))
+        subdirfile1sha256 = OpenSSL::Digest::SHA256.hexdigest(File.read(@destination_dir + "/remotesubdir/remote_subdir_file1.txt"))
 
         @provider.run_action(:create_if_missing)
 
-        expect(file1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + "/remote_dir_file1.txt")))).to be_truthy
-        expect(subdirfile1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + "/remotesubdir/remote_subdir_file1.txt")))).to be_truthy
+        expect(file1sha256.eql?(OpenSSL::Digest::SHA256.hexdigest(File.read(@destination_dir + "/remote_dir_file1.txt")))).to be_truthy
+        expect(subdirfile1sha256.eql?(OpenSSL::Digest::SHA256.hexdigest(File.read(@destination_dir + "/remotesubdir/remote_subdir_file1.txt")))).to be_truthy
       end
     end
 
@@ -209,11 +209,11 @@ describe Chef::Provider::RemoteDirectory do
         @provider.run_action(:create)
         ::File.open(@destination_dir + "/remote_dir_file1.txt", "a") { |f| f.puts "blah blah blah" }
         ::File.open(@destination_dir + "/remotesubdir/remote_subdir_file1.txt", "a") { |f| f.puts "blah blah blah" }
-        file1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + "/remote_dir_file1.txt"))
-        subdirfile1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + "/remotesubdir/remote_subdir_file1.txt"))
+        file1sha256 = OpenSSL::Digest::SHA256.hexdigest(::File.read(@destination_dir + "/remote_dir_file1.txt"))
+        subdirfile1sha256 = OpenSSL::Digest::SHA256.hexdigest(::File.read(@destination_dir + "/remotesubdir/remote_subdir_file1.txt"))
         @provider.run_action(:create)
-        expect(file1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + "/remote_dir_file1.txt")))).to be_truthy
-        expect(subdirfile1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + "/remotesubdir/remote_subdir_file1.txt")))).to be_truthy
+        expect(file1sha256.eql?(OpenSSL::Digest::SHA256.hexdigest(::File.read(@destination_dir + "/remote_dir_file1.txt")))).to be_truthy
+        expect(subdirfile1sha256.eql?(OpenSSL::Digest::SHA256.hexdigest(::File.read(@destination_dir + "/remotesubdir/remote_subdir_file1.txt")))).to be_truthy
       end
     end
 
