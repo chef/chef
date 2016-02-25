@@ -37,7 +37,7 @@ class Chef
               env_path = env["PATH"].dup
               env_path << path_separator unless env["PATH"].empty?
               env_path << sane_path
-              env["PATH"] = env_path
+              env["PATH"] = env_path.encode("utf-8", invalid: :replace, undef: :replace)
             end
           end
         end
