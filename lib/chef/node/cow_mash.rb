@@ -9,8 +9,6 @@ class Chef
   class Node
     class COWMash
       include AttributeTrait::Decorator
-      include AttributeTrait::SymbolConvert
-      include AttributeTrait::MethodMissing
       include AttributeTrait::CopyOnWrite
     end
   end
