@@ -22,7 +22,7 @@ require "tmpdir"
 require "shellwords"
 
 # Deploy relies heavily on symlinks, so it doesn't work on windows.
-describe Chef::Resource::Git do
+describe Chef::Resource::Git, :requires_git => true do
   include Chef::Mixin::ShellOut
   let(:file_cache_path) { Dir.mktmpdir }
   # Some versions of git complains when the deploy directory is

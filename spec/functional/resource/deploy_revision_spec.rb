@@ -20,7 +20,7 @@ require "spec_helper"
 require "tmpdir"
 
 # Deploy relies heavily on symlinks, so it doesn't work on windows.
-describe Chef::Resource::DeployRevision, :unix_only => true do
+describe Chef::Resource::DeployRevision, :unix_only => true, :requires_git => true do
 
   let(:file_cache_path) { Dir.mktmpdir }
   let(:deploy_directory) { Dir.mktmpdir }
