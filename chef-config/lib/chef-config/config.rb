@@ -919,6 +919,7 @@ module ChefConfig
       Digest.const_set("SHA1", OpenSSL::Digest::SHA1)
       Digest.const_set("MD5_", Digest::MD5)
       Digest.send(:remove_const, "MD5")
+      OpenSSL::Digest.send(:remove_const, "MD5")
     end
   end
 end
