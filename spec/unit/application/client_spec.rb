@@ -278,11 +278,11 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
         File.join(File.dirname(__FILE__), "../../data/client.d_00")) }
 
       it "loads the configuration in order" do
-
-        expect(::File).to receive(:read).with(Pathname.new("#{client_d_dir}/00-foo.rb").cleanpath.to_s).and_return("")
-        expect(::File).to receive(:read).with(Pathname.new("#{client_d_dir}/01-bar.rb").cleanpath.to_s).and_return("")
-        expect(app).to receive(:load_config_d_file).with(Pathname.new("#{client_d_dir}/00-foo.rb").cleanpath.to_s).and_call_original.ordered
-        expect(app).to receive(:load_config_d_file).with(Pathname.new("#{client_d_dir}/01-bar.rb").cleanpath.to_s).and_call_original.ordered
+        expect(IO).to receive(:read).with(Pathname.new("#{client_d_dir}/00-foo.rb").cleanpath.to_s).and_return("foo 0")
+        expect(IO).to receive(:read).with(Pathname.new("#{client_d_dir}/01-bar.rb").cleanpath.to_s).and_return("bar 0")
+        allow(app).to receive(:apply_config).with(anything(), Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_call_original.ordered
+        expect(app).to receive(:apply_config).with("foo 0", Pathname.new("#{client_d_dir}/00-foo.rb").cleanpath.to_s).and_call_original.ordered
+        expect(app).to receive(:apply_config).with("bar 0", Pathname.new("#{client_d_dir}/01-bar.rb").cleanpath.to_s).and_call_original.ordered
         app.reconfigure
       end
     end

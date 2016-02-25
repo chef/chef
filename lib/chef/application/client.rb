@@ -26,9 +26,11 @@ require "chef/config_fetcher"
 require "chef/handler/error_report"
 require "chef/workstation_config_loader"
 require "chef/mixin/shell_out"
+require "chef-config/mixin/dot_d"
 
 class Chef::Application::Client < Chef::Application
   include Chef::Mixin::ShellOut
+  include ChefConfig::Mixin::DotD
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
   SELF_PIPE = []
@@ -377,7 +379,7 @@ class Chef::Application::Client < Chef::Application
     super
 
     # Load all config files in client.d
-    load_config_d_directory
+    load_dot_d(Chef::Config[:client_d_dir]) if Chef::Config[:client_d_dir]
   end
 
   def configure_logging
@@ -506,30 +508,6 @@ class Chef::Application::Client < Chef::Application
       open(url) do |r|
         f.write(r.read)
       end
-    end
-  end
-
-  def load_config_d_directory
-    list_config_d_files.sort.each do |conf|
-      if File.file?(conf)
-        load_config_d_file(conf)
-      end
-    end
-  end
-
-  def load_config_d_file(f)
-    config_fetcher = Chef::ConfigFetcher.new(f)
-    config_fetcher.read_local_config.tap do |config_content|
-      apply_config(config_content, f)
-    end
-  end
-
-  def list_config_d_files
-    if Chef::Config[:client_d_dir]
-      Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(
-        Chef::Config[:client_d_dir]), "*.rb"))
-    else
-      []
     end
   end
 end
