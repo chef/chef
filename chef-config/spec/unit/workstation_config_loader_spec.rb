@@ -38,7 +38,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
   before do
     # We set this to nil so that a dev workstation will
     # not interfere with the tests.
-    ChefConfig::Config[:conf_d_dir] = nil
+    ChefConfig::Config[:config_d_dir] = nil
   end
 
   # Test methods that do I/O or reference external state which are stubbed out
@@ -308,7 +308,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
       end
 
       before do
-        ChefConfig::Config[:conf_d_dir] = tempdir
+        ChefConfig::Config[:config_d_dir] = tempdir
         allow(config_loader).to receive(:path_exists?).with(
           an_instance_of(String)).and_return(false)
       end
@@ -355,7 +355,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
 
     context "when the conf.d directory does not exist" do
       before do
-        ChefConfig::Config[:conf_d_dir] = "/nope/nope/nope/nope/notdoingit"
+        ChefConfig::Config[:config_d_dir] = "/nope/nope/nope/nope/notdoingit"
       end
 
       it "does not load anything" do

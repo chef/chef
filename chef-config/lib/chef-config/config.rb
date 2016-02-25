@@ -498,7 +498,7 @@ module ChefConfig
 
     # A directory that contains additional configuration scripts to load for
     # the workstation config
-    default(:conf_d_dir) { PathHelper.join(config_dir, "conf.d") }
+    default(:config_d_dir) { PathHelper.join(config_dir, "config.d") }
 
     # Where should chef-solo download recipes from?
     default :recipe_url, nil

@@ -74,7 +74,7 @@ module ChefConfig
         apply_config(IO.read(config_location), config_location)
       end
 
-      load_dot_d(Config[:conf_d_dir]) if Config[:conf_d_dir]
+      load_dot_d(Config[:config_d_dir]) if Config[:config_d_dir]
     end
 
     # (Private API, public for test purposes)
