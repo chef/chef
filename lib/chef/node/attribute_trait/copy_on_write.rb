@@ -35,9 +35,9 @@ class Chef
         ]
 
         MUTATOR_METHODS.each do |method|
-          define_method method do |*args|
+          define_method method do |*args, &block|
             wrapped_object = safe_dup(wrapped_object)
-            super(*args)
+            super(*args, &block)
           end
         end
       end
