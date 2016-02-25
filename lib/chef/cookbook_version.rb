@@ -26,6 +26,7 @@ require "chef/version_class"
 require "chef/digester"
 require "chef/cookbook_manifest"
 require "chef/server_api"
+require "chef/mixin/fips"
 
 class Chef
 
@@ -37,6 +38,7 @@ class Chef
   class CookbookVersion
 
     include Comparable
+    include Chef::Mixin::FIPS
 
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
 
@@ -97,7 +99,9 @@ class Chef
     # This is the one and only method that knows how cookbook files'
     # checksums are generated.
     def self.checksum_cookbook_file(filepath)
-      Chef::Digester.generate_md5_checksum_for_file(filepath)
+      with_fips_md5_exception do
+        Chef::Digester.generate_md5_checksum_for_file(filepath)
+      end
     rescue Errno::ENOENT
       Chef::Log.debug("File #{filepath} does not exist, so there is no checksum to generate")
       nil

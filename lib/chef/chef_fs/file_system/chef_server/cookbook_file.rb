@@ -18,6 +18,7 @@
 
 require "chef/chef_fs/file_system/base_fs_object"
 require "chef/http/simple"
+require "chef/mixin/fips"
 require "openssl"
 
 class Chef
@@ -25,6 +26,8 @@ class Chef
     module FileSystem
       module ChefServer
         class CookbookFile < BaseFSObject
+          include Chef::Mixin::FIPS
+
           def initialize(name, parent, file)
             super(name, parent)
             @file = file
@@ -75,7 +78,9 @@ class Chef
           private
 
           def calc_checksum(value)
-            OpenSSL::Digest::MD5.hexdigest(value)
+            with_fips_md5_exception do
+              OpenSSL::Digest::MD5.hexdigest(value)
+            end
           end
         end
       end
