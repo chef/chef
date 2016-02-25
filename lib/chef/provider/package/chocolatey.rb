@@ -147,15 +147,13 @@ EOS
         #
         # @return [String] full path of choco.exe
         def choco_exe
-          @choco_exe ||=
+          @choco_exe ||= begin
               # if this check is in #define_resource_requirements, it won't get
               # run before choco.exe gets called from #load_current_resource.
               exe_path = ::File.join(choco_install_path.to_s, "bin", "choco.exe")
-          if !::File.exist?(exe_path)
-            raise Chef::Exceptions::MissingLibrary, CHOCO_MISSING_MSG
-          else
-            exe_path
-          end
+              raise Chef::Exceptions::MissingLibrary, CHOCO_MISSING_MSG unless ::File.exist?(exe_path)
+              exe_path
+            end
         end
 
         # lets us mock out an incorrect value for testing.
