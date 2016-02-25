@@ -56,6 +56,12 @@ describe Chef::Mixin::PathSanity do
       expect(env["PATH"]).to eq("/usr/bin:/sbin:/bin:#{@ruby_bindir}:#{@gem_bindir}:/usr/local/sbin:/usr/local/bin:/usr/sbin")
     end
 
+    it "creates path with utf-8 encoding" do
+      env = { "PATH" => "/usr/bin:/sbin:/bin:/b\x81t".force_encoding("ISO-8859-1") }
+      @sanity.enforce_path_sanity(env)
+      expect(env["PATH"].encoding.to_s).to eq("UTF-8")
+    end
+
     it "adds the current executing Ruby's bindir and Gem bindir to the PATH" do
       env = { "PATH" => "" }
       @sanity.enforce_path_sanity(env)
