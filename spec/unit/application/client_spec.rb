@@ -257,6 +257,10 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       expect { app.reconfigure }.to raise_error(Chef::Exceptions::PIDFileLockfileMatch)
     end
   end
+
+  it_behaves_like "an application that loads a dot d" do
+    let(:dot_d_config_name) { :client_d_dir }
+  end
 end
 
 describe Chef::Application::Client, "setup_application" do

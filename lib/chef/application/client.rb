@@ -26,9 +26,11 @@ require "chef/config_fetcher"
 require "chef/handler/error_report"
 require "chef/workstation_config_loader"
 require "chef/mixin/shell_out"
+require "chef-config/mixin/dot_d"
 
 class Chef::Application::Client < Chef::Application
   include Chef::Mixin::ShellOut
+  include ChefConfig::Mixin::DotD
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
   SELF_PIPE = []
@@ -372,7 +374,12 @@ class Chef::Application::Client < Chef::Application
         config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
       end
     end
+
+    # Load the client.rb configuration
     super
+
+    # Load all config files in client.d
+    load_dot_d(Chef::Config[:client_d_dir]) if Chef::Config[:client_d_dir]
   end
 
   def configure_logging

@@ -458,6 +458,55 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
+  describe "when transferring client.d" do
+
+    let(:rendered_template) do
+      knife.merge_configs
+      knife.render_template
+    end
+
+    before do
+      Chef::Config[:client_d_dir] = client_d_dir
+    end
+
+    context "when client_d_dir is nil" do
+      let(:client_d_dir) { nil }
+
+      it "does not create /etc/chef/client.d" do
+        expect(rendered_template).not_to match(%r{mkdir -p /etc/chef/client\.d})
+      end
+    end
+
+    context "when client_d_dir is set" do
+      let(:client_d_dir) { Chef::Util::PathHelper.cleanpath(
+        File.join(File.dirname(__FILE__), "../../data/client.d_00")) }
+
+      it "creates /etc/chef/client.d" do
+        expect(rendered_template).to match("mkdir -p /etc/chef/client\.d")
+      end
+
+      context "a flat directory structure" do
+        it "creates a file 00-foo.rb" do
+          expect(rendered_template).to match("cat > /etc/chef/client.d/00-foo.rb <<'EOP'")
+          expect(rendered_template).to match("d6f9b976-289c-4149-baf7-81e6ffecf228")
+        end
+        it "creates a file bar" do
+          expect(rendered_template).to match("cat > /etc/chef/client.d/bar <<'EOP'")
+          expect(rendered_template).to match("1 / 0")
+        end
+      end
+
+      context "a nested directory structure" do
+        let(:client_d_dir) { Chef::Util::PathHelper.cleanpath(
+          File.join(File.dirname(__FILE__), "../../data/client.d_01")) }
+        it "creates a file foo/bar.rb" do
+          expect(rendered_template).to match("cat > /etc/chef/client.d/foo/bar.rb <<'EOP'")
+          expect(rendered_template).to match("1 / 0")
+        end
+      end
+    end
+  end
+
   describe "handling policyfile options" do
 
     context "when only policy_name is given" do

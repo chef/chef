@@ -490,6 +490,16 @@ module ChefConfig
     # HTTP file servers.
     default(:trusted_certs_dir) { PathHelper.join(config_dir, "trusted_certs") }
 
+    # A directory that contains additional configuration scripts to load for chef-client
+    default(:client_d_dir) { PathHelper.join(config_dir, "client.d") }
+
+    # A directory that contains additional configuration scripts to load for solo
+    default(:solo_d_dir) { PathHelper.join(config_dir, "solo.d") }
+
+    # A directory that contains additional configuration scripts to load for
+    # the workstation config
+    default(:config_d_dir) { PathHelper.join(config_dir, "config.d") }
+
     # Where should chef-solo download recipes from?
     default :recipe_url, nil
 

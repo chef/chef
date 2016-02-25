@@ -21,9 +21,11 @@ require "chef-config/exceptions"
 require "chef-config/logger"
 require "chef-config/path_helper"
 require "chef-config/windows"
+require "chef-config/mixin/dot_d"
 
 module ChefConfig
   class WorkstationConfigLoader
+    include ChefConfig::Mixin::DotD
 
     # Path to a config file requested by user, (e.g., via command line option). Can be nil
     attr_accessor :explicit_config_file
@@ -62,15 +64,17 @@ module ChefConfig
     def load
       # Ignore it if there's no explicit_config_file and can't find one at a
       # default path.
-      return false if config_location.nil?
+      if !config_location.nil?
+        if explicit_config_file && !path_exists?(config_location)
+          raise ChefConfig::ConfigurationError, "Specified config file #{config_location} does not exist"
+        end
 
-      if explicit_config_file && !path_exists?(config_location)
-        raise ChefConfig::ConfigurationError, "Specified config file #{config_location} does not exist"
+        # Have to set Config.config_file b/c other config is derived from it.
+        Config.config_file = config_location
+        apply_config(IO.read(config_location), config_location)
       end
 
-      # Have to set Config.config_file b/c other config is derived from it.
-      Config.config_file = config_location
-      read_config(IO.read(config_location), config_location)
+      load_dot_d(Config[:config_d_dir]) if Config[:config_d_dir]
     end
 
     # (Private API, public for test purposes)
@@ -134,7 +138,7 @@ module ChefConfig
       a
     end
 
-    def read_config(config_content, config_file_path)
+    def apply_config(config_content, config_file_path)
       Config.from_string(config_content, config_file_path)
     rescue SignalException
       raise
