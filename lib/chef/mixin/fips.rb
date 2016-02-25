@@ -27,19 +27,25 @@ class Chef
       # with a working MD5 implementation.
       # @api private
       def with_fips_md5_exception
-        if Chef::Config[:fips]
-          Digest.const_set("MD5", Digest::MD5_)
-          OpenSSL::Digest.const_set("MD5", Digest::MD5_)
-        end
+        allow_md5 if Chef::Config[:fips]
 
         begin
           yield
         ensure
-          if Chef::Config[:fips]
-            Digest.send(:remove_const, "MD5")
-            OpenSSL::Digest.send(:remove_const, "MD5")
-          end
+          disallow_md5 if Chef::Config[:fips]
         end
+      end
+
+      # @api private
+      def allow_md5
+        Digest.const_set("MD5", Digest::MD5_)
+        OpenSSL::Digest.const_set("MD5", Digest::MD5_)
+      end
+
+      # @api private
+      def disallow_md5
+        Digest.send(:remove_const, "MD5")
+        OpenSSL::Digest.send(:remove_const, "MD5")
       end
     end
   end
