@@ -44,8 +44,8 @@ class Chef
 
       # @api private
       def disallow_md5
-        Digest.send(:remove_const, "MD5")
-        OpenSSL::Digest.send(:remove_const, "MD5")
+        Digest.send(:remove_const, "MD5") if defined?(Digest::MD5)
+        OpenSSL::Digest.send(:remove_const, "MD5") if defined?(OpenSSL::Digest::MD5)
       end
     end
   end
