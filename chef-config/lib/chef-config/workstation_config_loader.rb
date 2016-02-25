@@ -71,7 +71,7 @@ module ChefConfig
 
         # Have to set Config.config_file b/c other config is derived from it.
         Config.config_file = config_location
-        read_config(IO.read(config_location), config_location)
+        apply_config(IO.read(config_location), config_location)
       end
 
       load_dot_d(Config[:conf_d_dir]) if Config[:conf_d_dir]
@@ -138,7 +138,7 @@ module ChefConfig
       a
     end
 
-    def read_config(config_content, config_file_path)
+    def apply_config(config_content, config_file_path)
       Config.from_string(config_content, config_file_path)
     rescue SignalException
       raise

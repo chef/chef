@@ -221,7 +221,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
 
       it "skips loading" do
         expect(config_loader.config_location).to be(nil)
-        expect(config_loader).not_to receive(:read_config)
+        expect(config_loader).not_to receive(:apply_config)
         config_loader.load
       end
 
@@ -261,7 +261,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
         let(:config_content) { "config_file_evaluated(true)" }
 
         it "loads the config" do
-          expect(config_loader).to receive(:read_config).and_call_original
+          expect(config_loader).to receive(:apply_config).and_call_original
           config_loader.load
           expect(ChefConfig::Config.config_file_evaluated).to be(true)
         end
@@ -321,7 +321,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
         let(:config_content) { "config_d_file_evaluated(true)" }
 
         it "loads the config" do
-          expect(config_loader).to receive(:read_config).and_call_original
+          expect(config_loader).to receive(:apply_config).and_call_original
           config_loader.load
           expect(ChefConfig::Config.config_d_file_evaluated).to be(true)
         end
@@ -359,7 +359,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
       end
 
       it "does not load anything" do
-        expect(config_loader).not_to receive(:read_config)
+        expect(config_loader).not_to receive(:apply_config)
       end
     end
   end

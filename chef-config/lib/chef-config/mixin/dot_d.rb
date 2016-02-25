@@ -30,7 +30,7 @@ module ChefConfig
             end
           end
         dot_d_files.sort.map do |conf|
-          read_config(IO.read(conf), conf)
+          apply_config(IO.read(conf), conf)
         end
       end
     end
