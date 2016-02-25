@@ -9,6 +9,7 @@ describe Chef::Node::COWMash do
       cow = Chef::Node::COWMash.new(wrapped_object: hash)
       expect(cow.keep_if { |k, v| v }).to eql({ "foo" => true })
       expect(hash).to eql({ "foo" => true, "bar" => false })
+      expect(cow).to eql({ "foo" => true })
     end
   end
 end
