@@ -27,9 +27,11 @@ require "chef/config_fetcher"
 require "fileutils"
 require "chef/mixin/shell_out"
 require "pathname"
+require "chef-config/mixin/dot_d"
 
 class Chef::Application::Solo < Chef::Application
   include Chef::Mixin::ShellOut
+  include ChefConfig::Mixin::DotD
 
   option :config_file,
     :short => "-c CONFIG",
@@ -206,6 +208,8 @@ class Chef::Application::Solo < Chef::Application
 
   def reconfigure
     super
+
+    load_dot_d(Chef::Config[:solo_d_dir]) if Chef::Config[:solo_d_dir]
 
     set_specific_recipes
 
