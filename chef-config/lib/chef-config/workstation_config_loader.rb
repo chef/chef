@@ -21,9 +21,11 @@ require "chef-config/exceptions"
 require "chef-config/logger"
 require "chef-config/path_helper"
 require "chef-config/windows"
+require "chef-config/mixin/dot_d"
 
 module ChefConfig
   class WorkstationConfigLoader
+    include ChefConfig::Mixin::DotD
 
     # Path to a config file requested by user, (e.g., via command line option). Can be nil
     attr_accessor :explicit_config_file
@@ -72,7 +74,7 @@ module ChefConfig
         read_config(IO.read(config_location), config_location)
       end
 
-      load_conf_d_directory
+      load_dot_d(Config[:conf_d_dir]) if Config[:conf_d_dir]
     end
 
     # (Private API, public for test purposes)
@@ -124,24 +126,6 @@ module ChefConfig
       candidate_configs.find do |candidate_config|
         have_config?(candidate_config)
       end
-    end
-
-    def load_conf_d_directory
-      conf_d_files.sort.map do |conf|
-        read_config(IO.read(conf), conf)
-      end
-    end
-
-    def conf_d_files
-      @conf_d_files ||=
-        begin
-          entries = Array.new
-          entries << Dir.glob(File.join(PathHelper.escape_glob_dir(
-            Config[:conf_d_dir]), "*.rb")) if Config[:conf_d_dir]
-          entries.flatten.select do |entry|
-            File.file?(entry)
-          end
-        end
     end
 
     def working_directory
