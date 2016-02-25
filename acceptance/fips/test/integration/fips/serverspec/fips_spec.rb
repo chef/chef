@@ -30,9 +30,9 @@ describe "Chef Fips Specs" do
     Bundler.with_clean_env do
       ruby_cmd = Mixlib::ShellOut.new(
         "bundle exec rspec -t ~requires_git spec/unit spec/functional", :env => { "PATH" => "#{ENV['PATH']}:#{path}",
-                                                                 "GEM_PATH" => nil, "GEM_CACHE" => nil, "GEM_HOME" => nil,
-                                                                 "CHEF_FIPS" => "1" },
-                                                       :live_stream => STDOUT, :cwd => chef_dir)
+                                                                                  "GEM_PATH" => nil, "GEM_CACHE" => nil, "GEM_HOME" => nil,
+                                                                                  "CHEF_FIPS" => "1" },
+                                                                                  :live_stream => STDOUT, :cwd => chef_dir, :timeout => 3600)
       expect { ruby_cmd.run_command.error! }.not_to raise_exception
     end
   end
