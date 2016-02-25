@@ -164,4 +164,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     end
   end
 
+  it_behaves_like "an application that loads a dot d" do
+    let(:dot_d_config_name) { :solo_d_dir }
+  end
 end
