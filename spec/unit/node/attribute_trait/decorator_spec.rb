@@ -77,6 +77,29 @@ describe Chef::Node::AttributeTrait::Decorator do
         test.each { |k, v| expect(v).not_to be_instance_of(Test) }
       end
     end
+
+    context "Hash#dup" do
+      it "yields decorated objects" do
+        pending "not fixed yet"
+        test["foo"] = { "bar" => "baz" }
+        test["bar"] = [ 1, 2 ]
+        testdup = test.dup
+        expect(testdup).to be_instance_of(Test)
+        expect(testdup["foo"]).to be_instance_of(Test)
+        expect(testdup["bar"]).to be_instance_of(Test)
+      end
+
+      it "deep dups the wrapped_object" do
+        test["foo"] = { "bar" => "baz" }
+        test["bar"] = [ 1, 2 ]
+        testdup = test.dup
+        testdup["foo"]["qux"] = "quux"
+        testdup["foo"]["bar"] << "buzz"
+        testdup["bar"] << 3
+        testdup["baz"] = false
+        expect(test).to eql({"foo" => { "bar" => "baz" }, "bar" => [ 1, 2 ]})
+      end
+    end
   end
 
   context "as an Array" do

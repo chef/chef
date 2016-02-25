@@ -44,7 +44,7 @@ class Chef
         #
 
         def ffi_yajl(*opts)
-          for_json.ffi_yajl(*opts)
+          wrapped_object.ffi_yajl(*opts)
         end
 
         def to_json(*opts)
@@ -52,13 +52,7 @@ class Chef
         end
 
         def for_json
-          if is_a?(Hash)
-            to_hash
-          elsif is_a?(Array)
-            to_ary
-          else
-            wrapped_object
-          end
+          wrapped_object
         end
 
         #
