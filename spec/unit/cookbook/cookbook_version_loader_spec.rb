@@ -74,7 +74,7 @@ describe Chef::Cookbook::CookbookVersionLoader do
     end
 
     it "loads all unignored files, even if they don't match a segment type" do
-      expect(loaded_cookbook.all_unignored_files).to include(full_path("/spec/spec_helper.rb"))
+      expect(loaded_cookbook.all_files).to include(full_path("/spec/spec_helper.rb"))
     end
 
     it "should load the metadata for the cookbook" do

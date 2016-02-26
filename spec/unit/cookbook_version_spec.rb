@@ -57,8 +57,8 @@ describe Chef::CookbookVersion do
       expect(cookbook_version.metadata_filenames).to be_empty
     end
 
-    it "has an empty set of all_unignored_files" do
-      expect(cookbook_version.all_unignored_files).to be_empty
+    it "has an empty set of all_files" do
+      expect(cookbook_version.all_files).to be_empty
     end
 
     it "is not frozen" do
@@ -82,7 +82,7 @@ describe Chef::CookbookVersion do
     let(:cookbook_paths_by_type) do
       {
         # Dunno if the paths here are representitive of what is set by CookbookLoader...
-        all_unignored_files:  Dir[File.join(cookbook_root, "**", "*.rb")],
+        all_files:  Dir[File.join(cookbook_root, "**", "*.rb")],
         attribute_filenames:  Dir[File.join(cookbook_root, "attributes", "**", "*.rb")],
         definition_filenames: Dir[File.join(cookbook_root, "definitions", "**", "*.rb")],
         file_filenames:       Dir[File.join(cookbook_root, "files", "**", "*.tgz")],
@@ -169,7 +169,7 @@ describe Chef::CookbookVersion do
     let(:cookbook_paths_by_type) do
       {
         # Dunno if the paths here are representitive of what is set by CookbookLoader...
-        all_unignored_files:  Dir[File.join(cookbook_root, "**", "*.rb")],
+        all_files:            Dir[File.join(cookbook_root, "**", "*.rb")],
         attribute_filenames:  Dir[File.join(cookbook_root, "attributes", "**", "*.rb")],
         definition_filenames: Dir[File.join(cookbook_root, "definitions", "**", "*.rb")],
         file_filenames:       Dir[File.join(cookbook_root, "files", "**", "*.*")],

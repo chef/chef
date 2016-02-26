@@ -43,7 +43,7 @@ class Chef
         @relative_path = /#{Regexp.escape(@cookbook_path)}\/(.+)$/
         @metadata_loaded = false
         @cookbook_settings = {
-          :all_unignored_files  => {},
+          :all_files            => {},
           :attribute_filenames  => {},
           :definition_filenames => {},
           :recipe_filenames     => {},
@@ -79,13 +79,13 @@ class Chef
         # re-raise any exception that occurred when reading the metadata
         raise_metadata_error!
 
-        load_all_unignored_files
+        load_all_files
 
         # TODO:
         # 1. Can we safely pick out the segment files with fnmatch against the
-        #    file names in all_unignored_files (?)
+        #    file names in all_files (?)
         # 2. If so, can we avoid running chefignore twice by running it against
-        #    all_unignored_files before segmenting?
+        #    all_files before segmenting?
         #
         # See: https://shane.io/2014/07/13/sobbing-with-ruby-file-globbing.html
 
@@ -132,7 +132,7 @@ class Chef
         return nil if empty?
 
         Chef::CookbookVersion.new(cookbook_name, *cookbook_paths).tap do |c|
-          c.all_unignored_files  = cookbook_settings[:all_unignored_files].values
+          c.all_files  = cookbook_settings[:all_files].values
           c.attribute_filenames  = cookbook_settings[:attribute_filenames].values
           c.definition_filenames = cookbook_settings[:definition_filenames].values
           c.recipe_filenames     = cookbook_settings[:recipe_filenames].values
@@ -224,7 +224,7 @@ class Chef
         @chefignore ||= Chefignore.new(File.basename(cookbook_path))
       end
 
-      def load_all_unignored_files
+      def load_all_files
         # List all directories that are not dotdirs, then list everything in
         # those, *including* dotfiles and dotdirs.
         # Finally, list all the _files_ at the root, including dotfiles, and
@@ -235,11 +235,11 @@ class Chef
 
           Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(dir), "**/*"), File::FNM_DOTMATCH).each do |file|
             name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
-            cookbook_settings[:all_unignored_files][name] = file
+            cookbook_settings[:all_files][name] = file
           end
         end
         load_root_files
-        cookbook_settings[:all_unignored_files].merge!(cookbook_settings[:root_filenames])
+        cookbook_settings[:all_files].merge!(cookbook_settings[:root_filenames])
       end
 
       def load_root_files
@@ -283,7 +283,7 @@ class Chef
       #   always enabled.
       def select_files_by_glob(pattern, option = 0)
         combined_opts = option | File::FNM_PATHNAME
-        cookbook_settings[:all_unignored_files].values.select do |path|
+        cookbook_settings[:all_files].values.select do |path|
           File.fnmatch?(pattern, path, combined_opts)
         end
       end
