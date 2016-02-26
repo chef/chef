@@ -40,8 +40,7 @@ fedora-21
 # centos-7
   - name: centos-6
     driver:
-      box: opscode-centos-6.6
-      box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.6_chef-provisionerless.box
+      box: bento/centos-6.7
 <% %w(
 2012r2
 2012
