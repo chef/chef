@@ -4,7 +4,7 @@ class Chef
       module Autovivify
         def initialize(wrapped_object: nil, **args)
           super
-          @wrapped_object = {} if @wrapped_object.nil?
+          self.wrapped_object = {} if wrapped_object.nil?
         end
 
         def [](key)

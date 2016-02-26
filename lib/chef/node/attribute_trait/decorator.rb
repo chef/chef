@@ -32,7 +32,7 @@ class Chef
         end
 
         def initialize(wrapped_object: nil, **args)
-          @wrapped_object = wrapped_object
+          self.wrapped_object = wrapped_object
         end
 
         def new_decorator(**args)
@@ -103,6 +103,7 @@ class Chef
         #
 
         def method_missing(method, *args, &block)
+          pp method
           if wrapped_object.respond_to?(method, false)
             # do not define_method here
             wrapped_object.public_send(method, *args, &block)
@@ -212,7 +213,7 @@ class Chef
 
         def initialize_copy(source)
           super
-          @wrapped_object = safe_dup(source.wrapped_object)
+          self.wrapped_object = safe_dup(source.wrapped_object)
         end
 
         private

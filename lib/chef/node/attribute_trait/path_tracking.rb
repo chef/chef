@@ -1,3 +1,5 @@
+require "chef/node/attribute_trait/convert_value"
+
 class Chef
   class Node
     class AttributeTrait
@@ -7,15 +9,13 @@ class Chef
         attr_accessor :__precedence
         attr_accessor :__node
 
+        include ConvertValue
+
         def initialize(path: nil, precedence: nil, node: nil, **args)
           super(**args)
-          @__path = path
+          @__path = path || []
           @__precedence = precedence
           @__node = node
-        end
-
-        def __path
-          @__path ||= []
         end
 
         def [](key)
