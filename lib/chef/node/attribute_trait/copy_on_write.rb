@@ -80,6 +80,10 @@ class Chef
 
         def __maybe_dup
           unless __duped
+            puts "============================"
+            puts "duping the node called from:"
+            puts caller
+            puts "============================"
             @wrapped_object = dup
             @__duped = true
           end

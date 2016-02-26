@@ -103,7 +103,6 @@ class Chef
         #
 
         def method_missing(method, *args, &block)
-          pp method
           if wrapped_object.respond_to?(method, false)
             # do not define_method here
             wrapped_object.public_send(method, *args, &block)
