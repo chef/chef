@@ -24,14 +24,14 @@ describe Chef::Knife::Ssh do
   include Chef::Mixin::FIPS
 
   before(:all) do
-    allow_md5
+    allow_md5 if fips?
     Chef::Knife::Ssh.load_deps
     @server = TinyServer::Manager.new
     @server.start
   end
 
   after(:all) do
-    disallow_md5
+    disallow_md5 if fips?
     @server.stop
   end
 
