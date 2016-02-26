@@ -107,9 +107,9 @@ class Chef
     end
 
     def to_hash
-      result = self.raw_data
+      result = self.raw_data.dup
       result["chef_type"] = "data_bag_item"
-      result["data_bag"] = self.data_bag
+      result["data_bag"] = self.data_bag.to_s
       result
     end
 

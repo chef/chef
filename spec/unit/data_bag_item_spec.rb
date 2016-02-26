@@ -146,6 +146,8 @@ describe Chef::DataBagItem do
       data_bag_item
     }
 
+    let!(:original_data_bag_keys) { data_bag_item.keys }
+
     let(:to_hash) { data_bag_item.to_hash }
 
     it "should return a hash" do
@@ -163,6 +165,11 @@ describe Chef::DataBagItem do
 
     it "should have the data_bag set" do
       expect(to_hash["data_bag"]).to eq("still_lost")
+    end
+
+    it "should not mutate the data_bag_item" do
+      data_bag_item.to_hash
+      expect(data_bag_item.keys).to eq(original_data_bag_keys)
     end
   end
 
