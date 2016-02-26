@@ -52,12 +52,7 @@ EOS
         def define_resource_requirements
           super
 
-          requirements.assert(:all_actions) do |a|
-            # GetEnvironmentVariable returns "" on failure.
-            a.assertion { !choco_install_path.to_s.empty? }
-            a.failure_message(Chef::Exceptions::MissingLibrary, CHOCO_MISSING_MSG)
-            a.whyrun("Assuming Chocolatey is installed")
-          end
+          # The check that Chocolatey is installed is in #choco_exe.
 
           # Chocolatey source attribute points to an alternate feed
           # and not a package specific alternate source like other providers
@@ -152,11 +147,13 @@ EOS
         #
         # @return [String] full path of choco.exe
         def choco_exe
-          @choco_exe ||= ::File.join(
-            choco_install_path,
-            "bin",
-            "choco.exe"
-            )
+          @choco_exe ||= begin
+              # if this check is in #define_resource_requirements, it won't get
+              # run before choco.exe gets called from #load_current_resource.
+              exe_path = ::File.join(choco_install_path.to_s, "bin", "choco.exe")
+              raise Chef::Exceptions::MissingLibrary, CHOCO_MISSING_MSG unless ::File.exist?(exe_path)
+              exe_path
+            end
         end
 
         # lets us mock out an incorrect value for testing.

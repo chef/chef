@@ -462,17 +462,6 @@ munin-node|1.6.1.20130823
       expect(new_resource).to be_updated_by_last_action
     end
   end
-
-  describe "#choco_exe" do
-    it "calls #choco_install_path" do
-      # un-stub #choco_exe from the before{} block.
-      allow(provider).to receive(:choco_exe).and_call_original
-      expect(provider).to receive(:choco_install_path).and_return("spork")
-      provider.instance_variable_set("@choco_exe", nil)
-
-      expect(provider.send(:choco_exe)).to match(%r{spork[/\\]bin[/\\]choco.exe})
-    end
-  end
 end
 
 describe "behavior when Chocolatey is not installed" do
@@ -486,19 +475,27 @@ describe "behavior when Chocolatey is not installed" do
   end
 
   before {
-    allow(provider).to receive(:choco_install_path).and_return("")
+    # the shellout sometimes returns "", but test nil to be safe.
+    allow(provider).to receive(:choco_install_path).and_return(nil)
     provider.instance_variable_set("@choco_install_path", nil)
 
     # we don't care what this returns, but we have to let it be called.
     allow(provider).to receive(:shell_out!).and_return(double(:stdout => ""))
   }
 
-  context "#define_resource_requirements" do
+  let(:error_regex) {
+    /Could not locate.*install.*cookbook.*PowerShell.*GetEnvironmentVariable/m
+  }
+
+  context "#choco_exe" do
     it "triggers a MissingLibrary exception when Chocolatey is not installed" do
-      provider.action = :install
-      provider.load_current_resource
-      provider.define_resource_requirements
-      expect { provider.process_resource_requirements }.to raise_error(Chef::Exceptions::MissingLibrary, /Could not locate.*install.*cookbook.*PowerShell.*GetEnvironmentVariable/m)
+      expect { provider.send(:choco_exe) }.to raise_error(Chef::Exceptions::MissingLibrary, error_regex)
+    end
+  end
+
+  context "#load_current_resource" do
+    it "triggers a MissingLibrary exception when Chocolatey is not installed" do
+      expect { provider.load_current_resource }.to raise_error(Chef::Exceptions::MissingLibrary, error_regex)
     end
   end
 end
