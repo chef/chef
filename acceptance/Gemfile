@@ -6,7 +6,9 @@ gem "test-kitchen", github: "sersut/test-kitchen", branch: "sersut/mixlib-instal
 gem "kitchen-ec2", github: "test-kitchen/kitchen-ec2", branch: "jk/image-search-only"
 gem "kitchen-inspec"
 gem "inspec"
-gem "kitchen-vagrant"
+# Pinning to github for kitchen-vagrant because 0.19.0 incorrectly
+# puts in a box_url for bento when a vagrant box in atlas is specified
+gem "kitchen-vagrant", github: "test-kitchen/kitchen-vagrant"
 gem "windows_chef_zero"
 gem "winrm-transport"
 gem "berkshelf"
