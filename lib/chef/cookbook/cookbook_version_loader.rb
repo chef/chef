@@ -253,8 +253,8 @@ class Chef
       end
 
       def load_recursively_as(category, category_dir, glob)
-        file_spec = File.join(Chef::Util::PathHelper.escape_glob(cookbook_path, category_dir), "**", glob)
-        Dir.glob(file_spec, File::FNM_DOTMATCH).each do |file|
+        glob_pattern = File.join(Chef::Util::PathHelper.escape_glob(cookbook_path, category_dir), "**", glob)
+        select_files_by_glob(glob_pattern, File::FNM_DOTMATCH).each do |file|
           file = Chef::Util::PathHelper.cleanpath(file)
           next if File.directory?(file)
           name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
@@ -263,10 +263,28 @@ class Chef
       end
 
       def load_as(category, *path_glob)
-        Dir[File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), *path_glob)].each do |file|
+        glob_pattern = File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), *path_glob)
+        select_files_by_glob(glob_pattern).each do |file|
           file = Chef::Util::PathHelper.cleanpath(file)
           name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
           cookbook_settings[category][name] = file
+        end
+      end
+
+      # Mimic Dir.glob inside a cookbook by running `File.fnmatch?` against
+      # `cookbook_settings[:all_files]`.
+      #
+      # @param pattern [String] a glob string passed to `File.fnmatch?`
+      # @param option [Integer] Option flag to control globbing behavior. These
+      #   are constants defined on `File`, such as `File::FNM_DOTMATCH`.
+      #   `File.fnmatch?` and `Dir.glob` only take one option argument, if you
+      #   need to combine options, you must `|` the constants together. To make
+      #   `File.fnmatch?` behave like `Dir.glob`, `File::FNM_PATHNAME` is
+      #   always enabled.
+      def select_files_by_glob(pattern, option = 0)
+        combined_opts = option | File::FNM_PATHNAME
+        cookbook_settings[:all_unignored_files].values.select do |path|
+          File.fnmatch?(pattern, path, combined_opts)
         end
       end
 
