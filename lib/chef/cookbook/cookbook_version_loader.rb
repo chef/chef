@@ -230,6 +230,7 @@ class Chef
             next if dir_relpath.to_s.start_with?(".")
 
             Dir.glob(File.join(fs_entry, "**/*"), File::FNM_DOTMATCH).each do |file|
+              next if File.directory?(file)
               file = Chef::Util::PathHelper.cleanpath(file)
               name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
               cookbook_settings[:all_files][name] = file
@@ -261,7 +262,6 @@ class Chef
         glob_pattern = File.join(Chef::Util::PathHelper.escape_glob_dir(cookbook_path, category_dir), "**", glob)
         select_files_by_glob(glob_pattern, File::FNM_DOTMATCH).each do |file|
           file = Chef::Util::PathHelper.cleanpath(file)
-          next if File.directory?(file)
           name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
           cookbook_settings[category][name] = file
         end

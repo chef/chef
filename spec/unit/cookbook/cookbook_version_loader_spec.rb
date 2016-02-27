@@ -73,8 +73,16 @@ describe Chef::Cookbook::CookbookVersionLoader do
       expect(loaded_cookbook.file_filenames).to include(full_path("/files/default/remotedir/.a_dotdir/.a_dotfile_in_a_dotdir"))
     end
 
+    it "loads root files that start with a ." do
+      expect(loaded_cookbook.all_files).to include(full_path(".root_dotfile"))
+      expect(loaded_cookbook.root_filenames).to include(full_path(".root_dotfile"))
+    end
+
     it "loads all unignored files, even if they don't match a segment type" do
       expect(loaded_cookbook.all_files).to include(full_path("/spec/spec_helper.rb"))
+
+      # Directories need to be filtered out, though:
+      expect(loaded_cookbook.all_files).to_not include(full_path("/spec"))
     end
 
     it "should load the metadata for the cookbook" do
