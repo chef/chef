@@ -224,26 +224,39 @@ class Chef
         @chefignore ||= Chefignore.new(File.basename(cookbook_path))
       end
 
+      # Enumerate all the files in a cookbook and assign the resulting list to
+      # `cookbook_settings[:all_files]`. In order to behave in a compatible way
+      # with previous implementations, directories at the cookbook's root that
+      # begin with a dot are ignored. dotfiles are generally not ignored,
+      # however if the file is named ".uploaded-cookbook-version.json" it is
+      # assumed to be managed by chef-zero and not part of the cookbook.
       def load_all_files
-        # List all directories that are not dotdirs, then list everything in
-        # those, *including* dotfiles and dotdirs.
-        # Finally, list all the _files_ at the root, including dotfiles, and
-        # merge those in.
-        Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), "*")).each do |dir|
-          dir = Chef::Util::PathHelper.cleanpath(dir)
-          next unless File.directory?(dir)
+        Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), "*"), File::FNM_DOTMATCH).each do |fs_entry|
+          if File.directory?(fs_entry)
+            dir_relpath = Chef::Util::PathHelper.relative_path_from(@cookbook_path, fs_entry)
 
-          Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(dir), "**/*"), File::FNM_DOTMATCH).each do |file|
+            next if dir_relpath.to_s.start_with?(".")
+
+            Dir.glob(File.join(fs_entry, "**/*"), File::FNM_DOTMATCH).each do |file|
+              file = Chef::Util::PathHelper.cleanpath(file)
+              name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
+              cookbook_settings[:all_files][name] = file
+            end
+          elsif File.file?(fs_entry)
+            file = Chef::Util::PathHelper.cleanpath(fs_entry)
+
+            next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
+
             name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
             cookbook_settings[:all_files][name] = file
+          else # pipes, devices, other weirdness
+            next
           end
         end
-        load_root_files
-        cookbook_settings[:all_files].merge!(cookbook_settings[:root_filenames])
       end
 
       def load_root_files
-        Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), "*"), File::FNM_DOTMATCH).each do |file|
+        select_files_by_glob(File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), "*"), File::FNM_DOTMATCH).each do |file|
           file = Chef::Util::PathHelper.cleanpath(file)
           next if File.directory?(file)
           next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
