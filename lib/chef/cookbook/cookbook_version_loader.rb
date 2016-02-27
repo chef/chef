@@ -81,13 +81,7 @@ class Chef
 
         load_all_files
 
-        # TODO:
-        # 1. Can we safely pick out the segment files with fnmatch against the
-        #    file names in all_files (?)
-        # 2. If so, can we avoid running chefignore twice by running it against
-        #    all_files before segmenting?
-        #
-        # See: https://shane.io/2014/07/13/sobbing-with-ruby-file-globbing.html
+        remove_ignored_files
 
         load_as(:attribute_filenames, "attributes", "*.rb")
         load_as(:definition_filenames, "definitions", "*.rb")
@@ -98,8 +92,6 @@ class Chef
         load_recursively_as(:resource_filenames, "resources", "*.rb")
         load_recursively_as(:provider_filenames, "providers", "*.rb")
         load_root_files
-
-        remove_ignored_files
 
         if empty?
           Chef::Log.warn "Found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
@@ -302,10 +294,8 @@ class Chef
       end
 
       def remove_ignored_files
-        cookbook_settings.each_value do |file_list|
-          file_list.reject! do |relative_path, full_path|
-            chefignore.ignored?(relative_path)
-          end
+        cookbook_settings[:all_files].reject! do |relative_path, full_path|
+          chefignore.ignored?(relative_path)
         end
       end
 
