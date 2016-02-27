@@ -124,7 +124,7 @@ class Chef
         return nil if empty?
 
         Chef::CookbookVersion.new(cookbook_name, *cookbook_paths).tap do |c|
-          c.all_files  = cookbook_settings[:all_files].values
+          c.all_files            = cookbook_settings[:all_files].values
           c.attribute_filenames  = cookbook_settings[:attribute_filenames].values
           c.definition_filenames = cookbook_settings[:definition_filenames].values
           c.recipe_filenames     = cookbook_settings[:recipe_filenames].values
