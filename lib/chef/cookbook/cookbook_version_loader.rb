@@ -231,7 +231,7 @@ class Chef
       # however if the file is named ".uploaded-cookbook-version.json" it is
       # assumed to be managed by chef-zero and not part of the cookbook.
       def load_all_files
-        Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), "*"), File::FNM_DOTMATCH).each do |fs_entry|
+        Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(cookbook_path), "*"), File::FNM_DOTMATCH).each do |fs_entry|
           if File.directory?(fs_entry)
             dir_relpath = Chef::Util::PathHelper.relative_path_from(@cookbook_path, fs_entry)
 
@@ -256,7 +256,7 @@ class Chef
       end
 
       def load_root_files
-        select_files_by_glob(File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), "*"), File::FNM_DOTMATCH).each do |file|
+        select_files_by_glob(File.join(Chef::Util::PathHelper.escape_glob_dir(cookbook_path), "*"), File::FNM_DOTMATCH).each do |file|
           file = Chef::Util::PathHelper.cleanpath(file)
           next if File.directory?(file)
           next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
@@ -266,7 +266,7 @@ class Chef
       end
 
       def load_recursively_as(category, category_dir, glob)
-        glob_pattern = File.join(Chef::Util::PathHelper.escape_glob(cookbook_path, category_dir), "**", glob)
+        glob_pattern = File.join(Chef::Util::PathHelper.escape_glob_dir(cookbook_path, category_dir), "**", glob)
         select_files_by_glob(glob_pattern, File::FNM_DOTMATCH).each do |file|
           file = Chef::Util::PathHelper.cleanpath(file)
           next if File.directory?(file)
@@ -276,7 +276,7 @@ class Chef
       end
 
       def load_as(category, *path_glob)
-        glob_pattern = File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), *path_glob)
+        glob_pattern = File.join(Chef::Util::PathHelper.escape_glob_dir(cookbook_path), *path_glob)
         select_files_by_glob(glob_pattern).each do |file|
           file = Chef::Util::PathHelper.cleanpath(file)
           name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
