@@ -110,7 +110,7 @@ class Chef
                   "sure that it shows up when running Get-DscResource"
               when 1
                 if found[0]["Module"].nil?
-                  :none
+                  "PSDesiredStateConfiguration" # default DSC module
                 else
                   found[0]["Module"]["Name"]
                 end
@@ -151,10 +151,7 @@ class Chef
       def invoke_resource(method, output_format = :object)
         properties = translate_type(@new_resource.properties)
         switches = "-Method #{method} -Name #{@new_resource.resource}"\
-                   " -Property #{properties} -Verbose"
-        if module_name != :none
-          switches += " -Module #{module_name}"
-        end
+                   " -Property #{properties} -Module #{module_name} -Verbose"
         cmdlet = Chef::Util::Powershell::Cmdlet.new(
           node,
           "Invoke-DscResource #{switches}",

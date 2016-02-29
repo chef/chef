@@ -38,7 +38,7 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
     before do
       if !Chef::Platform.supports_dsc_invoke_resource?(node)
         skip "Requires Powershell >= 5.0.10018.0"
-      elsif !Chef::Platform.dsc_refresh_mode_disabled?(node)
+      elsif !Chef::Platform.supports_refresh_mode_enabled?(node) && !Chef::Platform.dsc_refresh_mode_disabled?(node)
         skip "Requires LCM RefreshMode is Disabled"
       end
     end
