@@ -16,6 +16,12 @@ provisioner:
      chef_acceptance: "true"
      use_system_chef: "true"
 
+# busser installation relies on this
+<% if ENV["KITCHEN_CHEF_PRODUCT"] %>
+verifier:
+  chef_omnibus_root: "/opt/<%= ENV["KITCHEN_CHEF_PRODUCT"] %>"
+<% end %>
+
 platforms:
 <% %w(
 debian-8

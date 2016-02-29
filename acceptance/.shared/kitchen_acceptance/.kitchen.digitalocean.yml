@@ -15,6 +15,12 @@ provisioner:
   product_version: latest
   channel: current
 
+# busser installation relies on this
+<% if ENV["KITCHEN_CHEF_PRODUCT"] %>
+verifier:
+  chef_omnibus_root: "/opt/<%= ENV["KITCHEN_CHEF_PRODUCT"] %>"
+<% end %>
+
 platforms:
 <% %w(centos-6.5 centos-7.0
       fedora-21
