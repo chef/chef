@@ -28,10 +28,7 @@ class Chef
         # Takes a name like blah.json and removes the .json from it.
         #
         def remove_dot_json(name)
-          if name.length < 5 || name[-5, 5] != ".json"
-            raise "Invalid name #{path}: must end in .json"
-          end
-          name[0, name.length - 5]
+          File.basename(name, ".json")
         end
 
         #
