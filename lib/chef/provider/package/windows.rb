@@ -36,7 +36,7 @@ class Chef
 
         def define_resource_requirements
           requirements.assert(:install) do |a|
-            a.assertion { new_resource.source unless msi? }
+            a.assertion { new_resource.source || msi? }
             a.failure_message Chef::Exceptions::NoWindowsPackageSource, "Source for package #{new_resource.name} must be specified in the resource's source property for package to be installed because the package_name property is used to test for the package installation state for this package type."
           end
         end

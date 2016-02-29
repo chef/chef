@@ -296,6 +296,15 @@ describe Chef::Provider::Package::Windows, :windows_only do
       it "raises a NoWindowsPackageSource error" do
         expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::NoWindowsPackageSource)
       end
+
+      context "msi installer_type" do
+        let(:installer_type) { :msi }
+
+        it "does not raise a NoWindowsPackageSource error" do
+          expect(provider).to receive(:install_package)
+          provider.run_action(:install)
+        end
+      end
     end
 
     context "http source given and no type given explicitly" do
