@@ -119,6 +119,21 @@ describe Chef::HTTP::ValidateContentLength do
     end
   end
 
+  describe "with negative Content-Length header" do
+    let(:content_length_value) { '-1' }
+
+    %w{direct streaming}.each do |req_type|
+      describe "when running #{req_type} request" do
+        let(:request_type) { req_type.to_sym }
+
+        it "should skip validation and log for debug" do
+          run_content_length_validation
+          expect(debug_output).to include("HTTP server did not include a Content-Length header in response")
+        end
+      end
+    end
+  end
+
   describe "with correct Content-Length header" do
     %w{direct streaming}.each do |req_type|
       describe "when running #{req_type} request" do
