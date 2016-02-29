@@ -856,14 +856,14 @@ module ChefConfig
       # proxy before parsing. The regex /^.*:\/\// matches, for example, http://. Reusing proxy
       # here since we are really just trying to get the string built correctly.
       proxy = if !proxy_env_var.empty?
-        if proxy_env_var.match(/^.*:\/\//)
-          URI.parse(proxy_env_var)
-        else
-          URI.parse("#{scheme}://#{proxy_env_var}")
-        end
-      end
+                if proxy_env_var =~ /^.*:\/\//
+                  URI.parse(proxy_env_var)
+                else
+                  URI.parse("#{scheme}://#{proxy_env_var}")
+                end
+              end
 
-      excludes = ENV['no_proxy'].to_s.split(/\s*,\s*/).compact
+      excludes = ENV["no_proxy"].to_s.split(/\s*,\s*/).compact
       excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
       return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
     end
