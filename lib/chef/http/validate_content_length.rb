@@ -86,8 +86,13 @@ class Chef
         transfer_encoding = http_response["transfer-encoding"]
         content_encoding  = http_response["content-encoding"]
 
-        if content_length.nil? || content_length < 0
+        if content_length.nil?
           Chef::Log.debug "HTTP server did not include a Content-Length header in response, cannot identify truncated downloads."
+          return true
+        end
+
+        if content_length < 0
+          Chef::Log.debug "HTTP server responded with a negative Content-Length header (#{content_length}), cannot identify truncated downloads."
           return true
         end
 

@@ -128,7 +128,7 @@ describe Chef::HTTP::ValidateContentLength do
 
         it "should skip validation and log for debug" do
           run_content_length_validation
-          expect(debug_output).to include("HTTP server did not include a Content-Length header in response")
+          expect(debug_output).to include("HTTP server responded with a negative Content-Length header (-1), cannot identify truncated downloads.")
         end
       end
     end
