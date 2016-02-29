@@ -231,12 +231,12 @@ class Chef
 
             Dir.glob(File.join(fs_entry, "**/*"), File::FNM_DOTMATCH).each do |file|
               next if File.directory?(file)
-              file = Chef::Util::PathHelper.cleanpath(file)
+              file = Pathname.new(file).cleanpath.to_s
               name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
               cookbook_settings[:all_files][name] = file
             end
           elsif File.file?(fs_entry)
-            file = Chef::Util::PathHelper.cleanpath(fs_entry)
+            file = Pathname.new(fs_entry).cleanpath.to_s
 
             next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
 
