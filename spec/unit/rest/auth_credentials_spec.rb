@@ -96,13 +96,13 @@ end
 describe Chef::REST::RESTRequest do
   let(:url) { URI.parse("http://chef.example.com:4000/?q=chef_is_awesome") }
 
-  def new_request(method=nil)
+  def new_request(method = nil)
     method ||= :POST
     Chef::REST::RESTRequest.new(method, url, @req_body, @headers)
   end
 
   before do
-    @auth_credentials = Chef::REST::AuthCredentials.new("client-name", CHEF_SPEC_DATA + '/ssl/private_key.pem')
+    @auth_credentials = Chef::REST::AuthCredentials.new("client-name", CHEF_SPEC_DATA + "/ssl/private_key.pem")
     @req_body = '{"json_data":"as_a_string"}'
     @headers = { "Content-type" => "application/json",
                  "Accept" => "application/json",
@@ -182,7 +182,7 @@ describe Chef::REST::RESTRequest do
                           "http_proxy_pass" => nil,
                           "https_proxy_user" => nil,
                           "https_proxy_pass" => nil,
-                          "no_proxy" => nil,
+                          "no_proxy" => nil
                   )
       end
 
@@ -265,7 +265,7 @@ describe Chef::REST::RESTRequest do
       describe "with :https_proxy_user and :https_proxy_pass set" do
         before do
           stub_const("ENV", "http_proxy" => "http://proxy.example.com:3128",
-                            "https_proxy" => "https://homie:theclown@sproxy.example.com:3129",
+                            "https_proxy" => "https://homie:theclown@sproxy.example.com:3129"
                     )
         end
 

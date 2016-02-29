@@ -847,7 +847,7 @@ RSpec.describe ChefConfig::Config do
     context "when an empty proxy is set by the environment" do
       let(:env) do
         {
-          "https_proxy" => ""
+          "https_proxy" => "",
         }
       end
 
@@ -878,7 +878,6 @@ RSpec.describe ChefConfig::Config do
 
         it { is_expected.to eq nil }
       end
-
 
       context "when no_proxy is included on a list" do
         let(:env) do
