@@ -120,7 +120,7 @@ describe Chef::HTTP::ValidateContentLength do
   end
 
   describe "with negative Content-Length header" do
-    let(:content_length_value) { '-1' }
+    let(:content_length_value) { "-1" }
 
     %w{direct streaming}.each do |req_type|
       describe "when running #{req_type} request" do
