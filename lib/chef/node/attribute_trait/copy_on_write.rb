@@ -13,7 +13,7 @@ class Chef
         def initialize(duped: false, **args)
           super(**args)
           @__duped = duped
-          if __root == self
+          if __root.equal?(self)
             # this is a hack so that we can mutate the top level object without taking the
             # expense of duplicating it all.  at some lazy dup'ing at any level of the tree would
             # be awesome if its possible.
@@ -65,7 +65,7 @@ class Chef
         end
 
         def []=(key, value)
-          if __root == self
+          if __root.equal?(self)
             # hacky way to connect up to the hack in the initializer, we don't have to dup
             # because we already did a shallow dup.
             @wrapped_object[key] = value
