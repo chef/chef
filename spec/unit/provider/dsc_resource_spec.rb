@@ -77,16 +77,24 @@ describe Chef::Provider::DscResource do
       node.automatic[:languages][:powershell][:version] = "5.0.10018.0"
       node
     }
+    let (:resource_result) { double("CmdletResult", return_value: { "InDesiredState" => true }, stream: "description") }
+    let (:invoke_dsc_resource) { double("cmdlet", run!: resource_result) }
+    let (:store) { double("ResourceStore", find: resource_records) }
+    let (:resource_records) { [] }
+
+    before do
+      allow(Chef::Util::DSC::ResourceStore).to receive(:instance).and_return(store)
+      allow(Chef::Util::Powershell::Cmdlet).to receive(:new).and_return(invoke_dsc_resource)
+      allow(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
+    end
 
     it "does not update the resource if it is up to date" do
-      expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
       expect(provider).to receive(:test_resource).and_return(true)
       provider.run_action(:run)
       expect(resource).not_to be_updated
     end
 
     it "converges the resource if it is not up to date" do
-      expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:set_resource)
       provider.run_action(:run)
@@ -94,7 +102,6 @@ describe Chef::Provider::DscResource do
     end
 
     it "flags the resource as reboot required when required" do
-      expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:invoke_resource).
         and_return(double(:stdout => "", :return_value => nil))
@@ -105,7 +112,6 @@ describe Chef::Provider::DscResource do
     end
 
     it "does not flag the resource as reboot required when not required" do
-      expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:invoke_resource).
         and_return(double(:stdout => "", :return_value => nil))
@@ -113,6 +119,49 @@ describe Chef::Provider::DscResource do
       expect(provider).to receive(:return_dsc_resource_result).and_return(false)
       expect(provider).to_not receive(:create_reboot_resource)
       provider.run_action(:run)
+    end
+
+    context "resource name cannot be found" do
+      let (:resource_records) { [] }
+
+      it "raises ResourceNotFound" do
+        expect { provider.run_action(:run) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      end
+    end
+
+    context "resource name is found" do
+      context "no module name for resource found" do
+        let (:resource_records) { [{}] }
+
+        it "returns the default dsc resource module" do
+          expect(Chef::Util::Powershell::Cmdlet).to receive(:new) do |node, cmdlet, format|
+            expect(cmdlet).to match(/Module PSDesiredStateConfiguration /)
+          end.and_return(invoke_dsc_resource)
+          provider.run_action(:run)
+        end
+      end
+
+      context "a module name for resource is found" do
+        let (:resource_records) { [{ "Module" => { "Name" => "ModuleName" } }] }
+
+        it "returns the default dsc resource module" do
+          expect(Chef::Util::Powershell::Cmdlet).to receive(:new) do |node, cmdlet, format|
+            expect(cmdlet).to match(/Module ModuleName /)
+          end.and_return(invoke_dsc_resource)
+          provider.run_action(:run)
+        end
+      end
+
+      context "multiple resource are found" do
+        let (:resource_records) { [
+          { "Module" => { "Name" => "ModuleName1" } },
+          { "Module" => { "Name" => "ModuleName2" } },
+        ] }
+
+        it "raises MultipleDscResourcesFound" do
+          expect { provider.run_action(:run) }.to raise_error(Chef::Exceptions::MultipleDscResourcesFound)
+        end
+      end
     end
   end
 end
