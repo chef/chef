@@ -91,6 +91,11 @@ class Chef
           return true
         end
 
+        if content_length < 0
+          Chef::Log.debug "HTTP server responded with a negative Content-Length header (#{content_length}), cannot identify truncated downloads."
+          return true
+        end
+
         # if Transfer-Encoding is set the RFC states that we must ignore the Content-Length field
         # CHEF-5041: some proxies uncompress gzip content, leave the incorrect content-length, but set the transfer-encoding field
         unless transfer_encoding.nil?
