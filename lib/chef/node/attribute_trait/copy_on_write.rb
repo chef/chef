@@ -17,7 +17,7 @@ class Chef
             # this is a hack so that we can mutate the top level object without taking the
             # expense of duplicating it all.  at some lazy dup'ing at any level of the tree would
             # be awesome if its possible.
-            @wrapped_object = wrapped_object.dup  # this should be a Hash so its intended to be non-deep
+            @wrapped_object = shallow_duper(wrapped_object)
           end
         end
 
@@ -80,11 +80,11 @@ class Chef
 
         def __maybe_dup
           unless __duped
-            puts "============================"
-            puts "duping the node called from:"
+            puts "================================="
+            puts "deep duping the node called from:"
             puts caller
-            puts "============================"
-            @wrapped_object = dup
+            puts "================================="
+            @wrapped_object = deep_dup
             @__duped = true
           end
         end

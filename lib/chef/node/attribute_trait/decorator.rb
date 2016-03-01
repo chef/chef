@@ -199,6 +199,11 @@ class Chef
         end
 
         def dup
+          deep_dup
+        end
+
+        # FIXME: this needs wrapping with maybe_decorated_value()
+        def deep_dup
           if is_a?(Array)
             map(&method(:safe_dup))
           elsif is_a?(Hash)
@@ -207,6 +212,24 @@ class Chef
             h
           else
             safe_dup(wrapped_object)
+          end
+        end
+
+        def shallow_dup
+          maybe_decorated_value(
+            shallow_duper(wrapped_object)
+          )
+        end
+
+        def shallow_duper(e)
+          if e.is_a?(Array)
+            map { |e| e }
+          elsif e.is_a?(Hash)
+            h = {}
+            e.each { |k, v| h[k] = v }
+            h
+          else
+            safe_dup(e)
           end
         end
 
