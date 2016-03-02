@@ -131,6 +131,31 @@ class Chef
           maybe_decorated_value(wrapped_object[key])
         end
 
+        def merge(other)
+          ret = shallow_dup
+          other.each do |key, value|
+            if ret.key?(key) && block_given?
+              ret[key] = yield(key, ret[key], value)
+            else
+              ret[key] = value
+            end
+          end
+          ret
+        end
+
+        def update(other)
+          other.each do |key, value|
+            if key?(key) && block_given?
+              self[key] = yield(key, self[key], value)
+            else
+              self[key] = value
+            end
+          end
+          self
+        end
+
+        alias_method :merge!, :update
+
         def any?(&block)
           block ||= ->(o) { o }
           if is_a?(Hash)

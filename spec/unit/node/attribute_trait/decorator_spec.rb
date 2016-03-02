@@ -1,6 +1,16 @@
 
 require "spec_helper"
 
+#
+# This spec file tests that the methods on decorated objects return decorated
+# objets when its appropriate to do so.  In other words if our input collections
+# are decorated objects we generally expect our output collections to also
+# be decorated objects.  This is just "strongly typing" our output.
+#
+# The decorator_hash_spec.rb file contains the tests which test the correctness
+# of the underlying behavior, and asserts that our hashes behave like hashes
+# and our arrays behave like arrays.
+#
 describe Chef::Node::AttributeTrait::Decorator do
   class Test
     include Chef::Node::AttributeTrait::Decorator
@@ -8,6 +18,30 @@ describe Chef::Node::AttributeTrait::Decorator do
 
   context "as a Hash" do
     let(:test) { Test[] }
+
+    context "Hash#merge" do
+      it "returns decorated objects" do
+        test["foo"] = 1
+        other = { "bar" => 2 }
+        expect(test.merge(other)).to be_instance_of(Test)
+      end
+    end
+
+    context "Hash#merge!" do
+      it "returns decorated objects" do
+        test["foo"] = 1
+        other = { "bar" => 2 }
+        expect(test.merge!(other)).to be_instance_of(Test)
+      end
+    end
+
+    context "Hash#update" do
+      it "returns decorated objects" do
+        test["foo"] = 1
+        other = { "bar" => 2 }
+        expect(test.update(other)).to be_instance_of(Test)
+      end
+    end
 
     context "Hash#any" do
       it "yields decorated objects when nested" do

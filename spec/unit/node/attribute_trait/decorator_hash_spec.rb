@@ -760,7 +760,7 @@ describe Chef::Node::AttributeTrait::Decorator do
 #    end
 #  end
 
-  def test_update
+  it "#update" do
     h1 = hash_bracket( 1 => 2, 2 => 3, 3 => 4 )
     h2 = hash_bracket( 2 => "two", 4 => "four" )
 
