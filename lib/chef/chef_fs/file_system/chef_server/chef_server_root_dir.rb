@@ -31,6 +31,7 @@ require "chef/chef_fs/file_system/chef_server/organization_members_entry"
 require "chef/chef_fs/file_system/chef_server/policies_dir"
 require "chef/chef_fs/file_system/chef_server/policy_groups_dir"
 require "chef/chef_fs/file_system/chef_server/environments_dir"
+require "chef/chef_fs/file_system/chef_server/roles_dir"
 require "chef/chef_fs/data_handler/acl_data_handler"
 require "chef/chef_fs/data_handler/client_data_handler"
 require "chef/chef_fs/data_handler/environment_data_handler"
@@ -149,7 +150,7 @@ class Chef
                 # /environments
                 EnvironmentsDir.new("environments", self, nil, Chef::ChefFS::DataHandler::EnvironmentDataHandler.new),
                 # /roles
-                RestListDir.new("roles", self, nil, Chef::ChefFS::DataHandler::RoleDataHandler.new),
+                RolesDir.new("roles", self, nil, Chef::ChefFS::DataHandler::RoleDataHandler.new),
               ]
               if repo_mode == "hosted_everything"
                 result += [

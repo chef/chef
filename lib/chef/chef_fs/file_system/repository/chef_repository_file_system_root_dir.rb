@@ -22,6 +22,7 @@ require "chef/chef_fs/file_system/repository/cookbooks_dir"
 require "chef/chef_fs/file_system/repository/cookbook_artifacts_dir"
 require "chef/chef_fs/file_system/repository/data_bags_dir"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_client_keys_dir"
+require "chef/chef_fs/file_system/repository/chef_repository_file_system_roles_dir"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_policies_dir"
 require "chef/chef_fs/file_system/repository/versioned_cookbooks_dir"
@@ -182,6 +183,8 @@ class Chef
               dirs = paths.map { |path| ChefRepositoryFileSystemAclsDir.new(name, self, path) }
             when "client_keys"
               dirs = paths.map { |path| ChefRepositoryFileSystemClientKeysDir.new(name, self, path) }
+            when "roles"
+              dirs = paths.map { |path| ChefRepositoryFileSystemRolesDir.new(name, self, path) }
             else
               data_handler = case name
                              when "clients"
@@ -192,8 +195,6 @@ class Chef
                                Chef::ChefFS::DataHandler::NodeDataHandler.new
                              when "policy_groups"
                                Chef::ChefFS::DataHandler::PolicyGroupDataHandler.new
-                             when "roles"
-                               Chef::ChefFS::DataHandler::RoleDataHandler.new
                              when "users"
                                Chef::ChefFS::DataHandler::UserDataHandler.new
                              when "groups"
