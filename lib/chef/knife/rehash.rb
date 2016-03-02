@@ -35,7 +35,10 @@ class Chef
       end
 
       def reload_plugins
-        Chef::Knife::SubcommandLoader::GemGlobLoader.new(@@chef_config_dir).load_commands
+        # The subcommand_loader for this knife command should _always_ be the GemGlobLoader.  The GemGlobLoader loads
+        # plugins from disc and ensures the hash we write is always correct.  By this point it should also already have
+        # loaded plugins and `load_commands` shouldn't have an effect.
+        Chef::Knife::subcommand_loader.load_commands
       end
 
       def generate_hash

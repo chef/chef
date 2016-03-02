@@ -58,6 +58,12 @@ class Chef
         end
       end
 
+      # There are certain situations where we want to shortcut the loader selection
+      # in self.for_config and force using the GemGlobLoader
+      def self.gem_glob_loader(chef_config_dir)
+        Knife::SubcommandLoader::GemGlobLoader.new(chef_config_dir)
+      end
+
       def self.plugin_manifest?
         plugin_manifest_path && File.exist?(plugin_manifest_path)
       end
