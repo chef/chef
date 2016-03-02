@@ -40,9 +40,28 @@ class Chef
 
         def list_commands(pref_category = nil)
           if pref_category || manifest[KEY]["plugins_by_category"].key?(pref_category)
-            { pref_category => manifest[KEY]["plugins_by_category"][pref_category] }
+            commands = { pref_category => manifest[KEY]["plugins_by_category"][pref_category] }
           else
-            manifest[KEY]["plugins_by_category"]
+            commands = manifest[KEY]["plugins_by_category"]
+          end
+          # If any of the specified plugins in the manifest dont have a valid path we will
+          # eventually get an error and the user will need to rehash - instead, lets just
+          # print out 1 error here telling them to rehash
+          errors = {}
+          commands.collect {|k, v| v}.flatten.each do |command|
+            paths = manifest[KEY]["plugins_paths"][command]
+            if paths && paths.is_a?(Array)
+              if paths.all? {|sc| !File.exists?(sc)}
+                errors[command] = paths
+              end
+            end
+          end
+          if errors.empty?
+            commands
+          else
+            Chef::Log.error "There are files specified in the manifest that are missing.  Please rehash to update the subcommands cache.  If you see this error after rehashing delete the cache at #{Chef::Knife::SubcommandLoader.plugin_manifest_path}"
+            Chef::Log.error "Missing files:\n\t#{errors.values.flatten.join("\n\t")}"
+            {}
           end
         end
 
@@ -59,7 +78,6 @@ class Chef
               if File.exists?(sc)
                 Kernel.load sc
               else
-                Chef::Log.error "The file #{sc} is missing for subcommand '#{subcommand_for_args(args)}'. Please rehash to update the subcommands cache."
                 return false
               end
             end
