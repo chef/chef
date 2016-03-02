@@ -144,7 +144,6 @@ describe Chef::Provider::User::Useradd, metadata do
   let(:password) { nil }
   let(:system) { false }
   let(:comment) { nil }
-  let(:shell) { nil }
 
   let(:user_resource) do
     r = Chef::Resource::User.new("TEST USER RESOURCE", run_context)
@@ -155,7 +154,6 @@ describe Chef::Provider::User::Useradd, metadata do
     r.manage_home(manage_home)
     r.password(password)
     r.system(system)
-    r.shell(shell)
     r
   end
 
@@ -620,7 +618,6 @@ describe Chef::Provider::User::Useradd, metadata do
     context "when the user exists" do
 
       include_context "user exists for lock/unlock"
-      let(:shell) { "/bin/sh" }
 
       before do
         begin
