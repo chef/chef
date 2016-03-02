@@ -48,10 +48,11 @@ class Chef
           # eventually get an error and the user will need to rehash - instead, lets just
           # print out 1 error here telling them to rehash
           errors = {}
-          commands.collect {|k, v| v}.flatten.each do |command|
+          commands.collect { |k, v| v }.flatten.each do |command|
             paths = manifest[KEY]["plugins_paths"][command]
             if paths && paths.is_a?(Array)
-              if paths.all? {|sc| !File.exists?(sc)}
+              # It is only an error if all the paths don't exist
+              if paths.all? { |sc| !File.exists?(sc) }
                 errors[command] = paths
               end
             end
