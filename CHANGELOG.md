@@ -1,4 +1,44 @@
-## 12.8.0
+# Change Log
+
+## [12.8.0](https://github.com/chef/chef/tree/12.8.0) (2016-03-02)
+[Full Changelog](https://github.com/chef/chef/compare/12.7.2...12.8.0)
+
+**Implemented enhancements:**
+
+- Clarify the probable cause of tempfile creation failure during cookbook sync [\#2171](https://github.com/chef/chef/issues/2171)
+- Have client.rb verify that FIPS mode can be enforced [\#4630](https://github.com/chef/chef/pull/4630) ([ksubrama](https://github.com/ksubrama))
+- List all of the unignored files when loading a cookbook [\#4629](https://github.com/chef/chef/pull/4629) ([danielsdeleo](https://github.com/danielsdeleo))
+- adding pry and pry-byebug to dev dependencies [\#4601](https://github.com/chef/chef/pull/4601) ([mwrock](https://github.com/mwrock))
+- add an issue template [\#4590](https://github.com/chef/chef/pull/4590) ([lamont-granquist](https://github.com/lamont-granquist))
+- Split group members on commas [\#4583](https://github.com/chef/chef/pull/4583) ([thommay](https://github.com/thommay))
+- Make tempfiles easier to read \(prepend chef to the name\) [\#4582](https://github.com/chef/chef/pull/4582) ([thommay](https://github.com/thommay))
+- Extend cookbook shadowing deprecation warnings more broadly [\#4574](https://github.com/chef/chef/pull/4574) ([lamont-granquist](https://github.com/lamont-granquist))
+- tell knife's edit\_data what the object is [\#4548](https://github.com/chef/chef/pull/4548) ([thommay](https://github.com/thommay))
+- Implement knife bootstrap client.d RFC [\#4529](https://github.com/chef/chef/pull/4529) ([jaym](https://github.com/jaym))
+- Update to Log Level when showing unencrypted databag [\#4524](https://github.com/chef/chef/pull/4524) ([PatrickWalker](https://github.com/PatrickWalker))
+- chef-client: add --\[no\]skip-cookbook-sync option [\#4316](https://github.com/chef/chef/pull/4316) ([josb](https://github.com/josb))
+- launchd for osx [\#4111](https://github.com/chef/chef/pull/4111) ([mikedodge04](https://github.com/mikedodge04))
+
+**Fixed bugs:**
+
+- Chef::DataBagItem.to\_hash is modifying Chef::DataBagItem.raw\_data [\#4614](https://github.com/chef/chef/issues/4614)
+- Chef 12 seeing a ton of these in debug mode [\#2396](https://github.com/chef/chef/issues/2396)
+- Handle negative content length headers too. [\#4646](https://github.com/chef/chef/pull/4646) ([coderanger](https://github.com/coderanger))
+- if no module name is found for a valid dsc resource default to PSDesiredStateConfiguration [\#4638](https://github.com/chef/chef/pull/4638) ([mwrock](https://github.com/mwrock))
+- removing disabling of readline in chef-shell [\#4635](https://github.com/chef/chef/pull/4635) ([mwrock](https://github.com/mwrock))
+- Fix a bug that was causing DataBagItem.to\_hash to mutate the data bag item [\#4631](https://github.com/chef/chef/pull/4631) ([itmustbejj](https://github.com/itmustbejj))
+- ensure paths maintain utf-8ness in non ascii encodings [\#4626](https://github.com/chef/chef/pull/4626) ([mwrock](https://github.com/mwrock))
+- Fix the Chocolatey-missing error again [\#4621](https://github.com/chef/chef/pull/4621) ([randomcamel](https://github.com/randomcamel))
+- fixes exe package downloads [\#4612](https://github.com/chef/chef/pull/4612) ([mwrock](https://github.com/mwrock))
+- fallback to netmsg.dll error table if error message is not found in system errors [\#4600](https://github.com/chef/chef/pull/4600) ([mwrock](https://github.com/mwrock))
+- zypper multipackage performance fix [\#4591](https://github.com/chef/chef/pull/4591) ([lamont-granquist](https://github.com/lamont-granquist))
+- bugfix \#2865 check for validation\_key [\#4581](https://github.com/chef/chef/pull/4581) ([thommay](https://github.com/thommay))
+- remove bogus recalculation of cookbook upload failures [\#4580](https://github.com/chef/chef/pull/4580) ([thommay](https://github.com/thommay))
+- Make sure we have a valid object before calling close! [\#4579](https://github.com/chef/chef/pull/4579) ([thommay](https://github.com/thommay))
+- Fix policyfile\_zero provisioner in 12.7 [\#4571](https://github.com/chef/chef/pull/4571) ([andy-dufour](https://github.com/andy-dufour))
+- do not include source parameter when removing a chocolatey package and ensure source is used on all functional tests [\#4570](https://github.com/chef/chef/pull/4570) ([mwrock](https://github.com/mwrock))
+- Fix databag globbing issues for chef-solo on windows [\#4569](https://github.com/chef/chef/pull/4569) ([jaym](https://github.com/jaym))
+- remove Chef::Mixin::Command use [\#4566](https://github.com/chef/chef/pull/4566) ([lamont-granquist](https://github.com/lamont-granquist))
 
 ## 12.7.2
 

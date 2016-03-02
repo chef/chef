@@ -71,3 +71,12 @@ begin
 rescue LoadError
   puts "yard is not available. (sudo) gem install yard to generate yard documentation."
 end
+
+require "github_changelog_generator/task"
+
+GitHubChangelogGenerator::RakeTask.new :changelog do |config|
+  config.future_release = Chef::VERSION
+  config.enhancement_labels = "enhancement,Enhancement,New Feature,Feature".split(",")
+  config.bug_labels = "bug,Bug,Improvement,Upstream Bug".split(",")
+  config.exclude_labels = "duplicate,question,invalid,wontfix,no_changelog,Exclude From Changelog,Question,Discussion".split(",")
+end
