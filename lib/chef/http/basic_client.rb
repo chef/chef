@@ -96,7 +96,7 @@ class Chef
       end
 
       def proxy_uri
-        @proxy_uri ||= ChefConfig::Config.proxy_uri(url.scheme, host, port)
+        @proxy_uri ||= Chef::Config.proxy_uri(url.scheme, host, port)
       end
 
       def build_http_client
@@ -120,9 +120,17 @@ class Chef
           Net::HTTP
         else
           Chef::Log.debug("Using #{proxy_uri.host}:#{proxy_uri.port} for proxy")
-          Net::HTTP.Proxy(proxy_uri.host, proxy_uri.port, proxy_uri.user,
-                          proxy_uri.password)
+          Net::HTTP.Proxy(proxy_uri.host, proxy_uri.port, http_proxy_user(proxy_uri),
+                          http_proxy_pass(proxy_uri))
         end
+      end
+
+      def http_proxy_user(proxy_uri)
+        proxy_uri.user || Chef::Config["#{proxy_uri.scheme}_proxy_user"]
+      end
+
+      def http_proxy_pass(proxy_uri)
+        proxy_uri.password || Chef::Config["#{proxy_uri.scheme}_proxy_pass"]
       end
 
       def configure_ssl(http_client)

@@ -147,7 +147,7 @@ class Chef
         end
 
         def proxy_uri(uri)
-          ChefConfig::Config.proxy_uri("ftp", hostname, port)
+          Chef::Config.proxy_uri("ftp", hostname, port)
         end
 
         def parse_path
