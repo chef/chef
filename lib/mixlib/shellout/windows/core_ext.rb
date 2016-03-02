@@ -1,7 +1,7 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2011, 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright (c) 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -268,8 +268,8 @@ module Process
         # If running in the service windows station must do a log on to get
         # to the interactive desktop.  Running process user account must have
         # the 'Replace a process level token' permission.  This is necessary as
-        # the logon (which happens with CreateProcessWithLogon) must have an 
-        # interactive windows station to attach to, which is created with the 
+        # the logon (which happens with CreateProcessWithLogon) must have an
+        # interactive windows station to attach to, which is created with the
         # LogonUser cann with the LOGON32_LOGON_INTERACTIVE flag.
         if winsta_name =~ /^Service-0x0-.*$/i
           token = FFI::MemoryPointer.new(:ulong)
