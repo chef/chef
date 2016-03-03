@@ -297,6 +297,12 @@ class Chef
       #    - resource_completed
       #
 
+      # Called when a progress notification should be sent to the user to
+      # indicate the overall progress of a long running operation, such as
+      # a large file download.
+      def resource_action_progress(resource, current, total, interval)
+      end
+
       # Called before action is executed on a resource.
       def resource_action_start(resource, action, notification_type = nil, notifier = nil)
       end
