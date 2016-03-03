@@ -1,5 +1,6 @@
 #
 # Author:: Stephen Haynes (<sh@nomitor.com>)
+# Author:: Davide Cavalca (<dcavalca@fb.com>)
 # Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -48,12 +49,14 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
         @status_check_success = false
         current_resource.running(false)
         current_resource.enabled(false)
+        current_resource.masked(false)
       end
     else
       current_resource.running(is_active?)
     end
 
     current_resource.enabled(is_enabled?)
+    current_resource.masked(is_masked?)
     current_resource
   end
 
@@ -119,12 +122,25 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     shell_out!("#{systemctl_path} disable #{new_resource.service_name}")
   end
 
+  def mask_service
+    shell_out!("#{systemctl_path} mask #{new_resource.service_name}")
+  end
+
+  def unmask_service
+    shell_out!("#{systemctl_path} unmask #{new_resource.service_name}")
+  end
+
   def is_active?
     shell_out("#{systemctl_path} is-active #{new_resource.service_name} --quiet").exitstatus == 0
   end
 
   def is_enabled?
     shell_out("#{systemctl_path} is-enabled #{new_resource.service_name} --quiet").exitstatus == 0
+  end
+
+  def is_masked?
+    s = shell_out("#{systemctl_path} is-enabled #{new_resource.service_name}")
+    s.exitstatus != 0 && s.stdout.include?("masked")
   end
 
   private

@@ -1,5 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
+# Author:: Davide Cavalca (<dcavalca@fb.com>)
 # Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -56,6 +57,9 @@ class Chef
         if @new_resource.running.nil?
           @new_resource.running(@current_resource.running)
         end
+        if @new_resource.masked.nil?
+          @new_resource.masked(@current_resource.masked)
+        end
       end
 
       def shared_resource_requirements
@@ -95,6 +99,32 @@ class Chef
         end
         load_new_resource_state
         @new_resource.enabled(false)
+      end
+
+      def action_mask
+        if @current_resource.masked
+          Chef::Log.debug("#{@new_resource} already masked - nothing to do")
+        else
+          converge_by("mask service #{@new_resource}") do
+            mask_service
+            Chef::Log.info("#{@new_resource} masked")
+          end
+        end
+        load_new_resource_state
+        @new_resource.masked(true)
+      end
+
+      def action_unmask
+        if @current_resource.masked
+          converge_by("unmask service #{@new_resource}") do
+            unmask_service
+            Chef::Log.info("#{@new_resource} unmasked")
+          end
+        else
+          Chef::Log.debug("#{@new_resource} already unmasked - nothing to do")
+        end
+        load_new_resource_state
+        @new_resource.masked(false)
       end
 
       def action_start
@@ -148,6 +178,14 @@ class Chef
 
       def disable_service
         raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :disable"
+      end
+
+      def mask_service
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :mask"
+      end
+
+      def unmask_service
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :unmask"
       end
 
       def start_service
