@@ -54,7 +54,7 @@ another component.
     [Org.Components.DevTools]
       title = "Dev Tools"
       team = "client-dev-tools"
-      text = "Chef Zero, Knife, Chef Apply and Chef Shell."
+      text = "ChefDK, Chef Zero, Knife, Chef Apply and Chef Shell."
 
       paths = [
         "lib/chef/knife.rb",

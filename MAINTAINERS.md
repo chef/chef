@@ -46,7 +46,7 @@ To mention the team, use @chef/client-core
 
 ## Dev Tools
 
-Chef Zero, Knife, Chef Apply and Chef Shell.
+ChefDK, Chef Zero, Knife, Chef Apply and Chef Shell.
 To mention the team, use @chef/client-dev-tools
 
 ### Maintainers
@@ -197,7 +197,7 @@ To mention the team, use @chef/client-freebsd
 
 * [Cory Stephenson](https://github.com/Aevin1387)
 * [David Aronsohn](https://github.com/tbunnyman)
-* [Bryant Lippert](https://github.com/agentmeerkat)
+* [Bryant Lippert](https://github.com/AgentMeerkat)
 
 ## OpenBSD
 
