@@ -74,8 +74,6 @@ class Chef
     attr_reader :redirect_limit
 
     attr_reader :options
-    attr_reader :show_progress
-    attr_reader :progress_interval
 
     attr_reader :middlewares
 
@@ -156,8 +154,7 @@ class Chef
       raise
     end
 
-
-    def streaming_request_with_progress(path, headers={}, &progress_block)
+    def streaming_request_with_progress(path, headers = {}, &progress_block)
       url = create_url(path)
       response, rest_request, return_value = nil, nil, nil
       tempfile = nil
@@ -421,7 +418,7 @@ class Chef
     end
 
     def stream_to_tempfile(url, response, &progress_block)
-      content_length = response['Content-Length']
+      content_length = response["Content-Length"]
       tf = Tempfile.open("chef-rest")
       if Chef::Platform.windows?
         tf.binmode # required for binary files on Windows platforms
@@ -458,4 +455,3 @@ class Chef
 
   end
 end
-

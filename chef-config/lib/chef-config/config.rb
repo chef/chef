@@ -299,6 +299,12 @@ module ChefConfig
     # Using 'stream_execute_output' will have Chef always stream the execute output
     default :stream_execute_output, false
 
+    # Using `show_download_progress` will display the overall progress
+    # of a remote file download
+    default :show_download_progress, false
+    # How often to update the progress meter, in percent
+    default :download_progress_interval, 10
+
     default :http_retry_count, 5
     default :http_retry_delay, 5
     default :interval, nil

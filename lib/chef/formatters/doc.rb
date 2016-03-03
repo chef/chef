@@ -259,7 +259,7 @@ class Chef
         indent
       end
 
-      def resource_action_progress(resource, current, total, interval)
+      def resource_update_progress(resource, current, total, interval)
         @progress[resource] ||= 0
 
         percent_complete = (current.to_f / total.to_f * 100).to_i
@@ -269,7 +269,7 @@ class Chef
           @progress[resource] = percent_complete
 
           if percent_complete % interval == 0
-            start_line " - Progress: #{percent_complete}/100 %", :green
+            start_line " - Progress: #{percent_complete}%", :green
           end
         end
       end

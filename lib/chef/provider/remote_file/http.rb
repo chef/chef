@@ -63,7 +63,7 @@ class Chef
           http = Chef::HTTP::Simple.new(uri, http_client_opts)
           if want_progress?
             tempfile = http.streaming_request_with_progress(uri, headers) do |size, total|
-              events.resource_action_progress(new_resource, size, total, new_resource.progress_interval)
+              events.resource_update_progress(new_resource, size, total, progress_interval)
             end
           else
             tempfile = http.streaming_request(uri, headers)
@@ -89,7 +89,11 @@ class Chef
         end
 
         def want_progress?
-          new_resource.show_progress
+          events.formatter? && (Chef::Config[:show_download_progress] || !!new_resource.show_progress)
+        end
+
+        def progress_interval
+          Chef::Config[:download_progress_interval]
         end
 
         def want_mtime_cache_control?

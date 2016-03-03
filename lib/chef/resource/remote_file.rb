@@ -122,21 +122,12 @@ class Chef
         )
       end
 
-      def show_progress(args=nil)
+      def show_progress(args = nil)
         set_or_return(
           :show_progress,
           args,
           :default => false,
           :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def progress_interval(args=nil)
-        set_or_return(
-          :progress_interval,
-          args,
-          :default => 10,
-          :equal_to => [1, 5, 10, 20, 25]
         )
       end
 
