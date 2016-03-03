@@ -150,6 +150,7 @@ class Chef
     def self.load(data_bag, name)
       if Chef::Config[:solo]
         bag = Chef::DataBag.load(data_bag)
+        raise Exceptions::InvalidDataBagItemID, "Item #{name} not found in data bag #{data_bag}. Other items found: #{bag.keys.join(", ")}" unless bag.include?(name)
         item = bag[name]
       else
         item = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("data/#{data_bag}/#{name}")

@@ -325,6 +325,11 @@ describe Chef::DataBagItem do
         expect(item).to be_a_kind_of(Chef::DataBagItem)
         expect(item).to eq(data_bag_item)
       end
+
+      it "raises an exception for unknown items" do
+        expect(Chef::DataBag).to receive(:load).with("users").and_return({ "charlie" => data_bag_item.to_hash })
+        expect { Chef::DataBagItem.load("users", "wonka") }.to raise_error Chef::Exceptions::InvalidDataBagItemID
+      end
     end
   end
 end
