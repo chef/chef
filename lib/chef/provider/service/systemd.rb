@@ -72,17 +72,17 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def get_systemctl_options_args
     if new_resource.user
-      uid = node['etc']['passwd'][new_resource.user]['uid']
+      uid = node["etc"]["passwd"][new_resource.user]["uid"]
       options = {
-        'environment' => {
-          'DBUS_SESSION_BUS_ADDRESS' => "unix:path=/run/user/#{uid}/bus",
+        "environment" => {
+          "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/#{uid}/bus",
         },
-        'user' => new_resource.user,
+        "user" => new_resource.user,
       }
-      args = '--user'
+      args = "--user"
     else
       options = {}
-      args = '--system'
+      args = "--system"
     end
 
     return options, args
