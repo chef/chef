@@ -99,14 +99,15 @@ describe Chef::Node::AttributeTrait::Decorator do
     )
   end
 
-#  it "#initialize_copy bad" do
-#    h = hash_bracket(Class.new(Hash) {
-#      def initialize_copy(h)
-#        super(Object.new)
-#      end
-#    }.new)
-#    expect { h.dup }.to raise_error(TypeError)
-#  end
+  it "#initialize_copy bad" do
+    pending "needs more investigation"
+    h = hash_bracket(Class.new(Hash) {
+      def initialize_copy(h)
+        super(Object.new)
+      end
+    }.new)
+    expect { h.dup }.to raise_error(TypeError)
+  end
 
   it "#initialize_copy clear" do
     h = hash_bracket(1 => 2)
@@ -122,15 +123,15 @@ describe Chef::Node::AttributeTrait::Decorator do
     expect(2).to eql(h[1])
   end
 
-#  it "#dup will rehash" do
-#    skip "we deep-dup"
-#    set1 = hash_bracket()
-#    set2 = hash_bracket(set1 => true)
-#
-#    set1[set1] = true
-#
-#    expect(set2).to eql(set2.dup)
-#  end
+  it "#dup will rehash" do
+    skip "we deep-dup and so wind up in an infinite loop"
+    set1 = hash_bracket()
+    set2 = hash_bracket(set1 => true)
+
+    set1[set1] = true
+
+    expect(set2).to eql(set2.dup)
+  end
 
   it "test_s_AREF" do
     h = hash_bracket("a" => 100, "b" => 200)
