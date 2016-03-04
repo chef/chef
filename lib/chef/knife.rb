@@ -510,6 +510,7 @@ class Chef
       response.body
     end
 
+    # FIXME: yard with @yield
     def create_object(object, pretty_name = nil, object_class: nil)
       output = edit_data(object, object_class: object_class)
 
@@ -526,6 +527,7 @@ class Chef
       output(output) if config[:print_after]
     end
 
+    # FIXME: yard with @yield
     def delete_object(klass, name, delete_name = nil)
       confirm("Do you really want to delete #{name}")
 

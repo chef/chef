@@ -76,6 +76,7 @@ class Chef
         @resources
       end
 
+      # FIXME: yard with @yield
       def execute_each_resource
         @iterator = ResourceCollection::StepableIterator.for_collection(@resources)
         @iterator.each_with_index do |resource, idx|

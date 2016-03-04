@@ -177,6 +177,7 @@ class Chef
 
       # module_function :popen4
 
+      # FIXME: yard with @yield
       def chdir_or_tmpdir(dir)
         dir ||= Dir.tmpdir
         unless File.directory?(dir)

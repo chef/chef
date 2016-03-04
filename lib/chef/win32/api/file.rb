@@ -535,6 +535,7 @@ BOOL WINAPI VerQueryValue(
         # retrieves a file search handle and passes it
         # to +&block+ along with the find_data.  also
         # ensures the handle is closed on exit of the block
+        # FIXME: yard with @yield
         def file_search_handle(path)
           begin
             # Workaround for CHEF-4419:
@@ -559,6 +560,7 @@ BOOL WINAPI VerQueryValue(
         # retrieves a file handle and passes it
         # to +&block+ along with the find_data.  also
         # ensures the handle is closed on exit of the block
+        # FIXME: yard with @yield
         def file_handle(path)
           begin
             path = canonical_encode_path(path)
@@ -574,6 +576,7 @@ BOOL WINAPI VerQueryValue(
           end
         end
 
+        # FIXME: yard with @yield
         def symlink_file_handle(path)
           begin
             path = encode_path(path)

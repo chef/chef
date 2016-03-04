@@ -13,6 +13,7 @@ class Chef
 
       # Check whether this resource provides the resource_name DSL for the given
       # node.  TODO remove this when we stop checking unregistered things.
+      # FIXME: yard with @yield
       def provides?(node, resource)
         raise NotImplementedError, :provides?
       end

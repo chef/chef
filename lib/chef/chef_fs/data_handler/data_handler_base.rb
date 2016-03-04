@@ -185,10 +185,12 @@ class Chef
           result
         end
 
-        #
         # Verify that the JSON hash for this type has a key that matches its name.
-        # Calls the on_error block with the error, if there is one.
         #
+        # @param object [Object] JSON hash of the object
+        # @param entry [Chef::ChefFS::FileSystem::BaseFSObject] filesystem object we are verifying
+        # @yield  [s] callback to handle errors
+        # @yieldparam [s<string>] error message
         def verify_integrity(object, entry)
           base_name = remove_dot_json(entry.name)
           if object["name"] != base_name
