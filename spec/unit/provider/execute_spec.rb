@@ -118,7 +118,7 @@ describe Chef::Provider::Execute do
         new_resource.creates "foo_resource"
       end
 
-      it "should warn in Chef-12", :chef_lt_13_only do
+      it "should warn in Chef-12", chef: "< 13" do
         expect(Chef::Log).to receive(:warn).with(/relative path/)
         expect(FileTest).to receive(:exist?).with(new_resource.creates).and_return(true)
         expect(provider).not_to receive(:shell_out!)
@@ -126,7 +126,7 @@ describe Chef::Provider::Execute do
         expect(new_resource).not_to be_updated
       end
 
-      it "should raise if user specified relative path without cwd for Chef-13", :chef_gte_13_only do
+      it "should raise if user specified relative path without cwd for Chef-13", chef: ">= 13" do
         expect(Chef::Log).to receive(:warn).with(/relative path/)
         expect(FileTest).to receive(:exist?).with(new_resource.creates).and_return(true)
         expect(provider).not_to receive(:shell_out!)

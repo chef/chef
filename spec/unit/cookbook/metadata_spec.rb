@@ -309,7 +309,7 @@ describe Chef::Cookbook::Metadata do
       end
     end
 
-    it "strips out self-dependencies", :chef_lt_13_only do
+    it "strips out self-dependencies", chef: "< 13" do
       metadata.name("foo")
       expect(Chef::Log).to receive(:warn).with(
         "Ignoring self-dependency in cookbook foo, please remove it (in the future this will be fatal)."
@@ -318,7 +318,7 @@ describe Chef::Cookbook::Metadata do
       expect(metadata.dependencies).to eql({})
     end
 
-    it "errors on self-dependencies", :chef_gte_13_only do
+    it "errors on self-dependencies", chef: ">= 13" do
       metadata.name("foo")
       expect { metadata.depends("foo") }.to raise_error
       # FIXME: add the error type

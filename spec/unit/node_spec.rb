@@ -1511,7 +1511,7 @@ describe Chef::Node do
             # added the policyfile attributes to the node JSON, therefore
             # policyfile users need to be on 12.3 minimum when upgrading Chef
             # Client to 13+
-            it "lets the 400 pass through", :chef_gte_13_only do
+            it "lets the 400 pass through", chef: ">= 13" do
               expect { node.save }.to raise_error(http_exception)
             end
 

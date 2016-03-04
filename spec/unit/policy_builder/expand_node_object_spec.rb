@@ -38,7 +38,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:load_node)
     end
 
-    it "has removed the deprecated #load_node method", :chef_gte_13_only do
+    it "has removed the deprecated #load_node method", chef: ">= 13" do
       expect(policy_builder).to_not respond_to(:load_node)
     end
 

@@ -70,14 +70,14 @@ describe Chef::Resource::ChefGem, "gem_binary" do
       expect(Chef::Resource::ChefGem).to receive(:new).and_return(resource)
     end
 
-    it "runs the install at compile-time by default", :chef_lt_13_only do
+    it "runs the install at compile-time by default", chef: "< 13" do
       expect(resource).to receive(:run_action).with(:install)
       expect(Chef::Log).to receive(:deprecation).at_least(:once)
       recipe.chef_gem "foo"
     end
 
     # the default behavior will change in Chef-13
-    it "does not runs the install at compile-time by default", :chef_gte_13_only do
+    it "does not runs the install at compile-time by default", chef: ">= 13" do
       expect(resource).not_to receive(:run_action).with(:install)
       expect(Chef::Log).not_to receive(:deprecation)
       recipe.chef_gem "foo"

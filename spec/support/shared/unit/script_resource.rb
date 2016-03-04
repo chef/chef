@@ -30,11 +30,11 @@ shared_examples_for "a script resource" do
     expect(script_resource.resource_name).to eql(resource_name)
   end
 
-  it "should set command to nil on the resource", :chef_gte_13_only do
+  it "should set command to nil on the resource", chef: ">= 13" do
     expect(script_resource.command).to be nil
   end
 
-  it "should set command to the name on the resource", :chef_lt_13_only do
+  it "should set command to the name on the resource", chef: "< 13" do
     expect(script_resource.command).to eql script_resource.name
   end
 
@@ -48,11 +48,11 @@ shared_examples_for "a script resource" do
     expect(script_resource.flags).to eql("-f")
   end
 
-  it "should raise an exception if users set command on the resource", :chef_gte_13_only do
+  it "should raise an exception if users set command on the resource", chef: ">= 13" do
     expect { script_resource.command("foo") }.to raise_error(Chef::Exceptions::Script)
   end
 
-  it "should not raise an exception if users set command on the resource", :chef_lt_13_only do
+  it "should not raise an exception if users set command on the resource", chef: "< 13" do
     expect { script_resource.command("foo") }.not_to raise_error
   end
 

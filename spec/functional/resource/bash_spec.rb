@@ -33,7 +33,7 @@ describe Chef::Resource::Bash, :unix_only do
     # in Chef-12 the `command` attribute is largely useless, but does set the identity attribute
     # so that notifications need to target the value of the command.  it will not run the `command`
     # and if it is given without a code block then it does nothing and always succeeds.
-    describe "in Chef-12", :chef_lt_13_only do
+    describe "in Chef-12", chef: "< 13" do
       it "gets the commmand attribute from the name" do
         expect(resource.command).to eql("foo_resource")
       end
@@ -61,7 +61,7 @@ describe Chef::Resource::Bash, :unix_only do
     end
 
     # in Chef-13 the `command` attribute needs to be for internal use only
-    describe "in Chef-13", :chef_gte_13_only do
+    describe "in Chef-13", chef: ">= 13" do
       it "should raise an exception when trying to set the command" do
         expect { resource.command command }.to raise_error # FIXME: add a real error in Chef-13
       end
