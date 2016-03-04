@@ -22,10 +22,6 @@ class DependencyProc < Proc
   end
 end
 
-class ShellHelpers
-  extend Chef::Mixin::ShellOut
-end
-
 def ruby_64bit?
   !!(RbConfig::CONFIG["host_cpu"] =~ /x86_64/)
 end
