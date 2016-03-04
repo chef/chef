@@ -52,7 +52,7 @@ class Chef
         set_or_return(
           :mdadm_defaults,
           arg,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
@@ -120,7 +120,7 @@ class Chef
         set_or_return(
           :exists,
           arg,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
@@ -130,7 +130,7 @@ class Chef
         set_or_return(
           :exists,
           arg,
-          :kind_of => [ TrueClass, FalseClass ],
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
