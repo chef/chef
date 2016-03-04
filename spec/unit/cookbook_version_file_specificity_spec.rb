@@ -21,7 +21,7 @@ require "spec_helper"
 
 describe Chef::CookbookVersion, "file specificity" do
   before(:each) do
-    @cookbook = Chef::CookbookVersion.new "test-cookbook"
+    @cookbook = Chef::CookbookVersion.new("test-cookbook", "/cookbook-folder")
     @cookbook.manifest = {
       "files" =>
       [
@@ -299,6 +299,29 @@ describe Chef::CookbookVersion, "file specificity" do
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
     expect(manifest_record).not_to be_nil
     expect(manifest_record[:checksum]).to eq("csum4-platver-full")
+  end
+
+  it "should raise a FileNotFound exception without match" do
+    node = Chef::Node.new
+
+    expect {
+      @cookbook.preferred_manifest_record(node, :files, "doesn't_exist.rb")
+    }.to raise_error(Chef::Exceptions::FileNotFound)
+  end
+  it "should raise a FileNotFound exception consistently without match" do
+    node = Chef::Node.new
+
+    expect {
+      @cookbook.preferred_manifest_record(node, :files, "doesn't_exist.rb")
+    }.to raise_error(Chef::Exceptions::FileNotFound)
+
+    expect {
+      @cookbook.preferred_manifest_record(node, :files, "doesn't_exist.rb")
+    }.to raise_error(Chef::Exceptions::FileNotFound)
+
+    expect {
+      @cookbook.preferred_manifest_record(node, :files, "doesn't_exist.rb")
+    }.to raise_error(Chef::Exceptions::FileNotFound)
   end
 
   describe "when fetching the contents of a directory by file specificity" do
