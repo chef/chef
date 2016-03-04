@@ -60,6 +60,10 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     current_resource
   end
 
+  # systemd supports user services just fine
+  def user_services_requirements
+  end
+
   def define_resource_requirements
     shared_resource_requirements
     requirements.assert(:all_actions) do |a|
