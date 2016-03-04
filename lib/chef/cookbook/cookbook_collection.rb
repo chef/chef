@@ -1,7 +1,7 @@
 #--
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software, Inc.
+# Copyright:: Copyright 2010-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 #
 
 require "chef/mash"
+require "chef/cookbook/gem_installer"
 
 class Chef
   # == Chef::CookbookCollection
@@ -53,6 +54,10 @@ class Chef
         cookbook_version.metadata.validate_chef_version!
         cookbook_version.metadata.validate_ohai_version!
       end
+    end
+
+    def install_gems(events)
+      Cookbook::GemInstaller.new(self, events).install
     end
   end
 end

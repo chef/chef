@@ -68,7 +68,6 @@ matrix:
     env: "GEMFILE_MOD=\"gem 'foodcritic', github: 'acrmp/foodcritic', branch: 'v5.0.0'\""
     script: bundle exec rake foodcritic_spec
   - rvm: 2.2
-    before_install:
     env: "GEMFILE_MOD=\"gem 'halite', github: 'poise/halite'\""
     script: bundle exec rake halite_spec
   - rvm: 2.2
@@ -78,6 +77,8 @@ matrix:
   - rvm: 2.2
     gemfile: kitchen-tests/Gemfile
     before_install:
+    - gem update --system
+    - gem install bundler
     - echo -n $DO_KEY_CHUNK_{0..30} >> ~/.ssh/id_aws.base64
     - cat ~/.ssh/id_aws.base64 | tr -d ' ' | base64 --decode > ~/.ssh/id_aws.pem
     before_script:
@@ -128,6 +129,7 @@ matrix:
     sudo: required
     dist: trusty
     before_install:
+      - gem update --system
       - gem install bundler
       - sudo apt-get update
       - sudo apt-get -y install squid3 git curl
@@ -145,6 +147,10 @@ matrix:
 
   allow_failures:
     - rvm: rbx
+    - rvm: 2.2
+      env: "GEMFILE_MOD=\"gem 'halite', github: 'poise/halite'\""
+      script: bundle exec rake halite_spec
+
 notifications:
   on_change: true
   on_failure: true

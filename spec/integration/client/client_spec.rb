@@ -47,7 +47,7 @@ describe "chef-client" do
   # cf. CHEF-4914
   let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
 
-  let(:critical_env_vars) { %w{PATH RUBYOPT BUNDLE_GEMFILE GEM_PATH}.map { |o| "#{o}=#{ENV[o]}" } .join(" ") }
+  let(:critical_env_vars) { %w{_ORIGINAL_GEM_PATH GEM_PATH GEM_HOME GEM_ROOT BUNDLE_BIN_PATH BUNDLE_GEMFILE RUBYLIB RUBYOPT RUBY_ENGINE RUBY_ROOT RUBY_VERSION PATH}.map { |o| "#{o}=#{ENV[o]}" } .join(" ") }
 
   when_the_repository "has a cookbook with a no-op recipe" do
     before { file "cookbooks/x/recipes/default.rb", "" }

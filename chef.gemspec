@@ -45,6 +45,10 @@ Gem::Specification.new do |s|
 
   s.add_dependency "proxifier", "~> 1.0"
 
+  # v1.10 is needed as a runtime dep now for 'bundler/inline'
+  # very deliberately avoiding putting a ceiling on this to avoid depsolver conflicts.
+  s.add_dependency "bundler", ">= 1.10"
+
   s.add_development_dependency "rack"
   s.add_development_dependency "cheffish", ">= 1.1", "< 3.0"
   s.add_development_dependency "github_changelog_generator", "1.11.3"
