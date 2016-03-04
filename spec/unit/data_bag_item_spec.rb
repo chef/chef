@@ -109,6 +109,24 @@ describe Chef::DataBagItem do
     end
   end
 
+  describe "class method name" do
+    let(:data_bag_item) {
+      data_bag_item = Chef::DataBagItem.new
+      data_bag_item.data_bag("dreams")
+      data_bag_item.raw_data = { "id" => "the_beatdown", "name" => "Bruce" }
+      data_bag_item
+    }
+
+    it "should return the object name" do
+      expect(data_bag_item.name).to eq(data_bag_item.object_name)
+    end
+
+    it "should be distinct from raw_data 'name' key" do
+      expect(data_bag_item["name"]).to eq("Bruce")
+      expect(data_bag_item["name"]).not_to eq(data_bag_item.object_name)
+    end
+  end
+
   describe "when used like a Hash" do
     let(:data_bag_item) {
       data_bag_item = Chef::DataBagItem.new
@@ -138,11 +156,41 @@ describe Chef::DataBagItem do
     end
   end
 
+  describe "from_hash" do
+    context "when hash contains raw_data" do
+      let(:data_bag_item) {
+        Chef::DataBagItem.from_hash({ "raw_data" => { "id" => "whoa", "name" => "Bruce", "i_know" => "kung_fu" } })
+      }
+
+      it "should have the id key set" do
+        expect(data_bag_item["id"]).to eq("whoa")
+      end
+
+      it "should have the name key set" do
+        expect(data_bag_item["name"]).to eq("Bruce")
+      end
+    end
+
+    context "when hash does not contain raw_data" do
+      let(:data_bag_item) {
+        Chef::DataBagItem.from_hash({ "id" => "whoa", "name" => "Bruce", "i_know" => "kung_fu" })
+      }
+
+      it "should have the id key set" do
+        expect(data_bag_item["id"]).to eq("whoa")
+      end
+
+      it "should have the name key set" do
+        expect(data_bag_item["name"]).to eq("Bruce")
+      end
+    end
+  end
+
   describe "to_hash" do
     let(:data_bag_item) {
       data_bag_item = Chef::DataBagItem.new
       data_bag_item.data_bag("still_lost")
-      data_bag_item.raw_data = { "id" => "whoa", "i_know" => "kung_fu" }
+      data_bag_item.raw_data = { "id" => "whoa", "name" => "Bruce", "i_know" => "kung_fu" }
       data_bag_item
     }
 
@@ -156,6 +204,7 @@ describe Chef::DataBagItem do
 
     it "should have the raw_data keys as top level keys" do
       expect(to_hash["id"]).to eq("whoa")
+      expect(to_hash["name"]).to eq("Bruce")
       expect(to_hash["i_know"]).to eq("kung_fu")
     end
 
@@ -177,7 +226,7 @@ describe Chef::DataBagItem do
     let(:data_bag_item) {
       data_bag_item = Chef::DataBagItem.new
       data_bag_item.data_bag("mars_volta")
-      data_bag_item.raw_data = { "id" => "octahedron", "snooze" => { "finally" => :world_will } }
+      data_bag_item.raw_data = { "id" => "octahedron", "name" => "Bruce", "snooze" => { "finally" => :world_will } }
       data_bag_item
     }
 
@@ -193,6 +242,10 @@ describe Chef::DataBagItem do
 
     it "should have a matching 'id' key" do
       expect(deserial["id"]).to eq("octahedron")
+    end
+
+    it "should have a matching 'name' key" do
+      expect(deserial["name"]).to eq("Bruce")
     end
 
     it "should have a matching 'snooze' key" do

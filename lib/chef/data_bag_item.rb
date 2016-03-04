@@ -128,7 +128,6 @@ class Chef
     def self.from_hash(h)
       h.delete("chef_type")
       h.delete("json_class")
-      h.delete("name")
 
       item = new
       item.data_bag(h.delete("data_bag")) if h.key?("data_bag")
