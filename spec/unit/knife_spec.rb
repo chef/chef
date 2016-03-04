@@ -23,6 +23,7 @@ end
 
 require "spec_helper"
 require "uri"
+require "chef/knife/core/gem_glob_loader"
 
 describe Chef::Knife do
 
@@ -146,6 +147,12 @@ describe Chef::Knife do
       Chef::Knife.subcommands["cookbook_site_vendor"] = :CookbookSiteVendor
       Chef::Knife.subcommands["cookbook"] = :Cookbook
       expect(Chef::Knife.subcommand_class_from(%w{cookbook site vendor --help foo bar baz})).to eq(:CookbookSiteVendor)
+    end
+
+    it "special case sets the subcommand_loader to GemGlobLoader when running rehash" do
+      Chef::Knife.subcommands["rehash"] = :Rehash
+      expect(Chef::Knife.subcommand_class_from(%w{rehash })).to eq(:Rehash)
+      expect(Chef::Knife.subcommand_loader).to be_a(Chef::Knife::SubcommandLoader::GemGlobLoader)
     end
 
   end

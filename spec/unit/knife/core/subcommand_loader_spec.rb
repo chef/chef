@@ -61,4 +61,10 @@ describe Chef::Knife::SubcommandLoader do
       end
     end
   end
+
+  describe "#gem_glob_loader" do
+    it "always creates a GemGlobLoader" do
+      expect(Chef::Knife::SubcommandLoader.gem_glob_loader(config_dir)).to be_a Chef::Knife::SubcommandLoader::GemGlobLoader
+    end
+  end
 end

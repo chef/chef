@@ -46,12 +46,28 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
     plugin_manifest)}
 
   describe "#list_commands" do
+    before do
+      allow(File).to receive(:exists?).and_return(true)
+    end
+
     it "lists all commands by category when no argument is given" do
       expect(loader.list_commands).to eq({ "cool" => ["cool_a"], "cooler" => ["cooler_b"] })
     end
 
     it "lists only commands in the given category when a category is given" do
       expect(loader.list_commands("cool")).to eq({ "cool" => ["cool_a"] })
+    end
+
+    context "when the plugin path is invalid" do
+      before do
+        expect(File).to receive(:exists?).with("/file/for/plugin/b").and_return(false)
+      end
+
+      it "lists all commands by category when no argument is given" do
+        expect(Chef::Log).to receive(:error).with(/There are files specified in the manifest that are missing/)
+        expect(Chef::Log).to receive(:error).with("Missing files:\n\t/file/for/plugin/b")
+        expect(loader.list_commands).to eq({})
+      end
     end
   end
 
