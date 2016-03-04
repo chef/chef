@@ -6,24 +6,24 @@ class ShellHelpers
   extend Chef::Mixin::ShellOut
 end
 
-def ruby_lt_20?
-  !ruby_gte_20?
+# magic stolen from bundler/spec/support/less_than_proc.rb
+class DependencyProc < Proc
+  attr_accessor :present
+
+  def self.with(present)
+    provided = Gem::Version.new(present.dup)
+    new do |required|
+      !Gem::Requirement.new(required).satisfied_by?(provided)
+    end.tap { |l| l.present = present }
+  end
+
+  def inspect
+    "\"#{present}\""
+  end
 end
 
-def chef_gte_13?
-  Chef::VERSION.split(".").first.to_i >= 13
-end
-
-def chef_lt_13?
-  Chef::VERSION.split(".").first.to_i < 13
-end
-
-def ruby_gte_19?
-  RUBY_VERSION.to_f >= 1.9
-end
-
-def ruby_20?
-  !!(RUBY_VERSION =~ /^2.0/)
+class ShellHelpers
+  extend Chef::Mixin::ShellOut
 end
 
 def ruby_64bit?
