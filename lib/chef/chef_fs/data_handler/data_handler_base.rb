@@ -190,7 +190,7 @@ class Chef
         # Calls the on_error block with the error, if there is one.
         #
         def verify_integrity(object, entry, &on_error)
-          base_name = remove_dot_json(entry.name)
+          base_name = File.basename(entry.name, ".*")
           if object["name"] != base_name
             on_error.call("Name must be '#{base_name}' (is '#{object['name']}')")
           end

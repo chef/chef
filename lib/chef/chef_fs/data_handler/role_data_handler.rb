@@ -7,7 +7,7 @@ class Chef
       class RoleDataHandler < DataHandlerBase
         def normalize(role, entry)
           result = normalize_hash(role, {
-            "name" => remove_dot_json(entry.name),
+            "name" => File.basename(entry.name, ".*"),
             "description" => "",
             "json_class" => "Chef::Role",
             "chef_type" => "role",
@@ -29,6 +29,12 @@ class Chef
 
         def chef_class
           Chef::Role
+        end
+
+        def from_ruby(path)
+          r = Chef::Role.new
+          r.from_file(path)
+          r.to_hash
         end
 
         def to_ruby(object)

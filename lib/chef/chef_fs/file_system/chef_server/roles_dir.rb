@@ -17,43 +17,33 @@
 #
 
 require "chef/chef_fs/file_system/base_fs_dir"
-require "chef/chef_fs/file_system/chef_server/rest_list_entry"
+require "chef/chef_fs/file_system/chef_server/rest_list_dir"
+require "chef/chef_fs/file_system/chef_server/role_entry"
 require "chef/chef_fs/file_system/not_found_error"
-require "chef/chef_fs/file_system/default_environment_cannot_be_modified_error"
 
 class Chef
   module ChefFS
     module FileSystem
       module ChefServer
-        class EnvironmentsDir < RestListDir
-          def make_child_entry(name, exists = nil)
-            if name == "_default.json"
-              DefaultEnvironmentEntry.new(name, self, exists)
-            else
-              super
-            end
-          end
-
+        class RolesDir < RestListDir
           def can_have_child?(name, is_dir)
             %w{ .rb .json }.include?(File.extname(name)) && !is_dir
           end
 
-          class DefaultEnvironmentEntry < RestListEntry
-            def initialize(name, parent, exists = nil)
-              super(name, parent)
-              @exists = exists
-            end
-
-            def delete(recurse)
-              raise NotFoundError.new(self) if !exists?
-              raise DefaultEnvironmentCannotBeModifiedError.new(:delete, self)
-            end
-
-            def write(file_contents)
-              raise NotFoundError.new(self) if !exists?
-              raise DefaultEnvironmentCannotBeModifiedError.new(:write, self)
+          def child_name(name)
+            if File.extname(name) == ".rb"
+              name.gsub(/.rb$/, ".json")
+            else
+              name
             end
           end
+
+          def make_child_entry(name, exists = nil)
+            cn = child_name(name)
+            @children.select { |child| child.name == cn }.first if @children
+            RoleEntry.new(cn, self, exists)
+          end
+
         end
       end
     end
