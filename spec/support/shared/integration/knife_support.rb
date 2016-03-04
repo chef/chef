@@ -23,7 +23,7 @@ require "chef/log"
 
 module KnifeSupport
   DEBUG = ENV["DEBUG"]
-  def knife(*args, &block)
+  def knife(*args)
     # Allow knife('role from file roles/blah.json') rather than requiring the
     # arguments to be split like knife('role', 'from', 'file', 'roles/blah.json')
     # If any argument will have actual spaces in it, the long form is required.

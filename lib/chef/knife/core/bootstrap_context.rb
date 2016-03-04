@@ -182,9 +182,10 @@ CONFIG
         def first_boot
           (@config[:first_boot_attributes] || {}).tap do |attributes|
             if @config[:policy_name] && @config[:policy_group]
-              attributes.merge!(:policy_name => @config[:policy_name], :policy_group => @config[:policy_group])
+              attributes[:policy_name] = @config[:policy_name]
+              attributes[:policy_group] = @config[:policy_group]
             else
-              attributes.merge!(:run_list => @run_list)
+              attributes[:run_list] = @run_list
             end
 
             attributes.merge!(:tags => @config[:tags]) if @config[:tags] && !@config[:tags].empty?

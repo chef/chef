@@ -39,7 +39,7 @@ class Chef
           end
 
           def make_child_entry(name)
-            children.select { |child| child.name == name }.first
+            children.find { |child| child.name == name }
           end
 
           def can_have_child?(name, is_dir)

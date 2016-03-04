@@ -489,7 +489,7 @@ class Chef
 
     # @deprecated This method was used by the Ruby Chef Server and is no longer
     #   needed. There is no replacement.
-    def generate_manifest_with_urls(&url_generator)
+    def generate_manifest_with_urls
       Chef.log_deprecation("Deprecated method #generate_manifest_with_urls.")
 
       rendered_manifest = manifest.dup
@@ -497,7 +497,7 @@ class Chef
         if rendered_manifest.has_key?(segment)
           rendered_manifest[segment].each do |manifest_record|
             url_options = { :cookbook_name => name.to_s, :cookbook_version => version, :checksum => manifest_record["checksum"] }
-            manifest_record["url"] = url_generator.call(url_options)
+            manifest_record["url"] = yield(url_options)
           end
         end
       end

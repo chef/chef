@@ -47,7 +47,7 @@ class Chef
           # }
 
           def make_child_entry(name, exists = nil)
-            @children.select { |child| child.name == name }.first if @children
+            @children.find { |child| child.name == name } if @children
             PolicyRevisionEntry.new(name, self, exists)
           end
 

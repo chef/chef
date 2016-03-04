@@ -25,7 +25,7 @@ describe Chef::DSL::Resources do
     r = declared_resources
     Class.new do
       include Chef::DSL::Resources
-      define_method(:declare_resource) do |dsl_name, name, _created_at, &_block|
+      define_method(:declare_resource) do |dsl_name, name, _created_at|
         r << [dsl_name, name]
       end
     end

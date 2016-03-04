@@ -7,12 +7,13 @@ class Chef
       # TODO no longer needed, remove or deprecate?
       include Chef::Mixin::DescendantsTracker
 
-      def provides(short_name, opts = {}, &block)
+      def provides(short_name, opts = {})
         raise NotImplementedError, :provides
       end
 
       # Check whether this resource provides the resource_name DSL for the given
       # node.  TODO remove this when we stop checking unregistered things.
+      # FIXME: yard with @yield
       def provides?(node, resource)
         raise NotImplementedError, :provides?
       end

@@ -87,7 +87,7 @@ WARNDEP
         response = call_rest_service(type, query: query, **args_h)
 
         if block
-          response["rows"].each { |row| block.call(row) if row }
+          response["rows"].each { |row| yield(row) if row }
           #
           # args_h[:rows] and args_h[:start] are the page size and
           # start position requested of the search index backing the

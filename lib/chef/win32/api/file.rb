@@ -535,7 +535,8 @@ BOOL WINAPI VerQueryValue(
         # retrieves a file search handle and passes it
         # to +&block+ along with the find_data.  also
         # ensures the handle is closed on exit of the block
-        def file_search_handle(path, &block)
+        # FIXME: yard with @yield
+        def file_search_handle(path)
           begin
             # Workaround for CHEF-4419:
             # Make sure paths starting with "/" has a drive letter
@@ -550,7 +551,7 @@ BOOL WINAPI VerQueryValue(
             if handle == INVALID_HANDLE_VALUE
               Chef::ReservedNames::Win32::Error.raise!
             end
-            block.call(handle, find_data)
+            yield(handle, find_data)
           ensure
             FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
           end
@@ -559,7 +560,8 @@ BOOL WINAPI VerQueryValue(
         # retrieves a file handle and passes it
         # to +&block+ along with the find_data.  also
         # ensures the handle is closed on exit of the block
-        def file_handle(path, &block)
+        # FIXME: yard with @yield
+        def file_handle(path)
           begin
             path = canonical_encode_path(path)
             handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
@@ -568,13 +570,14 @@ BOOL WINAPI VerQueryValue(
             if handle == INVALID_HANDLE_VALUE
               Chef::ReservedNames::Win32::Error.raise!
             end
-            block.call(handle)
+            yield(handle)
           ensure
             CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
           end
         end
 
-        def symlink_file_handle(path, &block)
+        # FIXME: yard with @yield
+        def symlink_file_handle(path)
           begin
             path = encode_path(path)
             handle = CreateFileW(path, FILE_READ_EA, FILE_SHARE_READ,
@@ -583,7 +586,7 @@ BOOL WINAPI VerQueryValue(
             if handle == INVALID_HANDLE_VALUE
               Chef::ReservedNames::Win32::Error.raise!
             end
-            block.call(handle)
+            yield(handle)
           ensure
             CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
           end

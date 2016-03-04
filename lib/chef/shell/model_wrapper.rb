@@ -59,7 +59,8 @@ module Shell
 
     alias :load :show
 
-    def transform(what_to_transform, &block)
+    # FIXME: yard with @yield
+    def transform(what_to_transform)
       if what_to_transform == :all
         objects_to_transform = list_objects
       else

@@ -55,7 +55,7 @@ class Chef
         def list_from(entry, &block)
           # Include self in results if it matches
           if pattern.match?(entry.path)
-            block.call(entry)
+            yield(entry)
           end
 
           if pattern.could_match_children?(entry.path)

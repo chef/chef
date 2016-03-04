@@ -265,7 +265,7 @@ class Chef::Application::Client < Chef::Application
   option :audit_mode,
     :long           => "--audit-mode MODE",
     :description    => "Enable audit-mode with `enabled`. Disable audit-mode with `disabled`. Skip converge and only perform audits with `audit-only`",
-    :proc           => lambda { |mo| mo.gsub("-", "_").to_sym }
+    :proc           => lambda { |mo| mo.tr("-", "_").to_sym }
 
   option :minimal_ohai,
     :long           => "--minimal-ohai",

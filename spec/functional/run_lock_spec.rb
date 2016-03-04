@@ -343,7 +343,7 @@ describe Chef::RunLock do
       write_to_process.print "#{to_event}\n"
 
       # Run the background block
-      background_block.call if background_block
+      yield if background_block
 
       # Wait until it gets there
       Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do

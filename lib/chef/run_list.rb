@@ -105,12 +105,14 @@ class Chef
       @run_list_items[pos] = parse_entry(item)
     end
 
-    def each(&block)
-      @run_list_items.each { |i| block.call(i) }
+    # FIXME: yard with @yield
+    def each
+      @run_list_items.each { |i| yield(i) }
     end
 
-    def each_index(&block)
-      @run_list_items.each_index { |i| block.call(i) }
+    # FIXME: yard with @yield
+    def each_index
+      @run_list_items.each_index { |i| yield(i) }
     end
 
     def include?(item)

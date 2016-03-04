@@ -102,7 +102,7 @@ class Chef
       end
 
       def specific_cookbook_version_url
-        "#{cookbooks_api_url}/#{@name_args[0]}/versions/#{@name_args[1].gsub('.', '_')}"
+        "#{cookbooks_api_url}/#{@name_args[0]}/versions/#{@name_args[1].tr('.', '_')}"
       end
     end
   end

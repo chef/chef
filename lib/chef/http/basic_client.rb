@@ -104,7 +104,7 @@ class Chef
         # proxy before parsing. The regex /^.*:\/\// matches, for example, http://. Reusing proxy
         # here since we are really just trying to get the string built correctly.
         if String === proxy && !proxy.strip.empty?
-          if proxy.match(/^.*:\/\//)
+          if proxy =~ /^.*:\/\//
             proxy = URI.parse(proxy.strip)
           else
             proxy = URI.parse("#{url.scheme}://#{proxy.strip}")

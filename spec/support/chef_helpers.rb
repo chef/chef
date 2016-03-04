@@ -81,7 +81,7 @@ end
 # This is a helper to canonicalize paths that we're using in the file
 # tests.
 def canonicalize_path(path)
-  windows? ? path.gsub("/", '\\') : path
+  windows? ? path.tr("/", '\\') : path
 end
 
 # Check if a cmd exists on the PATH

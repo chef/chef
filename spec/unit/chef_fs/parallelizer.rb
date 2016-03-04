@@ -463,15 +463,15 @@ describe Chef::ChefFS::Parallelizer do
 
     attr_reader :num_processed
 
-    def each(&each_block)
+    def each
       @values.each do |value|
         @num_processed += 1
-        each_block.call(value)
+        yield(value)
       end
       if @block
         @block.call do |value|
           @num_processed += 1
-          each_block.call(value)
+          yield(value)
         end
       end
     end

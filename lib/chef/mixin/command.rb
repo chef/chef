@@ -177,13 +177,14 @@ class Chef
 
       # module_function :popen4
 
-      def chdir_or_tmpdir(dir, &block)
+      # FIXME: yard with @yield
+      def chdir_or_tmpdir(dir)
         dir ||= Dir.tmpdir
         unless File.directory?(dir)
           raise Chef::Exceptions::Exec, "#{dir} does not exist or is not a directory"
         end
         Dir.chdir(dir) do
-          block.call
+          yield
         end
       end
 

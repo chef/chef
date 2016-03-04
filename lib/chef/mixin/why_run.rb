@@ -49,7 +49,7 @@ class Chef
         def add_action(descriptions, &block)
           @actions << [descriptions, block]
           if (@resource.respond_to?(:is_guard_interpreter) && @resource.is_guard_interpreter) || !Chef::Config[:why_run]
-            block.call
+            yield
           end
           events.resource_update_applied(@resource, @action, descriptions)
         end

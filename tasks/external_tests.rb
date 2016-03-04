@@ -58,7 +58,7 @@ EXTERNAL_PROJECTS = {
 task :external_specs => EXTERNAL_PROJECTS.keys.map { |g| :"#{g.sub("-", "_")}_spec" }
 
 EXTERNAL_PROJECTS.each do |test_gem, commands|
-  task :"#{test_gem.gsub("-", "_")}_spec" do
+  task :"#{test_gem.tr("-", "_")}_spec" do
     bundle_exec_with_chef(test_gem, commands)
   end
 end

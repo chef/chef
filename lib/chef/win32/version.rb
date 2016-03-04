@@ -41,7 +41,7 @@ class Chef
       private_class_method :get_system_metrics
 
       def self.method_name_from_marketing_name(marketing_name)
-        "#{marketing_name.gsub(/\s/, '_').gsub(/\./, '_').downcase}?"
+        "#{marketing_name.gsub(/\s/, '_').tr('.', '_').downcase}?"
         # "#{marketing_name.gsub(/\s/, '_').gsub(//, '_').downcase}?"
       end
 

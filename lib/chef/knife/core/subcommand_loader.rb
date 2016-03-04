@@ -124,7 +124,7 @@ class Chef
         load_command(cmd_words)
         result = Chef::Knife.subcommands[find_longest_key(Chef::Knife.subcommands,
                                                           cmd_words, "_")]
-        result || Chef::Knife.subcommands[args.first.gsub("-", "_")]
+        result || Chef::Knife.subcommands[args.first.tr("-", "_")]
       end
 
       def guess_category(args)

@@ -25,7 +25,7 @@ class Chef
       end
 
       def handle_request(method, url, headers = {}, data = false)
-        headers.merge!({ "X-REMOTE-REQUEST-ID" => Chef::RequestID.instance.request_id })
+        headers["X-REMOTE-REQUEST-ID"] = Chef::RequestID.instance.request_id
         [method, url, headers, data]
       end
 

@@ -39,7 +39,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
   end
 
   def canonicalize(path)
-    Chef::Platform.windows? ? path.gsub("/", '\\') : path
+    Chef::Platform.windows? ? path.tr("/", '\\') : path
   end
 
   describe "when the target is a symlink" do
