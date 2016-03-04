@@ -51,7 +51,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rack"
   s.add_development_dependency "cheffish", ">= 1.1", "< 3.0"
-  s.add_development_dependency "github_changelog_generator", "1.11.3"
+  s.add_development_dependency "github_changelog_generator"
 
   s.add_development_dependency "rake", "~> 10.1"
 
