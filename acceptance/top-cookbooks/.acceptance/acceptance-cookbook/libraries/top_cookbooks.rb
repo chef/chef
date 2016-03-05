@@ -4,6 +4,9 @@ class TopCookbooks < Chef::Resource
   property :command, String, name_property: true
 
   action :run do
+    cookbook_kitchen "#{command} docker" do
+    end
+
     cookbook_kitchen "#{command} git" do
     end
 
