@@ -49,7 +49,7 @@ class Chef
 
       def run
         if @name_args.length != 2
-          stdout.puts "You must supply the data bag and an item to edit!"
+          stdout.puts "You must supply the data bag and an item to edit"
           stdout.puts opt_parser
           exit 1
         end

@@ -42,7 +42,7 @@ class Chef
 
           output(format_for_display(updated)) if config[:print_after]
 
-          ui.info("Updated Node #{updated.name}!")
+          ui.info("Updated Node #{updated.name}")
         end
       end
 

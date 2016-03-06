@@ -42,7 +42,7 @@ class Chef
 
           output(format_for_display(updated)) if config[:print_after]
 
-          ui.info("Updated Role #{updated.name}!")
+          ui.info("Updated Role #{updated.name}")
         end
       end
 
