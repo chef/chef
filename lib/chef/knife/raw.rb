@@ -59,7 +59,7 @@ class Chef
           exit(1)
         elsif name_args.length > 1
           show_usage
-          ui.fatal("Only one path accepted for knife raw")
+          ui.fatal("You must specify only a single path")
           exit(1)
         end
 

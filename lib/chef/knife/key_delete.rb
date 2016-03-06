@@ -39,7 +39,7 @@ class Chef
       end
 
       def print_destroyed
-        @ui.info("Destroyed key named #{@name} for the #{@actor_field_name} named #{@actor}")
+        @ui.info("Deleted key named #{@name} for the #{@actor_field_name} named #{@actor}")
       end
 
       def run

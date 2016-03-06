@@ -50,7 +50,7 @@ class Chef
           user.update
           ui.msg("Saved #{user}.")
         else
-          ui.msg("User unchaged, not saving.")
+          ui.msg("User unchanged, not saving.")
         end
       end
     end

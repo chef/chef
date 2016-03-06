@@ -35,7 +35,7 @@ class Chef
       option :admin,
              :short => "-a",
              :long  => "--admin",
-             :description => "Open Source Chef 11 only. Create the client as an admin.",
+             :description => "Open Source Chef Server 11 only. Create the client as an admin.",
              :boolean => true
 
       option :validator,
