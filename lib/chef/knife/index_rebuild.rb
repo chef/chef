@@ -68,11 +68,11 @@ class Chef
       end
 
       def deprecated_server_message
-        ui.warn("'knife index rebuild' has been removed for Chef 11+ servers.  It will continue to work for prior versions, however.")
+        ui.warn("'knife index rebuild' has been removed for Chef 11+ servers. It will continue to work for prior versions, however.")
       end
 
       def nag
-        ui.info("This operation is destructive.  Rebuilding the index may take some time.")
+        ui.info("This operation is destructive. Rebuilding the index may take some time.")
         ui.confirm("Continue")
       end
 

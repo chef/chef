@@ -21,7 +21,7 @@ class Chef
       option :patterns,
         :long => "--pattern [PATTERN]",
         :short => "-p [PATTERN]",
-        :description => "Pattern on command line (if these are not specified, a list of patterns is expected on standard input).  Multiple patterns may be passed in this way.",
+        :description => "Pattern on command line (if these are not specified, a list of patterns is expected on standard input). Multiple patterns may be passed in this way.",
         :arg_arity => [1, -1]
 
       option :diff,
@@ -44,12 +44,12 @@ class Chef
       option :replace_first,
         :long => "--replace-first REPLACESTR",
         :short => "-J REPLACESTR",
-        :description => "String to replace with filenames.  -J will only replace the FIRST occurrence of the replacement string."
+        :description => "String to replace with filenames. -J will only replace the FIRST occurrence of the replacement string."
 
       option :replace_all,
         :long => "--replace REPLACESTR",
         :short => "-I REPLACESTR",
-        :description => "String to replace with filenames.  -I will replace ALL occurrence of the replacement string."
+        :description => "String to replace with filenames. -I will replace ALL occurrence of the replacement string."
 
       option :max_arguments_per_command,
         :long => "--max-args MAXARGS",
@@ -78,7 +78,7 @@ class Chef
           Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern).each do |result|
             if result.dir?
               # TODO option to include directories
-              ui.warn "#{format_path(result)}: is a directory.  Will not run #{command} on it."
+              ui.warn "#{format_path(result)}: is a directory. Will not run #{command} on it."
             else
               files << result
               ran = false

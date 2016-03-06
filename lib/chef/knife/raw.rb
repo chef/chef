@@ -20,13 +20,13 @@ class Chef
         :long => "--method METHOD",
         :short => "-m METHOD",
         :default => "GET",
-        :description => "Request method (GET, POST, PUT or DELETE).  Default: GET"
+        :description => "Request method (GET, POST, PUT or DELETE). Default: GET"
 
       option :pretty,
         :long => "--[no-]pretty",
         :boolean => true,
         :default => true,
-        :description => "Pretty-print JSON output.  Default: true"
+        :description => "Pretty-print JSON output. Default: true"
 
       option :input,
         :long => "--input FILE",
@@ -37,7 +37,7 @@ class Chef
         :long => "--proxy-auth",
         :boolean => true,
         :default => false,
-        :description => "Use webui proxy authentication.  Client key must be the webui key."
+        :description => "Use webui proxy authentication. Client key must be the webui key."
 
       class RawInputServerAPI < Chef::HTTP
         def initialize(options = {})

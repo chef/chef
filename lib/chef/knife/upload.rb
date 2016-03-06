@@ -27,7 +27,7 @@ class Chef
         :long => "--[no-]force",
         :boolean => true,
         :default => false,
-        :description => "Force upload of files even if they match (quicker for many files).  Will overwrite frozen cookbooks."
+        :description => "Force upload of files even if they match (quicker for many files). Will overwrite frozen cookbooks."
 
       option :freeze,
         :long => "--[no-]freeze",

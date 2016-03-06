@@ -50,7 +50,7 @@ class Chef
 
       option :user_key,
         :long => "--user-key FILENAME",
-        :description => "Public key for newly created user.  By default a key will be created for you."
+        :description => "Public key for newly created user. By default a key will be created for you."
 
       banner "knife osc_user create USER (options)"
 

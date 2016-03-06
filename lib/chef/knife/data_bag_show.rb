@@ -48,7 +48,7 @@ class Chef
                                                             secret)
                       format_for_display(raw.to_hash)
                     elsif encrypted && !secret
-                      ui.warn("Encrypted data bag detected, but no secret provided for decoding.  Displaying encrypted data.")
+                      ui.warn("Encrypted data bag detected, but no secret provided for decoding. Displaying encrypted data.")
                       format_for_display(raw_data)
                     else
                       ui.warn("Unencrypted data bag detected, ignoring any provided secret options.")
