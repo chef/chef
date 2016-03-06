@@ -260,7 +260,7 @@ EOM
           end
 
           it "knife upload with no parameters reports an error" do
-            knife("upload").should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", :stdout => /USAGE/
+            knife("upload").should_fail "FATAL: You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"\n", :stdout => /USAGE/
           end
         end
       end
@@ -408,7 +408,7 @@ EOM
           end
 
           it "knife upload fails" do
-            knife("upload").should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", :stdout => /USAGE/
+            knife("upload").should_fail "FATAL: You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"\n", :stdout => /USAGE/
           end
 
           it "knife upload --purge . uploads everything" do
@@ -911,7 +911,7 @@ EOM
             cwd "."
           end
           it "knife upload with no parameters reports an error" do
-            knife("upload").should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", :stdout => /USAGE/
+            knife("upload").should_fail "FATAL: You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"\n", :stdout => /USAGE/
           end
         end
       end
@@ -1013,7 +1013,7 @@ EOM
             cwd "data_bags"
           end
           it "knife upload fails" do
-            knife("upload").should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", :stdout => /USAGE/
+            knife("upload").should_fail "FATAL: You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"\n", :stdout => /USAGE/
           end
           it "knife upload --purge . uploads everything" do
             knife("upload --purge .").should_succeed <<EOM

@@ -643,7 +643,7 @@ EOM
       context "and cwd is at the top level" do
         before { cwd "." }
         it "knife delete fails" do
-          knife("delete").should_fail "FATAL: Must specify at least one argument.  If you want to delete everything in this directory, type \"knife delete --recurse .\"\n", :stdout => /USAGE/
+          knife("delete").should_fail "FATAL: You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"\n", :stdout => /USAGE/
           knife("list -Rf /").should_succeed <<EOM
 clients
 clients/chef-validator.json
@@ -856,7 +856,7 @@ EOM
       context "and cwd is at the top level" do
         before { cwd "." }
         it "knife delete fails" do
-          knife("delete").should_fail "FATAL: Must specify at least one argument.  If you want to delete everything in this directory, type \"knife delete --recurse .\"\n", :stdout => /USAGE/
+          knife("delete").should_fail "FATAL: You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"\n", :stdout => /USAGE/
           knife("list -Rf /").should_succeed <<EOM
 clients
 clients/chef-validator.json

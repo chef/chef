@@ -255,7 +255,7 @@ EOM
           end
 
           it "knife download with no parameters reports an error" do
-            knife("download").should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+            knife("download").should_fail "FATAL: You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"\n", :stdout => /USAGE/
           end
         end
       end
@@ -383,7 +383,7 @@ EOM
             cwd "data_bags"
           end
           it "knife download fails" do
-            knife("download").should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+            knife("download").should_fail "FATAL: You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"\n", :stdout => /USAGE/
           end
           it "knife download --purge . downloads everything" do
             knife("download --purge .").should_succeed <<EOM
@@ -760,7 +760,7 @@ EOM
             cwd "."
           end
           it "knife download with no parameters reports an error" do
-            knife("download").should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+            knife("download").should_fail "FATAL: You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"\n", :stdout => /USAGE/
           end
         end
       end
@@ -879,7 +879,7 @@ EOM
             cwd "data_bags"
           end
           it "knife download fails" do
-            knife("download").should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+            knife("download").should_fail "FATAL: You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"\n", :stdout => /USAGE/
           end
           it "knife download --purge . downloads everything" do
             knife("download --purge .").should_succeed <<EOM
