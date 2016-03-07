@@ -169,7 +169,7 @@ class Chef
 
       def get_profile_hash(new_profile)
         if new_profile.is_a?(Hash)
-          return new_profile
+          return new_profile.to_hash
         elsif new_profile.is_a?(String)
           return load_profile_hash(new_profile)
         end
@@ -214,23 +214,18 @@ class Chef
       end
 
       def query_installed_profiles
-        # Dump all profile metadata to a tempfile
-        tempfile = generate_tempfile
-        write_installed_profiles(tempfile)
-        installed_profiles = read_plist(tempfile)
-        Chef::Log.debug("Saved profiles to run_state")
-        # Clean up the temp file as we do not need it anymore
-        ::File.unlink(tempfile)
-        installed_profiles
+        installed_profiles = dump_installed_profiles
+        read_plist(installed_profiles)
       end
 
-      def generate_tempfile
-        tempfile = ::Dir::Tmpname.create("allprofiles.plist") {}
-      end
-
-      def write_installed_profiles(tempfile)
-        cmd = "profiles -P -o '#{tempfile}'"
-        shell_out!(cmd)
+      def dump_installed_profiles
+        cmd = "profiles -P -o stdout-xml"
+        shellout_results = shell_out(cmd)
+        if shellout_results.exitstatus == 0
+          shellout_results.stdout
+        else
+          raise Mixlib::ShellOut::ShellCommandFailed, 'profiles command failed'
+        end
       end
 
       def read_plist(xml_file)
