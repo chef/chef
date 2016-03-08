@@ -76,6 +76,8 @@ class Chef
     attr_reader :options
     attr_reader :middlewares
 
+    attr_reader :http_client_cache
+
     # Create a HTTP client object. The supplied +url+ is used as the base for
     # all subsequent requests. For example, when initialized with a base url
     # http://localhost:4000, a call to +get+ with 'nodes' will make an
@@ -83,6 +85,7 @@ class Chef
     def initialize(url, options = {})
       @url = url
       @default_headers = options[:headers] || {}
+      @http_client_cache = options[:http_client_cache]
       @sign_on_redirect = true
       @redirects_followed = 0
       @redirect_limit = 10
@@ -211,7 +214,7 @@ class Chef
         }
         SocketlessChefZeroClient.new(base_url)
       else
-        BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
+        BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy, :http_client_cache => http_client_cache))
       end
     end
 
