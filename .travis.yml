@@ -4,6 +4,8 @@ cache: bundler
 sudo: false
 # Early warning system to catch if Rubygems breaks something
 before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq strace
   - gem update --system
   - gem install bundler
 
