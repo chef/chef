@@ -49,6 +49,11 @@ class Chef
           @current_resource
         end
 
+        def define_resource_requirements
+          # FIXME? need reload from service.rb
+          shared_resource_requirements
+        end
+
         def enable_service
           shell_out!(default_init_command, "clear", @new_resource.service_name) if @maintenance
           shell_out!(default_init_command, "enable", "-s", @new_resource.service_name)

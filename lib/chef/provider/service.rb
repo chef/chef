@@ -62,7 +62,16 @@ class Chef
         end
       end
 
+      # subclasses should override this if they do implement user services
+      def user_services_requirements
+        requirements.assert(:all_actions) do |a|
+          a.assertion { @new_resource.user.nil? }
+          a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} does not support user services"
+        end
+      end
+
       def shared_resource_requirements
+        user_services_requirements
       end
 
       def define_resource_requirements
