@@ -83,7 +83,7 @@ class Chef
           #If keys missing in the path and recursive == false
           a.assertion { !registry.keys_missing?(@current_resource.key) || @new_resource.recursive }
           a.failure_message(Chef::Exceptions::Win32RegNoRecursive, "Intermediate keys missing but recursive is set to false")
-          a.whyrun("Intermediate keys in #{@new_resource.key} go not exist. Unless they would have been created earlier, attempt to modify them would fail.")
+          a.whyrun("Intermediate keys in #{@new_resource.key} do not exist. Unless they would have been created earlier, attempt to modify them would fail.")
         end
         requirements.assert(:delete_key) do |a|
           #If key to be deleted has subkeys but recurssive == false
