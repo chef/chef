@@ -316,11 +316,17 @@ class Chef
           error_message << error_locations.join("\n")
           existing_files = segment_filenames(segment)
           # Strip the root_dir prefix off all files for readability
-          existing_files.map! { |path| path[root_dir.length + 1..-1] } if root_dir
+          pretty_existing_files = existing_files.map { |path|
+            if root_dir
+              path[root_dir.length + 1..-1]
+            else
+              path
+            end
+          }
           # Show the files that the cookbook does have. If the user made a typo,
           # hopefully they'll see it here.
-          unless existing_files.empty?
-            error_message << "\n\nThis cookbook _does_ contain: ['#{existing_files.join("','")}']"
+          unless pretty_existing_files.empty?
+            error_message << "\n\nThis cookbook _does_ contain: ['#{pretty_existing_files.join("','")}']"
           end
           raise Chef::Exceptions::FileNotFound, error_message
         else
