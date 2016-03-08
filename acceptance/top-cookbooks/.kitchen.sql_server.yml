@@ -1,0 +1,5 @@
+suites:
+  - name: sql_server
+    run_list: ["recipe[sql_server::default]"]
+    attributes: { sql_server: { accept_eula: true } }
+    includes: [windows-2012r2]
