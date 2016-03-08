@@ -1,28 +1,33 @@
 # Change Log
 
-## [12.8.0](https://github.com/chef/chef/tree/12.8.0) (2016-03-02)
-[Full Changelog](https://github.com/chef/chef/compare/12.7.2...12.8.0)
+## [12.8.1](https://github.com/chef/chef/tree/12.8.1) (2016-03-07)
+[Full Changelog](https://github.com/chef/chef/compare/12.7.2...12.8.1)
 
 **Implemented enhancements:**
 
 - Clarify the probable cause of tempfile creation failure during cookbook sync [\#2171](https://github.com/chef/chef/issues/2171)
+- Remove static libraries from Chef package [\#4654](https://github.com/chef/chef/pull/4654) ([chefsalim](https://github.com/chefsalim))
 - Have client.rb verify that FIPS mode can be enforced [\#4630](https://github.com/chef/chef/pull/4630) ([ksubrama](https://github.com/ksubrama))
 - List all of the unignored files when loading a cookbook [\#4629](https://github.com/chef/chef/pull/4629) ([danielsdeleo](https://github.com/danielsdeleo))
 - adding pry and pry-byebug to dev dependencies [\#4601](https://github.com/chef/chef/pull/4601) ([mwrock](https://github.com/mwrock))
-- add an issue template [\#4590](https://github.com/chef/chef/pull/4590) ([lamont-granquist](https://github.com/lamont-granquist))
 - Split group members on commas [\#4583](https://github.com/chef/chef/pull/4583) ([thommay](https://github.com/thommay))
 - Make tempfiles easier to read \(prepend chef to the name\) [\#4582](https://github.com/chef/chef/pull/4582) ([thommay](https://github.com/thommay))
 - Extend cookbook shadowing deprecation warnings more broadly [\#4574](https://github.com/chef/chef/pull/4574) ([lamont-granquist](https://github.com/lamont-granquist))
 - tell knife's edit\_data what the object is [\#4548](https://github.com/chef/chef/pull/4548) ([thommay](https://github.com/thommay))
 - Implement knife bootstrap client.d RFC [\#4529](https://github.com/chef/chef/pull/4529) ([jaym](https://github.com/jaym))
 - Update to Log Level when showing unencrypted databag [\#4524](https://github.com/chef/chef/pull/4524) ([PatrickWalker](https://github.com/PatrickWalker))
+- RFC-060 gem metadata MVP [\#4478](https://github.com/chef/chef/pull/4478) ([lamont-granquist](https://github.com/lamont-granquist))
 - chef-client: add --\[no\]skip-cookbook-sync option [\#4316](https://github.com/chef/chef/pull/4316) ([josb](https://github.com/josb))
+- Extend service resource to support masking [\#4307](https://github.com/chef/chef/pull/4307) ([davide125](https://github.com/davide125))
 - launchd for osx [\#4111](https://github.com/chef/chef/pull/4111) ([mikedodge04](https://github.com/mikedodge04))
 
 **Fixed bugs:**
 
 - Chef::DataBagItem.to\_hash is modifying Chef::DataBagItem.raw\_data [\#4614](https://github.com/chef/chef/issues/4614)
 - Chef 12 seeing a ton of these in debug mode [\#2396](https://github.com/chef/chef/issues/2396)
+- Data bag item hash can have name key [\#4664](https://github.com/chef/chef/pull/4664) ([chefsalim](https://github.com/chefsalim))
+- Clearer exception for loading non-existent data bag items in solo mode. [\#4655](https://github.com/chef/chef/pull/4655) ([coderanger](https://github.com/coderanger))
+- Always rehash from gem source and not existing hash file [\#4651](https://github.com/chef/chef/pull/4651) ([tyler-ball](https://github.com/tyler-ball))
 - Handle negative content length headers too. [\#4646](https://github.com/chef/chef/pull/4646) ([coderanger](https://github.com/coderanger))
 - if no module name is found for a valid dsc resource default to PSDesiredStateConfiguration [\#4638](https://github.com/chef/chef/pull/4638) ([mwrock](https://github.com/mwrock))
 - removing disabling of readline in chef-shell [\#4635](https://github.com/chef/chef/pull/4635) ([mwrock](https://github.com/mwrock))
