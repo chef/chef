@@ -45,6 +45,33 @@ describe "LWRPs with inline resources" do
     end
   end
 
+  context "with an inline resource with a property that shadows the enclosing provider's property" do
+    class LwrpShadowedPropertyTest < Chef::Resource::LWRPBase
+      PATH = ::File.join(Dir.tmpdir, "shadow-property.txt")
+      use_automatic_resource_name
+      actions :fiddle
+      property :content
+      action :fiddle do
+        file PATH do
+          content new_resource.content
+          action [:create, :delete]
+        end
+      end
+    end
+
+    after { File.delete(LwrpShadowedPropertyTest::PATH) if File.exists?(LwrpShadowedPropertyTest::PATH) }
+
+    # https://github.com/chef/chef/issues/4334
+    it "does not warn spuriously" do
+      expect(Chef::Log).to_not receive(:warn).with(/is declared in both/)
+      expect_recipe {
+        lwrp_shadowed_property_test "fnord" do
+          action :fiddle
+        end
+      }
+    end
+  end
+
   context "with an inline_resources provider with two actions, one calling the other" do
     class LwrpInlineResourcesTest2 < Chef::Resource::LWRPBase
       resource_name :lwrp_inline_resources_test2

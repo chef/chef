@@ -266,7 +266,7 @@ class Chef
         # In Chef 12, value(nil) does a *get* instead of a set, so we
         # warn if the value would have been changed. In Chef 13, it will be
         # equivalent to value = nil.
-        result = get(resource)
+        result = get(resource, nil_set: true)
 
         # Warn about this becoming a set in Chef 13.
         begin
@@ -311,7 +311,7 @@ class Chef
     # @raise Chef::Exceptions::ValidationFailed If the value is invalid for
     #   this property, or if the value is required and not set.
     #
-    def get(resource)
+    def get(resource, nil_set: false)
       # If it's set, return it (and evaluate any lazy values)
       if is_set?(resource)
         value = get_value(resource)
@@ -335,7 +335,8 @@ class Chef
         #
         # It won't do what they expect. This checks whether you try to *read*
         # `content` while we are compiling the resource.
-        if resource.respond_to?(:resource_initializing) &&
+        if !nil_set &&
+            resource.respond_to?(:resource_initializing) &&
             resource.resource_initializing &&
             resource.respond_to?(:enclosing_provider) &&
             resource.enclosing_provider &&
