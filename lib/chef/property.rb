@@ -87,7 +87,7 @@ class Chef
     #     is fully initialized.
     #
     def initialize(**options)
-      options.each { |k, v| options[k.to_sym] = v; options.delete(k) if k.is_a?(String) }
+      options = options.inject({}) { |memo, (key, value)| memo[key.to_sym] = value; memo }
       @options = options
       options[:name] = options[:name].to_sym if options[:name]
       options[:instance_variable_name] = options[:instance_variable_name].to_sym if options[:instance_variable_name]
