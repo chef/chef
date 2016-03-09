@@ -169,7 +169,7 @@ class Chef
 
       def get_profile_hash(new_profile)
         if new_profile.is_a?(Hash)
-          return new_profile.to_hash
+          return new_profile
         elsif new_profile.is_a?(String)
           return load_profile_hash(new_profile)
         end
