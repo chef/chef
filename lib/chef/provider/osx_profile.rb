@@ -224,7 +224,7 @@ class Chef
         if shellout_results.exitstatus == 0
           shellout_results.stdout
         else
-          raise Mixlib::ShellOut::ShellCommandFailed, 'profiles command failed'
+          raise Mixlib::ShellOut::ShellCommandFailed, "profiles command failed"
         end
       end
 
