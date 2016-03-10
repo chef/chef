@@ -80,6 +80,12 @@ class Chef
           end
         end
 
+        private
+
+        def mount_options_unchanged?
+          @current_resource.device == @new_resource.device
+        end
+
       end
     end
   end
