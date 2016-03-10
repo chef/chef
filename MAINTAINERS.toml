@@ -161,6 +161,26 @@ The specific components of Chef related to a given platform - including (but not
           "lamont-granquist"
         ]
 
+      [Org.Components.Subsystems.CiscoNXOS]
+        title = "Cisco NX-OS"
+        team = "client-nxos"
+
+        lieutenant = "cperry"
+
+        maintainers = [
+          "cperry"
+        ]
+
+      [Org.Components.Subsystems.CiscoIOSXR]
+        title = "Cisco IOS XR"
+        team = "client-iosxr"
+
+        lieutenant = "cperry"
+
+        maintainers = [
+          "cperry"
+        ]
+
     [Org.Components.Subsystems.Fedora]
         title = "Fedora"
         team = "client-fedora"
@@ -336,3 +356,7 @@ The specific components of Chef related to a given platform - including (but not
   [people.mwrock]
     Name = "Matt Wrock"
     GitHub = "mwrock"
+
+  [people.cperry]
+    Name = "Carl Perry"
+    GitHub = "edolnx"
