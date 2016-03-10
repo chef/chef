@@ -23,12 +23,13 @@ describe "chef-solo" do
       file "cookbooks/x/recipes/default.rb", 'puts "ITWORKS"'
     end
 
-    it "should complete with success" do
+    it "should complete with success", focus: true do
       file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
-      result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      result = shell_out("strace -ttfT #{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      puts result.stderr
       result.error!
       expect(result.stdout).to include("ITWORKS")
     end
