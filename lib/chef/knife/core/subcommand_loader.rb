@@ -139,7 +139,7 @@ class Chef
       #
       def find_subcommands_via_dirglob
         # The "require paths" of the core knife subcommands bundled with chef
-        files = Dir[File.join(Chef::Util::PathHelper.escape_glob(File.expand_path("../../../knife", __FILE__)), "*.rb")]
+        files = Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(File.expand_path("../../../knife", __FILE__)), "*.rb")]
         subcommand_files = {}
         files.each do |knife_file|
           rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/, 1]
@@ -197,12 +197,12 @@ Please use Chef::Knife::SubcommandLoader.for_config(chef_config_dir, env)"
         user_specific_files = []
 
         if chef_config_dir
-          user_specific_files.concat Dir.glob(File.expand_path("plugins/knife/*.rb", Chef::Util::PathHelper.escape_glob(chef_config_dir)))
+          user_specific_files.concat Dir.glob(File.expand_path("plugins/knife/*.rb", Chef::Util::PathHelper.escape_glob_dir(chef_config_dir)))
         end
 
         # finally search ~/.chef/plugins/knife/*.rb
         Chef::Util::PathHelper.home(".chef", "plugins", "knife") do |p|
-          user_specific_files.concat Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(p), "*.rb"))
+          user_specific_files.concat Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(p), "*.rb"))
         end
 
         user_specific_files

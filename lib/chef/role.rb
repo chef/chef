@@ -253,7 +253,7 @@ class Chef
     def self.from_disk(name)
       paths = Array(Chef::Config[:role_path])
       paths.each do |path|
-        roles_files = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(path), "**", "**"))
+        roles_files = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(path), "**", "**"))
         js_files = roles_files.select { |file| file.match(/\/#{name}\.json$/) }
         rb_files = roles_files.select { |file| file.match(/\/#{name}\.rb$/) }
         if js_files.count > 1 or rb_files.count > 1

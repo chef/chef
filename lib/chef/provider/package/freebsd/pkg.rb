@@ -88,7 +88,7 @@ class Chef
           end
 
           def file_candidate_version_path
-            Dir[Chef::Util::PathHelper.escape_glob("#{@new_resource.source}/#{@current_resource.package_name}") + "*"][-1].to_s
+            Dir[Chef::Util::PathHelper.escape_glob_dir("#{@new_resource.source}/#{@current_resource.package_name}") + "*"][-1].to_s
           end
 
           def file_candidate_version

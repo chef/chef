@@ -30,7 +30,7 @@ describe Chef::Util::PathHelper, "escape_glob" do
         File.new(File.join(dir, file), "w").close
       end
 
-      pattern = File.join(PathHelper.escape_glob(dir), "*")
+      pattern = File.join(PathHelper.escape_glob_dir(dir), "*")
       expect(Dir.glob(pattern).map { |x| File.basename(x) }).to match_array(files)
     end
   end

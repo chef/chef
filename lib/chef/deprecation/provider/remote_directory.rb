@@ -33,7 +33,7 @@ class Chef
 
         # List all excluding . and ..
         def ls(path)
-          files = Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob(path), "**", "*"),
+          files = Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob_dir(path), "**", "*"),
                            ::File::FNM_DOTMATCH)
 
           # Remove current directory and previous directory

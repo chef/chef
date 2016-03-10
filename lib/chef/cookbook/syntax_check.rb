@@ -114,7 +114,7 @@ class Chef
       end
 
       def ruby_files
-        path  = Chef::Util::PathHelper.escape_glob(cookbook_path)
+        path  = Chef::Util::PathHelper.escape_glob_dir(cookbook_path)
         files = Dir[File.join(path, "**", "*.rb")]
         files = remove_ignored_files(files)
         files = remove_uninteresting_ruby_files(files)
@@ -133,7 +133,7 @@ class Chef
       end
 
       def template_files
-        remove_ignored_files Dir[File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), "**/templates/**", "*.erb")]
+        remove_ignored_files Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(cookbook_path), "**/templates/**", "*.erb")]
       end
 
       def untested_template_files
