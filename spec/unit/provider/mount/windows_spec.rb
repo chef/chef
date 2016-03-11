@@ -120,6 +120,18 @@ describe Chef::Provider::Mount::Windows do
         @provider.mount_fs
       end
 
+      context "mount_options_unchanged?" do
+        it "should return true if mounted device is the same" do
+          allow(@current_resource).to receive(:device).and_return(GUID)
+          expect(@provider.send :mount_options_unchanged?).to be true
+        end
+
+        it "should return false if mounted device has changed" do
+          allow(@current_resource).to receive(:device).and_return("XXXX")
+          expect(@provider.send :mount_options_unchanged?).to be false
+        end
+      end
+
       it "should not mount the filesystem if it is mounted and the options have not changed" do
         expect(@vol).to_not receive(:add)
         allow(@current_resource).to receive(:mounted).and_return(true)
