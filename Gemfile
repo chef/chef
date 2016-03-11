@@ -17,6 +17,12 @@ group(:maintenance) do
   gem "netrc"
 end
 
+group(:pry) do
+  gem "pry"
+  gem "pry-byebug"
+  gem "pry-stack_explorer"
+end
+
 group(:ruby_prof) do
   # may need to disable this in insolation on fussy builds like AIX, RHEL4, etc
   gem "ruby-prof"
@@ -31,10 +37,6 @@ group(:development, :test) do
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 
   gem "ruby-shadow", platforms: :ruby unless RUBY_PLATFORM.downcase =~ /(aix|cygwin)/
-
-  gem "pry"
-  gem "pry-byebug"
-  gem "pry-stack_explorer"
 end
 
 group(:travis) do
