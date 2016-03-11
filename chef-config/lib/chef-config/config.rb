@@ -703,6 +703,9 @@ module ChefConfig
     # Use atomic updates (i.e. move operation) while updating contents
     # of the files resources. When set to false copy operation is
     # used to update files.
+    #
+    # NOTE: CHANGING THIS SETTING MAY CAUSE CORRUPTION, DATA LOSS AND
+    # INSTABILITY.
     default :file_atomic_update, true
 
     # There are 3 possible values for this configuration setting.
