@@ -1,0 +1,8 @@
+suites:
+  - name: default
+    run_list:
+      - recipe[winbox::default]
+    includes: [windows-2012r2]
+
+verifier:
+  name: dummy
