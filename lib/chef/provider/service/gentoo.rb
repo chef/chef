@@ -33,7 +33,7 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
     super
 
     @current_resource.enabled(
-      Dir.glob("/etc/runlevels/**/#{Chef::Util::PathHelper.escape_glob(@current_resource.service_name)}").any? do |file|
+      Dir.glob("/etc/runlevels/**/#{Chef::Util::PathHelper.escape_glob_dir(@current_resource.service_name)}").any? do |file|
         @found_script = true
         exists = ::File.exists? file
         readable = ::File.readable? file

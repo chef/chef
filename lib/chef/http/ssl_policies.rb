@@ -77,7 +77,7 @@ class Chef
           http_client.cert_store.set_default_paths
         end
         if config.trusted_certs_dir
-          certs = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(config.trusted_certs_dir), "*.{crt,pem}"))
+          certs = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(config.trusted_certs_dir), "*.{crt,pem}"))
           certs.each do |cert_file|
             cert = OpenSSL::X509::Certificate.new(File.read(cert_file))
             add_trusted_cert(cert)

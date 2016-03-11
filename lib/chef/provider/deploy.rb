@@ -242,7 +242,7 @@ class Chef
       end
 
       def all_releases
-        Dir.glob(Chef::Util::PathHelper.escape_glob(@new_resource.deploy_to) + "/releases/*").sort
+        Dir.glob(Chef::Util::PathHelper.escape_glob_dir(@new_resource.deploy_to) + "/releases/*").sort
       end
 
       def update_cached_repo

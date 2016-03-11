@@ -104,7 +104,7 @@ class Chef
       #
       def purge_unmanaged_files
         if purge
-          Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob(path), "**", "*"), ::File::FNM_DOTMATCH).sort!.reverse!.each do |file|
+          Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob_dir(path), "**", "*"), ::File::FNM_DOTMATCH).sort!.reverse!.each do |file|
             # skip '.' and '..'
             next if [".", ".."].include?(Pathname.new(file).basename().to_s)
 
