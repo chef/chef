@@ -136,14 +136,12 @@ describe Chef::Resource::Mdadm do
 
     it "should set chunk to return nil when not explicitly set and mdadm_defaults is true" do
       resource.mdadm_defaults(true)
-      expect(Chef).to receive(:log_deprecation).exactly(2).times
       resource.after_created
       expect(resource.chunk).to eql(nil)
     end
 
     it "should set metadata to return nil when not explicitly set and mdadm_defaults is true" do
       resource.mdadm_defaults(true)
-      expect(Chef).to receive(:log_deprecation).exactly(2).times
       resource.after_created
       expect(resource.metadata).to eql(nil)
     end
@@ -151,7 +149,6 @@ describe Chef::Resource::Mdadm do
     it "should allow chunk to be explicitly set when mdadm_defaults is true" do
       resource.mdadm_defaults(true)
       resource.chunk(256)
-      expect(Chef).to receive(:log_deprecation).exactly(1).times
       resource.after_created
       expect(resource.chunk).to eql(256)
     end
@@ -159,7 +156,6 @@ describe Chef::Resource::Mdadm do
     it "should allow metadata to be explicitly set when mdadm_defaults is true" do
       resource.mdadm_defaults(true)
       resource.metadata("1.2")
-      expect(Chef).to receive(:log_deprecation).exactly(1).times
       resource.after_created
       expect(resource.metadata).to eq("1.2")
     end

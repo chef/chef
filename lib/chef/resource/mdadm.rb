@@ -154,8 +154,8 @@ class Chef
           "resource if the mdadm default is not desired. This future change "\
           "will only impact newly created md devices."
 
-        Chef.log_deprecation(metadata_warn_msg) unless @user_set_metadata
-        Chef.log_deprecation(chunk_warn_msg) unless @user_set_chunk
+        Chef.log_deprecation(metadata_warn_msg) unless @user_set_metadata or @mdadm_defaults
+        Chef.log_deprecation(chunk_warn_msg) unless @user_set_chunk or @mdadm_defaults
       end
     end
   end
