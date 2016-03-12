@@ -83,7 +83,7 @@ describe Chef::Resource::Mdadm do
     expect(resource.mdadm_defaults).to eq(false)
   end
 
-  it "should have default mdadm_defaults of true", :chef_gte_13_only do
+  it "should have default mdadm_defaults of true in Chef-13", chef: ">= 13" do
     expect(resource.mdadm_defaults).to eq(true)
   end
 
