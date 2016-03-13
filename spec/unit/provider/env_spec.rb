@@ -306,5 +306,13 @@ describe Chef::Provider::Env do
       @provider.modify_env
       expect(@new_resource.value).to eq("C:/foo;C:/bar;C:/baz;C:/foo/bar")
     end
+
+    it "should reorder values to keep appened order" do
+      @new_resource.value("C:/foo;C:/bar;C:/baz")
+      @new_resource.append true
+      @current_resource.value("C:/foo/bar;C:/baz;C:/bar")
+      @provider.modify_env
+      expect(@new_resource.value).to eq("C:/foo/bar;C:/foo;C:/bar;C:/baz")
+    end
   end
 end
