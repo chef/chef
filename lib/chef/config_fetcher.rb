@@ -45,9 +45,9 @@ class Chef
 
     def read_local_config
       ::File.read(config_location)
-    rescue Errno::ENOENT => error
+    rescue Errno::ENOENT
       Chef::Application.fatal!("Cannot load configuration from #{config_location}", 2)
-    rescue Errno::EACCES => error
+    rescue Errno::EACCES
       Chef::Application.fatal!("Permissions are incorrect on #{config_location}. Please chmod a+r #{config_location}", 2)
     end
 

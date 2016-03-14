@@ -84,7 +84,6 @@ class Chef
       def validate(http_response, response_length)
         content_length    = response_content_length(http_response)
         transfer_encoding = http_response["transfer-encoding"]
-        content_encoding  = http_response["content-encoding"]
 
         if content_length.nil?
           Chef::Log.debug "HTTP server did not include a Content-Length header in response, cannot identify truncated downloads."

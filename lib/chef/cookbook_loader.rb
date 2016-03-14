@@ -47,7 +47,7 @@ class Chef
       @cookbooks_paths = Hash.new { |h, k| h[k] = [] } # for deprecation warnings
       @chefignores = {}
       @repo_paths = repo_paths.map do |repo_path|
-        repo_path = File.expand_path(repo_path)
+        File.expand_path(repo_path)
       end
 
       @preloaded_cookbooks = false
@@ -121,7 +121,7 @@ class Chef
     end
 
     def [](cookbook)
-      if @cookbooks_by_name.has_key?(cookbook.to_sym) or load_cookbook(cookbook.to_sym)
+      if @cookbooks_by_name.has_key?(cookbook.to_sym) || load_cookbook(cookbook.to_sym)
         @cookbooks_by_name[cookbook.to_sym]
       else
         raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook}; did you forget to add metadata to a cookbook? (https://docs.chef.io/config_rb_metadata.html)"
@@ -179,7 +179,7 @@ class Chef
       @all_files_in_repo_paths ||=
         begin
           @repo_paths.inject([]) do |all_children, repo_path|
-            all_children += Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(repo_path), "*")]
+            all_children + Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(repo_path), "*")]
           end
         end
     end
