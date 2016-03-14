@@ -478,9 +478,9 @@ class Chef
             sense = x.version.partial_compare(y.version)
 
             # Thanks to rpmdsCompare() rpmds.c
-            if sense < 0 and (x.flag == :> || x.flag == :>=) || (y.flag == :<= || y.flag == :<)
+            if (sense < 0) && ((x.flag == :> || x.flag == :>=) || (y.flag == :<= || y.flag == :<))
               return true
-            elsif sense > 0 and (x.flag == :< || x.flag == :<=) || (y.flag == :>= || y.flag == :>)
+            elsif (sense > 0) && ((x.flag == :< || x.flag == :<=) || (y.flag == :>= || y.flag == :>))
               return true
             elsif sense == 0 && (
               ((x.flag == :== || x.flag == :<= || x.flag == :>=) && (y.flag == :== || y.flag == :<= || y.flag == :>=)) ||
