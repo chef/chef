@@ -50,11 +50,11 @@ To mention the team, use @chef/ohai
 
 ### Lieutenant
 
-* [Bryan McLellan](https://github.com/btm)
+* [Claire McQuin](https://github.com/mcquin)
 
 ### Maintainers
 
-* [Claire McQuin](https://github.com/mcquin)
+* [Bryan McLellan](https://github.com/btm)
 * [Tim Smith](https://github.com/tas50)
 
 ## Dev Tools

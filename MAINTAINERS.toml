@@ -55,10 +55,10 @@ another component.
         title = "Ohai"
         team = "ohai"
 
-        lieutenant = "btm"
+        lieutenant = "mcquin"
 
         maintainers = [
-          "mcquin",
+          "btm",
           "tas50"
         ]
 
