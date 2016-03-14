@@ -60,9 +60,9 @@ class Chef
             a.failure_message Chef::Exceptions::Service, "#{chkconfig_file} dbleoes not exist!"
           end
 
-          requirements.assert(:start, :enable, :reload, :restart) do |a|
+          requirements.assert(:start, :reload, :restart) do |a|
             a.assertion do
-              custom_command_for_action?(action) || !@service_missing
+              new_resource.init_command || custom_command_for_action?(action) || !@service_missing
             end
             a.failure_message Chef::Exceptions::Service, "#{new_resource}: No custom command for #{action} specified and unable to locate the init.d script!"
             a.whyrun "Assuming service would be disabled. The init script is not presently installed."
