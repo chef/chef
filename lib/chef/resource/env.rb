@@ -62,7 +62,7 @@ class Chef
         )
       end
 
-      def append(arg=nil)
+      def append(arg = nil)
         set_or_return(
             :append,
             arg,
