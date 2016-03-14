@@ -480,7 +480,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def client_sleep(sec)
-    IO.select([ SELF_PIPE[0] ], nil, nil, sec) || (return)
+    return unless IO.select([ SELF_PIPE[0] ], nil, nil, sec)
     @signal = SELF_PIPE[0].getc.chr
   end
 
