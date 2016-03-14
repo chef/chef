@@ -139,7 +139,7 @@ class Chef
       #
       # @return [PolicyBuilder::Policyfile, PolicyBuilder::ExpandNodeObject]
       def implementation
-        @implementation or raise Exceptions::InvalidPolicybuilderCall, "#load_node must be called before other policy builder methods"
+        @implementation || raise(Exceptions::InvalidPolicybuilderCall, "#load_node must be called before other policy builder methods")
       end
 
       # @api private

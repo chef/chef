@@ -123,7 +123,7 @@ class Chef
           ui.error("Please specify a cookbook to download and install.")
           exit 1
         elsif name_args.size >= 2
-          unless name_args.last.match(/^(\d+)(\.\d+){1,2}$/) and name_args.size == 2
+          unless name_args.last.match(/^(\d+)(\.\d+){1,2}$/) && name_args.size == 2
             ui.error("Installing multiple cookbooks at once is not supported.")
             exit 1
           end

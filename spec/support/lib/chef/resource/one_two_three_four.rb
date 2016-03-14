@@ -27,7 +27,7 @@ class Chef
       end
 
       def something(arg = nil)
-        if arg == true or arg == false
+        if arg == true || arg == false
           @something = arg
         end
         @something

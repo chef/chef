@@ -15,7 +15,7 @@ class Chef
 
           @candidate_version = macports_candidate_version
 
-          if !@new_resource.version and !@candidate_version
+          if !@new_resource.version && !@candidate_version
             raise Chef::Exceptions::Package, "Could not get a candidate version for this package -- #{@new_resource.name} does not seem to be a valid package!"
           end
 
@@ -48,20 +48,20 @@ class Chef
         def install_package(name, version)
           unless @current_resource.version == version
             command = "port#{expand_options(@new_resource.options)} install #{name}"
-            command << " @#{version}" if version and !version.empty?
+            command << " @#{version}" if version && !version.empty?
             shell_out_with_timeout!(command)
           end
         end
 
         def purge_package(name, version)
           command = "port#{expand_options(@new_resource.options)} uninstall #{name}"
-          command << " @#{version}" if version and !version.empty?
+          command << " @#{version}" if version && !version.empty?
           shell_out_with_timeout!(command)
         end
 
         def remove_package(name, version)
           command = "port#{expand_options(@new_resource.options)} deactivate #{name}"
-          command << " @#{version}" if version and !version.empty?
+          command << " @#{version}" if version && !version.empty?
 
           shell_out_with_timeout!(command)
         end
@@ -71,7 +71,7 @@ class Chef
           # happens otherwise...
           current_version = @current_resource.version
 
-          if current_version.nil? or current_version.empty?
+          if current_version.nil? || current_version.empty?
             # Macports doesn't like when you upgrade a package
             # that hasn't been installed.
             install_package(name, version)

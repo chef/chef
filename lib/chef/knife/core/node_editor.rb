@@ -96,7 +96,7 @@ class Chef
 
       # @api private
       def apply_updates(updated_data)
-        if node.name and node.name != updated_data["name"]
+        if node.name && node.name != updated_data["name"]
           ui.warn "Changing the name of a node results in a new node being created, #{node.name} will not be modified or removed."
           ui.confirm "Proceed with creation of new node"
         end

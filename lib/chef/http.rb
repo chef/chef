@@ -221,7 +221,7 @@ class Chef
       return path if path.is_a?(URI)
       if path =~ /^(http|https|chefzero):\/\//i
         URI.parse(path)
-      elsif path.nil? or path.empty?
+      elsif path.nil? || path.empty?
         URI.parse(@url)
       else
         # The regular expressions used here are to make sure '@url' does not have

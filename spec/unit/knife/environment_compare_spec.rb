@@ -62,7 +62,7 @@ describe Chef::Knife::EnvironmentCompare do
       @knife.config[:format] = "summary"
       @knife.run
       @environments.each do |item, url|
-        expect(@stdout.string).to match /#{item}/ and expect(@stdout.string.lines.count).to be 4
+        expect(@stdout.string).to(match /#{item}/) && expect(@stdout.string.lines.count).to(be 4)
       end
     end
 

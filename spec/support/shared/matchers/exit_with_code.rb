@@ -9,7 +9,7 @@ RSpec::Matchers.define :exit_with_code do |exp_code|
     rescue SystemExit => e
       actual = e.status
     end
-    actual and actual == exp_code
+    actual && actual == exp_code
   end
 
   failure_message do |block|

@@ -96,7 +96,7 @@ class Chef
         end
 
         def validate!(current_copy_checksum)
-          if current_copy_checksum.nil? or checksum != current_copy_checksum
+          if current_copy_checksum.nil? || checksum != current_copy_checksum
             reset!
             false
           else

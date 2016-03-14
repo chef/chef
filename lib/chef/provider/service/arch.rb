@@ -70,7 +70,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
     new_daemons = []
     entries = daemons
 
-    if entries.include?(new_resource.service_name) or entries.include?("@#{new_resource.service_name}")
+    if entries.include?(new_resource.service_name) || entries.include?("@#{new_resource.service_name}")
       # exists and already enabled (or already enabled as a background service)
       # new_daemons += entries
     else
@@ -100,7 +100,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
       # exists and disabled
       # new_daemons += entries
     else
-      if entries.include?(new_resource.service_name) or entries.include?("@#{new_resource.service_name}")
+      if entries.include?(new_resource.service_name) || entries.include?("@#{new_resource.service_name}")
         # exists but enabled (or enabled as a back-ground service)
         # FIXME: Does arch support !@foobar ?
         entries.each do |daemon|

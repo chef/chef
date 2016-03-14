@@ -44,7 +44,7 @@ class Chef
           else
             priority_ok = @current_resource.priority == @new_resource.priority
           end
-          if @current_resource.enabled and priority_ok
+          if @current_resource.enabled && priority_ok
             Chef::Log.debug("#{@new_resource} already enabled - nothing to do")
           else
             converge_by("enable service #{@new_resource}") do

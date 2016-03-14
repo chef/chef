@@ -621,9 +621,9 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "use_sudo_password contains description and long params for help" do
-        expect(knife.options).to have_key(:use_sudo_password) \
-          and expect(knife.options[:use_sudo_password][:description].to_s).not_to eq("")\
-          and expect(knife.options[:use_sudo_password][:long].to_s).not_to eq("")
+        expect(knife.options).to(have_key(:use_sudo_password)) \
+          && expect(knife.options[:use_sudo_password][:description].to_s).not_to(eq(""))\
+          && expect(knife.options[:use_sudo_password][:long].to_s).not_to(eq(""))
       end
 
       it "uses the password from --ssh-password for sudo when --use-sudo-password is set" do

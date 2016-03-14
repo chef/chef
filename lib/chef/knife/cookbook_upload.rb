@@ -86,7 +86,7 @@ class Chef
 
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
-        if @name_args.empty? and ! config[:all]
+        if @name_args.empty? && ! config[:all]
           show_usage
           ui.fatal("You must specify the --all flag or at least one cookbook name")
           exit 1

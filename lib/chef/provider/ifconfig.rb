@@ -168,7 +168,7 @@ class Chef
       end
 
       def can_generate_config?
-        ! @config_template.nil? and ! @config_path.nil?
+        ! @config_template.nil? && ! @config_path.nil?
       end
 
       def resource_for_config(path)

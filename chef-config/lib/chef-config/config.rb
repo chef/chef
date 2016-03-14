@@ -476,7 +476,7 @@ module ChefConfig
     # Path to the default CA bundle files.
     default :ssl_ca_path, nil
     default(:ssl_ca_file) do
-      if ChefConfig.windows? and embedded_path = embedded_dir
+      if ChefConfig.windows? && (embedded_path = embedded_dir)
         cacert_path = File.join(embedded_path, "ssl/certs/cacert.pem")
         cacert_path if File.exist?(cacert_path)
       else

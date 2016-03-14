@@ -73,7 +73,7 @@ class Chef
           # which tricks Chef::REST into decompressing the response body. In this
           # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
           # which is not what you wanted.
-          if @new_resource.path =~ /gz$/ or source =~ /gz$/
+          if @new_resource.path =~ /gz$/ || source =~ /gz$/
             opts[:disable_gzip] = true
           end
           opts

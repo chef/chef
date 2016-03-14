@@ -74,8 +74,8 @@ class Chef
         requirements.assert(:delete) do |a|
           a.assertion do
             if @current_resource.to
-              @current_resource.link_type == @new_resource.link_type and
-                (@current_resource.link_type == :symbolic or @current_resource.to != "")
+              @current_resource.link_type == @new_resource.link_type &&
+                (@current_resource.link_type == :symbolic || @current_resource.to != "")
             else
               true
             end
