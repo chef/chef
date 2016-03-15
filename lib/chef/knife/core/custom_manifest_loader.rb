@@ -61,7 +61,7 @@ class Chef
         end
 
         def subcommand_files
-          subcommand_files ||= (find_subcommands_via_manifest.values + site_subcommands).flatten.uniq
+          @subcommand_files ||= (find_subcommands_via_manifest.values + site_subcommands).flatten.uniq
         end
       end
     end

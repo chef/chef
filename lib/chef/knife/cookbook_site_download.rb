@@ -98,7 +98,7 @@ class Chef
       end
 
       def replacement_cookbook
-        replacement = File.basename(current_cookbook_data["replacement"])
+        File.basename(current_cookbook_data["replacement"])
       end
 
       def specific_cookbook_version_url

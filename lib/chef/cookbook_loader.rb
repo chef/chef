@@ -47,7 +47,7 @@ class Chef
       @cookbooks_paths = Hash.new { |h, k| h[k] = [] } # for deprecation warnings
       @chefignores = {}
       @repo_paths = repo_paths.map do |repo_path|
-        repo_path = File.expand_path(repo_path)
+        File.expand_path(repo_path)
       end
 
       @preloaded_cookbooks = false
@@ -179,7 +179,7 @@ class Chef
       @all_files_in_repo_paths ||=
         begin
           @repo_paths.inject([]) do |all_children, repo_path|
-            all_children += Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(repo_path), "*")]
+            all_children + Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(repo_path), "*")]
           end
         end
     end

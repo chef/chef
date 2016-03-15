@@ -312,13 +312,13 @@ class Chef
           else
             ::File.open(config[:config_file]) { |f| apply_config(f.path) }
           end
-        rescue Errno::ENOENT => error
+        rescue Errno::ENOENT
           Chef::Log.warn("*****************************************")
           Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
           Chef::Log.warn("*****************************************")
 
           Chef::Config.merge!(config)
-        rescue SocketError => error
+        rescue SocketError
           Chef::Application.fatal!("Error getting config file #{Chef::Config[:config_file]}", 2)
         rescue Chef::Exceptions::ConfigurationError => error
           Chef::Application.fatal!("Error processing config file #{Chef::Config[:config_file]} with error #{error.message}", 2)

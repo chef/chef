@@ -22,7 +22,6 @@ class Chef
 
       def add_deprecation_warnings_for(method_names)
         method_names.each do |name|
-          m = instance_method(name)
           define_method(name) do |*args|
             message = []
             message << "Method '#{name}' of '#{self.class}' is deprecated. It will be removed in Chef 13."

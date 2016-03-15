@@ -66,7 +66,7 @@ module ChefConfig
       args.flatten.inject() do |joined_path, component|
         joined_path = joined_path.sub(trailing_slashes, "")
         component = component.sub(leading_slashes, "")
-        joined_path += "#{path_separator}#{component}"
+        joined_path + "#{path_separator}#{component}"
       end
     end
 

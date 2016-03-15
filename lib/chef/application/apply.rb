@@ -204,7 +204,7 @@ class Chef::Application::Apply < Chef::Application
       parse_options
       run_chef_recipe
       Chef::Application.exit! "Exiting", 0
-    rescue SystemExit => e
+    rescue SystemExit
       raise
     rescue Exception => e
       Chef::Application.debug_stacktrace(e)

@@ -319,7 +319,7 @@ class Chef
 
       def target_group
         return nil if resource.group.nil?
-        sid = get_sid(resource.group)
+        get_sid(resource.group)
       end
 
       def target_inherits
@@ -328,7 +328,7 @@ class Chef
 
       def target_owner
         return nil if resource.owner.nil?
-        sid = get_sid(resource.owner)
+        get_sid(resource.owner)
       end
     end
   end

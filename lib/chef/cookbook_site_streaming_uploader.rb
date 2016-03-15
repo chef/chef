@@ -77,7 +77,6 @@ class Chef
         parts = []
         content_file = nil
 
-        timestamp = Time.now.utc.iso8601
         secret_key = OpenSSL::PKey::RSA.new(File.read(secret_key_filename))
 
         unless params.nil? || params.empty?
