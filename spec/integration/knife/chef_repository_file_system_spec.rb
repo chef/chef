@@ -231,6 +231,10 @@ EOM
 /cookbooks/cookbook1/files/c/e.json
 /cookbooks/cookbook1/libraries/
 /cookbooks/cookbook1/libraries/a.rb
+/cookbooks/cookbook1/libraries/b.json
+/cookbooks/cookbook1/libraries/c/
+/cookbooks/cookbook1/libraries/c/d.rb
+/cookbooks/cookbook1/libraries/c/e.json
 /cookbooks/cookbook1/providers/
 /cookbooks/cookbook1/providers/a.rb
 /cookbooks/cookbook1/providers/c/

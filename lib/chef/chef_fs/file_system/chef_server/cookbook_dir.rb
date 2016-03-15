@@ -53,7 +53,7 @@ class Chef
             :attributes => { :ruby_only => true },
             :definitions => { :ruby_only => true },
             :recipes => { :ruby_only => true },
-            :libraries => { :ruby_only => true },
+            :libraries => { :recursive => true },
             :templates => { :recursive => true },
             :files => { :recursive => true },
             :resources => { :ruby_only => true, :recursive => true },
