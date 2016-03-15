@@ -256,6 +256,7 @@ class Chef
         run_context = nil
         events.run_start(Chef::VERSION)
         Chef::Log.info("*** Chef #{Chef::VERSION} ***")
+        Chef::Log.info("Platform: #{RUBY_PLATFORM}")
         Chef::Log.info "Chef-client pid: #{Process.pid}"
         Chef::Log.debug("Chef-client request_id: #{request_id}")
         enforce_path_sanity
