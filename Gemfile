@@ -5,6 +5,9 @@ gem "activesupport", "< 4.0.0", group: :compat_testing, platform: "ruby"
 
 gem "chef-config", path: "chef-config" if File.exist?(__FILE__ + "../chef-config")
 
+# Ensure that we can always install rake, regardless of gem groups
+gem "rake"
+
 group(:docgen) do
   gem "yard"
 end
