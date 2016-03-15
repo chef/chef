@@ -116,7 +116,7 @@ describe Chef::Provider::OsxProfile do
       profile_name = "com.testprofile.screensaver.mobileconfig"
       new_resource.profile_name profile_name
       allow(provider).to receive(:get_installed_profiles).and_call_original
-      expect(provider).to receive(:shell_out).with("profiles -P -o stdout-xml").and_return(shell_out_success)
+      expect(provider).to receive(:shell_out!).with("profiles -P -o stdout-xml").and_return(shell_out_success)
       provider.load_current_resource
     end
 
