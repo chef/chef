@@ -42,7 +42,7 @@ class MonoLogger < Logger
 
     def initialize(log = nil)
       @dev = @filename = @shift_age = @shift_size = nil
-      if log.respond_to?(:write) and log.respond_to?(:close)
+      if log.respond_to?(:write) && log.respond_to?(:close)
         @dev = log
       else
         @dev = open_logfile(log)

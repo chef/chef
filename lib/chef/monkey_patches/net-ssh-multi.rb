@@ -119,7 +119,8 @@ if Net::SSH::Multi::Version::STRING == "1.1.0" || Net::SSH::Multi::Version::STRI
 
             count = concurrent_connections ? (concurrent_connections - open_connections) : @pending_sessions.length
             count.times do
-              session = @pending_sessions.pop or break
+              session = @pending_sessions.pop
+              break unless session
               # ===== PATCH START
               # Increment the open_connections count here to prevent
               # creation of connection thread again before that is

@@ -69,7 +69,7 @@ class Chef
           package_name = "#{name}@#{version}"
           normal_command = "pkg#{expand_options(@new_resource.options)} install -q #{package_name}"
           command =
-            if @new_resource.respond_to?(:accept_license) and @new_resource.accept_license
+            if @new_resource.respond_to?(:accept_license) && @new_resource.accept_license
               normal_command.gsub("-q", "-q --accept")
             else
               normal_command

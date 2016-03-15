@@ -177,7 +177,8 @@ class Chef
 
       def to_net_http(code, headers, chunked_body)
         body = chunked_body.join("")
-        msg = STATUS_MESSAGE[code] or raise "Cannot determine HTTP status message for code #{code}"
+        msg = STATUS_MESSAGE[code]
+        raise "Cannot determine HTTP status message for code #{code}" unless msg
         response = Net::HTTPResponse.send(:response_class, code.to_s).new("1.0", code.to_s, msg)
         response.instance_variable_set(:@body, body)
         headers.each do |name, value|

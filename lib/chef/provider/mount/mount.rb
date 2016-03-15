@@ -133,7 +133,7 @@ class Chef
         end
 
         def remount_fs
-          if @current_resource.mounted and @new_resource.supports[:remount]
+          if @current_resource.mounted && @new_resource.supports[:remount]
             shell_out!(remount_command)
             @new_resource.updated_by_last_action(true)
             Chef::Log.debug("#{@new_resource} is remounted at #{@new_resource.mount_point}")
@@ -258,9 +258,9 @@ class Chef
         end
 
         def mount_options_unchanged?
-          @current_resource.fstype == @new_resource.fstype and
-            @current_resource.options == @new_resource.options and
-            @current_resource.dump == @new_resource.dump and
+          @current_resource.fstype == @new_resource.fstype &&
+            @current_resource.options == @new_resource.options &&
+            @current_resource.dump == @new_resource.dump &&
             @current_resource.pass == @new_resource.pass
         end
 

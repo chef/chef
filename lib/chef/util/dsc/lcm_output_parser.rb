@@ -79,7 +79,7 @@ class Chef
                 end
               when :end
                 # Make sure we log the last line
-                if current_resource[:context] == :logging and info.include? current_resource[:name]
+                if current_resource[:context] == :logging && info.include?(current_resource[:name])
                   current_resource[:logs].push(info)
                 end
                 current_resource[:context] = nil

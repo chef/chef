@@ -161,7 +161,7 @@ class Chef
       #   helpers(MyTemplateHelper)
       # The template code in the above example will work unmodified.
       def helpers(module_name = nil, &block)
-        if block_given? and !module_name.nil?
+        if block_given? && !module_name.nil?
           raise Exceptions::ValidationFailed,
             "Passing both a module and block to #helpers is not supported. Call #helpers multiple times instead"
         elsif block_given?

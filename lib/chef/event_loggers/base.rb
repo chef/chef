@@ -42,8 +42,8 @@ class Chef
     end
 
     def self.new(name)
-      event_logger_class = by_name(name.to_s) or
-        raise UnknownEventLogger, "No event logger found for #{name} (available: #{available_event_loggers.join(', ')})"
+      event_logger_class = by_name(name.to_s)
+      raise UnknownEventLogger, "No event logger found for #{name} (available: #{available_event_loggers.join(', ')})" unless event_logger_class
       raise UnavailableEventLogger unless available_event_loggers.include? name.to_s
       event_logger_class.new
     end

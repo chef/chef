@@ -319,7 +319,7 @@ class Chef
         def run(action)
           @assertions[action.to_sym].each do |a|
             a.run(action, events, @resource)
-            if a.assertion_failed? and a.block_action?
+            if a.assertion_failed? && a.block_action?
               @blocked_actions << action
               break
             end

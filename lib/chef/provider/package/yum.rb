@@ -73,17 +73,17 @@ class Chef
 
             # verify
             def isalnum(x)
-              isalpha(x) or isdigit(x)
+              isalpha(x) || isdigit(x)
             end
 
             def isalpha(x)
               v = x.ord
-              (v >= 65 and v <= 90) or (v >= 97 and v <= 122)
+              (v >= 65 && v <= 90) || (v >= 97 && v <= 122)
             end
 
             def isdigit(x)
               v = x.ord
-              v >= 48 and v <= 57
+              v >= 48 && v <= 57
             end
 
             # based on the reference spec in lib/rpmvercmp.c in rpm 4.9.0
@@ -128,17 +128,17 @@ class Chef
               y_pos_max = y.length - 1
               y_comp = nil
 
-              while x_pos <= x_pos_max and y_pos <= y_pos_max
+              while x_pos <= x_pos_max && y_pos <= y_pos_max
                 # first we skip over anything non alphanumeric
-                while (x_pos <= x_pos_max) and (isalnum(x[x_pos]) == false)
+                while (x_pos <= x_pos_max) && (isalnum(x[x_pos]) == false)
                   x_pos += 1 # +1 over pos_max if end of string
                 end
-                while (y_pos <= y_pos_max) and (isalnum(y[y_pos]) == false)
+                while (y_pos <= y_pos_max) && (isalnum(y[y_pos]) == false)
                   y_pos += 1
                 end
 
                 # if we hit the end of either we are done matching segments
-                if (x_pos == x_pos_max + 1) or (y_pos == y_pos_max + 1)
+                if (x_pos == x_pos_max + 1) || (y_pos == y_pos_max + 1)
                   break
                 end
 
@@ -154,14 +154,14 @@ class Chef
                   x_seg_pos += 1
 
                   # gather up our digits
-                  while (x_seg_pos <= x_pos_max) and isdigit(x[x_seg_pos])
+                  while (x_seg_pos <= x_pos_max) && isdigit(x[x_seg_pos])
                     x_seg_pos += 1
                   end
                   # copy the segment but not the unmatched character that x_seg_pos will
                   # refer to
                   x_comp = x[x_pos, x_seg_pos - x_pos]
 
-                  while (y_seg_pos <= y_pos_max) and isdigit(y[y_seg_pos])
+                  while (y_seg_pos <= y_pos_max) && isdigit(y[y_seg_pos])
                     y_seg_pos += 1
                   end
                   y_comp = y[y_pos, y_seg_pos - y_pos]
@@ -169,12 +169,12 @@ class Chef
                   # we are comparing strings
                   x_seg_is_num = false
 
-                  while (x_seg_pos <= x_pos_max) and isalpha(x[x_seg_pos])
+                  while (x_seg_pos <= x_pos_max) && isalpha(x[x_seg_pos])
                     x_seg_pos += 1
                   end
                   x_comp = x[x_pos, x_seg_pos - x_pos]
 
-                  while (y_seg_pos <= y_pos_max) and isalpha(y[y_seg_pos])
+                  while (y_seg_pos <= y_pos_max) && isalpha(y[y_seg_pos])
                     y_seg_pos += 1
                   end
                   y_comp = y[y_pos, y_seg_pos - y_pos]
@@ -213,7 +213,7 @@ class Chef
 
               # segments matched completely but the segment separators were different -
               # rpm reference code treats these as equal.
-              if (x_pos == x_pos_max + 1) and (y_pos == y_pos_max + 1)
+              if (x_pos == x_pos_max + 1) && (y_pos == y_pos_max + 1)
                 return 0
               end
 
@@ -290,11 +290,11 @@ class Chef
             x = self
 
             # compare epoch
-            if (x.e.nil? == false and x.e > 0) and y.e.nil?
+            if (x.e.nil? == false && x.e > 0) && y.e.nil?
               return 1
-            elsif x.e.nil? and (y.e.nil? == false and y.e > 0)
+            elsif x.e.nil? && (y.e.nil? == false && y.e > 0)
               return -1
-            elsif x.e.nil? == false and y.e.nil? == false
+            elsif x.e.nil? == false && y.e.nil? == false
               if x.e < y.e
                 return -1
               elsif x.e > y.e
@@ -303,25 +303,25 @@ class Chef
             end
 
             # compare version
-            if partial and (x.v.nil? or y.v.nil?)
+            if partial && (x.v.nil? || y.v.nil?)
               return 0
-            elsif x.v.nil? == false and y.v.nil?
+            elsif x.v.nil? == false && y.v.nil?
               return 1
-            elsif x.v.nil? and y.v.nil? == false
+            elsif x.v.nil? && y.v.nil? == false
               return -1
-            elsif x.v.nil? == false and y.v.nil? == false
+            elsif x.v.nil? == false && y.v.nil? == false
               cmp = RPMUtils.rpmvercmp(x.v, y.v)
               return cmp if cmp != 0
             end
 
             # compare release
-            if partial and (x.r.nil? or y.r.nil?)
+            if partial && (x.r.nil? || y.r.nil?)
               return 0
-            elsif x.r.nil? == false and y.r.nil?
+            elsif x.r.nil? == false && y.r.nil?
               return 1
-            elsif x.r.nil? and y.r.nil? == false
+            elsif x.r.nil? && y.r.nil? == false
               return -1
-            elsif x.r.nil? == false and y.r.nil? == false
+            elsif x.r.nil? == false && y.r.nil? == false
               cmp = RPMUtils.rpmvercmp(x.r, y.r)
               return cmp
             end
@@ -372,11 +372,11 @@ class Chef
             return 0 if x.nevra == y.nevra
 
             # compare name
-            if x.n.nil? == false and y.n.nil?
+            if x.n.nil? == false && y.n.nil?
               return 1
-            elsif x.n.nil? and y.n.nil? == false
+            elsif x.n.nil? && y.n.nil? == false
               return -1
-            elsif x.n.nil? == false and y.n.nil? == false
+            elsif x.n.nil? == false && y.n.nil? == false
               if x.n < y.n
                 return -1
               elsif x.n > y.n
@@ -392,11 +392,11 @@ class Chef
             end
 
             # compare arch
-            if x.a.nil? == false and y.a.nil?
+            if x.a.nil? == false && y.a.nil?
               return 1
-            elsif x.a.nil? and y.a.nil? == false
+            elsif x.a.nil? && y.a.nil? == false
               return -1
-            elsif x.a.nil? == false and y.a.nil? == false
+            elsif x.a.nil? == false && y.a.nil? == false
               if x.a < y.a
                 return -1
               elsif x.a > y.a
@@ -478,14 +478,14 @@ class Chef
             sense = x.version.partial_compare(y.version)
 
             # Thanks to rpmdsCompare() rpmds.c
-            if sense < 0 and (x.flag == :> || x.flag == :>=) || (y.flag == :<= || y.flag == :<)
+            if (sense < 0) && ((x.flag == :> || x.flag == :>=) || (y.flag == :<= || y.flag == :<))
               return true
-            elsif sense > 0 and (x.flag == :< || x.flag == :<=) || (y.flag == :>= || y.flag == :>)
+            elsif (sense > 0) && ((x.flag == :< || x.flag == :<=) || (y.flag == :>= || y.flag == :>))
               return true
-            elsif sense == 0 and (
-              ((x.flag == :== or x.flag == :<= or x.flag == :>=) and (y.flag == :== or y.flag == :<= or y.flag == :>=)) or
-              (x.flag == :< and y.flag == :<) or
-              (x.flag == :> and y.flag == :>)
+            elsif sense == 0 && (
+              ((x.flag == :== || x.flag == :<= || x.flag == :>=) && (y.flag == :== || y.flag == :<= || y.flag == :>=)) ||
+              (x.flag == :< && y.flag == :<) ||
+              (x.flag == :> && y.flag == :>)
             )
               return true
             end
@@ -1340,7 +1340,7 @@ class Chef
             old_candidate = @yum.candidate_version(package_name)
             new_installed = @yum.installed_version(new_package_name, new_arch)
             new_candidate = @yum.candidate_version(new_package_name, new_arch)
-            if (old_installed.nil? and old_candidate.nil?) and (new_installed or new_candidate)
+            if (old_installed.nil? && old_candidate.nil?) && (new_installed || new_candidate)
               Chef::Log.debug("Parsed out arch #{new_arch}, new package name is #{new_package_name}")
               return new_package_name, new_arch
             end
@@ -1378,7 +1378,7 @@ class Chef
           if packages.empty?
             # Don't bother if we are just ensuring a package is removed - we don't need Provides data
             actions = Array(@new_resource.action)
-            unless actions.size == 1 and (actions[0] == :remove || actions[0] == :purge)
+            unless actions.size == 1 && (actions[0] == :remove || actions[0] == :purge)
               Chef::Log.debug("#{@new_resource} couldn't match #{@new_resource.package_name} in " +
                             "installed Provides, loading available Provides - this may take a moment")
               @yum.reload_provides

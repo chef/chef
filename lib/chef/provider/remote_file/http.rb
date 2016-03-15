@@ -45,10 +45,10 @@ class Chef
 
         def conditional_get_headers
           cache_control_headers = {}
-          if last_modified = cache_control_data.mtime and want_mtime_cache_control?
+          if (last_modified = cache_control_data.mtime) && want_mtime_cache_control?
             cache_control_headers["if-modified-since"] = last_modified
           end
-          if etag = cache_control_data.etag and want_etag_cache_control?
+          if (etag = cache_control_data.etag) && want_etag_cache_control?
             cache_control_headers["if-none-match"] = etag
           end
           Chef::Log.debug("Cache control headers: #{cache_control_headers.inspect}")

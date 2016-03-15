@@ -117,7 +117,7 @@ RSpec.configure do |config|
   end
 
   # Only run these tests on platforms that are also chef workstations
-  config.filter_run_excluding :workstation if solaris? or aix?
+  config.filter_run_excluding :workstation if solaris? || aix?
 
   # Tests that randomly fail, but may have value.
   config.filter_run_excluding :volatile => true

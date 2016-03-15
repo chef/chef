@@ -270,7 +270,8 @@ class Chef
           end
           object_names.each do |object_name|
             # cookbooks -> cookbook_path
-            singular_name = INFLECTIONS[object_name] or raise "Unknown object name #{object_name}"
+            singular_name = INFLECTIONS[object_name]
+            raise "Unknown object name #{object_name}" unless singular_name
             variable_name = "#{singular_name}_path"
             paths = Array(@chef_config[variable_name]).flatten
             result[object_name] = paths.map { |path| File.expand_path(path) }

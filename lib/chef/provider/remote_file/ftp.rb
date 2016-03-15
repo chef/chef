@@ -112,7 +112,7 @@ class Chef
 
         def validate_typecode!
           # Only support ascii and binary types
-          if typecode and /\A[ai]\z/ !~ typecode
+          if typecode && /\A[ai]\z/ !~ typecode
             raise ArgumentError, "invalid typecode: #{typecode.inspect}"
           end
         end

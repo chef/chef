@@ -140,7 +140,7 @@ class Chef
       def ask_question(question, opts = {})
         question = question + "[#{opts[:default]}] " if opts[:default]
 
-        if opts[:default] and config[:defaults]
+        if opts[:default] && config[:defaults]
           opts[:default]
         else
           stdout.print question

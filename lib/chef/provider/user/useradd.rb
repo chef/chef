@@ -150,7 +150,7 @@ class Chef
           # ::File.expand_path("///tmp") == ::File.expand_path("/tmp") => false
           # ::File.expand_path("\\tmp") => "C:/tmp"
           return true if @current_resource.home.nil? && new_resource.home
-          new_resource.home and Pathname.new(@current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
+          new_resource.home && Pathname.new(@current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
         end
 
         def managing_home_dir?

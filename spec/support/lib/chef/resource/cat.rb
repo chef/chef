@@ -28,7 +28,7 @@ class Chef
       end
 
       def pretty_kitty(arg = nil)
-        if arg == true or arg == false
+        if arg == true || arg == false
           @pretty_kitty = arg
         end
         @pretty_kitty

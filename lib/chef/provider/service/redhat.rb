@@ -76,7 +76,7 @@ class Chef
 
           if ::File.exists?("/sbin/chkconfig")
             chkconfig = shell_out!("/sbin/chkconfig --list #{current_resource.service_name}", :returns => [0, 1])
-            unless run_levels.nil? or run_levels.empty?
+            unless run_levels.nil? || run_levels.empty?
               all_levels_match = true
               chkconfig.stdout.split(/\s+/)[1..-1].each do |level|
                 index = level.split(":").first
@@ -100,11 +100,11 @@ class Chef
 
         # @api private
         def levels
-          (run_levels.nil? or run_levels.empty?) ? "" : "--level #{run_levels.join('')} "
+          (run_levels.nil? || run_levels.empty?) ? "" : "--level #{run_levels.join('')} "
         end
 
         def enable_service()
-          unless run_levels.nil? or run_levels.empty?
+          unless run_levels.nil? || run_levels.empty?
             disable_levels = current_run_levels - run_levels
             shell_out! "/sbin/chkconfig --level #{disable_levels.join('')} #{new_resource.service_name} off" unless disable_levels.empty?
           end

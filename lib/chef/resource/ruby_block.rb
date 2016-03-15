@@ -34,7 +34,7 @@ class Chef
       end
 
       def block(&block)
-        if block_given? and block
+        if block_given? && block
           @block = block
         else
           @block

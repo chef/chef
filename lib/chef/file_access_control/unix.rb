@@ -117,7 +117,7 @@ class Chef
       end
 
       def gid_from_resource(resource)
-        return nil if resource == nil or resource.group.nil?
+        return nil if resource == nil || resource.group.nil?
         if resource.group.kind_of?(String)
           diminished_radix_complement( Etc.getgrnam(resource.group).gid )
         elsif resource.group.kind_of?(Integer)
@@ -168,7 +168,7 @@ class Chef
       end
 
       def mode_from_resource(res)
-        return nil if res == nil or res.mode.nil?
+        return nil if res == nil || res.mode.nil?
         (res.mode.respond_to?(:oct) ? res.mode.oct : res.mode.to_i) & 007777
       end
 
@@ -197,7 +197,7 @@ class Chef
           # the user has specified a permission, and it does not match the file, so fix the permission
           Chef::Log.debug("Found target_mode != current_mode, updating mode")
           return true
-        elsif suid_bit_set? and (should_update_group? or should_update_owner?)
+        elsif suid_bit_set? && (should_update_group? || should_update_owner?)
           return true
         else
           Chef::Log.debug("Found target_mode == current_mode, not updating mode")
@@ -264,7 +264,7 @@ class Chef
       end
 
       def uid_from_resource(resource)
-        return nil if resource == nil or resource.owner.nil?
+        return nil if resource == nil || resource.owner.nil?
         if resource.owner.kind_of?(String)
           diminished_radix_complement( Etc.getpwnam(resource.owner).uid )
         elsif resource.owner.kind_of?(Integer)

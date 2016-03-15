@@ -53,7 +53,7 @@ class Chef
         def upgrade_package(name, version)
           current_version = current_resource.version
 
-          if current_version.nil? or current_version.empty?
+          if current_version.nil? || current_version.empty?
             install_package(name, version)
           elsif current_version != version
             brew("upgrade", new_resource.options, name)
