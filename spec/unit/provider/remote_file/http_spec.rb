@@ -163,6 +163,12 @@ describe Chef::Provider::RemoteFile::HTTP do
 
     let(:last_response) { {} }
 
+    let(:event_dispatcher) do
+      event_dispatcher = double(Chef::EventDispatch::Dispatcher)
+      allow(event_dispatcher).to receive(:formatter?).and_return(false)
+      event_dispatcher
+    end
+
     let(:rest) do
       rest = double(Chef::HTTP::Simple)
       allow(rest).to receive(:streaming_request).and_return(tempfile)
@@ -173,6 +179,7 @@ describe Chef::Provider::RemoteFile::HTTP do
     before do
       new_resource.headers({})
       new_resource.use_last_modified(false)
+      allow(new_resource).to receive(:events).and_return(event_dispatcher)
       expect(Chef::Provider::RemoteFile::CacheControlData).to receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
 
       expect(Chef::HTTP::Simple).to receive(:new).with(*expected_http_args).and_return(rest)
@@ -203,6 +210,20 @@ describe Chef::Provider::RemoteFile::HTTP do
         expect(cache_control_data.etag).to be_nil
         expect(cache_control_data.mtime).to be_nil
         expect(cache_control_data.checksum).to eq(fetched_content_checksum)
+      end
+
+      context "with progress reports" do
+        before do
+          Chef::Config[:show_download_progress] = true
+        end
+
+        it "should yield its progress" do
+          allow(rest).to receive(:streaming_request_with_progress).and_yield(50, 100).and_yield(70, 100).and_return(tempfile)
+          expect(event_dispatcher).to receive(:formatter?).and_return(true)
+          expect(event_dispatcher).to receive(:resource_update_progress).with(new_resource, 50, 100, 10).ordered
+          expect(event_dispatcher).to receive(:resource_update_progress).with(new_resource, 70, 100, 10).ordered
+          fetcher.fetch
+        end
       end
 
       context "and the response does not contain an etag" do

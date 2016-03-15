@@ -23,6 +23,7 @@ class Chef
         @start_time = Time.now
         @end_time = @start_time
         @skipped_resources = 0
+        @progress = {}
       end
 
       def elapsed_time
@@ -282,6 +283,21 @@ class Chef
         # TODO: info about notifies
         start_line "* #{resource} action #{action}", :stream => resource
         indent
+      end
+
+      def resource_update_progress(resource, current, total, interval)
+        @progress[resource] ||= 0
+
+        percent_complete = (current.to_f / total.to_f * 100).to_i
+
+        if percent_complete > @progress[resource]
+
+          @progress[resource] = percent_complete
+
+          if percent_complete % interval == 0
+            start_line " - Progress: #{percent_complete}%", :green
+          end
+        end
       end
 
       # Called when a resource fails, but will retry.

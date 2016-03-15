@@ -75,4 +75,18 @@ describe Chef::Formatters::Base do
     expect(formatter.elapsed_time).to eql(36610.0)
     expect(formatter.pretty_elapsed_time).to include("10 hours 10 minutes 10 seconds")
   end
+
+  it "shows the percentage completion of an action" do
+    res = Chef::Resource::RemoteFile.new("canteloupe")
+    formatter.resource_update_progress(res, 35, 50, 10)
+    expect(out.string).to include(" - Progress: 70%")
+  end
+
+  it "updates the percentage completion of an action" do
+    res = Chef::Resource::RemoteFile.new("canteloupe")
+    formatter.resource_update_progress(res, 70, 100, 10)
+    expect(out.string).to include(" - Progress: 70%")
+    formatter.resource_update_progress(res, 80, 100, 10)
+    expect(out.string).to include(" - Progress: 80%")
+  end
 end

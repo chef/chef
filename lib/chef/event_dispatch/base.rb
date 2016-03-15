@@ -344,6 +344,12 @@ class Chef
       def resource_update_applied(resource, action, update)
       end
 
+      # Called when a progress notification should be sent to the user to
+      # indicate the overall progress of a long running operation, such as
+      # a large file download.
+      def resource_update_progress(resource, current, total, interval)
+      end
+
       # Called when a resource fails, but will retry.
       def resource_failed_retriable(resource, action, retry_count, exception)
       end

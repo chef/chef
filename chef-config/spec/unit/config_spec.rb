@@ -274,6 +274,14 @@ RSpec.describe ChefConfig::Config do
           expect(ChefConfig::Config[:stream_execute_output]).to eq(false)
         end
 
+        it "ChefConfig::Config[:show_download_progress] defaults to false" do
+          expect(ChefConfig::Config[:show_download_progress]).to eq(false)
+        end
+
+        it "ChefConfig::Config[:download_progress_interval] defaults to every 10%" do
+          expect(ChefConfig::Config[:download_progress_interval]).to eq(10)
+        end
+
         it "ChefConfig::Config[:file_backup_path] defaults to /var/chef/backup" do
           allow(ChefConfig::Config).to receive(:cache_path).and_return(primary_cache_path)
           backup_path = is_windows ? "#{primary_cache_path}\\backup" : "#{primary_cache_path}/backup"
