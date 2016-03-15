@@ -220,12 +220,7 @@ class Chef
 
       def dump_installed_profiles
         cmd = "profiles -P -o stdout-xml"
-        shellout_results = shell_out!(cmd)
-        if shellout_results.exitstatus == 0
-          shellout_results.stdout
-        else
-          raise Mixlib::ShellOut::ShellCommandFailed, "profiles command failed"
-        end
+        shell_out!(cmd).stdout
       end
 
       def read_plist(xml_file)
