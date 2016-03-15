@@ -24,8 +24,10 @@ require "chef/audit/runner"
 require "rspec/support/spec/in_sub_process"
 require "rspec/support/spec/stderr_splitter"
 require "chef/audit/rspec_formatter"
+require "chef/mixin/fips"
 
 describe Chef::Audit::RspecFormatter do
+  include Chef::Mixin::FIPS
   include RSpec::Support::InSubProcess
 
   let(:events) { double("events").as_null_object }
@@ -38,7 +40,12 @@ describe Chef::Audit::RspecFormatter do
   let!(:formatter) { Chef::Audit::RspecFormatter.new(output) }
 
   around(:each) do |ex|
-    RSpec::Core::Sandbox.sandboxed { ex.run }
+    begin
+      allow_md5 if fips?
+      RSpec::Core::Sandbox.sandboxed { ex.run }
+    ensure
+      disallow_md5 if fips?
+    end
   end
 
   it "should not close the output using our formatter" do

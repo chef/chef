@@ -144,7 +144,7 @@ describe Chef::CookbookManifest do
         {
           "name"        => File.basename(path),
           "path"        => relative_path,
-          "checksum"    => Chef::Digester.generate_md5_checksum_for_file(path),
+          "checksum"    => safe_md5(IO.read(path)),
           "specificity" => "default",
         }
       end

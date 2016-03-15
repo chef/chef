@@ -22,6 +22,7 @@ require "chef/audit/runner"
 require "rspec/support/spec/in_sub_process"
 require "rspec/support/spec/stderr_splitter"
 require "tempfile"
+require "chef/mixin/fips"
 
 ##
 # This functional test ensures that our runner can be setup to not interfere with existing RSpec
@@ -29,7 +30,7 @@ require "tempfile"
 # so this isn't needed.  In unit testing the Runner should be mocked appropriately.
 
 describe Chef::Audit::Runner do
-
+  include Chef::Mixin::FIPS
   # The functional tests must be run in a sub_process.  Including Serverspec includes the Serverspec DSL - this
   # conflicts with our `package` DSL (among others) when we try to test `package` inside an RSpec example.
   # Our DSL leverages `method_missing` while the Serverspec DSL defines a method on the RSpec::Core::ExampleGroup.
@@ -43,7 +44,12 @@ describe Chef::Audit::Runner do
   let(:stdout) { StringIO.new }
 
   around(:each) do |ex|
-    RSpec::Core::Sandbox.sandboxed { ex.run }
+    begin
+      allow_md5 if fips?
+      RSpec::Core::Sandbox.sandboxed { ex.run }
+    ensure
+      disallow_md5 if fips?
+    end
   end
 
   describe "#run" do

@@ -42,7 +42,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
   # the checksum of the file we have on disk already
   let(:current_file_checksum) { "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }
 
-  context "when loading data for an unknown URI" do
+  context "when loading data for an unknown URI", :not_supported_under_fips do
 
     before do
       expect(Chef::FileCache).to receive(:has_key?).with(cache_path).and_return(false)
@@ -146,7 +146,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       end
     end
 
-    context "when the filename uses md5" do
+    context "when the filename uses md5", :not_supported_under_fips do
       before do
         expect(Chef::FileCache).to receive(:has_key?).with(cache_path).and_return(false)
         expect(Chef::FileCache).to receive(:has_key?).with(old_cache_path).and_return(true)

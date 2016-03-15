@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require 'chef/mixin/fips'
+
 CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/../data/")
 CHEF_SPEC_ASSETS = File.expand_path(File.dirname(__FILE__) + "/../functional/assets/")
 CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, "test-backup-path")
@@ -92,4 +95,21 @@ def which(cmd)
     return filename if File.executable?(filename)
   end
   false
+end
+
+class MD5Safe
+  extend Chef::Mixin::FIPS
+end
+
+def safe_md5(data)
+  if fips?
+    begin
+      MD5Safe.allow_md5
+      OpenSSL::Digest::MD5.hexdigest(data)
+    ensure
+      MD5Safe.disallow_md5
+    end
+  else
+    OpenSSL::Digest::MD5.hexdigest(data)
+  end
 end

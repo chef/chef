@@ -19,8 +19,11 @@
 #
 
 require "spec_helper"
+require "support/shared/context/md5"
 
 describe Chef::Digester do
+  include_context "allow md5"
+
   before(:each) do
     @cache = Chef::Digester.instance
   end

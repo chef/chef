@@ -19,6 +19,7 @@
 require "spec_helper"
 require "tiny_server"
 require "support/shared/functional/http"
+require "openssl"
 
 describe Chef::REST do
   include ChefHTTPShared
@@ -30,13 +31,13 @@ describe Chef::REST do
     it "successfully downloads a streaming request" do
       tempfile = http_client.streaming_request(source, {})
       tempfile.close
-      expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
+      expect(OpenSSL::Digest::SHA256.hexdigest(binread(tempfile.path))).to eq(OpenSSL::Digest::SHA256.hexdigest(expected_content))
     end
 
     it "successfully downloads a GET request" do
       tempfile = http_client.get(source, {})
       tempfile.close
-      expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
+      expect(OpenSSL::Digest::SHA256.hexdigest(binread(tempfile.path))).to eq(OpenSSL::Digest::SHA256.hexdigest(expected_content))
     end
   end
 
@@ -65,14 +66,14 @@ describe Chef::REST do
     it "fails with a Net::HTTPServerException on a streaming download" do
       tempfile = http_client.streaming_request(source, {})
       tempfile.close
-      expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
+      expect(OpenSSL::Digest::SHA256.hexdigest(binread(tempfile.path))).to eq(OpenSSL::Digest::SHA256.hexdigest(expected_content))
       expect { http_client.streaming_request(source2, {}) }.to raise_error(Net::HTTPServerException)
     end
 
     it "fails with a Net::HTTPServerException on a GET request" do
       tempfile = http_client.get(source, {})
       tempfile.close
-      expect(Digest::MD5.hexdigest(binread(tempfile.path))).to eq(Digest::MD5.hexdigest(expected_content))
+      expect(OpenSSL::Digest::SHA256.hexdigest(binread(tempfile.path))).to eq(OpenSSL::Digest::SHA256.hexdigest(expected_content))
       expect { http_client.get(source2, {}) }.to raise_error(Net::HTTPServerException)
     end
   end
