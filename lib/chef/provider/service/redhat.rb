@@ -60,6 +60,12 @@ class Chef
             a.failure_message Chef::Exceptions::Service, "#{chkconfig_file} dbleoes not exist!"
           end
 
+          requirements.assert(:enable) do |a|
+            a.assertion { !@service_missing }
+            a.failure_message Chef::Exceptions::Service, "#{new_resource}: Service is not known to chkconfig."
+            a.whyrun "Assuming service would be disabled. The init script is not presently installed."
+          end
+
           requirements.assert(:start, :reload, :restart) do |a|
             a.assertion do
               new_resource.init_command || custom_command_for_action?(action) || !@service_missing
