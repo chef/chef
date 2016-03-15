@@ -39,12 +39,12 @@ class Chef
         end
 
         def set_members(members)
-          to_delete =  @current_resource.members - members
+          to_delete = @current_resource.members - members
           to_delete.each do |member|
             remove_member(member)
           end
 
-          to_add = members -  @current_resource.members
+          to_add = members - @current_resource.members
           to_add.each do |member|
             add_member(member)
           end
