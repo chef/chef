@@ -114,6 +114,5 @@ class Chef
         run_context.node.tags.delete(tag)
       end
     end
-
   end
 end

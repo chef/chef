@@ -23,21 +23,21 @@ require "chef/mixin/powershell_out"
 require "chef/dsl/resources"
 require "chef/dsl/definitions"
 require "chef/dsl/declare_resource"
+require "chef/mixin/lazy_module_include"
 
 class Chef
   module DSL
-
     # == Chef::DSL::Recipe
     # Provides the primary recipe DSL functionality for defining Chef resource
     # objects via method calls.
     module Recipe
-
       include Chef::Mixin::ShellOut
       include Chef::Mixin::PowershellOut
 
       include Chef::DSL::Resources
       include Chef::DSL::Definitions
       include Chef::DSL::DeclareResource
+      extend Chef::Mixin::LazyModuleInclude
 
       def resource_class_for(snake_case_name)
         Chef::Resource.resource_for_node(snake_case_name, run_context.node)
@@ -113,6 +113,8 @@ class Chef
         require "chef/dsl/reboot_pending"
         require "chef/dsl/audit"
         require "chef/dsl/powershell"
+        require "chef/mixin/lazy_module_include"
+
         include Chef::DSL::DataQuery
         include Chef::DSL::PlatformIntrospection
         include Chef::DSL::IncludeRecipe
@@ -121,6 +123,9 @@ class Chef
         include Chef::DSL::RebootPending
         include Chef::DSL::Audit
         include Chef::DSL::Powershell
+
+        extend Chef::Mixin::LazyModuleInclude
+
       end
     end
   end
