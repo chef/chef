@@ -23,6 +23,14 @@ require "chef/mixin/powershell_out"
 require "chef/dsl/resources"
 require "chef/dsl/definitions"
 require "chef/dsl/declare_resource"
+require "chef/dsl/data_query"
+require "chef/dsl/platform_introspection"
+require "chef/dsl/include_recipe"
+require "chef/dsl/registry_helper"
+require "chef/dsl/reboot_pending"
+require "chef/dsl/audit"
+require "chef/dsl/powershell"
+require "chef/mixin/lazy_module_include"
 require "chef/mixin/lazy_module_include"
 
 class Chef
@@ -34,6 +42,13 @@ class Chef
       include Chef::Mixin::ShellOut
       include Chef::Mixin::PowershellOut
 
+      include Chef::DSL::DataQuery
+      include Chef::DSL::PlatformIntrospection
+      include Chef::DSL::IncludeRecipe
+      include Chef::DSL::RegistryHelper
+      include Chef::DSL::RebootPending
+      include Chef::DSL::Audit
+      include Chef::DSL::Powershell
       include Chef::DSL::Resources
       include Chef::DSL::Definitions
       include Chef::DSL::DeclareResource
@@ -105,27 +120,10 @@ class Chef
         end
       end
 
+      # This module is deprecated and will be removed in Chef 13
       module FullDSL
-        require "chef/dsl/data_query"
-        require "chef/dsl/platform_introspection"
-        require "chef/dsl/include_recipe"
-        require "chef/dsl/registry_helper"
-        require "chef/dsl/reboot_pending"
-        require "chef/dsl/audit"
-        require "chef/dsl/powershell"
-        require "chef/mixin/lazy_module_include"
-
-        include Chef::DSL::DataQuery
-        include Chef::DSL::PlatformIntrospection
-        include Chef::DSL::IncludeRecipe
         include Chef::DSL::Recipe
-        include Chef::DSL::RegistryHelper
-        include Chef::DSL::RebootPending
-        include Chef::DSL::Audit
-        include Chef::DSL::Powershell
-
         extend Chef::Mixin::LazyModuleInclude
-
       end
     end
   end
