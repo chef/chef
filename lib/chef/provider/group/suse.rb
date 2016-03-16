@@ -39,12 +39,14 @@ class Chef
         end
 
         def set_members(members)
-          unless @current_resource.members.empty?
-            shell_out!("groupmod -R #{@current_resource.members.join(',')} #{@new_resource.group_name}")
+          to_delete = @current_resource.members - members
+          to_delete.each do |member|
+            remove_member(member)
           end
 
-          unless members.empty?
-            shell_out!("groupmod -A #{members.join(',')} #{@new_resource.group_name}")
+          to_add = members - @current_resource.members
+          to_add.each do |member|
+            add_member(member)
           end
         end
 
