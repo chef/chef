@@ -49,9 +49,10 @@ describe "proxy variables" do
       },
       :net_http => lambda { |url|
         uri = URI(url)
-        ::Net::HTTP.new(uri.host, uri.port).start do |client|
-          client.request(::Net::HTTP::Get.new(uri))
-        end
+        request = Net::HTTP.new(uri.host, uri.port)
+        request.use_ssl = uri.scheme == 'https'
+        request.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        response = request.get(uri)
       },
     }
   }
@@ -67,6 +68,7 @@ describe "proxy variables" do
       %w{
         www.example.com
         example.com
+        foo.com,www.example.com
         .example.com
         *.example.com
         }.each do |no_proxy_value|
