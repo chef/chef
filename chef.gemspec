@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
 
   s.add_dependency "chef-zero", "~> 4.5"
+  s.add_dependency "fuzzyurl", '~> 0.8.0'
 
   s.add_dependency "plist", "~> 3.1.0"
 

@@ -100,7 +100,12 @@ class Chef
       end
 
       def build_http_client
-        http_client = http_client_builder.new(host, port)
+        # Note: the last nil in the new below forces Net::HTTP to ignore the
+        # no_proxy environment variable. This is a workaround for limitations
+        # in Net::HTTP use of the no_proxy environment variable. We internally
+        # match no_proxy with a fuzzy matcher, rather than letting Net::HTTP
+        # do it.
+        http_client = http_client_builder.new(host, port, nil)
 
         if url.scheme == HTTPS
           configure_ssl(http_client)
