@@ -148,7 +148,7 @@ class Chef
 
         #adapted from buildr/lib/buildr/core/transports.rb via chef/rest/rest_client.rb
         def proxy_uri(uri)
-          proxy = Chef::Config["ftp_proxy"]
+          proxy = Chef::Config["ftp_proxy"] || ENV["ftp_proxy"] || ENV["FTP_PROXY"]
           proxy = URI.parse(proxy) if String === proxy
           if Chef::Config["ftp_proxy_user"]
             proxy.user = Chef::Config["ftp_proxy_user"]
