@@ -39,11 +39,13 @@ class Chef
         out.puts @title, :red
         out.puts "=" * 80
         out.puts "\n"
+
         sections.each do |section|
           section.each do |heading, text|
             display_section(heading, text, out)
           end
         end
+        display_section("Platform:", RUBY_PLATFORM, out)
       end
 
       def for_json()
