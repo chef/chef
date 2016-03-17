@@ -27,6 +27,7 @@ require "chef-config/windows"
 require "chef-config/path_helper"
 require "mixlib/shellout"
 require "uri"
+require "fuzzyurl"
 require "openssl"
 
 module ChefConfig
@@ -864,8 +865,13 @@ module ChefConfig
               end
 
       excludes = ENV["no_proxy"].to_s.split(/\s*,\s*/).compact
-      excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
-      return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
+      return proxy unless excludes.any? { |exclude| fuzzy_hostname_match?(exclude, host) }
+    end
+
+    def self.fuzzy_hostname_match?(match, hostname)
+        # Do greedy matching by adding wildcard if it is not specified
+        match = "*" + match if !match.start_with?("*")
+        Fuzzyurl.matches?(Fuzzyurl.mask(hostname: match), hostname)
     end
 
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt
