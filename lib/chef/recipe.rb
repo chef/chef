@@ -35,7 +35,7 @@ class Chef
   # A Recipe object is the context in which Chef recipes are evaluated.
   class Recipe
 
-    include Chef::DSL::Recipe::FullDSL
+    include Chef::DSL::Recipe
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::Deprecation
