@@ -120,7 +120,7 @@ class Chef
         end
       end
 
-      # This module is deprecated and will be removed in Chef 13
+      # @deprecated Use Chef::DSL::Recipe instead, will be removed in Chef 13
       module FullDSL
         include Chef::DSL::Recipe
         extend Chef::Mixin::LazyModuleInclude
