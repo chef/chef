@@ -109,10 +109,6 @@ class Chef
         end
       end
 
-      def config
-        Chef::Config
-      end
-
       # DEPRECATED. Call request on an HTTP client object instead.
       def http_client
         @http_client ||= BasicClient.new(url).http_client
