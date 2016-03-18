@@ -51,7 +51,7 @@ if windows? || rhel?
 end
 
 dependency "preparation"
-dependency "rb-readline" if windows?
+dependency "rb-readline"
 dependency "nokogiri"
 dependency "pry"
 dependency "chef"
