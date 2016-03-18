@@ -141,6 +141,10 @@ class Chef
     # that a user has configured a log_location in client.rb, but is running
     # chef-client by hand to troubleshoot a problem.
     def configure_logging
+      
+      if Chef::Log.info?
+          Chef::Log.close
+      end
       Chef::Log.init(MonoLogger.new(Chef::Config[:log_location]))
       if want_additional_logger?
         configure_stdout_logger
