@@ -908,6 +908,28 @@ RSpec.describe ChefConfig::Config do
 
         it { is_expected.to eq nil }
       end
+
+      context "when no_proxy is a domain with a dot prefix" do
+        let(:env) do
+          {
+            "http_proxy" => proxy,
+            "no_proxy" => ".example.com",
+          }
+        end
+
+        it { is_expected.to eq nil }
+      end
+
+      context "when no_proxy is a domain with no wildcard" do
+        let(:env) do
+          {
+            "http_proxy" => proxy,
+            "no_proxy" => "example.com",
+          }
+        end
+
+        it { is_expected.to eq nil }
+      end
     end
   end
 
