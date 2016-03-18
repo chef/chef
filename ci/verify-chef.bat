@@ -55,6 +55,10 @@ IF NOT EXIST "Gemfile.lock" (
 )
 
 IF "%PIPELINE_NAME%" == "chef-fips" (
-	set CHEF_FIPS=1
+  set CHEF_FIPS=1
 )
+
+REM ; ffi-yajl must run in c-extension mode for perf, so force it so we don't accidentally fall back to ffi
+set FORCE_FFI_YAJL=ext
+
 call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional
