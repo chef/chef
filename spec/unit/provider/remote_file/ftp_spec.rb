@@ -200,9 +200,7 @@ describe Chef::Provider::RemoteFile::FTP do
 
     context "and proxying is enabled" do
       before do
-        Chef::Config[:ftp_proxy] = "socks5://socks.example.com:5000"
-        Chef::Config[:ftp_proxy_user] = "bill"
-        Chef::Config[:ftp_proxy_pass] = "ted"
+        stub_const("ENV", "ftp_proxy" => "socks5://bill:ted@socks.example.com:5000")
       end
 
       it "fetches the file via the proxy" do
