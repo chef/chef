@@ -62,17 +62,17 @@ class Chef
 
       def do_update
         [STAMP_DIR, APT_CONF_DIR].each do |d|
-          declare_resource(:directory, d, caller[0]) do
+          declare_resource(:directory, d) do
             recursive true
           end
         end
 
-        declare_resource(:file, "#{APT_CONF_DIR}/15update-stamp", caller[0]) do
+        declare_resource(:file, "#{APT_CONF_DIR}/15update-stamp") do
           content "APT::Update::Post-Invoke-Success {\"touch #{STAMP_DIR}/update-success-stamp 2>/dev/null || true\";};"
           action :create_if_missing
         end
 
-        declare_resource(:execute, "apt-get -q update", caller[0])
+        declare_resource(:execute, "apt-get -q update")
       end
 
     end
