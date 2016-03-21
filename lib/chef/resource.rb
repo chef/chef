@@ -1316,11 +1316,7 @@ class Chef
     # life as well.
     @@sorted_descendants = nil
     def self.sorted_descendants
-      # so it turns out Class.to_s just blindly returns the name of the class,
-      # which can be a Symbol in addition to being a String.  as a result, we
-      # may get a Symbol back from Class.to_s, so we call #to_s on that again.
-      # (buggy on at least ruby-2.4.4)
-      @@sorted_descendants ||= descendants.sort_by { |x| x.to_s.to_s }
+      @@sorted_descendants ||= descendants.sort_by { |x| x.to_s }
     end
 
     def self.inherited(child)
