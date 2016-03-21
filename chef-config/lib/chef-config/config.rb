@@ -25,9 +25,10 @@ require "pathname"
 require "chef-config/logger"
 require "chef-config/windows"
 require "chef-config/path_helper"
+require "chef-config/mixin/fuzzy_hostname_matcher"
+
 require "mixlib/shellout"
 require "uri"
-require "fuzzyurl"
 require "openssl"
 
 module ChefConfig
@@ -35,6 +36,7 @@ module ChefConfig
   class Config
 
     extend Mixlib::Config
+    extend ChefConfig::Mixin::FuzzyHostnameMatcher
 
     # Evaluates the given string as config.
     #
@@ -864,14 +866,7 @@ module ChefConfig
                 end
               end
 
-      excludes = ENV["no_proxy"].to_s.split(/\s*,\s*/).compact
-      return proxy unless excludes.any? { |exclude| fuzzy_hostname_match?(exclude, host) }
-    end
-
-    def self.fuzzy_hostname_match?(match, hostname)
-        # Do greedy matching by adding wildcard if it is not specified
-        match = "*" + match if !match.start_with?("*")
-        Fuzzyurl.matches?(Fuzzyurl.mask(hostname: match), hostname)
+      return proxy unless fuzzy_hostname_match_any?(host, ENV["no_proxy"])
     end
 
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt

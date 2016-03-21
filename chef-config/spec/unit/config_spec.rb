@@ -684,6 +684,19 @@ RSpec.describe ChefConfig::Config do
   end
 
   describe "export_proxies" do
+    before(:all) do
+      @original_env = ENV.to_hash
+      ENV["http_proxy"] = nil
+      ENV["https_proxy"] = nil
+      ENV["ftp_proxy"] = nil
+      ENV["no_proxy"] = nil
+    end
+
+    after(:all) do
+      ENV.clear
+      ENV.update(@original_env)
+    end
+
     let(:http_proxy) { "http://localhost:7979" }
     let(:https_proxy) { "https://localhost:7979" }
     let(:ftp_proxy) { "ftp://localhost:7979" }
