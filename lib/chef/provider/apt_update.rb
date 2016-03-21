@@ -38,12 +38,16 @@ class Chef
 
       action :periodic do
         if !apt_up_to_date?
-          do_update
+          converge_by "update new lists of packages" do
+            do_update
+          end
         end
       end
 
       action :update do
-        do_update
+        converge_by "force update new lists of packages" do
+          do_update
+        end
       end
 
       private
