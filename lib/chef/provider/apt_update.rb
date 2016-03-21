@@ -22,7 +22,7 @@ require "chef/dsl/declare_resource"
 class Chef
   class Provider
     class AptUpdate < Chef::Provider
-      include Chef::DSL::DeclareResource
+      use_inline_resources
 
       provides :apt_update, os: "linux"
 
@@ -36,18 +36,14 @@ class Chef
       def load_current_resource
       end
 
-      def action_periodic
+      action :periodic do
         if !apt_up_to_date?
-          converge_by "update new lists of packages" do
-            do_update
-          end
+          do_update
         end
       end
 
-      def action_update
-        converge_by "force update new lists of packages" do
-          do_update
-        end
+      action :update do
+        do_update
       end
 
       private
@@ -62,16 +58,17 @@ class Chef
 
       def do_update
         [STAMP_DIR, APT_CONF_DIR].each do |d|
-          build_resource(:directory, d, caller[0]) do
+          declare_resource(:directory, d, caller[0]) do
             recursive true
-          end.run_action(:create)
+          end
         end
 
-        build_resource(:file, "#{APT_CONF_DIR}/15update-stamp", caller[0]) do
+        declare_resource(:file, "#{APT_CONF_DIR}/15update-stamp", caller[0]) do
           content "APT::Update::Post-Invoke-Success {\"touch #{STAMP_DIR}/update-success-stamp 2>/dev/null || true\";};"
-        end.run_action(:create_if_missing)
+          action :create_if_missing
+        end
 
-        shell_out!("apt-get -q update")
+        declare_resource(:execute, "apt-get -q update", caller[0])
       end
 
     end

@@ -754,7 +754,7 @@ describe "LWRP" do
 
     it "lets you extend the recipe DSL" do
       expect(Chef::Recipe).to receive(:include).with(MyAwesomeDSLExensionClass)
-      expect(Chef::Provider::InlineResources).to receive(:include).with(MyAwesomeDSLExensionClass)
+      expect(Chef::Resource::ActionClass).to receive(:include).with(MyAwesomeDSLExensionClass)
       Chef::DSL::Recipe.send(:include, MyAwesomeDSLExensionClass)
     end
 
