@@ -21,7 +21,7 @@ describe "Resource::ActionClass#converge_if_changed" do
     let(:resource_name) { :"converge_if_changed_dsl#{Namer.current_index}" }
     let(:resource_class) {
       result = Class.new(Chef::Resource) do
-        def self.to_s; resource_name; end
+        def self.to_s; resource_name.to_s; end
 
         def self.inspect; resource_name.inspect; end
         property :identity1, identity: true, default: "default_identity1"

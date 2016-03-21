@@ -20,7 +20,7 @@ describe "Resource.load_current_value" do
   let(:resource_name) { :"load_current_value_dsl#{Namer.current_index}" }
   let(:resource_class) {
     result = Class.new(Chef::Resource) do
-      def self.to_s; resource_name; end
+      def self.to_s; resource_name.to_s; end
 
       def self.inspect; resource_name.inspect; end
       property :x, default: lazy { "default #{Namer.incrementing_value}" }
