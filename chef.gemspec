@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef-zero", "~> 4.5"
 
-  s.add_dependency "plist", "~> 3.1"
+  s.add_dependency "plist", "~> 3.2"
 
   # Audit mode requires these, so they are non-developmental dependencies now
   %w{rspec-core rspec-expectations rspec-mocks}.each { |gem| s.add_dependency gem, "~> 3.4" }
