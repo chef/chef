@@ -20,7 +20,7 @@
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 module ChefConfig
-  CHEFCONFIG_ROOT = File.dirname(File.expand_path(File.dirname(__FILE__)))
+  CHEFCONFIG_ROOT = File.expand_path("../..", __FILE__)
   VERSION = "12.8.1"
 end
 

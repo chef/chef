@@ -83,8 +83,12 @@ module ChefConfig
       module_name == "Chef" ? root_path : File.dirname(root_path)
     end
 
+    def version_file_path
+      File.join(chef_root_path, "VERSION")
+    end
+
     def version
-      IO.read(File.join(chef_root_path, "VERSION")).strip
+      IO.read(version_file_path).strip
     end
 
     def full_package_dir
@@ -148,9 +152,10 @@ module ChefConfig
         end
       end
 
-      desc 'Regenerate lib/#{@module_path}/version.rb from VERSION file'
-      task :version => :update_components_versions do
-        contents = <<-VERSION_RB
+      namespace :version do
+        desc 'Regenerate lib/#{@module_path}/version.rb from VERSION file'
+        task :update => :update_components_versions do
+          contents = <<-VERSION_RB
 # Copyright:: Copyright 2010-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -173,7 +178,7 @@ module ChefConfig
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #{class_or_module} #{module_name}
-  #{module_name.upcase}_ROOT = File.dirname(File.expand_path(File.dirname(__FILE__)))
+  #{module_name.upcase}_ROOT = File.expand_path("../..", __FILE__)
   VERSION = "#{version}"
 end
 
@@ -185,9 +190,26 @@ end
 #       pre-release versions like "10.14.0.rc.2".  Please use Rubygem's
 #       Gem::Version class instead.
 #
-        VERSION_RB
-        IO.write(version_rb_path, contents)
+          VERSION_RB
+          IO.write(version_rb_path, contents)
+        end
+
+        task :bump => %w{version:bump_patch version:update}
+
+        task :show do
+          puts version
+        end
+
+        # Add 1 to the current patch version in the VERSION file, and write it back out.
+        task :bump_patch do
+          current_version = version
+          new_version = current_version.sub(/^(\d+\.\d+\.)(\d+)/) { "#{$1}#{$2.to_i + 1}" }
+          puts "Updating version in #{version_rb_path} from #{current_version.chomp} to #{new_version.chomp}"
+          IO.write(version_file_path, new_version)
+        end
       end
+
+      task :version => 'version:update'
 
       Dir[File.expand_path("*gemspec", root_path)].reverse_each do |gemspec_path|
         gemspec = eval(IO.read(gemspec_path))

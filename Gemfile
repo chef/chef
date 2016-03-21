@@ -3,7 +3,7 @@ gemspec name: "chef"
 
 gem "activesupport", "< 4.0.0", group: :compat_testing, platform: "ruby"
 
-gem "chef-config", path: "chef-config" if File.exist?(__FILE__ + "../chef-config")
+gem "chef-config", path: "chef-config" if File.exist?(File.expand_path("../chef-config", __FILE__))
 
 # Ensure that we can always install rake, regardless of gem groups
 gem "rake"
