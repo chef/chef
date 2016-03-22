@@ -390,9 +390,6 @@ class Chef
           end
         end
       end
-
-      require "chef/dsl/recipe"
-      include Chef::DSL::Recipe
     end
 
     protected

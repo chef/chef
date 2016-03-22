@@ -44,19 +44,19 @@ describe Chef::Provider::AptUpdate do
   context "when the apt config directory does not exist" do
     before do
       FileUtils.rmdir config_dir
-      expect(File.exist?(config_dir)).to be_falsey
-      allow(provider).to receive(:shell_out!).with("apt-get -q update")
+      expect(File.exist?(config_dir)).to be false
+      allow_any_instance_of(Chef::Provider::Execute).to receive(:shell_out!).with("apt-get -q update", anything())
     end
 
     it "should create the directory" do
       provider.run_action(:update)
-      expect(File.exist?(config_dir)).to be_truthy
-      expect(File.directory?(config_dir)).to be_truthy
+      expect(File.exist?(config_dir)).to be true
+      expect(File.directory?(config_dir)).to be true
     end
 
     it "should create the config file" do
       provider.run_action(:update)
-      expect(File.exist?(config_file)).to be_truthy
+      expect(File.exist?(config_file)).to be true
       expect(File.read(config_file)).to match(/^APT::Update.*#{stamp_dir}/)
     end
   end
@@ -64,7 +64,7 @@ describe Chef::Provider::AptUpdate do
   describe "#action_update" do
     it "should update the apt cache" do
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("apt-get -q update").and_return(double)
+      expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out!).with("apt-get -q update", anything())
       provider.run_action(:update)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -78,14 +78,14 @@ describe Chef::Provider::AptUpdate do
 
     it "should run if the time stamp is old" do
       expect(File).to receive(:mtime).with("#{stamp_dir}/update-success-stamp").and_return(Time.now - 86_500)
-      expect(provider).to receive(:shell_out!).with("apt-get -q update")
+      expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out!).with("apt-get -q update", anything())
       provider.run_action(:periodic)
       expect(new_resource).to be_updated_by_last_action
     end
 
     it "should not run if the time stamp is new" do
       expect(File).to receive(:mtime).with("#{stamp_dir}/update-success-stamp").and_return(Time.now)
-      expect(provider).to_not receive(:shell_out!).with("apt-get -q update")
+      expect_any_instance_of(Chef::Provider::Execute).not_to receive(:shell_out!).with("apt-get -q update", anything())
       provider.run_action(:periodic)
       expect(new_resource).to_not be_updated_by_last_action
     end
@@ -97,14 +97,14 @@ describe Chef::Provider::AptUpdate do
 
       it "should run if the time stamp is old" do
         expect(File).to receive(:mtime).with("#{stamp_dir}/update-success-stamp").and_return(Time.now - 500)
-        expect(provider).to receive(:shell_out!).with("apt-get -q update")
+        expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out!).with("apt-get -q update", anything())
         provider.run_action(:periodic)
         expect(new_resource).to be_updated_by_last_action
       end
 
       it "should not run if the time stamp is new" do
         expect(File).to receive(:mtime).with("#{stamp_dir}/update-success-stamp").and_return(Time.now - 300)
-        expect(provider).to_not receive(:shell_out!).with("apt-get -q update")
+        expect_any_instance_of(Chef::Provider::Execute).not_to receive(:shell_out!).with("apt-get -q update", anything())
         provider.run_action(:periodic)
         expect(new_resource).to_not be_updated_by_last_action
       end
