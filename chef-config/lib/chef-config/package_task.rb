@@ -209,7 +209,7 @@ end
         end
       end
 
-      task :version => 'version:update'
+      task :version => "version:update"
 
       Dir[File.expand_path("*gemspec", root_path)].reverse_each do |gemspec_path|
         gemspec = eval(IO.read(gemspec_path))
