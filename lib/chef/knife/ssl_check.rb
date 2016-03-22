@@ -245,6 +245,7 @@ ADVICE
 
       def run
         validate_uri
+
         if verify_X509 && verify_cert && verify_cert_host
           ui.msg "Successfully verified certificates from `#{host}'"
         else

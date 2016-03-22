@@ -26,11 +26,11 @@ end
 
 describe Chef::Mixin::ProxifiedSocket do
 
-  before do
+  before(:all) do
     @original_env = ENV.to_hash
   end
 
-  after do
+  after(:all) do
     ENV.clear
     ENV.update(@original_env)
   end
@@ -46,7 +46,7 @@ describe Chef::Mixin::ProxifiedSocket do
 
   shared_examples "proxified socket" do
     it "wraps the Socket in a Proxifier::Proxy" do
-      expect(Proxifier).to receive(:Proxy).with(proxy_uri, no_proxy: no_proxy_spec).and_return(proxifier_double)
+      expect(Proxifier).to receive(:Proxy).with(proxy_uri).and_return(proxifier_double)
       expect(proxifier_double).to receive(:open).with(host, port).and_return(socket_double)
       expect(test_instance.proxified_socket(host, port)).to eq(socket_double)
     end
@@ -54,6 +54,8 @@ describe Chef::Mixin::ProxifiedSocket do
 
   context "when no proxy is set" do
     it "returns a plain TCPSocket" do
+      ENV["http_proxy"] = nil
+      ENV["https_proxy"] = nil
       expect(TCPSocket).to receive(:new).with(host, port).and_return(socket_double)
       expect(test_instance.proxified_socket(host, port)).to eq(socket_double)
     end
@@ -84,6 +86,7 @@ describe Chef::Mixin::ProxifiedSocket do
 
   context "when http_proxy is set" do
     before do
+      ENV["https_proxy"] = nil
       ENV["http_proxy"] = http_uri
     end
 

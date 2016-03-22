@@ -255,7 +255,7 @@ describe Chef::REST::RESTRequest do
 
           it "does not configure the proxy user and pass when using https scheme" do
             http_client = new_request.http_client
-            expect(http_client.proxy?).to eq(true)
+            expect(http_client.proxy?).to eq(false)
             expect(http_client.proxy_user).to be_nil
             expect(http_client.proxy_pass).to be_nil
           end
