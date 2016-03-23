@@ -201,6 +201,8 @@ platforms:
   # Windows
   #
   - name: windows-2012r2
+    provisioner:
+      architecture: <%= ENV["KITCHEN_CHEF_WIN_ARCHITECTURE"] %>
     driver:
       image_search:
         name: Windows_Server-2012-R2*-English-*-Base-*
