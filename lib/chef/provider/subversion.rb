@@ -197,18 +197,13 @@ class Chef
       end
 
       def proxy
-        %w{http https}.each { |p|
-          if @new_resource.repository.start_with?("#{p}:") &&
-              ENV["#{p}_proxy"] != nil &&
-              !fuzzy_hostname_match_any?(URI.parse(@new_resource.repository).host, ENV["no_proxy"])
-            proxy_uri = URI.parse(ENV["#{p}_proxy"])
-            result = "--config-option servers:global:http-proxy-host=#{proxy_uri.host} "
-            result << "--config-option servers:global:http-proxy-port=#{proxy_uri.port} "
-            return result
-          end
-        }
+        repo_uri = URI.parse(@new_resource.repository)
+        proxy_uri = Chef::Config.proxy_uri(repo_uri.scheme, repo_uri.host, repo_uri.port)
+        return "" if proxy_uri.nil?
 
-        ""
+        result = "--config-option servers:global:http-proxy-host=#{proxy_uri.host} "
+        result << "--config-option servers:global:http-proxy-port=#{proxy_uri.port} "
+        result
       end
 
       def scm(*args)
