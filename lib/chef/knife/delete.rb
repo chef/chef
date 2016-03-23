@@ -31,7 +31,7 @@ class Chef
       def run
         if name_args.length == 0
           show_usage
-          ui.fatal("Must specify at least one argument.  If you want to delete everything in this directory, type \"knife delete --recurse .\"")
+          ui.fatal("You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"")
           exit 1
         end
 

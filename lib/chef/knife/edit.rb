@@ -32,7 +32,7 @@ class Chef
                   result.write(new_value)
                   output "Updated #{format_path(result)}"
                 else
-                  output "#{format_path(result)} unchanged!"
+                  output "#{format_path(result)} unchanged"
                 end
               rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
                 ui.error "#{format_path(e.entry)}: #{e.reason}."
@@ -58,7 +58,7 @@ class Chef
 
             # Let the user edit the temporary file
             if !system("#{config[:editor]} #{file.path}")
-              raise "Please set EDITOR environment variable"
+              raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_using.html for details."
             end
 
             result_text = IO.read(file.path)

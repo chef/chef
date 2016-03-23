@@ -15,11 +15,11 @@ class Chef
       option :recurse,
         :long => "--[no-]recurse",
         :boolean => true,
-        :description => "List dependencies recursively (default: true).  Only works with --tree."
+        :description => "List dependencies recursively (default: true). Only works with --tree."
       option :tree,
         :long => "--tree",
         :boolean => true,
-        :description => "Show dependencies in a visual tree.  May show duplicates."
+        :description => "Show dependencies in a visual tree. May show duplicates."
       option :remote,
         :long => "--remote",
         :boolean => true,

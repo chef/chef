@@ -74,7 +74,7 @@ class Chef
       option :filter_result,
         :short => "-f FILTER",
         :long => "--filter-result FILTER",
-        :description => "Only bring back specific attributes of the matching objects; for example: \"ServerName=name, Kernel=kernel.version\""
+        :description => "Only return specific attributes of the matching objects; for example: \"ServerName=name, Kernel=kernel.version\""
 
       def run
         read_cli_args

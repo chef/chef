@@ -80,7 +80,7 @@ qux: http://localhost:4000/data/bag_o_data/qux}
     it "displays the encrypted data bag when the secret is not provided" do
       expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(false)
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(data_bag_with_encoded_hash)
-      expect(knife.ui).to receive(:warn).with("Encrypted data bag detected, but no secret provided for decoding.  Displaying encrypted data.")
+      expect(knife.ui).to receive(:warn).with("Encrypted data bag detected, but no secret provided for decoding. Displaying encrypted data.")
 
       knife.run
       expect(stdout.string.strip).to include("baz", "qux", "cipher")

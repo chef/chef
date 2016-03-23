@@ -90,7 +90,7 @@ class Chef
 
           begin
             do_upload("#{tmp_cookbook_dir}/#{cookbook_name}.tgz", category, Chef::Config[:node_name], Chef::Config[:client_key])
-            ui.info("Upload complete!")
+            ui.info("Upload complete")
             Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
             FileUtils.rm_rf tmp_cookbook_dir
           rescue => e

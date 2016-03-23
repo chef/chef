@@ -108,8 +108,8 @@ describe Chef::Knife::ClientBulkDelete do
       describe "without --delete-validators" do
         it "should mention that validator clients wont be deleted" do
           knife.run
-          expect(stdout).to include("Following clients are validators and will not be deleted.")
-          info = stdout.index "Following clients are validators and will not be deleted."
+          expect(stdout).to include("The following clients are validators and will not be deleted:")
+          info = stdout.index "The following clients are validators and will not be deleted:"
           val = stdout.index "myorg-validator"
           expect(val > info).to be_truthy
         end

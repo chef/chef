@@ -35,7 +35,7 @@ class Chef
       option :admin,
              :short => "-a",
              :long  => "--admin",
-             :description => "Open Source Chef 11 only. Create the client as an admin.",
+             :description => "Open Source Chef Server 11 only. Create the client as an admin.",
              :boolean => true
 
       option :validator,
@@ -51,7 +51,7 @@ class Chef
       option :prevent_keygen,
              :short => "-k",
              :long  => "--prevent-keygen",
-             :description => "API V1 only. Prevent server from generating a default key pair for you. Cannot be passed with --public-key.",
+             :description => "API V1 (Chef Server 12.1+) only. Prevent server from generating a default key pair for you. Cannot be passed with --public-key.",
              :boolean => true
 
       banner "knife client create CLIENTNAME (options)"

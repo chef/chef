@@ -49,7 +49,7 @@ class Chef
 
       def run
         if @name_args.length != 2
-          stdout.puts "You must supply the data bag and an item to edit!"
+          stdout.puts "You must supply the data bag and an item to edit"
           stdout.puts opt_parser
           exit 1
         end
@@ -61,7 +61,7 @@ class Chef
           ui.info("Encrypting data bag using provided secret.")
           item_to_save = Chef::EncryptedDataBagItem.encrypt_data_bag_item(edited_item, read_secret)
         else
-          ui.info("Saving data bag unencrypted.  To encrypt it, provide an appropriate secret.")
+          ui.info("Saving data bag unencrypted. To encrypt it, provide an appropriate secret.")
           item_to_save = edited_item
         end
 

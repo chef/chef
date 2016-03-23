@@ -27,7 +27,7 @@ class Chef
         :long => "--[no-]force",
         :boolean => true,
         :default => false,
-        :description => "Force upload of files even if they match (quicker for many files).  Will overwrite frozen cookbooks."
+        :description => "Force upload of files even if they match (quicker for many files). Will overwrite frozen cookbooks."
 
       option :freeze,
         :long => "--[no-]freeze",
@@ -51,7 +51,7 @@ class Chef
       def run
         if name_args.length == 0
           show_usage
-          ui.fatal("Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"")
+          ui.fatal("You must specify at least one argument. If you want to upload everything in this directory, run \"knife upload .\"")
           exit 1
         end
 
