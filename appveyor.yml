@@ -8,7 +8,7 @@ environment:
   matrix:
     # 21-x64 is failing right now
     #- ruby_version: "21-x64"
-    - ruby_version: "21"
+    - ruby_version: "22"
 
 clone_folder: c:\projects\chef
 clone_depth: 1
