@@ -84,6 +84,20 @@ To mention the team, use @chef/client-test-tools
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Ranjib Dey](https://github.com/ranjib)
 
+## Chef Provisioning
+
+Chef Provisioning and Drivers.  Supported Drivers are listed in the [README](https://github.com/chef/chef-provisioning/blob/master/README.md#chef-provisioning).
+
+To mention the team, use @chef/provisioning
+
+### Lieutenant
+
+* [Tyler Ball](https://github.com/tyler-ball)
+
+### Maintainers
+
+* [John Keiser](https://github.com/jkeiser)
+
 ## Platform Specific Components
 
 The specific components of Chef related to a given platform - including (but not limited to) resources, providers, and the core DSL.
