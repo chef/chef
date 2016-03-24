@@ -34,7 +34,7 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
-override :ruby, version: "2.1.8"
+override :ruby, version: "2.2.4"
 # Leave dev-kit pinned to 4.5 because 4.7 is 20MB larger and we don't want
 # to unnecessarily make the client any fatter.
 override :'ruby-windows-devkit', version: "4.5.2-20111229-1559" if windows? && windows_arch_i386?

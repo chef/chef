@@ -8,6 +8,9 @@ gem "chef-config", path: "chef-config" if File.exist?(File.expand_path("../chef-
 # Ensure that we can always install rake, regardless of gem groups
 gem "rake"
 
+# we can go back to mainline when https://github.com/ffi/ffi/pull/490 is merged
+gem "ffi", github: "lamont-granquist/ffi", branch: "lcg/rb_gc_guard_ptr" if RUBY_PLATFORM.downcase =~ /aix/
+
 group(:docgen) do
   gem "yard"
 end

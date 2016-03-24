@@ -61,7 +61,9 @@ class Chef
       end
 
       def set_value(key_path, value)
-        Chef::Log.debug("Updating value #{value[:name]} in registry key #{key_path} with type #{value[:type]} and data #{value[:data]}")
+        data = value[:data]
+        data = data.to_s if value[:type] == :string
+        Chef::Log.debug("Updating value #{value[:name]} in registry key #{key_path} with type #{value[:type]} and data #{data}")
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         if value_exists?(key_path, value)
@@ -70,13 +72,13 @@ class Chef
             return false
           else
             hive.open(key, ::Win32::Registry::KEY_SET_VALUE | ::Win32::Registry::KEY_QUERY_VALUE | registry_system_architecture) do |reg|
-              reg.write(value[:name], get_type_from_name(value[:type]), value[:data])
+              reg.write(value[:name], get_type_from_name(value[:type]), data)
             end
             Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} updated")
           end
         else
           hive.open(key, ::Win32::Registry::KEY_SET_VALUE | ::Win32::Registry::KEY_QUERY_VALUE | registry_system_architecture) do |reg|
-            reg.write(value[:name], get_type_from_name(value[:type]), value[:data])
+            reg.write(value[:name], get_type_from_name(value[:type]), data)
           end
           Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} created")
         end
