@@ -142,27 +142,27 @@ describe Chef::Provider::Subversion do
   end
 
   it "generates a checkout command with default options" do
-    expect(@provider.checkout_command).to eql("svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+    expect(@provider.checkout_command).to eql("svn checkout -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
   end
 
   it "generates a checkout command with authentication" do
     @resource.svn_username "deployNinja"
     @resource.svn_password "vanish!"
-    expect(@provider.checkout_command).to eql("svn checkout -q --username deployNinja --password vanish!  " +
+    expect(@provider.checkout_command).to eql("svn checkout -q --username deployNinja --password vanish!   " +
                                           "-r12345 http://svn.example.org/trunk/ /my/deploy/dir")
   end
 
   it "generates a checkout command with arbitrary options" do
     @resource.svn_arguments "--no-auth-cache"
-    expect(@provider.checkout_command).to eql("svn checkout --no-auth-cache -q  -r12345 " + "http://svn.example.org/trunk/ /my/deploy/dir")
+    expect(@provider.checkout_command).to eql("svn checkout --no-auth-cache -q   -r12345 " + "http://svn.example.org/trunk/ /my/deploy/dir")
   end
 
   it "generates a sync command with default options" do
-    expect(@provider.sync_command).to eql("svn update -q  -r12345 /my/deploy/dir")
+    expect(@provider.sync_command).to eql("svn update -q   -r12345 /my/deploy/dir")
   end
 
   it "generates an export command with default options" do
-    expect(@provider.export_command).to eql("svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+    expect(@provider.export_command).to eql("svn export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
   end
 
   it "doesn't try to find the current revision when loading the resource if running an export" do
@@ -179,7 +179,7 @@ describe Chef::Provider::Subversion do
 
   it "runs an export with the --force option" do
     allow(::File).to receive(:directory?).with("/my/deploy").and_return(true)
-    expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
+    expected_cmd = "svn export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     expect(@provider).to receive(:shell_out!).with(expected_cmd, {})
     @provider.run_action(:force_export)
     expect(@resource).to be_updated
@@ -187,7 +187,7 @@ describe Chef::Provider::Subversion do
 
   it "runs the checkout command for action_checkout" do
     allow(::File).to receive(:directory?).with("/my/deploy").and_return(true)
-    expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
+    expected_cmd = "svn checkout -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     expect(@provider).to receive(:shell_out!).with(expected_cmd, {})
     @provider.run_action(:checkout)
     expect(@resource).to be_updated
@@ -211,7 +211,7 @@ describe Chef::Provider::Subversion do
     allow(::File).to receive(:directory?).with("/my/deploy").and_return(true)
     @resource.user "whois"
     @resource.group "thisis"
-    expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
+    expected_cmd = "svn checkout -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     expect(@provider).to receive(:shell_out!).with(expected_cmd, { user: "whois", group: "thisis" })
     @provider.run_action(:checkout)
     expect(@resource).to be_updated
@@ -236,7 +236,7 @@ describe Chef::Provider::Subversion do
     expect(::File).to receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
     allow(@provider).to receive(:find_current_revision).and_return("11410")
     allow(@provider).to receive(:current_revision_matches_target_revision?).and_return(false)
-    expected_cmd = "svn update -q  -r12345 /my/deploy/dir"
+    expected_cmd = "svn update -q   -r12345 /my/deploy/dir"
     expect(@provider).to receive(:shell_out!).with(expected_cmd, {})
     @provider.run_action(:sync)
     expect(@resource).to be_updated
@@ -253,7 +253,7 @@ describe Chef::Provider::Subversion do
 
   it "runs the export_command on action_export" do
     allow(::File).to receive(:directory?).with("/my/deploy").and_return(true)
-    expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
+    expected_cmd = "svn export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     expect(@provider).to receive(:shell_out!).with(expected_cmd, {})
     @provider.run_action(:export)
     expect(@resource).to be_updated
@@ -268,7 +268,7 @@ describe Chef::Provider::Subversion do
       allow(ChefConfig).to receive(:windows?) { false }
       expect(@provider).to receive(:svn_binary).and_return("svn")
       expect(@provider.export_command).to eql(
-        "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+        "svn export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
     end
 
     it "selects an svn binary with an exe extension on windows" do
@@ -276,23 +276,77 @@ describe Chef::Provider::Subversion do
       allow(ChefConfig).to receive(:windows?) { true }
       expect(@provider).to receive(:svn_binary).and_return("svn.exe")
       expect(@provider.export_command).to eql(
-        "svn.exe export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+        "svn.exe export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
     end
 
     it "uses a custom svn binary as part of the svn command" do
       @resource.svn_binary "teapot"
       expect(@provider).to receive(:svn_binary).and_return("teapot")
       expect(@provider.export_command).to eql(
-        "teapot export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+        "teapot export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
     end
 
     it "wraps custom svn binary with quotes if it contains whitespace" do
       @resource.svn_binary "c:/program files (x86)/subversion/svn.exe"
       expect(@provider).to receive(:svn_binary).and_return("c:/program files (x86)/subversion/svn.exe")
       expect(@provider.export_command).to eql(
-        '"c:/program files (x86)/subversion/svn.exe" export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir')
+        '"c:/program files (x86)/subversion/svn.exe" export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir')
     end
 
   end
 
+  shared_examples_for "proxied configuration" do
+    it "generates a checkout command with a http proxy" do
+      expect(@provider.checkout_command).to eql("svn checkout -q" +
+        "  --config-option servers:global:http-proxy-host=somehost --config-option servers:global:http-proxy-port=1" +
+        "  -r12345 #{repository_url} /my/deploy/dir" )
+    end
+  end
+
+  describe "when proxy environment variables exist" do
+    let(:http_proxy_uri) { "http://somehost:1" }
+    let(:http_no_proxy) { "svn.example.org" }
+
+    before (:all) do
+      @original_env = ENV.to_hash
+    end
+
+    after (:all) do
+      ENV.clear
+      ENV.update(@original_env)
+    end
+
+    context "http_proxy is specified" do
+      let(:repository_url) { "http://svn.example.org/trunk/" }
+
+      before do
+        ENV["http_proxy"] = http_proxy_uri
+      end
+
+      it_should_behave_like "proxied configuration"
+    end
+
+    context "https_proxy is specified" do
+      let(:repository_url) { "https://svn.example.org/trunk/" }
+
+      before do
+        ENV["http_proxy"] = nil
+        ENV["https_proxy"] = http_proxy_uri
+        @resource.repository "https://svn.example.org/trunk/"
+      end
+
+      it_should_behave_like "proxied configuration"
+    end
+
+    context "when no_proxy is specified" do
+      before do
+        ENV["http_proxy"] = http_proxy_uri
+        ENV["no_proxy"] = http_no_proxy
+      end
+
+      it "generates a checkout command with default options" do
+        expect(@provider.checkout_command).to eql("svn checkout -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+      end
+    end
+  end
 end

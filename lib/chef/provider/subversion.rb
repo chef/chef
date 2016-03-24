@@ -21,6 +21,7 @@
 require "chef/log"
 require "chef/provider"
 require "chef/mixin/command"
+require "chef-config/mixin/fuzzy_hostname_matcher"
 require "fileutils"
 
 class Chef
@@ -32,6 +33,7 @@ class Chef
       SVN_INFO_PATTERN = /^([\w\s]+): (.+)$/
 
       include Chef::Mixin::Command
+      include ChefConfig::Mixin::FuzzyHostnameMatcher
 
       def whyrun_supported?
         true
@@ -100,21 +102,21 @@ class Chef
       end
 
       def sync_command
-        c = scm :update, @new_resource.svn_arguments, verbose, authentication, "-r#{revision_int}", @new_resource.destination
+        c = scm :update, @new_resource.svn_arguments, verbose, authentication, proxy, "-r#{revision_int}", @new_resource.destination
         Chef::Log.debug "#{@new_resource} updated working copy #{@new_resource.destination} to revision #{@new_resource.revision}"
         c
       end
 
       def checkout_command
-        c = scm :checkout, @new_resource.svn_arguments, verbose, authentication,
-            "-r#{revision_int}", @new_resource.repository, @new_resource.destination
+        c = scm :checkout, @new_resource.svn_arguments, verbose, authentication, proxy,
+          "-r#{revision_int}", @new_resource.repository, @new_resource.destination
         Chef::Log.info "#{@new_resource} checked out #{@new_resource.repository} at revision #{@new_resource.revision} to #{@new_resource.destination}"
         c
       end
 
       def export_command
         args = ["--force"]
-        args << @new_resource.svn_arguments << verbose << authentication <<
+        args << @new_resource.svn_arguments << verbose << authentication << proxy <<
           "-r#{revision_int}" << @new_resource.repository << @new_resource.destination
         c = scm :export, *args
         Chef::Log.info "#{@new_resource} exported #{@new_resource.repository} at revision #{@new_resource.revision} to #{@new_resource.destination}"
@@ -191,6 +193,16 @@ class Chef
         return "" unless @new_resource.svn_username
         result = "--username #{@new_resource.svn_username} "
         result << "--password #{@new_resource.svn_password} "
+        result
+      end
+
+      def proxy
+        repo_uri = URI.parse(@new_resource.repository)
+        proxy_uri = Chef::Config.proxy_uri(repo_uri.scheme, repo_uri.host, repo_uri.port)
+        return "" if proxy_uri.nil?
+
+        result = "--config-option servers:global:http-proxy-host=#{proxy_uri.host} "
+        result << "--config-option servers:global:http-proxy-port=#{proxy_uri.port} "
         result
       end
 
