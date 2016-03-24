@@ -32,7 +32,7 @@ class Chef
             when "ftp"
               Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
             when "sftp"
-              Chef::Provider::RemoteFile::SFTP.net(uri, new_resource, current_resource)
+              Chef::Provider::RemoteFile::SFTP.new(uri, new_resource, current_resource)
             when "file"
               Chef::Provider::RemoteFile::LocalFile.new(uri, new_resource, current_resource)
             else

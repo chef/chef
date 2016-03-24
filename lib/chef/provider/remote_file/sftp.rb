@@ -36,26 +36,19 @@ class Chef
           @new_resource = new_resource
           @current_resource = current_resource
           validate_path!
+          validate_userinfo!
         end
 
         def hostname
           @uri.host
         end
 
-        def user
-          if uri.userinfo
-            URI.unescape(uri.user)
-          else
-            'anonymous'
-          end
+        def port
+          @uri.port
         end
 
-        def pass
-          if uri.userinfo
-            URI.unescape(uri.password)
-          else
-            nil
-          end
+        def user
+          URI.unescape(uri.user)
         end
 
         def filename
@@ -67,14 +60,32 @@ class Chef
           get
         end
 
+        private
+
         def sftp
-          @sftp ||= Net::SFTP.start(hostname, user, :password => pass)
+          host = port ? "#{hostname}:#{port}" : hostname
+          @sftp ||= Net::SFTP.start(host, user, :password => pass)
         end
 
-        private
+        def pass
+          URI.unescape(uri.password)
+        end
 
         def validate_path!
           parse_path
+        end
+
+        def validate_userinfo!
+          if uri.userinfo
+            if !(uri.user)
+              raise ArgumentError, "no user name provided in the sftp URI"
+            end
+            if !(uri.password)
+              raise ArgumentError, "no password provided in the sftp URI"
+            end
+          else
+            raise ArgumentError, "no userinfo provided in the sftp URI"
+          end
         end
 
         # Fetches using Net::FTP, returns a Tempfile with the content
