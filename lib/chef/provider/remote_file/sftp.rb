@@ -26,6 +26,81 @@ class Chef
   class Provider
     class RemoteFile
       class SFTP
+
+        attr_reader :uri
+        attr_reader :new_resource
+        attr_reader :current_resource
+
+        def initialize(uri, new_resource, current_resource)
+          @uri = uri
+          @new_resource = new_resource
+          @current_resource = current_resource
+          validate_path!
+        end
+
+        def hostname
+          @uri.host
+        end
+
+        def user
+          if uri.userinfo
+            URI.unescape(uri.user)
+          else
+            'anonymous'
+          end
+        end
+
+        def pass
+          if uri.userinfo
+            URI.unescape(uri.password)
+          else
+            nil
+          end
+        end
+
+        def filename
+          parse_path if @filename.nil?
+          @filename
+        end
+
+        def fetch
+          get
+        end
+
+        def sftp
+          @sftp ||= Net::SFTP.start(hostname, user, :password => pass)
+        end
+
+        private
+
+        def validate_path!
+          parse_path
+        end
+
+        # Fetches using Net::FTP, returns a Tempfile with the content
+        def get
+          tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
+          sftp.download!(uri.path, tempfile.path)
+          tempfile.close if tempfile
+          tempfile
+        end
+
+        def parse_path
+          path = uri.path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
+          directories = path.split(%r{/}, -1)
+          directories.each {|d|
+            d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
+          }
+          unless filename = directories.pop
+            raise ArgumentError, "no filename: #{path.inspect}"
+          end
+          if filename.length == 0 || filename.end_with?( "/" )
+            raise ArgumentError, "no filename: #{path.inspect}"
+          end
+
+          @directories, @filename = directories, filename
+        end
+
       end
     end
   end
