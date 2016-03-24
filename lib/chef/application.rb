@@ -141,6 +141,7 @@ class Chef
     # that a user has configured a log_location in client.rb, but is running
     # chef-client by hand to troubleshoot a problem.
     def configure_logging
+      configure_log_location
       Chef::Log.init(MonoLogger.new(Chef::Config[:log_location]))
       if want_additional_logger?
         configure_stdout_logger
@@ -149,6 +150,20 @@ class Chef
     rescue StandardError => error
       Chef::Log.fatal("Failed to open or create log file at #{Chef::Config[:log_location]}: #{error.class} (#{error.message})")
       Chef::Application.fatal!("Aborting due to invalid 'log_location' configuration", 2)
+    end
+
+    # Turn `log_location :syslog` and `log_location :win_evt` into the
+    # appropriate loggers.
+    def configure_log_location
+      log_location = Chef::Config[:log_location]
+      return unless log_location.respond_to?(:to_sym)
+
+      Chef::Config[:log_location] =
+        case log_location.to_sym
+          when :syslog then Chef::Log::Syslog.new
+          when :win_evt then Chef::Log::WinEvt.new
+          else log_location # Probably a path; let MonoLogger sort it out
+        end
     end
 
     def configure_stdout_logger

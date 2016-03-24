@@ -247,6 +247,33 @@ describe Chef::Application do
 
         it_behaves_like "log_level_is_auto"
       end
+
+      describe "log_location" do
+        shared_examples("sets log_location") do |config_value, expected_class|
+          context "when the configured value is #{config_value.inspect}" do
+            let(:logger_instance) { instance_double(expected_class).as_null_object }
+
+            before do
+              allow(expected_class).to receive(:new).and_return(logger_instance)
+              Chef::Config[:log_location] = config_value
+            end
+
+            it "it sets log_location to an instance of #{expected_class}" do
+              expect(expected_class).to receive(:new).with no_args
+              @app.configure_logging
+              expect(Chef::Config[:log_location]).to be logger_instance
+            end
+          end
+        end
+
+        if Chef::Platform.windows?
+          it_behaves_like "sets log_location", :win_evt, Chef::Log::WinEvt
+          it_behaves_like "sets log_location", "win_evt", Chef::Log::WinEvt
+        else
+          it_behaves_like "sets log_location", :syslog, Chef::Log::Syslog
+          it_behaves_like "sets log_location", "syslog", Chef::Log::Syslog
+        end
+      end
     end
   end
 
