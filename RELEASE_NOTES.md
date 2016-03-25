@@ -45,3 +45,11 @@ and `:win_evt` is shorthand for `Chef::Log::WinEvt.new`. All previously
 valid options are still valid, including Logger or Logger-like
 instances, e.g. `Chef::Log::Syslog.new` with other args than the
 defaults.
+
+## chef-client `--daemonize` option now takes an optional integer argument
+
+Optional integer argument (.e.g `chef-client --daemonize 5`) is the
+number of seconds to wait before the first daemonized run. See
+[#3305] for background.
+
+[#3305]: https://github.com/chef/chef/issues/3305

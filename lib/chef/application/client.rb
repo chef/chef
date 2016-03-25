@@ -105,10 +105,12 @@ class Chef::Application::Client < Chef::Application
 
   unless Chef::Platform.windows?
     option :daemonize,
-      :short => "-d",
-      :long => "--daemonize",
-      :description => "Daemonize the process",
-      :proc => lambda { |p| true }
+      :short => "-d [WAIT]",
+      :long => "--daemonize [WAIT]",
+      :description =>
+        "Daemonize the process. Accepts an optional integer which is the " \
+        "number of seconds to wait before the first daemonized run.",
+      :proc => lambda { |wait| wait =~ /^\d+$/ ? wait.to_i : true }
   end
 
   option :pid_file,
@@ -430,33 +432,38 @@ class Chef::Application::Client < Chef::Application
   def interval_run_chef_client
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
+
+      # Start first daemonized run after configured number of seconds
+      if Chef::Config[:daemonize].is_a?(Integer)
+        sleep_then_run_chef_client(Chef::Config[:daemonize])
+      end
     end
 
     loop do
-      begin
-        @signal = test_signal
-        if @signal != IMMEDIATE_RUN_SIGNAL
-          sleep_sec = time_to_sleep
-          Chef::Log.debug("Sleeping for #{sleep_sec} seconds")
-          interval_sleep(sleep_sec)
-        end
-
-        @signal = nil
-        run_chef_client(Chef::Config[:specific_recipes])
-
-        Chef::Application.exit!("Exiting", 0) if !Chef::Config[:interval]
-      rescue SystemExit => e
-        raise
-      rescue Exception => e
-        if Chef::Config[:interval]
-          Chef::Log.error("#{e.class}: #{e}")
-          Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
-          retry
-        else
-          Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
-        end
-      end
+      sleep_then_run_chef_client(time_to_sleep)
+      Chef::Application.exit!("Exiting", 0) if !Chef::Config[:interval]
     end
+  end
+
+  def sleep_then_run_chef_client(sleep_sec)
+    @signal = test_signal
+    unless @signal == IMMEDIATE_RUN_SIGNAL
+      Chef::Log.debug("Sleeping for #{sleep_sec} seconds")
+      interval_sleep(sleep_sec)
+    end
+    @signal = nil
+
+    run_chef_client(Chef::Config[:specific_recipes])
+  rescue SystemExit => e
+    raise
+  rescue Exception => e
+    if Chef::Config[:interval]
+      Chef::Log.error("#{e.class}: #{e}")
+      Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
+      retry
+    end
+
+    Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
   end
 
   def test_signal
