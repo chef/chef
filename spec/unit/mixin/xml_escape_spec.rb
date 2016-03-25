@@ -49,6 +49,6 @@ describe Chef::Mixin::XMLEscape do
   end
 
   it "converts win 1252 characters correctly" do
-    expect(@escaper.xml_escape("\x80")).to eq('&#8364;')
+    expect(@escaper.xml_escape("#{0x80.chr}")).to eq('&#8364;')
   end
 end
