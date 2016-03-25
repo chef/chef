@@ -16,17 +16,16 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'tempfile'
-require 'net/sftp'
-require 'chef/provider/remote_file'
-require 'chef/file_content_management/tempfile'
+require "uri"
+require "tempfile"
+require "net/sftp"
+require "chef/provider/remote_file"
+require "chef/file_content_management/tempfile"
 
 class Chef
   class Provider
     class RemoteFile
       class SFTP
-
         attr_reader :uri
         attr_reader :new_resource
         attr_reader :current_resource
@@ -77,10 +76,10 @@ class Chef
 
         def validate_userinfo!
           if uri.userinfo
-            if !(uri.user)
+            unless uri.user
               raise ArgumentError, "no user name provided in the sftp URI"
             end
-            if !(uri.password)
+            unless uri.password
               raise ArgumentError, "no password provided in the sftp URI"
             end
           else
@@ -90,14 +89,15 @@ class Chef
 
         # Fetches using Net::FTP, returns a Tempfile with the content
         def get
-          tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
+          tempfile =
+            Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
           sftp.download!(uri.path, tempfile.path)
           tempfile.close if tempfile
           tempfile
         end
 
         def parse_path
-          path = uri.path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
+          path = uri.path.sub(%r{\A/}, "%2F") # re-encode the beginning slash because uri library decodes it.
           directories = path.split(%r{/}, -1)
           directories.each {|d|
             d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }

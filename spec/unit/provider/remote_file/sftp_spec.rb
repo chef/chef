@@ -37,8 +37,6 @@ describe Chef::Provider::RemoteFile::SFTP do
     Chef::Resource::RemoteFile.new("remote file sftp backend test (current resource)'")
   end
 
-
-
   let(:uri) { URI.parse("sftp://conan:cthu1hu@opscode.com/seattle.txt") }
 
   let(:sftp) do
@@ -99,7 +97,6 @@ describe Chef::Provider::RemoteFile::SFTP do
       uri.path = "/the/whole/path/"
       expect { Chef::Provider::RemoteFile::SFTP.new(uri, new_resource, current_resource) }.to raise_error(ArgumentError)
     end
-
 
   end
 
