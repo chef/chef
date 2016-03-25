@@ -200,10 +200,10 @@ class Chef
           class_name = resource_type.class.name ? resource_type.class.name.split("::").last :
             convert_to_class_name(resource_type.resource_name.to_s)
 
-          if Chef::Provider.const_defined?(class_name)
+          if Chef::Provider.const_defined?(class_name, false)
             Chef::Log.warn("Class Chef::Provider::#{class_name} does not declare 'provides #{convert_to_snake_case(class_name).to_sym.inspect}'.")
             Chef::Log.warn("This will no longer work in Chef 13: you must use 'provides' to use the resource's DSL.")
-            return Chef::Provider.const_get(class_name)
+            return Chef::Provider.const_get(class_name, false)
           end
         end
         nil
