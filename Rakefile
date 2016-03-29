@@ -20,6 +20,7 @@
 VERSION = IO.read(File.expand_path("../VERSION", __FILE__)).strip
 
 require "rubygems"
+require "chef/version"
 require "chef-config/package_task"
 require "rdoc/task"
 require_relative "tasks/rspec"
