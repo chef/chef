@@ -17,6 +17,55 @@
 
 require "spec_helper"
 
+shared_context "with signal handlers" do
+  before do
+    Chef::Config[:specific_recipes] = [] # normally gets set in @app.reconfigure
+
+    @app = Chef::Application::Client.new
+    @app.setup_signal_handlers
+    # Default logger doesn't work correctly when logging from a trap handler.
+    @app.configure_logging
+  end
+end
+
+shared_context "with interval_sleep" do
+  before do
+    run_count = 0
+
+    # uncomment to debug failures...
+    # Chef::Log.init($stderr)
+    # Chef::Log.level = :debug
+
+    allow(@app).to receive(:run_chef_client) do
+      run_count += 1
+      if run_count > 3
+        exit 0
+      end
+
+      # If everything is fine, sending USR1 to self should prevent
+      # app to go into splay sleep forever.
+      Process.kill("USR1", Process.pid)
+      # On Ruby < 2.1, we need to give the signal handlers a little
+      # more time, otherwise the test will fail because interleavings.
+      sleep 1
+    end
+
+    number_of_sleep_calls = 0
+
+    # This is a very complicated way of writing
+    # @app.should_receive(:sleep).once.
+    # We have to do it this way because the main loop of
+    # Chef::Application::Client swallows most exceptions, and we need to be
+    # able to expose our expectation failures to the parent process in the test.
+    allow(@app).to receive(:interval_sleep) do |arg|
+      number_of_sleep_calls += 1
+      if number_of_sleep_calls > 1
+        exit 127
+      end
+    end
+  end
+end
+
 describe Chef::Application::Client, "reconfigure" do
   let(:app) do
     a = described_class.new
@@ -26,6 +75,7 @@ describe Chef::Application::Client, "reconfigure" do
 
   before do
     allow(Kernel).to receive(:trap).and_return(:ok)
+    allow(::File).to receive(:read).and_call_original
     allow(::File).to receive(:read).with(Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_return("")
 
     @original_argv = ARGV.dup
@@ -52,17 +102,44 @@ describe Chef::Application::Client, "reconfigure" do
       app.reconfigure
     end
 
-    context "when given a named_run_list" do
+    shared_examples "sets the configuration" do |cli_arguments, expected_config|
+      describe cli_arguments do
+        before do
+          ARGV.replace(cli_arguments.split)
+          app.reconfigure
+        end
 
-      before do
-        ARGV.replace( %w{ --named-run-list arglebargle-example } )
-        app.reconfigure
+        it "sets #{expected_config}" do
+          expect(Chef::Config.configuration).to include expected_config
+        end
+      end
+    end
+
+    describe "--named-run-list" do
+      it_behaves_like "sets the configuration",
+                      "--named-run-list arglebargle-example",
+                      :named_run_list => "arglebargle-example"
+    end
+
+    describe "--no-listen" do
+      it_behaves_like "sets the configuration", "--no-listen", :listen => false
+    end
+
+    describe "--daemonize", :unix_only do
+      context "with no value" do
+        it_behaves_like "sets the configuration", "--daemonize",
+                        :daemonize => true
       end
 
-      it "sets named_run_list in Chef::Config" do
-        expect(Chef::Config[:named_run_list]).to eq("arglebargle-example")
+      context "with an integer value" do
+        it_behaves_like "sets the configuration", "--daemonize 5",
+                        :daemonize => 5
       end
 
+      context "with a non-integer value" do
+        it_behaves_like "sets the configuration", "--daemonize foo",
+                        :daemonize => true
+      end
     end
   end
 
@@ -116,15 +193,46 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     end
   end
 
-  describe "when in daemonized mode and no interval has been set" do
+  describe "daemonized mode", :unix_only do
+    let(:daemonize) { true }
+
     before do
-      Chef::Config[:daemonize] = true
-      Chef::Config[:interval] = nil
+      Chef::Config[:daemonize] = daemonize
+      allow(Chef::Daemon).to receive(:daemonize)
     end
 
-    it "should set the interval to 1800" do
-      app.reconfigure
-      expect(Chef::Config.interval).to eq(1800)
+    context "when no interval has been set" do
+      before do
+        Chef::Config[:interval] = nil
+      end
+
+      it "should set the interval to 1800" do
+        app.reconfigure
+        expect(Chef::Config.interval).to eq(1800)
+      end
+    end
+
+    context "when the daemonize option is an integer" do
+      include_context "with signal handlers"
+      include_context "with interval_sleep"
+
+      let(:wait_secs) { 1 }
+      let(:daemonize) { wait_secs }
+
+      before do
+        allow(@app).to receive(:interval_sleep).with(wait_secs).and_return true
+        allow(@app).to receive(:interval_sleep).with(0).and_call_original
+      end
+
+      it "sleeps for the amount of time passed" do
+        pid = fork do
+          expect(@app).to receive(:interval_sleep).with(wait_secs)
+          @app.run_application
+        end
+        _pid, result = Process.waitpid2(pid)
+
+        expect(result.exitstatus).to eq 0
+      end
     end
   end
 
@@ -144,16 +252,6 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
     it "forces the interval to nil" do
       app.reconfigure
       expect(Chef::Config.interval).to be_nil
-    end
-
-  end
-
-  describe "when --no-listen is set" do
-
-    it "configures listen = false" do
-      app.config[:listen] = false
-      app.reconfigure
-      expect(Chef::Config[:listen]).to eq(false)
     end
 
   end
@@ -305,14 +403,9 @@ describe Chef::Application::Client, "configure_chef" do
 end
 
 describe Chef::Application::Client, "run_application", :unix_only do
+  include_context "with signal handlers"
+
   before(:each) do
-    Chef::Config[:specific_recipes] = [] # normally gets set in @app.reconfigure
-
-    @app = Chef::Application::Client.new
-    @app.setup_signal_handlers
-    # Default logger doesn't work correctly when logging from a trap handler.
-    @app.configure_logging
-
     @pipe = IO.pipe
     @client = Chef::Client.new
     allow(Chef::Client).to receive(:new).and_return(@client)
@@ -383,44 +476,11 @@ describe Chef::Application::Client, "run_application", :unix_only do
   end
 
   describe "when splay is set" do
+    include_context "with interval_sleep"
+
     before do
       Chef::Config[:splay] = 10
       Chef::Config[:interval] = 10
-
-      run_count = 0
-
-      # uncomment to debug failures...
-      # Chef::Log.init($stderr)
-      # Chef::Log.level = :debug
-
-      allow(@app).to receive(:run_chef_client) do
-
-        run_count += 1
-        if run_count > 3
-          exit 0
-        end
-
-        # If everything is fine, sending USR1 to self should prevent
-        # app to go into splay sleep forever.
-        Process.kill("USR1", Process.pid)
-        # On Ruby < 2.1, we need to give the signal handlers a little
-        # more time, otherwise the test will fail because interleavings.
-        sleep 1
-      end
-
-      number_of_sleep_calls = 0
-
-      # This is a very complicated way of writing
-      # @app.should_receive(:sleep).once.
-      # We have to do it this way because the main loop of
-      # Chef::Application::Client swallows most exceptions, and we need to be
-      # able to expose our expectation failures to the parent process in the test.
-      allow(@app).to receive(:interval_sleep) do |arg|
-        number_of_sleep_calls += 1
-        if number_of_sleep_calls > 1
-          exit 127
-        end
-      end
     end
 
     it "shouldn't sleep when sent USR1" do
