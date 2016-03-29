@@ -106,6 +106,7 @@ Chef Provisioning and Drivers.  Supported Drivers are listed in the [README](htt
 
       maintainers = [
         "jkeiser",
+        "stuartpreston"
       ]
 
     [Org.Components.Subsystems]
@@ -392,3 +393,8 @@ The specific components of Chef related to a given platform - including (but not
   [people.jkeiser]
     Name = "John Keiser"
     GitHub = "jkeiser"
+
+  [people.stuartpreston]
+    Name = "Stuart Preston"
+    GitHub = "stuartpreston"
+    
