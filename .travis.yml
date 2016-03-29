@@ -35,6 +35,9 @@ matrix:
   - rvm: 2.2
     sudo: true
     bundler_args: --without server docgen maintenance
+  - rvm: 2.3.0
+    sudo: true
+    bundler_args: --without server docgen maintenance
   - rvm: rbx
     sudo: true
     bundler_args: --without server docgen maintenance ruby_prof pry
