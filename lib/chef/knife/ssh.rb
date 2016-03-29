@@ -80,6 +80,12 @@ class Chef
         :description => "The ssh port",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key.strip }
 
+      option :ssh_timeout,
+        :short => "-t SECONDS",
+        :long => "--ssh-timeout SECONDS",
+        :description => "The ssh connection timeout",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_timeout] = key.strip }
+
       option :ssh_gateway,
         :short => "-G GATEWAY",
         :long => "--ssh-gateway GATEWAY",
@@ -258,6 +264,9 @@ class Chef
           # Handle port overrides for the main connection.
           session_opts[:port] = Chef::Config[:knife][:ssh_port] if Chef::Config[:knife][:ssh_port]
           session_opts[:port] = config[:ssh_port] if config[:ssh_port]
+          # Handle connection timeout
+          session_opts[:timeout] = Chef::Config[:knife][:ssh_timeout] if Chef::Config[:knife][:ssh_timeout]
+          session_opts[:timeout] = config[:ssh_timeout] if config[:ssh_timeout]
           # Create the hostspec.
           hostspec = session_opts[:user] ? "#{session_opts.delete(:user)}@#{host}" : host
           # Connect a new session on the multi.
