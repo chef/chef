@@ -36,3 +36,12 @@ from Chef::Provider when mixing `use_inline_resources` into classes that only in
 class.  If any code has been written like this, it should be modified to correctly inherit from
 Chef::Provider::LWRPBase instead (which will have the side effect of fixing it so that it correctly works
 on Chef 11.0-12.5 as well).
+
+## Shorthand options for `log_location`
+
+The `log_location` setting now accepts shorthand `:syslog` and
+`:win_evt` options. `:syslog` is shorthand for `Chef::Log::Syslog.new`
+and `:win_evt` is shorthand for `Chef::Log::WinEvt.new`. All previously
+valid options are still valid, including Logger or Logger-like
+instances, e.g. `Chef::Log::Syslog.new` with other args than the
+defaults.
