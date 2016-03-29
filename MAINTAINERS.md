@@ -97,6 +97,7 @@ To mention the team, use @chef/provisioning
 ### Maintainers
 
 * [John Keiser](https://github.com/jkeiser)
+* [Stuart Preston](https://github.com/stuartpreston)
 
 ## Platform Specific Components
 
