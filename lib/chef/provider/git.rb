@@ -107,7 +107,7 @@ class Chef
           git_standard_executor(["checkout", @new_resource.checkout_branch], run_opts)
           Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} onto: #{@new_resource.checkout_branch} reference: #{sha_ref}"
         end
-end
+      end
 
       def enable_submodules
         if @new_resource.enable_submodules
@@ -231,7 +231,7 @@ end
         else
           Chef::Log.debug "#{@new_resource} checkout destination #{cwd} already exists or is a non-empty directory"
         end
-end
+      end
 
       def action_export
         action_checkout

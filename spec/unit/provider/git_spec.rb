@@ -58,7 +58,7 @@ describe Chef::Provider::Git do
     it "determines the current revision when there is one" do
       expect(::File).to receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
       @stdout = "9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13\n"
-      expect(@provider).to receive(:shell_out!).with("git rev-parse HEAD", { :cwd => "/my/deploy/dir", :returns => [0, 128], :log_tag=>"git[web2.0 app]" }).and_return(double("ShellOut result", :stdout => @stdout))
+      expect(@provider).to receive(:shell_out!).with("git rev-parse HEAD", { :cwd => "/my/deploy/dir", :returns => [0, 128], :log_tag => "git[web2.0 app]" }).and_return(double("ShellOut result", :stdout => @stdout))
       expect(@provider.find_current_revision).to eql("9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13")
     end
 
@@ -66,7 +66,7 @@ describe Chef::Provider::Git do
       expect(::File).to receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
       @stderr = "fatal: Not a git repository (or any of the parent directories): .git"
       @stdout = ""
-      expect(@provider).to receive(:shell_out!).with("git rev-parse HEAD", :cwd => "/my/deploy/dir", :returns => [0, 128], :log_tag=>"git[web2.0 app]").and_return(double("ShellOut result", :stdout => "", :stderr => @stderr))
+      expect(@provider).to receive(:shell_out!).with("git rev-parse HEAD", :cwd => "/my/deploy/dir", :returns => [0, 128], :log_tag => "git[web2.0 app]").and_return(double("ShellOut result", :stdout => "", :stderr => @stderr))
       expect(@provider.find_current_revision).to be_nil
     end
   end
@@ -349,13 +349,15 @@ SHAS
     expect(@provider).to receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
     expected1_cmd = "git fetch origin --tags"
     expected2_cmd = "git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    expect(@provider).to receive(:shell_out!).with(expected1_cmd, :cwd => "/my/deploy/dir",
+    expect(@provider).to receive(:shell_out!).with(expected1_cmd,
+                                                   :cwd => "/my/deploy/dir",
                                                    :returns => [0, 1, 128],
                                                    :user => "whois",
                                                    :group => "thisis",
                                                    :log_tag => "git[web2.0 app]",
                                                    :environment => { "HOME" => "/home/whois" })
-    expect(@provider).to receive(:shell_out!).with(expected2_cmd, :cwd => "/my/deploy/dir",
+    expect(@provider).to receive(:shell_out!).with(expected2_cmd,
+                                                   :cwd => "/my/deploy/dir",
                                                    :user => "whois", :group => "thisis",
                                                    :log_tag => "git[web2.0 app]",
                                                    :environment => { "HOME" => "/home/whois" })
