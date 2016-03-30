@@ -127,7 +127,7 @@ class Chef
 
           Chef::Log.debug "Executing '#{command}' as user '#{homebrew_user.name}'"
           # FIXME: this 1800 second default timeout should be deprecated
-          output = shell_out_with_timeout!(command, :timeout => 1800, :user => homebrew_uid, :environment => { "HOME" => homebrew_user.dir, "RUBYOPT" => nil })
+          output = shell_out_with_timeout!(command, :timeout => 1800, :user => homebrew_uid, :environment => { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
           output.stdout.chomp
         end
 
