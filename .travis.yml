@@ -149,6 +149,7 @@ matrix:
       - sudo cat /var/log/squid3/access.log
 
   allow_failures:
+    - rvm: 2.3.0
     - rvm: rbx
     - rvm: 2.2
       env: "GEMFILE_MOD=\"gem 'halite', github: 'poise/halite'\""
