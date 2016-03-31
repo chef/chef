@@ -323,12 +323,6 @@ describe Chef::Provider::Mount::Mount do
         @provider.mount_fs()
       end
 
-      it "should not mount the filesystem if it is mounted and the options have not changed" do
-        allow(@current_resource).to receive(:mounted).and_return(true)
-        expect(@provider).to_not receive(:shell_out!)
-        @provider.mount_fs()
-      end
-
     end
 
     describe "umount_fs" do

@@ -60,25 +60,6 @@ describe Chef::Provider::Mount do
       provider.run_action(:mount)
       expect(new_resource).to be_updated_by_last_action
     end
-
-    it "should remount the filesystem if it is mounted and the options have changed" do
-      allow(current_resource).to receive(:mounted).and_return(true)
-      allow(provider).to receive(:mount_options_unchanged?).and_return(false)
-      expect(provider).to receive(:umount_fs).and_return(true)
-      expect(provider).to receive(:wait_until_unmounted)
-      expect(provider).to receive(:mount_fs).and_return(true)
-      provider.run_action(:mount)
-      expect(new_resource).to be_updated_by_last_action
-    end
-
-    it "should not mount the filesystem if it is mounted and the options have not changed" do
-      allow(current_resource).to receive(:mounted).and_return(true)
-      expect(provider).to receive(:mount_options_unchanged?).and_return(true)
-      expect(provider).not_to receive(:mount_fs)
-      provider.run_action(:mount)
-      expect(new_resource).not_to be_updated_by_last_action
-    end
-
   end
 
   describe "when the target state is an unmounted filesystem" do

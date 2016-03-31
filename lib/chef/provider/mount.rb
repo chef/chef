@@ -42,17 +42,13 @@ class Chef
       end
 
       def action_mount
-        if current_resource.mounted
-          if mount_options_unchanged?
-            Chef::Log.debug("#{new_resource} is already mounted")
-          else
-            action_remount
-          end
-        else
+        unless current_resource.mounted
           converge_by("mount #{current_resource.device} to #{current_resource.mount_point}") do
             mount_fs
             Chef::Log.info("#{new_resource} mounted")
           end
+        else
+          Chef::Log.debug("#{new_resource} is already mounted")
         end
       end
 
