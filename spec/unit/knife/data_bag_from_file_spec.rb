@@ -52,7 +52,7 @@ describe Chef::Knife::DataBagFromFile do
     k
   end
 
-  let(:tmp_dir) { Dir.mktmpdir }
+  let(:tmp_dir) { make_canonical_temp_directory }
   let(:db_folder) { File.join(tmp_dir, data_bags_path, bag_name) }
   let(:db_file) { Tempfile.new(["data_bag_from_file_test", ".json"], db_folder) }
   let(:db_file2) { Tempfile.new(["data_bag_from_file_test2", ".json"], db_folder) }
