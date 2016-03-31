@@ -28,6 +28,7 @@ class Chef
         super
         @resource_name = :git
         @additional_remotes = Hash[]
+        @uploadpack_allow_reachable_sha1_in_want = false
       end
 
       def additional_remotes(arg = nil)
@@ -35,6 +36,16 @@ class Chef
           :additional_remotes,
           arg,
           kind_of: Hash
+        )
+      end
+
+      # Introduced in git 2.5 // uploadpack.allowReachableSHA1InWant
+      # https://github.com/git/git/blob/v2.5.0/Documentation/config.txt#L2570
+      def uploadpack_allow_reachable_sha1_in_want(arg = nil)
+        set_or_return(
+          :uploadpack_allow_reachable_sha1_in_want,
+          arg,
+          kind_of: [TrueClass, FalseClass]
         )
       end
 
