@@ -320,7 +320,7 @@ SHAS
 
   it "runs an enable_submodule command" do
     @resource.enable_submodules true
-    expected_cmd = "git submodule sync"
+    expected_cmd = "git submodule init"
     expect(@provider).to receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir",
                                                                  :log_tag => "git[web2.0 app]")
     expected_cmd = "git submodule update --init --recursive"

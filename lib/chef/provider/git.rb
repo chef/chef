@@ -109,12 +109,14 @@ class Chef
         end
       end
 
+      # Updated as per https://git-scm.com/book/en/v2/Git-Tools-Submodules
+      # Address https://github.com/chef/chef/issues/4126 (CHEF-4126)
       def enable_submodules
         if @new_resource.enable_submodules
           converge_by("enable git submodules for #{@new_resource}") do
             Chef::Log.info "#{@new_resource} synchronizing git submodules"
             run_opts = { cwd: cwd }
-            git_standard_executor(%w{submodule sync}, run_opts)
+            git_standard_executor(%w{submodule init}, run_opts)
 
             Chef::Log.info "#{@new_resource} enabling git submodules"
             # the --recursive flag means we require git 1.6.5+ now, see CHEF-1827
@@ -336,6 +338,7 @@ class Chef
         args = []
         args << "-o #{remote}" unless remote == "origin"
         args << "--depth #{@new_resource.depth}" if @new_resource.depth
+        args << "--recursive" if @new_resource.enable_submodules # CHEF-4126
         args
       end
 
