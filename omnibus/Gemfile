@@ -5,7 +5,7 @@ gem "omnibus-software", git: "https://github.com/chef/omnibus-software.git"
 
 # omnibus pulls in aws-sdk which pulls in aws-sdk-core which pulls in jmespath which pulls in json_pure
 # json_pure breaks us. jmespath added it in 1.2.2. Pin to 1.1.
-gem 'jmespath', '< 1.2'
+gem "jmespath", "< 1.2"
 
 # pedump pessimistically pins multipart-post to a version from 2013 which makes
 # bundler very unhappy. Remove this when upstream has merged zed-0xff/pedump#6 .
