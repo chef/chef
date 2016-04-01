@@ -44,10 +44,6 @@ build_retries 3
 fetcher_retries 3
 fetcher_read_timeout 120
 
-# We limit this to 10 workers to eliminate transient timing issues in the
-# way Ruby (and other components) compiles on some more esoteric *nixes.
-workers 10
-
 # Load additional software
 # ------------------------------
 # software_gems ['omnibus-software', 'my-company-software']
