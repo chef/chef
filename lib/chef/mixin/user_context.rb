@@ -49,7 +49,7 @@ class Chef
             logon_session.open
             logon_session.set_user_context
           end
-          block.call
+          yield
         ensure
           logon_session.close if logon_session
         end
