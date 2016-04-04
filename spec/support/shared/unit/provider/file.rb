@@ -476,7 +476,15 @@ shared_examples_for Chef::Provider::File do
           allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
           provider.new_resource.verify windows? ? "REM" : "true"
           provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
-          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed)
+          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, "Proposed content for #{provider.new_resource.path} failed verification #{windows? ? "cmd.exe /c exit 1" : "false"}")
+        end
+
+        it "does not show verification for sensitive resources" do
+          allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
+          provider.new_resource.verify windows? ? "REM" : "true"
+          provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
+          provider.new_resource.sensitive true
+          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, "Proposed content for #{provider.new_resource.path} failed verification [sensitive]")
         end
       end
     end
