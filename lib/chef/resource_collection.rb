@@ -33,9 +33,12 @@ class Chef
     extend Forwardable
 
     attr_reader :resource_set, :resource_list
-    private :resource_set, :resource_list
+    attr_accessor :run_context
 
-    def initialize
+    protected :resource_set, :resource_list
+
+    def initialize(run_context = nil)
+      @run_context = run_context
       @resource_set = ResourceSet.new
       @resource_list = ResourceList.new
     end
@@ -79,11 +82,50 @@ class Chef
 
     resource_list_methods = Enumerable.instance_methods +
       [:iterator, :all_resources, :[], :each, :execute_each_resource, :each_index, :empty?] -
-      [:find] # find needs to run on the set
-    resource_set_methods = [:lookup, :find, :resources, :keys, :validate_lookup_spec!]
+      [:find] # find overridden below
+    resource_set_methods = [:resources, :keys, :validate_lookup_spec!]
 
     def_delegators :resource_list, *resource_list_methods
     def_delegators :resource_set, *resource_set_methods
 
+    def lookup_local(key)
+      resource_set.lookup(key)
+    end
+
+    def find_local(*args)
+      resource_set.find(*args)
+    end
+
+    def lookup(key)
+      if run_context.nil?
+        lookup_local(key)
+      else
+        lookup_recursive(run_context, key)
+      end
+    end
+
+    def find(*args)
+      if run_context.nil?
+        find_local(*args)
+      else
+        find_recursive(run_context, *args)
+      end
+    end
+
+    private
+
+    def lookup_recursive(rc, key)
+      rc.resource_collection.resource_set.lookup(key)
+    rescue Chef::Exceptions::ResourceNotFound
+      raise if rc.parent_run_context.nil?
+      lookup_recursive(rc.parent_run_context, key)
+    end
+
+    def find_recursive(rc, *args)
+      rc.resource_collection.resource_set.find(*args)
+    rescue Chef::Exceptions::ResourceNotFound
+      raise if rc.parent_run_context.nil?
+      find_recursive(rc.parent_run_context, *args)
+    end
   end
 end

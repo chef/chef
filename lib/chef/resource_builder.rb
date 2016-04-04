@@ -137,7 +137,7 @@ class Chef
       @prior_resource ||=
         begin
           key = "#{type}[#{name}]"
-          run_context.resource_collection.lookup(key)
+          run_context.resource_collection.lookup_local(key)
         rescue Chef::Exceptions::ResourceNotFound
           nil
         end

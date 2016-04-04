@@ -283,6 +283,76 @@ describe Chef::ResourceCollection do
     end
   end
 
+  describe "multiple run_contexts" do
+    let(:node) { Chef::Node.new }
+    let(:parent_run_context) { Chef::RunContext.new(node, {}, nil) }
+    let(:parent_resource_collection) { parent_run_context.resource_collection }
+    let(:child_run_context) { parent_run_context.create_child }
+    let(:child_resource_collection) { child_run_context.resource_collection }
+
+    it "should find resources in the parent run_context with lookup" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      parent_resource_collection << zmr
+      expect(child_resource_collection.lookup(zmr.to_s)).to eql(zmr)
+    end
+
+    it "should not find resources in the parent run_context with lookup_local" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      parent_resource_collection << zmr
+      expect { child_resource_collection.lookup_local(zmr.to_s) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+    end
+
+    it "should find resources in the child run_context with lookup_local" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      child_resource_collection << zmr
+      expect(child_resource_collection.lookup_local(zmr.to_s)).to eql(zmr)
+    end
+
+    it "should find resources in the parent run_context with find" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      parent_resource_collection << zmr
+      expect(child_resource_collection.find(zmr.to_s)).to eql(zmr)
+    end
+
+    it "should not find resources in the parent run_context with find_local" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      parent_resource_collection << zmr
+      expect { child_resource_collection.find_local(zmr.to_s) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+    end
+
+    it "should find resources in the child run_context with find_local" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      child_resource_collection << zmr
+      expect(child_resource_collection.find_local(zmr.to_s)).to eql(zmr)
+    end
+
+    it "should not find resources in the child run_context in any way from the parent" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      child_resource_collection << zmr
+      expect { parent_resource_collection.find_local(zmr.to_s) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      expect { parent_resource_collection.find(zmr.to_s) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      expect { parent_resource_collection.lookup_local(zmr.to_s) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      expect { parent_resource_collection.lookup(zmr.to_s) }.to raise_error(Chef::Exceptions::ResourceNotFound)
+    end
+
+    it "should behave correctly when there is an identically named resource in the child and parent" do
+      a = Chef::Resource::File.new("something")
+      a.content("foo")
+      parent_resource_collection << a
+      b = Chef::Resource::File.new("something")
+      b.content("bar")
+      child_resource_collection << b
+      expect(child_resource_collection.find_local("file[something]").content).to eql("bar")
+      expect(child_resource_collection.find("file[something]").content).to eql("bar")
+      expect(child_resource_collection.lookup_local("file[something]").content).to eql("bar")
+      expect(child_resource_collection.lookup("file[something]").content).to eql("bar")
+      expect(parent_resource_collection.find_local("file[something]").content).to eql("foo")
+      expect(parent_resource_collection.find("file[something]").content).to eql("foo")
+      expect(parent_resource_collection.lookup_local("file[something]").content).to eql("foo")
+      expect(parent_resource_collection.lookup("file[something]").content).to eql("foo")
+    end
+  end
+
   def check_by_names(results, *names)
     names.each do |res_name|
       expect(results.detect { |res| res.name == res_name }).not_to eql(nil)
