@@ -30,13 +30,14 @@ class Chef
 
     attr_reader :run_context
 
-    attr_reader :delayed_actions
-
     include Chef::Mixin::ParamsValidate
 
     def initialize(run_context)
-      @run_context      = run_context
-      @delayed_actions  = []
+      @run_context = run_context
+    end
+
+    def delayed_actions
+      @run_context.delayed_actions
     end
 
     def events
@@ -48,16 +49,11 @@ class Chef
     def run_action(resource, action, notification_type = nil, notifying_resource = nil)
       # If there are any before notifications, why-run the resource
       # and notify anyone who needs notifying
-      # TODO cheffish has a bug where it passes itself instead of the run_context to us, so doesn't have before_notifications. Fix there, update dependency requirement, and remove this if statement.
-      before_notifications = run_context.before_notifications(resource) if run_context.respond_to?(:before_notifications)
-      if before_notifications && !before_notifications.empty?
-        whyrun_before = Chef::Config[:why_run]
-        begin
-          Chef::Config[:why_run] = true
+      before_notifications = run_context.before_notifications(resource) || []
+      unless before_notifications.empty?
+        forced_why_run do
           Chef::Log.info("#{resource} running why-run #{action} action to support before action")
           resource.run_action(action, notification_type, notifying_resource)
-        ensure
-          Chef::Config[:why_run] = whyrun_before
         end
 
         if resource.updated_by_last_action?
@@ -65,8 +61,8 @@ class Chef
             Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (before)")
             run_action(notification.resource, notification.action, :before, resource)
           end
+          resource.updated_by_last_action(false)
         end
-
       end
 
       # Actually run the action for realsies
@@ -82,12 +78,8 @@ class Chef
         end
 
         run_context.delayed_notifications(resource).each do |notification|
-          if delayed_actions.any? { |existing_notification| existing_notification.duplicates?(notification) }
-            Chef::Log.info( "#{resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
-                            " (delayed), as it's already been queued")
-          else
-            delayed_actions << notification
-          end
+          # send the notification to the run_context of the receiving resource
+          notification.resource.run_context.add_delayed_action(notification)
         end
       end
     end
@@ -137,5 +129,15 @@ class Chef
     rescue Exception => e
       e
     end
+
+    # helper to run a block of code with why_run forced to true and then restore it correctly
+    def forced_why_run
+      saved = Chef::Config[:why_run]
+      Chef::Config[:why_run] = true
+      yield
+    ensure
+      Chef::Config[:why_run] = saved
+    end
+
   end
 end
