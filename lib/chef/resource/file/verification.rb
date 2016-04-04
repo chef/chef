@@ -119,6 +119,16 @@ class Chef
           v = verification_class.new(@parent_resource, @command, @command_opts, &@block)
           v.verify(path, opts)
         end
+
+        def to_s
+          if @block
+            '<Proc>'
+          elsif @command.is_a?(Symbol)
+            "#{@command.inspect} (#{Chef::Resource::File::Verification.lookup(@command).name})"
+          elsif @command.is_a?(String)
+            @command
+          end
+        end
       end
     end
   end

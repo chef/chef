@@ -66,6 +66,11 @@ describe Chef::Resource::File::Verification do
         v = Chef::Resource::File::Verification.new(parent_resource, nil, {}, &f_block)
         expect(v.verify(temp_path)).to eq(false)
       end
+
+      it "responds to to_s" do
+        v = Chef::Resource::File::Verification.new(parent_resource, nil, {}) { }
+        expect(v.to_s).to eq("<Proc>")
+      end
     end
 
     context "with a verification command(String)" do
@@ -110,23 +115,32 @@ describe Chef::Resource::File::Verification do
         v = Chef::Resource::File::Verification.new(parent_resource, "true", {})
         expect(v.verify(temp_path)).to eq(true)
       end
+
+      it "responds to to_s" do
+        v = Chef::Resource::File::Verification.new(parent_resource, "some command --here", {})
+        expect(v.to_s).to eq("some command --here")
+      end
     end
 
     context "with a named verification(Symbol)" do
+      let(:registered_verification) { double("registered_verification") }
+      subject { described_class.new(parent_resource, :cats, {}) }
       before(:each) do
         class Chef::Resource::File::Verification::Turtle < Chef::Resource::File::Verification
           provides :cats
           def verify(path, opts)
           end
         end
+        allow(Chef::Resource::File::Verification::Turtle).to receive(:new).and_return(registered_verification)
       end
 
       it "delegates to the registered verification" do
-        registered_verification = double()
-        allow(Chef::Resource::File::Verification::Turtle).to receive(:new).and_return(registered_verification)
-        v = Chef::Resource::File::Verification.new(parent_resource, :cats, {})
         expect(registered_verification).to receive(:verify).with(temp_path, {})
-        v.verify(temp_path, {})
+        subject.verify(temp_path, {})
+      end
+
+      it "responds to to_s" do
+        expect(subject.to_s).to eq(":cats (Chef::Resource::File::Verification::Turtle)")
       end
     end
   end

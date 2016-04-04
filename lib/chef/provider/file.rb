@@ -339,7 +339,7 @@ class Chef
         if tempfile
           new_resource.verify.each do |v|
             if ! v.verify(tempfile.path)
-              raise Chef::Exceptions::ValidationFailed.new "Proposed content for #{new_resource.path} failed verification #{v}"
+              raise Chef::Exceptions::ValidationFailed.new "Proposed content for #{new_resource.path} failed verification #{new_resource.sensitive ? '[sensitive]' : v}"
             end
           end
         end
