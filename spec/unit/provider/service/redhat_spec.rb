@@ -157,6 +157,20 @@ describe "Chef::Provider::Service::Redhat" do
           end
         end
 
+        %w{start reload restart}.each do |action|
+          it "should not raise an error when the action is #{action} and init_command is set" do
+            @new_resource.init_command("/etc/init.d/chef")
+            @provider.action = action
+            expect { @provider.process_resource_requirements }.not_to raise_error
+          end
+
+          it "should not raise an error when the action is #{action} and #{action}_command is set" do
+            @new_resource.send("#{action}_command", "/etc/init.d/chef #{action}")
+            @provider.action = action
+            expect { @provider.process_resource_requirements }.not_to raise_error
+          end
+        end
+
         %w{stop disable}.each do |action|
           it "should not raise an error when the action is #{action}" do
             @provider.action = action
