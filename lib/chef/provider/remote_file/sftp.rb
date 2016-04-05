@@ -94,7 +94,6 @@ class Chef
           end
         end
 
-        # Fetches using Net::FTP, returns a Tempfile with the content
         def get
           tempfile =
             Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
