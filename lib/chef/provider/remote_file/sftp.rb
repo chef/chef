@@ -77,8 +77,6 @@ class Chef
           if filename.length == 0 || filename.end_with?( "/" )
             raise ArgumentError, "no filename: #{path.inspect}"
           end
-
-          @directories, @filename = directories, filename
         end
 
         def validate_userinfo!
