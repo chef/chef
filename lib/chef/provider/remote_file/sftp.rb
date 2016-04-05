@@ -50,11 +50,6 @@ class Chef
           URI.unescape(uri.user)
         end
 
-        def filename
-          parse_path if @filename.nil?
-          @filename
-        end
-
         def fetch
           get
         end
@@ -71,7 +66,19 @@ class Chef
         end
 
         def validate_path!
-          parse_path
+          path = uri.path.sub(%r{\A/}, "%2F") # re-encode the beginning slash because uri library decodes it.
+          directories = path.split(%r{/}, -1)
+          directories.each {|d|
+            d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
+          }
+          unless filename = directories.pop
+            raise ArgumentError, "no filename: #{path.inspect}"
+          end
+          if filename.length == 0 || filename.end_with?( "/" )
+            raise ArgumentError, "no filename: #{path.inspect}"
+          end
+
+          @directories, @filename = directories, filename
         end
 
         def validate_userinfo!
@@ -95,23 +102,6 @@ class Chef
           tempfile.close if tempfile
           tempfile
         end
-
-        def parse_path
-          path = uri.path.sub(%r{\A/}, "%2F") # re-encode the beginning slash because uri library decodes it.
-          directories = path.split(%r{/}, -1)
-          directories.each {|d|
-            d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
-          }
-          unless filename = directories.pop
-            raise ArgumentError, "no filename: #{path.inspect}"
-          end
-          if filename.length == 0 || filename.end_with?( "/" )
-            raise ArgumentError, "no filename: #{path.inspect}"
-          end
-
-          @directories, @filename = directories, filename
-        end
-
       end
     end
   end
