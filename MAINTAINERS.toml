@@ -191,20 +191,20 @@ The specific components of Chef related to a given platform - including (but not
         title = "Cisco NX-OS"
         team = "client-nxos"
 
-        lieutenant = "cperry"
+        lieutenant = "adamleff"
 
         maintainers = [
-          "cperry"
+          "adamleff"
         ]
 
       [Org.Components.Subsystems.CiscoIOSXR]
         title = "Cisco IOS XR"
         team = "client-iosxr"
 
-        lieutenant = "cperry"
+        lieutenant = "adamleff"
 
         maintainers = [
-          "cperry"
+          "adamleff"
         ]
 
     [Org.Components.Subsystems.Fedora]
@@ -278,6 +278,10 @@ The specific components of Chef related to a given platform - including (but not
   [people.adamhjk]
     Name = "Adam Jacob"
     GitHub = "adamhjk"
+
+  [people.adamleff]
+    Name = "Adam Leff"
+    GitHub = "adamleff"
 
   [people.Aevin1387]
     Name = "Cory Stephenson"
@@ -382,10 +386,6 @@ The specific components of Chef related to a given platform - including (but not
   [people.mwrock]
     Name = "Matt Wrock"
     GitHub = "mwrock"
-
-  [people.cperry]
-    Name = "Carl Perry"
-    GitHub = "edolnx"
 
   [people.tas50]
     Name = "Tim Smith"
