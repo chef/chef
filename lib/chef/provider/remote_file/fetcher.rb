@@ -31,6 +31,8 @@ class Chef
               Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
             when "ftp"
               Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
+            when "sftp"
+              Chef::Provider::RemoteFile::SFTP.new(uri, new_resource, current_resource)
             when "file"
               Chef::Provider::RemoteFile::LocalFile.new(uri, new_resource, current_resource)
             else
