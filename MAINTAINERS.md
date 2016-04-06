@@ -99,6 +99,7 @@ To mention the team, use @chef/provisioning
 * [John Keiser](https://github.com/jkeiser)
 * [Stuart Preston](https://github.com/stuartpreston)
 * [JJ Asghar](https://github.com/jjasghar)
+* [João Cravo](https://github.com/joaogbcravo)
 
 ## Platform Specific Components
 
