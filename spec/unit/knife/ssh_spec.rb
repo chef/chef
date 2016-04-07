@@ -203,8 +203,14 @@ describe Chef::Knife::Ssh do
       expect(@knife.session.servers[0].port).to eq(123)
     end
 
+    it "defaults to a timeout of 120 seconds" do
+      @knife.session_from_list([["the.b.org", nil]])
+      expect(@knife.session.servers[0].options[:timeout]).to eq(120)
+    end
+
     it "uses the timeout from Chef Config" do
       Chef::Config[:knife][:ssh_timeout] = 5
+      @knife.config[:ssh_timeout] = nil
       @knife.session_from_list([["the.b.org", nil]])
       expect(@knife.session.servers[0].options[:timeout]).to eq(5)
     end
@@ -213,11 +219,6 @@ describe Chef::Knife::Ssh do
       @knife.config[:ssh_timeout] = 6
       @knife.session_from_list([["the.b.org", nil]])
       expect(@knife.session.servers[0].options[:timeout]).to eq(6)
-    end
-
-    it "defaults to no timeout" do
-      @knife.session_from_list([["the.b.org", nil]])
-      expect(@knife.session.servers[0].options[:timeout]).to eq(nil)
     end
 
     it "uses the user from an ssh config file" do
