@@ -50,7 +50,7 @@ class Chef
               File.open("#{dir}/Gemfile", "w+") do |tf|
                 tf.puts "source '#{Chef::Config[:rubygems_url]}'"
                 cookbook_gems.each do |args|
-                  tf.puts "gem #{args.map { |i| "'#{i}'" }.join(' ')}"
+                  tf.puts "gem(*#{args.inspect})"
                 end
                 tf.close
                 so = shell_out!("bundle install", cwd: dir, env: { "PATH" => path_with_prepended_ruby_bin })
