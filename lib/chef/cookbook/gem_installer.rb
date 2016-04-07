@@ -53,9 +53,7 @@ class Chef
                   tf.puts "gem #{args.map { |i| "'#{i}'" }.join(' ')}"
                 end
                 tf.close
-                Dir.chdir(dir) do
-                  so = shell_out!("bundle install")
-                end
+                so = shell_out!("bundle install", pwd: dir)
               end
             end
           rescue Exception => e
