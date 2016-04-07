@@ -55,7 +55,8 @@ describe Chef::Provider::Group::Windows do
       allow(Chef::Util::Windows::NetGroup).to receive(:new).and_return(@net_group)
       allow(@net_group).to receive(:local_add_members)
       allow(@net_group).to receive(:local_set_members)
-      allow(@provider).to receive(:local_group_name_to_sid)
+      allow(@provider).to receive(:lookup_account_name)
+      allow(@provider).to receive(:validate_member!).and_return(true)
       @provider.current_resource = @current_resource
     end
 
