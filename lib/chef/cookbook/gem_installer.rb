@@ -15,12 +15,13 @@
 # limitations under the License.
 #
 
-require "bundler"
-require "bundler/inline"
+require "tmpdir"
+require "chef/mixin/shell_out"
 
 class Chef
   class Cookbook
     class GemInstaller
+      include Chef::Mixin::ShellOut
 
       # @return [Chef::EventDispatch::Dispatcher] the client event dispatcher
       attr_accessor :events
@@ -45,10 +46,16 @@ class Chef
 
         unless cookbook_gems.empty?
           begin
-            inline_gemfile do
-              source Chef::Config[:rubygems_url]
-              cookbook_gems.each do |args|
-                gem(*args)
+            Dir.mktmpdir("chef-gem-bundle") do |dir|
+              File.open("#{dir}/Gemfile", "w+") do |tf|
+                tf.puts "source '#{Chef::Config[:rubygems_url]}'"
+                cookbook_gems.each do |args|
+                  tf.puts "gem #{args.map { |i| "'#{i}'" }.join(' ')}"
+                end
+                tf.close
+                Dir.chdir(dir) do
+                  so = shell_out!("bundle install")
+                end
               end
             end
           rescue Exception => e
