@@ -53,7 +53,8 @@ class Chef
                   tf.puts "gem #{args.map { |i| "'#{i}'" }.join(' ')}"
                 end
                 tf.close
-                so = shell_out!("bundle install", pwd: dir)
+                so = shell_out!("bundle install", cwd: dir, env: { "PATH" => path_with_prepended_ruby_bin })
+                Chef::Log.info(so.stdout)
               end
             end
           rescue Exception => e
@@ -63,6 +64,17 @@ class Chef
         end
 
         events.cookbook_gem_finished
+      end
+
+      private
+
+      # path_sanity appends the ruby_bin, but I want the ruby_bin prepended
+      def path_with_prepended_ruby_bin
+        env_path = ENV["PATH"].dup || ""
+        existing_paths = env_path.split(File::PATH_SEPARATOR)
+        existing_paths.unshift(RbConfig::CONFIG["bindir"])
+        env_path = existing_paths.join(File::PATH_SEPARATOR)
+        env_path.encode("utf-8", invalid: :replace, undef: :replace)
       end
     end
   end
