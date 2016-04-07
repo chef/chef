@@ -51,6 +51,7 @@ describe Chef::Provider::Group::Windows do
       @new_resource.members([ "us" ])
       @current_resource = Chef::Resource::Group.new("staff")
       @current_resource.members %w{all your base}
+      @new_resource.excluded_members %w{all}
 
       allow(Chef::Util::Windows::NetGroup).to receive(:new).and_return(@net_group)
       allow(@net_group).to receive(:local_add_members)
@@ -72,6 +73,12 @@ describe Chef::Provider::Group::Windows do
       @provider.manage_group
     end
 
+    it "should call @net_group.local_delete_members" do
+      allow(@new_resource).to receive(:append).and_return(true)
+      allow(@provider).to receive(:lookup_account_name).with("all").and_return("all")
+      expect(@net_group).to receive(:local_delete_members).with(@new_resource.excluded_members)
+      @provider.manage_group
+    end
   end
 
   describe "remove_group" do

@@ -267,14 +267,14 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     end
 
     describe "when removing members" do
-      it "raises an error for a non well-formed domain name" do
+      it "does not raise an error for a non well-formed domain name" do
         group_resource.excluded_members [invalid_domain_user_name]
-        expect { group_resource.run_action(tested_action) }.to raise_error Chef::Exceptions::Win32APIError
+        expect { group_resource.run_action(tested_action) }.to_not raise_error Chef::Exceptions::Win32APIError
       end
 
-      it "raises an error for a nonexistent domain" do
+      it "does not raise an error for a nonexistent domain" do
         group_resource.excluded_members [nonexistent_domain_user_name]
-        expect { group_resource.run_action(tested_action) }.to raise_error Chef::Exceptions::Win32APIError
+        expect { group_resource.run_action(tested_action) }.to_not raise_error Chef::Exceptions::Win32APIError
       end
     end
   end

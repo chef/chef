@@ -100,7 +100,7 @@ class Chef
           begin
             Chef::ReservedNames::Win32::Security.lookup_account_name(locally_qualified_name(account_name))[1].to_s
           rescue Chef::Exceptions::Win32APIError
-            Chef::Log.warn("SID for '#{locally_qualified_name}' could not be found")
+            Chef::Log.warn("SID for '#{locally_qualified_name(account_name)}' could not be found")
             ""
           end
         end
