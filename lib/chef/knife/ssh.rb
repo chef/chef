@@ -84,7 +84,8 @@ class Chef
         :short => "-t SECONDS",
         :long => "--ssh-timeout SECONDS",
         :description => "The ssh connection timeout",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_timeout] = key.strip.to_i }
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_timeout] = key.strip.to_i },
+        :default => 120
 
       option :ssh_gateway,
         :short => "-G GATEWAY",
