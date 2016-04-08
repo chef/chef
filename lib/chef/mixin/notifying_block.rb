@@ -24,9 +24,10 @@ class Chef
           subcontext = subcontext_block(&block)
           Chef::Runner.new(subcontext).converge
         ensure
-          new_resource.updated_by_last_action(
-            subcontext && subcontext.resource_collection.any?(&:updated?)
-          ) if respond_to?(:new_resource)
+          if respond_to?(:new_resource)
+            new_resource.updated_by_last_action(true) if
+              subcontext && subcontext.resource_collection.any?(&:updated?)
+          end
         end
       end
 
