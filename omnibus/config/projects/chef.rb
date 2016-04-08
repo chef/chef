@@ -45,7 +45,7 @@ override :rubygems,     version: "2.5.2"
 
 # Chef Release version pinning
 override :chef, version: "local_source"
-override :ohai, version: "master"
+override :ohai, version: "v8.14.0"
 
 # Global FIPS override flag.
 if windows? || rhel?
