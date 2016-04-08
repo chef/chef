@@ -15,12 +15,13 @@
 # limitations under the License.
 #
 
-require "bundler"
-require "bundler/inline"
+require "tmpdir"
+require "chef/mixin/shell_out"
 
 class Chef
   class Cookbook
     class GemInstaller
+      include Chef::Mixin::ShellOut
 
       # @return [Chef::EventDispatch::Dispatcher] the client event dispatcher
       attr_accessor :events
@@ -45,10 +46,17 @@ class Chef
 
         unless cookbook_gems.empty?
           begin
-            inline_gemfile do
-              source Chef::Config[:rubygems_url]
-              cookbook_gems.each do |args|
-                gem(*args)
+            Dir.mktmpdir("chef-gem-bundle") do |dir|
+              File.open("#{dir}/Gemfile", "w+") do |tf|
+                tf.puts "source '#{Chef::Config[:rubygems_url]}'"
+                cookbook_gems.each do |args|
+                  tf.puts "gem(*#{args.inspect})"
+                end
+                tf.close
+                Chef::Log.debug("generated Gemfile contents:")
+                Chef::Log.debug(IO.read(tf.path))
+                so = shell_out!("bundle install", cwd: dir, env: { "PATH" => path_with_prepended_ruby_bin })
+                Chef::Log.info(so.stdout)
               end
             end
           rescue Exception => e
@@ -60,58 +68,15 @@ class Chef
         events.cookbook_gem_finished
       end
 
-      # Bundler::UI object so that we can intercept and log the output
-      # of the in-memory bundle install that we are going to do.
-      #
-      class ChefBundlerUI < Bundler::UI::Silent
-        attr_accessor :events
-
-        def initialize(events)
-          @events = events
-          super()
-        end
-
-        def confirm(msg, newline = nil)
-          # looks like "Installing time_ago_in_words 0.1.1" when installing
-          if msg =~ /Installing\s+(\S+)\s+(\S+)/
-            events.cookbook_gem_installing($1, $2)
-          end
-          Chef::Log.info(msg)
-        end
-
-        def error(msg, newline = nil)
-          Chef::Log.error(msg)
-        end
-
-        def debug(msg, newline = nil)
-          Chef::Log.debug(msg)
-        end
-
-        def info(msg, newline = nil)
-          # looks like "Using time_ago_in_words 0.1.1" when using, plus other misc output
-          if msg =~ /Using\s+(\S+)\s+(\S+)/
-            events.cookbook_gem_using($1, $2)
-          end
-          Chef::Log.info(msg)
-        end
-
-        def warn(msg, newline = nil)
-          Chef::Log.warn(msg)
-        end
-      end
-
       private
 
-      # Helper to handle older bundler versions that do not support injecting the UI
-      # object.  On older bundler versions, we work, but you get no output other than
-      # on STDOUT.
-      #
-      def inline_gemfile(&block)
-        # requires https://github.com/bundler/bundler/pull/4245
-        gemfile(true, ui: ChefBundlerUI.new(events), &block)
-      rescue ArgumentError # Method#arity doesn't inspect optional arguments, so we rescue
-        # requires bundler 1.10.0
-        gemfile(true, &block)
+      # path_sanity appends the ruby_bin, but I want the ruby_bin prepended
+      def path_with_prepended_ruby_bin
+        env_path = ENV["PATH"].dup || ""
+        existing_paths = env_path.split(File::PATH_SEPARATOR)
+        existing_paths.unshift(RbConfig::CONFIG["bindir"])
+        env_path = existing_paths.join(File::PATH_SEPARATOR)
+        env_path.encode("utf-8", invalid: :replace, undef: :replace)
       end
     end
   end
