@@ -48,10 +48,6 @@ class Chef
         sub_run_context
       end
 
-      def global_resource_collection
-        Chef.run_context.resource_collection
-      end
-
     end
   end
 end
