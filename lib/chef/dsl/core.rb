@@ -17,15 +17,16 @@
 # limitations under the License.
 #
 
-require "chef/mixin/shell_out"
-require "chef/mixin/powershell_out"
 require "chef/dsl/declare_resource"
+require "chef/mixin/notifying_block"
+require "chef/mixin/powershell_out"
+require "chef/mixin/shell_out"
 
 class Chef
   module DSL
     # This is the "Core DSL" with various bits of Sugar that are mixed into core providers as well
     # as user LWRPs.  This module deliberately does not mixin the Resources or Defintions DSL bits
-    # so that cookbooks are not injeting random things into the samespace of core providers.
+    # so that cookbooks are not injeting random things into the namespace of core providers.
     #
     # - If you are writing cookbooks:  you have come to the wrong place, please inject things into
     #   Chef::DSL::Recipe instead.
@@ -34,9 +35,10 @@ class Chef
     #   into here.
     #
     module Core
-      include Chef::Mixin::ShellOut
-      include Chef::Mixin::PowershellOut
       include Chef::DSL::DeclareResource
+      include Chef::Mixin::NotifyingBlock
+      include Chef::Mixin::PowershellOut
+      include Chef::Mixin::ShellOut
     end
   end
 end
