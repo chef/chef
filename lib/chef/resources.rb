@@ -17,6 +17,7 @@
 #
 
 require "chef/resource/apt_package"
+require "chef/resource/apt_repository"
 require "chef/resource/apt_update"
 require "chef/resource/bash"
 require "chef/resource/batch"
