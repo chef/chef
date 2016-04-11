@@ -16,27 +16,5 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/file_system_error"
-
-class Chef
-  module ChefFS
-    module FileSystem
-      class OperationFailedError < FileSystemError
-        def initialize(operation, entry, cause = nil, reason = nil)
-          super(entry, cause, reason)
-          @operation = operation
-        end
-
-        def message
-          if cause && cause.is_a?(Net::HTTPExceptions) && cause.response.code == "400"
-            "#{super} cause: #{cause.response.body}"
-          else
-            super
-          end
-        end
-
-        attr_reader :operation
-      end
-    end
-  end
-end
+require "chef/chef_fs/file_system/exceptions"
+Chef.log_deprecation "Individual ChefFS error files are deprecated. Please require 'chef/chef_fs/file_system/exceptions' rather than 'chef/chef_fs/file_system/#{File.basename(__FILE__, ".rb")}'."

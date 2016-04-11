@@ -54,7 +54,7 @@ class Chef
             possible_child.dir? == is_dir && possible_child.name_valid?
           end
 
-          # Public API callied by chef_fs/file_system
+          # Public API called by chef_fs/file_system
           def dir?
             true
           end

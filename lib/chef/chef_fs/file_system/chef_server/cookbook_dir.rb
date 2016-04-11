@@ -20,7 +20,7 @@ require "chef/chef_fs/command_line"
 require "chef/chef_fs/file_system/chef_server/rest_list_dir"
 require "chef/chef_fs/file_system/chef_server/cookbook_subdir"
 require "chef/chef_fs/file_system/chef_server/cookbook_file"
-require "chef/chef_fs/file_system/not_found_error"
+require "chef/chef_fs/file_system/exceptions"
 require "chef/cookbook_version"
 require "chef/cookbook_uploader"
 

@@ -17,8 +17,7 @@
 #
 
 require "chef/chef_fs/file_system"
-require "chef/chef_fs/file_system/operation_failed_error"
-require "chef/chef_fs/file_system/operation_not_allowed_error"
+require "chef/chef_fs/file_system/exceptions"
 require "chef/util/diff"
 
 class Chef

@@ -16,17 +16,5 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/operation_not_allowed_error"
-
-class Chef
-  module ChefFS
-    module FileSystem
-      class DefaultEnvironmentCannotBeModifiedError < OperationNotAllowedError
-        def reason
-          result = super
-          result + " (default environment cannot be modified)"
-        end
-      end
-    end
-  end
-end
+require "chef/chef_fs/file_system/exceptions"
+Chef.log_deprecation "Individual ChefFS error files are deprecated. Please require 'chef/chef_fs/file_system/exceptions' rather than 'chef/chef_fs/file_system/#{File.basename(__FILE__, ".rb")}'."

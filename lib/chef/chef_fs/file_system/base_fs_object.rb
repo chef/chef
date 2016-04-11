@@ -17,7 +17,7 @@
 #
 
 require "chef/chef_fs/path_utils"
-require "chef/chef_fs/file_system/operation_not_allowed_error"
+require "chef/chef_fs/file_system/exceptions"
 
 class Chef
   module ChefFS

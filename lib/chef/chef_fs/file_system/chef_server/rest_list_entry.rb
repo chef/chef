@@ -17,8 +17,7 @@
 #
 
 require "chef/chef_fs/file_system/base_fs_object"
-require "chef/chef_fs/file_system/not_found_error"
-require "chef/chef_fs/file_system/operation_failed_error"
+require "chef/chef_fs/file_system/exceptions"
 require "chef/role"
 require "chef/node"
 require "chef/json_compat"
