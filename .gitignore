@@ -15,6 +15,8 @@ external_tests/*.lock
 # http://gembundler.com/man/bundle-exec.1.html
 b/
 binstubs/
+omnibus/.bundle
+acceptance/.bundle
 # RVM and RBENV ruby version files
 .rbenv-version
 .rvmrc

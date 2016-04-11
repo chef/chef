@@ -1,5 +1,8 @@
 source "https://rubygems.org"
-gemspec name: "chef"
+# path is needed because when we attempt to load this gemspec to look at it from
+# another bundle, it will expand the path relative to the other bundle rather than
+# this file.
+gemspec path: File.dirname(__FILE__), name: "chef"
 
 gem "activesupport", "< 4.0.0", group: :compat_testing, platform: "ruby"
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))

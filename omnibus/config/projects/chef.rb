@@ -36,61 +36,20 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
-override :ruby, version: "2.1.8"
-# Leave dev-kit pinned to 4.5 because 4.7 is 20MB larger and we don't want
-# to unnecessarily make the client any fatter.
-override :'ruby-windows-devkit', version: "4.5.2-20111229-1559" if windows? && windows_arch_i386?
-override :bundler,      version: "1.11.2"
-override :rubygems,     version: "2.5.2"
-
-# Chef Release version pinning
-override :chef, version: "local_source"
-override :ohai, version: "master"
-
 # Global FIPS override flag.
 if windows? || rhel?
   override :fips, enabled: true
 end
 
+# Load dynamically updated overrides
+overrides_path = File.expand_path("../../../../omnibus_overrides.rb", __FILE__)
+instance_eval(IO.read(overrides_path), overrides_path)
+
 dependency "preparation"
-dependency "rb-readline"
-dependency "nokogiri"
-dependency "pry"
-dependency "chef"
-dependency "shebang-cleanup"
-dependency "version-manifest"
-dependency "openssl-customization"
 
-if windows?
-  dependency "ruby-windows-devkit"
-  dependency "ruby-windows-devkit-bash"
-end
-
-# Lower level library pins
-override :xproto,             version: "7.0.28"
-override :"util-macros",      version: "1.19.0"
-override :makedepend,         version: "1.0.5"
-
-## We are currently on the latest of these:
-#override :"ncurses",          version: "5.9"
-#override :"zlib",             version: "1.2.8"
-#override :"pkg-config-lite",  version: "0.28-1"
-#override :"libffi",           version: "3.2.1"
-#override :"libyaml",          version: "0.1.6"
-#override :"libiconv",         version: "1.14"
-#override :"liblzma",          version: "5.2.2"
-#override :"libxml2",          version: "2.9.3"
-#override :"libxslt",          version: "1.1.28"
-
-## according to comment in omnibus-sw, latest versions don't work on solaris
-# https://github.com/chef/omnibus-software/blob/aefb7e79d29ca746c3f843673ef5e317fa3cba54/config/software/libtool.rb#L23
-#override :"libtool"
-
-## These can float as they are frequently updated in a way that works for us
-#override :"cacerts",                             # probably best to float?
-#override :"openssl"                              # leave this?
-
-dependency "clean-static-libs"
+# All actual dependencies are in chef-complete, so that the addition
+# or removal of a dependency doesn't dirty the entire project file
+dependency "chef-complete"
 
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
