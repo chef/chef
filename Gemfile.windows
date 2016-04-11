@@ -1,0 +1,34 @@
+#
+# We ensure everything in windows is pinned to the same version as "generic"
+# by reading the generic Gemfile.lock and pinning to that version in the Gemfile.
+#
+# This could *almost* be accomplished by simply copying the lockfile and doing a
+# `bundle install` to add any windows dependencies, but bundler can still update
+# existing versions in a couple of cases:
+#
+# 1. When the source has changed since the main lockfile was built.
+# 2. When Windows-specific dependencies constrain our solution.
+#
+# We do NOT allow windows gem versions to differ from non-windows, so that our
+# packages are consistent across operating systems.
+#
+# At the end of this process, this `Gemfile`:
+#
+# ```
+# gem 'chef', github: 'chef/chef'
+# gem 'berkshelf'
+# ```
+#
+# Is transformed to something like this:
+#
+# ```
+# gem 'chef', github: 'chef/chef', ref: '23049723984237948023'
+# gem 'berkshelf', '= 2.0.5'
+# gem 'ohai', '= 12.9.30' # implicit dependency of chef
+# ```
+#
+
+require_relative "tasks/gemfile_util"
+extend GemfileUtil
+generic_gemfile = File.expand_path("../Gemfile", __FILE__)
+include_locked_gemfile(generic_gemfile)

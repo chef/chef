@@ -50,12 +50,6 @@ Gem::Specification.new do |s|
   # very deliberately avoiding putting a ceiling on this to avoid depsolver conflicts.
   s.add_dependency "bundler", ">= 1.10"
 
-  s.add_development_dependency "rack"
-  s.add_development_dependency "cheffish", ">= 1.1", "< 3.0"
-  s.add_development_dependency "github_changelog_generator", "1.11.3"
-
-  s.add_development_dependency "rake", "~> 10.1"
-
   s.bindir       = "bin"
   s.executables  = %w{ chef-client chef-solo knife chef-shell chef-apply }
 
