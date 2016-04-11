@@ -61,7 +61,7 @@ class Chef
           if @new_resource.append
             members_to_be_added = [ ]
             @new_resource.members.each do |member|
-              members_to_be_added << member if ! has_current_group_member?(member)
+              members_to_be_added << member if ! has_current_group_member?(member) && validate_member!(member)
             end
 
             # local_add_members will raise ERROR_MEMBER_IN_ALIAS if a
@@ -70,7 +70,7 @@ class Chef
 
             members_to_be_removed = [ ]
             @new_resource.excluded_members.each do |member|
-              member_sid = local_group_name_to_sid(member)
+              member_sid = lookup_account_name(member)
               members_to_be_removed << member if has_current_group_member?(member)
             end
             @net_group.local_delete_members(members_to_be_removed) unless members_to_be_removed.empty?
@@ -80,7 +80,7 @@ class Chef
         end
 
         def has_current_group_member?(member)
-          member_sid = local_group_name_to_sid(member)
+          member_sid = lookup_account_name(member)
           @current_resource.members.include?(member_sid)
         end
 
@@ -88,10 +88,23 @@ class Chef
           @net_group.local_delete
         end
 
-        def local_group_name_to_sid(group_name)
-          locally_qualified_name = group_name.include?("\\") ? group_name : "#{ENV['COMPUTERNAME']}\\#{group_name}"
-          Chef::ReservedNames::Win32::Security.lookup_account_name(locally_qualified_name)[1].to_s
+        def locally_qualified_name(account_name)
+          account_name.include?("\\") ? account_name : "#{ENV['COMPUTERNAME']}\\#{account_name}"
         end
+
+        def validate_member!(member)
+          Chef::ReservedNames::Win32::Security.lookup_account_name(locally_qualified_name(member))[1].to_s
+        end
+
+        def lookup_account_name(account_name)
+          begin
+            Chef::ReservedNames::Win32::Security.lookup_account_name(locally_qualified_name(account_name))[1].to_s
+          rescue Chef::Exceptions::Win32APIError
+            Chef::Log.warn("SID for '#{locally_qualified_name(account_name)}' could not be found")
+            ""
+          end
+        end
+
       end
     end
   end

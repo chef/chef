@@ -94,6 +94,7 @@ class Chef
           missing_members = []
           @new_resource.members.each do |member|
             next if has_current_group_member?(member)
+            validate_member!(member)
             missing_members << member
           end
           if missing_members.length > 0
@@ -120,6 +121,12 @@ class Chef
 
       def has_current_group_member?(member)
         @current_resource.members.include?(member)
+      end
+
+      def validate_member!(member)
+        # Sub-classes can do any validation if needed
+        # and raise an error if validation fails
+        true
       end
 
       def action_create
