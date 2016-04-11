@@ -7,12 +7,6 @@ gem "omnibus-software", git: "https://github.com/chef/omnibus-software.git"
 # bundler very unhappy. Remove this when upstream has merged zed-0xff/pedump#6 .
 gem "pedump", git: "https://github.com/ksubrama/pedump.git", branch: "patch-1"
 
-# `json_pure` has a bug in it that is failing Chef builds.  We include the
-# json gem into the Gemfile so that running `bundle exec` will have
-# this gem on the load path, and cause `require 'json/ext'` to succeed.  This
-# prevents loading the `json_pure` gem
-gem "json", ">= 1.8.1"
-
 # This development group is installed by default when you run `bundle install`,
 # but if you are using Omnibus in a CI-based infrastructure, you do not need
 # the Test Kitchen-based build lab. You can skip these unnecessary dependencies
