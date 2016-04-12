@@ -1,3 +1,2 @@
 ---
-BUNDLE_WITHOUT: omnibus_package
 BUNDLE_FROZEN: '1'

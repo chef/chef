@@ -4,9 +4,9 @@ DEPENDENCIES
     path: cookbooks/webapp
 
 GRAPH
-  apache2 (3.2.1)
+  apache2 (3.2.2)
   apt (3.0.0)
-  aws (3.3.1)
+  aws (3.3.2)
     ohai (>= 2.1.0)
   build-essential (3.2.0)
     seven_zip (>= 0.0.0)

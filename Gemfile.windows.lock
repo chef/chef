@@ -7,6 +7,14 @@ GIT
       rubocop (= 0.39.0)
 
 GIT
+  remote: https://github.com/poise/poise
+  revision: a76980685a92283c08f5b2e4526ae1f08f87de79
+  ref: a76980685a92283c08f5b2e4526ae1f08f87de79
+  specs:
+    poise (2.6.2.pre)
+      halite (~> 1.0)
+
+GIT
   remote: https://github.com/rubysec/bundler-audit.git
   revision: 4e32fca89d75f0e249671431ff38aadc02bfb28b
   ref: 4e32fca89d75f0e249671431ff38aadc02bfb28b
@@ -18,7 +26,7 @@ GIT
 PATH
   remote: chef-config
   specs:
-    chef-config (12.10.1)
+    chef-config (12.10.4)
       fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -26,9 +34,9 @@ PATH
 PATH
   remote: .
   specs:
-    chef (12.10.1-universal-mingw32)
+    chef (12.10.4-universal-mingw32)
       bundler (>= 1.10)
-      chef-config (= 12.10.1)
+      chef-config (= 12.10.4)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -64,39 +72,69 @@ PATH
       windows-api (~> 0.4.4)
       wmi-lite (~> 1.0)
 
-PATH
-  remote: chef-config
-  specs:
-    chef-config (12.9.40)
-      fuzzyurl (~> 0.8.0)
-      mixlib-config (~> 2.0)
-      mixlib-shellout (~> 2.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
+    activesupport (3.2.22.2)
+      i18n (~> 0.6, >= 0.6.4)
+      multi_json (~> 1.0)
     addressable (2.4.0)
     appbundler (0.9.0)
       mixlib-cli (~> 1.4)
+    artifactory (2.3.2)
     ast (2.2.0)
+    aws-sdk (2.2.34)
+      aws-sdk-resources (= 2.2.34)
+    aws-sdk-core (2.2.34)
+      jmespath (~> 1.0)
+    aws-sdk-resources (2.2.34)
+      aws-sdk-core (= 2.2.34)
+    aws-sdk-v1 (1.66.0)
+      json (~> 1.4)
+      nokogiri (>= 1.4.4)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     builder (3.2.2)
     byebug (8.2.4)
-    chef-zero (4.5.0)
+    chef-api (0.5.0)
+      logify (~> 0.1)
+      mime-types
+    chef-provisioning (1.7.0)
+      cheffish (>= 1.3.1, < 3.0)
+      inifile (>= 2.0.2)
+      mixlib-install (~> 1.0)
+      net-scp (~> 1.0)
+      net-ssh (>= 2.9, < 4.0)
+      net-ssh-gateway (~> 1.2.0)
+      winrm (~> 1.3)
+    chef-provisioning-aws (1.9.0)
+      aws-sdk (>= 2.1.26, < 3.0)
+      aws-sdk-v1 (>= 1.59.0)
+      chef-provisioning (~> 1.4)
+      retryable (~> 2.0, >= 2.0.1)
+      ubuntu_ami (~> 0.4, >= 0.4.1)
+    chef-rewind (0.0.9)
+    chef-sugar (3.3.0)
+    chef-zero (4.6.1)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
       mixlib-log (~> 1.3)
       rack
       uuidtools (~> 2.1)
-    cheffish (2.0.3)
+    cheffish (2.0.4)
       chef-zero (~> 4.3)
       compat_resource
+    chefspec (4.6.1)
+      chef (>= 11.14)
+      fauxhai (~> 3.2)
+      rspec (~> 3.0)
     childprocess (0.5.9)
       ffi (~> 1.0, >= 1.0.11)
     coderay (1.1.1)
     colorize (0.7.7)
     compat_resource (12.9.1)
+    cucumber-core (1.4.0)
+      gherkin (~> 3.2.0)
     debug_inspector (0.0.2)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
@@ -105,10 +143,21 @@ GEM
     erubis (2.7.0)
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
+    fauxhai (3.3.0)
+      net-ssh
     ffi (1.9.10-x86-mingw32)
     ffi-yajl (2.2.3)
       libyajl2 (~> 1.2)
+    foodcritic (6.1.1)
+      cucumber-core (>= 1.3)
+      erubis
+      nokogiri (>= 1.5, < 2.0)
+      rake
+      rufus-lru (~> 1.0)
+      treetop (~> 1.4)
+      yajl-ruby (~> 1.1)
     fuzzyurl (0.8.0)
+    gherkin (3.2.0)
     github_api (0.13.1)
       addressable (~> 2.4.0)
       descendants_tracker (~> 0.0.4)
@@ -124,15 +173,39 @@ GEM
       rake (>= 10.0)
       rspec (>= 3.2)
       rubocop (>= 0.31)
+    gssapi (1.2.0)
+      ffi (>= 1.0.1)
+    gyoku (1.3.1)
+      builder (>= 2.1.2)
+    halite (1.2.1)
+      bundler
+      chef (~> 12.0)
+      stove (~> 3.2, >= 3.2.3)
+      thor
     hashie (3.4.3)
     highline (1.7.8)
+    httpclient (2.7.1)
     i18n (0.7.0)
+    inifile (3.0.0)
     iniparse (1.4.2)
     ipaddress (0.8.3)
+    jmespath (1.2.4)
+      json_pure (>= 1.8.1)
     json (1.8.3)
+    json_pure (1.8.3)
     jwt (1.5.1)
+    knife-windows (1.4.0)
+      winrm (~> 1.7)
     libyajl2 (1.2.0)
+    little-plugger (1.1.4)
+    logging (2.1.0)
+      little-plugger (~> 1.1)
+      multi_json (~> 1.10)
+    logify (0.2.0)
     method_source (0.8.2)
+    mime-types (3.0)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2016.0221)
     mini_portile2 (2.0.0)
     mixlib-authentication (1.4.0)
       mixlib-log
@@ -141,10 +214,15 @@ GEM
       rspec-mocks (~> 3.2)
     mixlib-cli (1.5.0)
     mixlib-config (2.2.1)
+    mixlib-install (1.0.6)
+      artifactory (>= 2.3.0)
+      mixlib-shellout (>= 2.2.6)
+      mixlib-versioning (>= 1.1.0)
     mixlib-log (1.6.0)
     mixlib-shellout (2.2.6-universal-mingw32)
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
+    mixlib-versioning (1.1.0)
     multi_json (1.11.2)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
@@ -162,6 +240,7 @@ GEM
     netrc (0.11.0)
     nokogiri (1.6.7.2-x86-mingw32)
       mini_portile2 (~> 2.0.0.rc2)
+    nori (2.6.0)
     oauth2 (1.1.0)
       faraday (>= 0.8, < 0.10)
       jwt (~> 1.0, < 1.5.2)
@@ -188,6 +267,7 @@ GEM
     parser (2.3.0.7)
       ast (~> 2.2)
     plist (3.2.0)
+    polyglot (0.3.5)
     powerpack (0.1.1)
     proxifier (1.0.3)
     pry (0.10.3)
@@ -207,6 +287,7 @@ GEM
     rainbow (2.1.0)
     rake (11.1.2)
     rb-readline (0.5.3)
+    retryable (2.0.3)
     rspec (3.4.0)
       rspec-core (~> 3.4.0)
       rspec-expectations (~> 3.4.0)
@@ -235,6 +316,8 @@ GEM
     ruby-prof (0.15.9)
     ruby-progressbar (1.7.5)
     ruby-shadow (2.5.0)
+    rubyntlm (0.6.0)
+    rufus-lru (1.0.5)
     sawyer (0.7.0)
       addressable (>= 2.3.5, < 2.5)
       faraday (~> 0.8, < 0.10)
@@ -255,11 +338,17 @@ GEM
       net-ssh (>= 2.7, < 4.0)
       net-telnet
       sfl
+    stove (3.2.8)
+      chef-api (~> 0.5)
+      logify (~> 0.2)
     syslog-logger (1.6.8)
     systemu (2.6.5)
     thor (0.19.1)
     thread_safe (0.3.5)
     tomlrb (1.2.1)
+    treetop (1.6.5)
+      polyglot (~> 0.3)
+    ubuntu_ami (0.4.1)
     unicode-display_width (1.0.3)
     uuidtools (2.1.5)
     win32-api (1.5.3-universal-mingw32)
@@ -281,110 +370,160 @@ GEM
       ffi
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
+    winrm (1.7.3)
+      builder (>= 2.1.2)
+      gssapi (~> 1.2)
+      gyoku (~> 1.0)
+      httpclient (~> 2.2, >= 2.2.0.2)
+      logging (>= 1.6.1, < 3.0)
+      nori (~> 2.0)
+      rubyntlm (~> 0.6.0)
     wmi-lite (1.0.0)
+    yajl-ruby (1.2.1)
     yard (0.8.7.6)
 
 PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  activesupport (= 3.2.22.2)
-  addressable (= 2.4.0)
-  appbundler (= 0.9.0)
-  ast (= 2.2.0)
-  binding_of_caller (= 0.7.2)
-  builder (= 3.2.2)
+  activesupport (= 3.2.22.2)!
+  addressable (= 2.4.0)!
+  appbundler (= 0.9.0)!
+  artifactory (= 2.3.2)!
+  ast (= 2.2.0)!
+  aws-sdk (= 2.2.34)!
+  aws-sdk-core (= 2.2.34)!
+  aws-sdk-resources (= 2.2.34)!
+  aws-sdk-v1 (= 1.66.0)!
+  binding_of_caller (= 0.7.2)!
+  builder (= 3.2.2)!
   bundler-audit!
-  byebug (= 8.2.4)
+  byebug (= 8.2.4)!
   chef!
+  chef-api (= 0.5.0)!
   chef-config!
-  chef-zero (= 4.5.0)
-  cheffish (= 2.0.3)
+  chef-provisioning (= 1.7.0)!
+  chef-provisioning-aws (= 1.9.0)!
+  chef-rewind (= 0.0.9)!
+  chef-sugar (= 3.3.0)!
+  chef-zero (= 4.6.1)!
+  cheffish (= 2.0.4)!
+  chefspec (= 4.6.1)!
   chefstyle!
-  childprocess (= 0.5.9)
-  coderay (= 1.1.1)
-  colorize (= 0.7.7)
-  compat_resource (= 12.9.1)
-  debug_inspector (= 0.0.2)
-  descendants_tracker (= 0.0.4)
-  diff-lcs (= 1.2.5)
-  docile (= 1.1.5)
-  erubis (= 2.7.0)
-  faraday (= 0.9.2)
-  ffi (= 1.9.10)
-  ffi-yajl (= 2.2.3)
-  fuzzyurl (= 0.8.0)
-  github_api (= 0.13.1)
-  github_changelog_generator (= 1.11.3)
-  hashie (= 3.4.3)
-  highline (= 1.7.8)
-  i18n (= 0.7.0)
-  iniparse (= 1.4.2)
-  ipaddress (= 0.8.3)
-  json (= 1.8.3)
-  jwt (= 1.5.1)
-  libyajl2 (= 1.2.0)
-  method_source (= 0.8.2)
-  mini_portile2 (= 2.0.0)
-  mixlib-authentication (= 1.4.0)
-  mixlib-cli (= 1.5.0)
-  mixlib-config (= 2.2.1)
-  mixlib-log (= 1.6.0)
-  mixlib-shellout (= 2.2.6)
-  multi_json (= 1.11.2)
-  multi_xml (= 0.5.5)
-  multipart-post (= 2.0.0)
-  net-scp (= 1.2.1)
-  net-sftp (= 2.1.2)
-  net-ssh (= 3.1.1)
-  net-ssh-gateway (= 1.2.0)
-  net-ssh-multi (= 1.2.1)
-  net-telnet (= 0.1.1)
-  netrc (= 0.11.0)
-  nokogiri (= 1.6.7.2)
-  oauth2 (= 1.1.0)
-  octokit (= 4.3.0)
-  ohai (= 8.14.0)
-  overcommit (= 0.33.0)
-  parser (= 2.3.0.7)
-  plist (= 3.2.0)
-  powerpack (= 0.1.1)
-  proxifier (= 1.0.3)
-  pry (= 0.10.3)
-  pry-byebug (= 3.3.0)
-  pry-remote (= 0.1.8)
-  pry-stack_explorer (= 0.4.9.2)
-  rack (= 1.6.4)
-  rainbow (= 2.1.0)
-  rake (= 11.1.2)
-  rb-readline (= 0.5.3)
-  rspec (= 3.4.0)
-  rspec-core (= 3.4.4)
-  rspec-expectations (= 3.4.0)
-  rspec-its (= 1.2.0)
-  rspec-mocks (= 3.4.1)
-  rspec-support (= 3.4.1)
-  rspec_junit_formatter (= 0.2.3)
-  rubocop (= 0.39.0)
-  ruby-prof (= 0.15.9)
-  ruby-progressbar (= 1.7.5)
-  ruby-shadow (= 2.5.0)
-  sawyer (= 0.7.0)
-  serverspec (= 2.31.1)
-  sfl (= 2.2)
-  simplecov (= 0.11.2)
-  simplecov-html (= 0.10.0)
-  slop (= 3.6.0)
-  specinfra (= 2.56.1)
-  syslog-logger (= 1.6.8)
-  systemu (= 2.6.5)
-  thor (= 0.19.1)
-  thread_safe (= 0.3.5)
-  tomlrb (= 1.2.1)
-  unicode-display_width (= 1.0.3)
-  uuidtools (= 2.1.5)
-  wmi-lite (= 1.0.0)
-  yard (= 0.8.7.6)
+  childprocess (= 0.5.9)!
+  coderay (= 1.1.1)!
+  colorize (= 0.7.7)!
+  compat_resource (= 12.9.1)!
+  cucumber-core (= 1.4.0)!
+  debug_inspector (= 0.0.2)!
+  descendants_tracker (= 0.0.4)!
+  diff-lcs (= 1.2.5)!
+  docile (= 1.1.5)!
+  erubis (= 2.7.0)!
+  faraday (= 0.9.2)!
+  fauxhai (= 3.3.0)!
+  ffi (= 1.9.10)!
+  ffi-yajl (= 2.2.3)!
+  foodcritic (= 6.1.1)!
+  fuzzyurl (= 0.8.0)!
+  gherkin (= 3.2.0)!
+  github_api (= 0.13.1)!
+  github_changelog_generator (= 1.11.3)!
+  gssapi (= 1.2.0)!
+  gyoku (= 1.3.1)!
+  halite (= 1.2.1)!
+  hashie (= 3.4.3)!
+  highline (= 1.7.8)!
+  httpclient (= 2.7.1)!
+  i18n (= 0.7.0)!
+  inifile (= 3.0.0)!
+  iniparse (= 1.4.2)!
+  ipaddress (= 0.8.3)!
+  jmespath (= 1.2.4)!
+  json (= 1.8.3)!
+  json_pure (= 1.8.3)!
+  jwt (= 1.5.1)!
+  knife-windows (= 1.4.0)!
+  libyajl2 (= 1.2.0)!
+  little-plugger (= 1.1.4)!
+  logging (= 2.1.0)!
+  logify (= 0.2.0)!
+  method_source (= 0.8.2)!
+  mime-types (= 3.0)!
+  mime-types-data (= 3.2016.0221)!
+  mini_portile2 (= 2.0.0)!
+  mixlib-authentication (= 1.4.0)!
+  mixlib-cli (= 1.5.0)!
+  mixlib-config (= 2.2.1)!
+  mixlib-install (= 1.0.6)!
+  mixlib-log (= 1.6.0)!
+  mixlib-shellout (= 2.2.6)!
+  mixlib-versioning (= 1.1.0)!
+  multi_json (= 1.11.2)!
+  multi_xml (= 0.5.5)!
+  multipart-post (= 2.0.0)!
+  net-scp (= 1.2.1)!
+  net-sftp (= 2.1.2)!
+  net-ssh (= 3.1.1)!
+  net-ssh-gateway (= 1.2.0)!
+  net-ssh-multi (= 1.2.1)!
+  net-telnet (= 0.1.1)!
+  netrc (= 0.11.0)!
+  nokogiri (= 1.6.7.2)!
+  nori (= 2.6.0)!
+  oauth2 (= 1.1.0)!
+  octokit (= 4.3.0)!
+  ohai (= 8.14.0)!
+  overcommit (= 0.33.0)!
+  parser (= 2.3.0.7)!
+  plist (= 3.2.0)!
+  poise!
+  polyglot (= 0.3.5)!
+  powerpack (= 0.1.1)!
+  proxifier (= 1.0.3)!
+  pry (= 0.10.3)!
+  pry-byebug (= 3.3.0)!
+  pry-remote (= 0.1.8)!
+  pry-stack_explorer (= 0.4.9.2)!
+  rack (= 1.6.4)!
+  rainbow (= 2.1.0)!
+  rake (= 11.1.2)!
+  rb-readline (= 0.5.3)!
+  retryable (= 2.0.3)!
+  rspec (= 3.4.0)!
+  rspec-core (= 3.4.4)!
+  rspec-expectations (= 3.4.0)!
+  rspec-its (= 1.2.0)!
+  rspec-mocks (= 3.4.1)!
+  rspec-support (= 3.4.1)!
+  rspec_junit_formatter (= 0.2.3)!
+  rubocop (= 0.39.0)!
+  ruby-prof (= 0.15.9)!
+  ruby-progressbar (= 1.7.5)!
+  ruby-shadow (= 2.5.0)!
+  rubyntlm (= 0.6.0)!
+  rufus-lru (= 1.0.5)!
+  sawyer (= 0.7.0)!
+  serverspec (= 2.31.1)!
+  sfl (= 2.2)!
+  simplecov (= 0.11.2)!
+  simplecov-html (= 0.10.0)!
+  slop (= 3.6.0)!
+  specinfra (= 2.56.1)!
+  stove (= 3.2.8)!
+  syslog-logger (= 1.6.8)!
+  systemu (= 2.6.5)!
+  thor (= 0.19.1)!
+  thread_safe (= 0.3.5)!
+  tomlrb (= 1.2.1)!
+  treetop (= 1.6.5)!
+  ubuntu_ami (= 0.4.1)!
+  unicode-display_width (= 1.0.3)!
+  uuidtools (= 2.1.5)!
+  winrm (= 1.7.3)!
+  wmi-lite (= 1.0.0)!
+  yajl-ruby (= 1.2.1)!
+  yard (= 0.8.7.6)!
 
 BUNDLED WITH
    1.11.2

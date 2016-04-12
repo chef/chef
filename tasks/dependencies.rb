@@ -111,10 +111,10 @@ namespace :dependencies do
       # Replace the bundler and rubygems versions
       OMNIBUS_RUBYGEMS_AT_LATEST_VERSION.each do |override_name, gem_name|
         # Get the latest bundler version
-        puts "Running gem list -re #{gem_name} ..."
-        gem_list = `gem list -re #{gem_name}`
+        puts "Running gem list -r #{gem_name} ..."
+        gem_list = `gem list -r #{gem_name}`
         unless gem_list =~ /^#{gem_name}\s*\(([^)]*)\)$/
-          raise "gem list -re #{gem_name} failed with output:\n#{gem_list}"
+          raise "gem list -r #{gem_name} failed with output:\n#{gem_list}"
         end
 
         # Emit it
@@ -141,6 +141,7 @@ namespace :dependencies do
   # Find out if we're using the latest gems we can (so we don't regress versions)
   desc "Check for gems that are not at the latest released version, and report if anything not in ACCEPTABLE_OUTDATED_GEMS (version_policy.rb) is out of date."
   task :check_outdated do
+    extend BundleUtil
     puts ""
     puts "-------------------------------------------------------------------"
     puts "Checking for outdated gems ..."

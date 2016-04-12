@@ -23,13 +23,16 @@ install:
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - echo %PATH%
   - ruby --version
+  - gem update --system || gem update --system || gem update --system
   - gem install bundler --quiet --no-ri --no-rdoc || gem install bundler --quiet --no-ri --no-rdoc || gem install bundler --quiet --no-ri --no-rdoc
-  - gem install rubygems-pkg/rubygems-update-2.4.6.gem
   - update_rubygems
   - gem --version
   - bundler --version
+  - SET BUNDLE_GEMFILE=Gemfile.windows
 
 build_script:
+  - bundle config --local frozen 1
+  - bundle config --local without docgen:maintenance:omnibus_package:integration:aix:bsd:linux:solaris
   - bundle install || bundle install || bundle install
 
 test_script:

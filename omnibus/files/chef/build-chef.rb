@@ -108,22 +108,24 @@ module BuildChef
           name, version = $1, $2
           # rubocop is an exception, since different projects disagree
           next if GEMS_ALLOWED_TO_FLOAT.include?(name)
-          gem_pins << "override_gem #{name.inspect}, #{version.inspect}\n"
+          gem_pins << "gem #{name.inspect}, #{version.inspect}, override: true\n"
         end
       end
 
+      # Find the installed chef gem by looking for lib/chef.rb
+      chef_gem = File.expand_path("../..", shellout!("#{gem_bin} which chef").stdout.chomp)
+      # Figure out the path to gemfile_util from there
+      gemfile_util = Pathname.new(File.join(chef_gem, "tasks", "gemfile_util"))
+      gemfile_util = gemfile_util.relative_path_from(Pathname.new(shared_gemfile).dirname)
+
       create_file(shared_gemfile) { <<-EOM }
-        # Meant to be included in component Gemfiles at the end with:
+        # Meant to be included in component Gemfiles at the beginning with:
         #
         #     instance_eval(IO.read("#{install_dir}/Gemfile"), "#{install_dir}/Gemfile")
         #
         # Override any existing gems with our own.
-        def override_gem(name, *args, &block)
-          # If the Gemfile re-specifies something in our lockfile, ignore it.
-          current = dependencies.find { |dep| dep.name == name }
-          dependencies.delete(current) if current
-          gem(name, *args, &block)
-        end
+        require_relative "#{gemfile_util}"
+        extend GemfileUtil
         #{gem_pins}
       EOM
     end

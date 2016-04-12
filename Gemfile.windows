@@ -29,6 +29,4 @@
 #
 
 require_relative "tasks/gemfile_util"
-extend GemfileUtil
-generic_gemfile = File.expand_path("../Gemfile", __FILE__)
-include_locked_gemfile(generic_gemfile)
+GemfileUtil.include_locked_gemfile(self, "Gemfile", without_groups: [ :linux, :solaris, :aix ])
