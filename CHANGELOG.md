@@ -1,7 +1,7 @@
 # Change Log
 
-## [v12.9](https://github.com/chef/chef/tree/v12.9.37) (2016-04-09)
-[Full Changelog](https://github.com/chef/chef/compare/v12.8.1...v12.9.37)
+## [v12.9](https://github.com/chef/chef/tree/v12.9.38) (2016-04-09)
+[Full Changelog](https://github.com/chef/chef/compare/v12.8.2...v12.9.38)
 
 **Implemented enhancements:**
 
