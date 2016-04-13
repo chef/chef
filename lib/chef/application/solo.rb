@@ -219,7 +219,14 @@ class Chef::Application::Solo < Chef::Application
       Chef::Config[:interval] ||= 1800
     end
 
-    Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
+    if Chef::Config[:interval]
+      if Chef::Platform.windows?
+        Chef::Log.warn("Use of chef-solo interval runs on Windows is discouraged. " +
+          "Please install chef-solo as a Windows service or scheduled task instead.")
+      elsif !Chef::Config[:client_fork]
+        Chef::Application.fatal!(unforked_interval_error_message)
+      end
+    end
 
     Chef::Log.deprecation("-r MUST be changed to --recipe-url, the -r option will be changed in Chef 13.0") if ARGV.include?("-r")
 
