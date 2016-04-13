@@ -16,13 +16,5 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/file_system_error"
-
-class Chef
-  module ChefFS
-    module FileSystem
-      class NotFoundError < FileSystemError
-      end
-    end
-  end
-end
+require "chef/chef_fs/file_system/exceptions"
+Chef.log_deprecation "Individual ChefFS error files are deprecated. Please require 'chef/chef_fs/file_system/exceptions' rather than 'chef/chef_fs/file_system/#{File.basename(__FILE__, ".rb")}'."

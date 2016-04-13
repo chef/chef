@@ -18,7 +18,7 @@
 
 require "chef/chef_fs/file_system/base_fs_dir"
 require "chef/chef_fs/file_system/chef_server/rest_list_entry"
-require "chef/chef_fs/file_system/not_found_error"
+require "chef/chef_fs/file_system/exceptions"
 
 class Chef
   module ChefFS

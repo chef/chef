@@ -22,7 +22,7 @@ require "chef_zero/data_store/data_already_exists_error"
 require "chef_zero/data_store/data_not_found_error"
 require "chef/chef_fs/file_pattern"
 require "chef/chef_fs/file_system"
-require "chef/chef_fs/file_system/not_found_error"
+require "chef/chef_fs/file_system/exceptions"
 require "chef/chef_fs/file_system/memory/memory_root"
 require "fileutils"
 

@@ -16,29 +16,5 @@
 # limitations under the License.
 #
 
-class Chef
-  module ChefFS
-    module FileSystem
-      class FileSystemError < StandardError
-        # @param entry The entry which had an issue.
-        # @param cause The wrapped exception (if any).
-        # @param reason A string describing why this exception happened.
-        def initialize(entry, cause = nil, reason = nil)
-          super(reason)
-          @entry = entry
-          @cause = cause
-          @reason = reason
-        end
-
-        # The entry which had an issue.
-        attr_reader :entry
-
-        # The wrapped exception (if any).
-        attr_reader :cause
-
-        # A string describing why this exception happened.
-        attr_reader :reason
-      end
-    end
-  end
-end
+require "chef/chef_fs/file_system/exceptions"
+Chef.log_deprecation "Individual ChefFS error files are deprecated. Please require 'chef/chef_fs/file_system/exceptions' rather than 'chef/chef_fs/file_system/#{File.basename(__FILE__, ".rb")}'."

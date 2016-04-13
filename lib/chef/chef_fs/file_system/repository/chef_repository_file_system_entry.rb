@@ -18,7 +18,7 @@
 #
 
 require "chef/chef_fs/file_system/repository/file_system_entry"
-require "chef/chef_fs/file_system/not_found_error"
+require "chef/chef_fs/file_system/exceptions"
 
 class Chef
   module ChefFS
