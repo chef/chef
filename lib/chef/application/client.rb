@@ -360,8 +360,13 @@ class Chef::Application::Client < Chef::Application
       Chef::Config[:splay] = nil
     end
 
-    if !Chef::Config[:client_fork] && Chef::Config[:interval] && !Chef::Platform.windows?
-      Chef::Application.fatal!(unforked_interval_error_message)
+    if Chef::Config[:interval]
+      if Chef::Platform.windows?
+        Chef::Log.warn("Use of chef-client interval runs on Windows is discouraged. " +
+          "Please install chef-client as a Windows service or scheduled task instead.")
+      elsif !Chef::Config[:client_fork]
+        Chef::Application.fatal!(unforked_interval_error_message)
+      end
     end
 
     if Chef::Config[:json_attribs]
