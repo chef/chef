@@ -371,9 +371,9 @@ EOH
   end
 
   def unforked_interval_error_message
-    "Unforked chef-client interval runs are disabled in Chef 12." +
+    "Unforked chef-solo interval runs are disabled in Chef 12." +
       "\nConfiguration settings:" +
       "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
-      "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+      "\nEnable chef-solo interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 end
