@@ -22,15 +22,19 @@ require "chef/chef_fs/file_system/base_fs_object"
 require "chef/chef_fs/file_system/exceptions"
 require "chef/chef_fs/file_system/nonexistent_fs_object"
 
-CHILD_DIRS = %w{ test1 test2 skip test3 skip2 }
+CHILD_FILES = %w{ test1.json test2.json skip test3.json skip2 test4 }
 
 class TestDirectory < Chef::ChefFS::FileSystem::Repository::Directory
   def make_child_entry(name)
     TestFile.new(name, self)
   end
 
+  def can_have_child?(name, is_dir)
+    !is_dir && File.extname(name) == ".json"
+  end
+
   def dir_ls
-    CHILD_DIRS
+    CHILD_FILES
   end
 end
 
@@ -91,7 +95,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
 
   context "#children" do
     before do
-      CHILD_DIRS.sort.each do |child|
+      CHILD_FILES.sort.each do |child|
         expect(TestFile).to receive(:new).with(child, test_directory).and_call_original
       end
     end
@@ -101,7 +105,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
     end
 
     it "filters invalid names" do
-      expect(test_directory.children.map { |c| c.name }).to eql %w{ test1 test2 test3 }
+      expect(test_directory.children.map { |c| c.name }).to eql %w{ test1.json test2.json test3.json }
     end
   end
 
