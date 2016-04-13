@@ -64,7 +64,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
   end
 
   let(:file_double) do
-    double(TestFile, create: true)
+    double(TestFile, create: true, exists?: false)
   end
 
   context "#make_child_entry" do
@@ -76,7 +76,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
   context "#create_child" do
     it "creates a new TestFile" do
       expect(TestFile).to receive(:new).with("test_child", test_directory).and_return(file_double)
-      expect(file_double).to receive(:create)
+      expect(file_double).to receive(:write).with("test")
       test_directory.create_child("test_child", "test")
     end
   end

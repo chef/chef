@@ -66,13 +66,26 @@ class Chef
           def children
             dir_ls.sort.
               map { |child_name| make_child_entry(child_name) }.
-              select { |maybe_child| maybe_child.fs_entry_valid? }
+              select { |new_child| new_child.fs_entry_valid? && can_have_child?(new_child.name, new_child.dir?)}
           rescue Errno::ENOENT => e
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
           end
 
           def create_child(child_name, file_contents = nil)
-            make_child_entry(child_name).tap { |c| c.create(file_contents) }
+            child = make_child_entry(child_name)
+            if child.exists?
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
+            end
+            if file_contents
+              child.write(file_contents)
+            else
+              begin
+                Dir.mkdir(child.file_path)
+              rescue Errno::EEXIST
+                raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
+              end
+            end
+            child
           end
 
           # An empty children array is an empty dir

@@ -57,12 +57,22 @@ class Chef
             !is_dir && name[-5..-1] == ".json"
           end
 
+          def name_valid?
+            !name.start_with?(".")
+          end
+
+          # basic implementation to support Repository::Directory API
+          def fs_entry_valid?
+            name_valid? && File.exist?(file_path)
+          end
+
           def write(file_contents)
             if file_contents && write_pretty_json && name[-5..-1] == ".json"
               file_contents = minimize(file_contents, self)
             end
             super(file_contents)
           end
+          alias :create :write
 
           def minimize(file_contents, entry)
             object = Chef::JSONCompat.parse(file_contents)
