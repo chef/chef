@@ -1,6 +1,7 @@
 #
-# Author:: Jordan Running (<jr@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Author:: Ho-Sheng Hsiao (<hosh@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,23 +18,20 @@
 #
 
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
-require "chef/chef_fs/data_handler/client_key_data_handler"
 require "chef/chef_fs/file_system/repository/directory"
+require "chef/chef_fs/file_system/exceptions"
 
 class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class ChefRepositoryFileSystemClientKeysDir < ChefRepositoryFileSystemEntry
-
+        class ClientsDir < Repository::Directory
           def can_have_child?(name, is_dir)
-            is_dir && !name.start_with?(".")
+            !is_dir && File.extname(name) == ".json"
           end
 
-          protected
-
           def make_child_entry(child_name)
-            ChefRepositoryFileSystemEntry.new(child_name, self, nil, Chef::ChefFS::DataHandler::ClientKeyDataHandler.new)
+            ChefRepositoryFileSystemEntry.new(child_name, self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new)
           end
         end
       end

@@ -17,6 +17,7 @@
 #
 
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
+require "chef/chef_fs/file_system/repository/directory"
 require "chef/chef_fs/file_system/chef_server/acls_dir"
 require "chef/chef_fs/data_handler/acl_data_handler"
 
@@ -24,13 +25,16 @@ class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class ChefRepositoryFileSystemAclsDir < ChefRepositoryFileSystemEntry
-          def initialize(name, parent, path = nil)
-            super(name, parent, path, Chef::ChefFS::DataHandler::AclDataHandler.new)
-          end
+        class ChefRepositoryFileSystemAclsDir < Repository::Directory
 
           def can_have_child?(name, is_dir)
             is_dir ? Chef::ChefFS::FileSystem::ChefServer::AclsDir::ENTITY_TYPES.include?(name) : name == "organization.json"
+          end
+
+          protected
+
+          def make_child_entry(child_name)
+            ChefRepositoryFileSystemEntry.new(child_name, self, nil, Chef::ChefFS::DataHandler::AclDataHandler.new)
           end
         end
       end

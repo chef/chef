@@ -66,7 +66,7 @@ class Chef
           def children
             dir_ls.sort.
               map { |child_name| make_child_entry(child_name) }.
-              select { |new_child| new_child.fs_entry_valid? && can_have_child?(new_child.name, new_child.dir?)}
+              select { |new_child| new_child.fs_entry_valid? && can_have_child?(new_child.name, new_child.dir?) }
           rescue Errno::ENOENT => e
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
           end
