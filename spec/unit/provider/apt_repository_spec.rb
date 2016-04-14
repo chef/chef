@@ -158,6 +158,11 @@ C5986B4F1257FFA86632CBA746181433FBB75451
       expect(provider.build_repo("http://test/uri", "unstable", "main", false, nil)).to eql(target)
     end
 
+    it "should create a repository string with no distribution" do
+      target = %Q{deb      "http://test/uri" main\n}
+      expect(provider.build_repo("http://test/uri", nil, "main", false, nil)).to eql(target)
+    end
+
     it "should create a repository string with source" do
       target = %Q{deb      "http://test/uri" unstable main\ndeb-src  "http://test/uri" unstable main\n}
       expect(provider.build_repo("http://test/uri", "unstable", "main", false, nil, true)).to eql(target)

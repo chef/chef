@@ -239,13 +239,15 @@ class Chef
 
         uri = '"' + uri + '"' unless uri.start_with?("'", '"')
         components = Array(components).join(" ")
-        options = ""
-        options << "arch=#{arch} " if arch
+        options = []
+        options << "arch=#{arch}" if arch
         options << "trusted=yes" if trusted
-        options = "[#{options}]" unless options.empty?
-        info = "#{options} #{uri} #{distribution} #{components}\n".lstrip
-        repo =  "deb      #{info}"
-        repo << "deb-src  #{info}" if add_src
+        optstr = unless options.empty?
+                   "[" + options.join(" ") + "]"
+                 end
+        info = [ optstr, uri, distribution, components ].compact.join(" ")
+        repo =  "deb      #{info}\n"
+        repo << "deb-src  #{info}\n" if add_src
         repo
       end
     end
