@@ -24,7 +24,7 @@ class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class ChefRepositoryFileSystemClientKeysDir < ChefRepositoryFileSystemEntry
+        class ClientKeysDir < Repository::Directory
 
           def can_have_child?(name, is_dir)
             is_dir && !name.start_with?(".")

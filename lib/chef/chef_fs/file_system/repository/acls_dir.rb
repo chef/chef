@@ -25,7 +25,7 @@ class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class ChefRepositoryFileSystemAclsDir < Repository::Directory
+        class AclsDir < Repository::Directory
 
           def can_have_child?(name, is_dir)
             is_dir ? Chef::ChefFS::FileSystem::ChefServer::AclsDir::ENTITY_TYPES.include?(name) : name == "organization.json"
