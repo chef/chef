@@ -26,17 +26,17 @@ class Chef
 
       property :repo_name, String, name_property: true
       property :uri, String
-      property :distribution, [ String, nil ], default: lazy { node["lsb"]["codename"] }, nillable: true
+      property :distribution, [ String, nil, false ], default: lazy { node["lsb"]["codename"] }, nillable: true, coerce: proc { |x| x ? x : nil }
       property :components, Array, default: []
-      property :arch, [String, nil], default: nil
+      property :arch, [String, nil, false], default: nil, nillable: true, coerce: proc { |x| x ? x : nil }
       property :trusted, [TrueClass, FalseClass], default: false
       # whether or not to add the repository as a source repo, too
       property :deb_src, [TrueClass, FalseClass], default: false
-      property :keyserver, [String, nil], default: "keyserver.ubuntu.com"
-      property :key, [String, nil], default: nil
-      property :key_proxy, [String, nil], default: nil
+      property :keyserver, [String, nil, false], default: "keyserver.ubuntu.com", nillable: true, coerce: proc { |x| x ? x : nil }
+      property :key, [String, nil, false], default: nil, nillable: true, coerce: proc { |x| x ? x : nil }
+      property :key_proxy, [String, nil, false], default: nil, nillable: true, coerce: proc { |x| x ? x : nil }
 
-      property :cookbook, [String, nil], default: nil, desired_state: false
+      property :cookbook, [String, nil, false], default: nil, desired_state: false, nillable: true, coerce: proc { |x| x ? x : nil }
       property :cache_rebuild, [TrueClass, FalseClass], default: true, desired_state: false
       property :sensitive, [TrueClass, FalseClass], default: false, desired_state: false
 
