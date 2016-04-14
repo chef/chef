@@ -17,7 +17,7 @@
 #
 
 require "chef/chef_fs/file_system/base_fs_dir"
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_acls_dir"
+require "chef/chef_fs/file_system/repository/acls_dir"
 require "chef/chef_fs/file_system/repository/clients_dir"
 require "chef/chef_fs/file_system/repository/cookbooks_dir"
 require "chef/chef_fs/file_system/repository/cookbook_artifacts_dir"
@@ -29,9 +29,9 @@ require "chef/chef_fs/file_system/repository/nodes_dir"
 require "chef/chef_fs/file_system/repository/policy_groups_dir"
 require "chef/chef_fs/file_system/repository/roles_dir"
 require "chef/chef_fs/file_system/repository/users_dir"
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_client_keys_dir"
+require "chef/chef_fs/file_system/repository/client_keys_dir"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_policies_dir"
+require "chef/chef_fs/file_system/repository/policies_dir"
 require "chef/chef_fs/file_system/repository/versioned_cookbooks_dir"
 require "chef/chef_fs/file_system/multiplexed_dir"
 require "chef/chef_fs/data_handler/client_data_handler"
@@ -175,9 +175,9 @@ class Chef
             end
             case name
             when "acls"
-              dirs = paths.map { |path| ChefRepositoryFileSystemAclsDir.new(name, self, path) }
+              dirs = paths.map { |path| AclsDir.new(name, self, path) }
             when "client_keys"
-              dirs = paths.map { |path| ChefRepositoryFileSystemClientKeysDir.new(name, self, path) }
+              dirs = paths.map { |path| ClientKeysDir.new(name, self, path) }
             when "clients"
               dirs = paths.map { |path| ClientsDir.new(name, self, path) }
             when "containers"
@@ -201,7 +201,7 @@ class Chef
             when "policy_groups"
               dirs = paths.map { |path| PolicyGroupsDir.new(name, self, path) }
             when "policies"
-              dirs = paths.map { |path| ChefRepositoryFileSystemPoliciesDir.new(name, self, path) }
+              dirs = paths.map { |path| PoliciesDir.new(name, self, path) }
             when "roles"
               dirs = paths.map { |path| RolesDir.new(name, self, path) }
             when "users"

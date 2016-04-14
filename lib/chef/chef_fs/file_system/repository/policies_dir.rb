@@ -17,19 +17,23 @@
 #
 
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
+require "chef/chef_fs/file_system/repository/directory"
 require "chef/chef_fs/data_handler/policy_data_handler"
 
 class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class ChefRepositoryFileSystemPoliciesDir < ChefRepositoryFileSystemEntry
-          def initialize(name, parent, path = nil)
-            super(name, parent, path, Chef::ChefFS::DataHandler::PolicyDataHandler.new)
-          end
+        class PoliciesDir < Repository::Directory
 
           def can_have_child?(name, is_dir)
             !is_dir && name.include?("-")
+          end
+
+          protected
+
+          def make_child_entry(child_name)
+            ChefRepositoryFileSystemEntry.new(child_name, self, nil, Chef::ChefFS::DataHandler::PolicyDataHandler.new)
           end
         end
       end
