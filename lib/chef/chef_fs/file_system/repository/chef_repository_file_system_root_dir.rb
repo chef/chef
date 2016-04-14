@@ -18,9 +18,17 @@
 
 require "chef/chef_fs/file_system/base_fs_dir"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_acls_dir"
+require "chef/chef_fs/file_system/repository/clients_dir"
 require "chef/chef_fs/file_system/repository/cookbooks_dir"
 require "chef/chef_fs/file_system/repository/cookbook_artifacts_dir"
+require "chef/chef_fs/file_system/repository/containers_dir"
 require "chef/chef_fs/file_system/repository/data_bags_dir"
+require "chef/chef_fs/file_system/repository/environments_dir"
+require "chef/chef_fs/file_system/repository/groups_dir"
+require "chef/chef_fs/file_system/repository/nodes_dir"
+require "chef/chef_fs/file_system/repository/policy_groups_dir"
+require "chef/chef_fs/file_system/repository/roles_dir"
+require "chef/chef_fs/file_system/repository/users_dir"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_client_keys_dir"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_policies_dir"
@@ -166,6 +174,14 @@ class Chef
               return NonexistentFSObject.new(name, self)
             end
             case name
+            when "acls"
+              dirs = paths.map { |path| ChefRepositoryFileSystemAclsDir.new(name, self, path) }
+            when "client_keys"
+              dirs = paths.map { |path| ChefRepositoryFileSystemClientKeysDir.new(name, self, path) }
+            when "clients"
+              dirs = paths.map { |path| ClientsDir.new(name, self, path) }
+            when "containers"
+              dirs = paths.map { |path| ContainersDir.new(name, self, path) }
             when "cookbooks"
               if versioned_cookbooks
                 dirs = paths.map { |path| VersionedCookbooksDir.new(name, self, path) }
@@ -174,36 +190,24 @@ class Chef
               end
             when "cookbook_artifacts"
               dirs = paths.map { |path| CookbookArtifactsDir.new(name, self, path) }
-            when "policies"
-              dirs = paths.map { |path| ChefRepositoryFileSystemPoliciesDir.new(name, self, path) }
             when "data_bags"
               dirs = paths.map { |path| DataBagsDir.new(name, self, path) }
-            when "acls"
-              dirs = paths.map { |path| ChefRepositoryFileSystemAclsDir.new(name, self, path) }
-            when "client_keys"
-              dirs = paths.map { |path| ChefRepositoryFileSystemClientKeysDir.new(name, self, path) }
+            when "environments"
+              dirs = paths.map { |path| EnvironmentsDir.new(name, self, path) }
+            when "groups"
+              dirs = paths.map { |path| GroupsDir.new(name, self, path) }
+            when "nodes"
+              dirs = paths.map { |path| NodesDir.new(name, self, path) }
+            when "policy_groups"
+              dirs = paths.map { |path| PolicyGroupsDir.new(name, self, path) }
+            when "policies"
+              dirs = paths.map { |path| ChefRepositoryFileSystemPoliciesDir.new(name, self, path) }
+            when "roles"
+              dirs = paths.map { |path| RolesDir.new(name, self, path) }
+            when "users"
+              dirs = paths.map { |path| UsersDir.new(name, self, path) }
             else
-              data_handler = case name
-                             when "clients"
-                               Chef::ChefFS::DataHandler::ClientDataHandler.new
-                             when "environments"
-                               Chef::ChefFS::DataHandler::EnvironmentDataHandler.new
-                             when "nodes"
-                               Chef::ChefFS::DataHandler::NodeDataHandler.new
-                             when "policy_groups"
-                               Chef::ChefFS::DataHandler::PolicyGroupDataHandler.new
-                             when "roles"
-                               Chef::ChefFS::DataHandler::RoleDataHandler.new
-                             when "users"
-                               Chef::ChefFS::DataHandler::UserDataHandler.new
-                             when "groups"
-                               Chef::ChefFS::DataHandler::GroupDataHandler.new
-                             when "containers"
-                               Chef::ChefFS::DataHandler::ContainerDataHandler.new
-                             else
-                               raise "Unknown top level path #{name}"
-                             end
-              dirs = paths.map { |path| ChefRepositoryFileSystemEntry.new(name, self, path, data_handler) }
+              raise "Unknown top level path #{name}"
             end
             MultiplexedDir.new(dirs)
           end
