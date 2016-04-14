@@ -31,4 +31,8 @@ describe Chef::Resource::AptRepository do
     expect(resource.keyserver).to eql("keyserver.ubuntu.com")
   end
 
+  it "the default distribution should be nillable" do
+    expect(resource.distribution(nil)).to eql(nil)
+    expect(resource.distribution).to eql(nil)
+  end
 end

@@ -99,13 +99,15 @@ describe "Chef::Resource.property validation" do
         expect(resource.x nil).to be_nil
         expect(resource.x).to be_nil
       end
-      it "changing x to nil warns that the get will change to a set in Chef 13 and does not change the value" do
-        resource.instance_eval { @x = "default" }
-        expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-          /An attempt was made to change x from "default" to nil by calling x\(nil\). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil./
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        expect(resource.x nil).to eq "default"
-        expect(resource.x).to eq "default"
+      unless tags.include?(:nillable)
+        it "changing x to nil warns that the get will change to a set in Chef 13 and does not change the value" do
+          resource.instance_eval { @x = "default" }
+          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+            /An attempt was made to change x from "default" to nil by calling x\(nil\). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil./
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          expect(resource.x nil).to eq "default"
+          expect(resource.x).to eq "default"
+        end
       end
     end
     if tags.include?(:nil_is_valid)
@@ -121,6 +123,15 @@ describe "Chef::Resource.property validation" do
           Chef::Config[:treat_deprecation_warnings_as_errors] = false
           expect(resource.x nil).to eq "default"
           expect(resource.x).to eq "default"
+        end
+      end
+    elsif tags.include?(:nillable)
+      with_property ":x, #{validation}, nillable: true" do
+        it "changing x to nil with nillable true overwrites defaults and just works" do
+          resource.instance_eval { @x = "default" }
+          expect { resource.x nil }.not_to raise_error
+          expect(resource.x nil).to eq nil
+          expect(resource.x).to eq nil
         end
       end
     else
@@ -268,6 +279,11 @@ describe "Chef::Resource.property validation" do
     validation_test "[]",
       [],
       [ :a ]
+
+    validation_test "[ String, nil ], nillable: true",
+      [ nil, "thing" ],
+      [ :nope, false ],
+      :nillable
   end
 
   # is

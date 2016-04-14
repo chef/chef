@@ -26,7 +26,7 @@ class Chef
 
       property :repo_name, String, name_property: true
       property :uri, String
-      property :distribution, String, default: lazy { node["lsb"]["codename"] }
+      property :distribution, [ String, nil ], default: lazy { node["lsb"]["codename"] }, nillable: true
       property :components, Array, default: []
       property :arch, [String, nil], default: nil
       property :trusted, [TrueClass, FalseClass], default: false
