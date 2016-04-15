@@ -23,68 +23,53 @@ provisioner:
   require_chef_omnibus: true
 
 platforms:
-  - name: centos-5.10
+  - name: centos-5.11
     run_list: yum-epel::default
-  - name: centos-6.5
+  - name: centos-6.7
     run_list: yum-epel::default
-  - name: centos-7.0
+  - name: centos-7.2
     run_list: yum-epel::default
-  - name: debian-7.2.0
-    run_list: apt::default
-  - name: debian-7.4
-    run_list: apt::default
   - name: debian-6.0.8
     run_list: apt::default
-  - name: freebsd-9.2
+  - name: debian-7.9
+    run_list: apt::default
+  - name: debian-8.2
+    run_list: apt::default
+  - name: freebsd-9.3
     run_list:
       - freebsd::portsnap
       - freebsd::pkgng
-  - name: freebsd-10.0
+  - name: freebsd-10.2
     run_list: freebsd::portsnap
   - name: ubuntu-10.04
     run_list: apt::default
   - name: ubuntu-12.04
     run_list: apt::default
-  - name: ubuntu-12.10
-    run_list: apt::default
-  - name: ubuntu-13.04
-    run_list: apt::default
-  - name: ubuntu-13.10
-    run_list: apt::default
   - name: ubuntu-14.04
     run_list: apt::default
   # The following (private) boxes are shared via Atlas and are only
   # available to users working for Chef. Sorry, it's about software licensing.
-  # 
-  # Chef-internal users, you will need to:  
+  #
+  # Chef-internal users, you will need to:
   # 1.  Create an Atlas account:  https://atlas.hashicorp.com/
   # 2.  Ping the Release Services room with your Atlas account name
   #     to be added to the relevant team in Atlas,
   # 3.  Do `vagrant login` with your Atlas creds so that you can download
-  #     the private boxes.   
+  #     the private boxes.
   #
   # The Mac OS X boxes are VMware only also. You can enable VMware Fusion
   # as the default provider by copying `.kitchen.local.yml.vmware.example`
   # over to `.kitchen.local.yml`.
   #
-  - name: macosx-10.8
-    driver:
-      box: chef/macosx-10.8 # private
   - name: macosx-10.9
     driver:
       box: chef/macosx-10.9 # private
   - name: macosx-10.10
     driver:
       box: chef/macosx-10.10 # private
-  - name: windows-7-professional
+  - name: macosx-10.11
     driver:
-      box: chef/windows-7-professional # private
-  - name: windows-8.1-professional
-    driver:
-      box: chef/windows-8.1-professional # private
-  - name: windows-2008r2-standard
-    driver:
-      box: chef/windows-server-2008r2-standard # private
+      box: chef/macosx-10.11 # private
   - name: windows-2012r2-standard
     driver:
       box: chef/windows-server-2012r2-standard # private
