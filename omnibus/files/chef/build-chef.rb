@@ -9,12 +9,6 @@ module BuildChef
   include BuildChefGem
 
   def create_bundle_config(gemfile, without: without_groups, retries: nil, jobs: nil, frozen: nil)
-    if without
-      without = without.dup
-      # no_aix, no_windows groups
-      without << "no_#{Omnibus::Ohai["platform"]}"
-    end
-
     bundle_config = File.expand_path("../.bundle/config", gemfile)
 
     block "Put build config into #{bundle_config}: #{ { without: without, retries: retries, jobs: jobs, frozen: frozen } }" do
@@ -84,7 +78,7 @@ module BuildChef
         # Emit blank line to separate different tasks
         log.info(log_key) { "" }
         log.info(log_key) { "Properly installing git or path sourced gem #{gem_path} using rake install" }
-        shellout!("#{bundle_bin} exec #{rake_bin} install", env: chef_env, cwd: gem_path)
+        shellout!("#{bundle_bin} exec #{rake_bin} install --trace", env: chef_env, cwd: gem_path)
       end
     end
   end
@@ -113,7 +107,7 @@ module BuildChef
       end
 
       # Find the installed chef gem by looking for lib/chef.rb
-      chef_gem = File.expand_path("../..", shellout!("#{gem_bin} which chef").stdout.chomp)
+      chef_gem = File.expand_path("../..", shellout!("#{gem_bin} which chef", env: chef_env).stdout.chomp)
       # Figure out the path to gemfile_util from there
       gemfile_util = Pathname.new(File.join(chef_gem, "tasks", "gemfile_util"))
       gemfile_util = gemfile_util.relative_path_from(Pathname.new(shared_gemfile).dirname)
@@ -136,7 +130,10 @@ module BuildChef
     bundle "lock", env: shared_gemfile_env
 
     # Freeze the location's Gemfile.lock.
-    create_bundle_config(shared_gemfile, frozen: true)
+    # TODO Windows cannot be frozen, because Bundler doesn't understand platform-specific
+    # versions. However, on Windows we have explicit version pins for most things, so
+    # we will *probably* get the exact versions of everything we want.
+    create_bundle_config(shared_gemfile, frozen: !windows?)
 
     # Clear the now-unnecessary git caches, cached gems, and git-checked-out gems
     block "Delete bundler git cache and git installs" do

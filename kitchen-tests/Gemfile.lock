@@ -82,10 +82,10 @@ GEM
       rspec-expectations (~> 3.2)
       rspec-mocks (~> 3.2)
     mixlib-config (2.2.1)
-    mixlib-install (1.0.6)
-      artifactory (>= 2.3.0)
-      mixlib-shellout (>= 2.2.6)
-      mixlib-versioning (>= 1.1.0)
+    mixlib-install (1.0.7)
+      artifactory
+      mixlib-shellout
+      mixlib-versioning
     mixlib-log (1.6.0)
     mixlib-shellout (2.2.6)
     mixlib-versioning (1.1.0)

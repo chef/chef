@@ -3,7 +3,7 @@ require_relative "tasks/gemfile_util"
 extend GemfileUtil
 
 source "https://rubygems.org"
-gemspec name: "chef"
+gemspec name: ($chef_platform ? "chef-#{$chef_platform}" : "chef")
 
 gem "activesupport", "< 4.0.0", group: :compat_testing, platform: "ruby"
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
@@ -31,7 +31,7 @@ group(:integration) do
   gem "chef-sugar"
   gem "chefspec"
   gem "halite"
-  gem "poise", git: "https://github.com/poise/poise" # until released poise's tests succeed against chef master
+  gem "poise"
   gem "knife-windows"
   gem "foodcritic"
 end
@@ -53,9 +53,11 @@ group(:linux, :bsd, :mac_os_x, :solaris, :windows, :ruby_prof) do
   # may need to disable this in insolation on fussy builds like AIX, RHEL4, etc
   gem "ruby-prof"
 end
-# Everything except AIX and Windows
-group(:linux, :bsd, :mac_os_x, :solaris) do
-  gem "ruby-shadow"
+unless $chef_platform == "windows"
+  # Everything except AIX and Windows
+  group(:linux, :bsd, :mac_os_x, :solaris) do
+    gem "ruby-shadow"
+  end
 end
 
 group(:development, :test) do

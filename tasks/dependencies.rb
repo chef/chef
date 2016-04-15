@@ -29,7 +29,6 @@ namespace :dependencies do
                     dependencies:update_omnibus_gemfile_lock
                     dependencies:update_acceptance_gemfile_lock
                     dependencies:update_kitchen_tests_gemfile_lock
-                    dependencies:update_omnibus_berksfile_lock
                     dependencies:update_kitchen_tests_berksfile_lock
                   }
 
@@ -81,7 +80,6 @@ namespace :dependencies do
   end
 
   gemfile_lock_task :update_omnibus_gemfile_lock, dirs: %w{omnibus}
-  berksfile_lock_task :update_omnibus_berksfile_lock, dirs: %w{omnibus}
   gemfile_lock_task :update_acceptance_gemfile_lock, dirs: %w{
     acceptance
     acceptance/fips/test/integration/fips/serverspec

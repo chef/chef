@@ -34,7 +34,9 @@ ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef") do |packag
   package.generate_version_class = true
 end
 # Add a conservative dependency update to version:bump (which was created by PackageTask)
-task "version:bump" => %w{version:bump_patch version:update dependencies:update[conservative]}
+task "version:bump" => %w{version:bump_patch version:update} do
+  Rake::Task["dependencies:update"].invoke("conservative")
+end
 
 task :pedant, :chef_zero_spec
 

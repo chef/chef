@@ -222,7 +222,12 @@ end
       task :install => [:package] do
         with_clean_env do
           full_module_path = File.join(full_package_dir, module_path)
-          sh %{gem install #{full_module_path}-#{version}.gem --no-rdoc --no-ri}
+          # Install the windows version on windows
+          if Gem.win_platform? && File.exist?("#{full_module_path}-#{version}-universal-mingw32.gem")
+            sh %{gem install #{full_module_path}-#{version}-universal-mingw32.gem --no-rdoc --no-ri}
+          else
+            sh %{gem install #{full_module_path}-#{version}.gem --no-rdoc --no-ri}
+          end
         end
       end
 

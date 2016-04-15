@@ -7,13 +7,6 @@ GIT
       rubocop (= 0.39.0)
 
 GIT
-  remote: https://github.com/poise/poise
-  revision: a76980685a92283c08f5b2e4526ae1f08f87de79
-  specs:
-    poise (2.6.2.pre)
-      halite (~> 1.0)
-
-GIT
   remote: https://github.com/rubysec/bundler-audit.git
   revision: 4e32fca89d75f0e249671431ff38aadc02bfb28b
   ref: 4e32fca
@@ -25,9 +18,9 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.10.4)
+    chef (12.10.5)
       bundler (>= 1.10)
-      chef-config (= 12.10.4)
+      chef-config (= 12.10.5)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -55,7 +48,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.10.4)
+    chef-config (12.10.5)
       fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -202,10 +195,10 @@ GEM
       rspec-mocks (~> 3.2)
     mixlib-cli (1.5.0)
     mixlib-config (2.2.1)
-    mixlib-install (1.0.6)
-      artifactory (>= 2.3.0)
-      mixlib-shellout (>= 2.2.6)
-      mixlib-versioning (>= 1.1.0)
+    mixlib-install (1.0.7)
+      artifactory
+      mixlib-shellout
+      mixlib-versioning
     mixlib-log (1.6.0)
     mixlib-shellout (2.2.6)
     mixlib-versioning (1.1.0)
@@ -253,6 +246,8 @@ GEM
     parser (2.3.0.7)
       ast (~> 2.2)
     plist (3.2.0)
+    poise (2.7.0)
+      halite (~> 1.0)
     polyglot (0.3.5)
     powerpack (0.1.1)
     proxifier (1.0.3)
@@ -373,7 +368,7 @@ DEPENDENCIES
   netrc
   nokogiri
   octokit
-  poise!
+  poise
   pry
   pry-byebug
   pry-remote

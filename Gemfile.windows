@@ -29,4 +29,13 @@
 #
 
 require_relative "tasks/gemfile_util"
-GemfileUtil.include_locked_gemfile(self, "Gemfile", without_groups: [ :linux, :solaris, :aix ])
+extend GemfileUtil
+
+# Honor the main gem's lockfile
+include_locked_gemfile("Gemfile", without_groups: [ :aix, :bsd, :mac_os_x, :linux, :solaris ], copy_groups: true)
+
+# We have the same deps as the main Gemfile (except since we're Windows, we read the
+# chef-windows.gemspec instead of chef.gemspec)
+$chef_platform = "windows"
+chef_gemfile = File.expand_path("../Gemfile", __FILE__)
+instance_eval(IO.read(chef_gemfile), chef_gemfile)

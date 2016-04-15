@@ -17,6 +17,7 @@
 
 require_relative "bundle_util"
 require_relative "../version_policy"
+require "fileutils"
 
 desc "Tasks to work with the main Gemfile and Gemfile.<platform>"
 namespace :bundle do
@@ -35,7 +36,9 @@ namespace :bundle do
         puts "-------------------------------------------------------------------"
         puts "Updating Gemfile.#{platform}.lock ..."
         puts "-------------------------------------------------------------------"
-        bundle "lock", gemfile: "Gemfile.#{platform}", platform: platform, delete_gemfile_lock: true
+        puts "Copy Gemfile.lock to Gemfile.#{platform}.lock ..."
+        FileUtils.cp(File.join(project_root, "Gemfile.lock"), File.join(project_root, "Gemfile.#{platform}.lock"))
+        bundle "lock", gemfile: "Gemfile.#{platform}", platform: platform
       end
     end
   end
@@ -55,6 +58,8 @@ namespace :bundle do
         puts "-------------------------------------------------------------------"
         puts "Updating Gemfile.#{platform}.lock (conservatively) ..."
         puts "-------------------------------------------------------------------"
+        puts "Copy Gemfile.lock to Gemfile.#{platform}.lock ..."
+        FileUtils.cp(File.join(project_root, "Gemfile.lock"), File.join(project_root, "Gemfile.#{platform}.lock"))
         bundle "lock", gemfile: "Gemfile.#{platform}", platform: platform
       end
     end

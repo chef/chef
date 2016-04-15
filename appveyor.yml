@@ -32,7 +32,7 @@ install:
 
 build_script:
   - bundle config --local frozen 1
-  - bundle config --local without docgen:maintenance:omnibus_package:integration:aix:bsd:linux:solaris
+  - bundle config --local without docgen:maintenance:omnibus_package:integration:aix:bsd:linux:mac_os_x:solaris
   - bundle install || bundle install || bundle install
 
 test_script:

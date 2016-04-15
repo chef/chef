@@ -19,12 +19,12 @@ module BuildChefAppbundle
       # times in the file.
       #
       distribution_gemfile = Pathname(shared_gemfile).relative_path_from(Pathname(installed_gemfile)).to_s
-      gemfile_text = IO.read(installed_gemfile)
-      gemfile_text << <<-EOM.gsub(/^\s+/, "")
+      gemfile_text = <<-EOM.gsub(/^\s+/, "")
         # Lock gems that are part of the distribution
         distribution_gemfile = File.expand_path(#{distribution_gemfile.inspect}, __FILE__)
         instance_eval(IO.read(distribution_gemfile), distribution_gemfile)
       EOM
+      gemfile_text << IO.read(installed_gemfile)
       create_file(installed_gemfile) { gemfile_text }
 
       # Remove the gemfile.lock
@@ -50,7 +50,10 @@ module BuildChefAppbundle
       # "test", "changelog" and "guard" come from berkshelf, "maintenance" comes from chef
       # "tools" and "integration" come from inspec
       shellout!("#{bundle_bin} config --local without #{without_groups.join(":")}", env: env, cwd: installed_path)
-      shellout!("#{bundle_bin} config --local frozen 1")
+      # TODO Windows cannot be frozen, because Bundler doesn't understand platform-specific
+      # versions. However, on Windows we have explicit version pins for most things, so
+      # we will *probably* get the exact versions of everything we want.
+      shellout!("#{bundle_bin} config --local frozen 1") unless windows?
 
       shellout!("#{bundle_bin} check", env: env, cwd: installed_path)
 

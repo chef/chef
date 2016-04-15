@@ -8,7 +8,7 @@ before_install:
   - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
   - rm -f .bundle/config
 
-bundler_args: --without docgen maintenance omnibus_package aix bsd solaris windows --frozen
+bundler_args: --without docgen maintenance omnibus_package aix bsd mac_os_x solaris windows --frozen
 
 # do not run expensive spec tests on PRs, only on branches
 branches:
@@ -26,29 +26,29 @@ matrix:
   - rvm: 2.1
     sudo: true
     script: tasks/bin/run_chef_tests
-    bundler_args: --without docgen maintenance integration aix bsd solaris windows --frozen
+    bundler_args: --without docgen maintenance integration aix bsd mac_os_x solaris windows --frozen
   - rvm: 2.2
     sudo: true
     script: tasks/bin/run_chef_tests
-    bundler_args: --without docgen maintenance integration aix bsd solaris windows --frozen
+    bundler_args: --without docgen maintenance integration aix bsd mac_os_x solaris windows --frozen
   - rvm: 2.3.0
     sudo: true
     script: tasks/bin/run_chef_tests
-    bundler_args: --without docgen maintenance integration aix bsd solaris windows --frozen
+    bundler_args: --without docgen maintenance integration aix bsd mac_os_x solaris windows --frozen
   - rvm: rbx
     sudo: true
     script: tasks/bin/run_chef_tests
-    bundler_args: --without docgen maintenance integration aix bsd solaris windows --frozen
+    bundler_args: --without docgen maintenance integration aix bsd mac_os_x solaris windows --frozen
   #
   # External tests
   #
   - env:
       TEST_GEM: chef-provisioning
-    script: tasks/bin/run_external_test $TEST_GEM "rake spec"
+    script: tasks/bin/run_external_test $TEST_GEM rake spec
     rvm: 2.2
   - env:
       TEST_GEM: chef-provisioning-aws
-    script: tasks/bin/run_external_test $TEST_GEM "rake spec"
+    script: tasks/bin/run_external_test $TEST_GEM rake spec
     rvm: 2.2
 # requires vagrant
 #  - env: TEST_GEM=chef-rewind
@@ -61,11 +61,11 @@ matrix:
     rvm: 2.2
   - env:
       - TEST_GEM: chef-zero
-    script: tasks/bin/run_external_test $TEST_GEM "rake spec" "rake cheffs"
+    script: tasks/bin/run_external_test $TEST_GEM rake spec cheffs
     rvm: 2.2
   - env:
       TEST_GEM: cheffish
-    script: tasks/bin/run_external_test $TEST_GEM "rake spec"
+    script: tasks/bin/run_external_test $TEST_GEM rake spec
     rvm: 2.2
   - env:
       TEST_GEM: chefspec
@@ -78,19 +78,19 @@ matrix:
     rvm: 2.2.0
   - env:
       TEST_GEM: foodcritic
-    script: tasks/bin/run_external_test $TEST_GEM "rake test"
+    script: tasks/bin/run_external_test $TEST_GEM rake test
     rvm: 2.2
   - env:
       TEST_GEM: halite
-    script: tasks/bin/run_external_test $TEST_GEM "rake spec"
+    script: tasks/bin/run_external_test $TEST_GEM rake spec
     rvm: 2.2
   - env:
       TEST_GEM: knife-windows
-    script: tasks/bin/run_external_test $TEST_GEM "rake unit_spec"
+    script: tasks/bin/run_external_test $TEST_GEM rake unit_spec
     rvm: 2.2
   - env:
       TEST_GEM: poise
-    script: tasks/bin/run_external_test $TEST_GEM "rake spec"
+    script: tasks/bin/run_external_test $TEST_GEM rake spec
     rvm: 2.2
   #
   ### START TEST KITCHEN ONLY ###

@@ -80,7 +80,7 @@ module BuildChefGem
     end
 
     def lockfile_path
-      @lockfile_path ||= "#{gemfile_path}.lock"
+      "#{gemfile_path}.lock"
     end
 
     def gem_name
@@ -98,16 +98,19 @@ module BuildChefGem
 
     def gem_metadata
       @gem_metadata ||= begin
-        selected = GemfileUtil.select_gems(gemfile_path, without_groups: without_groups)
-        result = GemfileUtil.locked_gems(lockfile_path, selected)[gem_name]
+        bundle = GemfileUtil::Bundle.parse(gemfile_path, lockfile_path)
+        result = bundle.gems[gem_name]
         if result
-          log.info(software.name) { "Using #{gem_name} version #{result[:version]} from #{gemfile_path}" }
-          result
-        elsif GemfileUtil.locked_gems(lockfile_path, GemfileUtil.select_gems(gemfile_path))[gem_name]
-          log.info(software.name) { "#{gem_name} not loaded from #{gemfile_path} because it was only in groups #{without_groups.join(", ")}, skipping" }
-          nil
+          if bundle.select_gems(without_groups: without_groups).include?(gem_name)
+            log.info(software.name) { "Using #{gem_name} version #{result[:version]} from #{gemfile_path}" }
+            result
+          else
+            log.info(software.name) { "#{gem_name} not loaded from #{gemfile_path} because it was only in groups #{without_groups.join(", ")}. Skipping ..." }
+            nil
+          end
         else
-          raise "#{gem_name} not found in #{gemfile_path} or #{lockfile_path}"
+          log.info(software.name) { "#{gem_name} was not found in #{lockfile_path}. Skipping ..." }
+          nil
         end
       end
     end

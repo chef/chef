@@ -20,7 +20,7 @@ TEST_GEMFILE=$TEST_GEM_ROOT/Gemfile
 MODIFIED_TEST_GEMFILE=$TEST_GEMFILE.externaltest
 cat <<EOM > $MODIFIED_TEST_GEMFILE
 require_relative "$PROJECT_ROOT/tasks/gemfile_util"
-GemfileUtil.include_locked_gemfile(self, "$PROJECT_ROOT/Gemfile", groups: [:default], gems: ["$TEST_GEM"] + "$TEST_WITH_GEMS".split(/\s+/))
+GemfileUtil.include_locked_gemfile(self, "$PROJECT_ROOT/Gemfile", gems: ["$TEST_GEM"] + "$TEST_WITH_GEMS".split(/\s+/))
 $TEST_GEM_OVERRIDES
 EOM
 cat $TEST_GEMFILE >> $MODIFIED_TEST_GEMFILE
@@ -38,17 +38,10 @@ export BUNDLE_IGNORE_CONFIG=true
 # Use the top level bundle cache so we don't have to reinstall their packages
 if [ -n "$PROJECT_BUNDLE_PATH" ]; then
   export BUNDLE_PATH=$PROJECT_BUNDLE_PATH
-  export BUNDLE_DISABLE_SHARED_GEMS=1
-  export BUNDLE_NO_PRUNE=true
 fi
 export BUNDLE_FROZEN=
 bundle install
 export BUNDLE_FROZEN=true
 
 bundle config
-
-# Iterate through the remaining arguments as commands
-while test ${#} -gt 0; do
-  bundle exec $1
-  shift
-done
+bundle exec $@

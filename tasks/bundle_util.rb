@@ -1,3 +1,4 @@
+require "bundler"
 require "shellwords"
 
 module BundleUtil
@@ -56,7 +57,7 @@ module BundleUtil
 
         # Run the bundle command
         ruby_platforms = platform ? PLATFORMS[platform].join(" ") : "ruby"
-        cmd = Shellwords.join([bundle_platform, ruby_platforms, *args])
+        cmd = Shellwords.join([Gem.ruby, "-S", bundle_platform, ruby_platforms, *args])
         puts "#{prefix}#{Shellwords.join(["bundle", *args])}#{platform ? " for #{platform} platform" : ""}:"
         with_gemfile(gemfile) do
           puts "#{prefix}BUNDLE_GEMFILE=#{gemfile}"
