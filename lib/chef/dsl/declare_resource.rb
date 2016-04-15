@@ -227,7 +227,7 @@ class Chef
 
         if create_if_missing
           Chef::Log.deprecation "build_resource with a create_if_missing flag is deprecated, use edit_resource instead"
-          # midly goofy since we call edit_resoruce only to re-call ourselves, but that's why its deprecated...
+          # midly goofy since we call edit_resource only to re-call ourselves, but that's why its deprecated...
           return edit_resource(type, name, created_at, run_context: run_context, &resource_attrs_block)
         end
 
