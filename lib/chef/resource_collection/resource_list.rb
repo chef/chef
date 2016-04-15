@@ -67,6 +67,16 @@ class Chef
         end
       end
 
+      def delete(key)
+        raise ArgumentError, "Must pass a Chef::Resource or String to delete" unless key.is_a?(String) || key.is_a?(Chef::Resource)
+        key = key.to_s
+        ret = @resources.reject! { |r| r.to_s == key }
+        if ret.nil?
+          raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
+        end
+        ret
+      end
+
       # @deprecated - can be removed when it is removed from resource_collection.rb
       def []=(index, resource)
         @resources[index] = resource

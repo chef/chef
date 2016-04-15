@@ -59,6 +59,11 @@ class Chef
       end
     end
 
+    def delete(key)
+      resource_list.delete(key)
+      resource_set.delete(key)
+    end
+
     # @deprecated
     def []=(index, resource)
       Chef::Log.warn("`[]=` is deprecated, use `insert` (which only inserts at the end)")
