@@ -28,13 +28,11 @@ install:
   - update_rubygems
   - gem --version
   - bundler --version
+  - SET BUNDLE_IGNORE_CONFIG=true
+  - SET BUNDLE_FROZEN=1
+  - SET BUNDLE_WITHOUT=docgen:maintenance:omnibus_package:integration:aix:bsd:linux:mac_os_x:solaris
 
 build_script:
-# TODO set frozen to true (can't do this until we can enable Gemfile.windows; can't do that
-# until we make the tests Bundle.with_clean_env before running things).
-  # - SET BUNDLE_GEMFILE=%APPVEYOR_BUILD_FOLDER%\Gemfile.windows
-  - bundle config --delete frozen
-  - bundle config --local without docgen:maintenance:omnibus_package:integration:aix:bsd:linux:mac_os_x:solaris
   - bundle install || bundle install || bundle install
 
 test_script:

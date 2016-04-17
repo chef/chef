@@ -211,23 +211,20 @@ end
 
       task :version => "version:update"
 
-      Dir[File.expand_path("*gemspec", root_path)].reverse_each do |gemspec_path|
+      gemspec_platform_to_install = ""
+      Dir[File.expand_path("*.gemspec", root_path)].reverse_each do |gemspec_path|
         gemspec = eval(IO.read(gemspec_path))
         Gem::PackageTask.new(gemspec) do |task|
           task.package_dir = full_package_dir
         end
+        gemspec_platform_to_install = "-#{gemspec.platform}" if gemspec.platform != Gem::Platform::RUBY && Gem::Platform.match(gemspec.platform)
       end
 
       desc "Build and install a #{module_path} gem"
       task :install => [:package] do
         with_clean_env do
           full_module_path = File.join(full_package_dir, module_path)
-          # Install the windows version on windows
-          if Gem.win_platform? && File.exist?("#{full_module_path}-#{version}-universal-mingw32.gem")
-            sh %{gem install #{full_module_path}-#{version}-universal-mingw32.gem --no-rdoc --no-ri}
-          else
-            sh %{gem install #{full_module_path}-#{version}.gem --no-rdoc --no-ri}
-          end
+          sh %{gem install #{full_module_path}-#{version}#{gemspec_platform_to_install}.gem --no-rdoc --no-ri}
         end
       end
 

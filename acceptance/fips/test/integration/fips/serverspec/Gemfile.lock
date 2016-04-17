@@ -1,10 +1,18 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    ffi (1.9.10-x86-mingw32)
     mixlib-shellout (2.2.6)
+    mixlib-shellout (2.2.6-universal-mingw32)
+      win32-process (~> 0.8.2)
+      wmi-lite (~> 1.0)
+    win32-process (0.8.3)
+      ffi (>= 1.0.0)
+    wmi-lite (1.0.0)
 
 PLATFORMS
   ruby
+  x86-mingw32
 
 DEPENDENCIES
   mixlib-shellout

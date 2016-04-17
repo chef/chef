@@ -86,7 +86,7 @@ GEM
     excon (0.49.0)
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
-    ffi (1.9.10)
+    ffi (1.9.10-x86-mingw32)
     fuzzyurl (0.8.0)
     gssapi (1.2.0)
       ffi (>= 1.0.1)
@@ -94,6 +94,7 @@ GEM
       builder (>= 2.1.2)
     hashie (3.4.3)
     hitimes (1.2.3)
+    hitimes (1.2.3-x86-mingw32)
     httpclient (2.7.1)
     inspec (0.18.0)
       json (~> 1.8)
@@ -130,6 +131,9 @@ GEM
       mixlib-versioning
     mixlib-log (1.6.0)
     mixlib-shellout (2.2.6)
+    mixlib-shellout (2.2.6-universal-mingw32)
+      win32-process (~> 0.8.2)
+      wmi-lite (~> 1.0)
     mixlib-versioning (1.1.0)
     molinillo (0.4.4)
     multi_json (1.11.2)
@@ -214,6 +218,8 @@ GEM
     varia_model (0.4.1)
       buff-extensions (~> 1.0)
       hashie (>= 2.0.2, < 4.0.0)
+    win32-process (0.8.3)
+      ffi (>= 1.0.0)
     windows_chef_zero (2.0.0)
       test-kitchen (>= 1.2.1)
     winrm (1.7.3)
@@ -229,9 +235,11 @@ GEM
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 1.1)
       winrm (~> 1.5)
+    wmi-lite (1.0.0)
 
 PLATFORMS
   ruby
+  x86-mingw32
 
 DEPENDENCIES
   berkshelf

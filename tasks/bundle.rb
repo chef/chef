@@ -32,13 +32,7 @@ namespace :bundle do
       puts "-------------------------------------------------------------------"
       bundle "install #{args}", delete_gemfile_lock: true
       platforms.each do |platform|
-        puts ""
-        puts "-------------------------------------------------------------------"
-        puts "Updating Gemfile.#{platform}.lock ..."
-        puts "-------------------------------------------------------------------"
-        puts "Copy Gemfile.lock to Gemfile.#{platform}.lock ..."
-        FileUtils.cp(File.join(project_root, "Gemfile.lock"), File.join(project_root, "Gemfile.#{platform}.lock"))
-        bundle "lock", gemfile: "Gemfile.#{platform}", platform: platform
+        bundle "lock", platform: platform
       end
     end
   end
@@ -54,13 +48,7 @@ namespace :bundle do
       puts "-------------------------------------------------------------------"
       bundle "install #{args}"
       platforms.each do |platform|
-        puts ""
-        puts "-------------------------------------------------------------------"
-        puts "Updating Gemfile.#{platform}.lock (conservatively) ..."
-        puts "-------------------------------------------------------------------"
-        puts "Copy Gemfile.lock to Gemfile.#{platform}.lock ..."
-        FileUtils.cp(File.join(project_root, "Gemfile.lock"), File.join(project_root, "Gemfile.#{platform}.lock"))
-        bundle "lock", gemfile: "Gemfile.#{platform}", platform: platform
+        bundle "lock", platform: platform
       end
     end
   end

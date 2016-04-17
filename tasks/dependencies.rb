@@ -52,7 +52,13 @@ namespace :dependencies do
         puts "-------------------------------------------------------------------"
         puts "Updating #{dir}/Gemfile.lock#{conservative ? " (conservatively)" : ""} ..."
         puts "-------------------------------------------------------------------"
-        bundle "install", cwd: dir, delete_gemfile_lock: !conservative
+        with_bundle_unfrozen(cwd: dir) do
+          bundle "install", cwd: dir, delete_gemfile_lock: !conservative
+          # Include all other supported platforms into the lockfile as well
+          platforms.each do |platform|
+            bundle "lock", cwd: dir, platform: platform
+          end
+        end
       end
     end
   end

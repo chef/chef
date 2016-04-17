@@ -98,6 +98,7 @@ GEM
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.10)
+    ffi (1.9.10-x86-mingw32)
     ffi-yajl (2.2.3)
       libyajl2 (~> 1.2)
     fuzzyurl (0.8.0)
@@ -107,6 +108,7 @@ GEM
       builder (>= 2.1.2)
     hashie (3.4.3)
     hitimes (1.2.3)
+    hitimes (1.2.3-x86-mingw32)
     httpclient (2.6.0.1)
     iostruct (0.0.4)
     ipaddress (0.8.3)
@@ -136,6 +138,9 @@ GEM
       mixlib-versioning
     mixlib-log (1.6.0)
     mixlib-shellout (2.2.6)
+    mixlib-shellout (2.2.6-universal-mingw32)
+      win32-process (~> 0.8.2)
+      wmi-lite (~> 1.0)
     mixlib-versioning (1.1.0)
     multi_json (1.11.2)
     multipart-post (1.2.0)
@@ -224,6 +229,8 @@ GEM
     varia_model (0.4.1)
       buff-extensions (~> 1.0)
       hashie (>= 2.0.2, < 4.0.0)
+    win32-process (0.8.3)
+      ffi (>= 1.0.0)
     winrm (1.7.3)
       builder (>= 2.1.2)
       gssapi (~> 1.2)
@@ -242,6 +249,7 @@ GEM
 
 PLATFORMS
   ruby
+  x86-mingw32
 
 DEPENDENCIES
   berkshelf (~> 3.0)

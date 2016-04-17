@@ -25,12 +25,12 @@ module BundleUtil
     result
   end
 
-  def with_bundle_unfrozen
-    bundle "config --delete frozen"
+  def with_bundle_unfrozen(cwd: nil)
+    bundle "config --delete frozen", cwd: cwd
     begin
       yield
     ensure
-      bundle "config --local frozen 1"
+      bundle "config --local frozen 1", cwd: cwd
     end
   end
 

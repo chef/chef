@@ -66,17 +66,7 @@ module BuildChefGem
     end
 
     def gemfile_path
-      # gemfile path could be relative to software filename (and often is)
-      @gemfile_path ||= begin
-        # Grab the version (and maybe source) from the lockfile so omnibus knows whether
-        # to toss the cache or not
-        gemfile_path = File.join(root_path, "Gemfile")
-        platform_gemfile_path = "#{gemfile_path}.#{Omnibus::Ohai["platform"]}"
-        if File.exist?(platform_gemfile_path)
-          gemfile_path = platform_gemfile_path
-        end
-        gemfile_path
-      end
+      File.join(root_path, "Gemfile")
     end
 
     def lockfile_path

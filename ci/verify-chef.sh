@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -evx
+
 # Set up a custom tmpdir, and clean it up before and after the tests
 TMPDIR="${TMPDIR:-/tmp}/cheftest"
 export TMPDIR
@@ -84,22 +86,31 @@ export FORCE_FFI_YAJL
 # ACCEPTANCE environment variable will be set on acceptance testers.
 # If is it set; we run the acceptance tests, otherwise run rspec tests.
 if [ "x$ACCEPTANCE" != "x" ]; then
+  # Find the Chef gem and cd there.
+  OLD_PATH=$PATH
+  PATH=/opt/$PROJECT_NAME/bin:/opt/$PROJECT_NAME/embedded/bin:$PATH
+  cd /opt/$PROJECT_NAME
+  CHEF_GEM=`bundle show chef`
+  PATH=$OLD_PATH
+  cd $CHEF_GEM
+
   # On acceptance testers we have Chef DK. We will use its Ruby environment
   # to cut down the gem installation time.
   PATH=/opt/chefdk/bin:/opt/chefdk/embedded/bin:$PATH
   export PATH
 
-  # Test against the vendored Chef gem
-  cd /opt/$PROJECT_NAME/embedded/lib/ruby/gems/*/gems/chef-[0-9]*/acceptance
+  # Test against the Chef bundle
+  sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID ARTIFACTORY_USERNAME=$ARTIFACTORY_USERNAME ARTIFACTORY_PASSWORD=$ARTIFACTORY_PASSWORD gem install bundler
   sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID ARTIFACTORY_USERNAME=$ARTIFACTORY_USERNAME ARTIFACTORY_PASSWORD=$ARTIFACTORY_PASSWORD bundle install
   sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID ARTIFACTORY_USERNAME=$ARTIFACTORY_USERNAME ARTIFACTORY_PASSWORD=$ARTIFACTORY_PASSWORD KITCHEN_DRIVER=ec2 bundle exec chef-acceptance test --force-destroy
 else
   PATH=/opt/$PROJECT_NAME/bin:/opt/$PROJECT_NAME/embedded/bin:$PATH
   export PATH
 
-  # Test against the vendored Chef gem
-  cd /opt/$PROJECT_NAME/embedded/lib/ruby/gems/*/gems/chef-[0-9]*
-
+  # Test against the installed Chef gem
+  cd /opt/$PROJECT_NAME
+  CHEF_GEM=`bundle show chef`
+  cd $CHEF_GEM
   if [ ! -f "Gemfile.lock" ]; then
     echo "Chef gem does not contain a Gemfile.lock! This is needed to run any tests."
     exit 1
@@ -111,5 +122,8 @@ else
       CHEF_FIPS=1
       export CHEF_FIPS
   fi
-  sudo env PATH=$PATH TERM=xterm CHEF_FIPS=$CHEF_FIPS bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec/functional
+
+  # TODO Fix Solaris and AIX so we don't have to do GIT_SSL_NO_VERIFY=true
+  sudo env BUNDLE_IGNORE_CONFIG=true BUNDLE_FROZEN=1 BUNDLE_WITHOUT=docgen:maintenance:omnibus_package:integration GIT_SSL_NO_VERIFY=true PATH=$PATH TERM=xterm CHEF_FIPS=$CHEF_FIPS bundle install
+  sudo env BUNDLE_IGNORE_CONFIG=true BUNDLE_FROZEN=1 BUNDLE_WITHOUT=docgen:maintenance:omnibus_package:integration GIT_SSL_NO_VERIFY=true PATH=$PATH TERM=xterm CHEF_FIPS=$CHEF_FIPS bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec/functional
 fi

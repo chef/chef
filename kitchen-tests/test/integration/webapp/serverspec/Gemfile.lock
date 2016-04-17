@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     ffi (1.9.10)
+    ffi (1.9.10-x86-mingw32)
     ffi-yajl (1.4.0)
       ffi (~> 1.5)
       libyajl2 (~> 1.2)
@@ -9,6 +10,7 @@ GEM
 
 PLATFORMS
   ruby
+  x86-mingw32
 
 DEPENDENCIES
   ffi-yajl (~> 1.1)

@@ -3,7 +3,18 @@ require_relative "tasks/gemfile_util"
 extend GemfileUtil
 
 source "https://rubygems.org"
-gemspec name: ($chef_platform ? "chef-#{$chef_platform}" : "chef")
+
+# Pick the gemspec for our platform
+gemspec_name = "chef"
+Dir.glob("chef-*.gemspec").each do |gemspec_filename|
+  gemspec_filename =~ /^chef-(.+).gemspec/
+  gemspec_platform = $1
+  if Gem::Platform.match(Gem::Platform.new(gemspec_platform))
+    Bundler.ui.info "Using gemspec #{gemspec_filename} for current platform."
+    gemspec_name = "chef-#{gemspec_platform}"
+  end
+end
+gemspec name: gemspec_name
 
 gem "activesupport", "< 4.0.0", group: :compat_testing, platform: "ruby"
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))

@@ -292,6 +292,8 @@ module GemfileUtil
           # Never include bundler, it can't be bundled and doesn't put itself in
           # the lockfile correctly anyway
           next if spec.name == "bundler"
+          # Only the platform-specific locks for now (TODO make it possible to emit all locks)
+          next if spec.platform && spec.platform != Gem::Platform::RUBY
           lock = lock_source_metadata(spec)
           lock[:version] = spec.version.to_s
           runtime = spec.dependencies.select { |dep| dep.type == :runtime }
@@ -304,6 +306,10 @@ module GemfileUtil
 
         # Transitivize the deps.
         locks.each do |name, lock|
+          # Not all deps were brought over (platform-specific ones) so weed them out
+          lock[:dependencies] &= locks.keys
+          lock[:development_dependencies] &= locks.keys
+
           lock[:dependencies] = transitive_dependencies(locks, name, :dependencies)
           lock[:development_dependencies] = transitive_dependencies(locks, name, :development_dependencies)
         end

@@ -134,7 +134,7 @@ Once you've made any changes you want, you have to update the lockfiles that act
 * To update specific gems only, run `rake bundle:update[gem1 gem2 ...]`
 * **`bundle update` and `bundle install` will *not* work, on purpose:** the rake task handles both the windows and non-windows lockfiles and updates them in sync.
 
-To perform a full update of all dependencies in chef (including binary packages, tests and build system dependencies), run `rake dependencies`. This will update the `Gemfile.lock`, `Gemfile.windows.lock`, `omnibus/Gemfile.lock`, `acceptance/Gemfile.lock`, `omnibus/Berksfile.lock`, and `omnibus_overrides.rb`.  It will also show you any outdated dependencies due to conflicting constraints. Some outdated dependencies are to be expected; it will inform you if any new ones appear that we don't know about, and tell you how to proceed.
+To perform a full update of all dependencies in chef (including binary packages, tests and build system dependencies), run `rake dependencies`. This will update the `Gemfile.lock`, `omnibus/Gemfile.lock`, `acceptance/Gemfile.lock`, `omnibus/Berksfile.lock`, and `omnibus_overrides.rb`.  It will also show you any outdated dependencies due to conflicting constraints. Some outdated dependencies are to be expected; it will inform you if any new ones appear that we don't know about, and tell you how to proceed.
 
 # How Chef Builds and Versions
 
@@ -157,7 +157,7 @@ Additionally, periodically Chef will update the desired versions of chef compone
 Whenever a change is checked in to `master`, the patch version of `chef` is bumped. To do this, the `lita-versioner` bot listens to github for merged PRs, and when it finds one, takes these actions:
 
 1. Bumps the patch version in `lib/chef/version.rb` (e.g. 0.9.14 -> 0.9.15).
-2. Runs `rake dependencies:update_conservative` to update the `Gemfile.lock` and `Gemfile.windows.lock` to include the new version.
+2. Runs `rake dependencies:update_conservative` to update the `Gemfile.lock` to include the new version.
 3. Pushes to `master` and submits a new build to Chef's Jenkins cluster.
 
 ## Component Versions
@@ -176,11 +176,11 @@ These have software definitions either in [omnibus/config/software](omnibus/conf
 
 Most of the actual front-facing software in chef is composed of ruby projects. berkshelf, test-kitchen and even chef itself are made of ruby gems. Chef uses the typical ruby way of controlling rubygems versions, the `Gemfile`. Specifically, the `Gemfile` at the top of chef repository governs the version of every single gem we install into chef package. It's a one-stop shop.
 
-Our rubygems component versions are locked down with `Gemfile.lock` and `Gemfile.windows.lock` (which affects windows), and can be updated with `rake dependencies`.
+Our rubygems component versions are locked down with `Gemfile.lock`, and can be updated with `rake dependencies`.
 
 There are three gems versioned outside the `Gemfile`: `rubygems`, `bundler` and `chef`. `rubygems` and `bundler` are in the `RUBYGEMS_AT_LATEST_VERSION` constant in [version_policy.rb](version-policy.rb) and locked in [omnibus_overrides](omnibus_overrides.rb). They are kept up to date by `rake dependencies`.
 
-**Windows**: [Gemfile.lock](Gemfile.lock) is generated platform-agnostic. In order to keep windows versions in sync, [Gemfile.windows](Gemfile.windows) reads the generic Gemfile.lock and explicitly pins all gems to those versions, allowing bundler to bring in windows-specific versions of the gems and new deps, but requiring that all gems shared between Windows and Unix have the same version.
+**Windows**: [Gemfile.lock](Gemfile.lock) is generated platform-agnostic, and then generated again for Windows. The one file has the solution for both Linux and Windows.
 
 The tool we use to generate Windows-specific lockfiles on non-Windows machines is [tasks/bin/bundle-platform](bundle-platform), which takes the first argument and sets `Gem.platforms`, and then calls `bundle` with the remaining arguments.
 

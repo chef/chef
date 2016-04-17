@@ -28,17 +28,9 @@ module BuildChef
 
   #
   # Get the (possibly platform-specific) path to the Gemfile.
-  # /var/omnibus/cache/src/chef/Gemfile or
-  # /var/omnibus/cache/src/chef/Gemfile.windows
   #
   def chef_gemfile
-    gemfile = File.join(project_dir, "Gemfile")
-    # Check for platform specific version
-    platform_gemfile = "#{gemfile}.#{Omnibus::Ohai["platform"]}"
-    if File.exist?(platform_gemfile)
-      gemfile = platform_gemfile
-    end
-    gemfile
+    File.join(project_dir, "Gemfile")
   end
 
   #
