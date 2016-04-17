@@ -63,10 +63,7 @@ build do
   # Prepare to install: build config, retries, job, frozen=true
   # TODO Windows install seems to sometimes install already-installed gems such
   # as gherkin (and fail as a result) if you use jobs > 1.
-  # TODO Windows cannot be frozen, because Bundler doesn't understand platform-specific
-  # versions. However, on Windows we have explicit version pins for most things, so
-  # we will *probably* get the exact versions of everything we want.
-  create_bundle_config(chef_gemfile, retries: 4, jobs: windows? ? 1 : 7, frozen: !windows?)
+  create_bundle_config(chef_gemfile, retries: 4, jobs: windows? ? 1 : 7, frozen: true)
 
   # Install all the things. Arguments are specified in .bundle/config (see create_bundle_config)
   block { log.info(log_key) { "" } }

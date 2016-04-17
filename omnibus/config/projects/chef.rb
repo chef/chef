@@ -45,6 +45,8 @@ end
 overrides_path = File.expand_path("../../../../omnibus_overrides.rb", __FILE__)
 instance_eval(IO.read(overrides_path), overrides_path)
 
+override :"ruby-windows-devkit", version: "4.5.2-20111229-1559" if windows? && windows_arch_i386?
+
 dependency "preparation"
 
 # All actual dependencies are in chef-complete, so that the addition

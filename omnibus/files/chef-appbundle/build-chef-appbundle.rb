@@ -50,10 +50,7 @@ module BuildChefAppbundle
       # "test", "changelog" and "guard" come from berkshelf, "maintenance" comes from chef
       # "tools" and "integration" come from inspec
       shellout!("#{bundle_bin} config --local without #{without_groups.join(":")}", env: env, cwd: installed_path)
-      # TODO Windows cannot be frozen, because Bundler doesn't understand platform-specific
-      # versions. However, on Windows we have explicit version pins for most things, so
-      # we will *probably* get the exact versions of everything we want.
-      shellout!("#{bundle_bin} config --local frozen 1") unless windows?
+      shellout!("#{bundle_bin} config --local frozen 1")
 
       shellout!("#{bundle_bin} check", env: env, cwd: installed_path)
 

@@ -78,7 +78,7 @@ module BuildChef
         # Emit blank line to separate different tasks
         log.info(log_key) { "" }
         log.info(log_key) { "Properly installing git or path sourced gem #{gem_path} using rake install" }
-        shellout!("#{bundle_bin} exec #{rake_bin} install --trace", env: chef_env, cwd: gem_path)
+        shellout!("#{bundle_bin} exec #{rake_bin} install", env: chef_env, cwd: gem_path)
       end
     end
   end

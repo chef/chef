@@ -33,9 +33,10 @@ OMNIBUS_OVERRIDES = {
   "ncurses" => "5.9",
   "pkg-config-lite" => "0.28-1",
   "ruby" => "2.1.8",
-  # Leave dev-kit pinned to 4.5 because 4.7 is 20MB larger and we don't want
-  # to unnecessarily make the client any fatter.
-  "ruby-windows-devkit" => "4.5.2-20111229-1559",
+  # Leave dev-kit pinned to 4.5 on 32-bit, because 4.7 is 20MB larger and we don't want
+  # to unnecessarily make the client any fatter. (Since it's different between
+  # 32 and 64, we have to do it in the project file still.)
+  # "ruby-windows-devkit" => "4.5.2-20111229-1559",
   "ruby-windows-devkit-bash" => "3.1.23-4-msys-1.0.18",
   "util-macros" => "1.19.0",
   "xproto" => "7.0.28",
