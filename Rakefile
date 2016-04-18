@@ -24,13 +24,18 @@ require "chef/version"
 require "chef-config/package_task"
 require "rdoc/task"
 require_relative "tasks/rspec"
-require_relative "tasks/external_tests"
 require_relative "tasks/maintainers"
 require_relative "tasks/cbgb"
+require_relative "tasks/dependencies"
+require_relative "tasks/changelog"
 
 ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef") do |package|
   package.component_paths = ["chef-config"]
   package.generate_version_class = true
+end
+# Add a conservative dependency update to version:bump (which was created by PackageTask)
+task "version:bump" => %w{version:bump_patch version:update} do
+  Rake::Task["dependencies:update"].invoke("conservative")
 end
 
 task :pedant, :chef_zero_spec
@@ -71,17 +76,4 @@ begin
 
 rescue LoadError
   puts "yard is not available. (sudo) gem install yard to generate yard documentation."
-end
-
-begin
-  require "github_changelog_generator/task"
-
-  GitHubChangelogGenerator::RakeTask.new :changelog do |config|
-    config.future_release = Chef::VERSION
-    config.enhancement_labels = "enhancement,Enhancement,New Feature,Feature".split(",")
-    config.bug_labels = "bug,Bug,Improvement,Upstream Bug".split(",")
-    config.exclude_labels = "duplicate,question,invalid,wontfix,no_changelog,Exclude From Changelog,Question,Discussion".split(",")
-  end
-rescue LoadError
-  puts "github_changelog_generator is not available. gem install github_changelog_generator to generate changelogs"
 end

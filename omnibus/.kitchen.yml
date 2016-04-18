@@ -11,9 +11,7 @@ driver:
     cpus: 4
     memory: 4096
   synced_folders:
-    - ['..', '/home/vagrant/chef']
-    - ['../../omnibus', '/home/vagrant/omnibus']
-    - ['../../omnibus-software', '/home/vagrant/omnibus-software']
+    - ['../..', '/home/vagrant']
 
 provisioner:
   name: chef_zero
@@ -21,6 +19,11 @@ provisioner:
   # This is not the version of chef that we're building - this is the version
   # of chef that omnibus needs to build chef/chef.
   require_chef_omnibus: true
+  attributes:
+    vagrant:
+      this_key_exists_so_we_have_a_vagrant_key: true
+  chef_omnibus_install_options: -P angrychef
+  chef_omnibus_root: /opt/angrychef
 
 platforms:
   - name: centos-5.11
@@ -73,6 +76,8 @@ platforms:
   - name: windows-2012r2-standard
     driver:
       box: chef/windows-server-2012r2-standard # private
+    provisioner:
+      chef_omnibus_root: /opscode/angrychef
 
 attribute_defaults: &attribute_defaults
   build_user:          vagrant
@@ -80,27 +85,17 @@ attribute_defaults: &attribute_defaults
   build_user_password: vagrant
 
 suites:
-  - name: angrychef
-    attributes:
-      omnibus:
-        <<: *attribute_defaults
-        install_dir: /opt/angrychef
-    run_list:
-      - omnibus::default
-  - name: chef-fips
-    attributes:
-      omnibus:
-        <<: *attribute_defaults
-        install_dir: /opt/chef-fips
-    run_list:
-      - omnibus::default
+  # - name: angrychef
+  #   attributes:
+  #     omnibus:
+  #       <<: *attribute_defaults
+  #       install_dir: /opt/angrychef
+  #   run_list:
+  #     - omnibus::default
   - name: chef
-    provisioner:
-      chef_omnibus_install_options: -P angrychef
-      chef_omnibus_root: /opt/angrychef
     attributes:
       omnibus:
         <<: *attribute_defaults
-        install_dir: /opt/chef
+        install_dir: /opscode/chef
     run_list:
       - omnibus::default

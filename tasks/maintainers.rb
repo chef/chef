@@ -31,9 +31,10 @@ begin
   require "tomlrb"
   require "octokit"
   require "pp"
-  task :default => :generate
 
   namespace :maintainers do
+    task :default => :generate
+
     desc "Generate MarkDown version of MAINTAINERS file"
     task :generate do
       out = "<!-- This is a generated file. Please do not edit directly -->\n\n"

@@ -46,8 +46,8 @@ call %EMBEDDED_BIN_DIR%\rspec --version
 
 SET PATH=C:\opscode\%PROJECT_NAME%\bin;C:\opscode\%PROJECT_NAME%\embedded\bin;%PATH%
 
-REM ; Test against the vendored chef gem
-cd C:\opscode\%PROJECT_NAME%\embedded\lib\ruby\gems\2*\gems\chef-*-mingw32
+REM ; Test against the vendored chef gem (cd into the output of "bundle show chef")
+for /f "delims=" %%a in ('bundle show chef') do cd %%a
 
 IF NOT EXIST "Gemfile.lock" (
   ECHO "Chef gem does not contain a Gemfile.lock! This is needed to run any tests."
@@ -61,4 +61,7 @@ IF "%PIPELINE_NAME%" == "chef-fips" (
 REM ; ffi-yajl must run in c-extension mode for perf, so force it so we don't accidentally fall back to ffi
 set FORCE_FFI_YAJL=ext
 
+set BUNDLE_GEMFILE=C:\opscode\%PROJECT_NAME%\Gemfile
+set BUNDLE_IGNORE_CONFIG=true
+set BUNDLE_FROZEN=1
 call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional
