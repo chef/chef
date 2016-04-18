@@ -1,7 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@chef.io>)
-# Author:: Ho-Sheng Hsiao (<hosh@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Author:: Thom May (<thom@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,23 +16,21 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/policy_group"
-require "chef/chef_fs/file_system/repository/directory"
-require "chef/chef_fs/file_system/exceptions"
+require "chef/chef_fs/data_handler/node_data_handler"
+require "chef/chef_fs/file_system/repository/base_file"
 
 class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class PolicyGroupsDir < Repository::Directory
 
-          def can_have_child?(name, is_dir)
-            !is_dir && File.extname(name) == ".json"
+        class Node < BaseFile
+
+          def initialize(name, parent)
+            @data_handler = Chef::ChefFS::DataHandler::NodeDataHandler.new
+            super
           end
 
-          def make_child_entry(child_name)
-            PolicyGroup.new(child_name, self)
-          end
         end
       end
     end
