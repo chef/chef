@@ -68,7 +68,7 @@ class Chef
       # @return [Chef::Resource] The resource
       #
       # @example
-      #   delete_resource(:template, '/x/y.txy')
+      #   delete_resource!(:template, '/x/y.txy')
       #
       def delete_resource!(type, name, run_context: self.run_context)
         run_context.resource_collection.delete("#{type}[#{name}]")
