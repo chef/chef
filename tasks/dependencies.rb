@@ -42,7 +42,7 @@ namespace :dependencies do
     end
   end
 
-  def gemfile_lock_task(task_name, dirs: [])
+  def gemfile_lock_task(task_name, dirs: [], other_platforms: true, leave_frozen: true)
     dirs.each do |dir|
       desc "Update #{dir}/Gemfile.lock. #{task_name}[conservative] to update as little as possible."
       task task_name, [:conservative] do |t, rake_args|
@@ -52,11 +52,13 @@ namespace :dependencies do
         puts "-------------------------------------------------------------------"
         puts "Updating #{dir}/Gemfile.lock#{conservative ? " (conservatively)" : ""} ..."
         puts "-------------------------------------------------------------------"
-        with_bundle_unfrozen(cwd: dir) do
+        with_bundle_unfrozen(cwd: dir, leave_frozen: leave_frozen) do
           bundle "install", cwd: dir, delete_gemfile_lock: !conservative
-          # Include all other supported platforms into the lockfile as well
-          platforms.each do |platform|
-            bundle "lock", cwd: dir, platform: platform
+          if other_platforms
+            # Include all other supported platforms into the lockfile as well
+            platforms.each do |platform|
+              bundle "lock", cwd: dir, platform: platform
+            end
           end
         end
       end
@@ -89,7 +91,7 @@ namespace :dependencies do
   gemfile_lock_task :update_acceptance_gemfile_lock, dirs: %w{
     acceptance
     acceptance/fips/test/integration/fips/serverspec
-  }
+  }, other_platforms: false, leave_frozen: false
   gemfile_lock_task :update_kitchen_tests_gemfile_lock, dirs: %w{
     kitchen-tests
     kitchen-tests/test/integration/webapp/serverspec
