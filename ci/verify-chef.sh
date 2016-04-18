@@ -92,7 +92,7 @@ if [ "x$ACCEPTANCE" != "x" ]; then
   cd /opt/$PROJECT_NAME
   CHEF_GEM=`bundle show chef`
   PATH=$OLD_PATH
-  cd $CHEF_GEM
+  cd $CHEF_GEM/acceptance
 
   # On acceptance testers we have Chef DK. We will use its Ruby environment
   # to cut down the gem installation time.
