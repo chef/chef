@@ -10,30 +10,38 @@ describe "Chef Fips Specs" do
     end
   end
 
-  let(:chef_dir) do
+  let(:omnibus_root) do
     if windows?
-      Dir.glob("c:/opscode/chef/embedded/lib/ruby/gems/*/gems/chef-[0-9]*").last
+      "c:/opscode/chef"
     else
-      Dir.glob("/opt/chef/embedded/lib/ruby/gems/*/gems/chef-[0-9]*").last
+      "/opt/chef"
     end
   end
 
-  let(:path) do
-    if windows?
-      'C:\opscode\chef\embedded\bin'
-    else
-      "/opt/chef/embedded/bin"
-    end
+  let(:env) do
+    {
+      "PATH" => [ "#{omnibus_root}/embedded/bin", ENV["PATH"] ].join(File::PATH_SEPARATOR),
+      "BUNDLE_GEMFILE" => "#{omnibus_root}/Gemfile",
+      "GEM_PATH" => nil, "GEM_CACHE" => nil, "GEM_HOME" => nil,
+      "BUNDLE_IGNORE_CONFIG" => "true",
+      "BUNDLE_FROZEN" => "1",
+      "CHEF_FIPS" => "1"
+    }
+  end
+
+  let(:chef_dir) do
+    cmd = Mixlib::ShellOut.new("bundle show chef", env: env).run_command
+    cmd.error!
+    cmd.stdout.chomp
   end
 
   it "passes the unit and functional specs" do
     Bundler.with_clean_env do
-      ruby_cmd = Mixlib::ShellOut.new(
-        "bundle exec rspec -t ~requires_git spec/unit spec/functional", :env => { "PATH" => [ENV["PATH"], path].join(File::PATH_SEPARATOR),
-                                                                                  "GEM_PATH" => nil, "GEM_CACHE" => nil, "GEM_HOME" => nil,
-                                                                                  "CHEF_FIPS" => "1" },
-                                                                        :live_stream => STDOUT, :cwd => chef_dir, :timeout => 3600)
-      expect { ruby_cmd.run_command.error! }.not_to raise_exception
+      cmd = Mixlib::ShellOut.new(
+        "bundle exec rspec -t ~requires_git spec/unit spec/functional",
+        env: env, live_stream: STDOUT, cwd: chef_dir, timeout: 3600
+      )
+      cmd.run_command.error!
     end
   end
 end
