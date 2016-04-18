@@ -306,6 +306,7 @@ describe Chef::Recipe do
 
       it "does not insert two resources if create_if_missing is used" do
         zm_resource
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
         recipe.declare_resource(:zen_master, "klopp", create_if_missing: true)
         expect(run_context.resource_collection.count).to eql(1)
       end

@@ -32,6 +32,14 @@ class Chef
   class Provider
     require "chef/mixin/why_run"
     require "chef/mixin/provides"
+
+    attr_accessor :new_resource
+    attr_accessor :current_resource
+    attr_accessor :run_context
+
+    attr_reader :recipe_name
+    attr_reader :cookbook_name
+
     include Chef::Mixin::WhyRun
     extend Chef::Mixin::Provides
 
@@ -42,13 +50,6 @@ class Chef
     def self.supports?(resource, action)
       true
     end
-
-    attr_accessor :new_resource
-    attr_accessor :current_resource
-    attr_accessor :run_context
-
-    attr_reader :recipe_name
-    attr_reader :cookbook_name
 
     #--
     # TODO: this should be a reader, and the action should be passed in the

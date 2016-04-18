@@ -34,13 +34,12 @@ class Chef
   # == Chef::Recipe
   # A Recipe object is the context in which Chef recipes are evaluated.
   class Recipe
+    attr_accessor :cookbook_name, :recipe_name, :recipe, :params, :run_context
 
     include Chef::DSL::Recipe
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::Deprecation
-
-    attr_accessor :cookbook_name, :recipe_name, :recipe, :params, :run_context
 
     # Parses a potentially fully-qualified recipe name into its
     # cookbook name and recipe short name.

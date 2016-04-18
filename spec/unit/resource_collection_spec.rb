@@ -162,6 +162,36 @@ describe Chef::ResourceCollection do
     end
   end
 
+  describe "delete" do
+    it "should allow you to delete resources by name via delete" do
+      zmr = Chef::Resource::ZenMaster.new("dog")
+      rc << zmr
+      expect(rc).not_to be_empty
+      expect(rc.delete(zmr.to_s)).to eql(zmr)
+      expect(rc).to be_empty
+
+      zmr = Chef::Resource::ZenMaster.new("cat")
+      rc[0] = zmr
+      expect(rc).not_to be_empty
+      expect(rc.delete(zmr)).to eql(zmr)
+      expect(rc).to be_empty
+
+      zmr = Chef::Resource::ZenMaster.new("monkey")
+      rc.push(zmr)
+      expect(rc).not_to be_empty
+      expect(rc.delete(zmr)).to eql(zmr)
+      expect(rc).to be_empty
+    end
+
+    it "should raise an exception if you send something strange to delete" do
+      expect { rc.delete(:symbol) }.to raise_error(ArgumentError)
+    end
+
+    it "should raise an exception if it cannot find a resource with delete" do
+      expect { rc.delete("zen_master[dog]") }.to raise_error(Chef::Exceptions::ResourceNotFound)
+    end
+  end
+
   describe "resources" do
 
     it "should find a resource by symbol and name (:zen_master => monkey)" do
