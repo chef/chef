@@ -342,6 +342,15 @@ class Chef
       include InlineResources
     end
 
+    # allow users to control enabling/disabling resource cloning per-resource
+    class << self
+      attr_accessor :resource_cloning
+
+      def resource_cloning(val)
+        @resource_cloning = val
+      end
+    end
+
     # Chef::Provider::InlineResources
     # Implementation of inline resource convergence for providers. See
     # Provider.use_inline_resources for a longer explanation.
@@ -358,6 +367,8 @@ class Chef
       def compile_and_converge_action(&block)
         old_run_context = run_context
         @run_context = run_context.create_child
+        # use_inline_resources gets the setting from the class instance variable
+        @run_context.resource_cloning = self.class.resource_cloning
         return_value = instance_eval(&block)
         Chef::Runner.new(run_context).converge
         return_value

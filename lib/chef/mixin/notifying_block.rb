@@ -37,6 +37,9 @@ class Chef
         parent_context ||= @run_context
         sub_run_context = parent_context.create_child
 
+        # inhert the resource_cloning setting from our parent context
+        sub_run_context.resource_cloning = parent_context.resource_cloning
+
         begin
           outer_run_context = @run_context
           @run_context = sub_run_context

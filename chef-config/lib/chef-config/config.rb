@@ -1053,6 +1053,9 @@ module ChefConfig
 
     default :rubygems_url, "https://rubygems.org"
 
+    # For Chef-12 this is still the default, in Chef-13 the default will be false
+    default :resource_cloning, true
+
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
     # omnibus. This is used to locate the cacert.pem file on windows.
