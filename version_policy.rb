@@ -90,15 +90,18 @@ GEMS_ALLOWED_TO_FLOAT = [
 # we do in chef-dk, and the `bundle check` we do to ensure installed gems don't
 # have extra deps hiding in their Gemfiles.
 #
+# NOTE: we DO install test, because there aren't many gems there, and it makes
+# our test phase a lot easier.
+#
 INSTALL_WITHOUT_GROUPS = %w{
-  development
-  guard
-  maintenance
-  tools
-  integration
   changelog
   compat_testing
+  development
   docgen
+  guard
+  integration
+  maintenance
+  tools
   travis
   style
 }
