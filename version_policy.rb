@@ -100,4 +100,5 @@ INSTALL_WITHOUT_GROUPS = %w{
   compat_testing
   docgen
   travis
+  style
 }

@@ -61,7 +61,7 @@ IF "%PIPELINE_NAME%" == "chef-fips" (
 REM ; ffi-yajl must run in c-extension mode for perf, so force it so we don't accidentally fall back to ffi
 set FORCE_FFI_YAJL=ext
 
+set BUNDLE_GEMFILE=C:\opscode\%PROJECT_NAME%\Gemfile
 set BUNDLE_IGNORE_CONFIG=true
 set BUNDLE_FROZEN=1
-set BUNDLE_WITHOUT=development:guard:maintenance:tools:integration:changelog:compat_testing:docgen:travis:aix:bsd:linux:mac_os_x:solaris
 call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional
