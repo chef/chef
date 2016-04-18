@@ -6,26 +6,6 @@ GIT
       mixlib-shellout (~> 2.0)
       thor (~> 0.19)
 
-GIT
-  remote: git://github.com/test-kitchen/kitchen-ec2.git
-  revision: 61458c354d71a4156263e7f8b33e51c6edcb5aa6
-  branch: jk/image-search-only
-  specs:
-    kitchen-ec2 (1.0.0.dev.0)
-      aws-sdk (~> 2)
-      excon
-      multi_json
-      retryable (~> 2.0)
-      test-kitchen (~> 1.4, >= 1.4.1)
-      ubuntu_ami (~> 0.4.1)
-
-GIT
-  remote: git://github.com/test-kitchen/kitchen-vagrant.git
-  revision: 67a5248070845f942c2e56359ba388f691079f6c
-  specs:
-    kitchen-vagrant (0.20.0)
-      test-kitchen (~> 1.4)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -96,13 +76,13 @@ GEM
     hitimes (1.2.3)
     hitimes (1.2.3-x86-mingw32)
     httpclient (2.7.1)
-    inspec (0.18.0)
+    inspec (0.19.1)
       json (~> 1.8)
       method_source (~> 0.8)
       pry (~> 0)
-      r-train (~> 0.10.4)
+      r-train (~> 0.10.5)
       rainbow (~> 2)
-      rspec (~> 3.3)
+      rspec (~> 3)
       rspec-its (~> 1.2)
       rubyzip (~> 1.1)
       thor (~> 0.19)
@@ -110,9 +90,17 @@ GEM
       json_pure (>= 1.8.1)
     json (1.8.3)
     json_pure (1.8.3)
+    kitchen-ec2 (1.0.0)
+      aws-sdk (~> 2)
+      excon
+      multi_json
+      retryable (~> 2.0)
+      test-kitchen (~> 1.4, >= 1.4.1)
     kitchen-inspec (0.12.5)
       inspec (>= 0.14.1, < 1.0.0)
       test-kitchen (~> 1.6)
+    kitchen-vagrant (0.20.0)
+      test-kitchen (~> 1.4)
     little-plugger (1.1.4)
     logging (2.1.0)
       little-plugger (~> 1.1)
@@ -149,7 +137,7 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
-    r-train (0.10.4)
+    r-train (0.10.5)
       docker-api (~> 1.26.2)
       json (~> 1.8)
       mixlib-shellout (~> 2.1)
@@ -214,7 +202,6 @@ GEM
     thor (0.19.1)
     timers (4.0.4)
       hitimes
-    ubuntu_ami (0.4.1)
     varia_model (0.4.1)
       buff-extensions (~> 1.0)
       hashie (>= 2.0.2, < 4.0.0)
@@ -245,9 +232,9 @@ DEPENDENCIES
   berkshelf
   chef-acceptance!
   inspec
-  kitchen-ec2!
+  kitchen-ec2
   kitchen-inspec
-  kitchen-vagrant!
+  kitchen-vagrant
   test-kitchen
   windows_chef_zero
   winrm-fs

@@ -2,12 +2,12 @@ source "https://rubygems.org"
 
 gem "chef-acceptance", github: "chef/chef-acceptance"
 gem "test-kitchen"
-gem "kitchen-ec2", github: "test-kitchen/kitchen-ec2", branch: "jk/image-search-only"
+gem "kitchen-ec2"
 gem "kitchen-inspec"
 gem "inspec"
 # Pinning to github for kitchen-vagrant because 0.19.0 incorrectly
 # puts in a box_url for bento when a vagrant box in atlas is specified
-gem "kitchen-vagrant", github: "test-kitchen/kitchen-vagrant"
+gem "kitchen-vagrant"
 gem "windows_chef_zero"
 gem "winrm-fs"
 gem "berkshelf"
