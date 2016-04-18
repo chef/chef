@@ -63,6 +63,5 @@ set FORCE_FFI_YAJL=ext
 
 set BUNDLE_IGNORE_CONFIG=true
 set BUNDLE_FROZEN=1
-set BUNDLE_WITHOUT=docgen:maintenance:omnibus_package:integration:aix:bsd:linux:mac_os_x:solaris
-call bundle install
+set BUNDLE_WITHOUT=development:guard:maintenance:tools:integration:changelog:compat_testing:docgen:travis:aix:bsd:linux:mac_os_x:solaris
 call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional
