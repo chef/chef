@@ -70,7 +70,7 @@ module BuildChefAppbundle
   # appbundler against the resulting file.
   #
   # Relocks the Gemfiles inside the specified gems (e.g. berkshelf, test-kitchen,
-  # chef) to use the chef distribution's chosen gems.
+  # chef) to use the distribution's chosen gems.
   def appbundle_gem(gem_name)
     # First lock the gemfile down.
     lockdown_gem(gem_name)

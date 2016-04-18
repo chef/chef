@@ -88,10 +88,8 @@ namespace :dependencies do
   end
 
   gemfile_lock_task :update_omnibus_gemfile_lock, dirs: %w{omnibus}
-  gemfile_lock_task :update_acceptance_gemfile_lock, dirs: %w{
-    acceptance
-    acceptance/fips/test/integration/fips/serverspec
-  }, other_platforms: false, leave_frozen: false
+  gemfile_lock_task :update_acceptance_gemfile_lock, dirs: %w{acceptance},
+    other_platforms: false, leave_frozen: false
   gemfile_lock_task :update_kitchen_tests_gemfile_lock, dirs: %w{
     kitchen-tests
     kitchen-tests/test/integration/webapp/serverspec

@@ -29,7 +29,7 @@ module BuildChef
   #
   # Get the (possibly platform-specific) path to the Gemfile.
   #
-  def chef_gemfile
+  def project_gemfile
     File.join(project_dir, "Gemfile")
   end
 
@@ -41,12 +41,12 @@ module BuildChef
   # then delete the git cached versions.
   #
   # Once we finish with all this, we update the Gemfile that will end up in the
-  # chef so that it doesn't have git or path references anymore.
+  # top-level install so that it doesn't have git or path references anymore.
   #
   def properly_reinstall_git_and_path_sourced_gems
     # Emit blank line to separate different tasks
     block { log.info(log_key) { "" } }
-    chef_env = env.dup.merge("BUNDLE_GEMFILE" => chef_gemfile)
+    project_env = env.dup.merge("BUNDLE_GEMFILE" => project_gemfile)
 
     # Reinstall git-sourced or path-sourced gems, and delete the originals
     block "Reinstall git-sourced gems properly" do
@@ -59,7 +59,7 @@ module BuildChef
       # or `gem :x, path: '.'` or `gemspec`). To do this, we just detect which ones
       # have properly-installed paths (in the `gems` directory that shows up when
       # you run `gem list`).
-      locally_installed_gems = shellout!("#{bundle_bin} list --paths", env: chef_env, cwd: project_dir).
+      locally_installed_gems = shellout!("#{bundle_bin} list --paths", env: project_env, cwd: project_dir).
         stdout.lines.select { |gem_path| !gem_path.start_with?(gem_install_dir) }
 
       # Install the gems for real using `rake install` in their directories
@@ -70,7 +70,7 @@ module BuildChef
         # Emit blank line to separate different tasks
         log.info(log_key) { "" }
         log.info(log_key) { "Properly installing git or path sourced gem #{gem_path} using rake install" }
-        shellout!("#{bundle_bin} exec #{rake_bin} install", env: chef_env, cwd: gem_path)
+        shellout!("#{bundle_bin} exec #{rake_bin} install", env: project_env, cwd: gem_path)
       end
     end
   end
@@ -80,16 +80,16 @@ module BuildChef
     block { log.info(log_key) { "" } }
 
     shared_gemfile = self.shared_gemfile
-    chef_env = env.dup.merge("BUNDLE_GEMFILE" => chef_gemfile)
+    project_env = env.dup.merge("BUNDLE_GEMFILE" => project_gemfile)
 
     # Show the config for good measure
-    bundle "config", env: chef_env
+    bundle "config", env: project_env
 
     # Make `Gemfile` point to these by removing path and git sources and pinning versions.
     block "Rewrite Gemfile using all properly-installed gems" do
       gem_pins = ""
       result = []
-      shellout!("#{bundle_bin} list", env: chef_env).stdout.lines.map do |line|
+      shellout!("#{bundle_bin} list", env: project_env).stdout.lines.map do |line|
         if line =~ /^\s*\*\s*(\S+)\s+\((\S+).*\)\s*$/
           name, version = $1, $2
           # rubocop is an exception, since different projects disagree
@@ -99,7 +99,7 @@ module BuildChef
       end
 
       # Find the installed chef gem by looking for lib/chef.rb
-      chef_gem = File.expand_path("../..", shellout!("#{gem_bin} which chef", env: chef_env).stdout.chomp)
+      chef_gem = File.expand_path("../..", shellout!("#{gem_bin} which chef", env: project_env).stdout.chomp)
       # Figure out the path to gemfile_util from there
       gemfile_util = Pathname.new(File.join(chef_gem, "tasks", "gemfile_util"))
       gemfile_util = gemfile_util.relative_path_from(Pathname.new(shared_gemfile).dirname)

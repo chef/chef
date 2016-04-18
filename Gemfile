@@ -64,11 +64,9 @@ group(:linux, :bsd, :mac_os_x, :solaris, :windows) do
   # may need to disable this in insolation on fussy builds like AIX, RHEL4, etc
   gem "ruby-prof"
 end
-unless $chef_platform == "windows"
-  # Everything except AIX and Windows
-  group(:linux, :bsd, :mac_os_x, :solaris) do
-    gem "ruby-shadow"
-  end
+# Everything except AIX and Windows
+group(:linux, :bsd, :mac_os_x, :solaris) do
+  gem "ruby-shadow"
 end
 
 group(:development, :test) do

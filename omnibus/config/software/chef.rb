@@ -57,17 +57,17 @@ build do
   require_relative "../../files/chef/build-chef"
   extend BuildChef
 
-  chef_build_env = env.dup
-  chef_build_env["BUNDLE_GEMFILE"] = chef_gemfile
+  project_env = env.dup
+  project_env["BUNDLE_GEMFILE"] = project_gemfile
 
   # Prepare to install: build config, retries, job, frozen=true
   # TODO Windows install seems to sometimes install already-installed gems such
   # as gherkin (and fail as a result) if you use jobs > 1.
-  create_bundle_config(chef_gemfile, retries: 4, jobs: windows? ? 1 : 7, frozen: true)
+  create_bundle_config(project_gemfile, retries: 4, jobs: windows? ? 1 : 7, frozen: true)
 
   # Install all the things. Arguments are specified in .bundle/config (see create_bundle_config)
   block { log.info(log_key) { "" } }
-  bundle "install --verbose", env: chef_build_env
+  bundle "install --verbose", env: project_env
 
   # For whatever reason, nokogiri software def deletes this (rather small) directory
   block { log.info(log_key) { "" } }
@@ -78,7 +78,7 @@ build do
 
   # Check that it worked
   block { log.info(log_key) { "" } }
-  bundle "check", env: chef_build_env
+  bundle "check", env: project_env
 
   # fix up git-sourced gems
   properly_reinstall_git_and_path_sourced_gems

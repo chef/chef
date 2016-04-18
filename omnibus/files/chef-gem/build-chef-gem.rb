@@ -4,7 +4,7 @@ require "bundler"
 require_relative "../../../version_policy"
 
 # Common definitions and helpers (like compile environment and binary
-# locations) for all chef software definitions.
+# locations) for all software definitions.
 module BuildChefGem
   PLATFORM_FAMILY_FAMILIES = {
     "linux" => %w{wrlinux debian fedora rhel suse gentoo slackware arch exherbo alpine},
