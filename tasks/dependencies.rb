@@ -89,7 +89,7 @@ namespace :dependencies do
 
   gemfile_lock_task :update_omnibus_gemfile_lock, dirs: %w{omnibus}
   gemfile_lock_task :update_acceptance_gemfile_lock, dirs: %w{acceptance},
-    other_platforms: false, leave_frozen: false
+                                                     other_platforms: false, leave_frozen: false
   gemfile_lock_task :update_kitchen_tests_gemfile_lock, dirs: %w{
     kitchen-tests
     kitchen-tests/test/integration/webapp/serverspec
@@ -151,16 +151,18 @@ namespace :dependencies do
     puts "Checking for outdated gems ..."
     puts "-------------------------------------------------------------------"
     # TODO check for outdated windows gems too
-    bundle_outdated = bundle("outdated", extract_output: true)
-    puts bundle_outdated
-    outdated_gems = parse_bundle_outdated(bundle_outdated).map { |line, gem_name| gem_name }
-    # Weed out the acceptable ones
-    outdated_gems = outdated_gems.reject { |gem_name| ACCEPTABLE_OUTDATED_GEMS.include?(gem_name) }
-    if outdated_gems.empty?
-      puts ""
-      puts "SUCCESS!"
-    else
-      raise "ERROR: outdated gems: #{outdated_gems.join(", ")}. Either fix them or add them to ACCEPTABLE_OUTDATED_GEMS in #{__FILE__}."
+    with_bundle_unfrozen do
+      bundle_outdated = bundle("outdated", extract_output: true)
+      puts bundle_outdated
+      outdated_gems = parse_bundle_outdated(bundle_outdated).map { |line, gem_name| gem_name }
+      # Weed out the acceptable ones
+      outdated_gems = outdated_gems.reject { |gem_name| ACCEPTABLE_OUTDATED_GEMS.include?(gem_name) }
+      if outdated_gems.empty?
+        puts ""
+        puts "SUCCESS!"
+      else
+        raise "ERROR: outdated gems: #{outdated_gems.join(", ")}. Either fix them or add them to ACCEPTABLE_OUTDATED_GEMS in #{__FILE__}."
+      end
     end
   end
 end
