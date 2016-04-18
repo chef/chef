@@ -60,7 +60,7 @@ group(:maintenance) do
 end
 
 # Everything except AIX
-group(:linux, :bsd, :mac_os_x, :solaris, :windows, :ruby_prof) do
+group(:linux, :bsd, :mac_os_x, :solaris, :windows) do
   # may need to disable this in insolation on fussy builds like AIX, RHEL4, etc
   gem "ruby-prof"
 end
