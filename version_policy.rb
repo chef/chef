@@ -92,7 +92,6 @@ GEMS_ALLOWED_TO_FLOAT = [
 #
 INSTALL_WITHOUT_GROUPS = %w{
   development
-  test
   guard
   maintenance
   tools
@@ -100,6 +99,5 @@ INSTALL_WITHOUT_GROUPS = %w{
   changelog
   compat_testing
   docgen
-  ruby_prof
   travis
 }
