@@ -79,7 +79,7 @@ group(:development, :test) do
 end
 
 group(:changelog) do
-  gem "github_changelog_generator", "1.11.3"
+  gem "github_changelog_generator"
 end
 
 group(:travis) do
