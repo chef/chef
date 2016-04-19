@@ -73,7 +73,8 @@ begin
     desc "Run the specs under spec/unit with activesupport loaded"
     RSpec::Core::RakeTask.new(:activesupport) do |t|
       t.rspec_opts = %w{--require active_support/core_ext --profile}
-      t.pattern = FileList["spec/unit/**/*_spec.rb"]
+      # Only node_spec and role_spec specifically have issues, target those tests
+      t.pattern = FileList["spec/unit/node_spec.rb", "spec/unit/role_spec.rb"]
     end
 
     [:unit, :functional, :integration, :stress].each do |sub|

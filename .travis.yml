@@ -8,7 +8,7 @@ before_install:
   - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
   - rm -f .bundle/config
 
-bundler_args: --without changelog compat_testing development docgen guard maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+bundler_args: --without changelog development docgen guard maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
 
 # do not run expensive spec tests on PRs, only on branches
 branches:
@@ -26,19 +26,19 @@ matrix:
   - rvm: 2.1
     sudo: true
     script: tasks/bin/run_chef_tests
-    bundler_args: --without changelog compat_testing development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - rvm: 2.2
     sudo: true
     script: tasks/bin/run_chef_tests
-    bundler_args: --without changelog compat_testing development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - rvm: 2.3.0
     sudo: true
     script: tasks/bin/run_chef_tests
-    bundler_args: --without changelog compat_testing development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - rvm: rbx
     sudo: true
     script: tasks/bin/run_chef_tests
-    bundler_args: --without changelog compat_testing development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   #
   # External tests
   #
