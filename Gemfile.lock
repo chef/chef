@@ -93,9 +93,6 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (3.2.22.2)
-      i18n (~> 0.6, >= 0.6.4)
-      multi_json (~> 1.0)
     addressable (2.4.0)
     appbundler (0.9.0)
       mixlib-cli (~> 1.4)
@@ -204,7 +201,6 @@ GEM
     hashie (3.4.3)
     highline (1.7.8)
     httpclient (2.7.1)
-    i18n (0.7.0)
     inifile (3.0.0)
     iniparse (1.4.2)
     ipaddress (0.8.3)
@@ -411,7 +407,6 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  activesupport (< 4.0.0)
   appbundler
   bundler
   bundler-audit!

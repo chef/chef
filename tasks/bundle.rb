@@ -52,6 +52,30 @@ namespace :bundle do
       end
     end
   end
+
+  # Find out if we're using the latest gems we can (so we don't regress versions)
+  desc "Check for gems that are not at the latest released version, and report if anything not in ACCEPTABLE_OUTDATED_GEMS (version_policy.rb) is out of date."
+  task :outdated do
+    extend BundleUtil
+    puts ""
+    puts "-------------------------------------------------------------------"
+    puts "Checking for outdated gems ..."
+    puts "-------------------------------------------------------------------"
+    # TODO check for outdated windows gems too
+    with_bundle_unfrozen do
+      bundle_outdated = bundle("outdated", extract_output: true)
+      puts bundle_outdated
+      outdated_gems = parse_bundle_outdated(bundle_outdated).map { |line, gem_name| gem_name }
+      # Weed out the acceptable ones
+      outdated_gems = outdated_gems.reject { |gem_name| ACCEPTABLE_OUTDATED_GEMS.include?(gem_name) }
+      if outdated_gems.empty?
+        puts ""
+        puts "SUCCESS!"
+      else
+        raise "ERROR: outdated gems: #{outdated_gems.join(", ")}. Either fix them or add them to ACCEPTABLE_OUTDATED_GEMS in #{__FILE__}."
+      end
+    end
+  end
 end
 
 desc "Run bundle with arbitrary args against the given platform; e.g. rake bundle[show]. No platform to run against the main bundle; bundle[show,windows] to run the windows one; bundle[show,*] to run against all non-default platforms."

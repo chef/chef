@@ -67,10 +67,12 @@ OMNIBUS_RUBYGEMS_AT_LATEST_VERSION = {
 # add gems to the output of bundle outdated here and we'll parse it to get the
 # list of outdated gems.
 #
-# We're starting with debt here, but don't want it to get worse.
+# gherkin - expected to update with new cucumber (and foodcritic?) release
+# jwt - expected to update with new oauth2 release
+# mini_portile2 - should go away *entirely* with new nokogiri release (not a dep anymore)
+# slop - expected to disappear with new pry release
 #
 ACCEPTABLE_OUTDATED_GEMS = %w{
-  activesupport
   gherkin
   jwt
   mini_portile2
@@ -98,7 +100,6 @@ GEMS_ALLOWED_TO_FLOAT = [
 #
 INSTALL_WITHOUT_GROUPS = %w{
   changelog
-  compat_testing
   development
   docgen
   guard
