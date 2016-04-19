@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/client_keys_sub_dir"
+require "chef/chef_fs/file_system/repository/client_key"
 require "chef/chef_fs/data_handler/client_key_data_handler"
 require "chef/chef_fs/file_system/repository/directory"
 
@@ -24,7 +24,7 @@ class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class ClientKeysDir < Repository::Directory
+        class ClientKeysSubDir < Repository::Directory
 
           def can_have_child?(name, is_dir)
             is_dir && !name.start_with?(".")
@@ -33,7 +33,7 @@ class Chef
           protected
 
           def make_child_entry(child_name)
-            ClientKeysSubDir.new(child_name, self)
+            ClientKey.new(child_name, self)
           end
         end
       end
