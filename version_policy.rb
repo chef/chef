@@ -72,7 +72,6 @@ OMNIBUS_RUBYGEMS_AT_LATEST_VERSION = {
 ACCEPTABLE_OUTDATED_GEMS = %w{
   activesupport
   gherkin
-  github_changelog_generator
   jwt
   mini_portile2
   slop

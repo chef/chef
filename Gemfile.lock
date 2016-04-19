@@ -184,7 +184,7 @@ GEM
       hashie (>= 3.4)
       multi_json (>= 1.7.5, < 2.0)
       oauth2
-    github_changelog_generator (1.11.3)
+    github_changelog_generator (1.12.0)
       bundler (>= 1.7)
       colorize (~> 0.7)
       github_api (~> 0.12)
@@ -425,7 +425,7 @@ DEPENDENCIES
   chefspec
   chefstyle!
   foodcritic
-  github_changelog_generator (= 1.11.3)
+  github_changelog_generator
   halite
   knife-windows
   netrc
