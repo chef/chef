@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: cc37808b7849fdcf49f04011626143940f83fe92
+  revision: 52a0d55a9e8fb30d067c0a66371db4ae781a0269
   branch: master
   specs:
     chefstyle (0.3.1)
@@ -18,9 +18,9 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.10.7)
+    chef (12.10.8)
       bundler (>= 1.10)
-      chef-config (= 12.10.7)
+      chef-config (= 12.10.8)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -44,9 +44,9 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (12.10.7-universal-mingw32)
+    chef (12.10.8-universal-mingw32)
       bundler (>= 1.10)
-      chef-config (= 12.10.7)
+      chef-config (= 12.10.8)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -85,7 +85,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.10.7)
+    chef-config (12.10.8)
       fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -101,12 +101,12 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.3.2)
     ast (2.2.0)
-    aws-sdk (2.2.34)
-      aws-sdk-resources (= 2.2.34)
-    aws-sdk-core (2.2.34)
+    aws-sdk (2.2.35)
+      aws-sdk-resources (= 2.2.35)
+    aws-sdk-core (2.2.35)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.2.34)
-      aws-sdk-core (= 2.2.34)
+    aws-sdk-resources (2.2.35)
+      aws-sdk-core (= 2.2.35)
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
@@ -233,7 +233,7 @@ GEM
       rspec-mocks (~> 3.2)
     mixlib-cli (1.5.0)
     mixlib-config (2.2.1)
-    mixlib-install (1.0.7)
+    mixlib-install (1.0.8)
       artifactory
       mixlib-shellout
       mixlib-versioning
@@ -271,7 +271,7 @@ GEM
       rack (>= 1.2, < 3)
     octokit (4.3.0)
       sawyer (~> 0.7.0, >= 0.5.3)
-    ohai (8.14.0)
+    ohai (8.15.0)
       chef-config (>= 12.5.0.alpha.1, < 13)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
