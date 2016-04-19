@@ -39,9 +39,9 @@ class Chef
       #     end
       #   end
       #
-      def with_run_context(rc, &block)
+      def with_run_context(rc)
         raise ArgumentError, "with_run_context is useless without a block" unless block_given?
-        @old_run_context = @run_context
+        old_run_context = @run_context
         @run_context =
           case rc
           when Chef::RunContext
@@ -51,11 +51,11 @@ class Chef
           when :parent
             run_context.parent_run_context
           else
-            raise "bad argument to run_context helper, must be :root, :parent, or a Chef::RunContext"
+            raise ArgumentError, "bad argument to run_context helper, must be :root, :parent, or a Chef::RunContext"
           end
-        ret = yield
-        @run_context = @old_run_context
-        ret
+        yield
+      ensure
+        @run_context = old_run_context
       end
 
       # Lookup a resource in the resource collection by name and delete it.  This
