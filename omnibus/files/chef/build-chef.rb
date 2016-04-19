@@ -122,10 +122,7 @@ module BuildChef
     bundle "lock", env: shared_gemfile_env
 
     # Freeze the location's Gemfile.lock.
-    # TODO Windows cannot be frozen, because Bundler doesn't understand platform-specific
-    # versions. However, on Windows we have explicit version pins for most things, so
-    # we will *probably* get the exact versions of everything we want.
-    create_bundle_config(shared_gemfile, frozen: !windows?)
+    create_bundle_config(shared_gemfile, frozen: true)
 
     # Clear the now-unnecessary git caches, cached gems, and git-checked-out gems
     block "Delete bundler git cache and git installs" do
