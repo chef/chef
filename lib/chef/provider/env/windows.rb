@@ -36,7 +36,7 @@ class Chef
           obj.variablevalue = @new_resource.value
           obj.put_
           value = @new_resource.value
-          value = expand_path(value) if @new_resource.key_name.upcase == "PATH"
+          value = expand_path(value) if @new_resource.key_name.casecmp("PATH").zero?
           ENV[@new_resource.key_name] = value
           broadcast_env_change
         end
