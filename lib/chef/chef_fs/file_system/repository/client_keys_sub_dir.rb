@@ -27,7 +27,7 @@ class Chef
         class ClientKeysSubDir < Repository::Directory
 
           def can_have_child?(name, is_dir)
-            is_dir && !name.start_with?(".")
+            !is_dir && File.extname(name) == ".json"
           end
 
           protected
