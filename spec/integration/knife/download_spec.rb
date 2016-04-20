@@ -532,6 +532,25 @@ EOM
       end
     end
 
+    when_the_chef_server "has a role" do
+      before do
+        role "x", {}
+      end
+      when_the_repository "has the role in ruby" do
+        before do
+          file "roles/x.rb", <<EOM
+name "x"
+description "x"
+EOM
+        end
+
+        it "knife download refuses to change the role" do
+          knife("download /roles/x.json").should_succeed "", :stderr => "WARNING: /roles/x.rb cannot be updated (can't safely update ruby files).\n"
+          knife("diff --name-status /roles/x.json").should_succeed "M\t/roles/x.rb\n"
+        end
+      end
+    end
+
     when_the_chef_server "has an environment" do
       before do
         environment "x", {}
