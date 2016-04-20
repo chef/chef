@@ -145,7 +145,7 @@ class Chef
     end
 
     def self.subcommand_class_from(args)
-      if args.size == 1 && args[0].strip.downcase == "rehash"
+      if args.size == 1 && args[0].strip.casecmp("rehash").zero?
         # To prevent issues with the rehash file not pointing to the correct plugins,
         # we always use the glob loader when regenerating the rehash file
         @subcommand_loader = Chef::Knife::SubcommandLoader.gem_glob_loader(chef_config_dir)
