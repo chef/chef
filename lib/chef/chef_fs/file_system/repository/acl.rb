@@ -1,5 +1,5 @@
 #
-# Author:: John Keiser (<jkeiser@chef.io>)
+# Author:: Thom May (<thom@chef.io>)
 # Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -16,31 +16,21 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/acl"
-require "chef/chef_fs/file_system/repository/directory"
-require "chef/chef_fs/file_system/repository/acls_sub_dir"
-require "chef/chef_fs/file_system/chef_server/acls_dir"
 require "chef/chef_fs/data_handler/acl_data_handler"
+require "chef/chef_fs/file_system/repository/base_file"
 
 class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class AclsDir < Repository::Directory
 
-          def can_have_child?(name, is_dir)
-            is_dir ? Chef::ChefFS::FileSystem::ChefServer::AclsDir::ENTITY_TYPES.include?(name) : name == "organization.json"
+        class Acl < BaseFile
+
+          def initialize(name, parent)
+            @data_handler = Chef::ChefFS::DataHandler::AclDataHandler.new
+            super
           end
 
-          protected
-
-          def make_child_entry(child_name)
-            if child_name == "organization.json"
-              Acl.new(child_name, self)
-            else
-              AclsSubDir.new(child_name, self)
-            end
-          end
         end
       end
     end
