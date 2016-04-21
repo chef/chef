@@ -65,8 +65,8 @@ describe Chef::Resource::Mdadm do
   end
 
   it "should allow you to set the bitmap attribute" do
-    @resource.metadata "internal"
-    expect(@resource.metadata).to eql("internal")
+    @resource.bitmap "internal"
+    expect(@resource.bitmap).to eql("internal")
   end
 
   it "should allow you to set the layout attribute" do
