@@ -69,6 +69,11 @@ describe Chef::Resource::Mdadm do
     expect(@resource.metadata).to eql("internal")
   end
 
+  it "should allow you to set the layout attribute" do
+    @resource.layout "f2"
+    expect(@resource.layout).to eql("f2")
+  end
+
   it "should allow you to set the devices attribute" do
     @resource.devices ["/dev/sda", "/dev/sdb"]
     expect(@resource.devices).to eql(["/dev/sda", "/dev/sdb"])
