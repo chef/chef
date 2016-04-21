@@ -1,7 +1,7 @@
 require "mixlib/shellout"
 require "bundler"
 
-describe "Chef Fips Specs" do
+describe "Chef Fips Unit/Functional Specs" do
   def windows?
     if RUBY_PLATFORM =~ /mswin|mingw|windows/
       true
@@ -53,7 +53,4 @@ describe "Chef Fips Specs" do
     run_rspec_test("spec/functional")
   end
 
-  it "passes the integration specs" do
-    run_rspec_test("spec/integration")
-  end
 end
