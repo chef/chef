@@ -33,6 +33,7 @@ class Chef
       def initialize(name, run_context = nil)
         super
 
+        @mdadm_defaults = false
         @chunk = 16
         @devices = []
         @exists = false
@@ -40,9 +41,23 @@ class Chef
         @metadata = "0.90"
         @bitmap = nil
         @raid_device = name
+
+        # Can be removed once the chunk member defaults to nil
+        @user_set_chunk = false
+        # Can be removed once the metadata member defaults to nil
+        @user_set_metadata = false
+      end
+
+      def mdadm_defaults(arg = nil)
+        set_or_return(
+          :mdadm_defaults,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
       end
 
       def chunk(arg = nil)
+        @user_set_chunk = true unless arg.nil?
         set_or_return(
           :chunk,
           arg,
@@ -75,6 +90,7 @@ class Chef
       end
 
       def metadata(arg = nil)
+        @user_set_metadata = true unless arg.nil?
         set_or_return(
           :metadata,
           arg,
@@ -98,6 +114,49 @@ class Chef
         )
       end
 
+      # Track if user set metadata attribute which is used in after_create
+      # method to facilitate proper behavior of the mdadm_defaults attribute
+      def user_set_metadata(arg = nil)
+        set_or_return(
+          :exists,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      # Track if user set chunk attribute which is used in after_create
+      # method to facilitate proper behavior of the mdadm_defaults attribute
+      def user_set_chunk(arg = nil)
+        set_or_return(
+          :exists,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def after_created
+        # Once the mdadm_defaults defaults to true the nil's below will need
+        # to be replaced with 16 and "0.90"
+        if @mdadm_defaults
+          @chunk = nil unless @user_set_chunk
+          @metadata = nil unless @user_set_metadata
+        end
+
+        metadata_warn_msg = "#{self} the default metadata version of 0.90 "\
+          "will be removed in a future release. To maintain backwards "\
+          "compatibility please explicitly specify the metadata version that "\
+          "you desire on the the mdadm resource if the mdadm default is not "\
+          "desired. This future change will only impact newly created md "\
+          "devices."
+        chunk_warn_msg = "#{self} default chunk size of 16k will be removed "\
+          "in a future release. To maintain backwards compatibility please "\
+          "explicitly specify the chunk size that you desire on the the mdadm "\
+          "resource if the mdadm default is not desired. This future change "\
+          "will only impact newly created md devices."
+
+        Chef.log_deprecation(metadata_warn_msg) unless @user_set_metadata || @mdadm_defaults
+        Chef.log_deprecation(chunk_warn_msg) unless @user_set_chunk || @mdadm_defaults
+      end
     end
   end
 end
