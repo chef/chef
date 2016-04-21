@@ -16,8 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
+require "chef/chef_fs/file_system/repository/acl"
 require "chef/chef_fs/file_system/repository/directory"
+require "chef/chef_fs/file_system/repository/acls_sub_dir"
 require "chef/chef_fs/file_system/chef_server/acls_dir"
 require "chef/chef_fs/data_handler/acl_data_handler"
 
@@ -34,7 +35,11 @@ class Chef
           protected
 
           def make_child_entry(child_name)
-            ChefRepositoryFileSystemEntry.new(child_name, self, nil, Chef::ChefFS::DataHandler::AclDataHandler.new)
+            if child_name == "organization.json"
+              Acl.new(child_name, self)
+            else
+              AclsSubDir.new(child_name, self)
+            end
           end
         end
       end

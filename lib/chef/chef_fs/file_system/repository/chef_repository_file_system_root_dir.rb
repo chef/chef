@@ -30,7 +30,7 @@ require "chef/chef_fs/file_system/repository/policy_groups_dir"
 require "chef/chef_fs/file_system/repository/roles_dir"
 require "chef/chef_fs/file_system/repository/users_dir"
 require "chef/chef_fs/file_system/repository/client_keys_dir"
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
+require "chef/chef_fs/file_system/repository/file_system_entry"
 require "chef/chef_fs/file_system/repository/policies_dir"
 require "chef/chef_fs/file_system/repository/versioned_cookbooks_dir"
 require "chef/chef_fs/file_system/multiplexed_dir"
@@ -150,7 +150,7 @@ class Chef
             existing_paths = root_paths.select { |path| File.exists?(path) }
             if existing_paths.size > 0
               MultiplexedDir.new(existing_paths.map do |path|
-                dir = ChefRepositoryFileSystemEntry.new(name, parent, path)
+                dir = FileSystemEntry.new(name, parent, path)
                 dir.write_pretty_json = !!write_pretty_json
                 dir
               end)

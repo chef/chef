@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
+require "chef/chef_fs/file_system/repository/policy"
 require "chef/chef_fs/file_system/repository/directory"
 require "chef/chef_fs/data_handler/policy_data_handler"
 
@@ -33,7 +33,7 @@ class Chef
           protected
 
           def make_child_entry(child_name)
-            ChefRepositoryFileSystemEntry.new(child_name, self, nil, Chef::ChefFS::DataHandler::PolicyDataHandler.new)
+            Policy.new(child_name, self)
           end
         end
       end

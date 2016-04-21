@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
+require "chef/chef_fs/file_system/repository/group"
 require "chef/chef_fs/file_system/repository/directory"
 require "chef/chef_fs/file_system/exceptions"
 
@@ -32,7 +32,7 @@ class Chef
           end
 
           def make_child_entry(child_name)
-            ChefRepositoryFileSystemEntry.new(child_name, self, nil, Chef::ChefFS::DataHandler::GroupDataHandler.new)
+            Group.new(child_name, self)
           end
         end
       end

@@ -17,7 +17,6 @@
 #
 
 require "chef/chef_fs/file_system/repository/directory"
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_entry"
 require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_dir"
 require "chef/cookbook/chefignore"
 
