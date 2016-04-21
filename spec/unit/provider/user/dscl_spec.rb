@@ -294,7 +294,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       let(:dscl_exists) { false }
 
       it "should raise an error" do
-        expect { run_requirements }.to raise_error
+        expect { run_requirements }.to raise_error(Chef::Exceptions::User)
       end
     end
 
@@ -302,7 +302,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       let(:plutil_exists) { false }
 
       it "should raise an error" do
-        expect { run_requirements }.to raise_error
+        expect { run_requirements }.to raise_error(Chef::Exceptions::User)
       end
     end
 
@@ -312,7 +312,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       }
 
       it "should raise an error" do
-        expect { run_requirements }.to raise_error
+        expect { run_requirements }.to raise_error(Chef::Exceptions::User)
       end
     end
 
@@ -333,7 +333,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
         let(:password) { salted_sha512_pbkdf2_password }
 
         it "should raise an error" do
-          expect { run_requirements }.to raise_error
+          expect { run_requirements }.to raise_error(Chef::Exceptions::User)
         end
       end
     end
@@ -348,7 +348,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
           let(:password) { salted_sha512_password }
 
           it "should raise an error" do
-            expect { run_requirements }.to raise_error
+            expect { run_requirements }.to raise_error(Chef::Exceptions::User)
           end
         end
 
@@ -357,7 +357,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
           describe "when salt and iteration is not set" do
             it "should raise an error" do
-              expect { run_requirements }.to raise_error
+              expect { run_requirements }.to raise_error(Chef::Exceptions::User)
             end
           end
 

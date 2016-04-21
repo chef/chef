@@ -43,7 +43,7 @@ describe Chef::Resource::File::Verification do
     it "expects a string argument" do
       v = Chef::Resource::File::Verification.new(parent_resource, nil, {}) {}
       expect { v.verify("/foo/bar") }.to_not raise_error
-      expect { v.verify }.to raise_error
+      expect { v.verify }.to raise_error(ArgumentError)
     end
 
     it "accepts an options hash" do

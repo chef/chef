@@ -26,7 +26,7 @@ describe TinyServer::API do
   end
 
   it "is a Singleton" do
-    expect { TinyServer::API.new }.to raise_error
+    expect { TinyServer::API.new }.to raise_error NoMethodError
   end
 
   it "clears the router" do

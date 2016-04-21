@@ -35,13 +35,25 @@ describe "Chef Fips Specs" do
     cmd.stdout.chomp
   end
 
-  it "passes the unit and functional specs" do
+  def run_rspec_test(test)
     Bundler.with_clean_env do
       cmd = Mixlib::ShellOut.new(
-        "bundle exec rspec -t ~requires_git spec/unit spec/functional spec/integration",
-        env: env, live_stream: STDOUT, cwd: chef_dir, timeout: 3600
+        "bundle exec rspec -f documentation -t ~requires_git #{test}",
+        env: env, cwd: chef_dir, timeout: 3600
       )
       cmd.run_command.error!
     end
+  end
+
+  it "passes the unit specs" do
+    run_rspec_test("spec/unit")
+  end
+
+  it "passes the functional specs" do
+    run_rspec_test("spec/functional")
+  end
+
+  it "passes the integration specs" do
+    run_rspec_test("spec/integration")
   end
 end

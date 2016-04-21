@@ -64,7 +64,7 @@ shared_examples_for "a Windows script resource" do
       it "should raise an exception if the guard_interpreter is overridden from its default value" do
         @resource.guard_interpreter :bash
         @resource.only_if { true }
-        expect { @resource.should_skip?(:run) }.to raise_error
+        expect { @resource.should_skip?(:run) }.to raise_error(ArgumentError)
       end
     end
   end

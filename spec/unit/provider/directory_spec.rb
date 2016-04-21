@@ -187,13 +187,6 @@ describe Chef::Provider::Directory do
       it "raises an exception when the parent directory is a file and recursive is true" do
         FileUtils.touch tmp_dir
         new_resource.recursive true
-        expect { directory.run_action(:create) }.to raise_error
-      end
-
-      it "raises the right exception when the parent directory is a file and recursive is true" do
-        pending "this seems to return the wrong error" # FIXME
-        FileUtils.touch tmp_dir
-        new_resource.recursive true
         expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
       end
     end

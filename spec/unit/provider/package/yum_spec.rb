@@ -1578,7 +1578,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
     end
 
     it "should only accept an RPMDbPackage object" do
-      expect { @rpmdb.push("string") }.to raise_error
+      expect { @rpmdb.push("string") }.to raise_error(ArgumentError)
     end
 
     it "should add the package to the package db" do

@@ -707,7 +707,7 @@ describe Chef::Cookbook::Metadata do
       }
       expect {
         metadata.attribute("test_cookbook/test", options)
-      }.to raise_error
+      }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "should error if default used with calculated" do

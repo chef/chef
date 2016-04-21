@@ -105,7 +105,7 @@ describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only do
   context "when constructor is given invalid arguments" do
     let(:cmd_output_format) { :invalid }
     it "throws an exception if an invalid format is passed to the constructor" do
-      expect(lambda { simple_cmdlet }).to raise_error
+      expect(lambda { simple_cmdlet }).to raise_error(ArgumentError)
     end
   end
 end
