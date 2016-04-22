@@ -11,7 +11,9 @@ driver:
     cpus: 4
     memory: 4096
   synced_folders:
-    - ['../..', '/home/vagrant']
+    - ['..', '/home/vagrant/chef']
+    - ['../../omnibus', '/home/vagrant/omnibus']
+    - ['../../omnibus-software', '/home/vagrant/omnibus-software']
 
 provisioner:
   name: chef_zero
@@ -55,27 +57,39 @@ platforms:
   #
   # Chef-internal users, you will need to:
   # 1.  Create an Atlas account:  https://atlas.hashicorp.com/
-  # 2.  Ping the Release Services room with your Atlas account name
+  # 2.  Ping #eng-services-support with your Atlas account name
   #     to be added to the relevant team in Atlas,
   # 3.  Do `vagrant login` with your Atlas creds so that you can download
   #     the private boxes.
   #
   # The Mac OS X boxes are VMware only also. You can enable VMware Fusion
-  # as the default provider by copying `.kitchen.local.yml.vmware.example`
-  # over to `.kitchen.local.yml`.
+  # by activating the `.kitchen.vmware.yml` file with the `KITCHEN_LOCAL_YAML`
+  # environment variable:
   #
-  - name: macosx-10.9
+  #   KITCHEN_LOCAL_YAML=.kitchen.vmware.yml kitchen converge chefdk-macosx-109
+  #
+  <% %w(
+    10.9
+    10.10
+    10.11
+  ).each do |mac_version| %>
+  - name: macosx-<%= mac_version %>
     driver:
-      box: chef/macosx-10.9 # private
-  - name: macosx-10.10
-    driver:
-      box: chef/macosx-10.10 # private
-  - name: macosx-10.11
-    driver:
-      box: chef/macosx-10.11 # private
+      box: chef/macosx-<%= mac_version %> # private
+      synced_folders:
+      - ['..', '/Users/vagrant/chef']
+      - ['../../omnibus', '/Users/vagrant/omnibus']
+      - ['../../omnibus-software', '/Users/vagrant/omnibus-software']
+  <% end %>
   - name: windows-2012r2-standard
     driver:
       box: chef/windows-server-2012r2-standard # private
+      synced_folders:
+      # We have to mount this repos enclosing folder as the Omnibus build
+      # gets cranky if the mounted Chef source folder is a symlink. This
+      # mounts at `C:\vagrant\code` and the Chef source folder is available
+      # at `C:\vagrant\code\chef`
+      - ['../..', '/vagrant/code']
     provisioner:
       chef_omnibus_root: /opscode/angrychef
 
@@ -96,6 +110,6 @@ suites:
     attributes:
       omnibus:
         <<: *attribute_defaults
-        install_dir: /opscode/chef
+        install_dir: /opt/chef
     run_list:
       - omnibus::default
