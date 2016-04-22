@@ -88,7 +88,7 @@ liking, you can bring up an individual build environment using the `kitchen`
 command.
 
 ```shell
-$ bundle exec kitchen converge <PROJECT>-ubuntu-1204
+$ bundle exec kitchen converge chef-ubuntu-1404
 ```
 
 Then login to the instance and build the project as described in the Usage
@@ -100,6 +100,14 @@ $ bundle exec kitchen login <PROJECT>-ubuntu-1204
 [vagrant@ubuntu...] $ bundle install --without development # Don't install dev tools!
 [vagrant@ubuntu...] $ ...
 [vagrant@ubuntu...] $ bundle exec omnibus build <PROJECT> -l internal
+```
+```shell
+$ kitchen login chef-ubuntu-1404
+[vagrant@ubuntu...] $ source load-omnibus-toolchain.sh
+[vagrant@ubuntu...] $ cd chef/omnibus
+[vagrant@ubuntu...] $ bundle install --without development # Don't install dev tools!
+[vagrant@ubuntu...] $ ...
+[vagrant@ubuntu...] $ bundle exec omnibus build chef -l internal
 ```
 
 You can also login to Windows instances but will have to manually call the
@@ -113,13 +121,13 @@ Last login: Sat Sep 13 10:19:04 2014 from 172.16.27.1
 Microsoft Windows [Version 6.3.9600]
 (c) 2013 Microsoft Corporation. All rights reserved.
 
-C:\Users\vagrant>load-omnibus-toolchain.bat
+C:\>C:\vagrant\load-omnibus-toolchain.bat
 
-C:\Users\vagrant>cd C:\home\vagrant\chef\omnibus
+C:\>cd C:\vagrant\code\chef\omnibus
 
-C:\home\vagrant\chef\omnibus>bundle install --without development
+C:\vagrant\code\chef\omnibus>bundle install --without development
 
-C:\home\vagrant\chef\omnibus>bundle exec omnibus build <PROJECT> -l internal
+C:\vagrant\code\chef\omnibus>bundle exec omnibus build chef -l internal
 ```
 
 For a complete list of all commands and platforms, run `kitchen list` or
