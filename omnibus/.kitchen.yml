@@ -110,6 +110,6 @@ suites:
     attributes:
       omnibus:
         <<: *attribute_defaults
-        install_dir: /opscode/chef
+        install_dir: /opt/chef
     run_list:
       - omnibus::default
