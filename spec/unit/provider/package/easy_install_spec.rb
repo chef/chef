@@ -61,6 +61,7 @@ describe Chef::Provider::Package::EasyInstall do
 
   describe "actions_on_package" do
     it "should run easy_install with the package name and version" do
+      expect(Chef).to receive(:log_deprecation).with(/easy_install package provider is deprecated/)
       expect(@provider).to receive(:run_command).with({
         :command => "easy_install \"boto==1.8d\"",
       })
@@ -68,6 +69,7 @@ describe Chef::Provider::Package::EasyInstall do
     end
 
     it "should run easy_install with the package name and version and specified options" do
+      expect(Chef).to receive(:log_deprecation).with(/easy_install package provider is deprecated/)
       expect(@provider).to receive(:run_command).with({
         :command => "easy_install --always-unzip \"boto==1.8d\"",
       })
@@ -76,6 +78,7 @@ describe Chef::Provider::Package::EasyInstall do
     end
 
     it "should run easy_install with the package name and version" do
+      expect(Chef).to receive(:log_deprecation).with(/easy_install package provider is deprecated/)
       expect(@provider).to receive(:run_command).with({
         :command => "easy_install \"boto==1.8d\"",
       })
@@ -83,6 +86,7 @@ describe Chef::Provider::Package::EasyInstall do
     end
 
     it "should run easy_install -m with the package name and version" do
+      expect(Chef).to receive(:log_deprecation).with(/easy_install package provider is deprecated/)
       expect(@provider).to receive(:run_command).with({
         :command => "easy_install -m boto",
       })
@@ -90,6 +94,7 @@ describe Chef::Provider::Package::EasyInstall do
     end
 
     it "should run easy_install -m with the package name and version and specified options" do
+      expect(Chef).to receive(:log_deprecation).with(/easy_install package provider is deprecated/)
       expect(@provider).to receive(:run_command).with({
         :command => "easy_install -x -m boto",
       })
@@ -98,6 +103,7 @@ describe Chef::Provider::Package::EasyInstall do
     end
 
     it "should run easy_install -m with the package name and version" do
+      expect(Chef).to receive(:log_deprecation).with(/easy_install package provider is deprecated/)
       expect(@provider).to receive(:run_command).with({
         :command => "easy_install -m boto",
       })
