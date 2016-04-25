@@ -30,18 +30,13 @@ class Chef
       # generally must support UTF-8 unicode.
       def shell_out(*args, **options)
         args = args.dup
-        options ||= { :environment => {
-            "LC_ALL" => Chef::Config[:internal_locale],
-            "LANGUAGE" => Chef::Config[:internal_locale],
-            "LANG" => Chef::Config[:internal_locale],
-          } }
         options = options.dup
         env_key = options.has_key?(:env) ? :env : :environment
-        options[env_key] ||= {}
-        options[env_key] = options[env_key].dup
-        options[env_key]["LC_ALL"] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?("LC_ALL")
-        options[env_key]["LANGUAGE"] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?("LANGUAGE")
-        options[env_key]["LANG"] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?("LANG")
+        options[env_key] = {
+          "LC_ALL" => Chef::Config[:internal_locale],
+          "LANGUAGE" => Chef::Config[:internal_locale],
+          "LANG" => Chef::Config[:internal_locale],
+        }.update(options[env_key] || {})
         shell_out_command(*args, **options)
       end
 
