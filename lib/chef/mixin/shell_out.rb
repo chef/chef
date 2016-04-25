@@ -28,26 +28,21 @@ class Chef
 
       # we use 'en_US.UTF-8' by default because we parse localized strings in English as an API and
       # generally must support UTF-8 unicode.
-      def shell_out(*command_args)
-        args = command_args.dup
-        if args.last.is_a?(Hash)
-          options = args.pop.dup
-          env_key = options.has_key?(:env) ? :env : :environment
-          options[env_key] ||= {}
-          options[env_key] = options[env_key].dup
-          options[env_key]["LC_ALL"] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?("LC_ALL")
-          options[env_key]["LANGUAGE"] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?("LANGUAGE")
-          options[env_key]["LANG"] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?("LANG")
-          args << options
-        else
-          args << { :environment => {
+      def shell_out(*args, **options)
+        args = args.dup
+        options ||= { :environment => {
             "LC_ALL" => Chef::Config[:internal_locale],
             "LANGUAGE" => Chef::Config[:internal_locale],
             "LANG" => Chef::Config[:internal_locale],
           } }
-        end
-
-        shell_out_command(*args)
+        options = options.dup
+        env_key = options.has_key?(:env) ? :env : :environment
+        options[env_key] ||= {}
+        options[env_key] = options[env_key].dup
+        options[env_key]["LC_ALL"] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?("LC_ALL")
+        options[env_key]["LANGUAGE"] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?("LANGUAGE")
+        options[env_key]["LANG"] ||= Chef::Config[:internal_locale] unless options[env_key].has_key?("LANG")
+        shell_out_command(*args, **options)
       end
 
       # call shell_out (using en_US.UTF-8) and raise errors
