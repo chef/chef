@@ -22,6 +22,9 @@ license "Apache-2.0"
 license_file "../LICENSE"
 
 build_iteration 1
+# Do not use __FILE__ after this point, use current_file. If you use __FILE__
+# after this point, any dependent defs (ex: angrychef) that use instance_eval
+# will fail to work correctly.
 current_file ||= __FILE__
 version_file = File.expand_path("../../../../VERSION", current_file)
 build_version IO.read(version_file).strip
@@ -42,7 +45,7 @@ if windows? || rhel?
 end
 
 # Load dynamically updated overrides
-overrides_path = File.expand_path("../../../../omnibus_overrides.rb", __FILE__)
+overrides_path = File.expand_path("../../../../omnibus_overrides.rb", current_file)
 instance_eval(IO.read(overrides_path), overrides_path)
 
 override :"ruby-windows-devkit", version: "4.5.2-20111229-1559" if windows? && windows_arch_i386?
