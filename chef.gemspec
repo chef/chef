@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-log", "~> 1.3"
   s.add_dependency "mixlib-authentication", "~> 1.4"
   s.add_dependency "mixlib-shellout", "~> 2.0"
-  s.add_dependency "ohai", ">= 8.6.0.alpha.1", "< 9"
+  s.add_dependency "ohai", "~> 8.15"
 
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-ssh", ">= 2.9", "< 4.0"

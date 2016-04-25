@@ -16,11 +16,18 @@ shared_context "client" do
       :machinename =>      machinename,
       :platform =>         platform,
       :platform_version => platform_version,
+      :fips => { :kernel => { :enabled => false } },
     }
   end
 
   let(:ohai_system) do
-    ohai = instance_double("Ohai::System", :all_plugins => true, :data => ohai_data)
+    ohai = instance_double(
+      "Ohai::System",
+      :all_plugins => true,
+      :data => ohai_data,
+      :load_plugins => nil,
+      :require_plugin => nil
+    )
     allow(ohai).to receive(:[]) do |k|
       ohai_data[k]
     end

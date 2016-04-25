@@ -2,3 +2,5 @@ source "https://rubygems.org"
 
 # Specify your gem's dependencies in chef-config.gemspec
 gemspec
+
+gem "ohai", "~> 8.15"

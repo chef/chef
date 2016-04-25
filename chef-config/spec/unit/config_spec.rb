@@ -19,6 +19,7 @@
 
 require "spec_helper"
 require "chef-config/config"
+require "ohai"
 
 RSpec.describe ChefConfig::Config do
   before(:each) do
@@ -163,6 +164,57 @@ RSpec.describe ChefConfig::Config do
           end
 
           allow(ChefConfig::Config).to receive(:path_accessible?).and_return(false)
+        end
+
+        describe "ChefConfig::Config[:fips]" do
+          let(:fips_ohai) { double("Ohai::System", load_plugins: nil, require_plugin: nil) }
+          let(:fips_ohai_data) do
+            {
+              kernel: {
+                enabled: fips_ohai_value,
+              },
+            }
+          end
+          let(:fips_ohai_value) { false }
+
+          before(:all) do
+            @original_env = ENV.to_hash
+          end
+
+          after(:all) do
+            ENV.clear
+            ENV.update(@original_env)
+          end
+
+          before(:each) do
+            ENV["CHEF_FIPS"] = nil
+            allow(Ohai::System).to receive(:new).and_return(fips_ohai)
+            allow(fips_ohai).to receive(:[]).with(:fips).and_return(fips_ohai_data)
+          end
+
+          it "returns false when no environment is set and ohai flag is disabled" do
+            expect(ChefConfig::Config[:fips]).to eq(false)
+            ChefConfig::Config.instance_eval { remove_instance_variable(:@sync_value) }
+          end
+
+          context "when ENV['CHEF_FIPS'] is set" do
+            before do
+              ENV["CHEF_FIPS"] = "1"
+            end
+
+            it "returns true" do
+              expect(ChefConfig::Config[:fips]).to eq(true)
+            end
+          end
+
+          context "when fips is enabled in ohai data" do
+            let(:fips_ohai_value) { true }
+
+            it "returns true" do
+              expect(ChefConfig::Config[:fips]).to eq(true)
+              ChefConfig::Config.instance_eval { remove_instance_variable(:@sync_value) }
+            end
+          end
         end
 
         describe "ChefConfig::Config[:chef_server_root]" do
