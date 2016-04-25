@@ -38,6 +38,8 @@ module ChefConfig
     extend Mixlib::Config
     extend ChefConfig::Mixin::FuzzyHostnameMatcher
 
+    @ohai_mutex = Mutex.new
+
     # Evaluates the given string as config.
     #
     # +filename+ is used for context in stacktraces, but doesn't need to be the name of an actual file.
@@ -513,7 +515,31 @@ module ChefConfig
     default :recipe_url, nil
 
     # Set to true if Chef is to set OpenSSL to run in FIPS mode
-    default(:fips) { ENV["CHEF_FIPS"] == "1" }
+    default(:fips) do
+      !ENV["CHEF_FIPS"].nil? || check_fips_via_ohai
+    end
+
+    # we want to synchronize this ohai call because ohai is not thread safe
+    # if this gets called in a mulithreaded context, each thread's ohai instance
+    # will call reset_system while other threads are loading plugins
+    # the destructive power of reset_system is scoped to the module and not to the instance
+    def self.check_fips_via_ohai
+      return @sync_value if defined?(@sync_value)
+
+      @ohai_mutex.synchronize do
+        return @sync_value if defined?(@sync_value)
+        require "ohai"
+        o = Ohai::System.new
+        o.load_plugins
+        begin
+          o.require_plugin "fips"
+          @sync_value = o[:fips][:kernel][:enabled]
+        rescue Ohai::Exceptions::DependencyNotFound
+          @sync_value = false
+        end
+      end
+      @sync_value
+    end
 
     # Initialize openssl
     def self.init_openssl
@@ -962,6 +988,7 @@ module ChefConfig
       require "digest/md5"
       Digest.const_set("SHA1", OpenSSL::Digest::SHA1)
       OpenSSL::Digest.const_set("MD5", Digest::MD5)
+      ChefConfig.logger.debug "FIPS mode is enabled."
     end
   end
 end
