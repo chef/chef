@@ -112,6 +112,7 @@ class Chef
         end
 
         def install_package(name, version)
+          Chef.log_deprecation("The easy_install package provider is deprecated and will be removed in Chef 13.")
           run_command(:command => "#{easy_install_binary_path}#{expand_options(@new_resource.options)} \"#{name}==#{version}\"")
         end
 
@@ -120,6 +121,7 @@ class Chef
         end
 
         def remove_package(name, version)
+          Chef.log_deprecation("The easy_install package provider is deprecated and will be removed in Chef 13.")
           run_command(:command => "#{easy_install_binary_path }#{expand_options(@new_resource.options)} -m #{name}")
         end
 
