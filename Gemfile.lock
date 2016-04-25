@@ -18,9 +18,9 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.10.16)
+    chef (12.10.17)
       bundler (>= 1.10)
-      chef-config (= 12.10.16)
+      chef-config (= 12.10.17)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -44,9 +44,9 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (12.10.16-universal-mingw32)
+    chef (12.10.17-universal-mingw32)
       bundler (>= 1.10)
-      chef-config (= 12.10.16)
+      chef-config (= 12.10.17)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -85,7 +85,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.10.16)
+    chef-config (12.10.17)
       fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -200,7 +200,7 @@ GEM
       thor
     hashie (3.4.3)
     highline (1.7.8)
-    httpclient (2.7.1)
+    httpclient (2.8.0)
     inifile (3.0.0)
     iniparse (1.4.2)
     ipaddress (0.8.3)
@@ -239,7 +239,7 @@ GEM
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
     mixlib-versioning (1.1.0)
-    multi_json (1.11.2)
+    multi_json (1.11.3)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
     net-scp (1.2.1)
@@ -334,7 +334,7 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-prof (0.15.9)
-    ruby-progressbar (1.7.5)
+    ruby-progressbar (1.8.0)
     ruby-shadow (2.5.0)
     rubyntlm (0.6.0)
     rufus-lru (1.0.5)
@@ -353,7 +353,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.56.1)
+    specinfra (2.57.0)
       net-scp
       net-ssh (>= 2.7, < 4.0)
       net-telnet
