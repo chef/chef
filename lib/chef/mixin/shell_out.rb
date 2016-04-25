@@ -29,7 +29,6 @@ class Chef
       # we use 'en_US.UTF-8' by default because we parse localized strings in English as an API and
       # generally must support UTF-8 unicode.
       def shell_out(*args, **options)
-        args = args.dup
         options = options.dup
         env_key = options.has_key?(:env) ? :env : :environment
         options[env_key] = {
