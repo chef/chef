@@ -51,6 +51,7 @@ class Chef
             command << " --chunk=#{@new_resource.chunk}" unless @new_resource.level == 1
             command << " --metadata=#{@new_resource.metadata}"
             command << " --bitmap=#{@new_resource.bitmap}" if @new_resource.bitmap
+            command << " --layout=#{@new_resource.layout}" if @new_resource.layout
             command << " --raid-devices #{@new_resource.devices.length} #{@new_resource.devices.join(" ")}"
             Chef::Log.debug("#{@new_resource} mdadm command: #{command}")
             shell_out!(command)

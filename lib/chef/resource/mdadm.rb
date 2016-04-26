@@ -40,6 +40,7 @@ class Chef
         @metadata = "0.90"
         @bitmap = nil
         @raid_device = name
+        @layout = nil
       end
 
       def chunk(arg = nil)
@@ -93,6 +94,14 @@ class Chef
       def raid_device(arg = nil)
         set_or_return(
           :raid_device,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def layout(arg = nil)
+        set_or_return(
+          :layout,
           arg,
           :kind_of => [ String ]
         )
