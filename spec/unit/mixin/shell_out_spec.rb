@@ -34,6 +34,10 @@ describe Chef::Mixin::ShellOut do
     let!(:capture_log_output) { Chef::Log.logger = Logger.new(output) }
     let(:assume_deprecation_log_level) { allow(Chef::Log).to receive(:level).and_return(:warn) }
 
+    before do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+    end
+
     context "without options" do
       let(:command_args) { [ cmd ] }
 
