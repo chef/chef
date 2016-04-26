@@ -143,9 +143,6 @@ class Chef
         ui.info("Uncompressing #{@cookbook_name} version #{version}.")
         # FIXME: Detect if we have the bad tar from git on Windows: https://github.com/opscode/chef/issues/1753
         extract_command = "tar zxvf \"#{convert_path upstream_file}\""
-        if Chef::Platform.windows?
-          extract_command << " --force-local"
-        end
         shell_out!(extract_command, :cwd => @install_path)
       end
 
