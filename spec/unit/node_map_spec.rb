@@ -27,7 +27,7 @@ describe Chef::NodeMap do
 
   describe "with a bad filter name" do
     it "should raise an error" do
-      expect { node_map.set(node, :thing, on_platform_family: "rhel") }.to raise_error
+      expect { node_map.set(node, :thing, on_platform_family: "rhel") }.to raise_error(ArgumentError)
     end
   end
 

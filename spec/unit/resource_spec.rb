@@ -542,7 +542,7 @@ describe Chef::Resource do
       allow(provider).to receive(:action_purr).and_raise
 
       expect(retriable_resource).to receive(:sleep).exactly(3).times
-      expect { retriable_resource.run_action(:purr) }.to raise_error
+      expect { retriable_resource.run_action(:purr) }.to raise_error(RuntimeError)
       expect(retriable_resource.retries).to eq(3)
     end
   end

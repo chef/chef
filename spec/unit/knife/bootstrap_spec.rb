@@ -85,7 +85,7 @@ describe Chef::Knife::Bootstrap do
         let(:bootstrap_template) { "/opt/blah/not/exists/template.erb" }
 
         it "raises an error" do
-          expect { knife.find_template }.to raise_error
+          expect { knife.find_template }.to raise_error(Errno::ENOENT)
         end
       end
 
@@ -339,7 +339,7 @@ describe Chef::Knife::Bootstrap do
       let(:options) { ["--node-ssl-verify-mode", "all"] }
 
       it "raises error" do
-        expect { rendered_template }.to raise_error
+        expect { rendered_template }.to raise_error(RuntimeError)
       end
     end
 

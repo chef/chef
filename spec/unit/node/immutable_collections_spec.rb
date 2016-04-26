@@ -97,7 +97,7 @@ describe Chef::Node::ImmutableMash do
     :shift,
   ].each do |mutator|
     it "doesn't allow mutation via `#{mutator}'" do
-      expect { @immutable_mash.send(mutator) }.to raise_error
+      expect { @immutable_mash.send(mutator) }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
   end
 
@@ -154,7 +154,7 @@ describe Chef::Node::ImmutableArray do
     :unshift,
   ].each do |mutator|
     it "does not allow mutation via `#{mutator}" do
-      expect { @immutable_array.send(mutator) }.to raise_error
+      expect { @immutable_array.send(mutator) }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
   end
 

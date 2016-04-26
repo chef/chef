@@ -586,14 +586,14 @@ shared_examples_for Chef::Provider::File do
       it "raises an exception when the content object returns a tempfile with a nil path" do
         tempfile = double("Tempfile", :path => nil)
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(tempfile)
-        expect { provider.send(:do_contents_changes) }.to raise_error
+        expect { provider.send(:do_contents_changes) }.to raise_error(RuntimeError)
       end
 
       it "raises an exception when the content object returns a tempfile that does not exist" do
         tempfile = double("Tempfile", :path => "/tmp/foo-bar-baz")
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(tempfile)
         expect(File).to receive(:exists?).with("/tmp/foo-bar-baz").and_return(false)
-        expect { provider.send(:do_contents_changes) }.to raise_error
+        expect { provider.send(:do_contents_changes) }.to raise_error(RuntimeError)
       end
     end
 
@@ -712,7 +712,7 @@ shared_examples_for Chef::Provider::File do
         it "should not try to backup or delete the file, and should not be updated by last action" do
           expect(provider).not_to receive(:do_backup)
           expect(File).not_to receive(:delete)
-          expect { provider.run_action(:delete) }.to raise_error()
+          expect { provider.run_action(:delete) }.to raise_error(Chef::Exceptions::InsufficientPermissions)
           expect(resource).not_to be_updated_by_last_action
         end
       end

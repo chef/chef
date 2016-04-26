@@ -83,10 +83,8 @@ E
   after(:each) do
     Chef::Config[:file_cache_path] = @old_file_cache_path
     FileUtils.remove_entry_secure deploy_directory if File.exist?(deploy_directory)
+    FileUtils.remove_entry_secure base_dir_path
     FileUtils.remove_entry_secure file_cache_path
-  end
-
-  after(:all) do
     FileUtils.remove_entry_secure origin_repo_dir
   end
 

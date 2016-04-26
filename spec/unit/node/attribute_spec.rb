@@ -408,7 +408,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should die if you try and do nested attributes that do not exist without read vivification" do
-      expect { @attributes["foo"]["bar"] = :baz }.to raise_error
+      expect { @attributes["foo"]["bar"] = :baz }.to raise_error(NoMethodError)
     end
 
     it "should let you set attributes manually without vivification" do

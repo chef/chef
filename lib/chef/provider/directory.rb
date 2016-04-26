@@ -50,7 +50,21 @@ class Chef
           # Make sure the parent dir exists, or else fail.
           # for why run, print a message explaining the potential error.
           parent_directory = ::File.dirname(@new_resource.path)
-          a.assertion { @new_resource.recursive || ::File.directory?(parent_directory) }
+          a.assertion do
+            if @new_resource.recursive
+              does_parent_exist = lambda do |base_dir|
+                base_dir = ::File.dirname(base_dir)
+                if ::File.exist?(base_dir)
+                  ::File.directory?(base_dir)
+                else
+                  does_parent_exist.call(base_dir)
+                end
+              end
+              does_parent_exist.call(@new_resource.path)
+            else
+              ::File.directory?(parent_directory)
+            end
+          end
           a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist, "Parent directory #{parent_directory} does not exist, cannot create #{@new_resource.path}")
           a.whyrun("Assuming directory #{parent_directory} would have been created")
         end

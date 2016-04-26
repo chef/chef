@@ -70,8 +70,8 @@ describe Chef::Resource::File do
     expect { @resource.verify {} }.not_to raise_error
     expect { @resource.verify "" }.not_to raise_error
     expect { @resource.verify :json }.not_to raise_error
-    expect { @resource.verify true }.to raise_error
-    expect { @resource.verify false }.to raise_error
+    expect { @resource.verify true }.to raise_error(ArgumentError)
+    expect { @resource.verify false }.to raise_error(ArgumentError)
   end
 
   it "should accept multiple verify statements" do
