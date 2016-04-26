@@ -22,6 +22,7 @@ describe Chef::Application::Apply do
   before do
     @app = Chef::Application::Apply.new
     allow(@app).to receive(:configure_logging).and_return(true)
+    allow(Chef::Log).to receive(:debug).with("FIPS mode is enabled.")
     @recipe_text = "package 'nyancat'"
     Chef::Config[:solo] = true
   end
