@@ -218,7 +218,7 @@ SHAS
   context "with an ssh wrapper" do
     let(:deploy_user)  { "deployNinja" }
     let(:wrapper)      { "do_it_this_way.sh" }
-    let(:expected_cmd) { 'git clone  "git://github.com/opscode/chef.git" "/my/deploy/dir"' }
+    let(:expected_cmd) { 'git clone "git://github.com/opscode/chef.git" "/my/deploy/dir"' }
     let(:default_options) do
       {
         :user => deploy_user,
@@ -272,7 +272,7 @@ SHAS
     allow(Etc).to receive(:getpwnam).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/deployNinja"))
     @resource.destination "/Application Support/with/space"
     @resource.ssh_wrapper "do_it_this_way.sh"
-    expected_cmd = "git clone  \"git://github.com/opscode/chef.git\" \"/Application Support/with/space\""
+    expected_cmd = "git clone \"git://github.com/opscode/chef.git\" \"/Application Support/with/space\""
     expect(@provider).to receive(:shell_out!).with(expected_cmd, :user => "deployNinja",
                                                                  :log_tag=>"git[web2.0 app]",
                                                                  :environment => { "HOME" => "/home/deployNinja",
