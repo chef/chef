@@ -18,9 +18,9 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.10.23)
+    chef (12.10.24)
       bundler (>= 1.10)
-      chef-config (= 12.10.23)
+      chef-config (= 12.10.24)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -44,9 +44,9 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (12.10.23-universal-mingw32)
+    chef (12.10.24-universal-mingw32)
       bundler (>= 1.10)
-      chef-config (= 12.10.23)
+      chef-config (= 12.10.24)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -85,7 +85,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.10.23)
+    chef-config (12.10.24)
       fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -110,7 +110,7 @@ GEM
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     builder (3.2.2)
-    byebug (8.2.4)
+    byebug (8.2.5)
     chef-api (0.5.0)
       logify (~> 0.1)
       mime-types
@@ -229,7 +229,7 @@ GEM
       rspec-mocks (~> 3.2)
     mixlib-cli (1.5.0)
     mixlib-config (2.2.1)
-    mixlib-install (1.0.9)
+    mixlib-install (1.0.11)
       artifactory
       mixlib-shellout
       mixlib-versioning
@@ -282,7 +282,7 @@ GEM
     overcommit (0.33.0)
       childprocess (~> 0.5.8)
       iniparse (~> 1.4)
-    parser (2.3.0.7)
+    parser (2.3.1.0)
       ast (~> 2.2)
     plist (3.2.0)
     poise (2.7.0)
