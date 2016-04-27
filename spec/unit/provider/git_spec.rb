@@ -274,7 +274,7 @@ SHAS
     @resource.ssh_wrapper "do_it_this_way.sh"
     expected_cmd = "git clone \"git://github.com/opscode/chef.git\" \"/Application Support/with/space\""
     expect(@provider).to receive(:shell_out!).with(expected_cmd, :user => "deployNinja",
-                                                                 :log_tag=>"git[web2.0 app]",
+                                                                 :log_tag => "git[web2.0 app]",
                                                                  :environment => { "HOME" => "/home/deployNinja",
                                                                                    "GIT_SSH" => "do_it_this_way.sh" })
     @provider.clone
@@ -351,19 +351,19 @@ SHAS
 
     expected_cmd1 = "git fetch origin"
     expect(@provider).to receive(:shell_out!).with(expected_cmd1, :cwd => "/my/deploy/dir",
-                                                                 :user => "whois", :group => "thisis",
-                                                                 :log_tag => "git[web2.0 app]",
-                                                                 :environment => { "HOME" => "/home/whois" })
+                                                                  :user => "whois", :group => "thisis",
+                                                                  :log_tag => "git[web2.0 app]",
+                                                                  :environment => { "HOME" => "/home/whois" })
     expected_cmd2 = "git fetch origin --tags"
     expect(@provider).to receive(:shell_out!).with(expected_cmd2, :cwd => "/my/deploy/dir",
-                                                                 :user => "whois", :group => "thisis",
-                                                                 :log_tag => "git[web2.0 app]",
-                                                                 :environment => { "HOME" => "/home/whois" })
+                                                                  :user => "whois", :group => "thisis",
+                                                                  :log_tag => "git[web2.0 app]",
+                                                                  :environment => { "HOME" => "/home/whois" })
     expected_cmd3 = "git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     expect(@provider).to receive(:shell_out!).with(expected_cmd3, :cwd => "/my/deploy/dir",
-                                                                 :user => "whois", :group => "thisis",
-                                                                 :log_tag => "git[web2.0 app]",
-                                                                 :environment => { "HOME" => "/home/whois" })
+                                                                  :user => "whois", :group => "thisis",
+                                                                  :log_tag => "git[web2.0 app]",
+                                                                  :environment => { "HOME" => "/home/whois" })
     @provider.fetch_updates
   end
 
