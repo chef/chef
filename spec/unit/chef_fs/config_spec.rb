@@ -103,4 +103,133 @@ describe Chef::ChefFS::Config do
       expect(local_fs.child_paths["users"]).to eq([platform_path("/base_path/users")])
     end
   end
+
+  describe "formats paths", :unix_only do
+
+    let(:single_repo_path) do
+      Mash.new({
+        chef_repo_path: "/base_path",
+      })
+    end
+
+    let(:double_repo_path) do
+      Mash.new({
+        chef_repo_path: %w{ /base_path /second_base_path },
+      })
+    end
+
+    describe "#server_path" do
+      it "returns nil if no paths match" do
+        cfg = Chef::ChefFS::Config.new(single_repo_path, "/my_repo/cookbooks")
+        expect(cfg.server_path("foo")).to be_nil
+      end
+
+      context "with only repo paths" do
+        it "returns / if in the repo path" do
+          cwd = "/base_path/cookbooks"
+          cfg = Chef::ChefFS::Config.new(single_repo_path, cwd)
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("/base_path/cookbooks", cwd).and_return("/base_path/cookbooks")
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("/base_path", cwd).and_return("/base_path/cookbooks")
+          expect(cfg.server_path("/base_path/cookbooks")).to eq("/")
+        end
+
+        it "checks all the repo paths" do
+          cwd = "/second_base_path/cookbooks"
+          cfg = Chef::ChefFS::Config.new(double_repo_path, cwd)
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("/second_base_path/cookbooks", cwd).and_return("/second_base_path/cookbooks")
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("/base_path", cwd).and_return("/base_path/cookbooks")
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("/second_base_path", cwd).and_return("/second_base_path/cookbooks")
+          expect(cfg.server_path("/second_base_path/cookbooks")).to eq("/")
+        end
+      end
+
+      context "with specific object locations" do
+        let(:single_cookbook_path) do
+          Mash.new({
+            cookbook_path: "/base_path/cookbooks",
+            role_path: "/base_path/roles",
+          })
+        end
+
+        let(:cwd) { "/base_path/cookbooks" }
+        let(:cfg) { Chef::ChefFS::Config.new(single_cookbook_path, cwd) }
+
+        before do
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("/base_path/cookbooks", cwd).and_return("/base_path/cookbooks")
+          allow(Chef::ChefFS::PathUtils).to receive(:realest_path).with("/base_path/roles", cwd).and_return("/base_path/roles")
+        end
+
+        it "resolves a relative path" do
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("blah", cwd).and_return("/base_path/cookbooks/blah")
+          expect(cfg.server_path("blah")).to eql("/cookbooks/blah")
+        end
+
+        it "resolves a relative path in a parent directory" do
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("../roles/blah", cwd).and_return("/base_path/roles/blah")
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("/base_path/roles", cwd).and_return("/base_path/roles")
+          expect(cfg.server_path("../roles/blah")).to eql("/roles/blah")
+        end
+
+        it "ignores a relative path that's outside the repository" do
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("../../readme.txt", cwd).and_return("/readme.txt")
+          expect(cfg.server_path("../../readme.txt")).to be_nil
+        end
+
+        it "deals with splat paths" do
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("*/*ab*", cwd).and_return("/base_path/cookbooks/*/*ab*")
+          expect(cfg.server_path("*/*ab*")).to eql("/cookbooks/*/*ab*")
+        end
+
+        it "resolves an absolute path" do
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("/base_path/cookbooks/blah", cwd).and_return("/base_path/cookbooks/blah")
+          expect(cfg.server_path("/base_path/cookbooks/blah")).to eql("/cookbooks/blah")
+        end
+
+        it "deals with an absolute path with splats" do
+          expect(Chef::ChefFS::PathUtils).to receive(:realest_path).with("/*/cookbooks/blah", cwd).and_return("/*/cookbooks/blah")
+          expect(cfg.server_path("/*/cookbooks/blah")).to be_nil
+        end
+      end
+    end
+
+    describe "#format_path" do
+      Entry = Struct.new(:path)
+
+      let(:config) do
+        Mash.new({
+          chef_repo_path: "/base_path",
+          cookbook_path: "/base_path/cookbooks",
+          role_path: "/base_path/roles",
+        })
+      end
+
+      let (:path) { "/roles/foo.json" }
+      let (:entry) { Entry.new(path) }
+
+      it "returns the entry's path if the cwd isn't in the config" do
+        cfg = Chef::ChefFS::Config.new(config, "/my_repo/cookbooks")
+        expect(cfg).to receive(:base_path).and_return(nil)
+        expect(cfg.format_path(entry)).to eq(path)
+      end
+
+      it "returns . if the cwd is the same as the entry's path" do
+        cfg = Chef::ChefFS::Config.new(config, "/base_path/roles/foo.json")
+        expect(cfg).to receive(:base_path).and_return("/roles/foo.json").at_least(:once)
+        expect(cfg.format_path(entry)).to eq(".")
+      end
+
+      it "returns a relative path if the cwd is in the repo" do
+        cfg = Chef::ChefFS::Config.new(config, "/base_path/roles")
+        expect(cfg).to receive(:base_path).and_return("/roles").at_least(:once)
+        expect(cfg.format_path(entry)).to eq("foo.json")
+      end
+
+      it "returns a relative path if the cwd is at the root of repo" do
+        cfg = Chef::ChefFS::Config.new(config, "/base_path")
+        expect(cfg).to receive(:base_path).and_return("/").at_least(:once)
+        expect(cfg.format_path(entry)).to eq("roles/foo.json")
+      end
+
+    end
+  end
 end
