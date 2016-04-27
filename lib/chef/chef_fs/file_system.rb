@@ -327,8 +327,8 @@ class Chef
                 if options[:dry_run]
                   ui.output "Would create #{dest_path}" if ui
                 else
-                  new_dest_parent.create_child(src_entry.name, src_entry.read)
-                  ui.output "Created #{dest_path}" if ui
+                  child = new_dest_parent.create_child(src_entry.name, src_entry.read)
+                  ui.output "Created #{format_path.call(child)}" if ui
                 end
               end
             end
