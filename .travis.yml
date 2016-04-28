@@ -35,7 +35,9 @@ matrix:
     sudo: true
     script: tasks/bin/run_chef_tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
-  - rvm: 2.1
+  - env:
+      CHEFSTYLE: 1
+    rvm: 2.1
     script: bundle exec rake style
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - rvm: rbx
