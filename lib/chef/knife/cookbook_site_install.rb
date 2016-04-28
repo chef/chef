@@ -144,11 +144,11 @@ class Chef
         extract_command = "tar zxvf \"#{convert_path upstream_file}\""
         if Chef::Platform.windows?
           # FIXED: Detect if we have the bad tar from git on Windows: https://github.com/opscode/chef/issues/1753
-          tar_version = shell_out("tar --version").stdout.tr("\n"," ")
-          if /GNU tar/.match(tar_version)
+          tar_version = shell_out("tar --version").stdout.tr("\n", " ")
+          if tar_version =~ /GNU tar/
             ui.info("GNU tar detected")
             extract_command << " --force-local"
-          elsif /bsdtar/.match(tar_version)
+          elsif tar_version =~ /bsdtar/
             ui.info("BSD tar detected")
           end
         end
