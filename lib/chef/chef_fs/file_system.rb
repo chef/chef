@@ -186,16 +186,16 @@ class Chef
           # Make sure everything on the server is also on the filesystem, and diff
           found_paths = Set.new
           Chef::ChefFS::FileSystem.list(a_root, pattern).each do |a|
-            found_paths << a.path
-            b = Chef::ChefFS::FileSystem.resolve_path(b_root, a.path)
+            found_paths << a.display_path
+            b = Chef::ChefFS::FileSystem.resolve_path(b_root, a.display_path)
             yield [ a, b ]
           end
 
           # Check the outer regex pattern to see if it matches anything on the
           # filesystem that isn't on the server
           Chef::ChefFS::FileSystem.list(b_root, pattern).each do |b|
-            if !found_paths.include?(b.path)
-              a = Chef::ChefFS::FileSystem.resolve_path(a_root, b.path)
+            if !found_paths.include?(b.display_path)
+              a = Chef::ChefFS::FileSystem.resolve_path(a_root, b.display_path)
               yield [ a, b ]
             end
           end
@@ -392,6 +392,8 @@ class Chef
               end
             end
           end
+        rescue RubyFileError => e
+          ui.warn "#{format_path.call(e.entry)} #{e.reason}." if ui
         rescue DefaultEnvironmentCannotBeModifiedError => e
           ui.warn "#{format_path.call(e.entry)} #{e.reason}." if ui
         rescue OperationFailedError => e

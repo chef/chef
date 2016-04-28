@@ -47,6 +47,11 @@ class Chef
             "#{parent.api_path}/#{api_child_name}"
           end
 
+          def display_path
+            pth = api_path.start_with?("/") ? api_path : "/#{api_path}"
+            File.extname(pth).empty? ? pth + ".json" : pth
+          end
+
           def org
             parent.org
           end
