@@ -12,6 +12,5 @@ if [ -n "$1" ]; then
   sudo -E $(which bundle) exec $@;
 else
   sudo -E $(which bundle) exec rake spec;
-  bundle exec rake style;
   bundle exec bundle-audit check --update;
 fi
