@@ -18,9 +18,9 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.10.24)
+    chef (12.10.25)
       bundler (>= 1.10)
-      chef-config (= 12.10.24)
+      chef-config (= 12.10.25)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -44,9 +44,9 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (12.10.24-universal-mingw32)
+    chef (12.10.25-universal-mingw32)
       bundler (>= 1.10)
-      chef-config (= 12.10.24)
+      chef-config (= 12.10.25)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -85,7 +85,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.10.24)
+    chef-config (12.10.25)
       fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -341,7 +341,7 @@ GEM
     sawyer (0.7.0)
       addressable (>= 2.3.5, < 2.5)
       faraday (~> 0.8, < 0.10)
-    serverspec (2.32.0)
+    serverspec (2.33.0)
       multi_json
       rspec (~> 3.0)
       rspec-its
@@ -353,7 +353,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.57.0)
+    specinfra (2.57.1)
       net-scp
       net-ssh (>= 2.7, < 4.0)
       net-telnet
@@ -390,7 +390,7 @@ GEM
       ffi
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
-    winrm (1.7.3)
+    winrm (1.8.0)
       builder (>= 2.1.2)
       gssapi (~> 1.2)
       gyoku (~> 1.0)
