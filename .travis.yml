@@ -10,6 +10,11 @@ before_install:
 
 bundler_args: --without changelog development docgen guard maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
 
+before_script:
+ - echo --color > .rspec
+ - echo -fp >> .rspec
+ - sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers;
+
 # do not run expensive spec tests on PRs, only on branches
 branches:
   only:
@@ -36,6 +41,10 @@ matrix:
       CHEFSTYLE: 1
     rvm: 2.1
     script: bundle exec rake style
+  - env:
+      AUDIT_CHECK: 1
+    rvm: 2.1
+    script: bundle exec bundle-audit check --update
   - rvm: rbx
     sudo: true
     script: tasks/bin/run_chef_tests
