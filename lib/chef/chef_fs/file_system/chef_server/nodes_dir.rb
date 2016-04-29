@@ -30,7 +30,7 @@ class Chef
           def children
             begin
               @children ||= root.get_json(env_api_path).keys.sort.map do |key|
-                make_child_entry("#{key}.json", true)
+                make_child_entry(key, true)
               end
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout retrieving children: #{e}")

@@ -37,10 +37,11 @@ class Chef
           end
 
           def api_child_name
-            if name.length < 5 || name[-5, 5] != ".json"
-              raise "Invalid name #{path}: must end in .json"
+            if %w{ .rb .json }.include? File.extname(name)
+              File.basename(name, ".*")
+            else
+              name
             end
-            name[0, name.length - 5]
           end
 
           def api_path
@@ -51,6 +52,7 @@ class Chef
             pth = api_path.start_with?("/") ? api_path : "/#{api_path}"
             File.extname(pth).empty? ? pth + ".json" : pth
           end
+          alias_method :path_for_printing, :display_path
 
           def org
             parent.org
@@ -63,7 +65,7 @@ class Chef
           def exists?
             if @exists.nil?
               begin
-                @exists = parent.children.any? { |child| child.name == name }
+                @exists = parent.children.any? { |child| child.api_child_name == api_child_name }
               rescue Chef::ChefFS::FileSystem::NotFoundError
                 @exists = false
               end
