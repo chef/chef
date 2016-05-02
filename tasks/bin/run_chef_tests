@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# Fail fast (e) and echo commands (vx)
-set -evx
-
-sudo -E $(which bundle) exec rake spec;
