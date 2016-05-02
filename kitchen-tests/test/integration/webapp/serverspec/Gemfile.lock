@@ -16,4 +16,4 @@ DEPENDENCIES
   ffi-yajl (~> 1.1)
 
 BUNDLED WITH
-   1.11.2
+   1.12.1
