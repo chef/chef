@@ -490,20 +490,9 @@ class Chef
                                 end
         end
 
-        def target_version_already_installed?(current_version, new_version)
-          match_version(current_version, new_version, false)
-        end
-
-        def version_requirement_satisfied?(current_version, version_requirement)
-          match_version(current_version, version_requirement, true)
-        end
-
-        def match_version(current_version, new_version, fuzzy_match)
+        def version_requirement_satisfied?(current_version, new_version)
           return false unless current_version && new_version
-
-          requirement = Gem::Requirement.new(new_version)
-          (fuzzy_match || requirement.exact?) &&
-            requirement.satisfied_by?(Gem::Version.new(current_version))
+          Gem::Requirement.new(new_version).satisfied_by?(Gem::Version.new(current_version))
         end
 
         ##
