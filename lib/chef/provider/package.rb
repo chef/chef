@@ -267,12 +267,13 @@ class Chef
       # The current_version should probably be dropped out of the method signature, it should
       # always be the first argument.
       #
-      # The name is not just bad, but completely misleading, consider:
+      # The name is not just bad, but i find it completely misleading, consider:
       #
       #    target_version_already_installed?(current_version, new_version)
+      #    target_version_already_installed?(current_version, candidate_version)
       #
-      # does not involve any comparison using the target_version but the target_version is
-      # in the method name.
+      # which of those is the 'target_version'?  i'd say the new_version and i'm confused when
+      # i see it called with the candidate_version.
       #
       # `current_version_equals?(version)` would be a better name
       def target_version_already_installed?(current_version, target_version)
