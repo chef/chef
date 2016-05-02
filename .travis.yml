@@ -10,6 +10,13 @@ before_install:
 
 bundler_args: --without changelog development docgen guard maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
 
+before_script:
+ # force all .rspec tests into progress display to reduce line count
+ - echo --color > .rspec
+ - echo -fp >> .rspec
+ # necessary for sudo: true tests, ingore failures on tests invoked with sudo: false
+ - sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers || true
+
 # do not run expensive spec tests on PRs, only on branches
 branches:
   only:
@@ -25,24 +32,35 @@ matrix:
   include:
   - rvm: 2.1
     sudo: true
-    script: tasks/bin/run_chef_tests
+    script: sudo -E $(which bundle) exec rake spec;
+    # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - rvm: 2.2
     sudo: true
-    script: tasks/bin/run_chef_tests
+    script: sudo -E $(which bundle) exec rake spec;
+    # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - rvm: 2.3.0
     sudo: true
-    script: tasks/bin/run_chef_tests
+    script: sudo -E $(which bundle) exec rake spec;
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+  - rvm: rbx
+    sudo: true
+    script: sudo -E $(which bundle) exec rake spec;
+    # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - env:
       CHEFSTYLE: 1
     rvm: 2.1
     script: bundle exec rake style
+    # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
-  - rvm: rbx
-    sudo: true
-    script: tasks/bin/run_chef_tests
+  - env:
+      AUDIT_CHECK: 1
+    rvm: 2.1
+    script: bundle exec bundle-audit check --update
+    # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   #
   # External tests
@@ -55,11 +73,6 @@ matrix:
       TEST_GEM: chef-provisioning-aws
     script: tasks/bin/run_external_test $TEST_GEM rake spec
     rvm: 2.2
-# requires vagrant
-#  - env: TEST_GEM=chef-rewind
-#    script: tasks/bin/run_external_test $TEST_GEM "rake spec"
-#    bundler_args: --without development
-#    rvm: 2.2
   - env:
       TEST_GEM: chef-sugar
     script: tasks/bin/run_external_test $TEST_GEM rake
