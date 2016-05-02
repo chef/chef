@@ -13,7 +13,7 @@ bundler_args: --without changelog development docgen guard maintenance omnibus_p
 before_script:
  - echo --color > .rspec
  - echo -fp >> .rspec
- - sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers;
+ - sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers || true
 
 # do not run expensive spec tests on PRs, only on branches
 branches:
