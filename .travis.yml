@@ -2,10 +2,12 @@ language: ruby
 sudo: false
 cache: bundler
 
-# Early warning system to catch if Rubygems breaks something
+# We deliberately control bundler and gem versions seperately from omnibus and generally track the latest release of both
+# in order to check gem installs of external tests against the latset released versions.  If they are busted, even though omnibus is
+# pinned, we want to break.
 before_install:
-  - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-  - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+  - gem update --system
+  - gem install bundler
   - rm -f .bundle/config
 
 bundler_args: --without changelog development docgen guard maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
