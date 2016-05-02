@@ -31,23 +31,35 @@ matrix:
   - rvm: 2.1
     sudo: true
     script: tasks/bin/run_chef_tests
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - rvm: 2.2
     sudo: true
     script: tasks/bin/run_chef_tests
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - rvm: 2.3.0
     sudo: true
     script: tasks/bin/run_chef_tests
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - env:
       CHEFSTYLE: 1
     rvm: 2.1
     script: bundle exec rake style
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - env:
       AUDIT_CHECK: 1
     rvm: 2.1
     script: bundle exec bundle-audit check --update
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - rvm: rbx
     sudo: true
     script: tasks/bin/run_chef_tests
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   #
   # External tests
   #
