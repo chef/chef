@@ -18,32 +18,6 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.10.26)
-      bundler (>= 1.10)
-      chef-config (= 12.10.26)
-      chef-zero (~> 4.5)
-      diff-lcs (~> 1.2, >= 1.2.4)
-      erubis (~> 2.7)
-      ffi-yajl (~> 2.2)
-      highline (~> 1.6, >= 1.6.9)
-      mixlib-authentication (~> 1.4)
-      mixlib-cli (~> 1.4)
-      mixlib-log (~> 1.3)
-      mixlib-shellout (~> 2.0)
-      net-sftp (~> 2.1, >= 2.1.2)
-      net-ssh (>= 2.9, < 4.0)
-      net-ssh-multi (~> 1.1)
-      ohai (>= 8.6.0.alpha.1, < 9)
-      plist (~> 3.2)
-      proxifier (~> 1.0)
-      rspec-core (~> 3.4)
-      rspec-expectations (~> 3.4)
-      rspec-mocks (~> 3.4)
-      rspec_junit_formatter (~> 0.2.0)
-      serverspec (~> 2.7)
-      specinfra (~> 2.10)
-      syslog-logger (~> 1.6)
-      uuidtools (~> 2.1.5)
     chef (12.10.26-universal-mingw32)
       bundler (>= 1.10)
       chef-config (= 12.10.26)
@@ -53,6 +27,7 @@ PATH
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       highline (~> 1.6, >= 1.6.9)
+      iniparse (~> 1.4)
       mixlib-authentication (~> 1.4)
       mixlib-cli (~> 1.4)
       mixlib-log (~> 1.3)
@@ -160,7 +135,6 @@ GEM
       multipart-post (>= 1.2, < 3)
     fauxhai (3.4.0)
       net-ssh
-    ffi (1.9.10)
     ffi (1.9.10-x86-mingw32)
     ffi-yajl (2.2.3)
       libyajl2 (~> 1.2)
@@ -198,7 +172,7 @@ GEM
       chef (~> 12.0)
       stove (~> 3.2, >= 3.2.3)
       thor
-    hashie (3.4.3)
+    hashie (3.4.4)
     highline (1.7.8)
     httpclient (2.8.0)
     inifile (3.0.0)
@@ -369,7 +343,7 @@ GEM
     treetop (1.6.5)
       polyglot (~> 0.3)
     ubuntu_ami (0.4.1)
-    unicode-display_width (1.0.3)
+    unicode-display_width (1.0.5)
     uuidtools (2.1.5)
     win32-api (1.5.3-universal-mingw32)
     win32-dir (0.5.1)
@@ -441,4 +415,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.11.2
+   1.12.1
