@@ -22,7 +22,6 @@ require "chef/mixin/subclass_directive"
 require "chef/log"
 require "chef/file_cache"
 require "chef/platform"
-require "chef/decorator/lazy"
 require "chef/decorator/lazy_array"
 
 class Chef

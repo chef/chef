@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "chef/decorator"
+require "chef/decorator/lazy"
 
 class Chef
   class Decorator

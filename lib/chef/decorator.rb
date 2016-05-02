@@ -21,9 +21,9 @@ class Chef
   class Decorator < SimpleDelegator
     NULL = ::Object.new
 
-    def initialize(obj: NULL)
-      super(obj) unless obj == NULL
+    def initialize(obj = NULL)
       @__defined_methods__ = []
+      super unless obj.equal?(NULL)
     end
 
     # if we wrap a nil then decorator.nil? should be true
