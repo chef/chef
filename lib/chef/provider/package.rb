@@ -257,16 +257,40 @@ class Chef
         options ? " #{options}" : ""
       end
 
-      # this is public and overridden by subclasses
+      # Check the current_version against either the candidate_version or the new_version
+      #
+      # For some reason the windows provider subclasses this (to implement passing Arrays to
+      # versions for some reason other than multipackage stuff, which is mildly terrifying).
+      #
+      # This MUST have 'equality' semantics -- the exact thing matches the exact thing.
+      #
+      # The current_version should probably be dropped out of the method signature, it should
+      # always be the first argument.
+      #
+      # The name is not just bad, but completely misleading, consider:
+      #
+      #    target_version_already_installed?(current_version, new_version)
+      #
+      # does not involve any comparison using the target_version but the target_version is
+      # in the method name.
+      #
+      # `current_version_equals?(version)` would be a better name
       def target_version_already_installed?(current_version, target_version)
-        current_version && target_version &&
-          current_version == target_version
+        return false unless current_version && target_version
+        current_version == target_version
       end
 
-      # this is public and overridden by subclasses
-      # (rubygems package implements '>=' and '~>' operators)
-      def version_requirement_satisfied?(current_version, version_requirement)
-        target_version_already_installed?(current_version, version_requirement)
+      # Check the current_version against the new_resource.version, possibly using fuzzy
+      # matching criteria.
+      #
+      # Subclasses MAY override this to provide fuzzy matching on the resource ('>=' and '~>' stuff)
+      #
+      # This should only ever be offered the same arguments (so they should most likely be
+      # removed from the method signature).
+      #
+      # `new_version_satisfied?()` might be a better name
+      def version_requirement_satisfied?(current_version, new_version)
+        target_version_already_installed?(current_version, new_version)
       end
 
       # @todo: extract apt/dpkg specific preseeding to a helper class
@@ -362,10 +386,12 @@ class Chef
             each_package do |package_name, new_version, current_version, candidate_version|
               case action
               when :upgrade
-
-                if target_version_already_installed?(current_version, new_version) ||
-                    target_version_already_installed?(current_version, candidate_version)
-                  Chef::Log.debug("#{new_resource} #{package_name} #{new_version} is already installed")
+                if target_version_already_installed?(current_version, new_version)
+                  # this is an odd use case
+                  Chef::Log.debug("#{new_resource} #{package_name} #{new_version} is already installed -- you are equality pinning with an :upgrade action, this may be deprecated in the future")
+                  target_version_array.push(nil)
+                elsif target_version_already_installed?(current_version, candidate_version)
+                  Chef::Log.debug("#{new_resource} #{package_name} #{candidate_version} is already installed")
                   target_version_array.push(nil)
                 elsif candidate_version.nil?
                   Chef::Log.debug("#{new_resource} #{package_name} has no candidate_version to upgrade to")

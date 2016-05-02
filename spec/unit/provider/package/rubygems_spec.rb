@@ -498,6 +498,7 @@ describe Chef::Provider::Package::Rubygems do
 
       context "when the current version is the target version" do
         it "does not query for available versions" do
+          # NOTE: odd use case -- we've equality pinned a version, but are calling :upgrade
           expect(provider.gem_env).not_to receive(:candidate_version_from_remote)
           expect(provider.gem_env).not_to receive(:install)
           provider.run_action(:upgrade)
