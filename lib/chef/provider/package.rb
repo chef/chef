@@ -22,6 +22,8 @@ require "chef/mixin/subclass_directive"
 require "chef/log"
 require "chef/file_cache"
 require "chef/platform"
+require "chef/decorator/lazy"
+require "chef/decorator/lazy_array"
 
 class Chef
   class Provider
@@ -476,32 +478,9 @@ class Chef
 
       # @return [Array] candidate_version(s) as an array
       def candidate_version_array
-        use_multipackage_api? ?
-          [ candidate_version ].flatten :
-          [ LazyObject.new { candidate_version } ]
-      end
-
-      # Wrap single candidate_version in a lazy object to minimize unnecessary API queries.
-      class LazyObject < BasicObject
-        NULL = ::Object.new
-
-        def initialize(&block)
-          @block = block
-          @target = NULL
-        end
-
-        def __obj
-          @target = @block.call if @target == NULL
-          @target
-        end
-
-        def ==(other_object)
-          __obj == other_object
-        end
-
-        def method_missing(method_name, *args, &block)
-          __obj.send(method_name, *args, &block)
-        end
+        # NOTE: even with use_multipackage_api candidate_version may be a bare nil and need wrapping
+        # ( looking at you, dpkg provider... )
+        Chef::Decorator::LazyArray.new { [ candidate_version ].flatten }
       end
 
       # @return [Array] current_version(s) as an array
