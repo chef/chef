@@ -44,7 +44,6 @@ class Chef
         patterns = name_args.length == 0 ? [""] : name_args
 
         # Get the top-level matches
-        args = pattern_args_from(patterns)
         all_results = parallelize(pattern_args_from(patterns)) do |pattern|
           pattern_results = Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern).to_a
 
