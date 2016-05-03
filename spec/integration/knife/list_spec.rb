@@ -309,14 +309,6 @@ EOM
       it "knife list /blarghle reports missing directory" do
         knife("list /blarghle").should_fail "ERROR: /blarghle: No such file or directory\n"
       end
-
-      it "knife list /roles/blarghle reports missing directory" do
-        knife("list /roles/blarghle").should_fail "ERROR: /roles/blarghle: No such file or directory\n"
-      end
-
-      it "knife list /roles/blarghle/blorghle reports missing directory" do
-        knife("list /roles/blarghle/blorghle").should_fail "ERROR: /roles/blarghle/blorghle: No such file or directory\n"
-      end
     end
 
     context "symlink tests" do
