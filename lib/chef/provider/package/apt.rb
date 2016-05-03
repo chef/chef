@@ -48,6 +48,66 @@ class Chef
           end
         end
 
+        def package_data
+          @package_data ||= Hash.new do |hash, key|
+            hash[key] = package_data_for(key)
+          end
+        end
+
+        def get_current_versions
+          package_name_array.map do |package_name|
+            package_data[package_name][:current_version]
+          end
+        end
+
+        def get_candidate_versions
+          package_name_array.map do |package_name|
+            package_data[package_name][:candidate_version]
+          end
+        end
+
+        def candidate_version
+          @candidate_version ||= get_candidate_versions
+        end
+
+        def install_package(name, version)
+          package_name = name.zip(version).map do |n, v|
+            package_data[n][:virtual] ? n : "#{n}=#{v}"
+          end.join(" ")
+          run_noninteractive("apt-get -q -y", default_release_options, new_resource.options, "install", package_name)
+        end
+
+        def upgrade_package(name, version)
+          install_package(name, version)
+        end
+
+        def remove_package(name, version)
+          run_noninteractive("apt-get -q -y", new_resource.options, "remove", name)
+        end
+
+        def purge_package(name, version)
+          run_noninteractive("apt-get -q -y", new_resource.options, "purge", name)
+        end
+
+        def preseed_package(preseed_file)
+          Chef::Log.info("#{new_resource} pre-seeding package installation instructions")
+          run_noninteractive("debconf-set-selections", preseed_file)
+        end
+
+        def reconfig_package(name, version)
+          Chef::Log.info("#{new_resource} reconfiguring")
+          run_noninteractive("dpkg-reconfigure", name)
+        end
+
+        private
+
+        # Runs command via shell_out with magic environment to disable
+        # interactive prompts. Command is run with default localization rather
+        # than forcing locale to "C", so command output may not be stable.
+        def run_noninteractive(*args)
+          shell_out_with_timeout!(a_to_s(*args), :env => { "DEBIAN_FRONTEND" => "noninteractive" })
+        end
+
         def default_release_options
           # Use apt::Default-Release option only if provider supports it
           "-o APT::Default-Release=#{new_resource.default_release}" if new_resource.respond_to?(:default_release) && new_resource.default_release
@@ -108,66 +168,6 @@ class Chef
             candidate_version:  candidate_version,
             virtual:            virtual,
           }
-        end
-
-        def package_data
-          @package_data ||= Hash.new do |hash, key|
-            hash[key] = package_data_for(key)
-          end
-        end
-
-        def get_current_versions
-          package_name_array.map do |package_name|
-            package_data[package_name][:current_version]
-          end
-        end
-
-        def get_candidate_versions
-          package_name_array.map do |package_name|
-            package_data[package_name][:candidate_version]
-          end
-        end
-
-        def candidate_version
-          @candidate_version ||= get_candidate_versions
-        end
-
-        def install_package(name, version)
-          package_name = name.zip(version).map do |n, v|
-            package_data[n][:virtual] ? n : "#{n}=#{v}"
-          end.join(" ")
-          run_noninteractive("apt-get -q -y", default_release_options, new_resource.options, "install", package_name)
-        end
-
-        def upgrade_package(name, version)
-          install_package(name, version)
-        end
-
-        def remove_package(name, version)
-          run_noninteractive("apt-get -q -y", new_resource.options, "remove", name)
-        end
-
-        def purge_package(name, version)
-          run_noninteractive("apt-get -q -y", new_resource.options, "purge", name)
-        end
-
-        def preseed_package(preseed_file)
-          Chef::Log.info("#{new_resource} pre-seeding package installation instructions")
-          run_noninteractive("debconf-set-selections", preseed_file)
-        end
-
-        def reconfig_package(name, version)
-          Chef::Log.info("#{new_resource} reconfiguring")
-          run_noninteractive("dpkg-reconfigure", name)
-        end
-
-        private
-
-        # Runs command via shell_out with magic environment to disable
-        # interactive prompts. Command is run with default localization rather
-        # than forcing locale to "C", so command output may not be stable.
-        def run_noninteractive(*args)
-          shell_out_with_timeout!(a_to_s(*args), :env => { "DEBIAN_FRONTEND" => "noninteractive" })
         end
 
       end
