@@ -73,7 +73,7 @@ class Chef
         def install_package(name, version)
           package_name = name.zip(version).map do |n, v|
             package_data[n][:virtual] ? n : "#{n}=#{v}"
-          end.join(" ")
+          end
           run_noninteractive("apt-get -q -y", default_release_options, new_resource.options, "install", package_name)
         end
 
@@ -82,11 +82,17 @@ class Chef
         end
 
         def remove_package(name, version)
-          run_noninteractive("apt-get -q -y", new_resource.options, "remove", name)
+          package_name = name.map do |n|
+            package_data[n][:virtual] ? resolve_virtual_package_name(n) : n
+          end
+          run_noninteractive("apt-get -q -y", new_resource.options, "remove", package_name)
         end
 
         def purge_package(name, version)
-          run_noninteractive("apt-get -q -y", new_resource.options, "purge", name)
+          package_name = name.map do |n|
+            package_data[n][:virtual] ? resolve_virtual_package_name(n) : n
+          end
+          run_noninteractive("apt-get -q -y", new_resource.options, "purge", package_name)
         end
 
         def preseed_package(preseed_file)
