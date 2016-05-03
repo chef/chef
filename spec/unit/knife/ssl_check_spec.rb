@@ -114,6 +114,22 @@ E
       allow(ssl_check).to receive(:verify_cert_host).and_return(true)
     end
 
+    context "when the trusted certificates directory is not glob escaped", :windows_only do
+      let(:trusted_certs_dir) { File.join(CHEF_SPEC_DATA.tr("/", "\\"), "trusted_certs") }
+
+      before do
+        allow(ssl_check).to receive(:trusted_certificates).and_call_original
+        allow(store).to receive(:verify).with(certificate).and_return(true)
+      end
+
+      it "escpaes the trusted certificates directory" do
+        expect(Dir).to receive(:glob)
+          .with("#{ChefConfig::PathHelper.escape_glob_dir(trusted_certs_dir)}/*.{crt,pem}")
+          .and_return([trusted_cert_file])
+        ssl_check.run
+      end
+    end
+
     context "when the trusted certificates have valid X509 properties" do
       before do
         allow(store).to receive(:verify).with(certificate).and_return(true)
