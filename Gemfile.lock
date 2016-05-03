@@ -18,9 +18,9 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.10.28)
+    chef (12.10.29)
       bundler (>= 1.10)
-      chef-config (= 12.10.28)
+      chef-config (= 12.10.29)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -45,9 +45,9 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (12.10.28-universal-mingw32)
+    chef (12.10.29-universal-mingw32)
       bundler (>= 1.10)
-      chef-config (= 12.10.28)
+      chef-config (= 12.10.29)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -87,7 +87,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.10.28)
+    chef-config (12.10.29)
       fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -355,7 +355,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.57.1)
+    specinfra (2.57.2)
       net-scp
       net-ssh (>= 2.7, < 4.0)
       net-telnet
