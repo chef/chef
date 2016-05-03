@@ -83,6 +83,30 @@ sudo:
           expect(@provider.candidate_version).to eql(["1.7.2p1-1ubuntu5.3"])
         end
 
+        # it is the superclasses responsibility to throw most exceptions
+        it "if the package does not exist in the cache sets installed + candidate version to nil" do
+          @new_resource.package_name("conic-smarms")
+          policy_out = <<-POLICY_STDOUT
+N: Unable to locate package conic-smarms
+          POLICY_STDOUT
+          policy = double(:stdout => policy_out, :exitstatus => 0)
+          expect(@provider).to receive(:shell_out!).with(
+            "apt-cache policy conic-smarms",
+            :env => { "DEBIAN_FRONTEND" => "noninteractive" },
+            :timeout => @timeout
+          ).and_return(policy)
+          showpkg_out = <<-SHOWPKG_STDOUT
+N: Unable to locate package conic-smarms
+          SHOWPKG_STDOUT
+          showpkg = double(:stdout => showpkg_out, :exitstatus => 0)
+          expect(@provider).to receive(:shell_out!).with(
+            "apt-cache showpkg conic-smarms",
+            :env => { "DEBIAN_FRONTEND" => "noninteractive" },
+            :timeout => @timeout
+          ).and_return(showpkg)
+          @provider.load_current_resource
+        end
+
         # libmysqlclient-dev is a real package in newer versions of debian + ubuntu
         # list of virtual packages: http://www.debian.org/doc/packaging-manuals/virtual-package-names-list.txt
         it "should not install the virtual package there is a single provider package and it is installed" do

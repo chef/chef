@@ -113,9 +113,6 @@ class Chef
           "-o APT::Default-Release=#{new_resource.default_release}" if new_resource.respond_to?(:default_release) && new_resource.default_release
         end
 
-        # FIXME: need spec to check that candidate_version is set correctly on a virtual package
-        # FIXME: need spec to check that packages missing a candidate_version can be removed/purged
-
         def resolve_package_versions(pkg)
           current_version = nil
           candidate_version = nil
