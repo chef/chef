@@ -558,7 +558,7 @@ class Chef
       # @param args [String] variable number of string arguments
       # @return [String] nicely concatenated string or empty string
       def a_to_s(*args)
-        args.reject { |i| i.nil? || i == "" }.join(" ")
+        args.flatten.reject { |i| i.nil? || i == "" }.join(" ")
       end
     end
   end

@@ -458,8 +458,18 @@ describe "Subclass with use_multipackage_api" do
     expect(provider.use_multipackage_api?).to be true
   end
 
-  it "offers a_to_s to subclasses to convert an array of strings to a single string" do
-    expect(provider.send(:a_to_s, "a", nil, "b", "", "c", " ", "d e", "f-g")).to eq("a b c   d e f-g")
+  context "#a_to_s utility for subclasses" do
+    it "converts varargs of strings to a single string" do
+      expect(provider.send(:a_to_s, "a", nil, "b", "", "c", " ", "d e", "f-g")).to eq("a b c   d e f-g")
+    end
+
+    it "converts an array of strings to a single string" do
+      expect(provider.send(:a_to_s, ["a", nil, "b", "", "c", " ", "d e", "f-g"])).to eq("a b c   d e f-g")
+    end
+
+    it "converts a mishmash of array args to a single string" do
+      expect(provider.send(:a_to_s, "a", [ nil, "b", "", [ "c" ] ], " ", [ "d e", "f-g" ])).to eq("a b c   d e f-g")
+    end
   end
 
   it "when user passes string to package_name, passes arrays to install_package" do
