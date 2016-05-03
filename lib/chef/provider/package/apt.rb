@@ -59,7 +59,6 @@ class Chef
 
         def check_package_state(pkg)
           is_virtual_package = false
-          installed          = false
           installed_version  = nil
           candidate_version  = nil
 
@@ -68,11 +67,7 @@ class Chef
             when /^\s{2}Installed: (.+)$/
               installed_version = $1
               if installed_version == "(none)"
-                Chef::Log.debug("#{new_resource} current version is nil")
                 installed_version = nil
-              else
-                Chef::Log.debug("#{new_resource} current version is #{installed_version}")
-                installed = true
               end
             when /^\s{2}Candidate: (.+)$/
               candidate_version = $1
@@ -93,7 +88,6 @@ class Chef
                 # Check if the package providing this virtual package is installed
                 Chef::Log.info("#{new_resource} is a virtual package, actually acting on package[#{providers.keys.first}]")
                 ret = check_package_state(providers.keys.first)
-                installed = ret[:installed]
                 installed_version = ret[:installed_version]
               else
                 Chef::Log.debug("#{new_resource} candidate version is #{$1}")
@@ -103,7 +97,6 @@ class Chef
 
           return {
             installed_version:   installed_version,
-            installed:           installed,
             candidate_version:   candidate_version,
             is_virtual_package:  is_virtual_package,
           }
@@ -112,12 +105,10 @@ class Chef
         def check_all_packages_state(package)
           installed_version = {}
           candidate_version = {}
-          installed = {}
 
           [package].flatten.each do |pkg|
             ret = check_package_state(pkg)
             is_virtual_package[pkg] = ret[:is_virtual_package]
-            installed[pkg]          = ret[:installed]
             installed_version[pkg]  = ret[:installed_version]
             candidate_version[pkg]  = ret[:candidate_version]
           end
