@@ -143,13 +143,12 @@ class Chef
         ui.info("Uncompressing #{@cookbook_name} version #{version}.")
         extract_command = "tar zxvf \"#{convert_path upstream_file}\""
         if Chef::Platform.windows?
-          # FIXED: Detect if we have the bad tar from git on Windows: https://github.com/opscode/chef/issues/1753
           tar_version = shell_out("tar --version").stdout.tr("\n", " ")
           if tar_version =~ /GNU tar/
-            ui.info("GNU tar detected")
+            ui.debug("GNU tar detected, adding --force-local")
             extract_command << " --force-local"
-          elsif tar_version =~ /bsdtar/
-            ui.info("BSD tar detected")
+          else
+            ui.debug("non-GNU tar detected, not adding --force-local")
           end
         end
         shell_out!(extract_command, :cwd => @install_path)
