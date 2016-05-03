@@ -23,15 +23,25 @@ class Chef
     # called against the object.
     #
     # @example
-    #   a = Chef::Decorator::Lazy.new { puts "allocated" }
-    #   puts "start"
-    #   puts a.class
+    #
+    #     def foo
+    #       puts "allocated"
+    #       "value"
+    #     end
+    #
+    #     a = Chef::Decorator::Lazy.new { foo }
+    #
+    #     puts "started"
+    #     a
+    #     puts "still lazy"
+    #     puts a
     #
     #   outputs:
     #
-    #   start
-    #   allocated
-    #   String
+    #     started
+    #     still lazy
+    #     allocated
+    #     value
     #
     # @since 12.10.x
     class Lazy < Decorator

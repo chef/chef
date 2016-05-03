@@ -19,19 +19,34 @@ require "chef/decorator/lazy"
 
 class Chef
   class Decorator
-    # Lazy wrapper to delay construction of an object until a method is
-    # called against the object.
+    # Lazy Array around Lazy Objects
+    #
+    # This only lazys access through `#[]`.  In order to implement #each we need to
+    # know how many items we have and what their indexes are, so we'd have to evalute
+    # the proc which makes that impossible.  You can call methods like #each and the
+    # decorator will forward the method, but item access will not be lazy.
+    #
+    # #at() and #fetch() are not implemented but technically could be.
     #
     # @example
-    #   a = Chef::Decorator::Lazy.new { puts "allocated" }
-    #   puts "start"
-    #   puts a.class
+    #     def foo
+    #         puts "allocated"
+    #           "value"
+    #     end
+    #
+    #     a = Chef::Decorator::LazyArray.new { [ foo ] }
+    #
+    #     puts "started"
+    #     a[0]
+    #     puts "still lazy"
+    #     puts a[0]
     #
     #   outputs:
     #
-    #   start
-    #   allocated
-    #   String
+    #     started
+    #     still lazy
+    #     allocated
+    #     value
     #
     # @since 12.10.x
     class LazyArray < Lazy
