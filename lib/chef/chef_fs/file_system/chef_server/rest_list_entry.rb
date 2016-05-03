@@ -54,6 +54,10 @@ class Chef
           end
           alias_method :path_for_printing, :display_path
 
+          def display_name
+            File.basename(display_path)
+          end
+
           def org
             parent.org
           end

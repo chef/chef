@@ -36,7 +36,6 @@ class Chef
                   else
                     "/acls/#{parent.name}/#{name}"
                   end
-            # Chef::Log.warn "Display Path is #{pth}"
             File.extname(pth).empty? ? pth + ".json" : pth
           end
 

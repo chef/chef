@@ -95,7 +95,7 @@ class Chef
             printed_something = true
           end
           output "#{format_path(result)}:"
-          print_results(children.map { |result| maybe_add_slash(result.name, result.dir?) }.sort, "")
+          print_results(children.map { |result| maybe_add_slash(result.display_name, result.dir?) }.sort, "")
         end
 
         exit self.exit_code if self.exit_code

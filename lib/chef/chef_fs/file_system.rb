@@ -52,13 +52,13 @@ class Chef
 
         def list_from(entry, &block)
           # Include self in results if it matches
-          if pattern.match?(entry.path)
+          if pattern.match?(entry.display_path)
             yield(entry)
           end
 
-          if pattern.could_match_children?(entry.path)
+          if pattern.could_match_children?(entry.display_path)
             # If it's possible that our children could match, descend in and add matches.
-            exact_child_name = pattern.exact_child_name_under(entry.path)
+            exact_child_name = pattern.exact_child_name_under(entry.display_path)
 
             # If we've got an exact name, don't bother listing children; just grab the
             # child with the given name.
@@ -222,14 +222,14 @@ class Chef
         result = []
         a_children_names = Set.new
         a.children.each do |a_child|
-          a_children_names << a_child.name
-          result << [ a_child, b.child(a_child.name) ]
+          a_children_names << a_child.bare_name
+          result << [ a_child, b.child(a_child.bare_name) ]
         end
 
         # Check b for children that aren't in a
         b.children.each do |b_child|
-          if !a_children_names.include?(b_child.name)
-            result << [ a.child(b_child.name), b_child ]
+          if !a_children_names.include?(b_child.bare_name)
+            result << [ a.child(b_child.bare_name), b_child ]
           end
         end
         result
