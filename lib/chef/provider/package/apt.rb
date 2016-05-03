@@ -65,10 +65,7 @@ class Chef
           run_noninteractive("apt-cache", default_release_options, "policy", pkg).stdout.each_line do |line|
             case line
             when /^\s{2}Installed: (.+)$/
-              installed_version = $1
-              if installed_version == "(none)"
-                installed_version = nil
-              end
+              installed_version = ( $1 != "(none)" ) ? $1 : nil
             when /^\s{2}Candidate: (.+)$/
               candidate_version = $1
               if candidate_version == "(none)"
