@@ -47,7 +47,7 @@ describe Chef::ChefFS::FileSystem::Repository::BaseFile do
   end
 
   context "#is_json_file?" do
-    it "returns false when the file is not json" do
+    it "returns false when the file is not json", pending: "We assume that everything is ruby or JSON" do
       file = described_class.new("test_file.dpkg", parent)
       expect(file.is_json_file?).to be_falsey
     end
@@ -63,9 +63,14 @@ describe Chef::ChefFS::FileSystem::Repository::BaseFile do
       expect(file.name_valid?).to be_falsey
     end
 
-    it "rejects non json files" do
+    it "rejects non json files", pending: "We assume that everything is ruby or JSON" do
       file = described_class.new("test_file.dpkg", parent)
       expect(file.name_valid?).to be_falsey
+    end
+
+    it "allows ruby files" do
+      file = described_class.new("test_file.rb", parent)
+      expect(file.name_valid?).to be_truthy
     end
 
     it "allows correctly named files" do
@@ -105,14 +110,7 @@ describe Chef::ChefFS::FileSystem::Repository::BaseFile do
 
   context "#write" do
     context "minimises a json object" do
-      it "not if pretty json is off" do
-        expect(file).to_not receive(:minimize)
-        file.write(content)
-      end
-
-      it "not if it's not a json file" do
-        file = described_class.new("test_file.dpkg", parent)
-        file.write_pretty_json = true
+      it "unless pretty json is off" do
         expect(file).to_not receive(:minimize)
         file.write(content)
       end
