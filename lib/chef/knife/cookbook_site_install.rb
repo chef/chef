@@ -145,10 +145,10 @@ class Chef
         if Chef::Platform.windows?
           tar_version = shell_out("tar --version").stdout.tr("\n", " ")
           if tar_version =~ /GNU tar/
-            ui.debug("GNU tar detected, adding --force-local")
+            Chef::Log.debug("GNU tar detected, adding --force-local")
             extract_command << " --force-local"
           else
-            ui.debug("non-GNU tar detected, not adding --force-local")
+            Chef::Log.debug("non-GNU tar detected, not adding --force-local")
           end
         end
         shell_out!(extract_command, :cwd => @install_path)
