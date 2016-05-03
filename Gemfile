@@ -26,6 +26,7 @@ group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
   gem "nokogiri"
+  gem "inspec"
 end
 group(:omnibus_package, :pry) do
   gem "pry"
