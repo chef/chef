@@ -57,38 +57,54 @@ class Chef
           "-o APT::Default-Release=#{new_resource.default_release}" if new_resource.respond_to?(:default_release) && new_resource.default_release
         end
 
+        # FIXME: need spec to check that candidate_version is set correctly on a virtual package
+        # FIXME: need spec to check that packages missing a candidate_version can be removed/purged
+
+        def get_package_versions(pkg)
+          installed_version  = nil
+          candidate_version  = nil
+          run_noninteractive("apt-cache", default_release_options, "policy", pkg).stdout.each_line do |line|
+            case line
+            when /^\s{2}Installed: (.+)$/
+              installed_version = ( $1 != "(none)" ) ? $1 : nil
+              Chef::Log.debug("#{new_resource} installed version for #{pkg} is #{$1}")
+            when /^\s{2}Candidate: (.+)$/
+              candidate_version = ( $1 != "(none)" ) ? $1 : nil
+              Chef::Log.debug("#{new_resource} candidate version for #{pkg} is #{$1}")
+            end
+          end
+          [ installed_version, candidate_version ]
+        end
+
+        def resolve_virtual_package_name(pkg)
+          showpkg = run_noninteractive("apt-cache showpkg", pkg).stdout
+          partitions = showpkg.rpartition(/Reverse Provides: ?#{$/}/)
+          return nil if partitions[0] == "" && partitions[1] == ""  # not found in output
+          set = partitions[2].lines.each_with_object(Set.new) do |line, acc|
+            # there may be multiple reverse provides for a single package
+            acc.add(line.split[0])
+          end
+          if set.size > 1
+            raise Chef::Exceptions::Package, "#{new_resource.package_name} is a virtual package provided by multiple packages, you must explicitly select one"
+          end
+          return set.to_a.first
+        end
+
         def check_package_state(pkg)
           is_virtual_package = false
           installed_version  = nil
           candidate_version  = nil
 
-          run_noninteractive("apt-cache", default_release_options, "policy", pkg).stdout.each_line do |line|
-            case line
-            when /^\s{2}Installed: (.+)$/
-              installed_version = ( $1 != "(none)" ) ? $1 : nil
-            when /^\s{2}Candidate: (.+)$/
-              candidate_version = $1
-              if candidate_version == "(none)"
-                # This may not be an appropriate assumption, but it shouldn't break anything that already worked -- btm
-                is_virtual_package = true
-                showpkg = run_noninteractive("apt-cache showpkg", pkg).stdout
-                providers = Hash.new
-                showpkg.rpartition(/Reverse Provides: ?#{$/}/)[2].each_line do |line|
-                  provider, version = line.split
-                  providers[provider] = version
-                end
-                # Check if the package providing this virtual package is installed
-                num_providers = providers.length
-                raise Chef::Exceptions::Package, "#{new_resource.package_name} has no candidate in the apt-cache" if num_providers == 0
-                # apt will only install a virtual package if there is a single providing package
-                raise Chef::Exceptions::Package, "#{new_resource.package_name} is a virtual package provided by #{num_providers} packages, you must explicitly select one to install" if num_providers > 1
-                # Check if the package providing this virtual package is installed
-                Chef::Log.info("#{new_resource} is a virtual package, actually acting on package[#{providers.keys.first}]")
-                ret = check_package_state(providers.keys.first)
-                installed_version = ret[:installed_version]
-              else
-                Chef::Log.debug("#{new_resource} candidate version is #{$1}")
-              end
+
+          installed_version, candidate_version = get_package_versions(pkg)
+
+          if candidate_version.nil?
+            newpkg = resolve_virtual_package_name(pkg)
+
+            if newpkg
+              is_virtual_package = true
+              Chef::Log.info("#{new_resource} is a virtual package, actually acting on package[#{newpkg}]")
+              installed_version, candidate_version = get_package_versions(newpkg)
             end
           end
 
