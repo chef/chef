@@ -61,7 +61,7 @@ irssi:
           expect(current_resource).to be_a(Chef::Resource::Package)
           expect(current_resource.name).to eq("irssi")
           expect(current_resource.package_name).to eq("irssi")
-          expect(current_resource.version).to be_nil
+          expect(current_resource.version).to eql([nil])
         end
 
         it "should set the installed version if package has one" do
@@ -79,8 +79,8 @@ sudo:
           INSTALLED
           expect(@provider).to receive(:shell_out!).and_return(@shell_out)
           @provider.load_current_resource
-          expect(@provider.current_resource.version).to eq("1.7.2p1-1ubuntu5.3")
-          expect(@provider.candidate_version).to eql("1.7.2p1-1ubuntu5.3")
+          expect(@provider.current_resource.version).to eq(["1.7.2p1-1ubuntu5.3"])
+          expect(@provider.candidate_version).to eql(["1.7.2p1-1ubuntu5.3"])
         end
 
         # libmysqlclient-dev is a real package in newer versions of debian + ubuntu
@@ -210,9 +210,6 @@ mpg123 1.12.1-0ubuntu1
             :env => { "DEBIAN_FRONTEND" => "noninteractive" } ,
             :timeout => @timeout
           ).and_return(@shell_out)
-          @provider.load_current_resource
-          @provider.define_resource_requirements
-          expect(@provider).to receive(:shell_out!).with("apt-cache policy irssi", { :env => { "DEBIAN_FRONTEND" => "noninteractive" }, :timeout => 900 }).and_return(@shell_out)
           expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
         end
       end
@@ -221,6 +218,18 @@ mpg123 1.12.1-0ubuntu1
         before do
           @current_resource = resource_klass.new("irssi", @run_context)
           @provider.current_resource = @current_resource
+          allow(@provider).to receive(:package_data).and_return({
+            "irssi" => {
+              virtual: false,
+              candidate_version: "0.8.12-7",
+              installed_version: nil,
+            },
+            "libmysqlclient-dev" => {
+              virtual: true,
+              candidate_version: nil,
+              installed_version: nil,
+            },
+          })
         end
 
         describe "install_package" do
@@ -364,7 +373,7 @@ mpg123 1.12.1-0ubuntu1
 
         describe "when installing a virtual package" do
           it "should install the package without specifying a version" do
-            @provider.is_virtual_package["libmysqlclient-dev"] = true
+            @provider.package_data["libmysqlclient-dev"][:virtual] = true
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y install libmysqlclient-dev",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -377,8 +386,8 @@ mpg123 1.12.1-0ubuntu1
         describe "when installing multiple packages" do
           it "can install a virtual package followed by a non-virtual package" do
             # https://github.com/chef/chef/issues/2914
-            @provider.is_virtual_package["libmysqlclient-dev"] = true
-            @provider.is_virtual_package["irssi"] = false
+            @provider.package_data["libmysqlclient-dev"][:virtual] = true
+            @provider.package_data["irssi"][:virtual] = false
             expect(@provider).to receive(:shell_out!).with(
               "apt-get -q -y install libmysqlclient-dev irssi=0.8.12-7",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },

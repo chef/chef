@@ -28,18 +28,14 @@ class Chef
         provides :package, platform_family: "debian"
         provides :apt_package, os: "linux"
 
-        # return [Hash] mapping of package name to Boolean value
-        attr_accessor :is_virtual_package
-
         def initialize(new_resource, run_context)
           super
-          @is_virtual_package = {}
         end
 
         def load_current_resource
           @current_resource = Chef::Resource::AptPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
-          check_all_packages_state(new_resource.package_name)
+          current_resource.version(get_current_versions)
           current_resource
         end
 
@@ -60,26 +56,26 @@ class Chef
         # FIXME: need spec to check that candidate_version is set correctly on a virtual package
         # FIXME: need spec to check that packages missing a candidate_version can be removed/purged
 
-        def get_package_versions(pkg)
-          installed_version  = nil
-          candidate_version  = nil
+        def resolve_package_versions(pkg)
+          current_version = nil
+          candidate_version = nil
           run_noninteractive("apt-cache", default_release_options, "policy", pkg).stdout.each_line do |line|
             case line
             when /^\s{2}Installed: (.+)$/
-              installed_version = ( $1 != "(none)" ) ? $1 : nil
+              current_version = ( $1 != "(none)" ) ? $1 : nil
               Chef::Log.debug("#{new_resource} installed version for #{pkg} is #{$1}")
             when /^\s{2}Candidate: (.+)$/
               candidate_version = ( $1 != "(none)" ) ? $1 : nil
               Chef::Log.debug("#{new_resource} candidate version for #{pkg} is #{$1}")
             end
           end
-          [ installed_version, candidate_version ]
+          [ current_version, candidate_version ]
         end
 
         def resolve_virtual_package_name(pkg)
           showpkg = run_noninteractive("apt-cache showpkg", pkg).stdout
           partitions = showpkg.rpartition(/Reverse Provides: ?#{$/}/)
-          return nil if partitions[0] == "" && partitions[1] == ""  # not found in output
+          return nil if partitions[0] == "" && partitions[1] == "" # not found in output
           set = partitions[2].lines.each_with_object(Set.new) do |line, acc|
             # there may be multiple reverse provides for a single package
             acc.add(line.split[0])
@@ -90,59 +86,55 @@ class Chef
           return set.to_a.first
         end
 
-        def check_package_state(pkg)
-          is_virtual_package = false
-          installed_version  = nil
-          candidate_version  = nil
+        def package_data_for(pkg)
+          virtual           = false
+          current_version   = nil
+          candidate_version = nil
 
-
-          installed_version, candidate_version = get_package_versions(pkg)
+          current_version, candidate_version = resolve_package_versions(pkg)
 
           if candidate_version.nil?
             newpkg = resolve_virtual_package_name(pkg)
 
             if newpkg
-              is_virtual_package = true
+              virtual = true
               Chef::Log.info("#{new_resource} is a virtual package, actually acting on package[#{newpkg}]")
-              installed_version, candidate_version = get_package_versions(newpkg)
+              current_version, candidate_version = resolve_package_versions(newpkg)
             end
           end
 
           return {
-            installed_version:   installed_version,
-            candidate_version:   candidate_version,
-            is_virtual_package:  is_virtual_package,
+            current_version:    current_version,
+            candidate_version:  candidate_version,
+            virtual:            virtual,
           }
         end
 
-        def check_all_packages_state(package)
-          installed_version = {}
-          candidate_version = {}
-
-          [package].flatten.each do |pkg|
-            ret = check_package_state(pkg)
-            is_virtual_package[pkg] = ret[:is_virtual_package]
-            installed_version[pkg]  = ret[:installed_version]
-            candidate_version[pkg]  = ret[:candidate_version]
+        def package_data
+          @package_data ||= Hash.new do |hash, key|
+            hash[key] = package_data_for(key)
           end
+        end
 
-          if package.is_a?(Array)
-            @candidate_version = []
-            final_installed_version = []
-            [package].flatten.each do |pkg|
-              candidate_version << candidate_version[pkg]
-              final_installed_version << installed_version[pkg]
-            end
-            current_resource.version(final_installed_version)
-          else
-            @candidate_version = candidate_version[package]
-            current_resource.version(installed_version[package])
+        def get_current_versions
+          package_name_array.map do |package_name|
+            package_data[package_name][:current_version]
           end
+        end
+
+        def get_candidate_versions
+          package_name_array.map do |package_name|
+            package_data[package_name][:candidate_version]
+          end
+        end
+
+        def candidate_version
+          @candidate_version ||= get_candidate_versions
         end
 
         def install_package(name, version)
           package_name = name.zip(version).map do |n, v|
-            is_virtual_package[n] ? n : "#{n}=#{v}"
+            package_data[n][:virtual] ? n : "#{n}=#{v}"
           end.join(" ")
           run_noninteractive("apt-get -q -y", default_release_options, new_resource.options, "install", package_name)
         end
