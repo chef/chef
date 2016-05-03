@@ -248,7 +248,7 @@ mpg123 1.12.1-0ubuntu1
               candidate_version: "0.8.12-7",
               installed_version: nil,
             },
-            "libmysqlclient-dev" => {
+            "libmysqlclient15-dev" => {
               virtual: true,
               candidate_version: nil,
               installed_version: nil,
@@ -397,27 +397,49 @@ mpg123 1.12.1-0ubuntu1
 
         describe "when installing a virtual package" do
           it "should install the package without specifying a version" do
-            @provider.package_data["libmysqlclient-dev"][:virtual] = true
+            @provider.package_data["libmysqlclient15-dev"][:virtual] = true
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get -q -y install libmysqlclient-dev",
+              "apt-get -q -y install libmysqlclient15-dev",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
-            @provider.install_package(["libmysqlclient-dev"], ["not_a_real_version"])
+            @provider.install_package(["libmysqlclient15-dev"], ["not_a_real_version"])
+          end
+        end
+
+        describe "when removing a virtual package" do
+          it "should remove the resolved name instead of the virtual package name" do
+            expect(@provider).to receive(:resolve_virtual_package_name).with("libmysqlclient15-dev").and_return("libmysqlclient-dev")
+            expect(@provider).to receive(:shell_out!).with(
+              "apt-get -q -y remove libmysqlclient-dev",
+              :env => { "DEBIAN_FRONTEND" => "noninteractive" },
+              :timeout => @timeout
+            )
+            @provider.remove_package(["libmysqlclient15-dev"], ["not_a_real_version"])
+          end
+        end
+
+        describe "when purging a virtual package" do
+          it "should purge the resolved name instead of the virtual package name" do
+            expect(@provider).to receive(:resolve_virtual_package_name).with("libmysqlclient15-dev").and_return("libmysqlclient-dev")
+            expect(@provider).to receive(:shell_out!).with(
+              "apt-get -q -y purge libmysqlclient-dev",
+              :env => { "DEBIAN_FRONTEND" => "noninteractive" },
+              :timeout => @timeout
+            )
+            @provider.purge_package(["libmysqlclient15-dev"], ["not_a_real_version"])
           end
         end
 
         describe "when installing multiple packages" do
           it "can install a virtual package followed by a non-virtual package" do
             # https://github.com/chef/chef/issues/2914
-            @provider.package_data["libmysqlclient-dev"][:virtual] = true
-            @provider.package_data["irssi"][:virtual] = false
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get -q -y install libmysqlclient-dev irssi=0.8.12-7",
+              "apt-get -q -y install libmysqlclient15-dev irssi=0.8.12-7",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
-            @provider.install_package(["libmysqlclient-dev", "irssi"], ["not_a_real_version", "0.8.12-7"])
+            @provider.install_package(["libmysqlclient15-dev", "irssi"], ["not_a_real_version", "0.8.12-7"])
           end
         end
 
