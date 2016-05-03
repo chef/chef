@@ -1,5 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Author:: Joshua Burt (<joshburt@shapeandshare.com>)
 # Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -21,9 +22,11 @@ require "chef/resource/scm"
 class Chef
   class Resource
     class Git < Chef::Resource::Scm
+      provides :git
 
       def initialize(name, run_context = nil)
         super
+        @resource_name = :git
         @additional_remotes = Hash[]
       end
 
@@ -31,14 +34,14 @@ class Chef
         set_or_return(
           :additional_remotes,
           arg,
-          :kind_of => Hash
+          kind_of: Hash
         )
       end
 
-      alias :branch :revision
-      alias :reference :revision
+      alias branch revision
+      alias reference revision
 
-      alias :repo :repository
+      alias repo repository
     end
   end
 end
