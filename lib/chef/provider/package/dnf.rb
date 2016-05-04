@@ -48,11 +48,11 @@ class Chef
               return nil if provides.exitstatus != 0
               version = nil
               provides.stdout.each_line do |line|
-                if line =~ /^(\s+)\-(\s+)\-(\s+)\.(\s+) : /
+                if line =~ /^(\S+)\-(\S+)\-(\S+)\.(\S+) : /
                   version = "#{$2}-#{$3}"
                 end
               end
-              Chef::Log.debug("#{new_resource} found candidate_version of #{version} for #{package_name}")
+              Chef::Log.debug("#{new_resource} found candidate_version of #{version.nil? ? "nil" : version} for #{package_name}")
               version
             end
           end
