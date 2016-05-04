@@ -59,11 +59,11 @@ class Chef
 
         def resolve_installed_version(pkg)
           query = rpm("--queryformat '%{EPOCHNUM}:%{VERSION}-%{RELEASE}.%{ARCH}\n' --whatprovides -q", pkg)
-          if query.exitstatus != 0 ? nil : virtual.stdout.chomp
+          if query.exitstatus != 0 ? nil : query.stdout.chomp
             Chef::Log.debug("#{new_resource} did not find installed_version for #{pkg}")
             nil
           else
-            version = virtual.stdout.chomp
+            version = query.stdout.chomp
             Chef::Log.debug("#{new_resource} found installed_version of #{version} for #{pkg}")
             version
           end
