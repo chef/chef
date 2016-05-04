@@ -93,7 +93,7 @@ class Chef
 
         def zip(names, versions)
           names.zip(versions).map do |n, v|
-            (v.nil? || v.empty?) ? n : "#{n}=#{v}"
+            (v.nil? || v.empty?) ? n : "#{n}-#{v}"
           end
         end
 
