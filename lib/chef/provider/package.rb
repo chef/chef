@@ -22,6 +22,7 @@ require "chef/mixin/subclass_directive"
 require "chef/log"
 require "chef/file_cache"
 require "chef/platform"
+require "chef/decorator/lazy_array"
 
 class Chef
   class Provider
@@ -256,9 +257,41 @@ class Chef
         options ? " #{options}" : ""
       end
 
-      # this is public and overridden by subclasses (rubygems package implements '>=' and '~>' operators)
-      def target_version_already_installed?(current_version, new_version)
-        new_version == current_version
+      # Check the current_version against either the candidate_version or the new_version
+      #
+      # For some reason the windows provider subclasses this (to implement passing Arrays to
+      # versions for some reason other than multipackage stuff, which is mildly terrifying).
+      #
+      # This MUST have 'equality' semantics -- the exact thing matches the exact thing.
+      #
+      # The current_version should probably be dropped out of the method signature, it should
+      # always be the first argument.
+      #
+      # The name is not just bad, but i find it completely misleading, consider:
+      #
+      #    target_version_already_installed?(current_version, new_version)
+      #    target_version_already_installed?(current_version, candidate_version)
+      #
+      # which of those is the 'target_version'?  i'd say the new_version and i'm confused when
+      # i see it called with the candidate_version.
+      #
+      # `current_version_equals?(version)` would be a better name
+      def target_version_already_installed?(current_version, target_version)
+        return false unless current_version && target_version
+        current_version == target_version
+      end
+
+      # Check the current_version against the new_resource.version, possibly using fuzzy
+      # matching criteria.
+      #
+      # Subclasses MAY override this to provide fuzzy matching on the resource ('>=' and '~>' stuff)
+      #
+      # This should only ever be offered the same arguments (so they should most likely be
+      # removed from the method signature).
+      #
+      # `new_version_satisfied?()` might be a better name
+      def version_requirement_satisfied?(current_version, new_version)
+        target_version_already_installed?(current_version, new_version)
       end
 
       # @todo: extract apt/dpkg specific preseeding to a helper class
@@ -354,12 +387,15 @@ class Chef
             each_package do |package_name, new_version, current_version, candidate_version|
               case action
               when :upgrade
-
-                if !candidate_version
-                  Chef::Log.debug("#{new_resource} #{package_name} has no candidate_version to upgrade to")
+                if target_version_already_installed?(current_version, new_version)
+                  # this is an odd use case
+                  Chef::Log.debug("#{new_resource} #{package_name} #{new_version} is already installed -- you are equality pinning with an :upgrade action, this may be deprecated in the future")
                   target_version_array.push(nil)
-                elsif current_version == candidate_version
-                  Chef::Log.debug("#{new_resource} #{package_name} the #{candidate_version} is already installed")
+                elsif target_version_already_installed?(current_version, candidate_version)
+                  Chef::Log.debug("#{new_resource} #{package_name} #{candidate_version} is already installed")
+                  target_version_array.push(nil)
+                elsif candidate_version.nil?
+                  Chef::Log.debug("#{new_resource} #{package_name} has no candidate_version to upgrade to")
                   target_version_array.push(nil)
                 else
                   Chef::Log.debug("#{new_resource} #{package_name} is out of date, will upgrade to #{candidate_version}")
@@ -369,7 +405,7 @@ class Chef
               when :install
 
                 if new_version
-                  if target_version_already_installed?(current_version, new_version)
+                  if version_requirement_satisfied?(current_version, new_version)
                     Chef::Log.debug("#{new_resource} #{package_name} #{current_version} satisifies #{new_version} requirement")
                     target_version_array.push(nil)
                   else
@@ -411,7 +447,7 @@ class Chef
           begin
             missing = []
             each_package do |package_name, new_version, current_version, candidate_version|
-              missing.push(package_name) if candidate_version.nil? && current_version.nil?
+              missing.push(package_name) if current_version.nil? && candidate_version.nil?
             end
             missing
           end
@@ -436,7 +472,7 @@ class Chef
             missing = []
             each_package do |package_name, new_version, current_version, candidate_version|
               next if new_version.nil? || current_version.nil?
-              if candidate_version.nil? && !target_version_already_installed?(current_version, new_version)
+              if !version_requirement_satisfied?(current_version, new_version) && candidate_version.nil?
                 missing.push(package_name)
               end
             end
@@ -468,7 +504,9 @@ class Chef
 
       # @return [Array] candidate_version(s) as an array
       def candidate_version_array
-        [ candidate_version ].flatten
+        # NOTE: even with use_multipackage_api candidate_version may be a bare nil and need wrapping
+        # ( looking at you, dpkg provider... )
+        Chef::Decorator::LazyArray.new { [ candidate_version ].flatten }
       end
 
       # @return [Array] current_version(s) as an array
