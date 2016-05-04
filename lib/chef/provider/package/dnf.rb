@@ -47,11 +47,12 @@ class Chef
               provides = dnf("repoquery -q --whatprovides", package_name)
               version = nil
               provides.stdout.each_line do |line|
-                if /^(\S+)\-(\S+)\-(\S+)\.(\S+)/
+                if line =~ /^(\S+)\-(\S+)\-(\S+)\.(\S+)/
+                  real_name = $1
                   version = "#{$2}-#{$3}.#{$4}"
                 end
               end
-              Chef::Log.debug("#{new_resource} found candidate_version of #{version.nil? ? "nil" : version} for #{package_name}")
+              Chef::Log.debug("#{new_resource} found candidate_version of #{version.nil? ? "nil" : version} for #{real_name}")
               version
             end
           end
