@@ -44,12 +44,11 @@ class Chef
         def candidate_version
           @candidate_version ||= begin
             package_name_array.map do |package_name|
-              provides = dnf("provides", package_name)
-              return nil if provides.exitstatus != 0
+              provides = dnf("repoquery -q --whatprovides", package_name)
               version = nil
               provides.stdout.each_line do |line|
-                if line =~ /^(\S+)\-(\S+)\-(\S+)\.(\S+) : /
-                  version = "#{$2}-#{$3}"
+                if /^(\S+)\-(\S+)\-(\S+)\.(\S+)/
+                  version = "#{$2}-#{$3}.#{$4}"
                 end
               end
               Chef::Log.debug("#{new_resource} found candidate_version of #{version.nil? ? "nil" : version} for #{package_name}")
@@ -77,14 +76,14 @@ class Chef
         end
 
         def install_package(name, version)
-          dnf(new_resource.options, "-qy install", zip(name, version))
+          dnf(new_resource.options, "-y install", zip(name, version))
         end
 
         # dnf upgrade does not work on uninstalled packaged, while install will upgrade
         alias_method :upgrade_package, :install_package
 
         def remove_package(name, version)
-          dnf(new_resource.options, "-qy remove", zip(name, version))
+          dnf(new_resource.options, "-y remove", zip(name, version))
         end
 
         alias_method :purge_package, :remove_package
