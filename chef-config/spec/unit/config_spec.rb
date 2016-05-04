@@ -165,6 +165,46 @@ RSpec.describe ChefConfig::Config do
           allow(ChefConfig::Config).to receive(:path_accessible?).and_return(false)
         end
 
+        describe "ChefConfig::Config[:fips]" do
+          let(:fips_enabled) { false }
+
+          before(:all) do
+            @original_env = ENV.to_hash
+          end
+
+          after(:all) do
+            ENV.clear
+            ENV.update(@original_env)
+          end
+
+          before(:each) do
+            ENV["CHEF_FIPS"] = nil
+            allow(ChefConfig).to receive(:fips?).and_return(fips_enabled)
+          end
+
+          it "returns false when no environment is set and not enabled on system" do
+            expect(ChefConfig::Config[:fips]).to eq(false)
+          end
+
+          context "when ENV['CHEF_FIPS'] is set" do
+            before do
+              ENV["CHEF_FIPS"] = "1"
+            end
+
+            it "returns true" do
+              expect(ChefConfig::Config[:fips]).to eq(true)
+            end
+          end
+
+          context "when fips is enabled on system" do
+            let(:fips_enabled) { true }
+
+            it "returns true" do
+              expect(ChefConfig::Config[:fips]).to eq(true)
+            end
+          end
+        end
+
         describe "ChefConfig::Config[:chef_server_root]" do
           context "when chef_server_url isn't set manually" do
             it "returns the default of 'https://localhost:443'" do
