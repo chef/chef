@@ -53,7 +53,7 @@ class Chef
               version = "#{$2}-#{$3}"
             end
             Chef::Log.debug("#{new_resource} found candidate_version of #{version} for #{package_name}")
-            version
+            hash[key] = version
           end
         end
 
