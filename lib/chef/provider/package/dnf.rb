@@ -46,6 +46,7 @@ class Chef
             package_name_array.map do |package_name|
               provides = dnf("repoquery -q --whatprovides", package_name)
               version = nil
+              real_name = ""
               provides.stdout.each_line do |line|
                 if line =~ /^(\S+)\-(\S+)\-(\S+)\.(\S+)/
                   real_name = $1
