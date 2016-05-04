@@ -42,21 +42,24 @@ class Chef
         end
 
         def candidate_version
-          @candidate_version ||= begin
-            package_name_array.map do |package_name|
-              provides = dnf("repoquery -q --whatprovides", package_name)
-              version = nil
-              real_name = ""
-              provides.stdout.each_line do |line|
-                if line =~ /^(\S+)\-(\S+)\-(\S+)\.(\S+)/
-                  real_name = $1
-                  version = "#{$2}-#{$3}.#{$4}"
+          @candidate_version ||=
+            begin
+              @real_name = {}
+              package_name_array.map do |package_name|
+                provides = dnf("repoquery -q --whatprovides", package_name)
+                version = nil
+                real_name = ""
+                provides.stdout.each_line do |line|
+                  if line =~ /^(\S+)\-(\S+)\-(\S+)\.(\S+)/
+                    real_name = $1
+                    version = "#{$2}-#{$3}.#{$4}"
+                  end
                 end
+                Chef::Log.debug("#{new_resource} found candidate_version of #{version.nil? ? "nil" : version} for #{real_name}")
+                @real_name[package_name] = real_name
+                version
               end
-              Chef::Log.debug("#{new_resource} found candidate_version of #{version.nil? ? "nil" : version} for #{real_name}")
-              version
             end
-          end
         end
 
         def resolve_installed_version(pkg)
@@ -94,7 +97,7 @@ class Chef
 
         def zip(names, versions)
           names.zip(versions).map do |n, v|
-            (v.nil? || v.empty?) ? n : "#{n}-#{v}"
+            (v.nil? || v.empty?) ? n : "#{real_name[n]}-#{v}"
           end
         end
 
