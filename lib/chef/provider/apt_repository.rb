@@ -18,7 +18,7 @@
 
 require "chef/resource"
 require "chef/dsl/declare_resource"
-require "chef/mixin/shell_out"
+require "chef/mixin/which"
 require "chef/http/simple"
 require "chef/provider/noop"
 
@@ -27,10 +27,10 @@ class Chef
     class AptRepository < Chef::Provider
       use_inline_resources
 
-      include Chef::Mixin::ShellOut
+      extend Chef::Mixin::Which
 
       provides :apt_repository do
-        uses_apt?
+        which("apt-get")
       end
 
       def whyrun_supported?

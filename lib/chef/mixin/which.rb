@@ -18,17 +18,13 @@
 class Chef
   module Mixin
     module Which
-      def which(cmd, opts = {})
-        extra_path =
-          if opts[:extra_path].nil?
-            [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
-          else
-            [ opts[:extra_path] ].flatten
-          end
+      def which(cmd, extra_path: nil)
+        # NOTE: unnecessarily duplicates function of path_sanity
+        extra_path ||= [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
         paths = ENV["PATH"].split(File::PATH_SEPARATOR) + extra_path
         paths.each do |path|
-          filename = File.join(path, cmd)
-          return filename if File.executable?(Chef.path_to(filename))
+          filename = Chef.path_to(File.join(path, cmd))
+          return filename if File.executable?(filename)
         end
         false
       end
