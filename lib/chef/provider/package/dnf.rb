@@ -80,7 +80,7 @@ class Chef
         end
 
         # dnf upgrade does not work on uninstalled packaged, while install will upgrade
-        alias_method :upgrade_package, :install_packge
+        alias_method :upgrade_package, :install_package
 
         def remove_package(name, version)
           dnf(new_resource.options, "-qy remove", zip(name, version))
