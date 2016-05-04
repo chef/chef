@@ -211,7 +211,7 @@ GEM
     json (1.8.3)
     json_pure (1.8.3)
     jwt (1.5.1)
-    knife-windows (1.4.0)
+    knife-windows (1.4.1)
       winrm (~> 1.7)
     libyajl2 (1.2.0)
     little-plugger (1.1.4)
