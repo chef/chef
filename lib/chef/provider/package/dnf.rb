@@ -42,18 +42,19 @@ class Chef
         end
 
         def candidate_version
-          # abusing Hash.new to act like an Array since Array.new doesn't take a default constructor
-          @candidate_version ||= Hash.new do |hash, key|
-            package_name = package_name_array[key]
-            provides = dnf("provides", package_name)
-            return nil if provides.exitstatus != 0
-            version = nil
-            provides.stdout.each_line do |line|
-              line =~ /^(\s+)\-(\s+)\-(\s+)\.(\s+) : /
-              version = "#{$2}-#{$3}"
+          @candidate_version ||= begin
+            package_name_array.each do |package_name|
+              package_name = package_name_array[key]
+              provides = dnf("provides", package_name)
+              return nil if provides.exitstatus != 0
+              version = nil
+              provides.stdout.each_line do |line|
+                line =~ /^(\s+)\-(\s+)\-(\s+)\.(\s+) : /
+                version = "#{$2}-#{$3}"
+              end
+              Chef::Log.debug("#{new_resource} found candidate_version of #{version} for #{package_name}")
+              version
             end
-            Chef::Log.debug("#{new_resource} found candidate_version of #{version} for #{package_name}")
-            hash[key] = version
           end
         end
 
