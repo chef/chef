@@ -44,7 +44,6 @@ class Chef
         def candidate_version
           @candidate_version ||= begin
             package_name_array.each do |package_name|
-              package_name = package_name_array[key]
               provides = dnf("provides", package_name)
               return nil if provides.exitstatus != 0
               version = nil
