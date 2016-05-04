@@ -36,7 +36,6 @@ class Chef
           @current_resource = Chef::Resource::DnfPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
 
-          @candidate_version = get_candidate_versions
           current_resource.version(get_current_versions)
 
           current_resource
