@@ -49,13 +49,13 @@ class Chef
       end
 
       def assign_provider
-        @provider = if source.to_s =~ /^ports$/i
-                      Chef::Provider::Package::Freebsd::Port
-                    elsif supports_pkgng?
-                      Chef::Provider::Package::Freebsd::Pkgng
-                    else
-                      Chef::Provider::Package::Freebsd::Pkg
-                    end
+        @provider ||= if source.to_s =~ /^ports$/i
+                        Chef::Provider::Package::Freebsd::Port
+                      elsif supports_pkgng?
+                        Chef::Provider::Package::Freebsd::Pkgng
+                      else
+                        Chef::Provider::Package::Freebsd::Pkg
+                      end
       end
     end
   end
