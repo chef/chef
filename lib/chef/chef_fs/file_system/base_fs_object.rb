@@ -40,6 +40,10 @@ class Chef
         attr_reader :parent
         attr_reader :path
 
+        alias_method :display_path, :path
+        alias_method :display_name, :name
+        alias_method :bare_name, :name
+
         # Override this if you have a special comparison algorithm that can tell
         # you whether this entry is the same as another--either a quicker or a
         # more reliable one.  Callers will use this to decide whether to upload,

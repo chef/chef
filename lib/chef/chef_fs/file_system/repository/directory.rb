@@ -28,6 +28,10 @@ class Chef
           attr_reader :path
           attr_reader :file_path
 
+          alias_method :display_path, :path
+          alias_method :display_name, :name
+          alias_method :bare_name, :name
+
           def initialize(name, parent, file_path = nil)
             @parent = parent
             @name = name

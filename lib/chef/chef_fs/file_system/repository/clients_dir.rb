@@ -26,9 +26,6 @@ class Chef
     module FileSystem
       module Repository
         class ClientsDir < Repository::Directory
-          def can_have_child?(name, is_dir)
-            !is_dir && File.extname(name) == ".json"
-          end
 
           def make_child_entry(child_name)
             Client.new(child_name, self)
