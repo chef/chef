@@ -38,6 +38,7 @@ describe Chef::Knife::CookbookSiteDownload do
       expect(@noauth_rest).to receive(:get).
         with("#{@cookbook_api_url}/apache2").
         and_return(@current_data)
+      @knife.configure_chef
     end
 
     context "when the cookbook is deprecated and not forced" do

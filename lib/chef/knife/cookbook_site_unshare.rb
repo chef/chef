@@ -30,6 +30,13 @@ class Chef
       banner "knife cookbook site unshare COOKBOOK"
       category "cookbook site"
 
+      option :supermarket_site,
+        :short => "-m SUPERMARKET_SITE",
+        :long => "--supermarket-site SUPERMARKET_SITE",
+        :description => "Supermarket Site",
+        :default => "https://supermarket.chef.io",
+        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+
       def run
         @cookbook_name = @name_args[0]
         if @cookbook_name.nil?
@@ -41,7 +48,7 @@ class Chef
         confirm "Do you really want to unshare all versions of the cookbook #{@cookbook_name}"
 
         begin
-          rest.delete "https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}"
+          rest.delete "#{config[:supermarket_site]}/api/v1/cookbooks/#{@name_args[0]}"
         rescue Net::HTTPServerException => e
           raise e unless e.message =~ /Forbidden/
           ui.error "Forbidden: You must be the maintainer of #{@cookbook_name} to unshare it."

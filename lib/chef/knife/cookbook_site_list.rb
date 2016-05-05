@@ -30,6 +30,13 @@ class Chef
         :long => "--with-uri",
         :description => "Show corresponding URIs"
 
+      option :supermarket_site,
+        :short => "-m SUPERMARKET_SITE",
+        :long => "--supermarket-site SUPERMARKET_SITE",
+        :description => "Supermarket Site",
+        :default => "https://supermarket.chef.io",
+        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+
       def run
         if config[:with_uri]
           cookbooks = Hash.new
@@ -41,7 +48,7 @@ class Chef
       end
 
       def get_cookbook_list(items = 10, start = 0, cookbook_collection = {})
-        cookbooks_url = "https://supermarket.chef.io/api/v1/cookbooks?items=#{items}&start=#{start}"
+        cookbooks_url = "#{config[:supermarket_site]}/api/v1/cookbooks?items=#{items}&start=#{start}"
         cr = noauth_rest.get(cookbooks_url)
         cr["items"].each do |cookbook|
           cookbook_collection[cookbook["cookbook_name"]] = cookbook
