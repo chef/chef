@@ -301,7 +301,16 @@ class Chef
           # user who is executing `git` not the user running Chef.
           env["HOME"] = begin
             require "etc"
-            Etc.getpwnam(@new_resource.user).dir
+            case @new_resource.user
+            when String
+              Etc.getpwnam(@new_resource.user).dir
+            when Integer
+              Etc.getpwuid(@new_resource.user).dir
+            else
+              Chef::Log.error("The `owneuser` parameter of the #@new_resource resource is set to an invalid value (#{new_resource.owner.inspect})")
+              raise ArgumentError, "cannot resolve #{new_resource.owner.inspect} to uid, owner must be a string or integer"
+            end
+            
           rescue ArgumentError # user not found
             raise Chef::Exceptions::User, "Could not determine HOME for specified user '#{@new_resource.user}' for resource '#{@new_resource.name}'"
           end
