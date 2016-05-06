@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright (c) 2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,7 @@ class Chef
         end
 
         if ! block_given?
-          raise Exceptions::ArgumentError, "You must supply a block to `with_user_context`"
+          raise ArgumentError, "You must supply a block to `with_user_context`"
         end
 
         validate_identity(specified_user, password, specified_domain)
