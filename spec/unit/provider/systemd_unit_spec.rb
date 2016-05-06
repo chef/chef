@@ -39,7 +39,8 @@ describe Chef::Provider::SystemdUnit do
   let(:provider) { Chef::Provider::SystemdUnit.new(new_resource, run_context) }
   let(:unit_path_system) { "/etc/systemd/system/sysstat-collect.timer" }
   let(:unit_path_user) { "/etc/systemd/user/sysstat-collect.timer" }
-  let(:unit_content_string) { "[Unit]\nDescription=Run system activity accounting tool every 10 minutes\n\n[Timer]\nOnCalendar=*:00/10\n\n[Install]\nWantedBy=sysstat.service" }
+  let(:unit_content_string) { "[Unit]\nDescription = Run system activity accounting tool every 10 minutes\n\n[Timer]\nOnCalendar = *:00/10\n\n[Install]\nWantedBy = sysstat.service\n" }
+  let(:malformed_content_string) { "derp" }
 
   let(:unit_content_hash) do
     {
@@ -84,6 +85,30 @@ describe Chef::Provider::SystemdUnit do
     allow(Chef::Resource::SystemdUnit).to receive(:new)
                                             .with(unit_name)
                                             .and_return(current_resource)
+  end
+
+  describe "define_resource_requirements" do
+    before(:each) do
+      provider.action = :create
+      allow(provider).to receive(:active?).and_return(false)
+      allow(provider).to receive(:enabled?).and_return(false)
+      allow(provider).to receive(:masked?).and_return(false)
+      allow(provider).to receive(:static?).and_return(false)
+    end
+
+    it "accepts valid resource requirements" do
+      new_resource.content(unit_content_string)
+      provider.load_current_resource
+      provider.define_resource_requirements
+      expect { provider.process_resource_requirements }.to_not raise_error
+    end
+
+    it "rejects failed resource requirements" do
+      new_resource.content(malformed_content_string)
+      provider.load_current_resource
+      provider.define_resource_requirements
+      expect { provider.process_resource_requirements }.to raise_error(IniParse::ParseError)
+    end
   end
 
   describe "load_current_resource" do
