@@ -22,6 +22,17 @@ require "win32/registry"
 module Win32
   class Registry
 
+    # ::Win32::Registry#export_string is used when enumerating child
+    # keys and values and re encodes a UTF-16LE to the local codepage.
+    # This can result in encoding incompatibilities if the native codepage
+    # does not support the characters in the registry. There is an open bug
+    # in ruby at https://bugs.ruby-lang.org/issues/11410. Rather than converting
+    # the UTF-16LE originally returned by the win32 api, we encode to UTF-8
+    # which will likely not result in any conversion error.
+    def export_string(str, enc = Encoding.default_internal || "utf-8")
+      str.encode(enc)
+    end
+
     module API
 
       extend Chef::ReservedNames::Win32::API::Registry
