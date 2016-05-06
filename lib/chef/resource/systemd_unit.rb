@@ -29,7 +29,9 @@ class Chef
                       :enable, :disable,
                       :mask, :unmask,
                       :start, :stop,
-                      :restart, :reload
+                      :restart, :reload,
+                      :try_restart, :reload_or_restart,
+                      :reload_or_try_restart
 
       property :enabled, [TrueClass, FalseClass]
       property :active, [TrueClass, FalseClass]
