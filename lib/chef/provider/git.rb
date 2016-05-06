@@ -307,7 +307,6 @@ class Chef
             else
               Etc.getpwnam(@new_resource.user.to_s).dir
             end
-            
           rescue ArgumentError # user not found
             raise Chef::Exceptions::User, "Could not determine HOME for specified user '#{@new_resource.user}' for resource '#{@new_resource.name}'"
           end
