@@ -307,7 +307,7 @@ class Chef
             when Integer
               Etc.getpwuid(@new_resource.user).dir
             else
-              Chef::Log.error("The `owneuser` parameter of the #@new_resource resource is set to an invalid value (#{new_resource.owner.inspect})")
+              Chef::Log.error("The `user` parameter of the #@new_resource resource is set to an invalid value (#{new_resource.owner.inspect})")
               raise ArgumentError, "cannot resolve #{new_resource.owner.inspect} to uid, owner must be a string or integer"
             end
             
