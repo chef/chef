@@ -208,7 +208,7 @@ user password using shadow hash.")
         #
         # Sets the user id for the user using dscl.
         # If a `uid` is not specified, it finds the next available one starting
-        # from 200 if `system` is set, 500 otherwise.
+        # from 200 if `system` is set, 501 otherwise.
         #
         def dscl_set_uid
           # XXX: mutates the new resource
@@ -223,11 +223,11 @@ user password using shadow hash.")
 
         #
         # Find the next available uid on the system. starting with 200 if `system` is set,
-        # 500 otherwise.
+        # 501 otherwise.
         #
         def get_free_uid(search_limit = 1000)
           uid = nil
-          base_uid = new_resource.system ? 200 : 500
+          base_uid = new_resource.system ? 200 : 501
           next_uid_guess = base_uid
           users_uids = run_dscl("list /Users uid")
           while next_uid_guess < search_limit + base_uid
@@ -291,6 +291,8 @@ user password using shadow hash.")
             return
           end
 
+          run_dscl("create /Users/#{new_resource.username} NFSHomeDirectory '#{new_resource.home}'")
+
           if new_resource.supports[:manage_home]
             validate_home_dir_specification!
 
@@ -302,7 +304,6 @@ user password using shadow hash.")
               move_home
             end
           end
-          run_dscl("create /Users/#{new_resource.username} NFSHomeDirectory '#{new_resource.home}'")
         end
 
         def validate_home_dir_specification!
@@ -320,10 +321,7 @@ user password using shadow hash.")
         end
 
         def ditto_home
-          skel = "/System/Library/User Template/English.lproj"
-          raise(Chef::Exceptions::User, "can't find skel at: #{skel}") unless ::File.exists?(skel)
-          shell_out! "ditto '#{skel}' '#{new_resource.home}'"
-          ::FileUtils.chown_R(new_resource.username, new_resource.gid.to_s, new_resource.home)
+          shell_out! "/usr/sbin/createhomedir -c -u #{new_resource.username}"
         end
 
         def move_home
