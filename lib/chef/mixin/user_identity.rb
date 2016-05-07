@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright (c) 2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,10 +71,10 @@ class Chef
         { domain: domain, user: user }
       end
 
-      protected(:validate_identity)
-      protected(:validate_identity_platform)
-      protected(:validate_identity_syntax)
-      protected(:qualify_user)
+      private(:validate_identity)
+      private(:validate_identity_platform)
+      private(:validate_identity_syntax)
+      private(:qualify_user)
 
     end
   end
