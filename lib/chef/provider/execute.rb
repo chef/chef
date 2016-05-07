@@ -32,10 +32,6 @@ class Chef
 
       def_delegators :@new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates
 
-      def initialize(new_resource, run_context)
-        super
-      end
-
       def load_current_resource
         current_resource = Chef::Resource::Execute.new(new_resource.name)
         current_resource
