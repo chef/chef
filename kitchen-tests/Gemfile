@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 group :end_to_end do
   gem "berkshelf"
-  gem "test-kitchen", "~> 1.4"
+  gem "test-kitchen", github: "test-kitchen/test-kitchen", branch: "lcg/parallel-scp-upload"
   gem "kitchen-appbundle-updater"
   gem "kitchen-vagrant", "~> 0.17"
   gem "kitchen-ec2", github: "test-kitchen/kitchen-ec2"

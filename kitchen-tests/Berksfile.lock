@@ -24,6 +24,7 @@ GRAPH
     sudo (>= 0.0.0)
     ubuntu (>= 0.0.0)
     users (>= 0.0.0)
+    yum-epel (>= 0.0.0)
   build-essential (3.2.0)
     seven_zip (>= 0.0.0)
   chef-client (4.5.0)

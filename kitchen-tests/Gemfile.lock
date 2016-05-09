@@ -9,6 +9,19 @@ GIT
       retryable (~> 2.0)
       test-kitchen (~> 1.4, >= 1.4.1)
 
+GIT
+  remote: git://github.com/test-kitchen/test-kitchen.git
+  revision: 4742157cdad415f86296556a0052cfd1f47151ea
+  branch: lcg/parallel-scp-upload
+  specs:
+    test-kitchen (1.8.0)
+      mixlib-install (~> 1.0, >= 1.0.4)
+      mixlib-shellout (>= 1.2, < 3.0)
+      net-scp (~> 1.1)
+      net-ssh (>= 2.9, < 4.0)
+      safe_yaml (~> 1.0)
+      thor (~> 0.18)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -139,13 +152,6 @@ GEM
     solve (2.0.3)
       molinillo (~> 0.4.2)
       semverse (~> 1.1)
-    test-kitchen (1.8.0)
-      mixlib-install (~> 1.0, >= 1.0.4)
-      mixlib-shellout (>= 1.2, < 3.0)
-      net-scp (~> 1.1)
-      net-ssh (>= 2.9, < 4.0)
-      safe_yaml (~> 1.0)
-      thor (~> 0.18)
     thor (0.19.1)
     timers (4.0.4)
       hitimes
@@ -166,8 +172,8 @@ DEPENDENCIES
   kitchen-appbundle-updater
   kitchen-ec2!
   kitchen-vagrant (~> 0.17)
-  test-kitchen (~> 1.4)
+  test-kitchen!
   vagrant-wrapper
 
 BUNDLED WITH
-   1.11.2
+   1.12.1
