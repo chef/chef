@@ -1,5 +1,6 @@
 source "https://supermarket.getchef.com"
 
 cookbook "webapp", :path => "cookbooks/webapp"
+cookbook "base", :path => "cookbooks/base"
 
 cookbook "php", "~> 1.5.0"
