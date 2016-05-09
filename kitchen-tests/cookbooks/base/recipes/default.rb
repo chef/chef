@@ -11,7 +11,7 @@ if node[:platform_family] == "debian"
 end
 
 if %w{rhel fedora}.include?(node[:platform_family])
-  include_recipe "epel"
+  include_recipe "yum-epel"
 end
 
 include_recipe "build-essential"
