@@ -11,7 +11,7 @@ GIT
 
 GIT
   remote: git://github.com/test-kitchen/test-kitchen.git
-  revision: 4742157cdad415f86296556a0052cfd1f47151ea
+  revision: 6811fa27896a48439dfc24655ce2b6aad9d095df
   branch: lcg/parallel-scp-upload
   specs:
     test-kitchen (1.8.0)

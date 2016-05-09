@@ -124,11 +124,11 @@ matrix:
       - cd kitchen-tests
     script:
       # FIXME: we should fix centos-6 against AWS and then enable it here
-      - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen test ubuntu-1404; fi
+      - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen test ubuntu-1404 -l debug; fi
     after_failure:
       - cat .kitchen/logs/kitchen.log
     after_script:
-      - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen destroy ubuntu-1404; fi
+      - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen destroy ubuntu-1404 -l debug; fi
     env:
       - UBUNTU=1
       - KITCHEN_YAML=.kitchen.travis.yml
