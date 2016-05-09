@@ -77,4 +77,4 @@ default["resolver"]["search"] = "chef.io"
 #
 
 default["authorization"]["sudo"]["passwordless"] = true
-default["authorization"]["sudo"]["users"] = %w{vagrant}
+default["authorization"]["sudo"]["users"] = %w{vagrant centos}
