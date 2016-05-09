@@ -46,7 +46,7 @@ class Chef
               lead = 0
               tail = evr.size
 
-              if evr =~ %r{^([\d]+):}
+              if %r{^([\d]+):}.match(evr)
                 epoch = $1.to_i
                 lead = $1.length + 1
               elsif evr[0].ord == ":".ord
@@ -54,7 +54,7 @@ class Chef
                 lead = 1
               end
 
-              if evr =~ %r{:?.*-(.*)$}
+              if %r{:?.*-(.*)$}.match(evr)
                 release = $1
                 tail = evr.length - release.length - lead - 1
 
@@ -443,7 +443,7 @@ class Chef
           # "mtr >= 2:0.71-3.0"
           # "mta"
           def self.parse(string)
-            if string =~ %r{^(\S+)\s+(>|>=|=|==|<=|<)\s+(\S+)$}
+            if %r{^(\S+)\s+(>|>=|=|==|<=|<)\s+(\S+)$}.match(string)
               name = $1
               if $2 == "="
                 flag = :==
