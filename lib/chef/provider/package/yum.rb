@@ -46,7 +46,7 @@ class Chef
               lead = 0
               tail = evr.size
 
-              if %r{^([\d]+):}.match(evr)
+              if %r{^([\d]+):}.match(evr) # rubocop:disable Performance/RedundantMatch
                 epoch = $1.to_i
                 lead = $1.length + 1
               elsif evr[0].ord == ":".ord
@@ -54,7 +54,7 @@ class Chef
                 lead = 1
               end
 
-              if %r{:?.*-(.*)$}.match(evr)
+              if %r{:?.*-(.*)$}.match(evr) # rubocop:disable Performance/RedundantMatch
                 release = $1
                 tail = evr.length - release.length - lead - 1
 
@@ -443,7 +443,7 @@ class Chef
           # "mtr >= 2:0.71-3.0"
           # "mta"
           def self.parse(string)
-            if %r{^(\S+)\s+(>|>=|=|==|<=|<)\s+(\S+)$}.match(string)
+            if %r{^(\S+)\s+(>|>=|=|==|<=|<)\s+(\S+)$}.match(string) # rubocop:disable Performance/RedundantMatch
               name = $1
               if $2 == "="
                 flag = :==
