@@ -130,6 +130,7 @@ matrix:
     after_script:
       - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen destroy ubuntu-1404; fi
     env:
+      - UBUNTU=1
       - KITCHEN_YAML=.kitchen.travis.yml
       - EC2_SSH_KEY_PATH=~/.ssh/id_aws.pem
       - secure: VAauyVnAMWhqvnhJOJ/tCDn3XAdWqzbWiDVQPNBkqtm2SBIvhmZl2hlrusvw6YLU31Prdf8fSFhOSysVQQs/rJYrmD/1BfV79p6M7cGXYZ0nGWwldF81N296lyFoZLyrqtmG4G0cx3Pw2ojADFgFe+B5eTGlqJFD+z371g4RF/Y=
@@ -180,6 +181,7 @@ matrix:
     after_script:
       - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then bundle exec kitchen destroy centos-6; fi
     env:
+      - CENTOS=1
       - KITCHEN_YAML=.kitchen.travis.yml
       - EC2_SSH_KEY_PATH=~/.ssh/id_aws.pem
       - secure: VAauyVnAMWhqvnhJOJ/tCDn3XAdWqzbWiDVQPNBkqtm2SBIvhmZl2hlrusvw6YLU31Prdf8fSFhOSysVQQs/rJYrmD/1BfV79p6M7cGXYZ0nGWwldF81N296lyFoZLyrqtmG4G0cx3Pw2ojADFgFe+B5eTGlqJFD+z371g4RF/Y=
