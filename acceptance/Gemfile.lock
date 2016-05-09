@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/chef-acceptance.git
-  revision: 49458ec493dbd12588680eea9f2f9beb76463d09
+  revision: 4abda84e2fadd0452b77a8a88d4fd534843ced55
   specs:
     chef-acceptance (0.2.0)
       mixlib-shellout (~> 2.0)
@@ -11,12 +11,12 @@ GEM
   specs:
     addressable (2.4.0)
     artifactory (2.3.2)
-    aws-sdk (2.3.1)
-      aws-sdk-resources (= 2.3.1)
-    aws-sdk-core (2.3.1)
+    aws-sdk (2.3.2)
+      aws-sdk-resources (= 2.3.2)
+    aws-sdk-core (2.3.2)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.3.1)
-      aws-sdk-core (= 2.3.1)
+    aws-sdk-resources (2.3.2)
+      aws-sdk-core (= 2.3.2)
     berkshelf (4.3.2)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -188,7 +188,7 @@ GEM
     solve (2.0.3)
       molinillo (~> 0.4.2)
       semverse (~> 1.1)
-    test-kitchen (1.7.3)
+    test-kitchen (1.8.0)
       mixlib-install (~> 1.0, >= 1.0.4)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
@@ -203,7 +203,7 @@ GEM
       hashie (>= 2.0.2, < 4.0.0)
     windows_chef_zero (2.0.0)
       test-kitchen (>= 1.2.1)
-    winrm (1.8.0)
+    winrm (1.8.1)
       builder (>= 2.1.2)
       gssapi (~> 1.2)
       gyoku (~> 1.0)
