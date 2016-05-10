@@ -71,12 +71,16 @@ OMNIBUS_RUBYGEMS_AT_LATEST_VERSION = {
 # jwt - expected to update with new oauth2 release
 # mini_portile2 - should go away *entirely* with new nokogiri release (not a dep anymore)
 # slop - expected to disappear with new pry release
+# stove - halite pins to ~> 3.2 in 1.2.1
+# rubocop - chef-style pins to 0.39.0 in 0.3.1
 #
 ACCEPTABLE_OUTDATED_GEMS = %w{
   gherkin
   jwt
   mini_portile2
   slop
+  stove
+  rubocop
 }
 
 #
