@@ -110,16 +110,16 @@ describe "webapp::default", :end_to_end => true do
       end
     end
 
-    describe "http://localhost/index.html" do
+    describe "http://127.0.0.1/index.html" do
       include_examples "a webpage" do
-        let(:uri) { URI.parse("http://localhost/index.html") }
+        let(:uri) { URI.parse("http://127.0.0.1/index.html") }
         let(:content) { "Hello, World!" }
       end
     end
 
-    describe "http://localhost/index.php" do
+    describe "http://127.0.0.1/index.php" do
       include_examples "a webpage" do
-        let(:uri) { URI.parse("http://localhost/index.php") }
+        let(:uri) { URI.parse("http://127.0.0.1/index.php") }
         let(:content) { "Hello, World!" }
       end
     end
