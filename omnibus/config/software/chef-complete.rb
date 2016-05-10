@@ -6,6 +6,7 @@ dependency "chef"
 dependency "chef-appbundle"
 dependency "chef-remove-docs"
 
+dependency "gem-permissions"
 dependency "shebang-cleanup"
 dependency "version-manifest"
 dependency "openssl-customization"
