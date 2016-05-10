@@ -20,10 +20,10 @@ before_script:
  - sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers || true
  - pwd
  - mkdir -p /home/travis/.ssh
- - ssh-keygen -t rsa -N ""
- - ls -laR /home/travis/.ssh
+ - ssh-keygen -t rsa -N "" -f /home/travis/.ssh/id_rsa
  - cp /home/travis/.ssh/id_rsa.pub /home/travis/.ssh/authorized_keys
  - chmod 600 /home/travis/.ssh/authorized_keys
+ - ls -laR /home/travis/.ssh
  - sudo apt-get -y install pv
  - ssh -vvv localhost 'uname -a'
 
