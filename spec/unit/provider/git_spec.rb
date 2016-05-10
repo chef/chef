@@ -297,7 +297,7 @@ SHAS
       end
       before { @resource.environment(override_home) }
       it "clones a repo with amended git options with specific home" do
-        expect(@provider).to receive(:shell_out!).with(expected_cmd, overrided_options)
+        expect(@provider).to receive(:shell_out!).with(expected_cmd, hash_including(overrided_options))
         @provider.clone
       end
     end
