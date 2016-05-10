@@ -11,8 +11,8 @@ GIT
 
 GIT
   remote: git://github.com/test-kitchen/test-kitchen.git
-  revision: a1a0c6a1cba8ea830959280fff0567d190096185
-  branch: lcg/parallel-scp-upload
+  revision: 26168bfad0041b31cc1b6ad615f9b936a2f0c092
+  branch: lcg/disable-encryption
   specs:
     test-kitchen (1.8.0)
       mixlib-install (~> 1.0, >= 1.0.4)
