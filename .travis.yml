@@ -18,7 +18,14 @@ before_script:
  - echo -fp >> .rspec
  # necessary for sudo: true tests, ingore failures on tests invoked with sudo: false
  - sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers || true
- - sudo apt-get -y install pv
+ - mkdir -p .ssh
+ - chmod 600 .ssh
+ - ssh-keygen -f .ssh/id_rsa -t rsa -N ''
+ - chmod 600 .ssh/id_rsa
+ - chmod 600 .ssh/id_rsa.pub
+ - cp .ssh/id_rsa.pub .ssh/authorized_keys
+ - chmod 600 .ssh/authorized_keys
+ - apt-get -y install pv
 
 # do not run expensive spec tests on PRs, only on branches
 branches:
