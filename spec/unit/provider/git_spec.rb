@@ -269,7 +269,7 @@ SHAS
 
   context "with a user id" do
     let(:deploy_user)  { 123 }
-    let(:expected_cmd) { 'git clone  "git://github.com/opscode/chef.git" "/my/deploy/dir"' }
+    let(:expected_cmd) { 'git clone "git://github.com/opscode/chef.git" "/my/deploy/dir"' }
     let(:default_options) do
       {
         :user => 123,
