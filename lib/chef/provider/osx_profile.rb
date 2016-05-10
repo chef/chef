@@ -56,8 +56,8 @@ class Chef
 
         current_profile = nil
         if all_profiles && !all_profiles.empty?
-          current_profile = all_profiles['_computerlevel'].find do |item|
-            item['ProfileIdentifier'] == @new_profile_identifier
+          current_profile = all_profiles["_computerlevel"].find do |item|
+            item["ProfileIdentifier"] == @new_profile_identifier
           end
         end
         @current_resource.profile(current_profile)
