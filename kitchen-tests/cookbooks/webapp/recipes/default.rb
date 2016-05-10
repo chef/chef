@@ -15,8 +15,8 @@ creds = Hash.new
 end
 
 web_app "webapp" do
-  server_name "localhost"
-  server_aliases [node["fqdn"], node["hostname"], "localhost.localdomain"]
+  server_name "127.0.0.1"
+  server_aliases [node["fqdn"], node["hostname"], "localhost.localdomain", "localhost"]
   docroot node["webapp"]["path"]
   cookbook "apache2"
 end
