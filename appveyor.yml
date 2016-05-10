@@ -33,6 +33,7 @@ install:
   - SET BUNDLE_WITHOUT=development:guard:maintenance:tools:integration:changelog:docgen:travis:style:omnibus_package:aix:bsd:linux:mac_os_x:solaris
 
 build_script:
+  - just quit
   - bundle install || bundle install || bundle install
 
 test_script:
