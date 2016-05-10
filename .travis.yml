@@ -18,6 +18,7 @@ before_script:
  - echo -fp >> .rspec
  # necessary for sudo: true tests, ingore failures on tests invoked with sudo: false
  - sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers || true
+ - mkdir -p .ssh
  - ssh-keygen -b 4096 -t rsa -f .ssh/id_rsa -N ""
  - ls -laR .ssh
  - cp .ssh/id_rsa.pub .ssh/authorized_keys
