@@ -25,7 +25,7 @@ before_script:
  - chmod 600 /home/travis/.ssh/authorized_keys
  - ls -laR /home/travis/.ssh
  - sudo apt-get -y install pv
- - ssh -vvv localhost 'uname -a'
+ - ssh -vvv  -o 'StrictHostKeyChecking=no' localhost 'uname -a'
 
 # do not run expensive spec tests on PRs, only on branches
 branches:
