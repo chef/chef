@@ -18,6 +18,7 @@
 
 require "chef"
 require "chef/application"
+require "chef/application/client"
 require "chef/client"
 require "chef/config"
 require "chef/daemon"
@@ -200,10 +201,23 @@ class Chef::Application::Solo < Chef::Application
     :description    => "DANGEROUS: does what it says, only useful with --recipe-url",
     :boolean        => true
 
+  option :og_chef_solo,
+    :long           => "--legacy-mode",
+    :description    => "Run chef-solo in legacy mode",
+    :boolean        => true
+
   attr_reader :chef_client_json
 
-  def initialize
-    super
+  # Get this party started
+  def run
+    setup_signal_handlers
+    reconfigure
+    if !Chef::Config[:og_chef_solo]
+      Chef::Application::Client.new.run
+    else
+      setup_application
+      run_application
+    end
   end
 
   def reconfigure
@@ -214,40 +228,46 @@ class Chef::Application::Solo < Chef::Application
     set_specific_recipes
 
     Chef::Config[:solo] = true
-
-    if Chef::Config[:daemonize]
-      Chef::Config[:interval] ||= 1800
-    end
-
-    Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
+    # Chef::Config[:og_chef_solo] = true
 
     Chef::Log.deprecation("-r MUST be changed to --recipe-url, the -r option will be changed in Chef 13.0") if ARGV.include?("-r")
 
-    if Chef::Config[:recipe_url]
-      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| Pathname.new(e).cleanpath.to_s =~ /\/cookbooks\/*$/ }
-      recipes_path = File.expand_path(File.join(cookbooks_path, ".."))
+    if !Chef::Config[:og_chef_solo]
+      Chef::Config[:local_mode] = true
+    else
 
-      if Chef::Config[:delete_entire_chef_repo]
-        Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
-        FileUtils.rm_rf(recipes_path, :secure => true)
+      if Chef::Config[:daemonize]
+        Chef::Config[:interval] ||= 1800
       end
-      Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
-      FileUtils.mkdir_p(recipes_path)
-      tarball_path = File.join(recipes_path, "recipes.tgz")
-      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      result = shell_out!("tar zxvf #{tarball_path} -C #{recipes_path}")
-      Chef::Log.debug "#{result.stdout}"
-    end
 
-    # json_attribs shuld be fetched after recipe_url tarball is unpacked.
-    # Otherwise it may fail if points to local file from tarball.
-    if Chef::Config[:json_attribs]
-      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
-      @chef_client_json = config_fetcher.fetch_json
-    end
+      Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
 
-    # Disable auditing for solo
-    Chef::Config[:audit_mode] = :disabled
+      if Chef::Config[:recipe_url]
+        cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| Pathname.new(e).cleanpath.to_s =~ /\/cookbooks\/*$/ }
+        recipes_path = File.expand_path(File.join(cookbooks_path, ".."))
+
+        if Chef::Config[:delete_entire_chef_repo]
+          Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
+          FileUtils.rm_rf(recipes_path, :secure => true)
+        end
+        Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
+        FileUtils.mkdir_p(recipes_path)
+        tarball_path = File.join(recipes_path, "recipes.tgz")
+        fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
+        result = shell_out!("tar zxvf #{tarball_path} -C #{recipes_path}")
+        Chef::Log.debug "#{result.stdout}"
+      end
+
+      # json_attribs shuld be fetched after recipe_url tarball is unpacked.
+      # Otherwise it may fail if points to local file from tarball.
+      if Chef::Config[:json_attribs]
+        config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
+        @chef_client_json = config_fetcher.fetch_json
+      end
+
+      # Disable auditing for solo
+      Chef::Config[:audit_mode] = :disabled
+    end
   end
 
   def setup_application
