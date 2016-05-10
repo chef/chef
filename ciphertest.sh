@@ -5,7 +5,7 @@ for cipher in aes128-cbc aes128-ctr aes128-gcm@openssh.com aes192-cbc aes192-ctr
         echo
         echo "Cipher: $cipher (try $i)"
 
-        dd if=/dev/zero bs=1024k count=1024 2>/tmp/dd.txt | pv --size 1G | time -p ssh -o 'Compression=no' -c "$cipher" localhost 'cat > /dev/null'
+        dd if=/dev/zero bs=1024k count=1024 2>/tmp/dd.txt | pv --size 1G | time -p ssh -o 'Compression=no' -o 'StrictHostKeyChecking=no' -c "$cipher" localhost 'cat > /dev/null'
         grep -v records /tmp/dd.txt
     done
 done
