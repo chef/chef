@@ -6,7 +6,4 @@ suites:
     run_list:
       - recipe[apt]
       - recipe[apt-docker]
-      - recipe[docker_test::installation_package]
-      - recipe[docker_test::service_upstart]
-      - recipe[docker_test::auto]
     includes: [ubuntu-14.04]
