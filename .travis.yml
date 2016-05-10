@@ -35,6 +35,6 @@ matrix:
   include:
   - rvm: 2.1
     sudo: true
-    script: /bin/bash ./ciphertest.sh
+    script: sudo /bin/bash ./ciphertest.sh
     # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
