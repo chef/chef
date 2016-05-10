@@ -103,7 +103,7 @@ if [ "x$ACCEPTANCE" != "x" ]; then
   sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID pwd
   sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID bundle config
   sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID bundle install
-  sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID KITCHEN_DRIVER=ec2 bundle exec chef-acceptance test --force-destroy
+  sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID KITCHEN_DRIVER=ec2 bundle exec chef-acceptance test --force-destroy --data-path $WORKSPACE/chef-acceptance-data
 else
   PATH=/opt/$PROJECT_NAME/bin:/opt/$PROJECT_NAME/embedded/bin:$PATH
   export PATH
