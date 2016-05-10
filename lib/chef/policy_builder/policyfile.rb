@@ -68,7 +68,7 @@ class Chef
 
         @node = nil
 
-        if Chef::Config[:solo]
+        if Chef::Config[:solo_legacy_mode]
           raise UnsupportedFeature, "Policyfile does not support chef-solo. Use chef-client local mode instead."
         end
 

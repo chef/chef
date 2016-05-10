@@ -201,7 +201,7 @@ class Chef::Application::Solo < Chef::Application
     :description    => "DANGEROUS: does what it says, only useful with --recipe-url",
     :boolean        => true
 
-  option :og_chef_solo,
+  option :solo_legacy_mode,
     :long           => "--legacy-mode",
     :description    => "Run chef-solo in legacy mode",
     :boolean        => true
@@ -212,7 +212,7 @@ class Chef::Application::Solo < Chef::Application
   def run
     setup_signal_handlers
     reconfigure
-    if !Chef::Config[:og_chef_solo]
+    if !Chef::Config[:solo_legacy_mode]
       Chef::Application::Client.new.run
     else
       setup_application
@@ -228,11 +228,11 @@ class Chef::Application::Solo < Chef::Application
     set_specific_recipes
 
     Chef::Config[:solo] = true
-    # Chef::Config[:og_chef_solo] = true
+    # Chef::Config[:solo_legacy_mode] = true
 
     Chef::Log.deprecation("-r MUST be changed to --recipe-url, the -r option will be changed in Chef 13.0") if ARGV.include?("-r")
 
-    if !Chef::Config[:og_chef_solo]
+    if !Chef::Config[:solo_legacy_mode]
       Chef::Config[:local_mode] = true
     else
 

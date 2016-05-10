@@ -69,7 +69,7 @@ class Chef
       end
 
       def setup_run_context(specific_recipes = nil)
-        if Chef::Config[:solo]
+        if Chef::Config[:solo_legacy_mode]
           Chef::Cookbook::FileVendor.fetch_from_disk(Chef::Config[:cookbook_path])
           cl = Chef::CookbookLoader.new(Chef::Config[:cookbook_path])
           cl.load_cookbooks
@@ -118,7 +118,7 @@ class Chef
         Chef::Log.debug("Building node object for #{node_name}")
 
         @node =
-          if Chef::Config[:solo]
+          if Chef::Config[:solo_legacy_mode]
             Chef::Node.build(node_name)
           else
             Chef::Node.find_or_create(node_name)
@@ -167,7 +167,7 @@ class Chef
 
       # Expands the node's run list. Stores the run_list_expansion object for later use.
       def expand_run_list
-        @run_list_expansion = if Chef::Config[:solo]
+        @run_list_expansion = if Chef::Config[:solo_legacy_mode]
                                 node.expand!("disk")
                               else
                                 node.expand!("server")

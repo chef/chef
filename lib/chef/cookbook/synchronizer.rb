@@ -43,7 +43,7 @@ class Chef
     end
 
     def cleanup_file_cache
-      unless Chef::Config[:solo] || skip_removal
+      unless Chef::Config[:solo_legacy_mode] || skip_removal
         # Delete each file in the cache that we didn't encounter in the
         # manifest.
         cache.find(File.join(%w{cookbooks ** {*,.*}})).each do |cache_filename|

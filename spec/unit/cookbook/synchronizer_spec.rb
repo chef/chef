@@ -50,7 +50,7 @@ describe Chef::CookbookCacheCleaner do
     end
 
     it "does not remove anything on chef-solo" do
-      Chef::Config[:solo] = true
+      Chef::Config[:solo_legacy_mode] = true
       allow(cleaner.cache).to receive(:find).and_return(%w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb})
       expect(cleaner.cache).not_to receive(:delete)
       cleaner.cleanup_file_cache

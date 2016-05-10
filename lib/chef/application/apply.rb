@@ -150,7 +150,7 @@ class Chef::Application::Apply < Chef::Application
   end
 
   def get_recipe_and_run_context
-    Chef::Config[:solo] = true
+    Chef::Config[:solo_legacy_mode] = true
     @chef_client = Chef::Client.new(@json_attribs)
     @chef_client.run_ohai
     @chef_client.load_node

@@ -147,7 +147,7 @@ class Chef
 
     # Load a Data Bag Item by name via either the RESTful API or local data_bag_path if run in solo mode
     def self.load(data_bag, name)
-      if Chef::Config[:solo]
+      if Chef::Config[:solo_legacy_mode]
         bag = Chef::DataBag.load(data_bag)
         raise Exceptions::InvalidDataBagItemID, "Item #{name} not found in data bag #{data_bag}. Other items found: #{bag.keys.join(", ")}" unless bag.include?(name)
         item = bag[name]

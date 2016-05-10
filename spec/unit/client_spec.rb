@@ -462,7 +462,7 @@ describe Chef::Client do
 
   describe "assert_cookbook_path_not_empty" do
     before do
-      Chef::Config[:solo] = true
+      Chef::Config[:solo_legacy_mode] = true
       Chef::Config[:cookbook_path] = ["/path/to/invalid/cookbook_path"]
     end
 
