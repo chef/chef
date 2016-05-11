@@ -25,7 +25,10 @@ class Chef
   class Provider
     class Git < Chef::Provider
 
+      extend Forwardable
       provides :git
+
+      def_delegator :@new_resource, :destination, :cwd
 
       def whyrun_supported?
         true
@@ -42,11 +45,11 @@ class Chef
       def define_resource_requirements
         # Parent directory of the target must exist.
         requirements.assert(:checkout, :sync) do |a|
-          dirname = ::File.dirname(@new_resource.destination)
+          dirname = ::File.dirname(cwd)
           a.assertion { ::File.directory?(dirname) }
           a.whyrun("Directory #{dirname} does not exist, this run will fail unless it has been previously created. Assuming it would have been created.")
           a.failure_message(Chef::Exceptions::MissingParentDirectory,
-            "Cannot clone #{@new_resource} to #{@new_resource.destination}, the enclosing directory #{dirname} does not exist")
+            "Cannot clone #{@new_resource} to #{cwd}, the enclosing directory #{dirname} does not exist")
         end
 
         requirements.assert(:all_actions) do |a|
@@ -79,14 +82,14 @@ class Chef
           enable_submodules
           add_remotes
         else
-          Chef::Log.debug "#{@new_resource} checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
+          Chef::Log.debug "#{@new_resource} checkout destination #{cwd} already exists or is a non-empty directory"
         end
       end
 
       def action_export
         action_checkout
-        converge_by("complete the export by removing #{@new_resource.destination}.git after checkout") do
-          FileUtils.rm_rf(::File.join(@new_resource.destination, ".git"))
+        converge_by("complete the export by removing #{cwd}.git after checkout") do
+          FileUtils.rm_rf(::File.join(cwd, ".git"))
         end
       end
 
@@ -109,11 +112,11 @@ class Chef
       end
 
       def existing_git_clone?
-        ::File.exist?(::File.join(@new_resource.destination, ".git"))
+        ::File.exist?(::File.join(cwd, ".git"))
       end
 
       def target_dir_non_existent_or_empty?
-        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == [".", ".."]
+        !::File.exist?(cwd) || Dir.entries(cwd).sort == [".", ".."]
       end
 
       def find_current_revision
@@ -137,7 +140,7 @@ class Chef
       end
 
       def clone
-        converge_by("clone from #{@new_resource.repository} into #{@new_resource.destination}") do
+        converge_by("clone from #{@new_resource.repository} into #{cwd}") do
           remote = @new_resource.remote
 
           clone_cmd = ["clone"]
@@ -145,9 +148,9 @@ class Chef
           clone_cmd << "--depth #{@new_resource.depth}" if @new_resource.depth
           clone_cmd << "--no-single-branch" if @new_resource.depth && git_minor_version >= Gem::Version.new("1.7.10")
           clone_cmd << "\"#{@new_resource.repository}\""
-          clone_cmd << "\"#{@new_resource.destination}\""
+          clone_cmd << "\"#{cwd}\""
 
-          Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
+          Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{cwd}"
           git clone_cmd
         end
       end
@@ -309,10 +312,6 @@ class Chef
         env.merge!(@new_resource.environment) if @new_resource.environment
         run_opts[:environment] = env unless env.empty?
         run_opts
-      end
-
-      def cwd
-        @new_resource.destination
       end
 
       def git(*args, **run_opts)
