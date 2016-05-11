@@ -228,7 +228,6 @@ class Chef::Application::Solo < Chef::Application
     set_specific_recipes
 
     Chef::Config[:solo] = true
-    # Chef::Config[:solo_legacy_mode] = true
 
     Chef::Log.deprecation("-r MUST be changed to --recipe-url, the -r option will be changed in Chef 13.0") if ARGV.include?("-r")
 
