@@ -234,39 +234,42 @@ class Chef::Application::Solo < Chef::Application
     if !Chef::Config[:solo_legacy_mode]
       Chef::Config[:local_mode] = true
     else
-
-      if Chef::Config[:daemonize]
-        Chef::Config[:interval] ||= 1800
-      end
-
-      Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
-
-      if Chef::Config[:recipe_url]
-        cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| Pathname.new(e).cleanpath.to_s =~ /\/cookbooks\/*$/ }
-        recipes_path = File.expand_path(File.join(cookbooks_path, ".."))
-
-        if Chef::Config[:delete_entire_chef_repo]
-          Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
-          FileUtils.rm_rf(recipes_path, :secure => true)
-        end
-        Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
-        FileUtils.mkdir_p(recipes_path)
-        tarball_path = File.join(recipes_path, "recipes.tgz")
-        fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-        result = shell_out!("tar zxvf #{tarball_path} -C #{recipes_path}")
-        Chef::Log.debug "#{result.stdout}"
-      end
-
-      # json_attribs shuld be fetched after recipe_url tarball is unpacked.
-      # Otherwise it may fail if points to local file from tarball.
-      if Chef::Config[:json_attribs]
-        config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
-        @chef_client_json = config_fetcher.fetch_json
-      end
-
-      # Disable auditing for solo
-      Chef::Config[:audit_mode] = :disabled
+      configure_legacy_mode!
     end
+  end
+
+  def configure_legacy_mode!
+    if Chef::Config[:daemonize]
+      Chef::Config[:interval] ||= 1800
+    end
+
+    Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
+
+    if Chef::Config[:recipe_url]
+      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| Pathname.new(e).cleanpath.to_s =~ /\/cookbooks\/*$/ }
+      recipes_path = File.expand_path(File.join(cookbooks_path, ".."))
+
+      if Chef::Config[:delete_entire_chef_repo]
+        Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
+        FileUtils.rm_rf(recipes_path, :secure => true)
+      end
+      Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
+      FileUtils.mkdir_p(recipes_path)
+      tarball_path = File.join(recipes_path, "recipes.tgz")
+      fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
+      result = shell_out!("tar zxvf #{tarball_path} -C #{recipes_path}")
+      Chef::Log.debug "#{result.stdout}"
+    end
+
+    # json_attribs shuld be fetched after recipe_url tarball is unpacked.
+    # Otherwise it may fail if points to local file from tarball.
+    if Chef::Config[:json_attribs]
+      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
+      @chef_client_json = config_fetcher.fetch_json
+    end
+
+    # Disable auditing for solo
+    Chef::Config[:audit_mode] = :disabled
   end
 
   def setup_application
