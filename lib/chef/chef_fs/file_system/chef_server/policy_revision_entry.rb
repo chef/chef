@@ -14,6 +14,10 @@ class Chef
             "#{parent.api_path}/#{policy_name}/revisions/#{revision_id}"
           end
 
+          def display_path
+            "/policies/#{policy_name}-#{revision_id}.json"
+          end
+
           def write(file_contents)
             raise OperationNotAllowedError.new(:write, self, nil, "cannot be updated: policy revisions are immutable once uploaded. If you want to change the policy, create a new revision with your changes")
           end

@@ -27,10 +27,6 @@ class Chef
       module Repository
         class GroupsDir < Repository::Directory
 
-          def can_have_child?(name, is_dir)
-            !is_dir && File.extname(name) == ".json"
-          end
-
           def make_child_entry(child_name)
             Group.new(child_name, self)
           end

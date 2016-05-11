@@ -29,23 +29,48 @@ class Chef
           attr_reader :file_path
           attr_reader :data_handler
 
+          alias_method :display_path, :path
+          alias_method :display_name, :name
+
           def initialize(name, parent)
             @parent = parent
+
+            if %w{ .rb .json }.include? File.extname(name)
+              name = File.basename(name, ".*")
+            end
+
+            file_path = "#{parent.file_path}/#{name}"
+
+            Chef::Log.debug "BaseFile: Detecting file extension for #{name}"
+            ext = File.exist?(file_path + ".rb") ? ".rb" : ".json"
+            name += ext
+            file_path += ext
+
+            Chef::Log.debug "BaseFile: got a file path of #{file_path} for #{name}"
             @name = name
             @path = Chef::ChefFS::PathUtils.join(parent.path, name)
-            @file_path = "#{parent.file_path}/#{name}"
+            @file_path = file_path
           end
 
           def dir?
             false
           end
 
+          # Used to compare names on disk to the API, for diffing.
+          def bare_name
+            File.basename(name, ".*")
+          end
+
           def is_json_file?
-            File.extname(name) == ".json"
+            File.extname(file_path) == ".json"
+          end
+
+          def is_ruby_file?
+            File.extname(file_path) == ".rb"
           end
 
           def name_valid?
-            !name.start_with?(".") && is_json_file?
+            !name.start_with?(".") && (is_json_file? || is_ruby_file?)
           end
 
           def fs_entry_valid?
@@ -91,12 +116,19 @@ class Chef
           end
 
           def read
-            File.open(file_path, "rb") { |f| f.read }
+            if is_ruby_file?
+              data_handler.from_ruby(file_path).to_json
+            else
+              File.open(file_path, "rb") { |f| f.read }
+            end
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
 
           def write(content)
+            if is_ruby_file?
+              raise Chef::ChefFS::FileSystem::RubyFileError.new(:write, self)
+            end
             if content && write_pretty_json && is_json_file?
               content = minimize(content, self)
             end

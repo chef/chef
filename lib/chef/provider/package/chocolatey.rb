@@ -256,6 +256,7 @@ EOS
         def parse_list_output(*args)
           list = []
           choco_command(*args).stdout.each_line do |line|
+            next if line.start_with?("Chocolatey v")
             name, version = line.split("|")
             list << [ name.downcase, version.chomp ]
           end

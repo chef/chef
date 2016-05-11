@@ -24,15 +24,14 @@ class Chef
           object
         end
 
-        #
-        # Takes a name like blah.json and removes the .json from it.
-        #
-        def remove_dot_json(name)
-          if name.length < 5 || name[-5, 5] != ".json"
-            raise "Invalid name #{path}: must end in .json"
+        def remove_file_extension(name, ext = ".*")
+          if %w{ .rb .json }.include?(File.extname(name))
+            File.basename(name, ext)
+          else
+            name
           end
-          name[0, name.length - 5]
         end
+        alias_method :remove_dot_json, :remove_file_extension
 
         #
         # Return true if minimize() should preserve a key even if it is the same
@@ -109,8 +108,10 @@ class Chef
         #
         # Bring in an instance of this object from Ruby.  (Like roles/x.rb)
         #
-        def from_ruby(ruby)
-          chef_class.from_file(ruby).to_hash
+        def from_ruby(path)
+          r = chef_class.new
+          r.from_file(path)
+          r.to_hash
         end
 
         #
@@ -192,7 +193,7 @@ class Chef
         # @yield  [s] callback to handle errors
         # @yieldparam [s<string>] error message
         def verify_integrity(object, entry)
-          base_name = remove_dot_json(entry.name)
+          base_name = remove_file_extension(entry.name)
           if object["name"] != base_name
             yield("Name must be '#{base_name}' (is '#{object['name']}')")
           end

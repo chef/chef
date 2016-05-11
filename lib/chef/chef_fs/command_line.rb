@@ -63,6 +63,13 @@ class Chef
             end
 
           when :deleted
+            # This is kind of a kludge - because the "new" entry isn't there, we can't predict
+            # it's true file name, because we've not got enough information. So because we know
+            # the two entries really ought to have the same extension, we'll just grab the old one
+            # and use it. (This doesn't affect cookbook files, since they'll always have extensions)
+            if File.extname(old_path) != File.extname(new_path)
+              new_path += File.extname(old_path)
+            end
             next if diff_filter && diff_filter !~ /D/
             if output_mode == :name_only
               yield "#{new_path}\n"

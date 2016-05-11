@@ -154,6 +154,25 @@ EOM
           end
         end
 
+        context "the role is in ruby" do
+          before do
+            file "roles/x.rb", <<EOM
+name "x"
+description "blargle"
+EOM
+          end
+
+          it "knife upload changes the role" do
+            knife("upload /").should_succeed "Updated /roles/x.json\n"
+            knife("diff --name-status /").should_succeed ""
+          end
+
+          it "knife upload --no-diff does not change the role" do
+            knife("upload --no-diff /").should_succeed ""
+            knife("diff --name-status /").should_succeed "M\t/roles/x.rb\n"
+          end
+        end
+
         context "when cookbook metadata has a self-dependency" do
           before do
             file "cookbooks/x/metadata.rb", "name 'x'; version '1.0.0'; depends 'x'"
@@ -632,14 +651,14 @@ WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error
 ERROR: /environments/x.json failed to write: Parse error reading JSON: parse error: premature EOF
                                        {
                      (right here) ------^
-EOH
+          EOH
 
           warn = <<-EOH
 WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF
                                        {
                      (right here) ------^
 
-EOH
+          EOH
           knife("upload /environments/x.json").should_fail(error1)
           knife("diff --name-status /environments/x.json").should_succeed("M\t/environments/x.json\n", :stderr => warn)
         end

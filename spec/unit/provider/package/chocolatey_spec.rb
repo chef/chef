@@ -36,6 +36,7 @@ describe Chef::Provider::Package::Chocolatey do
   # installed packages (ConEmu is upgradable)
   let(:local_list_stdout) do
     <<-EOF
+Chocolatey v0.9.9.11
 chocolatey|0.9.9.11
 ConEmu|15.10.25.0
     EOF
@@ -50,6 +51,7 @@ ConEmu|15.10.25.0
 
   def allow_remote_list(package_names, args = nil)
     remote_list_stdout = <<-EOF
+Chocolatey v0.9.9.11
 chocolatey|0.9.9.11
 ConEmu|15.10.25.1
 Git|2.6.1

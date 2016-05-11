@@ -17,6 +17,10 @@ class Chef
             parent.api_path
           end
 
+          def display_path
+            "/org.json"
+          end
+
           def exists?
             parent.exists?
           end

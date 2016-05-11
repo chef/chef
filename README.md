@@ -157,7 +157,7 @@ Additionally, periodically Chef will update the desired versions of chef compone
 Whenever a change is checked in to `master`, the patch version of `chef` is bumped. To do this, the `lita-versioner` bot listens to github for merged PRs, and when it finds one, takes these actions:
 
 1. Bumps the patch version in `lib/chef/version.rb` (e.g. 0.9.14 -> 0.9.15).
-2. Runs `rake dependencies:update_conservative` to update the `Gemfile.lock` to include the new version.
+2. Runs `rake bundle:install` to update the `Gemfile.lock` to include the new version.
 3. Pushes to `master` and submits a new build to Chef's Jenkins cluster.
 
 ## Component Versions

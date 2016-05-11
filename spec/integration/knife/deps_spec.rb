@@ -289,11 +289,11 @@ EOM
             :stderr => "ERROR: /cookbooks/x: No such file or directory\n"
           )
         end
-        it "knife deps /data_bags/bag/item reports an error" do
-          knife("deps /data_bags/bag/item").should_fail(
+        it "knife deps /data_bags/bag/item.json reports an error" do
+          knife("deps /data_bags/bag/item.json").should_fail(
             :exit_code => 2,
-            :stdout => "/data_bags/bag/item\n",
-            :stderr => "ERROR: /data_bags/bag/item: No such file or directory\n"
+            :stdout => "/data_bags/bag/item.json\n",
+            :stderr => "ERROR: /data_bags/bag/item.json: No such file or directory\n"
           )
         end
       end
@@ -628,10 +628,10 @@ EOM
           )
         end
         it "knife deps /data_bags/bag/item reports an error" do
-          knife("deps --remote /data_bags/bag/item").should_fail(
+          knife("deps --remote /data_bags/bag/item.json").should_fail(
             :exit_code => 2,
-            :stdout => "/data_bags/bag/item\n",
-            :stderr => "ERROR: /data_bags/bag/item: No such file or directory\n"
+            :stdout => "/data_bags/bag/item.json\n",
+            :stderr => "ERROR: /data_bags/bag/item.json: No such file or directory\n"
           )
         end
       end
