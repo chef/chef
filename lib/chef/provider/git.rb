@@ -25,7 +25,10 @@ class Chef
   class Provider
     class Git < Chef::Provider
 
+      extend Forwardable
       provides :git
+
+      def_delegator :@new_resource, :destination, :cwd
 
       def whyrun_supported?
         true
@@ -309,10 +312,6 @@ class Chef
         env.merge!(@new_resource.environment) if @new_resource.environment
         run_opts[:environment] = env unless env.empty?
         run_opts
-      end
-
-      def cwd
-        @new_resource.destination
       end
 
       def git(*args, **run_opts)
