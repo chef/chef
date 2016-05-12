@@ -8,7 +8,7 @@ driver:
   instance_type: "m3.medium"
 
 provisioner:
-  name: chef_zero
+  name: chef_github
   chef_omnibus_url: "https://omnitruck.chef.io/current/install.sh"
   chef_omnibus_install_options: "-n"
   github_owner: "chef"

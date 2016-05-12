@@ -166,7 +166,7 @@ DEPENDENCIES
   kitchen-appbundle-updater
   kitchen-ec2!
   kitchen-vagrant (~> 0.17)
-  test-kitchen
+  test-kitchen (~> 1.4)
   vagrant-wrapper
 
 BUNDLED WITH
