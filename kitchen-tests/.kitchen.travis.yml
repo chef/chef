@@ -8,7 +8,7 @@ driver:
   instance_type: "m3.medium"
 
 provisioner:
-  name: chef_github
+  name: chef_zero
   chef_omnibus_url: "https://omnitruck.chef.io/current/install.sh"
   chef_omnibus_install_options: "-n"
   github_owner: "chef"
@@ -24,19 +24,18 @@ transport:
   ssh_key: <%= ENV['EC2_SSH_KEY_PATH'] %>
 
 platforms:
-  - name: ubuntu-12.04
+  - name: ubuntu-14.04
     driver:
       # http://cloud-images.ubuntu.com/locator/ec2/
-      # 12.04 amd64 us-west-2 hvm:ssd
-      image_id: ami-f3635fc3
-  - name: rhel-6
+      # 14.04 amd64 us-west-2 hvm:ebs-ssd
+      image_id: ami-63ac5803
+  - name: centos-6
     driver:
-      # https://github.com/chef/releng-chef-repo/blob/master/script/ci#L93-L96
-      image_id: ami-7df0bd4d
+      image_id: ami-05cf2265  
 
 suites:
   - name: webapp
     run_list:
-      - recipe[apt::default]
+      - recipe[base::default]
       - recipe[webapp::default]
     attributes:
