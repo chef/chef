@@ -33,13 +33,22 @@ class Chef
             shell_out_with_timeout!("make deinstall", :timeout => 300, :env => nil, :cwd => port_dir).status
           end
 
+          # The name of the package (without the version number) as understood by pkg_add and pkg_info.
+          def package_name
+            if makefile_variable_value("PKGNAME", port_dir) =~ /^(.+)-[^-]+$/
+              $1
+            else
+              raise Chef::Exceptions::Package, "Unexpected form for PKGNAME variable in #{port_dir}/Makefile"
+            end
+          end
+
           def current_installed_version
             pkg_info = if @new_resource.supports_pkgng?
-                         shell_out_with_timeout!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0, 70])
+                         shell_out_with_timeout!("pkg info \"#{@current_resource.package_name}\"", :env => nil, :returns => [0, 70])
                        else
-                         shell_out_with_timeout!("pkg_info -E \"#{@new_resource.package_name}*\"", :env => nil, :returns => [0, 1])
+                         shell_out_with_timeout!("pkg_info -E \"#{@current_resource.package_name}*\"", :env => nil, :returns => [0, 1])
                        end
-            pkg_info.stdout[/^#{Regexp.escape(@new_resource.package_name)}-(.+)/, 1]
+            pkg_info.stdout[/^#{Regexp.escape(@current_resource.package_name)}-(.+)/, 1]
           end
 
           def candidate_version

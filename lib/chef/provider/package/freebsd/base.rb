@@ -71,7 +71,7 @@ class Chef
           end
 
           def load_current_resource
-            @current_resource.package_name(@new_resource.package_name)
+            @current_resource.package_name(package_name)
 
             @current_resource.version(current_installed_version)
             Chef::Log.debug("#{@new_resource} current version is #{@current_resource.version}") if @current_resource.version
@@ -80,6 +80,10 @@ class Chef
             Chef::Log.debug("#{@new_resource} candidate version is #{@candidate_version}") if @candidate_version
 
             @current_resource
+          end
+
+          def package_name
+            @new_resource.package_name
           end
         end
 
