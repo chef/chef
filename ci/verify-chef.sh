@@ -92,7 +92,6 @@ if [ "x$ACCEPTANCE" != "x" ]; then
   cd /opt/$PROJECT_NAME
   CHEF_GEM=`bundle show chef`
   PATH=$OLD_PATH
-  cd $CHEF_GEM/acceptance
 
   # On acceptance testers we have Chef DK. We will use its Ruby environment
   # to cut down the gem installation time.
@@ -100,10 +99,13 @@ if [ "x$ACCEPTANCE" != "x" ]; then
   export PATH
 
   # Test against the Chef bundle
-  sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID pwd
-  sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID bundle config
-  sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID bundle install
-  sudo env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID KITCHEN_DRIVER=ec2 KITCHEN_CHEF_CHANNEL=unstable bundle exec chef-acceptance test --force-destroy --data-path $WORKSPACE/chef-acceptance-data
+  env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID pwd
+  # Force `$WORKSPACE/.bundle/config` to be created so bundler doesn't
+  # attempt to create the file up in the `$CHEF_GEM/acceptance/`. This
+  # saves us from having to add a `sudo` to any of the `bundle` commands.
+  env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID bundle config --local gemfile $CHEF_GEM/acceptance/Gemfile
+  env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID bundle install --deployment
+  env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID KITCHEN_DRIVER=ec2 KITCHEN_CHEF_CHANNEL=unstable bundle exec chef-acceptance test --force-destroy --data-path $WORKSPACE/chef-acceptance-data
 else
   PATH=/opt/$PROJECT_NAME/bin:/opt/$PROJECT_NAME/embedded/bin:$PATH
   export PATH
