@@ -20,6 +20,7 @@ require "chef/provider"
 require "chef/mixin/which"
 require "chef/mixin/shell_out"
 require "chef/resource/file"
+require "iniparse"
 
 class Chef
   class Provider
@@ -41,6 +42,15 @@ class Chef
         current_resource.triggers_reload(new_resource.triggers_reload)
 
         current_resource
+      end
+
+      def define_resource_requirements
+        super
+
+        requirements.assert(:create) do |a|
+          a.assertion { IniParse.parse(new_resource.to_ini) }
+          a.failure_message "Unit content is not valid INI text"
+        end
       end
 
       def action_create
