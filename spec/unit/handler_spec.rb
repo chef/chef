@@ -212,4 +212,91 @@ describe Chef::Handler do
     end
   end
 
+  describe "library report handler" do
+    before do
+      # we need to lazily declare this after we have reset Chef::Config in the default rspec before handler
+      class MyTestHandler < Chef::Handler
+        handler_for :report, :exception, :start
+
+        class << self
+          attr_accessor :ran_report
+        end
+
+        def report
+          self.class.ran_report = true
+        end
+      end
+    end
+
+    it "gets added to Chef::Config[:report_handlers]" do
+      expect(Chef::Config[:report_handlers].include?(MyTestHandler)).to be true
+    end
+
+    it "gets added to Chef::Config[:exception_handlers]" do
+      expect(Chef::Config[:exception_handlers].include?(MyTestHandler)).to be true
+    end
+
+    it "gets added to Chef::Config[:start_handlers]" do
+      expect(Chef::Config[:start_handlers].include?(MyTestHandler)).to be true
+    end
+
+    it "runs the report handler" do
+      Chef::Handler.run_report_handlers(@run_status)
+      expect(MyTestHandler.ran_report).to be true
+    end
+
+    it "runs the exception handler" do
+      Chef::Handler.run_exception_handlers(@run_status)
+      expect(MyTestHandler.ran_report).to be true
+    end
+
+    it "runs the start handler" do
+      Chef::Handler.run_start_handlers(@run_status)
+      expect(MyTestHandler.ran_report).to be true
+    end
+  end
+
+  describe "library singleton report handler" do
+    before do
+      # we need to lazily declare this after we have reset Chef::Config in the default rspec before handler
+      class MyTestHandler < Chef::Handler
+        handler_for :report, :exception, :start
+
+        include Singleton
+
+        attr_accessor :ran_report
+
+        def report
+          self.ran_report = true
+        end
+      end
+    end
+
+    it "gets added to Chef::Config[:report_handlers]" do
+      expect(Chef::Config[:report_handlers].include?(MyTestHandler)).to be true
+    end
+
+    it "gets added to Chef::Config[:exception_handlers]" do
+      expect(Chef::Config[:exception_handlers].include?(MyTestHandler)).to be true
+    end
+
+    it "gets added to Chef::Config[:start_handlers]" do
+      expect(Chef::Config[:start_handlers].include?(MyTestHandler)).to be true
+    end
+
+    it "runs the report handler" do
+      Chef::Handler.run_report_handlers(@run_status)
+      expect(MyTestHandler.instance.ran_report).to be true
+    end
+
+    it "runs the exception handler" do
+      Chef::Handler.run_exception_handlers(@run_status)
+      expect(MyTestHandler.instance.ran_report).to be true
+    end
+
+    it "runs the start handler" do
+      Chef::Handler.run_start_handlers(@run_status)
+      expect(MyTestHandler.instance.ran_report).to be true
+    end
+  end
 end
