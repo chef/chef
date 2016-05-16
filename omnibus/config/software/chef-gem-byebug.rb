@@ -4,3 +4,6 @@
 # another gem's installation.
 require_relative "../../files/chef-gem/build-chef-gem/gem-install-software-def"
 BuildChefGem::GemInstallSoftwareDef.define(self, __FILE__)
+
+license "MIT"
+license_file "https://github.com/deivid-rodriguez/byebug/blob/master/LICENSE"

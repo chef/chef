@@ -5,4 +5,7 @@
 require_relative "../../files/chef-gem/build-chef-gem/gem-install-software-def"
 BuildChefGem::GemInstallSoftwareDef.define(self, __FILE__)
 
+license "MIT"
+license_file "https://github.com/chef/ffi-yajl/blob/master/LICENSE"
+
 dependency "chef-gem-libyajl2"
