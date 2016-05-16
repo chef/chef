@@ -1,5 +1,31 @@
 # Change Log
 
+## [v12.10.24](https://github.com/chef/chef/tree/v12.10.24) (2016-04-27)
+[Full Changelog](https://github.com/chef/chef/compare/v12.10.23...v12.10.24)
+
+**Fixed Bugs:**
+
+- Removing non-existent members from group should not fail [\#4812](https://github.com/chef/chef/pull/4812) ([chefsalim](https://github.com/chefsalim))
+- The easy\_install provider and resource are deprecated and will be removed in Chef 13 [\#4860](https://github.com/chef/chef/pull/4860) ([coderanger](https://github.com/coderanger))
+
+**Tech cleanup:**
+
+- Refactor ChefFS files to be files [\#4837](https://github.com/chef/chef/pull/4837) ([thommay](https://github.com/thommay))
+- Rename and add backcompat requires for ChefFS dirs [\#4830](https://github.com/chef/chef/pull/4830) ([thommay](https://github.com/thommay))
+- Refactor ChefFS directories to be directories [\#4826](https://github.com/chef/chef/pull/4826) ([thommay](https://github.com/thommay))
+- Move all ChefFS exceptions into a single file [\#4822](https://github.com/chef/chef/pull/4822) ([thommay](https://github.com/thommay))
+
+**Enhancements:**
+
+- Add layout option support for device creation to mdadm resource provider [\#4855](https://github.com/chef/chef/pull/4855) ([kbruner](https://github.com/kbruner))
+- add notifying\_block and subcontext\_block to chef [\#4818](https://github.com/chef/chef/pull/4818) ([lamont-granquist](https://github.com/lamont-granquist))
+- modernize shell\_out method syntax [\#4865](https://github.com/chef/chef/pull/4865) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update rubygems provider to support local install of gems if so specified [\#4847](https://github.com/chef/chef/pull/4847) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit))
+- fix details in with\_run\_context [\#4839](https://github.com/chef/chef/pull/4839) ([lamont-granquist](https://github.com/lamont-granquist))
+- Lock dependencies of chef through a `Gemfile.lock` [\#4820](https://github.com/chef/chef/pull/4820) ([jkeiser](https://github.com/jkeiser))
+- add better resource manipulation API [\#4834](https://github.com/chef/chef/pull/4834) ([lamont-granquist](https://github.com/lamont-granquist)) 
+- add nillable apt\_repository and nillable properties [\#4832](https://github.com/chef/chef/pull/4832) ([lamont-granquist](https://github.com/lamont-granquist))
+
 ## [v12.9](https://github.com/chef/chef/tree/v12.9.38) (2016-04-09)
 [Full Changelog](https://github.com/chef/chef/compare/v12.8.2...v12.9.38)
 
