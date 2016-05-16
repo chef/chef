@@ -18,9 +18,9 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.10.55)
+    chef (12.10.56)
       bundler (>= 1.10)
-      chef-config (= 12.10.55)
+      chef-config (= 12.10.56)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -45,9 +45,9 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (12.10.55-universal-mingw32)
+    chef (12.10.56-universal-mingw32)
       bundler (>= 1.10)
-      chef-config (= 12.10.55)
+      chef-config (= 12.10.56)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -87,7 +87,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.10.55)
+    chef-config (12.10.56)
       fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -164,7 +164,7 @@ GEM
     ffi (1.9.10-x86-mingw32)
     ffi-yajl (2.2.3)
       libyajl2 (~> 1.2)
-    foodcritic (6.2.0)
+    foodcritic (6.3.0)
       cucumber-core (>= 1.3)
       erubis
       nokogiri (>= 1.5, < 2.0)
