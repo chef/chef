@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: b62510242eceae2f52f2701f6ee0c4ef48ae8b4a
+  revision: 33ea65e3428bef1cb05b9a36311090fe39e64f8c
   specs:
     omnibus (5.4.0)
       aws-sdk (~> 2)
@@ -75,7 +75,7 @@ GEM
     buff-shell_out (0.2.0)
       buff-ruby_engine (~> 0.1.0)
     builder (3.2.2)
-    byebug (8.2.5)
+    byebug (9.0.3)
     celluloid (0.16.0)
       timers (~> 4.0.0)
     celluloid-io (0.16.2)
@@ -164,8 +164,8 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
-    pry-byebug (3.3.0)
-      byebug (~> 8.0)
+    pry-byebug (3.4.0)
+      byebug (~> 9.0)
       pry (~> 0.10)
     pry-stack_explorer (0.4.9.2)
       binding_of_caller (>= 0.7)
@@ -198,7 +198,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.4.0)
     rspec-support (3.4.1)
-    ruby-progressbar (1.8.0)
+    ruby-progressbar (1.8.1)
     rubyntlm (0.6.0)
     rubyzip (1.2.0)
     safe_yaml (1.0.4)
