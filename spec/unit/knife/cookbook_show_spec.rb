@@ -20,30 +20,57 @@
 require "spec_helper"
 
 describe Chef::Knife::CookbookShow do
-  before(:each) do
+  before do
     Chef::Config[:node_name] = "webmonkey.example.com"
-    @knife = Chef::Knife::CookbookShow.new
-    @knife.config = {}
-    @knife.name_args = [ "cookbook_name" ]
-    @rest = double(Chef::ServerAPI)
-    allow(@knife).to receive(:rest).and_return(@rest)
-    allow(@knife).to receive(:pretty_print).and_return(true)
-    allow(@knife).to receive(:output).and_return(true)
+    allow(knife).to receive(:rest).and_return(rest)
+    allow(knife).to receive(:pretty_print).and_return(true)
+    allow(knife).to receive(:output).and_return(true)
+    allow(Chef::CookbookVersion).to receive(:load).and_return(cb)
+  end
+
+  let (:knife) do
+    knife = Chef::Knife::CookbookShow.new
+    knife.config = {}
+    knife.name_args = [ "cookbook_name" ]
+    knife
+  end
+
+  let (:cb) do
+    cb = Chef::CookbookVersion.new("cookbook_name")
+    cb.manifest = manifest
+    cb
+  end
+
+  let (:rest) { double(Chef::ServerAPI) }
+
+  let (:content) { "Example recipe text" }
+
+  let (:manifest) do
+    {
+      "recipes" => [
+        {
+          :name => "default.rb",
+          :path => "recipes/default.rb",
+          :checksum => "1234",
+          :url => "http://example.org/files/default.rb",
+        },
+      ],
+    }
   end
 
   describe "run" do
     describe "with 0 arguments: help" do
       it "should should print usage and exit when given no arguments" do
-        @knife.name_args = []
-        expect(@knife).to receive(:show_usage)
-        expect(@knife.ui).to receive(:fatal)
-        expect { @knife.run }.to raise_error(SystemExit)
+        knife.name_args = []
+        expect(knife).to receive(:show_usage)
+        expect(knife.ui).to receive(:fatal)
+        expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
     describe "with 1 argument: versions" do
-      before(:each) do
-        @response = {
+      let (:response) do
+        {
           "cookbook_name" => {
             "url" => "http://url/cookbooks/cookbook_name",
             "versions" => [
@@ -56,87 +83,60 @@ describe Chef::Knife::CookbookShow do
       end
 
       it "should show the raw cookbook data" do
-        expect(@rest).to receive(:get).with("cookbooks/cookbook_name").and_return(@response)
-        expect(@knife).to receive(:format_cookbook_list_for_display).with(@response)
-        @knife.run
+        expect(rest).to receive(:get).with("cookbooks/cookbook_name").and_return(response)
+        expect(knife).to receive(:format_cookbook_list_for_display).with(response)
+        knife.run
       end
 
       it "should respect the user-supplied environment" do
-        @knife.config[:environment] = "foo"
-        expect(@rest).to receive(:get).with("environments/foo/cookbooks/cookbook_name").and_return(@response)
-        expect(@knife).to receive(:format_cookbook_list_for_display).with(@response)
-        @knife.run
+        knife.config[:environment] = "foo"
+        expect(rest).to receive(:get).with("environments/foo/cookbooks/cookbook_name").and_return(response)
+        expect(knife).to receive(:format_cookbook_list_for_display).with(response)
+        knife.run
       end
     end
 
     describe "with 2 arguments: name and version" do
-      before(:each) do
-        @knife.name_args << "0.1.0"
-        @response = { "0.1.0" => { "recipes" => { "default.rb" => "" } } }
+      before do
+        knife.name_args << "0.1.0"
       end
 
       it "should show the specific part of a cookbook" do
-        expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@response)
-        expect(@knife).to receive(:output).with(@response)
-        @knife.run
+        expect(Chef::CookbookVersion).to receive(:load).with("cookbook_name", "0.1.0").and_return(cb)
+        expect(knife).to receive(:output).with(cb)
+        knife.run
       end
     end
 
     describe "with 3 arguments: name, version, and segment" do
       before(:each) do
-        @knife.name_args = [ "cookbook_name", "0.1.0", "recipes" ]
-        @cookbook_response = Chef::CookbookVersion.new("cookbook_name")
-        @manifest = {
-          "recipes" => [
-            {
-              :name => "default.rb",
-              :path => "recipes/default.rb",
-              :checksum => "1234",
-              :url => "http://example.org/files/default.rb",
-            },
-          ],
-        }
-        @cookbook_response.manifest = @manifest
-        @response = { "name" => "default.rb", "url" => "http://example.org/files/default.rb", "checksum" => "1234", "path" => "recipes/default.rb" }
+        knife.name_args = [ "cookbook_name", "0.1.0", "recipes" ]
       end
 
       it "should print the json of the part" do
-        expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-        expect(@knife).to receive(:output).with(@cookbook_response.manifest["recipes"])
-        @knife.run
+        expect(Chef::CookbookVersion).to receive(:load).with("cookbook_name", "0.1.0").and_return(cb)
+        expect(knife).to receive(:output).with(cb.manifest["recipes"])
+        knife.run
       end
     end
 
     describe "with 4 arguments: name, version, segment and filename" do
       before(:each) do
-        @knife.name_args = [ "cookbook_name", "0.1.0", "recipes", "default.rb" ]
-        @cookbook_response = Chef::CookbookVersion.new("cookbook_name")
-        @cookbook_response.manifest = {
-          "recipes" => [
-            {
-              :name => "default.rb",
-              :path => "recipes/default.rb",
-              :checksum => "1234",
-              :url => "http://example.org/files/default.rb",
-            },
-          ],
-        }
-        @response = "Example recipe text"
+        knife.name_args = [ "cookbook_name", "0.1.0", "recipes", "default.rb" ]
       end
 
       it "should print the raw result of the request (likely a file!)" do
-        expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-        expect(@rest).to receive(:streaming_request).with("http://example.org/files/default.rb").and_return(StringIO.new(@response))
-        expect(@knife).to receive(:pretty_print).with(@response)
-        @knife.run
+        expect(Chef::CookbookVersion).to receive(:load).with("cookbook_name", "0.1.0").and_return(cb)
+        expect(rest).to receive(:streaming_request).with("http://example.org/files/default.rb").and_return(StringIO.new(content))
+        expect(knife).to receive(:pretty_print).with(content)
+        knife.run
       end
     end
 
     describe "with 4 arguments: name, version, segment and filename -- with specificity" do
       before(:each) do
-        @knife.name_args = [ "cookbook_name", "0.1.0", "files", "afile.rb" ]
-        @cookbook_response = Chef::CookbookVersion.new("cookbook_name")
-        @cookbook_response.manifest = {
+        knife.name_args = [ "cookbook_name", "0.1.0", "files", "afile.rb" ]
+        cb.manifest = {
           "files" => [
             {
               :name => "afile.rb",
@@ -169,51 +169,50 @@ describe Chef::Knife::CookbookShow do
           ],
         }
 
-        @response = "Example recipe text"
       end
 
       describe "with --fqdn" do
         it "should pass the fqdn" do
-          @knife.config[:platform] = "example_platform"
-          @knife.config[:platform_version] = "1.0"
-          @knife.config[:fqdn] = "examplehost.example.org"
-          expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-          expect(@rest).to receive(:streaming_request).with("http://example.org/files/1111").and_return(StringIO.new(@response))
-          expect(@knife).to receive(:pretty_print).with(@response)
-          @knife.run
+          knife.config[:platform] = "example_platform"
+          knife.config[:platform_version] = "1.0"
+          knife.config[:fqdn] = "examplehost.example.org"
+          expect(Chef::CookbookVersion).to receive(:load).with("cookbook_name", "0.1.0").and_return(cb)
+          expect(rest).to receive(:streaming_request).with("http://example.org/files/1111").and_return(StringIO.new(content))
+          expect(knife).to receive(:pretty_print).with(content)
+          knife.run
         end
       end
 
       describe "and --platform" do
         it "should pass the platform" do
-          @knife.config[:platform] = "ubuntu"
-          @knife.config[:platform_version] = "1.0"
-          @knife.config[:fqdn] = "differenthost.example.org"
-          expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-          expect(@rest).to receive(:streaming_request).with("http://example.org/files/3333").and_return(StringIO.new(@response))
-          expect(@knife).to receive(:pretty_print).with(@response)
-          @knife.run
+          knife.config[:platform] = "ubuntu"
+          knife.config[:platform_version] = "1.0"
+          knife.config[:fqdn] = "differenthost.example.org"
+          expect(Chef::CookbookVersion).to receive(:load).with("cookbook_name", "0.1.0").and_return(cb)
+          expect(rest).to receive(:streaming_request).with("http://example.org/files/3333").and_return(StringIO.new(content))
+          expect(knife).to receive(:pretty_print).with(content)
+          knife.run
         end
       end
 
       describe "and --platform-version" do
         it "should pass the platform" do
-          @knife.config[:platform] = "ubuntu"
-          @knife.config[:platform_version] = "9.10"
-          @knife.config[:fqdn] = "differenthost.example.org"
-          expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-          expect(@rest).to receive(:streaming_request).with("http://example.org/files/2222").and_return(StringIO.new(@response))
-          expect(@knife).to receive(:pretty_print).with(@response)
-          @knife.run
+          knife.config[:platform] = "ubuntu"
+          knife.config[:platform_version] = "9.10"
+          knife.config[:fqdn] = "differenthost.example.org"
+          expect(Chef::CookbookVersion).to receive(:load).with("cookbook_name", "0.1.0").and_return(cb)
+          expect(rest).to receive(:streaming_request).with("http://example.org/files/2222").and_return(StringIO.new(content))
+          expect(knife).to receive(:pretty_print).with(content)
+          knife.run
         end
       end
 
       describe "with none of the arguments, it should use the default" do
         it "should pass them all" do
-          expect(@rest).to receive(:get).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-          expect(@rest).to receive(:streaming_request).with("http://example.org/files/4444").and_return(StringIO.new(@response))
-          expect(@knife).to receive(:pretty_print).with(@response)
-          @knife.run
+          expect(Chef::CookbookVersion).to receive(:load).with("cookbook_name", "0.1.0").and_return(cb)
+          expect(rest).to receive(:streaming_request).with("http://example.org/files/4444").and_return(StringIO.new(content))
+          expect(knife).to receive(:pretty_print).with(content)
+          knife.run
         end
       end
 
