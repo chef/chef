@@ -56,7 +56,7 @@ class Chef
         def source_file(source, current_checksum, &block)
           if absolute_uri?(source)
             fetch_from_uri(source, &block)
-          elsif !Chef::Config[:solo]
+          elsif !Chef::Config[:solo_legacy_mode]
             fetch_from_chef_server(source, current_checksum, &block)
           else
             fetch_from_local_cookbook(source, &block)

@@ -18,6 +18,7 @@
 
 require "chef"
 require "chef/application"
+require "chef/application/client"
 require "chef/client"
 require "chef/config"
 require "chef/daemon"
@@ -200,10 +201,23 @@ class Chef::Application::Solo < Chef::Application
     :description    => "DANGEROUS: does what it says, only useful with --recipe-url",
     :boolean        => true
 
+  option :solo_legacy_mode,
+    :long           => "--legacy-mode",
+    :description    => "Run chef-solo in legacy mode",
+    :boolean        => true
+
   attr_reader :chef_client_json
 
-  def initialize
-    super
+  # Get this party started
+  def run
+    setup_signal_handlers
+    reconfigure
+    if !Chef::Config[:solo_legacy_mode]
+      Chef::Application::Client.new.run
+    else
+      setup_application
+      run_application
+    end
   end
 
   def reconfigure
@@ -215,13 +229,21 @@ class Chef::Application::Solo < Chef::Application
 
     Chef::Config[:solo] = true
 
+    Chef::Log.deprecation("-r MUST be changed to --recipe-url, the -r option will be changed in Chef 13.0") if ARGV.include?("-r")
+
+    if !Chef::Config[:solo_legacy_mode]
+      Chef::Config[:local_mode] = true
+    else
+      configure_legacy_mode!
+    end
+  end
+
+  def configure_legacy_mode!
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
     end
 
     Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
-
-    Chef::Log.deprecation("-r MUST be changed to --recipe-url, the -r option will be changed in Chef 13.0") if ARGV.include?("-r")
 
     if Chef::Config[:recipe_url]
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| Pathname.new(e).cleanpath.to_s =~ /\/cookbooks\/*$/ }

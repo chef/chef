@@ -115,7 +115,7 @@ describe Chef::PolicyBuilder::Policyfile do
     end
 
     context "chef-solo" do
-      before { Chef::Config[:solo] = true }
+      before { Chef::Config[:solo_legacy_mode] = true }
 
       it "errors on create" do
         expect { initialize_pb }.to raise_error(err_namespace::UnsupportedFeature)

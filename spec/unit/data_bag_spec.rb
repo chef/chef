@@ -143,13 +143,13 @@ describe Chef::DataBag do
 
     shared_examples_for "data bag in solo mode" do |data_bag_path|
       before do
-        Chef::Config[:solo] = true
+        Chef::Config[:solo_legacy_mode] = true
         Chef::Config[:data_bag_path] = data_bag_path
         @paths = Array(data_bag_path)
       end
 
       after do
-        Chef::Config[:solo] = false
+        Chef::Config[:solo_legacy_mode] = false
       end
 
       it "should get the data bag from the data_bag_path" do

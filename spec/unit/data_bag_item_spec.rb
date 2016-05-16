@@ -365,11 +365,11 @@ describe Chef::DataBagItem do
 
     describe "in solo mode" do
       before do
-        Chef::Config[:solo] = true
+        Chef::Config[:solo_legacy_mode] = true
       end
 
       after do
-        Chef::Config[:solo] = false
+        Chef::Config[:solo_legacy_mode] = false
       end
 
       it "converts the raw data to a data bag item" do

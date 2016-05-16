@@ -24,13 +24,13 @@ describe Chef::Application::Apply do
     allow(@app).to receive(:configure_logging).and_return(true)
     allow(Chef::Log).to receive(:debug).with("FIPS mode is enabled.")
     @recipe_text = "package 'nyancat'"
-    Chef::Config[:solo] = true
+    Chef::Config[:solo_legacy_mode] = true
   end
 
   describe "configuring the application" do
     it "should set solo mode to true" do
       @app.reconfigure
-      expect(Chef::Config[:solo]).to be_truthy
+      expect(Chef::Config[:solo_legacy_mode]).to be_truthy
     end
   end
   describe "read_recipe_file" do

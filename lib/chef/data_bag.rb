@@ -91,7 +91,7 @@ class Chef
     end
 
     def self.list(inflate = false)
-      if Chef::Config[:solo]
+      if Chef::Config[:solo_legacy_mode]
         paths = Array(Chef::Config[:data_bag_path])
         names = []
         paths.each do |path|
@@ -118,7 +118,7 @@ class Chef
 
     # Load a Data Bag by name via either the RESTful API or local data_bag_path if run in solo mode
     def self.load(name)
-      if Chef::Config[:solo]
+      if Chef::Config[:solo_legacy_mode]
         paths = Array(Chef::Config[:data_bag_path])
         data_bag = {}
         paths.each do |path|

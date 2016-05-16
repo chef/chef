@@ -262,7 +262,7 @@ class Chef
         enforce_path_sanity
         run_ohai
 
-        register unless Chef::Config[:solo]
+        register unless Chef::Config[:solo_legacy_mode]
 
         load_node
 
@@ -533,7 +533,7 @@ class Chef
     # @api private
     #
     def save_updated_node
-      if Chef::Config[:solo]
+      if Chef::Config[:solo_legacy_mode]
         # nothing to do
       elsif policy_builder.temporary_policy?
         Chef::Log.warn("Skipping final node save because override_runlist was given")
@@ -936,7 +936,7 @@ class Chef
     end
 
     def assert_cookbook_path_not_empty(run_context)
-      if Chef::Config[:solo]
+      if Chef::Config[:solo_legacy_mode]
         # Check for cookbooks in the path given
         # Chef::Config[:cookbook_path] can be a string or an array
         # if it's an array, go through it and check each one, raise error at the last one if no files are found
