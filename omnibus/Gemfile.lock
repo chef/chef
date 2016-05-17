@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 33ea65e3428bef1cb05b9a36311090fe39e64f8c
+  revision: 7c98e2bbceb741711de408dceba7bd7c813713e4
   specs:
     omnibus (5.4.0)
       aws-sdk (~> 2)
@@ -81,7 +81,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.9.41)
+    chef-config (12.10.24)
       fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
