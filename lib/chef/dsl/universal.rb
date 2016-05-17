@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "chef/dsl/platform_instrospection"
+require "chef/dsl/platform_introspection"
 require "chef/mixin/powershell_out"
 require "chef/mixin/shell_out"
 
