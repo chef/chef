@@ -33,6 +33,7 @@ class Chef
     #
     # Chef::DSL::Core mixes into Recipes, LWRP Providers and Core Providers
     #   - this adds cores providers on top of the Recipe DSL.
+    #   - this is restricted to recipe/resource/provider context where a resource collection exists.
     #   - core chef authors should typically include modules into here.
     #
     # Chef::DSL::Universal mixes into Recipes, LWRP Resources+Providers, Core Resources+Providers, and Attributes files.
