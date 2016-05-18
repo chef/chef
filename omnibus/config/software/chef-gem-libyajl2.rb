@@ -4,3 +4,6 @@
 # another gem's installation.
 require_relative "../../files/chef-gem/build-chef-gem/gem-install-software-def"
 BuildChefGem::GemInstallSoftwareDef.define(self, __FILE__)
+
+license "Apache-2.0"
+license_file "https://github.com/chef/libyajl2-gem/blob/master/LICENSE"
