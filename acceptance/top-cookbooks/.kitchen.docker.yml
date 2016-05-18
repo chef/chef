@@ -5,5 +5,5 @@ suites:
         version: 1.10.0
     run_list:
       - recipe[apt]
-      - recipe[apt-docker]
+      - recipe[chef-apt-docker]
     includes: [ubuntu-14.04]
