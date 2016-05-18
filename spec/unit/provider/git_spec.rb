@@ -267,6 +267,42 @@ SHAS
     end
   end
 
+  context "with a user id" do
+    let(:deploy_user)  { 123 }
+    let(:expected_cmd) { 'git clone "git://github.com/opscode/chef.git" "/my/deploy/dir"' }
+    let(:default_options) do
+      {
+        :user => 123,
+        :environment => { "HOME" => "/home/deployNinja" },
+        :log_tag => "git[web2.0 app]",
+      }
+    end
+    before do
+      @resource.user deploy_user
+      allow(Etc).to receive(:getpwuid).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/deployNinja"))
+    end
+    context "with a specific home" do
+      let (:override_home) do
+        { "HOME" => "/home/masterNinja" }
+      end
+      let(:overrided_options) do
+        {
+          :user => 123,
+          :environment => { "HOME" => "/home/masterNinja" },
+          :log_tag => "git[web2.0 app]",
+        }
+      end
+      before do
+        @resource.environment(override_home)
+      end
+      before { @resource.environment(override_home) }
+      it "clones a repo with amended git options with specific home" do
+        expect(@provider).to receive(:shell_out!).with(expected_cmd, hash_including(overrided_options))
+        @provider.clone
+      end
+    end
+  end
+
   it "runs a clone command with escaped destination" do
     @resource.user "deployNinja"
     allow(Etc).to receive(:getpwnam).and_return(double("Struct::Passwd", :name => @resource.user, :dir => "/home/deployNinja"))

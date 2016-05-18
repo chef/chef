@@ -300,7 +300,12 @@ class Chef
           # user who is executing `git` not the user running Chef.
           env["HOME"] = begin
             require "etc"
-            Etc.getpwnam(@new_resource.user).dir
+            case @new_resource.user
+            when Integer
+              Etc.getpwuid(@new_resource.user).dir
+            else
+              Etc.getpwnam(@new_resource.user.to_s).dir
+            end
           rescue ArgumentError # user not found
             raise Chef::Exceptions::User, "Could not determine HOME for specified user '#{@new_resource.user}' for resource '#{@new_resource.name}'"
           end
