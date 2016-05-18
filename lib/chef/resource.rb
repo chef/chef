@@ -19,7 +19,6 @@
 #
 
 require "chef/exceptions"
-require "chef/dsl/platform_introspection"
 require "chef/dsl/data_query"
 require "chef/dsl/registry_helper"
 require "chef/dsl/reboot_pending"
@@ -42,8 +41,7 @@ require "set"
 require "chef/mixin/deprecation"
 require "chef/mixin/properties"
 require "chef/mixin/provides"
-require "chef/mixin/shell_out"
-require "chef/mixin/powershell_out"
+require "chef/dsl/universal"
 
 class Chef
   class Resource
@@ -53,14 +51,11 @@ class Chef
     #
 
     include Chef::DSL::DataQuery
-    include Chef::DSL::PlatformIntrospection
     include Chef::DSL::RegistryHelper
     include Chef::DSL::RebootPending
     extend Chef::Mixin::Provides
 
-    # This lets user code do things like `not_if { shell_out!("command") }`
-    include Chef::Mixin::ShellOut
-    include Chef::Mixin::PowershellOut
+    include Chef::DSL::Universal
 
     # Bring in `property` and `property_type`
     include Chef::Mixin::Properties

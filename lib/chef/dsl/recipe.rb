@@ -21,7 +21,6 @@ require "chef/exceptions"
 require "chef/dsl/resources"
 require "chef/dsl/definitions"
 require "chef/dsl/data_query"
-require "chef/dsl/platform_introspection"
 require "chef/dsl/include_recipe"
 require "chef/dsl/registry_helper"
 require "chef/dsl/reboot_pending"
@@ -33,20 +32,27 @@ require "chef/mixin/lazy_module_include"
 
 class Chef
   module DSL
-    # This is the "Recipe DSL" which is all the sugar, plus all the resources and definitions
-    # which are mixed into user LWRPs/Resources/Providers.
+    # Part of a family of DSL mixins.
     #
-    # - If you are writing cookbooks:  you have come to the right place, please inject things
-    #   into here if you want to make them available to all recipe and non-core provider code.
+    # Chef::DSL::Recipe mixes into Recipes and LWRP Providers.
+    #   - this does not target core chef resources and providers.
+    #   - this is restricted to recipe/resource/provider context where a resource collection exists.
+    #   - cookbook authors should typically include modules into here.
     #
-    # - If you are writing core chef:  you have likely come to the wrong place, please consider
-    #   dropping your DSL modules into Chef::DSL::Core instead so that we can use them in core
-    #   providers (unless they are *only* intended for recipe code).
+    # Chef::DSL::Core mixes into Recipes, LWRP Providers and Core Providers
+    #   - this adds cores providers on top of the Recipe DSL.
+    #   - this is restricted to recipe/resource/provider context where a resource collection exists.
+    #   - core chef authors should typically include modules into here.
+    #
+    # Chef::DSL::Universal mixes into Recipes, LWRP Resources+Providers, Core Resources+Providers, and Attributes files.
+    #   - this adds resources and attributes files.
+    #   - do not add helpers which manipulate the resource collection.
+    #   - this is for general-purpose stuff that is useful nearly everywhere.
+    #   - it also pollutes the namespace of nearly every context, watch out.
     #
     module Recipe
       include Chef::DSL::Core
       include Chef::DSL::DataQuery
-      include Chef::DSL::PlatformIntrospection
       include Chef::DSL::IncludeRecipe
       include Chef::DSL::RegistryHelper
       include Chef::DSL::RebootPending

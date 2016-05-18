@@ -17,10 +17,9 @@
 # limitations under the License.
 #
 
-require "chef/dsl/declare_resource"
-require "chef/dsl/universal"
-require "chef/mixin/notifying_block"
-require "chef/mixin/lazy_module_include"
+require "chef/dsl/platform_introspection"
+require "chef/mixin/powershell_out"
+require "chef/mixin/shell_out"
 
 class Chef
   module DSL
@@ -42,11 +41,10 @@ class Chef
     #   - this is for general-purpose stuff that is useful nearly everywhere.
     #   - it also pollutes the namespace of nearly every context, watch out.
     #
-    module Core
-      include Chef::DSL::Universal
-      include Chef::DSL::DeclareResource
-      include Chef::Mixin::NotifyingBlock
-      extend Chef::Mixin::LazyModuleInclude
+    module Universal
+      include Chef::DSL::PlatformIntrospection
+      include Chef::Mixin::PowershellOut
+      include Chef::Mixin::ShellOut
     end
   end
 end
