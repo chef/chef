@@ -87,26 +87,27 @@ export FORCE_FFI_YAJL
 # If is it set; we run the acceptance tests, otherwise run rspec tests.
 if [ "x$ACCEPTANCE" != "x" ]; then
   # Find the Chef gem and cd there.
-  # OLD_PATH=$PATH
-  # PATH=/opt/$PROJECT_NAME/bin:/opt/$PROJECT_NAME/embedded/bin:$PATH
-  # cd /opt/$PROJECT_NAME
-  # CHEF_GEM=`bundle show chef`
-  # PATH=$OLD_PATH
+  OLD_PATH=$PATH
+  PATH=/opt/$PROJECT_NAME/bin:/opt/$PROJECT_NAME/embedded/bin:$PATH
+  cd /opt/$PROJECT_NAME
+  CHEF_GEM=`bundle show chef`
+  PATH=$OLD_PATH
 
-  # # On acceptance testers we have Chef DK. We will use its Ruby environment
-  # # to cut down the gem installation time.
-  # PATH=/opt/chefdk/bin:/opt/chefdk/embedded/bin:$PATH
-  # export PATH
+  # On acceptance testers we have Chef DK. We will use its Ruby environment
+  # to cut down the gem installation time.
+  PATH=/opt/chefdk/bin:/opt/chefdk/embedded/bin:$PATH
+  export PATH
 
-  # # Test against the Chef bundle
-  # env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID pwd
-  # # Force `$WORKSPACE/.bundle/config` to be created so bundler doesn't
-  # # attempt to create the file up in the `$CHEF_GEM/acceptance/`. This
-  # # saves us from having to add a `sudo` to any of the `bundle` commands.
-  # env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID bundle config --local gemfile $CHEF_GEM/acceptance/Gemfile
-  # env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID bundle install --deployment
-  # env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID KITCHEN_DRIVER=ec2 KITCHEN_CHEF_CHANNEL=unstable bundle exec chef-acceptance test --force-destroy --data-path $WORKSPACE/chef-acceptance-data
-  exit 0
+  # copy acceptance suites into workspace
+  SUITE_PATH=$WORKSPACE/acceptance
+  mkdir -p $SUITE_PATH
+  cp -R $CHEF_GEM/acceptance/. $SUITE_PATH
+  sudo chown -R $USER:$USER $SUITE_PATH
+
+  cd $SUITE_PATH
+
+  env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID bundle install --deployment
+  env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID KITCHEN_DRIVER=ec2 KITCHEN_CHEF_CHANNEL=unstable bundle exec chef-acceptance test --force-destroy --data-path $WORKSPACE/chef-acceptance-data
 else
   PATH=/opt/$PROJECT_NAME/bin:/opt/$PROJECT_NAME/embedded/bin:$PATH
   export PATH

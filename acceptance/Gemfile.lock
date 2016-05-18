@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/chef-acceptance.git
-  revision: 4abda84e2fadd0452b77a8a88d4fd534843ced55
+  revision: 47e931cec100dce8efae4369a5b03443eaf2b733
   specs:
     chef-acceptance (0.2.0)
       mixlib-shellout (~> 2.0)
