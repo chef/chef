@@ -1,0 +1,6 @@
+DEPENDENCIES
+  data-collector-test
+    path: .acceptance/data-collector-test
+
+GRAPH
+  data-collector-test (0.1.0)
