@@ -33,13 +33,8 @@ class Chef
             shell_out_with_timeout!("make deinstall", :timeout => 300, :env => nil, :cwd => port_dir).status
           end
 
-          # The name of the package (without the version number) as understood by pkg_add and pkg_info.
           def package_name
-            if makefile_variable_value("PKGNAME", port_dir) =~ /^(.+)-[^-]+$/
-              $1
-            else
-              raise Chef::Exceptions::Package, "Unexpected form for PKGNAME variable in #{port_dir}/Makefile"
-            end
+            get_package_name_from_ports
           end
 
           def current_installed_version

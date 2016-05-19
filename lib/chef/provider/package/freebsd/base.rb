@@ -60,6 +60,15 @@ class Chef
             make_v = shell_out_with_timeout!("make -V #{variable}", options.merge!(:env => nil, :returns => [0, 1]))
             make_v.exitstatus.zero? ? make_v.stdout.strip.split($\).first : nil # $\ is the line separator, i.e. newline.
           end
+
+          # The name of the package (without the version number) as understood by pkg, pkg_add and pkg_info.
+          def get_package_name_from_ports
+            if makefile_variable_value("PKGNAME", port_dir) =~ /^(.+)-[^-]+$/
+              $1
+            else
+              raise Chef::Exceptions::Package, "Unexpected form for PKGNAME variable in #{port_dir}/Makefile"
+            end
+          end
         end
 
         class Base < Chef::Provider::Package
