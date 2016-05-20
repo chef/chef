@@ -212,6 +212,7 @@ class Chef::Application::Solo < Chef::Application
   def run
     setup_signal_handlers
     reconfigure
+    for_ezra if Chef::Config[:ez]
     if !Chef::Config[:solo_legacy_mode]
       Chef::Application::Client.new.run
     else
@@ -232,6 +233,14 @@ class Chef::Application::Solo < Chef::Application
     Chef::Log.deprecation("-r MUST be changed to --recipe-url, the -r option will be changed in Chef 13.0") if ARGV.include?("-r")
 
     if !Chef::Config[:solo_legacy_mode]
+      # Because we re-parse ARGV when we move to chef-client, we need to tidy up some options first.
+      ARGV.delete("--ez")
+
+      # -r means something entirely different in chef-client land, so let's replace it with a "safe" value
+      if dash_r = ARGV.index("-r")
+        ARGV[dash_r] = "--recipe-url"
+      end
+
       Chef::Config[:local_mode] = true
     else
       configure_legacy_mode!
@@ -277,7 +286,6 @@ class Chef::Application::Solo < Chef::Application
   end
 
   def run_application
-    for_ezra if Chef::Config[:ez]
     if !Chef::Config[:client_fork] || Chef::Config[:once]
       # Run immediately without interval sleep or splay
       begin
