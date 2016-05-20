@@ -18,9 +18,9 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.11.2)
+    chef (12.11.3)
       bundler (>= 1.10)
-      chef-config (= 12.11.2)
+      chef-config (= 12.11.3)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -45,9 +45,9 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (12.11.2-universal-mingw32)
+    chef (12.11.3-universal-mingw32)
       bundler (>= 1.10)
-      chef-config (= 12.11.2)
+      chef-config (= 12.11.3)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -87,7 +87,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.11.2)
+    chef-config (12.11.3)
       fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -100,12 +100,12 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.3.2)
     ast (2.2.0)
-    aws-sdk (2.3.6)
-      aws-sdk-resources (= 2.3.6)
-    aws-sdk-core (2.3.6)
+    aws-sdk (2.3.7)
+      aws-sdk-resources (= 2.3.7)
+    aws-sdk-core (2.3.7)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.3.6)
-      aws-sdk-core (= 2.3.6)
+    aws-sdk-resources (2.3.7)
+      aws-sdk-core (= 2.3.7)
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
@@ -147,7 +147,7 @@ GEM
       rspec (~> 3.0)
     coderay (1.1.1)
     colorize (0.7.7)
-    compat_resource (12.9.1)
+    compat_resource (12.10.1)
     cucumber-core (1.4.0)
       gherkin (~> 3.2.0)
     debug_inspector (0.0.2)
@@ -334,7 +334,7 @@ GEM
     sawyer (0.7.0)
       addressable (>= 2.3.5, < 2.5)
       faraday (~> 0.8, < 0.10)
-    serverspec (2.35.0)
+    serverspec (2.36.0)
       multi_json
       rspec (~> 3.0)
       rspec-its
@@ -346,7 +346,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.57.2)
+    specinfra (2.57.3)
       net-scp
       net-ssh (>= 2.7, < 4.0)
       net-telnet
