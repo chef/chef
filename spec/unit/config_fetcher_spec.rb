@@ -58,7 +58,7 @@ describe Chef::ConfigFetcher do
             and_return(invalid_json)
 
           expect(Chef::Application).to receive(:fatal!).
-            with(invalid_json_error_regex, 2)
+            with(invalid_json_error_regex, Chef::Exceptions::DeprecatedExitCode.new)
           fetcher.fetch_json
         end
       end
@@ -104,7 +104,7 @@ describe Chef::ConfigFetcher do
               with("").and_return(invalid_json)
 
             expect(Chef::Application).to receive(:fatal!).
-              with(invalid_json_error_regex, 2)
+              with(invalid_json_error_regex, Chef::Exceptions::DeprecatedExitCode.new)
             fetcher.fetch_json
           end
         end

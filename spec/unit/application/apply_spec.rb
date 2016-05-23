@@ -52,7 +52,8 @@ describe Chef::Application::Apply do
 
     describe "when recipe is nil" do
       it "should raise a fatal with the missing filename message" do
-        expect(Chef::Application).to receive(:fatal!).with("No recipe file was provided", 1)
+        expect(Chef::Application).to receive(:fatal!).with("No recipe file was provided",
+          Chef::Exceptions::RecipeNotFound.new)
         @app.read_recipe_file(nil)
       end
     end
@@ -61,7 +62,8 @@ describe Chef::Application::Apply do
         allow(File).to receive(:exist?).with(@recipe_path).and_return(false)
       end
       it "should raise a fatal with the file doesn't exist message" do
-        expect(Chef::Application).to receive(:fatal!).with(/^No file exists at/, 1)
+        expect(Chef::Application).to receive(:fatal!).with(/^No file exists at/,
+          Chef::Exceptions::RecipeNotFound.new)
         @app.read_recipe_file(@recipe_file_name)
       end
     end

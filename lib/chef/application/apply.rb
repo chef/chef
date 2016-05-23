@@ -137,11 +137,11 @@ class Chef::Application::Apply < Chef::Application
 
   def read_recipe_file(file_name)
     if file_name.nil?
-      Chef::Application.fatal!("No recipe file was provided", 1)
+      Chef::Application.fatal!("No recipe file was provided", Chef::Exceptions::RecipeNotFound.new)
     else
       recipe_path = File.expand_path(file_name)
       unless File.exist?(recipe_path)
-        Chef::Application.fatal!("No file exists at #{recipe_path}", 1)
+        Chef::Application.fatal!("No file exists at #{recipe_path}", Chef::Exceptions::RecipeNotFound.new)
       end
       recipe_fh = open(recipe_path)
       recipe_text = recipe_fh.read
@@ -183,7 +183,7 @@ class Chef::Application::Apply < Chef::Application
     else
       if !ARGV[0]
         puts opt_parser
-        Chef::Application.exit! "No recipe file provided", 1
+        Chef::Application.exit! "No recipe file provided", Chef::Exceptions::RecipeNotFound.new
       end
       @recipe_filename = ARGV[0]
       @recipe_text, @recipe_fh = read_recipe_file @recipe_filename
@@ -208,7 +208,7 @@ class Chef::Application::Apply < Chef::Application
       raise
     rescue Exception => e
       Chef::Application.debug_stacktrace(e)
-      Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
+      Chef::Application.fatal!("#{e.class}: #{e.message}", e)
     end
   end
 

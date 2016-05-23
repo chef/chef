@@ -324,7 +324,7 @@ class Chef::Application::Client < Chef::Application
 
     if Chef::Config[:recipe_url]
       if !Chef::Config.local_mode
-        Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode", 1)
+        Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode")
       else
         if Chef::Config[:delete_entire_chef_repo]
           Chef::Log.debug "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
@@ -420,7 +420,7 @@ class Chef::Application::Client < Chef::Application
       rescue SystemExit
         raise
       rescue Exception => e
-        Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
+        Chef::Application.fatal!("#{e.class}: #{e.message}", e)
       end
     else
       interval_run_chef_client
@@ -463,7 +463,7 @@ class Chef::Application::Client < Chef::Application
       retry
     end
 
-    Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
+    Chef::Application.fatal!("#{e.class}: #{e.message}", e)
   end
 
   def test_signal
