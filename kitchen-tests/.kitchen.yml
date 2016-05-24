@@ -5,6 +5,9 @@ driver:
     cpus: 4
     memory: 2048
 
+verifier:
+  name: inspec
+
 provisioner:
   name: chef_github
   chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
@@ -19,17 +22,15 @@ provisioner:
 platforms:
   - name: ubuntu-12.04
   - name: ubuntu-14.04
-  # needs updates for 16.04
-  #- name: ubuntu-16.04
-  # needs updates for 7.2
-  #- name: centos-7.2
+  - name: ubuntu-16.04
+  - name: centos-7.2
   - name: centos-6.7
   # needs fixing for 5.11
-  #- name: centos-5.11
+  # - name: centos-5.11
 
 suites:
   - name: webapp
     run_list:
       - recipe[base::default]
-      - recipe[webapp::default]
+#      - recipe[webapp::default]
     attributes:

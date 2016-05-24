@@ -1,9 +1,12 @@
+puts "CHEF SUGAR THINKS WE ARE ON UBUNTU" if ubuntu?
+puts "CHEF SUGAR THINKS WE ARE ON RHEL" if rhel?
+
 #
 # ubuntu cookbook overrides
 #
 
-default["ubuntu"]["archive_url"] = "mirror://mirrors.ubuntu.com/mirrors.txt"
-default["ubuntu"]["security_url"] = "mirror://mirrors.ubuntu.com/mirrors.txt"
+default["ubuntu"]["archive_url"] = "http://us-west-2.ec2.archive.ubuntu.com/ubuntu"
+default["ubuntu"]["security_url"] = "http://us-west-2.ec2.archive.ubuntu.com/ubuntu"
 default["ubuntu"]["include_source_packages"] = true
 default["ubuntu"]["components"] = "main restricted universe multiverse"
 
@@ -78,3 +81,9 @@ default["resolver"]["search"] = "chef.io"
 
 default["authorization"]["sudo"]["passwordless"] = true
 default["authorization"]["sudo"]["users"] = %w{vagrant centos ubuntu}
+
+#
+# nscd cookbook overrides
+#
+
+default["nscd"]["server_user"] = "nobody"
