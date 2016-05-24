@@ -56,6 +56,12 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
       expect(@provider.current_resource.version).to eq("1.0.0-r1")
     end
 
+    it "should return a current resource with the correct version if the package is found with version with character" do
+      allow(::Dir).to receive(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0d"])
+      @provider.load_current_resource
+      expect(@provider.current_resource.version).to eq("1.0.0d")
+    end
+
     it "should return a current resource with a nil version if the package is not found" do
       allow(::Dir).to receive(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/notgit-1.0.0"])
       @provider.load_current_resource
