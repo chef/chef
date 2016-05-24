@@ -1,14 +1,16 @@
 ---
 driver:
-  name: ec2
-  aws_ssh_key_id: <%= ENV['AWS_KEYPAIR_NAME'] %>
-  region: "us-west-2"
-  availability_zone: "us-west-2a"
-  security_group_ids: ["travis-ci"]
-  instance_type: "m3.medium"
+  name: dokken
+  privileged: true
+  chef_version: latest
+
+transport:
+  name: dokken
 
 provisioner:
   name: chef_github
+  root_path: /opt/kitchen
+  chef_version: latest
   chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
   chef_omnibus_install_options: "-c current"
   github_owner: "chef"
@@ -20,22 +22,90 @@ provisioner:
   client_rb:
     diff_disabled: true
 
-transport:
-  ssh_key: <%= ENV['EC2_SSH_KEY_PATH'] %>
+verifier:
+  name: inspec
 
 platforms:
-  - name: ubuntu-14.04
-    driver:
-      # http://cloud-images.ubuntu.com/locator/ec2/
-      # 14.04 amd64 us-west-2 hvm:ebs-ssd
-      image_id: ami-63ac5803
-  - name: centos-6
-    driver:
-      image_id: ami-05cf2265  
+- name: debian-7
+  driver:
+    image: debian:7
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools
+
+- name: debian-8
+  driver:
+    image: debian:8
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools
+
+- name: centos-5
+  driver:
+    image: centos:5
+    platform: rhel
+    run_command: /sbin/init
+    provision_command:
+      - RUN yum clean all
+      - RUN yum install -y which initscripts net-tools sudo
+
+- name: centos-6
+  driver:
+    image: centos:6
+    intermediate_instructions:
+      - RUN yum clean all
+      - RUN yum -y install which initscripts net-tools sudo
+
+- name: centos-7
+  driver:
+    image: centos:7
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum clean all
+      - RUN yum -y install which initscripts net-tools sudo
+
+- name: fedora-23
+  driver:
+    image: fedora:23
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN dnf -y install yum which initscripts net-tools
+
+- name: ubuntu-12.04
+  driver:
+    image: ubuntu-upstart:12.04
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools
+
+- name: ubuntu-14.04
+  driver:
+    image: ubuntu-upstart:14.04
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools
+
+- name: ubuntu-16.04
+  driver:
+    image: ubuntu:16.04
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools
+
+- name: opensuse-13.2
+  driver:
+    image: opensuse:13.2
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN zypper refresh
 
 suites:
   - name: webapp
     run_list:
       - recipe[base::default]
-      - recipe[webapp::default]
-    attributes:
+#      - recipe[webapp::default]
