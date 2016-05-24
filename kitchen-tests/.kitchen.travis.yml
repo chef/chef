@@ -47,13 +47,14 @@ platforms:
     image: centos:5
     platform: rhel
     run_command: /sbin/init
-    provision_command:
+    intermediate_instructions:
       - RUN yum clean all
       - RUN yum install -y which initscripts net-tools sudo
 
 - name: centos-6
   driver:
     image: centos:6
+    run_command: /sbin/init
     intermediate_instructions:
       - RUN yum clean all
       - RUN yum -y install which initscripts net-tools sudo
