@@ -18,9 +18,9 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.11.3)
+    chef (12.11.4)
       bundler (>= 1.10)
-      chef-config (= 12.11.3)
+      chef-config (= 12.11.4)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -45,9 +45,9 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (12.11.3-universal-mingw32)
+    chef (12.11.4-universal-mingw32)
       bundler (>= 1.10)
-      chef-config (= 12.11.3)
+      chef-config (= 12.11.4)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -87,7 +87,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.11.3)
+    chef-config (12.11.4)
       fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -100,12 +100,12 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.3.2)
     ast (2.2.0)
-    aws-sdk (2.3.7)
-      aws-sdk-resources (= 2.3.7)
-    aws-sdk-core (2.3.7)
+    aws-sdk (2.3.8)
+      aws-sdk-resources (= 2.3.8)
+    aws-sdk-core (2.3.8)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.3.7)
-      aws-sdk-core (= 2.3.7)
+    aws-sdk-resources (2.3.8)
+      aws-sdk-core (= 2.3.8)
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
@@ -147,7 +147,7 @@ GEM
       rspec (~> 3.0)
     coderay (1.1.1)
     colorize (0.7.7)
-    compat_resource (12.10.1)
+    compat_resource (12.10.4)
     cucumber-core (1.4.0)
       gherkin (~> 3.2.0)
     debug_inspector (0.0.2)
@@ -174,12 +174,11 @@ GEM
       yajl-ruby (~> 1.1)
     fuzzyurl (0.8.0)
     gherkin (3.2.0)
-    github_api (0.13.1)
+    github_api (0.14.0)
       addressable (~> 2.4.0)
       descendants_tracker (~> 0.0.4)
       faraday (~> 0.8, < 0.10)
       hashie (>= 3.4)
-      multi_json (>= 1.7.5, < 2.0)
       oauth2
     github_changelog_generator (1.12.1)
       colorize (~> 0.7)
@@ -214,9 +213,9 @@ GEM
       multi_json (~> 1.10)
     logify (0.2.0)
     method_source (0.8.2)
-    mime-types (3.0)
+    mime-types (3.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2016.0221)
+    mime-types-data (3.2016.0521)
     mini_portile2 (2.0.0)
     mixlib-authentication (1.4.0)
       mixlib-log
@@ -225,7 +224,7 @@ GEM
       rspec-mocks (~> 3.2)
     mixlib-cli (1.6.0)
     mixlib-config (2.2.1)
-    mixlib-install (1.0.11)
+    mixlib-install (1.0.12)
       artifactory
       mixlib-shellout
       mixlib-versioning
@@ -346,7 +345,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.57.3)
+    specinfra (2.57.5)
       net-scp
       net-ssh (>= 2.7, < 4.0)
       net-telnet
