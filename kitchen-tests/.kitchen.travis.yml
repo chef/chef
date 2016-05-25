@@ -33,6 +33,7 @@ platforms:
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
       - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools
+      - RUN /bin/mkdir /var/run/sshd
 
 - name: debian-8
   driver:
@@ -50,6 +51,7 @@ platforms:
     intermediate_instructions:
       - RUN yum clean all
       - RUN yum install -y which initscripts net-tools sudo
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: centos-6
   driver:
@@ -58,6 +60,7 @@ platforms:
     intermediate_instructions:
       - RUN yum clean all
       - RUN yum -y install which initscripts net-tools sudo
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: centos-7
   driver:
@@ -66,13 +69,15 @@ platforms:
     intermediate_instructions:
       - RUN yum clean all
       - RUN yum -y install which initscripts net-tools sudo
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: fedora-23
   driver:
     image: fedora:23
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN dnf -y install yum which initscripts net-tools
+      - RUN dnf -y install yum which initscripts net-tools sudo
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: ubuntu-12.04
   driver:
