@@ -97,13 +97,6 @@ end
   end
 end
 
-if %w{debian ubuntu}.include?(os[:family])
-  describe apt("http://us-west-2.ec2.archive.ubuntu.com/ubuntu") do
-    it { should be_enabled }
-    it { should exist }
-  end
-end
-
 describe etc_group.where(group_name: "sysadmin") do
   its("users") { should include "adam" }
   its("gids") { should eq [2300] }
