@@ -7,7 +7,7 @@ old_platforms = Gem.platforms
 Gem.platforms = platforms
 puts "bundle-platform set Gem.platforms to #{Gem.platforms.map { |p| p.to_s }} (was #{old_platforms.map { |p| p.to_s } })"
 
-desired_version = ARGV.shift.delete("_", "")
+desired_version = ARGV.shift.delete("_")
 
 # The rest of this is a normal bundler binstub
 require "pathname"
