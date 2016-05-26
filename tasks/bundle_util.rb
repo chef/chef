@@ -57,7 +57,14 @@ module BundleUtil
 
         # Run the bundle command
         ruby_platforms = platform ? PLATFORMS[platform].join(" ") : "ruby"
-        cmd = Shellwords.join([Gem.ruby, "-S", bundle_platform, ruby_platforms, *args])
+        cmd = Shellwords.join([
+          Gem.ruby,
+          "-S",
+          bundle_platform,
+          ruby_platforms,
+          "_#{desired_bundler_version}_",
+          *args,
+        ])
         puts "#{prefix}#{Shellwords.join(["bundle", *args])}#{platform ? " for #{platform} platform" : ""}:"
         with_gemfile(gemfile) do
           puts "#{prefix}BUNDLE_GEMFILE=#{gemfile}"
@@ -65,7 +72,7 @@ module BundleUtil
           if extract_output
             `#{cmd}`
           else
-            unless system(bundle_platform, ruby_platforms, *args)
+            unless system(bundle_platform, ruby_platforms, "_#{desired_bundler_version}_", *args)
               raise "#{bundle_platform} failed: exit code #{$?}"
             end
           end
@@ -90,5 +97,14 @@ module BundleUtil
 
   def platforms
     PLATFORMS.keys
+  end
+
+  def desired_bundler_version
+    @desired_bundler_version ||= begin
+      omnibus_overrides = File.join(project_root, "omnibus_overrides.rb")
+      File.readlines(omnibus_overrides).each do |line|
+        return $1 if line =~ /^override :bundler, version: "(.+)"$/
+      end
+    end
   end
 end
