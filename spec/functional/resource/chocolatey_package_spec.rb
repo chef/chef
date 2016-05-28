@@ -82,11 +82,6 @@ describe Chef::Resource::ChocolateyPackage, :windows_only do
       subject.package_name "blah"
       expect { subject.run_action(:install) }.to raise_error Chef::Exceptions::Package
     end
-
-    it "raises if package version is not found" do
-      subject.version "3.0"
-      expect { subject.run_action(:install) }.to raise_error Chef::Exceptions::Package
-    end
   end
 
   context "upgrading a package" do
