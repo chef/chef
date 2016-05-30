@@ -50,8 +50,7 @@ class Chef
       allowed_actions :create, :delete, :touch, :create_if_missing
 
       property :path, String, name_property: true, identity: true
-      property :atomic_update, [ true, false ], desired_state: false,
-        default: lazy { |r| r.docker?(r.node) && r.special_docker_files?(r.path) ? false : Chef::Config[:file_atomic_update] }
+      property :atomic_update, [ true, false ], desired_state: false, default: lazy { |r| r.docker?(r.node) && r.special_docker_files?(r.path) ? false : Chef::Config[:file_atomic_update] }
       property :backup, [ Integer, false ], desired_state: false, default: 5
       property :checksum, [ /^[a-zA-Z0-9]{64}$/, nil ]
       property :content, [ String, nil ], desired_state: false
@@ -82,7 +81,7 @@ class Chef
       end
 
       def special_docker_files?(file)
-        %w(/etc/hostname /etc/resolv.conf).include?(Pathname(file).cleanpath.to_path)
+        %w{/etc/hostname /etc/resolv.conf}.include?(Pathname(file).cleanpath.to_path)
       end
     end
   end

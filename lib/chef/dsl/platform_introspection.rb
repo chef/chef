@@ -255,7 +255,7 @@ class Chef
       # true:: if the current node is a docker container
       # false:: if the current node is not a docker container
       def docker?(node)
-        ::File.exist?('/.dockerinit') || ::File.exist?('/.dockerenv')
+        ::File.exist?("/.dockerinit") || ::File.exist?("/.dockerenv")
       end
 
     end
