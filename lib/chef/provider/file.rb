@@ -67,13 +67,7 @@ class Chef
       def initialize(new_resource, run_context)
         @content_class ||= Chef::Provider::File::Content
         if new_resource.respond_to?(:atomic_update)
-          # Resolves https://github.com/chef/chef/issues/4949
-          if docker_guest?(run_context.node) && (new_resource.path == "/etc/resolv.conf" ||
-                                                 new_resource.path == "/etc/hostname")
-            @deployment_strategy = Chef::FileContentManagement::Deploy.strategy(false)
-          else
-            @deployment_strategy = Chef::FileContentManagement::Deploy.strategy(new_resource.atomic_update)
-          end
+          @deployment_strategy = Chef::FileContentManagement::Deploy.strategy(new_resource.atomic_update)
         end
         super
       end
@@ -198,12 +192,6 @@ class Chef
       end
 
       private
-
-      # Return true if we are running in a docker guest, or false otherwise.
-      def docker_guest?(node)
-        node[:virtualization] && node[:virtualization][:systems] &&
-          node[:virtualization][:systems][:docker] && node[:virtualization][:systems][:docker] == "guest"
-      end
 
       # What to check in this resource to see if we're going to be actively managing
       # content (for things like doing checksums in load_current_resource).  Expected to
