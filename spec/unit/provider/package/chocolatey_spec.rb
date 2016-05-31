@@ -59,7 +59,7 @@ Git|2.6.2
 munin-node|1.6.1.20130823
     EOF
     remote_list_obj = double(stdout: remote_list_stdout)
-    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -ar #{package_names.join ' '}#{args}", { timeout: timeout }).and_return(remote_list_obj)
+    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -r #{package_names.join ' '}#{args}", { timeout: timeout }).and_return(remote_list_obj)
   end
 
   describe "#initialize" do
@@ -82,12 +82,6 @@ munin-node|1.6.1.20130823
       allow_remote_list(["git"])
       new_resource.version("2.6.1")
       expect(provider.candidate_version).to eql(["2.6.1"])
-    end
-
-    it "should set the candidate_version to nill if pinning to bogus version" do
-      allow_remote_list(["git"])
-      new_resource.version("2.5.0")
-      expect(provider.candidate_version).to eql([nil])
     end
 
     it "should set the candidate_version to nil if there is no candidate" do
@@ -297,14 +291,6 @@ munin-node|1.6.1.20130823
     it "installing a package that does not exist throws an error" do
       allow_remote_list(["package-does-not-exist"])
       new_resource.package_name("package-does-not-exist")
-      provider.load_current_resource
-      expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
-    end
-
-    it "installing a package version that does not exist throws an error" do
-      allow_remote_list(["git"])
-      new_resource.package_name("git")
-      new_resource.version("2.7.0")
       provider.load_current_resource
       expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
