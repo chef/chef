@@ -41,7 +41,7 @@ class Chef
           globsafe_pkg = Chef::Util::PathHelper.escape_glob_dir(pkg)
           possibilities = Dir["/var/db/pkg/#{globsafe_category || "*"}/#{globsafe_pkg}-*"].map { |d| d.sub(%r{/var/db/pkg/}, "") }
           versions = possibilities.map do |entry|
-            if entry =~ %r{[^/]+/#{Regexp.escape(pkg)}\-(\d[\.\d]*((_(alpha|beta|pre|rc|p)\d*)*)?(-r\d+)?)}
+            if entry =~ %r{[^/]+/#{Regexp.escape(pkg)}\-(\d[\.\d]*[a-z]?((_(alpha|beta|pre|rc|p)\d*)*)?(-r\d+)?)}
               [$&, $1]
             end
           end.compact
