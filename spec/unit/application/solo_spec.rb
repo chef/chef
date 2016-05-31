@@ -187,6 +187,31 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       expect(Chef::Config[:local_mode]).to be_truthy
     end
 
+    context "argv gets tidied up" do
+      before do
+        @original_argv = ARGV.dup
+        ARGV.clear
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      end
+
+      after do
+        ARGV.replace(@original_argv)
+      end
+
+      it "deletes --ez" do
+        ARGV << "--ez"
+        app.reconfigure
+        expect(ARGV.include?("--ez")).to be_falsey
+      end
+
+      it "replaces -r with --recipe-url" do
+        ARGV.push("-r", "http://junglist.gen.nz/recipes.tgz")
+        app.reconfigure
+        expect(ARGV.include?("-r")).to be_falsey
+        expect(ARGV.include?("--recipe-url")).to be_truthy
+      end
+    end
+
     it "runs chef-client in local mode" do
       allow(app).to receive(:setup_application).and_return(true)
       allow(app).to receive(:run_application).and_return(true)
