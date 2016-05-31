@@ -6,17 +6,15 @@ Example Doc Change:
 Description of the required change.
 -->
 
-## Doc changes for Chef 12.9
+## Doc changes for Chef 12.11
 
-### New timeout option added to `knife ssh`
+### RFC 062 Exit Status Support
 
-When doing a `knife ssh` call, if a connection to a host is not able
-to succeed due to host unreachable or down, the entire call can hang. In
-order to prevent this from happening, a new timeout option has been added
-to allow a connection timeout to be passed to the underlying SSH call
-(see ConnectTimeout setting in http://linux.die.net/man/5/ssh_config)
+Starting with Chef Client 12.11, there is support for the consistent, standard exit codes as defined in [Chef RFC 062](https://github.com/chef/chef-rfc/blob/master/rfc062-exit-status.md).
 
-The timeout setting can be passed in via a command line parameter
-(`-t` or `--ssh-timeout`) or via a knife config
-(`Chef::Config[:knife][:ssh_timeout]`).  The value of the timeout is set
-in seconds.
+With no additional configuration when Chef Client exits with a non-standard exit code a deprecation warning will be issued advising users of the upcoming change in behavior.
+
+To enable the standardized exit code behavior, there is a new setting in client.rb.  The `exit_status` setting, when set to `:enabled` will enforce standarized exit codes.  In a future release, this will become the default behavior.
+
+If you need to maintain the previous exit code behavior to support your current workflow, you can disable this (and the deprecation warnings) by setting `exit_status` to `:disabled`.
+
