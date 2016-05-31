@@ -245,6 +245,22 @@ class Chef
         end
       end
 
+      # Shamelessly stolen from https://github.com/sethvargo/chef-sugar/blob/master/lib/chef/sugar/docker.rb
+      # Given a node object, returns whether the node is a docker container.
+      #
+      # === Parameters
+      # node:: [Chef::Node] The node to check.
+      #
+      # === Returns
+      # true:: if the current node is a docker container
+      # false:: if the current node is not a docker container
+      def docker?(node = run_context.nil? ? nil : run_context.node)
+        # Using "File.exist?('/.dockerinit') || File.exist?('/.dockerenv')" makes Travis sad,
+        # and that makes us sad too.
+        node && node[:virtualization] && node[:virtualization][:systems] &&
+          node[:virtualization][:systems][:docker] && node[:virtualization][:systems][:docker] == "guest"
+      end
+
     end
   end
 end
