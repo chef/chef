@@ -654,6 +654,69 @@ describe Chef::Provider::SystemdUnit do
         end
       end
 
+      describe "try-restarts the unit" do
+        context "when a user is specified" do
+          it "try-restarts the unit" do
+            current_resource.user(user_name)
+            expect(provider).to receive(:shell_out_with_systems_locale!)
+                                  .with("#{systemctl_path} --user try-restart #{unit_name}", user_cmd_opts)
+                                  .and_return(shell_out_success)
+            provider.action_try_restart
+          end
+        end
+
+        context "when no user is specified" do
+          it "try-restarts the unit" do
+            expect(provider).to receive(:shell_out_with_systems_locale!)
+                                  .with("#{systemctl_path} --system try-restart #{unit_name}", {})
+                                  .and_return(shell_out_success)
+            provider.action_try_restart
+          end
+        end
+      end
+
+      describe "reload-or-restarts the unit" do
+        context "when a user is specified" do
+          it "reload-or-restarts the unit" do
+            current_resource.user(user_name)
+            expect(provider).to receive(:shell_out_with_systems_locale!)
+                                  .with("#{systemctl_path} --user reload-or-restart #{unit_name}", user_cmd_opts)
+                                  .and_return(shell_out_success)
+            provider.action_reload_or_restart
+          end
+        end
+
+        context "when no user is specified" do
+          it "reload-or-restarts the unit" do
+            expect(provider).to receive(:shell_out_with_systems_locale!)
+                                  .with("#{systemctl_path} --system reload-or-restart #{unit_name}", {})
+                                  .and_return(shell_out_success)
+            provider.action_reload_or_restart
+          end
+        end
+      end
+
+      describe "reload-or-try-restarts the unit" do
+        context "when a user is specified" do
+          it "reload-or-try-restarts the unit" do
+            current_resource.user(user_name)
+            expect(provider).to receive(:shell_out_with_systems_locale!)
+                                  .with("#{systemctl_path} --user reload-or-try-restart #{unit_name}", user_cmd_opts)
+                                  .and_return(shell_out_success)
+            provider.action_reload_or_try_restart
+          end
+        end
+
+        context "when no user is specified" do
+          it "reload-or-try-restarts the unit" do
+            expect(provider).to receive(:shell_out_with_systems_locale!)
+                                  .with("#{systemctl_path} --system reload-or-try-restart #{unit_name}", {})
+                                  .and_return(shell_out_success)
+            provider.action_reload_or_try_restart
+          end
+        end
+      end
+
       describe "#active?" do
         before(:each) do
           provider.current_resource = current_resource

@@ -143,6 +143,24 @@ class Chef
         end
       end
 
+      def action_try_restart
+        converge_by("try-restarting unit: #{new_resource.name}") do
+          systemctl_execute!("try-restart", new_resource.name)
+        end
+      end
+
+      def action_reload_or_restart
+        converge_by("reload-or-restarting unit: #{new_resource.name}") do
+          systemctl_execute!("reload-or-restart", new_resource.name)
+        end
+      end
+
+      def action_reload_or_try_restart
+        converge_by("reload-or-try-restarting unit: #{new_resource.name}") do
+          systemctl_execute!("reload-or-try-restart", new_resource.name)
+        end
+      end
+
       def active?
         systemctl_execute("is-active", new_resource.name).exitstatus == 0
       end
