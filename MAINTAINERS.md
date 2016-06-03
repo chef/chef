@@ -36,6 +36,7 @@ To mention the team, use @chef/client-core
 * [AJ Christensen](https://github.com/fujin)
 * [Phil Dibowitz](https://github.com/jaymzh)
 * [Jay Mundrawala](https://github.com/jaym)
+* [John Keiser](https://github.com/jkeiser)
 * [Jon Cowie](https://github.com/jonlives)
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Claire McQuin](https://github.com/mcquin)
@@ -65,6 +66,7 @@ To mention the team, use @chef/client-dev-tools
 ### Maintainers
 
 * [Daniel DeLeo](https://github.com/danielsdeleo)
+* [John Keiser](https://github.com/jkeiser)
 * [Joshua Timberman](https://github.com/jtimberman)
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Steven Danna](https://github.com/stevendanna)
@@ -197,11 +199,11 @@ To mention the team, use @chef/client-nxos
 
 ### Lieutenant
 
-* [Carl Perry](https://github.com/edolnx)
+* [Adam Leff](https://github.com/adamleff)
 
 ### Maintainers
 
-* [Carl Perry](https://github.com/edolnx)
+* [Adam Leff](https://github.com/adamleff)
 
 ## Cisco IOS XR
 
@@ -209,11 +211,11 @@ To mention the team, use @chef/client-iosxr
 
 ### Lieutenant
 
-* [Carl Perry](https://github.com/edolnx)
+* [Adam Leff](https://github.com/adamleff)
 
 ### Maintainers
 
-* [Carl Perry](https://github.com/edolnx)
+* [Adam Leff](https://github.com/adamleff)
 
 ## Fedora
 
