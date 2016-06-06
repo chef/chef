@@ -1,5 +1,41 @@
 # Change Log
 
+## [v12.11.18](https://github.com/chef/chef/tree/v12.11.18) (2016-06-02)
+[Full Changelog](https://github.com/chef/chef/compare/v12.11.17...v12.11.18)
+
+**Implemented Enhancements:**
+
+- Creation of the new DataCollector reporter [\#4973](https://github.com/chef/chef/pull/4973) ([adamleff](https://github.com/adamleff))
+- Add systemd\_unit try-restart, reload-or-restart, reload-or-try-restart actions [\#4908](https://github.com/chef/chef/pull/4908) ([nathwill](https://github.com/nathwill))
+- RFC062 exit status chef client [\#4611](https://github.com/chef/chef/pull/4611) ([smurawski](https://github.com/smurawski))
+- Create 'universal' DSL [\#4942](https://github.com/chef/chef/pull/4942) ([lamont-granquist](https://github.com/lamont-granquist))
+- Handle numeric id for the user value in the git resource [\#4902](https://github.com/chef/chef/pull/4902) ([MichaelPereira](https://github.com/MichaelPereira))
+- RFC 31 - Default solo to local mode [\#4919](https://github.com/chef/chef/pull/4919) ([thommay](https://github.com/thommay))
+- Wire up chef handlers directly from libraries [\#4933](https://github.com/chef/chef/pull/4933) ([lamont-granquist](https://github.com/lamont-granquist))
+- Reject malformed ini content in systemd\_unit resource [\#4907](https://github.com/chef/chef/pull/4907) ([nathwill](https://github.com/nathwill))
+- Update usage of @new\_resource.destination to `cwd` within the git hwrp [\#4898](https://github.com/chef/chef/pull/4898) ([joshburt](https://github.com/joshburt))
+- Support Ruby Files in ChefFS [\#4887](https://github.com/chef/chef/pull/4887) ([thommay](https://github.com/thommay))
+- Adds a system check for fips enablement and runs in fips mode if enabled [\#4880](https://github.com/chef/chef/pull/4880) ([mwrock](https://github.com/mwrock))
+- Lazy'ing candidate\_version in package provider [\#4869](https://github.com/chef/chef/pull/4869) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add systemd\_unit resource [\#4700](https://github.com/chef/chef/pull/4700) ([nathwill](https://github.com/nathwill))
+- Bump chef-zero to avoid aggressive logging [\#4878](https://github.com/chef/chef/pull/4878) ([stevendanna](https://github.com/stevendanna))
+
+**Fixed Bugs:**
+
+- Fix \#4949 and Avoid Errno::EBUSY on docker containers [\#4979](https://github.com/chef/chef/pull/4979) ([andrewjamesbrown](https://github.com/andrewjamesbrown))
+- Ensure recipe-url works right in solo [\#4957](https://github.com/chef/chef/pull/4957) ([thommay](https://github.com/thommay))
+- Fix portage provider to support version with character [\#4966](https://github.com/chef/chef/pull/4966) ([crigor](https://github.com/crigor))
+- Fixes \#4968 and only retrieves the latest version of packages from chocolatey [\#4977](https://github.com/chef/chef/pull/4977) ([mwrock](https://github.com/mwrock))
+- Update contributing doc to better reflect reality [\#4962](https://github.com/chef/chef/pull/4962) ([tas50](https://github.com/tas50))
+- Load cookbook versions correctly for knife [\#4936](https://github.com/chef/chef/pull/4936) ([thommay](https://github.com/thommay))
+- Gem metadata command needs Gem.clear\_paths [\#4929](https://github.com/chef/chef/pull/4929) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix os x profile provider for nil [\#4921](https://github.com/chef/chef/pull/4921) ([achand](https://github.com/achand))
+- Cookbook site install : tar error on windows [\#4867](https://github.com/chef/chef/pull/4867) ([willoucom](https://github.com/willoucom))
+- Fix yum\_package breakage \(the =~ operator in ruby is awful\) [\#4912](https://github.com/chef/chef/pull/4912) ([lamont-granquist](https://github.com/lamont-granquist))
+- Encode registry enumerated values and keys to utf8 instead of the local codepage [\#4906](https://github.com/chef/chef/pull/4906) ([mwrock](https://github.com/mwrock))
+- Chocolatey Package Provider chomps nil object [\#4760](https://github.com/chef/chef/pull/4760) ([svmastersamurai](https://github.com/svmastersamurai))
+- Fixes knife ssl check on windows [\#4886](https://github.com/chef/chef/pull/4886) ([mwrock](https://github.com/mwrock))
+
 ## [v12.10.24](https://github.com/chef/chef/tree/v12.10.24) (2016-04-27)
 [Full Changelog](https://github.com/chef/chef/compare/v12.10.23...v12.10.24)
 
