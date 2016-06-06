@@ -13,7 +13,7 @@ gem "chef", path: "."
 
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
 # Ensure that we can always install rake, regardless of gem groups
-gem "rake"
+gem "rake", group: [ :default, :omnibus_package, :development ]
 gem "bundler"
 gem "cheffish"
 
