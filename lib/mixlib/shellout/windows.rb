@@ -333,13 +333,21 @@ module Mixlib
           ]
         end
 
+        def self.unsafe_process?(name, logger)
+          return false unless system_required_processes.include? name
+          logger.debug(
+            "A request to kill a critical system process - #{name} - was received and skipped."
+          )
+          true
+        end
+
         # recursively kills all child processes of given pid
         # calls itself querying for children child procs until
         # none remain. Important that a single WmiLite instance
         # is passed in since each creates its own WMI rpc process
         def self.kill_process_tree(pid, wmi, logger)
           wmi.query("select * from Win32_Process where ParentProcessID=#{pid}").each do |instance|
-            next if system_required_processes.include? instance.wmi_ole_object.name
+            next if unsafe_process?(instance.wmi_ole_object.name, logger)
             child_pid = instance.wmi_ole_object.processid
             kill_process_tree(child_pid, wmi, logger)
             kill_process(instance, logger)

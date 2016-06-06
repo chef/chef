@@ -114,10 +114,12 @@ describe 'Mixlib::ShellOut::Windows', :windows_only do
       let(:wmi) { Object.new }
       let(:wmi_ole_object) { Object.new }
       let(:wmi_process) { Object.new }
+      let(:logger) { Object.new }
 
       before do
         allow(wmi).to receive(:query).and_return([wmi_process])
         allow(wmi_process).to receive(:wmi_ole_object).and_return(wmi_ole_object)
+        allow(logger).to receive(:debug)
       end
 
       context 'with a protected system process in the process tree' do
@@ -128,7 +130,7 @@ describe 'Mixlib::ShellOut::Windows', :windows_only do
 
         it 'does not attempt to kill csrss.exe' do
           expect(utils).to_not receive(:kill_process)
-          utils.kill_process_tree(200, wmi, nil)
+          utils.kill_process_tree(200, wmi, logger)
         end
       end
 
@@ -139,10 +141,10 @@ describe 'Mixlib::ShellOut::Windows', :windows_only do
         end
 
         it 'does attempt to kill blah.exe' do
-          expect(utils).to receive(:kill_process).with(wmi_process, nil)
-          expect(utils).to receive(:kill_process_tree).with(200, wmi, nil).and_call_original
-          expect(utils).to receive(:kill_process_tree).with(300, wmi, nil)
-          utils.kill_process_tree(200, wmi, nil)
+          expect(utils).to receive(:kill_process).with(wmi_process, logger)
+          expect(utils).to receive(:kill_process_tree).with(200, wmi, logger).and_call_original
+          expect(utils).to receive(:kill_process_tree).with(300, wmi, logger)
+          utils.kill_process_tree(200, wmi, logger)
         end
       end
     end
