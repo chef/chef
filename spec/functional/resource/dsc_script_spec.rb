@@ -469,6 +469,7 @@ EOF
     end
 
     it "allows the use of ps_credential" do
+      pending("Pended until we can adjust the test cert to meet the WMF 5 cert requirements.")
       expect(user_exists?(dsc_user)).to eq(false)
       powershell_script_resource.run_action(:run)
       expect(File).to exist(configuration_data_path)
