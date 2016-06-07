@@ -51,13 +51,12 @@ class Chef
     # and exports its data through a webhook-like mechanism to a configured
     # endpoint.
     class Reporter < EventDispatch::Base
-      attr_reader :updated_resources, :status, :exception, :error_descriptions,
-                  :expanded_run_list, :run_status, :http, :resource_count,
+      attr_reader :completed_resources, :status, :exception, :error_descriptions,
+                  :expanded_run_list, :run_status, :http,
                   :current_resource_report, :enabled
 
       def initialize
-        @updated_resources       = []
-        @resource_count          = 0
+        @completed_resources     = []
         @current_resource_loaded = nil
         @error_descriptions      = {}
         @expanded_run_list       = {}
@@ -111,20 +110,16 @@ class Chef
       end
 
       # see EventDispatch::Base#resource_up_to_date
-      # Mark our ResourceReport status accordingly, and increment the total
-      # resource count.
+      # Mark our ResourceReport status accordingly
       def resource_up_to_date(new_resource, action)
         current_resource_report.up_to_date unless nested_resource?(new_resource)
-        increment_resource_count
       end
 
       # see EventDispatch::Base#resource_skipped
-      # Increment the total resource count. If this is a top-level resource,
-      # we also create a ResourceReport instance (because a skipped resource
-      # does not trigger the resource_current_state_loaded event), and flag
-      # it as skipped.
+      # If this is a top-level resource, we create a ResourceReport instance
+      # (because a skipped resource does not trigger the
+      # resource_current_state_loaded event), and flag it as skipped.
       def resource_skipped(new_resource, action, conditional)
-        increment_resource_count
         return if nested_resource?(new_resource)
 
         update_current_resource_report(
@@ -138,19 +133,17 @@ class Chef
 
       # see EventDispatch::Base#resource_updated
       # Flag the current ResourceReport instance as updated (as long as it's
-      # a top-level resource) and increment the total resource count.
+      # a top-level resource).
       def resource_updated(new_resource, action)
         current_resource_report.updated unless nested_resource?(new_resource)
-        increment_resource_count
       end
 
       # see EventDispatch::Base#resource_failed
       # Flag the current ResourceReport as failed and supply the exception as
-      # long as it's a top-level resource, increment the total resource count,
-      # and update the run error text with the proper Formatter.
+      # long as it's a top-level resource, and update the run error text
+      # with the proper Formatter.
       def resource_failed(new_resource, action, exception)
         current_resource_report.failed(exception) unless nested_resource?(new_resource)
-        increment_resource_count
         update_error_description(
           Formatters::ErrorMapper.resource_failed(
             new_resource,
@@ -167,7 +160,7 @@ class Chef
       def resource_completed(new_resource)
         if current_resource_report && !nested_resource?(new_resource)
           current_resource_report.finish
-          add_updated_resource(current_resource_report)
+          add_completed_resource(current_resource_report)
           update_current_resource_report(nil)
         end
       end
@@ -278,8 +271,7 @@ class Chef
           Chef::DataCollector::Messages.run_end_message(
             run_status: run_status,
             expanded_run_list: expanded_run_list,
-            total_resource_count: resource_count,
-            updated_resources: updated_resources,
+            completed_resources: completed_resources,
             status: opts[:status],
             error_descriptions: error_descriptions
           ).to_json
@@ -305,12 +297,8 @@ class Chef
         Chef::Config[:data_collector][:token]
       end
 
-      def increment_resource_count
-        @resource_count += 1
-      end
-
-      def add_updated_resource(resource_report)
-        @updated_resources << resource_report
+      def add_completed_resource(resource_report)
+        @completed_resources << resource_report
       end
 
       def disable_data_collector_reporter
