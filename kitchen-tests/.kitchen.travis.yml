@@ -76,7 +76,7 @@ platforms:
     image: fedora:23
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN dnf -y install yum which initscripts net-tools sudo
+      - RUN dnf -y install yum which initscripts rpm-build zlib-devel net-tools sudo
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: ubuntu-12.04
