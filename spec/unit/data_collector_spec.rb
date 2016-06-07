@@ -226,15 +226,9 @@ describe Chef::DataCollector::Reporter do
     let(:resource_report) { double("resource_report") }
 
     before do
-      allow(reporter).to receive(:increment_resource_count)
       allow(reporter).to receive(:nested_resource?)
       allow(reporter).to receive(:current_resource_report).and_return(resource_report)
       allow(resource_report).to receive(:up_to_date)
-    end
-
-    it "increments the resource count" do
-      expect(reporter).to receive(:increment_resource_count)
-      reporter.resource_up_to_date(new_resource, action)
     end
 
     context "when the resource is a nested resource" do
@@ -261,15 +255,9 @@ describe Chef::DataCollector::Reporter do
     let(:resource_report) { double("resource_report") }
 
     before do
-      allow(reporter).to receive(:increment_resource_count)
       allow(reporter).to receive(:nested_resource?)
       allow(reporter).to receive(:current_resource_report).and_return(resource_report)
       allow(resource_report).to receive(:skipped)
-    end
-
-    it "increments the resource count" do
-      expect(reporter).to receive(:increment_resource_count)
-      reporter.resource_skipped(new_resource, action, conditional)
     end
 
     context "when the resource is a nested resource" do
@@ -307,11 +295,6 @@ describe Chef::DataCollector::Reporter do
       allow(resource_report).to receive(:updated)
     end
 
-    it "increments the resource count" do
-      expect(reporter).to receive(:increment_resource_count)
-      reporter.resource_updated("new_resource", "action")
-    end
-
     it "marks the resource report as updated" do
       expect(resource_report).to receive(:updated)
       reporter.resource_updated("new_resource", "action")
@@ -326,17 +309,11 @@ describe Chef::DataCollector::Reporter do
     let(:resource_report) { double("resource_report") }
 
     before do
-      allow(reporter).to receive(:increment_resource_count)
       allow(reporter).to receive(:update_error_description)
       allow(reporter).to receive(:current_resource_report).and_return(resource_report)
       allow(resource_report).to receive(:failed)
       allow(Chef::Formatters::ErrorMapper).to receive(:resource_failed).and_return(error_mapper)
       allow(error_mapper).to receive(:for_json)
-    end
-
-    it "increments the resource count" do
-      expect(reporter).to receive(:increment_resource_count)
-      reporter.resource_failed(new_resource, action, exception)
     end
 
     it "updates the error description" do
@@ -372,7 +349,7 @@ describe Chef::DataCollector::Reporter do
     let(:resource_report) { double("resource_report") }
 
     before do
-      allow(reporter).to receive(:add_updated_resource)
+      allow(reporter).to receive(:add_completed_resource)
       allow(reporter).to receive(:update_current_resource_report)
       allow(resource_report).to receive(:finish)
     end
@@ -380,7 +357,7 @@ describe Chef::DataCollector::Reporter do
     context "when there is no current resource report" do
       it "does not add the updated resource" do
         allow(reporter).to receive(:current_resource_report).and_return(nil)
-        expect(reporter).not_to receive(:add_updated_resource)
+        expect(reporter).not_to receive(:add_completed_resource)
         reporter.resource_completed(new_resource)
       end
     end
@@ -393,7 +370,7 @@ describe Chef::DataCollector::Reporter do
       context "when the resource is a nested resource" do
         it "does not add the updated resource" do
           allow(reporter).to receive(:nested_resource?).with(new_resource).and_return(true)
-          expect(reporter).not_to receive(:add_updated_resource)
+          expect(reporter).not_to receive(:add_completed_resource)
           reporter.resource_completed(new_resource)
         end
       end
@@ -409,7 +386,7 @@ describe Chef::DataCollector::Reporter do
         end
 
         it "adds the resource to the updated resource list" do
-          expect(reporter).to receive(:add_updated_resource).with(resource_report)
+          expect(reporter).to receive(:add_completed_resource).with(resource_report)
           reporter.resource_completed(new_resource)
         end
 

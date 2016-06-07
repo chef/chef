@@ -61,12 +61,13 @@ describe Chef::DataCollector::Messages do
   end
 
   describe '#run_end_message' do
-    let(:run_status)    { Chef::RunStatus.new(Chef::Node.new, Chef::EventDispatch::Dispatcher.new) }
-    let(:resource)      { double("resource", for_json: "resource_data") }
+    let(:run_status) { Chef::RunStatus.new(Chef::Node.new, Chef::EventDispatch::Dispatcher.new) }
+    let(:resource1)  { double("resource1", for_json: "resource_data", status: "updated") }
+    let(:resource2)  { double("resource2", for_json: "resource_data", status: "skipped") }
     let(:reporter_data) do
       {
         run_status: run_status,
-        updated_resources: [resource],
+        completed_resources: [resource1, resource2],
       }
     end
 
@@ -115,6 +116,12 @@ describe Chef::DataCollector::Messages do
           !required_fields.include?(key) && !optional_fields.include?(key)
         end
         expect(extra_fields).to eq([])
+      end
+
+      it "only includes updated resources in its count" do
+        message = Chef::DataCollector::Messages.run_end_message(reporter_data)
+        expect(message["total_resource_count"]).to eq(2)
+        expect(message["updated_resource_count"]).to eq(1)
       end
     end
 
