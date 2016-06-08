@@ -9,7 +9,7 @@ Please see `https://docs.chef.io/release/<major>-<minor>/release_notes.html` for
 
 Also introduced is a new configuration setting - `exit_status`.  
 
-By default in this release, `exit_status` is `nil` and the default behavior will be to warn on the use of deprecated and non-standard exit codes.  `exit_status` can be set to `:enabled`, which will force chef-client to exit with then RFC defined exit codes and any non-standard exit statuses will be converted to `1` or GENERIC_FAILURE.  `exit_status` can also be set to `:disabled` which preserves the old behavior of non-standardized exit status and skips the deprecation warnings.
+By default in this release, `exit_status` is `nil` and the default behavior will be to warn on the use of deprecated and non-standard exit codes.  `exit_status` can be set to `:enabled`, which will force chef-client to exit with the RFC defined exit codes and any non-standard exit statuses will be converted to `1` or GENERIC_FAILURE.  `exit_status` can also be set to `:disabled` which preserves the old behavior of non-standardized exit status and skips the deprecation warnings.
 
 ## New Data Collector functionality for run statistics
 
