@@ -22,3 +22,36 @@ To enable the Data Collector, specify the following settings in your client conf
  * `data_collector.mode`: The Chef mode in which the Data Collector should run. For example, this allows you to only enable Data Collector in Chef Solo but not Chef Client. Available options are `:solo`, `:client`, or `:both`. Default is `:both`.
  * `data_collector.raise_on_failure`: If enabled, Chef will raise an exception and fail to run if the Data Collector cannot be reached at the start of the Chef run. Defaults to `false`.
  * `data_collector.organization`: Optional. In Solo mode, the `organization` field in the messages will be set to this value. Default is `chef_solo`. This field does not apply to Chef Client mode.
+
+## Replace chef-solo with chef-client local mode
+
+The default operation of `chef-solo` is now the equivalent to `chef-client -z`, but allows for the old style `chef-solo` by uttering `chef-solo --legacy-mode`. As part of this effort, environment and role files written in ruby are now fully supported by `knife upload`.
+
+## Added a `systemd_unit` resource
+
+A new `systemd_unit` resource is now available. This resource supports the following properties:
+
+* `enabled` - boolean
+* `active` - boolean
+* `masked` - boolean
+* `static` - boolean
+* `user` - String
+* `content` - String or Hash
+* `triggers_reload` - boolean
+
+It has these possible actions:
+
+* `:nothing` - default
+* `:create`
+* `:delete`
+* `:enable`
+* `:disable`
+* `:mask`
+* `:unmask`
+* `:start`
+* `:stop`
+* `:restart`
+* `:reload`
+* `:try_restart`
+* `:reload_or_restart`
+* `:reload_or_try_restart`
