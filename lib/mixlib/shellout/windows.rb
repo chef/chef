@@ -321,31 +321,51 @@ module Mixlib
           File.executable?(path) && !File.directory?(path)
         end
 
+        def self.system_required_processes
+          [
+            'System Idle Process',
+            'System',
+            'spoolsv.exe',
+            'lsass.exe',
+            'csrss.exe',
+            'smss.exe',
+            'svchost.exe'
+          ]
+        end
+
+        def self.unsafe_process?(name, logger)
+          return false unless system_required_processes.include? name
+          logger.debug(
+            "A request to kill a critical system process - #{name} - was received and skipped."
+          )
+          true
+        end
+
         # recursively kills all child processes of given pid
         # calls itself querying for children child procs until
         # none remain. Important that a single WmiLite instance
         # is passed in since each creates its own WMI rpc process
         def self.kill_process_tree(pid, wmi, logger)
           wmi.query("select * from Win32_Process where ParentProcessID=#{pid}").each do |instance|
+            next if unsafe_process?(instance.wmi_ole_object.name, logger)
             child_pid = instance.wmi_ole_object.processid
             kill_process_tree(child_pid, wmi, logger)
-            begin
-              logger.debug([
-                "killing child process #{child_pid}::",
-                "#{instance.wmi_ole_object.Name} of parent #{pid}"
-                ].join) if logger
-              kill_process(instance)
-            rescue Errno::EIO, SystemCallError
-              logger.debug([
-                "Failed to kill child process #{child_pid}::",
-                "#{instance.wmi_ole_object.Name} of parent #{pid}"
-              ].join) if logger
-            end
+            kill_process(instance, logger)
           end
         end
 
-        def self.kill_process(instance)
+        def self.kill_process(instance, logger)
+          child_pid = instance.wmi_ole_object.processid
+          logger.debug([
+            "killing child process #{child_pid}::",
+            "#{instance.wmi_ole_object.Name} of parent #{pid}"
+            ].join) if logger
           Process.kill(:KILL, instance.wmi_ole_object.processid)
+        rescue Errno::EIO, SystemCallError
+          logger.debug([
+            "Failed to kill child process #{child_pid}::",
+            "#{instance.wmi_ole_object.Name} of parent #{pid}"
+          ].join) if logger
         end
 
         def self.format_process(process, app_name, command_line, timeout)

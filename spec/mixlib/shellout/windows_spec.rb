@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'Mixlib::ShellOut::Windows', :windows_only do
- 
+
   describe 'Utils' do
     describe '.should_run_under_cmd?' do
       subject { Mixlib::ShellOut::Windows::Utils.should_run_under_cmd?(command) }
@@ -108,6 +108,46 @@ describe 'Mixlib::ShellOut::Windows', :windows_only do
         end
       end
     end
+
+    describe '.kill_process_tree' do
+      let(:utils) { Mixlib::ShellOut::Windows::Utils }
+      let(:wmi) { Object.new }
+      let(:wmi_ole_object) { Object.new }
+      let(:wmi_process) { Object.new }
+      let(:logger) { Object.new }
+
+      before do
+        allow(wmi).to receive(:query).and_return([wmi_process])
+        allow(wmi_process).to receive(:wmi_ole_object).and_return(wmi_ole_object)
+        allow(logger).to receive(:debug)
+      end
+
+      context 'with a protected system process in the process tree' do
+        before do
+          allow(wmi_ole_object).to receive(:name).and_return('csrss.exe')
+          allow(wmi_ole_object).to receive(:processid).and_return(100)
+        end
+
+        it 'does not attempt to kill csrss.exe' do
+          expect(utils).to_not receive(:kill_process)
+          utils.kill_process_tree(200, wmi, logger)
+        end
+      end
+
+      context 'with a non-system-critical process in the process tree' do
+        before do
+          allow(wmi_ole_object).to receive(:name).and_return('blah.exe')
+          allow(wmi_ole_object).to receive(:processid).and_return(300)
+        end
+
+        it 'does attempt to kill blah.exe' do
+          expect(utils).to receive(:kill_process).with(wmi_process, logger)
+          expect(utils).to receive(:kill_process_tree).with(200, wmi, logger).and_call_original
+          expect(utils).to receive(:kill_process_tree).with(300, wmi, logger)
+          utils.kill_process_tree(200, wmi, logger)
+        end
+      end
+    end
   end
 
   # Caveat: Private API methods are subject to change without notice.
@@ -170,7 +210,7 @@ describe 'Mixlib::ShellOut::Windows', :windows_only do
           allow(ENV).to receive(:[]).with('COMSPEC').and_return('C:\Windows\system32\cmd.exe')
           allow(File).to receive(:executable?).and_return(false)
           allow(File).to receive(:executable?).with(executable_path).and_return(true)
-          allow(File).to receive(:directory?).and_return(false)            
+          allow(File).to receive(:directory?).and_return(false)
         end
 
         it 'should return with full path with extension' do
@@ -181,7 +221,7 @@ describe 'Mixlib::ShellOut::Windows', :windows_only do
           before do
             # File.executable? returns true for directories
             allow(File).to receive(:executable?).with(cmd).and_return(true)
-            allow(File).to receive(:directory?).with(cmd).and_return(true)            
+            allow(File).to receive(:directory?).with(cmd).and_return(true)
           end
 
           it 'should return with full path with extension' do
@@ -195,6 +235,8 @@ describe 'Mixlib::ShellOut::Windows', :windows_only do
         let(:cmd_invocation) { "cmd /c \"#{cmd}\"" }
         let(:cmd_exe) { "C:\\Windows\\system32\\cmd.exe" }
         let(:cmd) { "#{executable_path}" }
+
+        before { ENV['ComSpec'] = 'C:\Windows\system32\cmd.exe' }
 
         context 'with .bat file' do
           let(:executable_path) { '"C:\Program Files\Application\Start.bat"' }
