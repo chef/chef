@@ -102,6 +102,7 @@ To mention the team, use @chef/provisioning
 * [Stuart Preston](https://github.com/stuartpreston)
 * [JJ Asghar](https://github.com/jjasghar)
 * [João Cravo](https://github.com/joaogbcravo)
+* [Harley Alaniz](https://github.com/thehar)
 
 ## Platform Specific Components
 
