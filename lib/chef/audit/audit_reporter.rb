@@ -140,7 +140,11 @@ class Chef
               # Save the audit report to local disk
               error_file = "failed-audit-data.json"
               Chef::FileCache.store(error_file, Chef::JSONCompat.to_json_pretty(run_data), 0640)
-              Chef::Log.error("Failed to post audit report to server. Saving report to #{Chef::FileCache.load(error_file, false)}")
+              if Chef::Config.chef_zero.enabled
+                Chef::Log.debug("Saving audit report to #{Chef::FileCache.load(error_file, false)}")
+              else
+                Chef::Log.error("Failed to post audit report to server. Saving report to #{Chef::FileCache.load(error_file, false)}")
+              end
             end
           else
             Chef::Log.error("Failed to post audit report to server (#{e})")
