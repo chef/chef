@@ -18,9 +18,9 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.12.0)
+    chef (12.12.1)
       bundler (>= 1.10)
-      chef-config (= 12.12.0)
+      chef-config (= 12.12.1)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -45,9 +45,9 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (12.12.0-universal-mingw32)
+    chef (12.12.1-universal-mingw32)
       bundler (>= 1.10)
-      chef-config (= 12.12.0)
+      chef-config (= 12.12.1)
       chef-zero (~> 4.5)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -87,7 +87,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.12.0)
+    chef-config (12.12.1)
       fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -148,8 +148,8 @@ GEM
     coderay (1.1.1)
     colorize (0.7.7)
     compat_resource (12.10.6)
-    cucumber-core (1.4.0)
-      gherkin (~> 3.2.0)
+    cucumber-core (1.5.0)
+      gherkin (~> 4.0)
     debug_inspector (0.0.2)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
@@ -173,7 +173,7 @@ GEM
       treetop (~> 1.4)
       yajl-ruby (~> 1.1)
     fuzzyurl (0.8.0)
-    gherkin (3.2.0)
+    gherkin (4.0.0)
     github_api (0.14.0)
       addressable (~> 2.4.0)
       descendants_tracker (~> 0.0.4)
@@ -221,7 +221,7 @@ GEM
       mixlib-log
     mixlib-cli (1.6.0)
     mixlib-config (2.2.1)
-    mixlib-install (1.0.12)
+    mixlib-install (1.0.13)
       artifactory
       mixlib-shellout
       mixlib-versioning
