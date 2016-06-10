@@ -171,20 +171,16 @@ describe Chef::DataCollector::Messages::Helpers do
   end
 
   describe '#update_metadata' do
-    let(:metadata) { double("metadata") }
-
     it "updates the file" do
       allow(TestMessage).to receive(:metadata_filename).and_return("fake_metadata_file.json")
-      allow(TestMessage).to receive(:metadata).and_return(metadata)
-      expect(metadata).to receive(:[]=).with("new_key", "new_value")
-      expect(metadata).to receive(:to_json).and_return("metadata_json")
+      allow(TestMessage).to receive(:metadata).and_return({ "key" => "current_value" })
       expect(Chef::FileCache).to receive(:store).with(
         "fake_metadata_file.json",
-        "metadata_json",
+        '{"key":"updated_value"}',
         0644
       )
 
-      TestMessage.update_metadata("new_key", "new_value")
+      TestMessage.update_metadata("key", "updated_value")
     end
   end
 end
