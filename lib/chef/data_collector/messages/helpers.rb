@@ -148,8 +148,8 @@ class Chef
         end
 
         def update_metadata(key, value)
-          metadata[key] = value
-          Chef::FileCache.store(metadata_filename, metadata.to_json, 0644)
+          updated_metadata = metadata.tap { |x| x[key] = value }
+          Chef::FileCache.store(metadata_filename, updated_metadata.to_json, 0644)
         end
 
         def metadata_filename
