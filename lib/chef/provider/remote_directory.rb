@@ -209,6 +209,8 @@ class Chef
       def cookbook_file_resource(target_path, relative_source_path)
         res = Chef::Resource::CookbookFile.new(target_path, run_context)
         res.cookbook_name = resource_cookbook
+        # Set the sensitivity level
+        res.sensitive(new_resource.sensitive)
         res.source(::File.join(source, relative_source_path))
         if Chef::Platform.windows? && files_rights
           files_rights.each_pair do |permission, *args|

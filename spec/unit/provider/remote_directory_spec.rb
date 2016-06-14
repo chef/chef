@@ -99,6 +99,21 @@ describe Chef::Provider::RemoteDirectory do
       expect(cookbook_file.owner).to          eq("toor")
       expect(cookbook_file.backup).to         eq(23)
     end
+
+    it "respects sensitive flag" do
+      @resource.cookbook "gondola_rides"
+      @resource.sensitive true
+      cookbook_file = @provider.send(:cookbook_file_resource,
+                                    "/target/destination/path.txt",
+                                    "relative/source/path.txt")
+      expect(cookbook_file.sensitive).to eq(true)
+
+      @resource.sensitive false
+      cookbook_file = @provider.send(:cookbook_file_resource,
+                                    "/target/destination/path.txt",
+                                    "relative/source/path.txt")
+      expect(cookbook_file.sensitive).to eq(false)
+    end
   end
 
   describe "when creating the remote directory" do
