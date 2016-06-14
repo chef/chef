@@ -20,8 +20,9 @@ gem "cheffish"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "nokogiri"
+  gem "nokogiri", "= 1.6.7.2"
 end
+
 group(:omnibus_package, :pry) do
   gem "pry"
   gem "pry-byebug"
