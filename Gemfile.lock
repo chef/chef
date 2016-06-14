@@ -216,7 +216,7 @@ GEM
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
-    mini_portile2 (2.1.0)
+    mini_portile2 (2.0.0)
     mixlib-authentication (1.4.1)
       mixlib-log
     mixlib-cli (1.6.0)
@@ -246,12 +246,10 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     net-telnet (0.1.1)
     netrc (0.11.0)
-    nokogiri (1.6.8)
-      mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
-    nokogiri (1.6.8-x86-mingw32)
-      mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
+    nokogiri (1.6.7.2)
+      mini_portile2 (~> 2.0.0.rc2)
+    nokogiri (1.6.7.2-x86-mingw32)
+      mini_portile2 (~> 2.0.0.rc2)
     nori (2.6.0)
     oauth2 (1.1.0)
       faraday (>= 0.8, < 0.10)
@@ -275,7 +273,6 @@ GEM
       wmi-lite (~> 1.0)
     parser (2.3.1.2)
       ast (~> 2.2)
-    pkg-config (1.1.7)
     plist (3.2.0)
     poise (2.7.0)
       halite (~> 1.0)
@@ -297,7 +294,7 @@ GEM
       pry (>= 0.9.11)
     rack (1.6.4)
     rainbow (2.1.0)
-    rake (11.1.2)
+    rake (11.2.2)
     rb-readline (0.5.3)
     retryable (2.0.3)
     rspec (3.4.0)
@@ -416,7 +413,7 @@ DEPENDENCIES
   halite
   knife-windows
   netrc
-  nokogiri
+  nokogiri (= 1.6.7.2)
   octokit
   poise
   pry

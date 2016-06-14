@@ -85,13 +85,11 @@ namespace :dependencies do
                                                      other_platforms: false, leave_frozen: false
   gemfile_lock_task :update_kitchen_tests_gemfile_lock, dirs: %w{
     kitchen-tests
-    kitchen-tests/test/integration/webapp/serverspec
   }
   berksfile_lock_task :update_kitchen_tests_berksfile_lock, dirs: %w{
     kitchen-tests
     kitchen-tests/cookbooks/audit_test
   }
-  # kitchen-tests/cookbooks/webapp isn't solving right now ....
 
   desc "Update omnibus overrides, including versions in version_policy.rb and latest version of gems: #{OMNIBUS_RUBYGEMS_AT_LATEST_VERSION.keys}."
   task :update_omnibus_overrides do |t, rake_args|
