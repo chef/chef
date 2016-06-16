@@ -8,10 +8,9 @@ GIT
 
 GIT
   remote: https://github.com/rubysec/bundler-audit.git
-  revision: 4e32fca89d75f0e249671431ff38aadc02bfb28b
-  ref: 4e32fca
+  revision: 2c876da51beeee3b535c4524d3eabd0f6a067113
   specs:
-    bundler-audit (0.4.0)
+    bundler-audit (0.5.0)
       bundler (~> 1.2)
       thor (~> 0.18)
 

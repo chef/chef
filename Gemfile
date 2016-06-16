@@ -79,7 +79,7 @@ end
 
 group(:travis) do
   # See `bundler-audit` in .travis.yml
-  gem "bundler-audit", git: "https://github.com/rubysec/bundler-audit.git", ref: "4e32fca"
+  gem "bundler-audit", git: "https://github.com/rubysec/bundler-audit.git"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
