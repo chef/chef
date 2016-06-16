@@ -5,4 +5,4 @@ cookbook "base", path: "cookbooks/base"
 
 cookbook "php", "~> 1.5.0"
 
-cookbook "resolver", github: "chef-cookbooks/resolver", branch: "lcg/docker"
+cookbook "resolver", github: "chef-cookbooks/resolver"

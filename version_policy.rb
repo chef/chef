@@ -73,6 +73,7 @@ OMNIBUS_RUBYGEMS_AT_LATEST_VERSION = {
 # slop - expected to disappear with new pry release
 # stove - halite pins to ~> 3.2 in 1.2.1
 # rubocop - chef-style pins to 0.39.0 in 0.3.1
+# TODO remove nokogiri when we can update to 1.6.8
 #
 ACCEPTABLE_OUTDATED_GEMS = %w{
   gherkin
@@ -81,6 +82,7 @@ ACCEPTABLE_OUTDATED_GEMS = %w{
   slop
   stove
   rubocop
+  nokogiri
 }
 
 #

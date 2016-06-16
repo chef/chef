@@ -20,8 +20,9 @@ gem "cheffish"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "nokogiri"
+  gem "nokogiri", "= 1.6.7.2"
 end
+
 group(:omnibus_package, :pry) do
   gem "pry"
   gem "pry-byebug"
@@ -78,7 +79,7 @@ end
 
 group(:travis) do
   # See `bundler-audit` in .travis.yml
-  gem "bundler-audit", git: "https://github.com/rubysec/bundler-audit.git", ref: "4e32fca"
+  gem "bundler-audit", git: "https://github.com/rubysec/bundler-audit.git"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]

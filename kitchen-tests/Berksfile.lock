@@ -4,8 +4,7 @@ DEPENDENCIES
   php (~> 1.5.0)
   resolver
     git: git://github.com/chef-cookbooks/resolver.git
-    revision: dd65ab8e2346cc0739c13682c74868f5b939b06a
-    branch: lcg/docker
+    revision: 8bf9034dabc47d29a07870e4059c32114f2c820a
   webapp
     path: cookbooks/webapp
 
