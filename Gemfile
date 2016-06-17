@@ -16,6 +16,7 @@ gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.ex
 gem "rake", group: [ :default, :omnibus_package, :development ]
 gem "bundler"
 gem "cheffish"
+gem "hodorhodor"
 
 group(:omnibus_package) do
   gem "appbundler"
