@@ -181,6 +181,9 @@ class Chef
       @pending_update = nil unless nested_resource?(resource)
     end
 
+    def resource_not_skipped(resource, action, conditional)
+    end
+
     def resource_updated(new_resource, action)
       @total_res_count += 1
     end

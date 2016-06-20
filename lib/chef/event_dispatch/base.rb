@@ -325,6 +325,10 @@ class Chef
       def resource_skipped(resource, action, conditional)
       end
 
+      # Called when a conditional has passed and the resource action is not skipped.
+      def resource_not_skipped(resource, action, conditional)
+      end
+
       # Called after #load_current_resource has run.
       def resource_current_state_loaded(resource, action, current_resource)
       end

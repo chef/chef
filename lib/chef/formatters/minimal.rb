@@ -182,6 +182,9 @@ class Chef
         print "S"
       end
 
+      def resource_not_skipped(resource, action, conditional)
+      end
+
       # Called after #load_current_resource has run.
       def resource_current_state_loaded(resource, action, current_resource)
       end

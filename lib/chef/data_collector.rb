@@ -147,6 +147,9 @@ class Chef
         update_current_resource_report(resource_report)
       end
 
+      def resource_not_skipped(resource, action, conditional)
+      end
+
       # see EventDispatch::Base#resource_updated
       # Flag the current ResourceReport instance as updated (as long as it's
       # a top-level resource).

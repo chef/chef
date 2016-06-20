@@ -318,6 +318,13 @@ class Chef
         unindent
       end
 
+      def resource_not_skipped(resource, action, conditional)
+        if [:not_if, :only_if].include?(conditional.short_description)
+          puts " (passed guard #{conditional.short_description})", :stream => resource
+          unindent
+        end
+      end
+
       # Called after #load_current_resource has run.
       def resource_current_state_loaded(resource, action, current_resource)
       end
