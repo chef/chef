@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 931d8a331bd8397729735867d394560c151dcca9
+  revision: 3b57c59dff75de3e20f2da54e78532fa7e773318
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 5.2.0)
@@ -142,12 +142,12 @@ GEM
     multipart-post (1.2.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
-    net-ssh (3.1.1)
+    net-ssh (3.2.0)
     nio4r (1.2.1)
     nori (2.6.0)
     octokit (3.8.0)
       sawyer (~> 0.6.0, >= 0.5.3)
-    ohai (8.16.0)
+    ohai (8.17.0)
       chef-config (>= 12.5.0.alpha.1, < 13)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
