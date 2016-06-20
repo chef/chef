@@ -31,6 +31,8 @@ class Chef
           alias_method :display_path, :path
           alias_method :display_name, :name
           alias_method :bare_name, :name
+          
+          @@dir_cache = Hash.new
 
           def initialize(name, parent, file_path = nil)
             @parent = parent
@@ -68,9 +70,11 @@ class Chef
           end
 
           def children
-            dir_ls.sort.
+            return @@dir_cache[file_path] if @@dir_cache.key?(file_path)
+            @@dir_cache[file_path] = dir_ls.sort.
               map { |child_name| make_child_entry(child_name) }.
               select { |new_child| new_child.fs_entry_valid? && can_have_child?(new_child.name, new_child.dir?) }
+            @@dir_cache[file_path]
           rescue Errno::ENOENT => e
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
           end
