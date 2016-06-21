@@ -5,8 +5,5 @@
 require_relative "../../files/chef-gem/build-chef-gem/gem-install-software-def"
 BuildChefGem::GemInstallSoftwareDef.define(self, __FILE__)
 
-license "MIT"
-license_file "https://github.com/ruby-prof/ruby-prof/blob/master/LICENSE"
-
-dependency "chef-gem-pkg-config"
-dependency "chef-gem-mini_portile2"
+license "LGPL-2.1"
+license_file "https://github.com/ruby-gnome2/pkg-config/blob/master/LGPL-2.1"

@@ -59,9 +59,7 @@ matrix:
   - env:
       AUDIT_CHECK: 1
     rvm: 2.1
-    # TODO stop ignoring nokogiri CVE when we update to 1.6.8
-    # script: bundle exec bundle-audit check --update
-    script: bundle exec bundle-audit check --update --ignore CVE-2015-8806
+    script: bundle exec bundle-audit check --update
     # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   #

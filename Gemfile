@@ -20,7 +20,6 @@ gem "cheffish"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "nokogiri", "= 1.6.7.2"
 end
 
 group(:omnibus_package, :pry) do
