@@ -108,7 +108,32 @@ class Chef
         config_content = config_fetcher.read_config
         apply_config(config_content, config[:config_file])
       end
+      extra_config_options = config.delete(:config_option)
       Chef::Config.merge!(config)
+      if extra_config_options
+        extra_parsed_options = extra_config_options.inject({}) do |memo, option|
+          # Sanity check value.
+          Chef::Application.fatal!("Unparsable config option #{option.inspect}") if option.empty? || !option.include?("=")
+          # Split including whitespace if someone does truly odd like
+          # --config-option "foo = bar"
+          key, value = option.split(/\s*=\s*/, 2)
+          # Call to_sym because Chef::Config expects only symbol keys. Also
+          # runs a simple parse on the string for some common types. Not using
+          # a YAML parser or similar because security. Could maybe use JSON?
+          memo[key.to_sym] = case value
+                             when "true"
+                               true
+                             when "false"
+                               false
+                             when /^\d+$/
+                               value.to_i
+                             else
+                               value
+                             end
+          memo
+        end
+        Chef::Config.merge!(extra_parsed_options)
+      end
     end
 
     def set_specific_recipes
