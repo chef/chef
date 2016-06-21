@@ -11,7 +11,7 @@ driver:
     cpus: 4
     memory: 4096
   synced_folders:
-    - ['..', '/home/vagrant/chef']
+    - ['../..', '/vagrant/code']
     - ['../../omnibus', '/home/vagrant/omnibus']
     - ['../../omnibus-software', '/home/vagrant/omnibus-software']
 
@@ -25,10 +25,11 @@ provisioner:
     vagrant:
       this_key_exists_so_we_have_a_vagrant_key: true
     omnibus:
-      build_user:          vagrant
-      build_user_group:    vagrant
+      build_user: vagrant
+      build_user_group: vagrant
       build_user_password: vagrant
-  chef_omnibus_install_options: -P angrychef
+  product_name: angrychef
+  product_version: latest
   chef_omnibus_root: /opt/angrychef
 
 platforms:
