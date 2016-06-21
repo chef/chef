@@ -31,6 +31,10 @@ module ChefConfig
     # the top level module which contains VERSION and MODULE_ROOT.
     attr_accessor :module_name
 
+    # Name of the gem being built. This is used to find the lines to fix in
+    # Gemfile.lock.
+    attr_accessor :gem_name
+
     # Should the generated version.rb be in a class or module?  Default is false (module).
     attr_accessor :generate_version_class
 
@@ -55,15 +59,16 @@ module ChefConfig
     # Name of git remote used to push tags during a release.  Default is origin.
     attr_accessor :git_remote
 
-    def initialize(root_path = nil, module_name = nil)
-      init(root_path, module_name)
+    def initialize(root_path = nil, module_name = nil, gem_name = nil)
+      init(root_path, module_name, gem_name)
       yield self if block_given?
       define unless root_path.nil? || module_name.nil?
     end
 
-    def init(root_path, module_name)
+    def init(root_path, module_name, gem_name)
       @root_path = root_path
       @module_name = module_name
+      @gem_name = gem_name
       @component_paths = []
       @module_path = nil
       @package_dir = "pkg"
@@ -85,6 +90,10 @@ module ChefConfig
 
     def version_file_path
       File.join(chef_root_path, "VERSION")
+    end
+
+    def gemfile_lock_path
+      File.join(root_path, "Gemfile.lock")
     end
 
     def version
@@ -155,6 +164,26 @@ module ChefConfig
       namespace :version do
         desc 'Regenerate lib/#{@module_path}/version.rb from VERSION file'
         task :update => :update_components_versions do
+          update_version_rb
+          update_gemfile_lock
+        end
+
+        task :bump => %w{version:bump_patch version:update}
+
+        task :show do
+          puts version
+        end
+
+        # Add 1 to the current patch version in the VERSION file, and write it back out.
+        task :bump_patch do
+          current_version = version
+          new_version = current_version.sub(/^(\d+\.\d+\.)(\d+)/) { "#{$1}#{$2.to_i + 1}" }
+          puts "Updating version in #{version_rb_path} from #{current_version.chomp} to #{new_version.chomp}"
+          IO.write(version_file_path, new_version)
+        end
+
+        def update_version_rb
+          puts "Updating #{version_rb_path} to include version #{version} ..."
           contents = <<-VERSION_RB
 # Copyright:: Copyright 2010-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
@@ -194,18 +223,15 @@ end
           IO.write(version_rb_path, contents)
         end
 
-        task :bump => %w{version:bump_patch version:update}
-
-        task :show do
-          puts version
-        end
-
-        # Add 1 to the current patch version in the VERSION file, and write it back out.
-        task :bump_patch do
-          current_version = version
-          new_version = current_version.sub(/^(\d+\.\d+\.)(\d+)/) { "#{$1}#{$2.to_i + 1}" }
-          puts "Updating version in #{version_rb_path} from #{current_version.chomp} to #{new_version.chomp}"
-          IO.write(version_file_path, new_version)
+        def update_gemfile_lock
+          if File.exist?(gemfile_lock_path)
+            puts "Updating #{gemfile_lock_path} to include version #{version} ..."
+            contents = IO.read(gemfile_lock_path)
+            contents.gsub!(/^\s*(chef|chef-config)\s*\((= )?\S+\)\s*$/) do |line|
+              line.gsub(/\((= )?\d+(\.\d+)+/) { "(#{$1}#{version}" }
+            end
+            IO.write(gemfile_lock_path, contents)
+          end
         end
       end
 
