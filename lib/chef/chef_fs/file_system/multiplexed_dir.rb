@@ -41,7 +41,7 @@ class Chef
             child_entry = dir.child(name)
             if child_entry.exists?
               if result
-                Chef::Log.debug("Child with name '#{child_entry.name}' found in multiple directories: #{result.parent.path_for_printing} and #{child_entry.parent.path_for_printing}") unless seen[child.name].path_for_printing == child.path_for_printing
+                Chef::Log.debug("Child with name '#{child_entry.name}' found in multiple directories: #{result.parent.path_for_printing} and #{child_entry.parent.path_for_printing}")
               else
                 result = child_entry
               end
