@@ -23,7 +23,7 @@ require "chef/log"
 
 module KnifeSupport
   DEBUG = ENV["DEBUG"]
-  def knife(*args)
+  def knife(*args, input: nil)
     # Allow knife('role from file roles/blah.json') rather than requiring the
     # arguments to be split like knife('role', 'from', 'file', 'roles/blah.json')
     # If any argument will have actual spaces in it, the long form is required.
@@ -37,7 +37,7 @@ module KnifeSupport
     Chef::Config[:concurrency] = 1
 
     # Work on machines where we can't access /var
-    checksums_cache_dir = Dir.mktmpdir("checksums") do |checksums_cache_dir|
+    Dir.mktmpdir("checksums") do |checksums_cache_dir|
       Chef::Config[:cache_options] = {
         :path => checksums_cache_dir,
         :skip_expires => true,
@@ -47,6 +47,13 @@ module KnifeSupport
       # ourselves, thank you very much
       stdout = StringIO.new
       stderr = StringIO.new
+
+      stdin = if input
+                StringIO.new(input)
+              else
+                STDIN
+              end
+
       old_loggers = Chef::Log.loggers
       old_log_level = Chef::Log.level
       begin
@@ -57,7 +64,7 @@ module KnifeSupport
         instance = subcommand_class.new(args)
 
         # Capture stdout/stderr
-        instance.ui = Chef::Knife::UI.new(stdout, stderr, STDIN, {})
+        instance.ui = Chef::Knife::UI.new(stdout, stderr, stdin, disable_editing: true)
 
         # Don't print stuff
         Chef::Config[:verbosity] = ( DEBUG ? 2 : 0 )
