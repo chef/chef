@@ -15,7 +15,7 @@ gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.ex
 # Ensure that we can always install rake, regardless of gem groups
 gem "rake", group: [ :default, :omnibus_package, :development ]
 gem "bundler"
-gem "cheffish"
+gem "cheffish", github: "chef/cheffish", branch: "master"
 
 group(:omnibus_package) do
   gem "appbundler"
