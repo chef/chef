@@ -431,17 +431,23 @@ class Chef
         end
 
         def current_version
-          #raise 'todo'
+          # rubygems 2.6.3 ensures that gem lists are sorted newest first
+          pos = if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.6.3")
+                  :first
+                else
+                  :last
+                end
+
           # If one or more matching versions are installed, the newest of them
           # is the current version
           if !matching_installed_versions.empty?
-            gemspec = matching_installed_versions.last
+            gemspec = matching_installed_versions.send(pos)
             logger.debug { "#{@new_resource} found installed gem #{gemspec.name} version #{gemspec.version} matching #{gem_dependency}" }
             gemspec
             # If no version matching the requirements exists, the latest installed
             # version is the current version.
           elsif !all_installed_versions.empty?
-            gemspec = all_installed_versions.last
+            gemspec = all_installed_versions.send(pos)
             logger.debug { "#{@new_resource} newest installed version of gem #{gemspec.name} is #{gemspec.version}" }
             gemspec
           else
