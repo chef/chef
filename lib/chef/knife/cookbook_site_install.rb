@@ -59,6 +59,13 @@ class Chef
         :boolean => true,
         :default => false
 
+      option :supermarket_site,
+        :short => "-m SUPERMARKET_SITE",
+        :long => "--supermarket-site SUPERMARKET_SITE",
+        :description => "Supermarket Site",
+        :default => "https://supermarket.chef.io",
+        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+
       attr_reader :cookbook_name
       attr_reader :vendor_path
 
@@ -134,6 +141,7 @@ class Chef
       def download_cookbook_to(download_path)
         downloader = Chef::Knife::CookbookSiteDownload.new
         downloader.config[:file] = download_path
+        downloader.config[:supermarket_site] = config[:supermarket_site]
         downloader.name_args = name_args
         downloader.run
         downloader
