@@ -54,7 +54,7 @@ class Chef
         end
 
         def client_d
-          @cliend_d ||= client_d_content
+          @client_d ||= client_d_content
         end
 
         def encrypted_data_bag_secret
