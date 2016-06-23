@@ -519,7 +519,16 @@ module ChefConfig
 
     # Set to true if Chef is to set OpenSSL to run in FIPS mode
     default(:fips) do
-      !ENV["CHEF_FIPS"].nil? || ChefConfig.fips?
+      # CHEF_FIPS is used in testing to override checking for system level
+      # enablement. There are 3 possible values that this variable may have:
+      # nil - no override and the system will be checked
+      # empty - FIPS is NOT enabled
+      # a non empty value - FIPS is enabled
+      if ENV["CHEF_FIPS"] == ""
+        false
+      else
+        !ENV["CHEF_FIPS"].nil? || ChefConfig.fips?
+      end
     end
 
     # Initialize openssl
