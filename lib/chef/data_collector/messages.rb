@@ -70,15 +70,15 @@ class Chef
           "message_type"           => "run_converge",
           "node_name"              => run_status.node.name,
           "organization_name"      => organization,
-          "resources"              => reporter_data[:completed_resources].map(&:for_json),
+          "resources"              => reporter_data[:resources].map(&:report_data),
           "run_id"                 => run_status.run_id,
           "run_list"               => run_status.node.run_list.for_json,
           "start_time"             => run_status.start_time.utc.iso8601,
           "end_time"               => run_status.end_time.utc.iso8601,
           "source"                 => collector_source,
           "status"                 => reporter_data[:status],
-          "total_resource_count"   => reporter_data[:completed_resources].count,
-          "updated_resource_count" => reporter_data[:completed_resources].select { |r| r.status == "updated" }.count,
+          "total_resource_count"   => reporter_data[:resources].count,
+          "updated_resource_count" => reporter_data[:resources].select { |r| r.report_data["status"] == "updated" }.count,
         }
 
         message["error"] = {

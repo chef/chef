@@ -20,6 +20,7 @@
 
 require "spec_helper"
 require "chef/data_collector"
+require "chef/resource_builder"
 
 describe Chef::DataCollector do
   describe ".register_reporter?" do
@@ -193,10 +194,32 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
+  describe '#converge_start' do
+    it "stashes the run_context for later use" do
+      reporter.converge_start("test_context")
+      expect(reporter.run_context).to eq("test_context")
+    end
+  end
+
+  describe '#converge_complete' do
+    it "detects and processes any unprocessed resources" do
+      expect(reporter).to receive(:detect_unprocessed_resources)
+      reporter.converge_complete
+    end
+  end
+
+  describe '#converge_failed' do
+    it "detects and processes any unprocessed resources" do
+      expect(reporter).to receive(:detect_unprocessed_resources)
+      reporter.converge_failed("exception")
+    end
+  end
+
   describe '#resource_current_state_loaded' do
     let(:new_resource)     { double("new_resource") }
     let(:action)           { double("action") }
     let(:current_resource) { double("current_resource") }
+    let(:resource_report)  { double("resource_report") }
 
     context "when resource is a nested resource" do
       it "does not update the resource report" do
@@ -207,14 +230,12 @@ describe Chef::DataCollector::Reporter do
     end
 
     context "when resource is not a nested resource" do
-      it "updates the resource report" do
+      it "creates the resource report and stores it as the current one" do
         allow(reporter).to receive(:nested_resource?).and_return(false)
-        expect(Chef::DataCollector::ResourceReport).to receive(:new).with(
-          new_resource,
-          action,
-          current_resource)
-        .and_return("resource_report")
-        expect(reporter).to receive(:update_current_resource_report).with("resource_report")
+        expect(reporter).to receive(:create_resource_report)
+          .with(new_resource, action, current_resource)
+          .and_return(resource_report)
+        expect(reporter).to receive(:update_current_resource_report).with(resource_report)
         reporter.resource_current_state_loaded(new_resource, action, current_resource)
       end
     end
@@ -256,7 +277,7 @@ describe Chef::DataCollector::Reporter do
 
     before do
       allow(reporter).to receive(:nested_resource?)
-      allow(reporter).to receive(:current_resource_report).and_return(resource_report)
+      allow(reporter).to receive(:create_resource_report).and_return(resource_report)
       allow(resource_report).to receive(:skipped)
     end
 
@@ -269,13 +290,12 @@ describe Chef::DataCollector::Reporter do
     end
 
     context "when the resource is not a nested resource" do
-      it "updates the resource report" do
+      it "creates the resource report and stores it as the current one" do
         allow(reporter).to receive(:nested_resource?).and_return(false)
-        expect(Chef::DataCollector::ResourceReport).to receive(:new).with(
-          new_resource,
-          action)
-        .and_return("resource_report")
-        expect(reporter).to receive(:update_current_resource_report).with("resource_report")
+        expect(reporter).to receive(:create_resource_report)
+          .with(new_resource, action)
+          .and_return(resource_report)
+        expect(reporter).to receive(:update_current_resource_report).with(resource_report)
         reporter.resource_skipped(new_resource, action, conditional)
       end
 
@@ -349,15 +369,16 @@ describe Chef::DataCollector::Reporter do
     let(:resource_report) { double("resource_report") }
 
     before do
-      allow(reporter).to receive(:add_completed_resource)
       allow(reporter).to receive(:update_current_resource_report)
+      allow(reporter).to receive(:add_resource_report)
+      allow(reporter).to receive(:current_resource_report)
       allow(resource_report).to receive(:finish)
     end
 
     context "when there is no current resource report" do
-      it "does not add the updated resource" do
+      it "does not touch the current resource report" do
         allow(reporter).to receive(:current_resource_report).and_return(nil)
-        expect(reporter).not_to receive(:add_completed_resource)
+        expect(reporter).not_to receive(:update_current_resource_report)
         reporter.resource_completed(new_resource)
       end
     end
@@ -368,9 +389,9 @@ describe Chef::DataCollector::Reporter do
       end
 
       context "when the resource is a nested resource" do
-        it "does not add the updated resource" do
+        it "does not mark the resource as finished" do
           allow(reporter).to receive(:nested_resource?).with(new_resource).and_return(true)
-          expect(reporter).not_to receive(:add_completed_resource)
+          expect(resource_report).not_to receive(:finish)
           reporter.resource_completed(new_resource)
         end
       end
@@ -382,11 +403,6 @@ describe Chef::DataCollector::Reporter do
 
         it "marks the current resource report as finished" do
           expect(resource_report).to receive(:finish)
-          reporter.resource_completed(new_resource)
-        end
-
-        it "adds the resource to the updated resource list" do
-          expect(reporter).to receive(:add_completed_resource).with(resource_report)
           reporter.resource_completed(new_resource)
         end
 
