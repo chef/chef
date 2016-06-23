@@ -186,6 +186,16 @@ RSpec.describe ChefConfig::Config do
             expect(ChefConfig::Config[:fips]).to eq(false)
           end
 
+          context "when ENV['CHEF_FIPS'] is empty" do
+            before do
+              ENV["CHEF_FIPS"] = ""
+            end
+
+            it "returns false" do
+              expect(ChefConfig::Config[:fips]).to eq(false)
+            end
+          end
+
           context "when ENV['CHEF_FIPS'] is set" do
             before do
               ENV["CHEF_FIPS"] = "1"
