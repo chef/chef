@@ -22,6 +22,7 @@ require "uri"
 require "chef/event_dispatch/base"
 require "chef/data_collector/messages"
 require "chef/data_collector/resource_report"
+require "ostruct"
 
 class Chef
 
@@ -51,12 +52,12 @@ class Chef
     # and exports its data through a webhook-like mechanism to a configured
     # endpoint.
     class Reporter < EventDispatch::Base
-      attr_reader :completed_resources, :status, :exception, :error_descriptions,
-                  :expanded_run_list, :run_status, :http,
+      attr_reader :all_resource_reports, :status, :exception, :error_descriptions,
+                  :expanded_run_list, :run_context, :run_status, :http,
                   :current_resource_report, :enabled
 
       def initialize
-        @completed_resources     = []
+        @all_resource_reports    = []
         @current_resource_loaded = nil
         @error_descriptions      = {}
         @expanded_run_list       = {}
@@ -93,6 +94,29 @@ class Chef
         send_run_completion(status: "failure")
       end
 
+      # see EventDispatch::Base#converge_start
+      # Upon receipt, we stash the run_context for use at the
+      # end of the run in order to determine what resource+action
+      # combinations have not yet fired so we can report on
+      # unprocessed resources.
+      def converge_start(run_context)
+        @run_context = run_context
+      end
+
+      # see EventDispatch::Base#converge_complete
+      # At the end of the converge, we add any unprocessed resources
+      # to our report list.
+      def converge_complete
+        detect_unprocessed_resources
+      end
+
+      # see EventDispatch::Base#converge_failed
+      # At the end of the converge, we add any unprocessed resources
+      # to our report list
+      def converge_failed(exception)
+        detect_unprocessed_resources
+      end
+
       # see EventDispatch::Base#resource_current_state_loaded
       # Create a new ResourceReport instance that we'll use to track
       # the state of this resource during the run. Nested resources are
@@ -100,13 +124,7 @@ class Chef
       # resource, and we only care about tracking top-level resources.
       def resource_current_state_loaded(new_resource, action, current_resource)
         return if nested_resource?(new_resource)
-        update_current_resource_report(
-          Chef::DataCollector::ResourceReport.new(
-            new_resource,
-            action,
-            current_resource
-          )
-        )
+        update_current_resource_report(create_resource_report(new_resource, action, current_resource))
       end
 
       # see EventDispatch::Base#resource_up_to_date
@@ -116,19 +134,15 @@ class Chef
       end
 
       # see EventDispatch::Base#resource_skipped
-      # If this is a top-level resource, we create a ResourceReport instance
-      # (because a skipped resource does not trigger the
+      # If this is a top-level resource, we create a ResourceReport
+      # instance (because a skipped resource does not trigger the
       # resource_current_state_loaded event), and flag it as skipped.
       def resource_skipped(new_resource, action, conditional)
         return if nested_resource?(new_resource)
 
-        update_current_resource_report(
-          Chef::DataCollector::ResourceReport.new(
-            new_resource,
-            action
-          )
-        )
-        current_resource_report.skipped(conditional)
+        resource_report = create_resource_report(new_resource, action)
+        resource_report.skipped(conditional)
+        update_current_resource_report(resource_report)
       end
 
       # see EventDispatch::Base#resource_updated
@@ -154,13 +168,12 @@ class Chef
       end
 
       # see EventDispatch::Base#resource_completed
-      # Mark the ResourceReport instance as finished (for timing details)
-      # and add it to the list of resources encountered during this run.
+      # Mark the ResourceReport instance as finished (for timing details).
       # This marks the end of this resource during this run.
       def resource_completed(new_resource)
         if current_resource_report && !nested_resource?(new_resource)
           current_resource_report.finish
-          add_completed_resource(current_resource_report)
+          add_resource_report(current_resource_report)
           update_current_resource_report(nil)
         end
       end
@@ -271,7 +284,7 @@ class Chef
           Chef::DataCollector::Messages.run_end_message(
             run_status: run_status,
             expanded_run_list: expanded_run_list,
-            completed_resources: completed_resources,
+            resources: all_resource_reports,
             status: opts[:status],
             error_descriptions: error_descriptions
           ).to_json
@@ -297,8 +310,12 @@ class Chef
         Chef::Config[:data_collector][:token]
       end
 
-      def add_completed_resource(resource_report)
-        @completed_resources << resource_report
+      def add_resource_report(resource_report)
+        @all_resource_reports << OpenStruct.new(
+          resource: resource_report.new_resource,
+          action: resource_report.action,
+          report_data: resource_report.to_hash
+        )
       end
 
       def disable_data_collector_reporter
@@ -319,6 +336,38 @@ class Chef
 
       def update_error_description(discription_hash)
         @error_descriptions = discription_hash
+      end
+
+      def create_resource_report(new_resource, action, current_resource = nil)
+        Chef::DataCollector::ResourceReport.new(
+          new_resource,
+          action,
+          current_resource
+        )
+      end
+
+      def detect_unprocessed_resources
+        # create a Set containing all resource+action combinations from
+        # the Resource Collection
+        collection_resources = Set.new
+        run_context.resource_collection.all_resources.each do |resource|
+          Array(resource.action).each do |action|
+            collection_resources.add([resource, action])
+          end
+        end
+
+        # Delete from the Set any resource+action combination we have
+        # already processed.
+        all_resource_reports.each do |report|
+          collection_resources.delete([report.resource, report.action])
+        end
+
+        # The items remaining in the Set are unprocessed resource+actions,
+        # so we'll create new resource reports for them which default to
+        # a state of "unprocessed".
+        collection_resources.each do |resource, action|
+          add_resource_report(create_resource_report(resource, action))
+        end
       end
 
       # If we are getting messages about a resource while we are in the middle of

@@ -62,12 +62,12 @@ describe Chef::DataCollector::Messages do
 
   describe '#run_end_message' do
     let(:run_status) { Chef::RunStatus.new(Chef::Node.new, Chef::EventDispatch::Dispatcher.new) }
-    let(:resource1)  { double("resource1", for_json: "resource_data", status: "updated") }
-    let(:resource2)  { double("resource2", for_json: "resource_data", status: "skipped") }
+    let(:report1)  { double("report1", report_data: { "status" => "updated" }) }
+    let(:report2)  { double("report2", report_data: { "status" => "skipped" }) }
     let(:reporter_data) do
       {
         run_status: run_status,
-        completed_resources: [resource1, resource2],
+        resources: [report1, report2],
       }
     end
 
