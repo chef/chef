@@ -241,6 +241,13 @@ class Chef::Application::Solo < Chef::Application
         ARGV[dash_r] = "--recipe-url"
       end
 
+      # For back compat reasons, we need to ensure that we try and use the cache_path as a repo first
+      Chef::Log.debug "Current chef_repo_path is #{Chef::Config.chef_repo_path}"
+
+      if !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+        Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Chef::Config[:cache_path])
+      end
+
       Chef::Config[:local_mode] = true
     else
       configure_legacy_mode!
