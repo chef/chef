@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: cb6f0afa1cd334f25aece7deeef3a9454cecc0e7
+  revision: 32324e19b76f75d06c6e3c7333a8865c9b5767c3
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 5.2.0)
@@ -38,13 +38,13 @@ GEM
     addressable (2.4.0)
     artifactory (2.3.2)
     awesome_print (1.7.0)
-    aws-sdk (2.3.14)
-      aws-sdk-resources (= 2.3.14)
-    aws-sdk-core (2.3.14)
+    aws-sdk (2.3.16)
+      aws-sdk-resources (= 2.3.16)
+    aws-sdk-core (2.3.16)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.3.14)
-      aws-sdk-core (= 2.3.14)
-    berkshelf (4.3.3)
+    aws-sdk-resources (2.3.16)
+      aws-sdk-core (= 2.3.16)
+    berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
       buff-config (~> 1.0)
@@ -56,6 +56,7 @@ GEM
       faraday (~> 0.9)
       httpclient (~> 2.7)
       minitar (~> 0.5, >= 0.5.4)
+      mixlib-archive (~> 0.1)
       octokit (~> 4.0)
       retryable (~> 2.0)
       ridley (~> 4.5)
@@ -121,11 +122,12 @@ GEM
       multi_json (~> 1.10)
     method_source (0.8.2)
     minitar (0.5.4)
+    mixlib-archive (0.1.0)
     mixlib-authentication (1.4.1)
       mixlib-log
     mixlib-cli (1.6.0)
     mixlib-config (2.2.1)
-    mixlib-install (1.0.12)
+    mixlib-install (1.0.13)
       artifactory
       mixlib-shellout
       mixlib-versioning
@@ -140,7 +142,7 @@ GEM
     multipart-post (1.2.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
-    net-ssh (3.1.1)
+    net-ssh (3.2.0)
     nio4r (1.2.1)
     nori (2.6.0)
     octokit (4.3.0)
@@ -201,7 +203,7 @@ GEM
       molinillo (~> 0.4.2)
       semverse (~> 1.1)
     systemu (2.6.5)
-    test-kitchen (1.9.2)
+    test-kitchen (1.10.2)
       mixlib-install (~> 1.0, >= 1.0.4)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
@@ -224,7 +226,7 @@ GEM
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
       rubyntlm (~> 0.6.0)
-    winrm-fs (0.4.2)
+    winrm-fs (0.4.3)
       erubis (~> 2.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 1.1)
