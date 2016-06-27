@@ -186,9 +186,13 @@ class Chef
             super
           # Upstart always provides restart functionality so we don't need to mimic it with stop/sleep/start.
           # Older versions of upstart would fail on restart if the service was currently stopped, check for that. LP:430883
+          # But for safe working of latest upstart job config being loaded, 'restart' can't be used as per link
+          # http://upstart.ubuntu.com/cookbook/#restart (it doesn't uses latest jon config from disk but retains old)
           else
             if @current_resource.running
-              shell_out_with_systems_locale!("/sbin/restart #{@job}")
+              stop_command
+              sleep 1
+              start_command
             else
               start_service
             end
