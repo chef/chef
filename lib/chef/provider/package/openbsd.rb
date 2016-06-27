@@ -127,7 +127,7 @@ class Chef
         end
 
         def pkg_path
-          ENV["PKG_PATH"] || "http://ftp.OpenBSD.org/pub/#{node.kernel.name}/#{node.kernel.release}/packages/#{node.kernel.machine}/"
+          ENV["PKG_PATH"] || "http://ftp.OpenBSD.org/pub/#{node["kernel"]["name"]}/#{node["kernel"]["release"]}/packages/#{node["kernel"]["machine"]}/"
         end
 
       end
