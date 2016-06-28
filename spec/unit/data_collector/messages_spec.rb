@@ -18,6 +18,7 @@
 #
 
 require "spec_helper"
+require "ffi_yajl"
 require "chef/data_collector/messages/helpers"
 
 describe Chef::DataCollector::Messages do
@@ -61,7 +62,8 @@ describe Chef::DataCollector::Messages do
   end
 
   describe '#run_end_message' do
-    let(:run_status) { Chef::RunStatus.new(Chef::Node.new, Chef::EventDispatch::Dispatcher.new) }
+    let(:node)       { Chef::Node.new }
+    let(:run_status) { Chef::RunStatus.new(node, Chef::EventDispatch::Dispatcher.new) }
     let(:report1)  { double("report1", report_data: { "status" => "updated" }) }
     let(:report2)  { double("report2", report_data: { "status" => "skipped" }) }
     let(:reporter_data) do
@@ -74,6 +76,20 @@ describe Chef::DataCollector::Messages do
     before do
       allow(run_status).to receive(:start_time).and_return(Time.now)
       allow(run_status).to receive(:end_time).and_return(Time.now)
+    end
+
+    it "includes a valid node object in the payload" do
+      message = Chef::DataCollector::Messages.run_end_message(reporter_data)
+      expect(message["node"]).to be_an_instance_of(Chef::Node)
+    end
+
+    it "returns a sane JSON representation of the node object" do
+      node.chef_environment = "my_test_environment"
+      node.run_list.add("recipe[my_test_cookbook::default]")
+      message = FFI_Yajl::Parser.parse(Chef::DataCollector::Messages.run_end_message(reporter_data).to_json)
+
+      expect(message["node"]["chef_environment"]).to eq("my_test_environment")
+      expect(message["node"]["run_list"]).to eq(["recipe[my_test_cookbook::default]"])
     end
 
     context "when the run was successful" do
