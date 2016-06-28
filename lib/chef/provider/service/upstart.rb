@@ -190,9 +190,9 @@ class Chef
           # http://upstart.ubuntu.com/cookbook/#restart (it doesn't uses latest jon config from disk but retains old)
           else
             if @current_resource.running
-              stop_command
+              stop_service
               sleep 1
-              start_command
+              start_service
             else
               start_service
             end

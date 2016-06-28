@@ -295,9 +295,11 @@ describe Chef::Provider::Service::Upstart do
       @provider.restart_service()
     end
 
-    it "should call '/sbin/restart service_name' if no restart command is specified" do
+    it "should call start/sleep/stop if no restart command is specified" do
       allow(@current_resource).to receive(:running).and_return(true)
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/restart #{@new_resource.service_name}").and_return(shell_out_success)
+      expect(@provider).to receive(:stop_service)
+      expect(@provider).to receive(:sleep).with(1)
+      expect(@provider).to receive(:start_service)
       @provider.restart_service()
     end
 
