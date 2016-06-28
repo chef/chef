@@ -86,6 +86,7 @@ describe Chef::DataCollector::Messages do
           expanded_run_list
           message_type
           message_version
+          node
           node_name
           organization_name
           resources
@@ -136,6 +137,7 @@ describe Chef::DataCollector::Messages do
           expanded_run_list
           message_type
           message_version
+          node
           node_name
           organization_name
           resources
@@ -167,48 +169,6 @@ describe Chef::DataCollector::Messages do
         end
         expect(extra_fields).to eq([])
       end
-    end
-  end
-
-  describe '#node_update_message' do
-    let(:run_status) { Chef::RunStatus.new(Chef::Node.new, Chef::EventDispatch::Dispatcher.new) }
-
-    let(:required_fields) do
-      %w{
-        entity_name
-        entity_type
-        entity_uuid
-        id
-        message_type
-        message_version
-        organization_name
-        recorded_at
-        remote_hostname
-        requestor_name
-        requestor_type
-        run_id
-        service_hostname
-        source
-        task
-        user_agent
-      }
-    end
-    let(:optional_fields) { %w{data} }
-
-    it "is not missing any required fields" do
-      missing_fields = required_fields.select do |key|
-        !Chef::DataCollector::Messages.node_update_message(run_status).key?(key)
-      end
-
-      expect(missing_fields).to eq([])
-    end
-
-    it "does not have any extra fields" do
-      extra_fields = Chef::DataCollector::Messages.node_update_message(run_status).keys.select do |key|
-        !required_fields.include?(key) && !optional_fields.include?(key)
-      end
-
-      expect(extra_fields).to eq([])
     end
   end
 end

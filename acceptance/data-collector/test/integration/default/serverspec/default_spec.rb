@@ -110,6 +110,7 @@ shared_examples_for "run_converge.success payload check" do
         expanded_run_list
         message_type
         message_version
+        node
         node_name
         organization_name
         resources
@@ -150,6 +151,7 @@ shared_examples_for "run_converge.failure payload check" do
         expanded_run_list
         message_type
         message_version
+        node
         node_name
         organization_name
         resources
@@ -178,44 +180,6 @@ shared_examples_for "run_converge.failure payload check" do
   end
 end
 
-shared_examples_for "node-update payload check" do
-  describe "node update message" do
-    let(:required_fields) do
-      %w{
-        entity_name
-        entity_type
-        entity_uuid
-        id
-        message_type
-        message_version
-        organization_name
-        recorded_at
-        remote_hostname
-        requestor_name
-        requestor_type
-        run_id
-        service_hostname
-        source
-        task
-        user_agent
-      }
-    end
-    let(:optional_fields) { %{data} }
-
-    it "is not missing any required fields" do
-      payload = JSON.load(command("curl http://localhost:9292/cache/action").stdout)
-      missing_fields = required_fields.select { |key| !payload.key?(key) }
-      expect(missing_fields).to eq([])
-    end
-
-    it "does not have any extra fields" do
-      payload = JSON.load(command("curl http://localhost:9292/cache/action").stdout)
-      extra_fields = payload.keys.select { |key| !required_fields.include?(key) && !optional_fields.include?(key) }
-      expect(extra_fields).to eq([])
-    end
-  end
-end
-
 describe "CCR with no data collector URL configured" do
   include_examples "successful chef run", "chef-client -z -c /etc/chef/no-endpoint.rb"
   include_examples "counter checks", { "run_start" => nil, "run_converge.success" => nil, "run_converge.failure" => nil }
@@ -226,7 +190,6 @@ describe "CCR, local mode, config in solo mode" do
   include_examples "counter checks", { "run_start" => 1, "run_converge.success" => 1, "run_converge.failure" => nil }
   include_examples "run_start payload check"
   include_examples "run_converge.success payload check"
-  include_examples "node-update payload check"
 end
 
 describe "CCR, local mode, config in client mode" do
@@ -239,7 +202,6 @@ describe "CCR, local mode, config in both mode" do
   include_examples "counter checks", { "run_start" => 1, "run_converge.success" => 1, "run_converge.failure" => nil }
   include_examples "run_start payload check"
   include_examples "run_converge.success payload check"
-  include_examples "node-update payload check"
 end
 
 describe "CCR, local mode, config in solo mode, failed run" do
@@ -247,5 +209,4 @@ describe "CCR, local mode, config in solo mode, failed run" do
   include_examples "counter checks", { "run_start" => 1, "run_converge.success" => nil, "run_converge.failure" => 1 }
   include_examples "run_start payload check"
   include_examples "run_converge.failure payload check"
-  include_examples "node-update payload check"
 end
