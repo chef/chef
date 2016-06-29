@@ -161,7 +161,7 @@ class Chef
         load_new_resource_state
         @new_resource.running(false)
       end
-      
+
       def action_stop_start
         converge_by("stop then start service #{@new_resource}") do
           stop_service
@@ -172,7 +172,7 @@ class Chef
         load_new_resource_state
         @new_resource.running(true)
       end
-      
+
       def action_restart
         converge_by("restart service #{@new_resource}") do
           restart_service
