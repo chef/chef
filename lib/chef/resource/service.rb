@@ -28,7 +28,7 @@ class Chef
 
       default_action :nothing
       allowed_actions :enable, :disable, :start, :stop, :restart, :reload,
-                      :mask, :unmask
+                      :mask, :unmask, :stop_start
 
       def initialize(name, run_context = nil)
         super
