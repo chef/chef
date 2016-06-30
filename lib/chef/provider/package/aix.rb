@@ -34,13 +34,13 @@ class Chef
         def define_resource_requirements
           super
           requirements.assert(:install) do |a|
-            a.assertion { @new_resource.source }
-            a.failure_message Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
+            a.assertion { new_resource.source }
+            a.failure_message Chef::Exceptions::Package, "Source for package #{new_resource.name} required for action install"
           end
           requirements.assert(:all_actions) do |a|
-            a.assertion { !@new_resource.source || @package_source_found }
-            a.failure_message Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
-            a.whyrun "would assume #{@new_resource.source} would be have previously been made available"
+            a.assertion { !new_resource.source || @package_source_found }
+            a.failure_message Chef::Exceptions::Package, "Package #{new_resource.name} not found: #{new_resource.source}"
+            a.whyrun "would assume #{new_resource.source} would be have previously been made available"
           end
         end
 
@@ -54,23 +54,8 @@ class Chef
             @package_source_found = ::File.exists?(@new_resource.source)
             if @package_source_found
               Chef::Log.debug("#{@new_resource} checking pkg status")
-              ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
-              ret.stdout.each_line do |line|
-                case line
-                when /#{@new_resource.package_name}:/
-                  fields = line.split(":")
-                  file_sets.push([fields[1], fields[2]])
-                end
-              end
-              raise Chef::Exceptions::Package, "package source #{@new_resource.source} does not provide package #{@new_resource.package_name}" if file_sets.empty?
-
-              @new_resource.version(greatest_version(file_sets))
-
-              # only include file sets of the latest version
-              # remove the version and sort the file sets by name
-              file_sets = file_sets.each_with_object([]) do |fileset, filtered|
-                filtered.push(fileset[0]) if fileset[1] == @new_resource.version
-              end.sort
+              version, file_sets = filter_source_device { |fs| file_sets << fs }
+              new_resource.version(version)
             end
           end
 
@@ -82,7 +67,7 @@ class Chef
             when /#{@current_resource.package_name}/
               fields = line.split(":")
               Chef::Log.debug("#{@new_resource} version #{fields[2]} is already installed")
-              installed_file_sets.push([fields[1],fields[2]])
+              installed_file_sets.push([fields[1], fields[2]])
             end
           end
 
@@ -110,21 +95,21 @@ class Chef
         end
 
         def candidate_version
-          return @candidate_version if @candidate_version
-          ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
-          ret.stdout.each_line do |line|
-            case line
-            when /\w:#{Regexp.escape(@new_resource.package_name)}:(.*)/
-              fields = line.split(":")
-              @candidate_version = fields[2]
-              @new_resource.version(fields[2])
-              Chef::Log.debug("#{@new_resource} setting install candidate version to #{@candidate_version}")
+          @candidate_version ||= begin
+            ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
+            ret.stdout.each_line do |line|
+              case line
+              when /\w:#{Regexp.escape(@new_resource.package_name)}:(.*)/
+                fields = line.split(":")
+                @candidate_version = fields[2]
+                @new_resource.version(fields[2])
+                Chef::Log.debug("#{@new_resource} setting install candidate version to #{@candidate_version}")
+              end
+            end
+            unless ret.exitstatus == 0
+              raise Chef::Exceptions::Package, "installp -L -d #{@new_resource.source} - #{ret.format_for_exception}!"
             end
           end
-          unless ret.exitstatus == 0
-            raise Chef::Exceptions::Package, "installp -L -d #{@new_resource.source} - #{ret.format_for_exception}!"
-          end
-          @candidate_version
         end
 
         #
@@ -155,6 +140,29 @@ class Chef
             shell_out_with_timeout!( "installp -u #{expand_options(@new_resource.options)} #{name}" )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           end
+        end
+
+        def filter_source_device
+          file_sets = []
+          ret = shell_out_with_timeout("installp -L -d #{new_resource.source}")
+          ret.stdout.each_line do |line|
+            case line
+            when /(^|:)#{new_resource.package_name}:/
+              fields = line.split(":")
+              file_sets.push([fields[1], fields[2]])
+            end
+          end
+          raise Chef::Exceptions::Package, "package source #{new_resource.source} does not provide package #{new_resource.package_name}" if file_sets.empty?
+
+          resource_version = greatest_version(file_sets)
+
+          # only include file sets of the latest version
+          # remove the version and sort the file sets by name
+          file_sets = file_sets.each_with_object([]) do |fileset, filtered|
+            filtered.push(fileset[0]) if fileset[1] == resource_version
+          end.sort
+
+          [resource_version, file_sets]
         end
 
         def greatest_version(filesets)

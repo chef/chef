@@ -64,20 +64,24 @@ describe Chef::Provider::Package::Aix do
     end
 
     it "should get the source package version from installp if provided" do
-      status = double("Status", :stdout => @bffinfo, :exitstatus => 0)
+      info = <<EOH
+wacky.samba.base:wacky.samba.base:1.6.0.25::I:C:::::N:Network Authentication Service Client::::0::
+samba.base:samba.base:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
+EOH
+      status = double("Status", :stdout => info, :exitstatus => 0)
       expect(@provider).to receive(:shell_out).with("installp -L -d /tmp/samba.base", timeout: 900).and_return(status)
       expect(@provider).to receive(:shell_out).with("lslpp -lcq | grep :samba.base", timeout: 900).and_return(@empty_status)
       @provider.load_current_resource
 
       expect(@provider.current_resource.package_name).to eq("samba.base")
-      expect(@new_resource.version).to eq("3.3.12.0")
+      expect(@new_resource.version).to eq("1.6.0.3")
     end
 
     it "should get the source package version from the highest version available from installp" do
-      multi_file_set = <<-EOH
-        samba.base:samba.base.rte:1.6.0.25::I:C:::::N:Network Authentication Service Client::::0::
-        samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
-      EOH
+      multi_file_set = <<EOH
+samba.base:samba.base.rte:1.6.0.25::I:C:::::N:Network Authentication Service Client::::0::
+samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
+EOH
       status = double("Status", :stdout => multi_file_set, :exitstatus => 0)
       expect(@provider).to receive(:shell_out).with("installp -L -d /tmp/samba.base", timeout: 900).and_return(status)
       expect(@provider).to receive(:shell_out).with("lslpp -lcq | grep :samba.base", timeout: 900).and_return(@empty_status)
@@ -139,18 +143,18 @@ describe Chef::Provider::Package::Aix do
 
       context "source has multiple filesets" do
         let(:src_filesets) do
-          <<-EOH
-            samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
-            samba.base:samba.base.samples:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
-          EOH
+          <<EOH
+samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
+samba.base:samba.base.samples:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
+EOH
         end
 
         context "all filesets are installed but different version" do
           let(:current_filesets) do
-            <<-EOH
-              samba.base:samba.base.rte:1.6.0.2::I:C:::::N:Network Authentication Service Client::::0::
-              samba.base:samba.base.samples:1.6.0.2::I:C:::::N:Network Authentication Service Client::::0::
-            EOH
+            <<EOH
+samba.base:samba.base.rte:1.6.0.2::I:C:::::N:Network Authentication Service Client::::0::
+samba.base:samba.base.samples:1.6.0.2::I:C:::::N:Network Authentication Service Client::::0::
+EOH
           end
 
           it "sets current version to the installed versions" do
@@ -160,10 +164,10 @@ describe Chef::Provider::Package::Aix do
 
         context "all filesets are installed and same version" do
           let(:current_filesets) do
-            <<-EOH
-              samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
-              samba.base:samba.base.samples:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
-            EOH
+            <<EOH
+samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
+samba.base:samba.base.samples:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
+EOH
           end
 
           it "sets current version to the installed versions" do
@@ -173,9 +177,7 @@ describe Chef::Provider::Package::Aix do
 
         context "partial filesets are installed and same version" do
           let(:current_filesets) do
-            <<-EOH
-              samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
-            EOH
+            "samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::"
           end
 
           it "does not set current version" do
@@ -185,10 +187,10 @@ describe Chef::Provider::Package::Aix do
 
         context "all filesets are installed and mixed versions" do
           let(:current_filesets) do
-            <<-EOH
-              samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
-              samba.base:samba.base.samples:1.6.0.2::I:C:::::N:Network Authentication Service Client::::0::
-            EOH
+            <<EOH
+samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
+samba.base:samba.base.samples:1.6.0.2::I:C:::::N:Network Authentication Service Client::::0::
+EOH
           end
 
           it "does not set current version" do
