@@ -54,8 +54,9 @@ class Chef
             @package_source_found = ::File.exists?(@new_resource.source)
             if @package_source_found
               Chef::Log.debug("#{@new_resource} checking pkg status")
-              version, file_sets = filter_source_device { |fs| file_sets << fs }
-              new_resource.version(version)
+              src_version, file_sets = filter_source_device { |fs| file_sets << fs }
+              raise Chef::Exceptions::Package, "package source #{new_resource.source} does not provide package #{new_resource.package_name}" unless src_version
+              new_resource.version(src_version)
             end
           end
 
@@ -77,11 +78,11 @@ class Chef
           # are installed and they are all at the same version
           if installed_file_sets.length > 0
             # filter out filesets that are not part of the source package
-            installed_file_sets.select! { |fs| file_sets.include?(fs[0]) }
-            # if fileset versions are mixed, we dont consider the package installed
+            installed_file_sets.select! { |fs| file_sets.empty? || file_sets.include?(fs[0]) }
+            # if fileset versions are mixed, we dont consider the package to be installed
             if installed_file_sets.map { |fs| fs[1] }.uniq.length == 1
               # package must have all filesets
-              if installed_file_sets.map { |fs| fs[0] } == file_sets
+              if file_sets.empty? || installed_file_sets.map { |fs| fs[0] }.uniq.sort == file_sets
                 @current_resource.version(installed_file_sets[0][1])
               end
             end
@@ -96,18 +97,11 @@ class Chef
 
         def candidate_version
           @candidate_version ||= begin
-            ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
-            ret.stdout.each_line do |line|
-              case line
-              when /\w:#{Regexp.escape(@new_resource.package_name)}:(.*)/
-                fields = line.split(":")
-                @candidate_version = fields[2]
-                @new_resource.version(fields[2])
-                Chef::Log.debug("#{@new_resource} setting install candidate version to #{@candidate_version}")
-              end
-            end
-            unless ret.exitstatus == 0
-              raise Chef::Exceptions::Package, "installp -L -d #{@new_resource.source} - #{ret.format_for_exception}!"
+            candidate, _ = filter_source_device
+            if candidate
+              @candidate_version = candidate
+              @new_resource.version(candidate)
+              Chef::Log.debug("#{@new_resource} setting install candidate version to #{@candidate_version}")
             end
           end
         end
@@ -143,8 +137,13 @@ class Chef
         end
 
         def filter_source_device
+          return unless  new_resource.source
+
           file_sets = []
           ret = shell_out_with_timeout("installp -L -d #{new_resource.source}")
+          unless ret.exitstatus == 0
+            raise Chef::Exceptions::Package, "installp -L -d #{@new_resource.source} - #{ret.format_for_exception}!"
+          end
           ret.stdout.each_line do |line|
             case line
             when /(^|:)#{new_resource.package_name}:/
@@ -152,17 +151,18 @@ class Chef
               file_sets.push([fields[1], fields[2]])
             end
           end
-          raise Chef::Exceptions::Package, "package source #{new_resource.source} does not provide package #{new_resource.package_name}" if file_sets.empty?
 
-          resource_version = greatest_version(file_sets)
+          unless file_sets.empty?
+            resource_version = greatest_version(file_sets)
 
-          # only include file sets of the latest version
-          # remove the version and sort the file sets by name
-          file_sets = file_sets.each_with_object([]) do |fileset, filtered|
-            filtered.push(fileset[0]) if fileset[1] == resource_version
-          end.sort
+            # only include file sets of the latest version
+            # remove the version and sort the file sets by name
+            file_sets = file_sets.each_with_object([]) do |fileset, filtered|
+              filtered.push(fileset[0]) if fileset[1] == resource_version
+            end.uniq.sort
 
-          [resource_version, file_sets]
+            [resource_version, file_sets]
+          end
         end
 
         def greatest_version(filesets)
