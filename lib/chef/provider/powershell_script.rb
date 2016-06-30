@@ -36,7 +36,7 @@ class Chef
       end
 
       def command
-        basepath = is_forced_32bit ? wow64_directory : run_context.node.kernel.os_info.system_directory
+        basepath = is_forced_32bit ? wow64_directory : run_context.node["kernel"]["os_info"]["system_directory"]
 
         # Powershell.exe is always in "v1.0" folder (for backwards compatibility)
         interpreter_path = Chef::Util::PathHelper.join(basepath, "WindowsPowerShell", "v1.0", interpreter)

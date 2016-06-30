@@ -120,8 +120,8 @@ describe Chef::CookbookVersion do
       # Used to test file-specificity related file lookups
       let(:node) do
         Chef::Node.new.tap do |n|
-          n.set[:platform] = "ubuntu"
-          n.set[:platform_version] = "13.04"
+          n.normal[:platform] = "ubuntu"
+          n.normal[:platform_version] = "13.04"
           n.name("testing")
         end
       end
@@ -203,8 +203,8 @@ describe Chef::CookbookVersion do
     # Used to test file-specificity related file lookups
     let(:node) do
       Chef::Node.new.tap do |n|
-        n.set[:platform] = "ubuntu"
-        n.set[:platform_version] = "13.04"
+        n.normal[:platform] = "ubuntu"
+        n.normal[:platform_version] = "13.04"
         n.name("testing")
       end
     end

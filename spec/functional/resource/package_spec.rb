@@ -260,7 +260,7 @@ describe Chef::Resource::Package, metadata do
           end
 
           before do
-            node.set[:preseed_value] = "FROM TEMPLATE"
+            node.normal[:preseed_value] = "FROM TEMPLATE"
           end
 
           it "preseeds the package, then installs it" do

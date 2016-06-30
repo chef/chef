@@ -29,7 +29,7 @@ class Chef
       end
 
       def command
-        basepath = is_forced_32bit ? wow64_directory : run_context.node.kernel.os_info.system_directory
+        basepath = is_forced_32bit ? wow64_directory : run_context.node["kernel"]["os_info"]["system_directory"]
 
         interpreter_path = Chef::Util::PathHelper.join(basepath, interpreter)
 

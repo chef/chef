@@ -218,7 +218,7 @@ describe Chef::Node::Attribute do
     end
 
     it "gives the value at each level of precedence for a path spec" do
-      expected = [["set_unless_enabled?", false],
+      expected = [
         %w{default default},
         %w{env_default env_default},
         %w{role_default role_default},
@@ -417,12 +417,6 @@ describe Chef::Node::Attribute do
       expect(@attributes.normal["foo"]["bar"]).to eq(:baz)
     end
 
-    it "should optionally skip setting the value if one already exists" do
-      @attributes.set_unless_value_present = true
-      @attributes.normal["hostname"] = "bar"
-      expect(@attributes["hostname"]).to eq("latte")
-    end
-
     it "does not support ||= when setting" do
       # This is a limitation of auto-vivification.
       # Users who need this behavior can use set_unless and friends
@@ -493,6 +487,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should return true if an attribute exists but is set to nil using dot notation" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       expect(@attributes.music.deeper.has_key?("gates_of_ishtar")).to eq(true)
     end
 
@@ -533,10 +528,12 @@ describe Chef::Node::Attribute do
 
   describe "method_missing" do
     it "should behave like a [] lookup" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       expect(@attributes.music.mastodon).to eq("rocks")
     end
 
     it "should allow the last method to set a value if it has an = sign on the end" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       @attributes.normal.music.mastodon = %w{dream still shining}
       expect(@attributes.normal.music.mastodon).to eq(%w{dream still shining})
     end
@@ -577,7 +574,7 @@ describe Chef::Node::Attribute do
 
     it "should yield lower if we go deeper" do
       collect = Array.new
-      @attributes.one.keys.each do |k|
+      @attributes["one"].keys.each do |k|
         collect << k
       end
       expect(collect.include?("two")).to eq(true)
@@ -587,7 +584,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should not raise an exception if one of the hashes has a nil value on a deep lookup" do
-      expect { @attributes.place.keys { |k| } }.not_to raise_error
+      expect { @attributes["place"].keys { |k| } }.not_to raise_error
     end
   end
 
@@ -1171,6 +1168,7 @@ describe Chef::Node::Attribute do
     end
 
     it "raises an error when using `attr=value`" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       expect { @attributes.new_key = "new value" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
