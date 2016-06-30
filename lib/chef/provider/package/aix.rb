@@ -48,6 +48,8 @@ class Chef
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
 
+          file_sets = []
+
           if @new_resource.source
             @package_source_found = ::File.exists?(@new_resource.source)
             if @package_source_found
@@ -57,21 +59,46 @@ class Chef
                 case line
                 when /#{@new_resource.package_name}:/
                   fields = line.split(":")
-                  @new_resource.version(fields[2])
+                  file_sets.push([fields[1], fields[2]])
                 end
               end
-              raise Chef::Exceptions::Package, "package source #{@new_resource.source} does not provide package #{@new_resource.package_name}" unless @new_resource.version
+              raise Chef::Exceptions::Package, "package source #{@new_resource.source} does not provide package #{@new_resource.package_name}" if file_sets.empty?
+
+              @new_resource.version(greatest_version(file_sets))
+
+              # only include file sets of the latest version
+              # remove the version and sort the file sets by name
+              file_sets = file_sets.each_with_object([]) do |fileset, filtered|
+                filtered.push(fileset[0]) if fileset[1] == @new_resource.version
+              end.sort
             end
           end
 
           Chef::Log.debug("#{@new_resource} checking install state")
-          ret = shell_out_with_timeout("lslpp -lcq #{@current_resource.package_name}")
+          installed_file_sets = []
+          ret = shell_out_with_timeout("lslpp -lcq | grep :#{@current_resource.package_name}")
           ret.stdout.each_line do |line|
             case line
             when /#{@current_resource.package_name}/
               fields = line.split(":")
               Chef::Log.debug("#{@new_resource} version #{fields[2]} is already installed")
-              @current_resource.version(fields[2])
+              installed_file_sets.push([fields[1],fields[2]])
+            end
+          end
+
+          # there can be multiple filesets in a package and nodes may
+          # install filesets individually. We consider a package to
+          # be installed only if all filesets of the source package
+          # are installed and they are all at the same version
+          if installed_file_sets.length > 0
+            # filter out filesets that are not part of the source package
+            installed_file_sets.select! { |fs| file_sets.include?(fs[0]) }
+            # if fileset versions are mixed, we dont consider the package installed
+            if installed_file_sets.map { |fs| fs[1] }.uniq.length == 1
+              # package must have all filesets
+              if installed_file_sets.map { |fs| fs[0] } == file_sets
+                @current_resource.version(installed_file_sets[0][1])
+              end
             end
           end
 
@@ -130,6 +157,12 @@ class Chef
           end
         end
 
+        def greatest_version(filesets)
+          sorted = filesets.sort do |x, y|
+            Gem::Version.new(x[1]) <=> Gem::Version.new(y[1])
+          end
+          sorted.last[1]
+        end
       end
     end
   end
