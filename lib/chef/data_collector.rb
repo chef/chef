@@ -279,7 +279,6 @@ class Chef
         # we have nothing to report.
         return unless run_status
 
-        send_to_data_collector(Chef::DataCollector::Messages.node_update_message(run_status).to_json)
         send_to_data_collector(
           Chef::DataCollector::Messages.run_end_message(
             run_status: run_status,
