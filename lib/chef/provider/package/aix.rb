@@ -102,6 +102,9 @@ class Chef
               @candidate_version = candidate
               new_resource.version(candidate)
               Chef::Log.debug("#{new_resource} setting install candidate version to #{@candidate_version}")
+              candidate
+            else
+              nil
             end
           end
         end
@@ -146,6 +149,10 @@ class Chef
           end
           ret.stdout.each_line do |line|
             case line
+            # installp will return lines with product:file_set:version
+            # So we are searching for products or filesets that match the package name
+            # Example line:
+            # samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
             when /(^|:)#{new_resource.package_name}:/
               fields = line.split(":")
               file_sets.push([fields[1], fields[2]])

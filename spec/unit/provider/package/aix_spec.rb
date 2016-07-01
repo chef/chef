@@ -234,9 +234,11 @@ EOH
     end
 
     it "should lookup the candidate_version if the variable is not already set" do
-      status = double(:stdout => "", :exitstatus => 0)
+      bffinfo = "/usr/lib/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:
+  /etc/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:"
+      status = double(:stdout => bffinfo, :exitstatus => 0)
       expect(@provider).to receive(:shell_out).and_return(status)
-      @provider.candidate_version
+      expect(@provider.candidate_version).to eq("3.3.12.0")
     end
 
     it "should throw and exception if the exitstatus is not 0" do
