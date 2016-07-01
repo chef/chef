@@ -266,6 +266,27 @@ describe Chef::Recipe do
         end
       end
 
+      class Coerced < Chef::Resource
+        resource_name :coerced
+        provides :coerced
+        default_action :whatever
+        property :package_name, [String, Array], coerce: proc { |x| [x].flatten }, name_property: true
+        def after_created
+          Array(action).each do |action|
+            run_action(action)
+          end
+        end
+        action :whatever do
+          package_name # unlazy the package_name
+        end
+      end
+
+      it "does not emit 3694 when the name_property is unlazied by running it at compile_time" do
+        recipe.coerced "string"
+        expect(Chef).to_not receive(:log_deprecation)
+        recipe.coerced "string"
+      end
+
       it "validating resources via build_resource" do
         expect {recipe.build_resource(:remote_file, "klopp") do
           source Chef::DelayedEvaluator.new { "http://chef.io" }

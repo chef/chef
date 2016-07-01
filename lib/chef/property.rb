@@ -531,8 +531,6 @@ class Chef
       end
     end
 
-    protected
-
     #
     # The options this Property will use for get/set behavior and validation.
     #
@@ -583,6 +581,7 @@ class Chef
         (options.has_key?(:is) && resource.send(:_pv_is, { name => nil }, name, options[:is], raise_error: false))
     end
 
+    # @api private
     def get_value(resource)
       if instance_variable_name
         resource.instance_variable_get(instance_variable_name)
@@ -591,6 +590,7 @@ class Chef
       end
     end
 
+    # @api private
     def set_value(resource, value)
       if instance_variable_name
         resource.instance_variable_set(instance_variable_name, value)
@@ -599,6 +599,7 @@ class Chef
       end
     end
 
+    # @api private
     def value_is_set?(resource)
       if instance_variable_name
         resource.instance_variable_defined?(instance_variable_name)
@@ -607,6 +608,7 @@ class Chef
       end
     end
 
+    # @api private
     def reset_value(resource)
       if instance_variable_name
         if value_is_set?(resource)
@@ -616,6 +618,8 @@ class Chef
         raise ArgumentError, "Property #{name} has no instance variable defined and cannot be reset"
       end
     end
+
+    private
 
     def exec_in_resource(resource, proc, *args)
       if resource

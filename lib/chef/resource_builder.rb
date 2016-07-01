@@ -104,23 +104,26 @@ class Chef
     end
 
     def is_trivial_resource?(resource)
-      identicalish_resources?(resource_class.new(name, run_context), resource)
+      trivial_resource = resource_class.new(name, run_context)
+      # force un-lazy the name property on the created trivial resource
+      name_property = resource_class.properties.find { |sym, p| p.name_property? }
+      trivial_resource.send(name_property[0]) unless name_property.nil?
+      identicalish_resources?(trivial_resource, resource)
     end
 
     # this is an equality test specific to checking for 3694 cloning warnings
     def identicalish_resources?(first, second)
-      skipped_ivars = [ :@source_line, :@cookbook_name, :@recipe_name, :@params, :@elapsed_time, :@declared_type ]
-      checked_ivars = ( first.instance_variables | second.instance_variables ) - skipped_ivars
-      non_matching_ivars = checked_ivars.reject do |iv|
-        if iv == :@action && ( [first.instance_variable_get(iv)].flatten == [:nothing] || [second.instance_variable_get(iv)].flatten == [:nothing] )
-          # :nothing action on either side of the comparison always matches
+      non_matching_properties = first.class.properties.reject do |sym, property|
+        if !property.is_set?(first) && !property.is_set?(second)
           true
+        elsif property.is_set?(first) && property.is_set?(second)
+          property.send(:get_value, first) == property.send(:get_value, second)
         else
-          first.instance_variable_get(iv) == second.instance_variable_get(iv)
+          false
         end
       end
-      Chef::Log.debug("ivars which did not match with the prior resource: #{non_matching_ivars}")
-      non_matching_ivars.empty?
+      Chef::Log.debug("ivars which did not match with the prior resource: #{non_matching_properties.keys}")
+      non_matching_properties.empty?
     end
 
     def emit_cloned_resource_warning
