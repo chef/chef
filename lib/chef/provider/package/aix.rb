@@ -97,7 +97,7 @@ class Chef
 
         def candidate_version
           @candidate_version ||= begin
-            candidate, _ = filter_source_device
+            candidate, fs = filter_source_device
             if candidate
               @candidate_version = candidate
               new_resource.version(candidate)
