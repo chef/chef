@@ -113,17 +113,18 @@ class Chef
 
     # this is an equality test specific to checking for 3694 cloning warnings
     def identicalish_resources?(first, second)
-      non_matching_properties = first.class.properties.reject do |sym, property|
-        if !property.is_set?(first) && !property.is_set?(second)
+      skipped_ivars = [ :@source_line, :@cookbook_name, :@recipe_name, :@params, :@elapsed_time, :@declared_type ]
+      checked_ivars = ( first.instance_variables | second.instance_variables ) - skipped_ivars
+      non_matching_ivars = checked_ivars.reject do |iv|
+        if iv == :@action && ( [first.instance_variable_get(iv)].flatten == [:nothing] || [second.instance_variable_get(iv)].flatten == [:nothing] )
+          # :nothing action on either side of the comparison always matches
           true
-        elsif property.is_set?(first) && property.is_set?(second)
-          property.send(:get_value, first) == property.send(:get_value, second)
         else
-          false
+          first.instance_variable_get(iv) == second.instance_variable_get(iv)
         end
       end
-      Chef::Log.debug("ivars which did not match with the prior resource: #{non_matching_properties.keys}")
-      non_matching_properties.empty?
+      Chef::Log.debug("ivars which did not match with the prior resource: #{non_matching_ivars}")
+      non_matching_ivars.empty?
     end
 
     def emit_cloned_resource_warning

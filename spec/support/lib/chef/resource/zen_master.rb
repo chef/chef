@@ -24,8 +24,18 @@ class Chef
     class ZenMaster < Chef::Resource
       allowed_actions :win, :score
 
-      property :peace
-      property :something
+      attr_reader :peace
+
+      def peace(tf)
+        @peace = tf
+      end
+
+      def something(arg = nil)
+        if !arg.nil?
+          @something = arg
+        end
+        @something
+      end
     end
   end
 end
