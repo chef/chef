@@ -66,3 +66,6 @@ require 'chef/resource/timestamped_deploy'
 require 'chef/resource/user'
 require 'chef/resource/whyrun_safe_ruby_block'
 require 'chef/resource/yum_package'
+
+# Add ChefPackages
+require 'chef/chef_package'
