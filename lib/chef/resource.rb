@@ -1461,6 +1461,19 @@ class Chef
       end
     end
 
+    # Apply a proc or block to the resource.
+    #
+    # modes = proc { mode "0644"; group "root"; owner "root" }
+    # file "/tmp/whatever" do
+    #   apply modes
+    # end
+    #
+    # @method apply(proc, &block)
+    def apply(prok=nil, &block)
+      block ||= prok
+      self.instance_eval(&block)
+    end
+
     #
     # Preface an exception message with generic Resource information.
     #
