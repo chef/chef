@@ -66,7 +66,7 @@ class Chef
       # the logger API.
       def msg(message)
         begin
-          stdout.puts message
+          @stdout.puts message
         rescue Errno::EPIPE => e
           raise e if @config[:verbosity] >= 2
           exit 0
@@ -76,7 +76,7 @@ class Chef
       # Prints a msg to stderr. Used for info, warn, error, and fatal.
       def log(message)
         begin
-          stderr.puts message
+          @stderr.puts message
         rescue Errno::EPIPE => e
           raise e if @config[:verbosity] >= 2
           exit 0
@@ -113,7 +113,7 @@ class Chef
       # determined by the value of `config[:color]`. When output is not to a
       # terminal, colored output is never used
       def color?
-        Chef::Config[:color] && stdout.tty?
+        Chef::Config[:color] && @stdout.tty?
       end
 
       def ask(*args, &block)
@@ -143,7 +143,7 @@ class Chef
         if opts[:default] && config[:defaults]
           opts[:default]
         else
-          stdout.print question
+          @stdout.print question
           a = stdin.readline.strip
 
           if opts[:default]
@@ -237,8 +237,8 @@ class Chef
       def confirm_without_exit(question, append_instructions = true, default_choice = nil)
         return true if config[:yes]
 
-        stdout.print question
-        stdout.print confirmation_instructions(default_choice) if append_instructions
+        @stdout.print question
+        @stdout.print confirmation_instructions(default_choice) if append_instructions
 
         answer = stdin.readline
         answer.chomp!
