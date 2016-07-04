@@ -60,6 +60,9 @@ class Chef
           @metadata_filenames << File.join(@cookbook_path, "metadata.rb")
         elsif File.exists?(File.join(@cookbook_path, "metadata.json"))
           @metadata_filenames << File.join(@cookbook_path, "metadata.json")
+        else
+          Chef::Log.error "metadata.rb/metadata.json file not found at cookbook path #{@cookbook_path}"
+          raise Chef::Exceptions::MetadataNotFound, "Metadata file not found for cookbook #{cookbook_name} at #{@cookbook_path}"
         end
 
         if empty?

@@ -1,0 +1,5 @@
+maintainer       "Opscode"
+maintainer_email "do_not_reply@opscode.com"
+license          "Apache 2.0"
+description      "sample cookbook for test"
+version          "1.0"
