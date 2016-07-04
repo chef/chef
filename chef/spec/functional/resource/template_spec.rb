@@ -58,7 +58,7 @@ describe Chef::Resource::Template do
     end
 
     it "creates the template with the rendered content using a local erb file when the :create action is run" do
-      resource.source(File.expand_path(File.join(CHEF_SPEC_DATA,'cookbooks','openldap','templates','default','openldap_stuff.conf.erb')))
+      resource.source(File.expand_path(File.join(CHEF_SPEC_DATA,'cookbooks','openldap1','templates','default','openldap_stuff.conf.erb')))
       resource.cookbook(nil)
       resource.local(true)
       resource.run_action(:create)

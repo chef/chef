@@ -18,13 +18,15 @@ class Chef
                                       :provider_filenames]
 
 
+      attr_reader :cookbook_pathname
       attr_reader :cookbook_name
       attr_reader :cookbook_settings
       attr_reader :metadata_filenames
 
       def initialize(path, chefignore=nil)
         @cookbook_path = File.expand_path( path )
-        @cookbook_name = File.basename( path )
+        @cookbook_pathname = File.basename( path )
+        @cookbook_name = @cookbook_pathname
         @chefignore = chefignore
         @metadata = Hash.new
         @relative_path = /#{Regexp.escape(@cookbook_path)}\/(.+)$/
@@ -65,13 +67,17 @@ class Chef
         if empty?
           Chef::Log.warn "found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
         end
+
+        metadata = @metadata.is_a?(Metadata) ? @metadata : metadata(nil)
+        @cookbook_name = metadata.name.to_sym unless metadata.name.empty?
+
         @cookbook_settings
       end
 
       def cookbook_version
         return nil if empty?
 
-        Chef::CookbookVersion.new(@cookbook_name.to_sym).tap do |c|
+        cookbook_version = Chef::CookbookVersion.new(@cookbook_pathname.to_sym).tap do |c|
           c.root_dir             = @cookbook_path
           c.attribute_filenames  = cookbook_settings[:attribute_filenames].values
           c.definition_filenames = cookbook_settings[:definition_filenames].values
@@ -85,6 +91,11 @@ class Chef
           c.metadata_filenames   = @metadata_filenames
           c.metadata             = metadata(c)
         end
+
+        raise "Cookbook metadata is missing required 'name' value" unless cookbook_version.metadata.name
+        cookbook_version.name = cookbook_version.metadata.name.to_sym
+
+        cookbook_version
       end
 
       # Generates the Cookbook::Metadata object

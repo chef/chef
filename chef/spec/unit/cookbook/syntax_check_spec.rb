@@ -85,12 +85,14 @@ describe Chef::Cookbook::SyntaxCheck do
   before do
     Chef::Log.logger = Logger.new(StringIO.new)
 
-    @cookbook_path = File.join(CHEF_SPEC_DATA, 'cookbooks', 'openldap')
+    @cookbook_path = File.join(CHEF_SPEC_DATA, 'cookbooks', 'openldap1')
 
     @attr_files = %w{default.rb smokey.rb}.map { |f| File.join(@cookbook_path, 'attributes', f) }
     @defn_files = %w{client.rb server.rb}.map { |f| File.join(@cookbook_path, 'definitions', f)}
     @recipes = %w{default.rb gigantor.rb one.rb}.map { |f| File.join(@cookbook_path, 'recipes', f) }
-    @ruby_files = @attr_files + @defn_files + @recipes
+
+    metadata = File.join(@cookbook_path, 'metadata.rb')
+    @ruby_files = [metadata] + @attr_files + @defn_files + @recipes
 
     @template_files = %w{openldap_stuff.conf.erb openldap_variable_stuff.conf.erb test.erb}.map { |f| File.join(@cookbook_path, 'templates', 'default', f)}
 
@@ -99,7 +101,7 @@ describe Chef::Cookbook::SyntaxCheck do
 
   it "creates a syntax checker given the cookbook name when Chef::Config.cookbook_path is set" do
     Chef::Config[:cookbook_path] = File.dirname(@cookbook_path)
-    syntax_check = Chef::Cookbook::SyntaxCheck.for_cookbook(:openldap)
+    syntax_check = Chef::Cookbook::SyntaxCheck.for_cookbook("openldap1")
     syntax_check.cookbook_path.should == @cookbook_path
   end
 
