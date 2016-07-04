@@ -7,6 +7,11 @@ group(:docgen) do
   gem "yard"
 end
 
+# Newer rdiscount doesn't compile on windows, and this gemfile is used in Ci
+# pipeline for build/test on all platforms. Pin rdiscount to known good
+# version. (CHEF-3840)
+gem "rdiscount", "~> 1.6.8"
+
 group(:development, :test) do
   gem "simplecov"
   gem 'rack', "~> 1.5.1"
