@@ -118,7 +118,11 @@ class Chef
       end
 
       def tcp_test_ssh(hostname)
-        tcp_socket = TCPSocket.new(hostname, 22)
+        begin
+          tcp_socket = TCPSocket.new(hostname, 22)
+        rescue Errno::EHOSTUNREACH => e
+          retry
+        end
         readable = IO.select([tcp_socket], nil, nil, 5)
         if readable
           Chef::Log.debug("sshd accepting connections on #{hostname}, banner is #{tcp_socket.gets}")
