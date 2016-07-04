@@ -149,6 +149,14 @@ EOH
         <<-EOH
 # Chef Client wrapper for powershell_script resources
 
+# In rare cases, such as when PowerShell is executed
+# as an alternate user, the new-variable cmdlet is not
+# available, so import it just in case
+if ( get-module -ListAvailable Microsoft.PowerShell.Utility )
+{
+    Import-Module Microsoft.PowerShell.Utility
+}
+
 # LASTEXITCODE can be uninitialized -- make it explictly 0
 # to avoid incorrect detection of failure (non-zero) codes
 $global:LASTEXITCODE = 0
