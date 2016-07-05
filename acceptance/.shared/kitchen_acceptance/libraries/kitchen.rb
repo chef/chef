@@ -46,6 +46,14 @@ module KitchenAcceptance
           "ARTIFACTORY_PASSWORD" => artifactory_password
         }.merge(new_resource.env))
       end
+      ruby_block "copy_kitchen_logs_to_data_path" do
+        block do
+          suite = kitchen_dir.split("/").last
+          kitchen_log_path = ENV["WORKSPACE"] ? "#{ENV["WORKSPACE"]}/chef-acceptance-data/logs" : "#{kitchen_dir}/../.acceptance_data/logs/kitchen"
+          FileUtils.mkdir_p("#{kitchen_log_path}/#{suite}")
+          FileUtils.cp_r("#{kitchen_dir}/.kitchen/logs/", "#{kitchen_log_path}/#{suite}")
+        end
+      end
     end
   end
 end
