@@ -25,6 +25,7 @@ namespace :dependencies do
   desc "Update all dependencies. dependencies:update to update as little as possible."
   task :update => %w{
                     dependencies:update_gemfile_lock
+                    dependencies:update_chef_config_gemfile_lock
                     dependencies:update_omnibus_overrides
                     dependencies:update_omnibus_gemfile_lock
                     dependencies:update_acceptance_gemfile_lock
@@ -80,6 +81,7 @@ namespace :dependencies do
     end
   end
 
+  gemfile_lock_task :update_chef_config_gemfile_lock, dirs: %w{chef-config}
   gemfile_lock_task :update_omnibus_gemfile_lock, dirs: %w{omnibus}
   gemfile_lock_task :update_acceptance_gemfile_lock, dirs: %w{acceptance},
                                                      other_platforms: false, leave_frozen: false
