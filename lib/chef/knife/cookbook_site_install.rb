@@ -19,6 +19,7 @@
 require "chef/knife"
 require "chef/exceptions"
 require "shellwords"
+require "mixlib/archive"
 
 class Chef
   class Knife
@@ -149,17 +150,7 @@ class Chef
 
       def extract_cookbook(upstream_file, version)
         ui.info("Uncompressing #{@cookbook_name} version #{version}.")
-        extract_command = "tar zxvf \"#{convert_path upstream_file}\""
-        if Chef::Platform.windows?
-          tar_version = shell_out("tar --version").stdout.tr("\n", " ")
-          if tar_version =~ /GNU tar/
-            Chef::Log.debug("GNU tar detected, adding --force-local")
-            extract_command << " --force-local"
-          else
-            Chef::Log.debug("non-GNU tar detected, not adding --force-local")
-          end
-        end
-        shell_out!(extract_command, :cwd => @install_path)
+        Mixlib::Archive.new(convert_path(upstream_file)).extract(@install_path, perms: false)
       end
 
       def clear_existing_files(cookbook_path)
