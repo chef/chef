@@ -1,4 +1,5 @@
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in chef-config.gemspec
-gemspec
+require_relative "../tasks/gemfile_util"
+
+GemfileUtil.include_locked_gemfile(self, "../Gemfile", groups: [ :chef_config, :development ])
