@@ -120,9 +120,10 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
         expect(app).to receive(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(tarfile)
         expect(File).to receive(:open).with("#{Dir.tmpdir}/chef-solo/recipes.tgz", "wb").and_yield(target_file)
 
-        shellout = instance_double("Mixlib::ShellOut", run_command: nil, error!: nil, stdout: "")
+        archive = double(Mixlib::Archive)
 
-        expect(app).to receive(:shell_out!).with("tar zxvf #{Dir.tmpdir}/chef-solo/recipes.tgz -C #{Dir.tmpdir}/chef-solo").and_return(shellout)
+        expect(Mixlib::Archive).to receive(:new).with("#{Dir.tmpdir}/chef-solo/recipes.tgz").and_return(archive)
+        expect(archive).to receive(:extract).with("#{Dir.tmpdir}/chef-solo", { perms: false, ignore: /^\.$/ })
         app.reconfigure
         expect(target_file.string).to eq("remote_tarball_content")
       end
@@ -136,11 +137,10 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
         Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"
         expect(FileUtils).to receive(:mkdir_p).with("#{Dir.tmpdir}/chef-solo").and_return(true)
 
-        allow(Chef::Mixin::Command).to receive(:run_command).and_return(true)
+        archive = double(Mixlib::Archive)
 
-        shellout = instance_double("Mixlib::ShellOut", run_command: nil, error!: nil, stdout: "")
-
-        expect(app).to receive(:shell_out!).with("tar zxvf #{Dir.tmpdir}/chef-solo/recipes.tgz -C #{Dir.tmpdir}/chef-solo").and_return(shellout)
+        expect(Mixlib::Archive).to receive(:new).with("#{Dir.tmpdir}/chef-solo/recipes.tgz").and_return(archive)
+        expect(archive).to receive(:extract).with("#{Dir.tmpdir}/chef-solo", { perms: false, ignore: /^\.$/ })
         expect(app).to receive(:fetch_recipe_tarball).ordered
         expect(Chef::ConfigFetcher).to receive(:new).ordered.and_return(config_fetcher)
         app.reconfigure
