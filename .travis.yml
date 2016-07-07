@@ -34,12 +34,12 @@ matrix:
     sudo: true
     script: sudo -E $(which bundle) exec rake spec;
     # also remove integration / external tests
-    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+    bundler_args: --without changelog docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - rvm: 2.2
     sudo: true
     script: sudo -E $(which bundle) exec rake spec;
     # also remove integration / external tests
-    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+    bundler_args: --without changelog docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - rvm: 2.3.0
     sudo: true
     script: sudo -E $(which bundle) exec rake spec;
