@@ -19,13 +19,15 @@
 require "spec_helper"
 
 describe Chef::Provider::Package::Aix do
+  let(:package_source) { "/tmp/samba.base" }
+
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Package.new("samba.base")
-    @new_resource.source("/tmp/samba.base")
+    @new_resource.source(package_source)
 
     @provider = Chef::Provider::Package::Aix.new(@new_resource, @run_context)
     allow(::File).to receive(:exists?).and_return(true)
@@ -42,7 +44,7 @@ describe Chef::Provider::Package::Aix do
     it "should create a current resource with the name of new_resource" do
       status = double("Status", :stdout => @bffinfo, :exitstatus => 0)
       expect(@provider).to receive(:shell_out).with("installp -L -d /tmp/samba.base", timeout: 900).and_return(status)
-      expect(@provider).to receive(:shell_out).with("lslpp -lcq samba.base", timeout: 900).and_return(@empty_status)
+      expect(@provider).to receive(:shell_out).with("lslpp -lcq | grep :samba.base", timeout: 900).and_return(@empty_status)
       @provider.load_current_resource
       expect(@provider.current_resource.name).to eq("samba.base")
     end
@@ -50,7 +52,7 @@ describe Chef::Provider::Package::Aix do
     it "should set the current resource bff package name to the new resource bff package name" do
       status = double("Status", :stdout => @bffinfo, :exitstatus => 0)
       expect(@provider).to receive(:shell_out).with("installp -L -d /tmp/samba.base", timeout: 900).and_return(status)
-      expect(@provider).to receive(:shell_out).with("lslpp -lcq samba.base", timeout: 900).and_return(@empty_status)
+      expect(@provider).to receive(:shell_out).with("lslpp -lcq | grep :samba.base", timeout: 900).and_return(@empty_status)
       @provider.load_current_resource
       expect(@provider.current_resource.package_name).to eq("samba.base")
     end
@@ -63,14 +65,32 @@ describe Chef::Provider::Package::Aix do
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Package)
     end
 
-    it "should get the source package version from lslpp if provided" do
-      status = double("Status", :stdout => @bffinfo, :exitstatus => 0)
+    it "should get the source package version from installp if provided" do
+      info = <<EOH
+wacky.samba.base:wacky.samba.base:1.6.0.25::I:C:::::N:Network Authentication Service Client::::0::
+samba.base:samba.base:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
+EOH
+      status = double("Status", :stdout => info, :exitstatus => 0)
       expect(@provider).to receive(:shell_out).with("installp -L -d /tmp/samba.base", timeout: 900).and_return(status)
-      expect(@provider).to receive(:shell_out).with("lslpp -lcq samba.base", timeout: 900).and_return(@empty_status)
+      expect(@provider).to receive(:shell_out).with("lslpp -lcq | grep :samba.base", timeout: 900).and_return(@empty_status)
       @provider.load_current_resource
 
       expect(@provider.current_resource.package_name).to eq("samba.base")
-      expect(@new_resource.version).to eq("3.3.12.0")
+      expect(@new_resource.version).to eq("1.6.0.3")
+    end
+
+    it "should get the source package version from the highest version available from installp" do
+      multi_file_set = <<EOH
+samba.base:samba.base.rte:1.6.0.25::I:C:::::N:Network Authentication Service Client::::0::
+samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
+EOH
+      status = double("Status", :stdout => multi_file_set, :exitstatus => 0)
+      expect(@provider).to receive(:shell_out).with("installp -L -d /tmp/samba.base", timeout: 900).and_return(status)
+      expect(@provider).to receive(:shell_out).with("lslpp -lcq | grep :samba.base", timeout: 900).and_return(@empty_status)
+      @provider.load_current_resource
+
+      expect(@provider.current_resource.package_name).to eq("samba.base")
+      expect(@new_resource.version).to eq("1.6.0.25")
     end
 
     it "should return the current version installed if found by lslpp" do
@@ -78,9 +98,22 @@ describe Chef::Provider::Package::Aix do
       @stdout = StringIO.new(@bffinfo)
       @stdin, @stderr = StringIO.new, StringIO.new
       expect(@provider).to receive(:shell_out).with("installp -L -d /tmp/samba.base", timeout: 900).and_return(status)
-      expect(@provider).to receive(:shell_out).with("lslpp -lcq samba.base", timeout: 900).and_return(status)
+      expect(@provider).to receive(:shell_out).with("lslpp -lcq | grep :samba.base", timeout: 900).and_return(status)
       @provider.load_current_resource
       expect(@provider.current_resource.version).to eq("3.3.12.0")
+    end
+
+    context "no package source" do
+      let(:package_source) { nil }
+
+      it "should return the current version installed if found by lslpp and when no source" do
+        status = double("Status", :stdout => @bffinfo, :exitstatus => 0)
+        @stdout = StringIO.new(@bffinfo)
+        @stdin, @stderr = StringIO.new, StringIO.new
+        expect(@provider).to receive(:shell_out).with("lslpp -lcq | grep :samba.base", timeout: 900).and_return(status)
+        @provider.load_current_resource
+        expect(@provider.current_resource.version).to eq("3.3.12.0")
+      end
     end
 
     it "should raise an exception if the source is not set but we are installing" do
@@ -100,7 +133,7 @@ describe Chef::Provider::Package::Aix do
     it "should return a current resource with a nil version if the package is not found" do
       status = double("Status", :stdout => @bffinfo, :exitstatus => 0)
       expect(@provider).to receive(:shell_out).with("installp -L -d /tmp/samba.base", timeout: 900).and_return(status)
-      expect(@provider).to receive(:shell_out).with("lslpp -lcq samba.base", timeout: 900).and_return(@empty_status)
+      expect(@provider).to receive(:shell_out).with("lslpp -lcq | grep :samba.base", timeout: 900).and_return(@empty_status)
       @provider.load_current_resource
       expect(@provider.current_resource.version).to be_nil
     end
@@ -112,19 +145,100 @@ describe Chef::Provider::Package::Aix do
       expect(@provider).to receive(:shell_out).with("installp -L -d /tmp/samba.base", timeout: 900).and_return(status)
       expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Package)
     end
+
+    context "multi fileset packages" do
+      let(:src_status) { double("Status", :stdout => src_filesets, :exitstatus => 0) }
+      let(:current_status) { double("Status", :stdout => current_filesets, :exitstatus => 0) }
+      let(:src_filesets) do
+        <<EOH
+samba.base:samba.base.rte:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
+samba.base:samba.base.samples:1.6.0.3::I:C:::::N:Network Authentication Service Client::::0::
+EOH
+      end
+      before do
+        allow(@provider).to receive(:shell_out).with("installp -L -d /tmp/samba.base", timeout: 900).and_return(src_status)
+        allow(@provider).to receive(:shell_out).with("lslpp -lcq | grep :samba.base", timeout: 900).and_return(current_status)
+        @provider.load_current_resource
+      end
+
+      context "all filesets are installed but different version" do
+        let(:current_filesets) do
+          <<EOH
+/etc/objrepos:samba.base.rte:1.6.0.2::COMMITTED:I:Samba for AIX:
+/etc/objrepos:samba.base.samples:1.6.0.2::COMMITTED:I:Samba for AIX:
+EOH
+        end
+
+        it "sets current version to the installed versions" do
+          expect(@provider.current_resource.version).to eq("1.6.0.2")
+        end
+      end
+
+      context "all filesets are installed and same version" do
+        let(:current_filesets) do
+          <<EOH
+/etc/objrepos:samba.base.rte:1.6.0.3::COMMITTED:I:Samba for AIX:
+/etc/objrepos:samba.base.samples:1.6.0.3::COMMITTED:I:Samba for AIX:
+EOH
+        end
+
+        it "sets current version to the installed versions" do
+          expect(@provider.current_resource.version).to eq("1.6.0.3")
+        end
+      end
+
+      context "all filesets are installed and some to multiple locations" do
+        let(:current_filesets) do
+          <<EOH
+/etc/objrepos:samba.base.rte:1.6.0.3::COMMITTED:I:Samba for AIX:
+/etc/objrepos:samba.base.samples:1.6.0.3::COMMITTED:I:Samba for AIX:
+/usr/lib/objrepos:samba.base.samples:1.6.0.3::COMMITTED:I:Samba for AIX:
+EOH
+        end
+
+        it "sets current version to the installed versions" do
+          expect(@provider.current_resource.version).to eq("1.6.0.3")
+        end
+      end
+
+      context "partial filesets are installed and same version" do
+        let(:current_filesets) do
+          "/etc/objrepos:samba.base.rte:1.6.0.3::COMMITTED:I:Samba"
+        end
+
+        it "does not set current version" do
+          expect(@provider.current_resource.version).to be nil
+        end
+      end
+
+      context "all filesets are installed and mixed versions" do
+        let(:current_filesets) do
+          <<EOH
+/etc/objrepos:samba.base.rte:1.6.0.3::COMMITTED:I:Samba for AIX:
+/etc/objrepos:samba.base.samples:1.6.0.2::COMMITTED:I:Samba for AIX:
+EOH
+        end
+
+        it "does not set current version" do
+          expect(@provider.current_resource.version).to be nil
+        end
+      end
+    end
   end
 
   describe "candidate_version" do
     it "should return the candidate_version variable if already setup" do
       @provider.candidate_version = "3.3.12.0"
-      expect(@provider).not_to receive(:shell_out )
+      expect(@provider).not_to receive(:shell_out)
       @provider.candidate_version
     end
 
     it "should lookup the candidate_version if the variable is not already set" do
-      status = double(:stdout => "", :exitstatus => 0)
+      bffinfo = "/usr/lib/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:
+  /etc/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:"
+      status = double(:stdout => bffinfo, :exitstatus => 0)
       expect(@provider).to receive(:shell_out).and_return(status)
-      @provider.candidate_version
+      expect(@provider.candidate_version).to eq("3.3.12.0")
     end
 
     it "should throw and exception if the exitstatus is not 0" do
@@ -141,7 +255,7 @@ describe Chef::Provider::Package::Aix do
       @provider.install_package("samba.base", "3.3.12.0")
     end
 
-    it "should run  when the package is a path to install" do
+    it "should run when the package is a path to install" do
       @new_resource = Chef::Resource::Package.new("/tmp/samba.base")
       @provider = Chef::Provider::Package::Aix.new(@new_resource, @run_context)
       expect(@new_resource.source).to eq("/tmp/samba.base")
