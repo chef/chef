@@ -522,9 +522,7 @@ class Chef
               install_via_gem_command(name, version)
             end
           elsif @new_resource.gem_binary.nil?
-            # domain is used by Gem::DependencyInstaller rather than by Chef code
-            # domain can be :local, :remote or :both
-            @gem_env.install(@new_resource.source, domain: :local)
+            @gem_env.install(@new_resource.source)
           else
             install_via_gem_command(name, version)
           end
