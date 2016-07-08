@@ -1,5 +1,12 @@
 # Change Log
 
+## [v12.12.15](https://github.com/chef/chef/tree/v12.12.15) (2016-07-08)
+[Full Changelog](https://github.com/chef/chef/compare/v12.12.13...v12.12.15)
+
+**Fixed Bugs:**
+
+- Fix for #5094 12.12.13 node.default_unless issue [\#5097](https://github.com/chef/chef/pull/5097) ([lamont-granquist](https://github.com/lamont-granquist))
+
 ## [v12.12.13](https://github.com/chef/chef/tree/v12.12.13) (2016-07-01)
 [Full Changelog](https://github.com/chef/chef/compare/v12.11.18...v12.12.13)
 
