@@ -357,6 +357,30 @@ describe Chef::Node do
         node.default.fuu.bahrr.baz = "qux"
         expect(node.fuu.bahrr.baz).to eq("qux")
       end
+
+      it "default_unless correctly resets the deep merge cache" do
+        node.normal["tags"] = []  # this sets our top-level breadcrumb
+        node.default_unless["foo"]["bar"] = "NK-19V"
+        expect(node["foo"]["bar"]).to eql("NK-19V")
+        node.default_unless["foo"]["baz"] = "NK-33"
+        expect(node["foo"]["baz"]).to eql("NK-33")
+      end
+
+      it "normal_unless correctly resets the deep merge cache" do
+        node.normal["tags"] = []  # this sets our top-level breadcrumb
+        node.normal_unless["foo"]["bar"] = "NK-19V"
+        expect(node["foo"]["bar"]).to eql("NK-19V")
+        node.normal_unless["foo"]["baz"] = "NK-33"
+        expect(node["foo"]["baz"]).to eql("NK-33")
+      end
+
+      it "override_unless correctly resets the deep merge cache" do
+        node.normal["tags"] = []  # this sets our top-level breadcrumb
+        node.override_unless["foo"]["bar"] = "NK-19V"
+        expect(node["foo"]["bar"]).to eql("NK-19V")
+        node.override_unless["foo"]["baz"] = "NK-33"
+        expect(node["foo"]["baz"]).to eql("NK-33")
+      end
     end
 
     describe "override attributes" do
