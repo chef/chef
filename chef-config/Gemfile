@@ -1,4 +1,7 @@
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in chef-config.gemspec
-gemspec
+%w{rspec-core rspec-expectations rspec-mocks}.each { |rspec| gem rspec, "~> 3.2" }
+
+require_relative "../tasks/gemfile_util"
+
+GemfileUtil.include_locked_gemfile(self, "../Gemfile", groups: [ :chef_config, :development ])
