@@ -1494,7 +1494,6 @@ class Chef
       conditionals.find do |conditional|
         if conditional.continue?
           events.resource_not_skipped(self, action, conditional) if events
-          Chef::Log.debug("Not skipping #{self}, passed guard #{conditional.description}")
           false
         else
           events.resource_skipped(self, action, conditional)
