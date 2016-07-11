@@ -255,13 +255,13 @@ describe Chef::Node do
         expect(node[:snoopy][:is_a_puppy]).to eq(true)
       end
 
-      it "should allow you to set an attribute with set_unless" do
+      it "should allow you to set an attribute with set_unless with method_missing but emit a deprecation warning" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
         node.normal_unless.snoopy.is_a_puppy = false
         expect(node[:snoopy][:is_a_puppy]).to eq(false)
       end
 
-      it "should allow you to set an attribute with set_unless with method_missing but emit a deprecation warning" do
+      it "should allow you to set an attribute with set_unless" do
         node.normal_unless[:snoopy][:is_a_puppy] = false
         expect(node[:snoopy][:is_a_puppy]).to eq(false)
       end
