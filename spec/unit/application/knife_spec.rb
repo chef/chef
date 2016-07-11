@@ -223,6 +223,13 @@ describe Chef::Application::Knife do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
+      it "should run a sub command with the applications command line option prototype" do
+      with_argv(*%w{noop knife command with two args}) do
+        knife = double(Chef::Knife)
+        expect(Chef::Knife).to receive(:run).with(ARGV, @knife.options).and_return(knife)
+        expect(@knife).to receive(:exit).with(0)
+        @knife.run
+      end
     end
   end
 
