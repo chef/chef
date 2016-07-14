@@ -28,6 +28,7 @@ class Chef
         chef_client
         chef_container
         chef_data_bag
+        chef_data_bag_item
         chef_environment
         chef_group
         chef_mirror
