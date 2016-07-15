@@ -113,19 +113,13 @@ class Chef
       end
 
       def get_category(cookbook_name)
-        begin
-          data = noauth_rest.get("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}")
-          if !data["category"] && data["error_code"]
-            ui.fatal("Received an error from Supermarket: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
-            exit(1)
-          else
-            data["category"]
-          end
-        rescue => e
-          ui.fatal("Unable to reach Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
-          Chef::Log.debug("\n#{e.backtrace.join("\n")}")
-          exit(1)
-        end
+        data = noauth_rest.get("#{config[:supermarket_site]}/api/v1/cookbooks/#{@name_args[0]}")
+        data["category"]
+      rescue => e
+        return "Other" if e.kind_of?(Net::HTTPServerException) && e.response.code == "404"
+        ui.fatal("Unable to reach Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
+        Chef::Log.debug("\n#{e.backtrace.join("\n")}")
+        exit(1)
       end
 
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)
