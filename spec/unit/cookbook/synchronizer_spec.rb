@@ -213,6 +213,36 @@ describe Chef::CookbookSynchronizer do
            :path => "/tmp/cookbook_a_template_default_tempfile")
   end
 
+  def setup_common_files_missing_expectations_for_downloads
+    # Files are not in the cache:
+    expect(file_cache).to receive(:has_key?).
+      with("cookbooks/cookbook_a/recipes/default.rb").
+      and_return(false)
+    expect(file_cache).to receive(:has_key?).
+      with("cookbooks/cookbook_a/attributes/default.rb").
+      and_return(false)
+
+    # Fetch and copy default.rb recipe
+    expect(server_api).to receive(:streaming_request).
+      with("http://chef.example.com/abc123").
+      and_return(cookbook_a_default_recipe_tempfile)
+    expect(Chef::Digester).to receive(:generate_md5_checksum_for_file).
+      with(cookbook_a_default_recipe_tempfile.path).
+      and_return("xyz123")
+    expect(file_cache).not_to receive(:move_to)
+    expect(file_cache).not_to receive(:load)
+
+    # Fetch and copy default.rb attribute file
+    expect(server_api).to receive(:streaming_request).
+      with("http://chef.example.com/abc456").
+      and_return(cookbook_a_default_attribute_tempfile)
+    expect(Chef::Digester).to receive(:generate_md5_checksum_for_file).
+      with(cookbook_a_default_attribute_tempfile.path).
+      and_return("xyz456")
+    expect(file_cache).not_to receive(:move_to)
+    expect(file_cache).not_to receive(:load)
+  end
+
   def setup_common_files_missing_expectations
     # Files are not in the cache:
     expect(file_cache).to receive(:has_key?).
@@ -226,6 +256,9 @@ describe Chef::CookbookSynchronizer do
     expect(server_api).to receive(:streaming_request).
       with("http://chef.example.com/abc123").
       and_return(cookbook_a_default_recipe_tempfile)
+    expect(Chef::Digester).to receive(:generate_md5_checksum_for_file).
+      with(cookbook_a_default_recipe_tempfile.path).
+      and_return("abc123")
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_recipes_default_rb", "cookbooks/cookbook_a/recipes/default.rb")
     expect(file_cache).to receive(:load).
@@ -236,6 +269,9 @@ describe Chef::CookbookSynchronizer do
     expect(server_api).to receive(:streaming_request).
       with("http://chef.example.com/abc456").
       and_return(cookbook_a_default_attribute_tempfile)
+    expect(Chef::Digester).to receive(:generate_md5_checksum_for_file).
+      with(cookbook_a_default_attribute_tempfile.path).
+      and_return("abc456")
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_attributes_default_rb", "cookbooks/cookbook_a/attributes/default.rb")
     expect(file_cache).to receive(:load).
@@ -254,6 +290,9 @@ describe Chef::CookbookSynchronizer do
     expect(server_api).to receive(:streaming_request).
       with("http://chef.example.com/megaman.conf").
       and_return(cookbook_a_file_default_tempfile)
+    expect(Chef::Digester).to receive(:generate_md5_checksum_for_file).
+      with(cookbook_a_file_default_tempfile.path).
+      and_return("abc124")
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_file_default_tempfile", "cookbooks/cookbook_a/files/default/megaman.conf")
     expect(file_cache).to receive(:load).
@@ -263,6 +302,9 @@ describe Chef::CookbookSynchronizer do
     expect(server_api).to receive(:streaming_request).
       with("http://chef.example.com/ffffff").
       and_return(cookbook_a_template_default_tempfile)
+    expect(Chef::Digester).to receive(:generate_md5_checksum_for_file).
+      with(cookbook_a_template_default_tempfile.path).
+      and_return("abc125")
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_template_default_tempfile", "cookbooks/cookbook_a/templates/default/apache2.conf.erb")
     expect(file_cache).to receive(:load).
@@ -283,6 +325,9 @@ describe Chef::CookbookSynchronizer do
     expect(server_api).to receive(:streaming_request).
       with("http://chef.example.com/abc123").
       and_return(cookbook_a_default_recipe_tempfile)
+    expect(Chef::Digester).to receive(:generate_md5_checksum_for_file).
+      with(cookbook_a_default_recipe_tempfile.path).
+      and_return("abc123")
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_recipes_default_rb", "cookbooks/cookbook_a/recipes/default.rb")
     expect(file_cache).to receive(:load).
@@ -299,6 +344,9 @@ describe Chef::CookbookSynchronizer do
     expect(server_api).to receive(:streaming_request).
       with("http://chef.example.com/abc456").
       and_return(cookbook_a_default_attribute_tempfile)
+    expect(Chef::Digester).to receive(:generate_md5_checksum_for_file).
+      with(cookbook_a_default_attribute_tempfile.path).
+      and_return("abc456")
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_attributes_default_rb", "cookbooks/cookbook_a/attributes/default.rb")
     expect(file_cache).to receive(:load).
@@ -325,6 +373,9 @@ describe Chef::CookbookSynchronizer do
     expect(server_api).to receive(:streaming_request).
       with("http://chef.example.com/megaman.conf").
       and_return(cookbook_a_file_default_tempfile)
+    expect(Chef::Digester).to receive(:generate_md5_checksum_for_file).
+      with(cookbook_a_file_default_tempfile.path).
+      and_return("abc124")
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_file_default_tempfile", "cookbooks/cookbook_a/files/default/megaman.conf")
     expect(file_cache).to receive(:load).
@@ -336,6 +387,9 @@ describe Chef::CookbookSynchronizer do
     expect(server_api).to receive(:streaming_request).
       with("http://chef.example.com/ffffff").
       and_return(cookbook_a_template_default_tempfile)
+    expect(Chef::Digester).to receive(:generate_md5_checksum_for_file).
+      with(cookbook_a_template_default_tempfile.path).
+      and_return("abc125")
     expect(file_cache).to receive(:move_to).
       with("/tmp/cookbook_a_template_default_tempfile", "cookbooks/cookbook_a/templates/default/apache2.conf.erb")
     expect(file_cache).to receive(:load).
@@ -427,6 +481,17 @@ describe Chef::CookbookSynchronizer do
       allow(synchronizer).to receive(:cache).and_return(file_cache)
     end
 
+    context "when the cookbook checksum does not match the original checksum" do
+      before do
+        setup_common_files_missing_expectations_for_downloads
+      end
+      let(:no_lazy_load) { false }
+
+      it "does not download cookbook and raise error" do
+        expect { synchronizer.sync_cookbooks }.to raise_error(Chef::Exceptions::FileIntegrityCompromise)
+      end
+    end
+
     context "when the cache does not contain the desired files" do
       before do
         setup_common_files_missing_expectations
@@ -437,6 +502,10 @@ describe Chef::CookbookSynchronizer do
 
         it "fetches eagerly loaded files" do
           synchronizer.sync_cookbooks
+        end
+
+        it "downloads cookbooks if checksum matches" do
+          expect { synchronizer.sync_cookbooks }.not_to raise_error
         end
 
         it "does not fetch templates or cookbook files" do
