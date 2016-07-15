@@ -224,6 +224,7 @@ class Chef
           unless valid_values.include?(v)
             raise "Invalid value '#{v}' for --node-ssl-verify-mode. Valid values are: #{valid_values.join(", ")}"
           end
+          v
         }
 
       option :node_verify_api_cert,
