@@ -28,7 +28,7 @@ PATH
       iniparse (~> 1.4)
       mixlib-archive (>= 0.2.0)
       mixlib-authentication (~> 1.4)
-      mixlib-cli (~> 1.4)
+      mixlib-cli (~> 1.4, < 1.7)
       mixlib-log (~> 1.3)
       mixlib-shellout (~> 2.0)
       net-sftp (~> 2.1, >= 2.1.2)
@@ -57,7 +57,7 @@ PATH
       iniparse (~> 1.4)
       mixlib-archive (>= 0.2.0)
       mixlib-authentication (~> 1.4)
-      mixlib-cli (~> 1.4)
+      mixlib-cli (~> 1.4, < 1.7)
       mixlib-log (~> 1.3)
       mixlib-shellout (~> 2.0)
       net-sftp (~> 2.1, >= 2.1.2)
@@ -422,6 +422,7 @@ DEPENDENCIES
   halite
   knife-windows
   netrc
+  nokogiri
   octokit
   poise
   pry
