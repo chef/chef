@@ -68,7 +68,7 @@ class Chef
 
         # Make sure the hashes don't have any incorrect keys/values
         array.each do |entry|
-          allowed_keys = %w(Minute Hour Day Weekday Month)
+          allowed_keys = %w{Minute Hour Day Weekday Month}
           error_msg = "Invalid key for start_calendar_interval, must be one of: #{allowed_keys.join(", ")}"
           if entry.keys.any? { |key| !allowed_keys.include?(key) }
             raise Chef::Exceptions::ValidationFailed, error_msg

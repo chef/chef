@@ -139,7 +139,7 @@ XML
         it "should allow array of Hashes" do
           allowed = (1..2).collect do |num|
             {
-              "Hour"    => 10+num,
+              "Hour"    => 10 + num,
               "Weekday" => num,
             }
           end
@@ -162,7 +162,7 @@ XML
           new_resource.time_out 300
           new_resource.start_calendar_interval allowed
           expect(provider.content?).to be_truthy
-          %w(Minute Hour Day Weekday Month).each do |key|
+          %w{Minute Hour Day Weekday Month}.each do |key|
             expect(provider.content).to include("<key>#{key}</key>")
           end
         end
