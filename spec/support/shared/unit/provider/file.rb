@@ -700,7 +700,7 @@ shared_examples_for Chef::Provider::File do
           provider.send(:do_resolv_conf_fixup)
         end
       end
-      context "when managing /etc/resolv.conf", linux_only: false do
+      context "when managing /etc/resolv.conf", non_linux_only: true do
         let(:resource_path) { "/etc/resolv.conf" }
         it "does not reload the nameservers on non-linux" do
           expect(Resolv::DefaultResolver).not_to receive(:replace_resolvers)
