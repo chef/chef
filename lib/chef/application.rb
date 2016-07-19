@@ -28,6 +28,8 @@ require "mixlib/cli"
 require "tmpdir"
 require "rbconfig"
 require "chef/application/exit_code"
+require "resolv"
+require "resolv-replace"
 
 class Chef
   class Application

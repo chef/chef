@@ -683,6 +683,24 @@ shared_examples_for Chef::Provider::File do
       end
     end
 
+    context "do_resolv_conf_fixup" do
+      %w{/resolv.conf /etc/resolv.con /etc/foo/resolv.conf /c/resolv.conf}.each do |path|
+        context "when managing #{path}" do
+          let(:resource_path) { path }
+          it "does not reload the nameservers" do
+            expect(Resolv::DefaultResolver).not_to receive(:replace_resolvers)
+            provider.send(:do_resolv_conf_fixup)
+          end
+        end
+      end
+      context "when managing /etc/resolv.conf" do
+        let(:resource_path) { "/etc/resolv.conf" }
+        it "reloads the nameservers" do
+          expect(Resolv::DefaultResolver).to receive(:replace_resolvers)
+          provider.send(:do_resolv_conf_fixup)
+        end
+      end
+    end
   end
 
   context "action delete" do
