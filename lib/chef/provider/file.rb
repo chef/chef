@@ -447,7 +447,8 @@ class Chef
       end
 
       def do_resolv_conf_fixup
-        if new_resource.path == "/etc/resolv.conf"
+        # reload /etc/resolv.conf after we edit it -- only on linux -- and see lib/chef/application.rb
+        if new_resource.path == "/etc/resolv.conf" && RbConfig::CONFIG["host_os"] =~ /linux/
           Resolv::DefaultResolver.replace_resolvers [Resolv::DNS.new("/etc/resolv.conf")]
         end
       end

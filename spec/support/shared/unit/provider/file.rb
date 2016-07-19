@@ -693,10 +693,17 @@ shared_examples_for Chef::Provider::File do
           end
         end
       end
-      context "when managing /etc/resolv.conf" do
+      context "when managing /etc/resolv.conf", linux_only: true do
         let(:resource_path) { "/etc/resolv.conf" }
-        it "reloads the nameservers" do
+        it "reloads the nameservers on linux" do
           expect(Resolv::DefaultResolver).to receive(:replace_resolvers)
+          provider.send(:do_resolv_conf_fixup)
+        end
+      end
+      context "when managing /etc/resolv.conf", linux_only: false do
+        let(:resource_path) { "/etc/resolv.conf" }
+        it "does not reload the nameservers on non-linux" do
+          expect(Resolv::DefaultResolver).not_to receive(:replace_resolvers)
           provider.send(:do_resolv_conf_fixup)
         end
       end
