@@ -27,6 +27,7 @@ class Chef
         chef_acl
         chef_client
         chef_container
+        chef_data_bag_item
         chef_data_bag
         chef_environment
         chef_group
