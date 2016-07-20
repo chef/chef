@@ -165,7 +165,7 @@ class Chef
         add_example_group_methods
         run_context.audits.each do |name, group|
           ctl_grp = RSpec::Core::ExampleGroup.__control_group__(*group.args, &group.block)
-          RSpec.world.register(ctl_grp)
+          RSpec.world.record(ctl_grp)
         end
       end
 
