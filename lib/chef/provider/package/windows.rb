@@ -201,6 +201,7 @@ class Chef
         def resource_for_provider
           @resource_for_provider = Chef::Resource::WindowsPackage.new(new_resource.name).tap do |r|
             r.source(Chef::Util::PathHelper.validate_path(source_location)) unless source_location.nil?
+            r.cookbook_name = new_resource.cookbook_name
             r.version(new_resource.version)
             r.timeout(new_resource.timeout)
             r.returns(new_resource.returns)
@@ -216,6 +217,7 @@ class Chef
         def source_resource
           @source_resource ||= Chef::Resource::RemoteFile.new(default_download_cache_path, run_context).tap do |r|
             r.source(new_resource.source)
+            r.cookbook_name = new_resource.cookbook_name
             r.checksum(new_resource.checksum)
             r.backup(false)
 
