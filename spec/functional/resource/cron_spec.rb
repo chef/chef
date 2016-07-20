@@ -120,7 +120,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
       return if %w{aix solaris}.include?(ohai[:platform])
       # Test if the attribute exists on newly created cron
       cron_should_exists(cron_name, "")
-      expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{attribute.upcase}=#{value}\"").exitstatus).to eq(0)
+      expect(shell_out("crontab -l -u #{new_resource.user} | grep '#{attribute.upcase}=\"#{value}\"'").exitstatus).to eq(0)
     end
 
     after do
