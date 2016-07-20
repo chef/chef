@@ -146,6 +146,13 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
       new_resource.home "/home/opscode"
       create_and_validate_with_attribute(new_resource, "home", "/home/opscode")
     end
+
+    %i{ home mailto path shell }.each do |attr|
+      it "supports an empty string for #{attr} attribute" do
+        new_resource.send(attr, "")
+        create_and_validate_with_attribute(new_resource, attr.to_s, "")
+      end
+    end
   end
 
   describe "negative tests for create action" do
