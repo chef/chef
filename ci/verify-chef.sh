@@ -106,8 +106,8 @@ if [ "x$ACCEPTANCE" != "x" ]; then
 
   cd $SUITE_PATH
 
-#  env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID bundle install --deployment
-#  env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID KITCHEN_DRIVER=ec2 KITCHEN_CHEF_CHANNEL=unstable bundle exec chef-acceptance test --force-destroy --data-path $WORKSPACE/chef-acceptance-data
+  env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID bundle install --deployment
+  env PATH=$PATH AWS_SSH_KEY_ID=$AWS_SSH_KEY_ID KITCHEN_DRIVER=ec2 KITCHEN_CHEF_CHANNEL=unstable bundle exec chef-acceptance test --force-destroy --data-path $WORKSPACE/chef-acceptance-data
 else
   PATH=/opt/$PROJECT_NAME/bin:/opt/$PROJECT_NAME/embedded/bin:$PATH
   export PATH

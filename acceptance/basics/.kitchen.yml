@@ -1,4 +1,5 @@
 suites:
   - name: chef-current-install
-    includes: [ubuntu-14.04, windows-server-2012r2]
+    #includes: [ubuntu-14.04, windows-server-2012r2]
+    includes: [ubuntu-14.04]
     run_list:
