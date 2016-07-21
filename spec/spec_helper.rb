@@ -66,6 +66,8 @@ require "chef/util/file_edit"
 
 require "chef/config"
 
+require "chef/chef_fs/file_system_cache"
+
 if ENV["CHEF_FIPS"] == "1"
   Chef::Config.init_openssl
 end
@@ -201,6 +203,8 @@ RSpec.configure do |config|
 
   config.before(:each) do
     Chef.reset!
+
+    Chef::ChefFS::FileSystemCache.instance.reset!
 
     Chef::Config.reset
 
