@@ -6,6 +6,6 @@ suites:
   - name: git-source
     run_list: ["recipe[git::source]"]
     includes: [nonexistent]
-  #- name: git-default-windows
-  #  run_list: ["recipe[git]"]
-  #  includes: [windows-2012r2]
+  - name: git-default-windows
+    run_list: ["recipe[git]"]
+    includes: [windows-2012r2]

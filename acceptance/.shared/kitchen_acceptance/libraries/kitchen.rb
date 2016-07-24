@@ -54,6 +54,8 @@ module KitchenAcceptance
           begin
             shell_out!("bundle exec kitchen #{command}#{instances ? " #{instances}" : ""}#{kitchen_options ? " #{kitchen_options}" : ""}",
                        env: cmd_env,
+                       timeout: 60 * 30,
+                       live_stream: STDOUT,
                        cwd: kitchen_dir)
           ensure
             FileUtils.mkdir_p("#{kitchen_log_path}/#{suite}/#{command}")
