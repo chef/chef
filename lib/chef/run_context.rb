@@ -194,12 +194,7 @@ class Chef
     # @param [Chef::Resource::Notification] The notification to add.
     #
     def notifies_before(notification)
-      nr = notification.notifying_resource
-      if nr.instance_of?(Chef::Resource)
-        before_notification_collection[nr.name] << notification
-      else
-        before_notification_collection[nr.declared_key] << notification
-      end
+      before_notification_collection[notification.notifying_resource.declared_key] << notification
     end
 
     #
@@ -208,12 +203,7 @@ class Chef
     # @param [Chef::Resource::Notification] The notification to add.
     #
     def notifies_immediately(notification)
-      nr = notification.notifying_resource
-      if nr.instance_of?(Chef::Resource)
-        immediate_notification_collection[nr.name] << notification
-      else
-        immediate_notification_collection[nr.declared_key] << notification
-      end
+      immediate_notification_collection[notification.notifying_resource.declared_key] << notification
     end
 
     #
@@ -222,12 +212,7 @@ class Chef
     # @param [Chef::Resource::Notification] The notification to add.
     #
     def notifies_delayed(notification)
-      nr = notification.notifying_resource
-      if nr.instance_of?(Chef::Resource)
-        delayed_notification_collection[nr.name] << notification
-      else
-        delayed_notification_collection[nr.declared_key] << notification
-      end
+      delayed_notification_collection[notification.notifying_resource.declared_key] << notification
     end
 
     #
@@ -245,50 +230,29 @@ class Chef
     #
     # Get the list of before notifications sent by the given resource.
     #
-    # TODO seriously, this is actually wrong.  resource.name is not unique,
-    # you need the type as well.
-    #
     # @return [Array[Notification]]
     #
     def before_notifications(resource)
-      if resource.instance_of?(Chef::Resource)
-        return before_notification_collection[resource.name]
-      else
-        return before_notification_collection[resource.declared_key]
-      end
+      return before_notification_collection[resource.declared_key]
     end
 
     #
     # Get the list of immediate notifications sent by the given resource.
     #
-    # TODO seriously, this is actually wrong.  resource.name is not unique,
-    # you need the type as well.
-    #
     # @return [Array[Notification]]
     #
     def immediate_notifications(resource)
-      if resource.instance_of?(Chef::Resource)
-        return immediate_notification_collection[resource.name]
-      else
-        return immediate_notification_collection[resource.declared_key]
-      end
+      return immediate_notification_collection[resource.declared_key]
     end
 
     #
     # Get the list of delayed (end of run) notifications sent by the given
     # resource.
     #
-    # TODO seriously, this is actually wrong.  resource.name is not unique,
-    # you need the type as well.
-    #
     # @return [Array[Notification]]
     #
     def delayed_notifications(resource)
-      if resource.instance_of?(Chef::Resource)
-        return delayed_notification_collection[resource.name]
-      else
-        return delayed_notification_collection[resource.declared_key]
-      end
+      return delayed_notification_collection[resource.declared_key]
     end
 
     #
