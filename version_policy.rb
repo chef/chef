@@ -74,14 +74,12 @@ OMNIBUS_RUBYGEMS_AT_LATEST_VERSION = {
 # stove - halite pins to ~> 3.2 in 1.2.1
 # rubocop - chef-style pins to 0.39.0 in 0.3.1
 #
-ACCEPTABLE_OUTDATED_GEMS = %w{
-  gherkin
-  jwt
-  mini_portile2
-  slop
-  stove
-  rubocop
-}
+ACCEPTABLE_OUTDATED_GEMS = [
+  "json",       # aws-sdk-v1 disallows JSON 2.x (no fix pending yet)
+  "rack",       # Rack 2.0+ requires Ruby 2.2
+  "rubocop",    # chef-style pins to 0.39.0 in 0.3.1
+  "slop",       # expected to disappear with pry 0.11
+]
 
 #
 # Some gems are part of our bundle (must be installed) but not important

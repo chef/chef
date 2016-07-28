@@ -22,7 +22,7 @@ GIT
 
 GIT
   remote: git://github.com/mwrock/kitchen-inspec.git
-  revision: d63240a44667974070298ad4fca20394257c92bd
+  revision: 5c00e1d66fa3b459e0a504ed08d0550c31f35b06
   branch: winrm-v2
   specs:
     kitchen-inspec (0.14.0)
@@ -64,7 +64,7 @@ GIT
 
 GIT
   remote: git://github.com/winrb/winrm.git
-  revision: 0f35bbd963024b32cc8e262f25e6110c6abf5794
+  revision: 3e50c963b935d046099a5afb295cf01f8030e43e
   branch: winrm-v2
   specs:
     winrm (2.0.0)
@@ -82,12 +82,12 @@ GEM
   specs:
     addressable (2.4.0)
     artifactory (2.3.3)
-    aws-sdk (2.4.2)
-      aws-sdk-resources (= 2.4.2)
-    aws-sdk-core (2.4.2)
+    aws-sdk (2.5.0)
+      aws-sdk-resources (= 2.5.0)
+    aws-sdk-core (2.5.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.4.2)
-      aws-sdk-core (= 2.4.2)
+    aws-sdk-resources (2.5.0)
+      aws-sdk-core (= 2.5.0)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -114,7 +114,7 @@ GEM
       buff-extensions (~> 1.0)
       varia_model (~> 0.4)
     buff-extensions (1.0.0)
-    buff-ignore (1.1.1)
+    buff-ignore (1.2.0)
     buff-ruby_engine (0.1.0)
     buff-shell_out (0.2.0)
       buff-ruby_engine (~> 0.1.0)
@@ -131,7 +131,7 @@ GEM
     cleanroom (1.0.0)
     coderay (1.1.1)
     diff-lcs (1.2.5)
-    docker-api (1.29.1)
+    docker-api (1.29.2)
       excon (>= 0.38.0)
       json
     erubis (2.7.0)
@@ -224,7 +224,7 @@ GEM
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
       rspec-mocks (~> 3.5.0)
-    rspec-core (3.5.1)
+    rspec-core (3.5.2)
       rspec-support (~> 3.5.0)
     rspec-expectations (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
