@@ -75,11 +75,15 @@ end
 
 group(:changelog) do
   gem "github_changelog_generator"
+  # Until https://github.com/piotrmurach/github/pull/274 is merged
+  gem "github_api", git: "https://github.com/jkeiser/github.git", branch: "pin-less"
 end
 
 group(:travis) do
   # See `bundler-audit` in .travis.yml
   gem "bundler-audit", git: "https://github.com/rubysec/bundler-audit.git"
+  # Until https://github.com/travis-ci/travis.rb/pull/426 is merged
+  gem "travis", git: "https://github.com/jkeiser/travis.rb", branch: "update-typheous"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
