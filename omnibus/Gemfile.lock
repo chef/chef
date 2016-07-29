@@ -1,14 +1,16 @@
 GIT
-  remote: https://github.com/chef/omnibus-software.git
-  revision: f0de110b280a1b6a70493c984565dc56cce9a1e7
+  remote: git://github.com/chef/omnibus-software.git
+  revision: f9938ad5b52b79b6b8960f33cd2670608b499e3d
+  branch: ksubrama/ruby23
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
       omnibus (>= 5.2.0)
 
 GIT
-  remote: https://github.com/chef/omnibus.git
-  revision: 184c3f7916f0deed7f1b25ecc755c332729fc2a8
+  remote: git://github.com/chef/omnibus.git
+  revision: 45daf5afbef664bb1866561671ec94ccfe307bc6
+  branch: ksubrama/gcc_investigate
   specs:
     omnibus (5.4.0)
       aws-sdk (~> 2)
