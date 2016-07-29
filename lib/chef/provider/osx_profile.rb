@@ -69,15 +69,16 @@ class Chef
             a.assertion do
               !@new_profile_identifier.nil? &&
                 !@new_profile_identifier.end_with?(".mobileconfig") &&
-                /^\w+(?:\.\w+)+$/.match(@new_profile_identifier)
             end
+                /^\w+(?:(\.| )\w+)+$/.match(@new_profile_identifier)
+            }
             a.failure_message RuntimeError, "when removing using the identifier attribute, it must match the profile identifier"
           else
             new_profile_name = @new_resource.profile_name
             a.assertion do
               !new_profile_name.end_with?(".mobileconfig") &&
-                /^\w+(?:\.\w+)+$/.match(new_profile_name)
-            end
+                /^\w+(?:(\.| )\w+)+$/.match(new_profile_name)
+            }
             a.failure_message RuntimeError, "When removing by resource name, it must match the profile identifier "
           end
         end
