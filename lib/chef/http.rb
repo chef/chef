@@ -227,7 +227,11 @@ class Chef
     end
 
     def http_client(base_url = nil)
-      @http_client =
+      # the per-host per-port cache here gets peristent connections correct in the
+      # face of redirects to different servers
+      @http_client ||= {}
+      @http_client[base_url.host] ||= {}
+      @http_client[base_url.host][base_url.port] ||=
         begin
           base_url ||= url
           if chef_zero_uri?(base_url)
