@@ -194,6 +194,9 @@ class Chef
     # @param [Chef::Resource::Notification] The notification to add.
     #
     def notifies_before(notification)
+      # Note for the future, notification.notifying_resource may be an instance
+      # of Chef::Resource::UnresolvedSubscribes when calling {Resource#subscribes}
+      # with a string value.
       before_notification_collection[notification.notifying_resource.declared_key] << notification
     end
 
@@ -203,6 +206,9 @@ class Chef
     # @param [Chef::Resource::Notification] The notification to add.
     #
     def notifies_immediately(notification)
+      # Note for the future, notification.notifying_resource may be an instance
+      # of Chef::Resource::UnresolvedSubscribes when calling {Resource#subscribes}
+      # with a string value.
       immediate_notification_collection[notification.notifying_resource.declared_key] << notification
     end
 
@@ -212,6 +218,9 @@ class Chef
     # @param [Chef::Resource::Notification] The notification to add.
     #
     def notifies_delayed(notification)
+      # Note for the future, notification.notifying_resource may be an instance
+      # of Chef::Resource::UnresolvedSubscribes when calling {Resource#subscribes}
+      # with a string value.
       delayed_notification_collection[notification.notifying_resource.declared_key] << notification
     end
 
