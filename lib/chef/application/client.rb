@@ -27,6 +27,7 @@ require "chef/handler/error_report"
 require "chef/workstation_config_loader"
 require "chef/mixin/shell_out"
 require "chef-config/mixin/dot_d"
+require "mixlib/archive"
 
 class Chef::Application::Client < Chef::Application
   include Chef::Mixin::ShellOut
@@ -334,8 +335,7 @@ class Chef::Application::Client < Chef::Application
         FileUtils.mkdir_p(Chef::Config.chef_repo_path)
         tarball_path = File.join(Chef::Config.chef_repo_path, "recipes.tgz")
         fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-        result = shell_out!("tar zxvf #{tarball_path} -C #{Chef::Config.chef_repo_path}")
-        Chef::Log.debug "#{result.stdout}"
+        Mixlib::Archive.new(tarball_path).extract(Chef::Config.chef_repo_path, perms: false, ignore: /^\.$/)
       end
     end
 

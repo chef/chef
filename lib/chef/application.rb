@@ -28,6 +28,10 @@ require "mixlib/cli"
 require "tmpdir"
 require "rbconfig"
 require "chef/application/exit_code"
+require "resolv"
+# on linux, we replace the glibc resolver with the ruby resolv library, which
+# supports reloading.
+require "resolv-replace" if RbConfig::CONFIG["host_os"] =~ /linux/
 
 class Chef
   class Application

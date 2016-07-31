@@ -20,6 +20,7 @@ require "chef/knife"
 require "chef/application/knife"
 require "logger"
 require "chef/log"
+require "chef/chef_fs/file_system_cache"
 
 module KnifeSupport
   DEBUG = ENV["DEBUG"]
@@ -69,6 +70,9 @@ module KnifeSupport
         # Don't print stuff
         Chef::Config[:verbosity] = ( DEBUG ? 2 : 0 )
         instance.config[:config_file] = File.join(CHEF_SPEC_DATA, "null_config.rb")
+
+        # Ensure the ChefFS cache is empty
+        Chef::ChefFS::FileSystemCache.instance.reset!
 
         # Configure chef with a (mostly) blank knife.rb
         # We set a global and then mutate it in our stub knife.rb so we can be

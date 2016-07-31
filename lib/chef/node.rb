@@ -43,6 +43,8 @@ class Chef
     def_delegators :attributes, :keys, :each_key, :each_value, :key?, :has_key?
     def_delegators :attributes, :rm, :rm_default, :rm_normal, :rm_override
     def_delegators :attributes, :default!, :normal!, :override!, :force_default!, :force_override!
+    def_delegators :attributes, :default_unless, :normal_unless, :override_unless, :set_unless
+    def_delegators :attributes, :read, :read!, :write, :write!, :unlink, :unlink!
 
     attr_accessor :recipe_list, :run_state, :override_runlist
 
@@ -196,35 +198,18 @@ class Chef
     # might be missing
     def normal
       attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = false
       attributes.normal
     end
 
-    alias_method :set, :normal
-
-    # Set a normal attribute of this node, auto-vivifying any mashes that are
-    # missing, but if the final value already exists, don't set it
-    def normal_unless
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = true
-      attributes.normal
+    def set
+      Chef.log_deprecation("node.set is deprecated and will be removed in Chef 14, please use node.default/node.override (or node.normal only if you really need persistence)")
+      normal
     end
-
-    alias_method :set_unless, :normal_unless
 
     # Set a default of this node, but auto-vivify any Mashes that might
     # be missing
     def default
       attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = false
-      attributes.default
-    end
-
-    # Set a default attribute of this node, auto-vivifying any mashes that are
-    # missing, but if the final value already exists, don't set it
-    def default_unless
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = true
       attributes.default
     end
 
@@ -232,15 +217,6 @@ class Chef
     # might be missing
     def override
       attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = false
-      attributes.override
-    end
-
-    # Set an override attribute of this node, auto-vivifying any mashes that
-    # are missing, but if the final value already exists, don't set it
-    def override_unless
-      attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = true
       attributes.override
     end
 
@@ -262,7 +238,6 @@ class Chef
 
     def automatic_attrs
       attributes.top_level_breadcrumb = nil
-      attributes.set_unless_value_present = false
       attributes.automatic
     end
 
@@ -290,8 +265,14 @@ class Chef
     end
 
     # Only works for attribute fetches, setting is no longer supported
-    def method_missing(symbol, *args)
-      attributes.send(symbol, *args)
+    # XXX: this should be deprecated
+    def method_missing(method, *args, &block)
+      attributes.public_send(method, *args, &block)
+    end
+
+    # Fix respond_to + method so that it works with method_missing delegation
+    def respond_to_missing?(method, include_private = false)
+      attributes.respond_to?(method, false)
     end
 
     # Returns true if this Node expects a given recipe, false if not.

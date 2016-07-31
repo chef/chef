@@ -1,3 +1,5 @@
+require 'chef/mixin/shell_out'
+
 module KitchenAcceptance
   class Kitchen < Chef::Resource
     resource_name :kitchen
@@ -33,18 +35,33 @@ module KitchenAcceptance
     property :kitchen_options, String, default: lazy { ENV["PROJECT_NAME"] ? "-c -l debug" : "-c" }
 
     action :run do
-      execute "bundle exec kitchen #{command}#{instances ? " #{instances}" : ""}#{kitchen_options ? " #{kitchen_options}" : ""}" do
-        cwd kitchen_dir
-        env({
-          "KITCHEN_DRIVER" => driver,
-          "KITCHEN_INSTANCES" => instances,
-          "KITCHEN_LOCAL_YAML" => ::File.expand_path("../../.kitchen.#{driver}.yml", __FILE__),
-          "KITCHEN_CHEF_PRODUCT" => chef_product,
-          "KITCHEN_CHEF_CHANNEL" => chef_channel,
-          "KITCHEN_CHEF_VERSION" => chef_version,
-          "ARTIFACTORY_USERNAME" => artifactory_username,
-          "ARTIFACTORY_PASSWORD" => artifactory_password
-        }.merge(new_resource.env))
+
+      ruby_block "copy_kitchen_logs_to_data_path" do
+        block do
+          cmd_env = {
+            "KITCHEN_DRIVER" => driver,
+            "KITCHEN_INSTANCES" => instances,
+            "KITCHEN_LOCAL_YAML" => ::File.expand_path("../../.kitchen.#{driver}.yml", __FILE__),
+            "KITCHEN_CHEF_PRODUCT" => chef_product,
+            "KITCHEN_CHEF_CHANNEL" => chef_channel,
+            "KITCHEN_CHEF_VERSION" => chef_version,
+            "ARTIFACTORY_USERNAME" => artifactory_username,
+            "ARTIFACTORY_PASSWORD" => artifactory_password
+          }.merge(new_resource.env)
+          suite = kitchen_dir.split("/").last
+          kitchen_log_path = ENV["WORKSPACE"] ? "#{ENV["WORKSPACE"]}/chef-acceptance-data/logs" : "#{kitchen_dir}/../.acceptance_data/logs/"
+
+          begin
+            shell_out!("bundle exec kitchen #{command}#{instances ? " #{instances}" : ""}#{kitchen_options ? " #{kitchen_options}" : ""}",
+                       env: cmd_env,
+                       timeout: 60 * 30,
+                       live_stream: STDOUT,
+                       cwd: kitchen_dir)
+          ensure
+            FileUtils.mkdir_p("#{kitchen_log_path}/#{suite}/#{command}")
+            FileUtils.cp_r("#{kitchen_dir}/.kitchen/logs/.", "#{kitchen_log_path}/#{suite}/#{command}")
+          end
+        end
       end
     end
   end

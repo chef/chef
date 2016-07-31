@@ -57,6 +57,8 @@ class Chef
                   :current_resource_report, :enabled
 
       def initialize
+        validate_data_collector_server_url!
+
         @all_resource_reports    = []
         @current_resource_loaded = nil
         @error_descriptions      = {}
@@ -236,7 +238,8 @@ class Chef
         yield
       rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,
              Errno::ECONNREFUSED, EOFError, Net::HTTPBadResponse,
-             Net::HTTPHeaderSyntaxError, Net::ProtocolError, OpenSSL::SSL::SSLError => e
+             Net::HTTPHeaderSyntaxError, Net::ProtocolError, OpenSSL::SSL::SSLError,
+             Errno::EHOSTDOWN => e
         disable_data_collector_reporter
         code = if e.respond_to?(:response) && e.response.code
                  e.response.code.to_s
@@ -279,7 +282,6 @@ class Chef
         # we have nothing to report.
         return unless run_status
 
-        send_to_data_collector(Chef::DataCollector::Messages.node_update_message(run_status).to_json)
         send_to_data_collector(
           Chef::DataCollector::Messages.run_end_message(
             run_status: run_status,
@@ -376,6 +378,20 @@ class Chef
       # output.
       def nested_resource?(new_resource)
         @current_resource_report && @current_resource_report.new_resource != new_resource
+      end
+
+      def validate_data_collector_server_url!
+        raise Chef::Exceptions::ConfigurationError,
+          "Chef::Config[:data_collector][:server_url] is empty. Please supply a valid URL." if data_collector_server_url.empty?
+
+        begin
+          uri = URI(data_collector_server_url)
+        rescue URI::InvalidURIError
+          raise Chef::Exceptions::ConfigurationError, "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is not a valid URI."
+        end
+
+        raise Chef::Exceptions::ConfigurationError,
+          "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is a URI with no host. Please supply a valid URL." if uri.host.nil?
       end
     end
   end

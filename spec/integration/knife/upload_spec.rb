@@ -96,7 +96,7 @@ EOM
           file "data_bags/x/y.json", {}
           file "environments/_default.json", { "description" => "The default Chef environment" }
           file "environments/x.json", {}
-          file "nodes/x.json", {}
+          file "nodes/x.json", { "normal" => { "tags" => [] } }
           file "roles/x.json", {}
           file "users/admin.json", { "admin" => true, "public_key" => ChefZero::PUBLIC_KEY }
           file "users/x.json", { "public_key" => ChefZero::PUBLIC_KEY }
@@ -802,7 +802,7 @@ EOM
           file "data_bags/x/y.json", {}
           file "environments/_default.json", { "description" => "The default Chef environment" }
           file "environments/x.json", {}
-          file "nodes/x.json", {}
+          file "nodes/x.json", { "normal" => { "tags" => [] } }
           file "roles/x.json", {}
           file "users/admin.json", { "admin" => true, "public_key" => ChefZero::PUBLIC_KEY }
           file "users/x.json", { "public_key" => ChefZero::PUBLIC_KEY }
@@ -1313,7 +1313,7 @@ EOM
           file "invitations.json", [ "foo" ]
           file "members.json", [ "bar" ]
           file "org.json", { "full_name" => "wootles" }
-          file "nodes/x.json", {}
+          file "nodes/x.json", { "normal" => { "tags" => [] } }
           file "policies/x-1.0.0.json", {}
           file "policies/blah-1.0.0.json", {}
           file "policy_groups/x.json", { "policies" => { "x" => { "revision_id" => "1.0.0" }, "blah" => { "revision_id" => "1.0.0" } } }

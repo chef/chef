@@ -260,6 +260,18 @@ class Chef
     end
 
     #
+    # Token class to hold an unresolved subscribes call with an associated
+    # run context.
+    #
+    # @api private
+    # @see Resource#subscribes
+    class UnresolvedSubscribes < self
+      # The full key ise given as the name in {Resource#subscribes}
+      alias_method :to_s, :name
+      alias_method :declared_key, :name
+    end
+
+    #
     # Subscribes to updates from other resources, causing a particular action to
     # run on *this* resource when the other resource is updated.
     #
@@ -326,7 +338,7 @@ class Chef
       resources = [resources].flatten
       resources.each do |resource|
         if resource.is_a?(String)
-          resource = Chef::Resource.new(resource, run_context)
+          resource = UnresolvedSubscribes.new(resource, run_context)
         end
         if resource.run_context.nil?
           resource.run_context = run_context

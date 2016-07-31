@@ -153,8 +153,8 @@ describe Chef::RunContext do
     let(:chef_repo_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")) }
     let(:node) {
       node = Chef::Node.new
-      node.set[:platform] = "ubuntu"
-      node.set[:platform_version] = "13.04"
+      node.normal[:platform] = "ubuntu"
+      node.normal[:platform_version] = "13.04"
       node.name("testing")
       node
     }

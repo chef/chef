@@ -148,7 +148,7 @@ module Shell
   end
 
   def self.greeting
-    " #{Etc.getlogin}@#{Shell.session.node.fqdn}"
+    " #{Etc.getlogin}@#{Shell.session.node["fqdn"]}"
   rescue NameError, ArgumentError
     ""
   end

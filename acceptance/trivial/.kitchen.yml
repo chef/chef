@@ -3,5 +3,5 @@ verifier:
 
 suites:
   - name: chef-current-install
-    includes: [windows-2012r2]
+    includes: [ubuntu-14.04, windows-server-2012r2]
     run_list:

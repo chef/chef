@@ -132,8 +132,8 @@ module ChefConfig
       until File.directory?(PathHelper.join(path, "cookbooks")) || File.directory?(PathHelper.join(path, "cookbook_artifacts"))
         new_path = File.expand_path("..", path)
         if new_path == path
-          ChefConfig.logger.warn("No cookbooks directory found at or above current directory.  Assuming #{Dir.pwd}.")
-          return Dir.pwd
+          ChefConfig.logger.warn("No cookbooks directory found at or above current directory.  Assuming #{cwd}.")
+          return cwd
         end
         path = new_path
       end

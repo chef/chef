@@ -156,6 +156,10 @@ describe Chef::DataCollector::Reporter do
   let(:reporter) { described_class.new }
   let(:run_status) { Chef::RunStatus.new(Chef::Node.new, Chef::EventDispatch::Dispatcher.new) }
 
+  before do
+    Chef::Config[:data_collector][:server_url] = "http://my-data-collector-server.mycompany.com"
+  end
+
   describe '#run_started' do
     before do
       allow(reporter).to receive(:update_run_status)
@@ -490,7 +494,8 @@ describe Chef::DataCollector::Reporter do
 
     [ Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,
       Errno::ECONNREFUSED, EOFError, Net::HTTPBadResponse,
-      Net::HTTPHeaderSyntaxError, Net::ProtocolError, OpenSSL::SSL::SSLError ].each do |exception_class|
+      Net::HTTPHeaderSyntaxError, Net::ProtocolError, OpenSSL::SSL::SSLError,
+      Errno::EHOSTDOWN ].each do |exception_class|
       context "when the block raises a #{exception_class} exception" do
         it "disables the reporter" do
           expect(reporter).to receive(:disable_data_collector_reporter)
@@ -510,6 +515,41 @@ describe Chef::DataCollector::Reporter do
             Chef::Config[:data_collector][:raise_on_failure] = false
             expect(Chef::Log).to receive(:warn)
             expect { reporter.send(:disable_reporter_on_error) { raise exception_class.new("bummer") } }.not_to raise_error
+          end
+        end
+      end
+    end
+  end
+
+  describe '#validate_data_collector_server_url!' do
+    context "when server_url is empty" do
+      it "raises an exception" do
+        Chef::Config[:data_collector][:server_url] = ""
+        expect { reporter.send(:validate_data_collector_server_url!) }.to raise_error(Chef::Exceptions::ConfigurationError)
+      end
+    end
+
+    context "when server_url is not empty" do
+      context "when server_url is an invalid URI" do
+        it "raises an exception" do
+          Chef::Config[:data_collector][:server_url] = "this is not a URI"
+          expect { reporter.send(:validate_data_collector_server_url!) }.to raise_error(Chef::Exceptions::ConfigurationError)
+        end
+      end
+
+      context "when server_url is a valid URI" do
+        context "when server_url is a URI with no host" do
+          it "raises an exception" do
+            Chef::Config[:data_collector][:server_url] = "/file/uri.txt"
+            expect { reporter.send(:validate_data_collector_server_url!) }.to raise_error(Chef::Exceptions::ConfigurationError)
+          end
+
+        end
+
+        context "when server_url is a URI with a valid host" do
+          it "does not an exception" do
+            Chef::Config[:data_collector][:server_url] = "http://www.google.com/data-collector"
+            expect { reporter.send(:validate_data_collector_server_url!) }.not_to raise_error
           end
         end
       end

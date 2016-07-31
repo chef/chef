@@ -20,6 +20,7 @@ gem "cheffish"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
+  gem "nokogiri"
 end
 
 group(:omnibus_package, :pry) do
@@ -65,7 +66,7 @@ end
 
 group(:development, :test) do
   gem "simplecov"
-  gem "rack"
+  gem "rack", "< 2.0" # 2.0 requires Ruby 2.2+
 
   # for testing new chefstyle rules
   # gem 'chefstyle', github: 'chef/chefstyle'

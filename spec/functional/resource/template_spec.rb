@@ -110,7 +110,7 @@ describe Chef::Resource::Template do
 
     context "using single helper syntax referencing @node" do
       before do
-        node.set[:helper_test_attr] = "value from helper method"
+        node.normal[:helper_test_attr] = "value from helper method"
         resource.helper(:helper_method) { "#{@node[:helper_test_attr]}" }
       end
 
@@ -131,7 +131,7 @@ describe Chef::Resource::Template do
 
     context "using an inline block referencing @node" do
       before do
-        node.set[:helper_test_attr] = "value from helper method"
+        node.normal[:helper_test_attr] = "value from helper method"
 
         resource.helpers do
           def helper_method
@@ -168,7 +168,7 @@ describe Chef::Resource::Template do
       end
 
       before do
-        node.set[:helper_test_attr] = "value from helper method"
+        node.normal[:helper_test_attr] = "value from helper method"
 
         resource.helpers(ExampleModuleReferencingATNode)
       end
