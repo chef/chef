@@ -138,6 +138,7 @@ class Chef
                 raise MustDeleteRecursivelyError.new(self, $!)
               end
               FileUtils.rm_r(file_path)
+              FileSystemCache.instance.delete!(file_path)
             else
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             end
@@ -148,6 +149,10 @@ class Chef
           end
 
           protected
+
+          def write(data)
+            raise FileSystemError.new(self, nil, "attempted to write to a directory entry")
+          end
 
           def make_child_entry(child_name)
             raise "Not Implemented"

@@ -458,6 +458,7 @@ class Chef
               # We want to delete just the ones that == POLICY
               next unless policy.name.rpartition("-")[0] == path[1]
               policy.delete(false)
+              FileSystemCache.instance.delete!(policy.file_path)
               found_policy = true
             end
             raise ChefZero::DataStore::DataNotFoundError.new(path) if !found_policy

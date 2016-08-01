@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require "chef/chef_fs/file_system_cache"
+
 class Chef
   module ChefFS
     module FileSystem
@@ -99,6 +101,7 @@ class Chef
           end
 
           def delete(_)
+            FileSystemCache.instance.delete!(file_path)
             File.delete(file_path)
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)

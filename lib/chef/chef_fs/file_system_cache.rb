@@ -49,6 +49,17 @@ class Chef
         val
       end
 
+      def delete!(path)
+        parent = _get_parent(path)
+        Chef::Log.debug("Deleting parent #{parent} and #{path} from FileSystemCache")
+        if @cache.key?(path)
+          @cache.delete(path)
+        end
+        if !parent.nil? && @cache.key?(parent)
+          @cache.delete(parent)
+        end
+      end
+
       def fetch(path)
         if @cache.key?(path)
           @cache[path]
@@ -57,6 +68,13 @@ class Chef
         end
       end
 
+      private
+
+      def _get_parent(path)
+        parts = ChefFS::PathUtils.split(path)
+        return nil if parts.nil? || parts.length < 2
+        ChefFS::PathUtils.join(*parts[0..-2])
+      end
     end
   end
 end
