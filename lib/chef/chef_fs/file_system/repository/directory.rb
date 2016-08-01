@@ -84,6 +84,7 @@ class Chef
             if child.exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
             end
+            FileSystemCache.instance.delete!(child.file_path)
             if file_contents
               child.write(file_contents)
             else
@@ -122,6 +123,7 @@ class Chef
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self)
             end
             begin
+              FileSystemCache.instance.delete!(file_path)
               Dir.mkdir(file_path)
             rescue Errno::EEXIST
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self)
