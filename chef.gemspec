@@ -17,10 +17,11 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
 
-  s.add_dependency "mixlib-cli", "~> 1.4"
+  s.add_dependency "mixlib-cli", "~> 1.4", "< 1.7"
   s.add_dependency "mixlib-log", "~> 1.3"
   s.add_dependency "mixlib-authentication", "~> 1.4"
   s.add_dependency "mixlib-shellout", "~> 2.0"
+  s.add_dependency "mixlib-archive", ">= 0.2.0"
   s.add_dependency "ohai", ">= 8.6.0.alpha.1", "< 9"
 
   s.add_dependency "ffi-yajl", "~> 2.2"
@@ -31,13 +32,13 @@ Gem::Specification.new do |s|
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
 
-  s.add_dependency "chef-zero", "~> 4.5"
+  s.add_dependency "chef-zero", "~> 4.8"
 
   s.add_dependency "plist", "~> 3.2"
   s.add_dependency "iniparse", "~> 1.4"
 
   # Audit mode requires these, so they are non-developmental dependencies now
-  %w{rspec-core rspec-expectations rspec-mocks}.each { |gem| s.add_dependency gem, "~> 3.4" }
+  %w{rspec-core rspec-expectations rspec-mocks}.each { |gem| s.add_dependency gem, "~> 3.5" }
   s.add_dependency "rspec_junit_formatter", "~> 0.2.0"
   s.add_dependency "serverspec", "~> 2.7"
   s.add_dependency "specinfra", "~> 2.10"

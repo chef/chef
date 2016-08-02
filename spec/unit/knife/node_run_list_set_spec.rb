@@ -111,30 +111,5 @@ describe Chef::Knife::NodeRunListSet do
       end
     end
 
-    describe "with no role or recipe" do
-      # Set up outputs for inspection later
-      before(:each) do
-        @stdout = StringIO.new
-        @stderr = StringIO.new
-
-        allow(@knife.ui).to receive(:stdout).and_return(@stdout)
-        allow(@knife.ui).to receive(:stderr).and_return(@stderr)
-      end
-
-      it "should exit" do
-        @knife.name_args = [ "adam" ]
-        expect { @knife.run }.to raise_error SystemExit
-      end
-
-      it "should show the user" do
-        @knife.name_args = [ "adam" ]
-
-        begin ; @knife.run ; rescue SystemExit ; end
-
-        expect(@stdout.string).to eq "USAGE: knife node run_list set NODE ENTRIES (options)\n"
-        expect(@stderr.string).to eq "FATAL: You must supply both a node name and a run list.\n"
-      end
-    end
-
   end
 end

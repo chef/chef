@@ -54,7 +54,7 @@ class Chef
         end
 
         def client_d
-          @cliend_d ||= client_d_content
+          @client_d ||= client_d_content
         end
 
         def encrypted_data_bag_secret
@@ -112,6 +112,16 @@ validation_client_name "#{@chef_config[:validation_client_name]}"
           if knife_config[:bootstrap_proxy]
             client_rb << %Q{http_proxy        "#{knife_config[:bootstrap_proxy]}"\n}
             client_rb << %Q{https_proxy       "#{knife_config[:bootstrap_proxy]}"\n}
+          end
+
+          if knife_config[:bootstrap_proxy_user]
+            client_rb << %Q{http_proxy_user   "#{knife_config[:bootstrap_proxy_user]}"\n}
+            client_rb << %Q{https_proxy_user  "#{knife_config[:bootstrap_proxy_user]}"\n}
+          end
+
+          if knife_config[:bootstrap_proxy_pass]
+            client_rb << %Q{http_proxy_pass   "#{knife_config[:bootstrap_proxy_pass]}"\n}
+            client_rb << %Q{https_proxy_pass  "#{knife_config[:bootstrap_proxy_pass]}"\n}
           end
 
           if knife_config[:bootstrap_no_proxy]

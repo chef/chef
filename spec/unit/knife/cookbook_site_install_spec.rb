@@ -23,6 +23,7 @@ describe Chef::Knife::CookbookSiteInstall do
   let(:stdout) { StringIO.new }
   let(:stderr) { StringIO.new }
   let(:downloader) { Hash.new }
+  let(:archive) { double(Mixlib::Archive, extract: true) }
   let(:repo) { double(:sanity_check => true, :reset_to_default_state => true,
                       :prepare_to_import => true, :finalize_updates_to => true,
                       :merge_updates_from => true) }
@@ -48,6 +49,7 @@ describe Chef::Knife::CookbookSiteInstall do
     allow(File).to receive(:unlink)
     allow(File).to receive(:rmtree)
     allow(knife).to receive(:shell_out!).and_return(true)
+    allow(Mixlib::Archive).to receive(:new).and_return(archive)
 
     # CookbookSiteDownload Stup
     allow(knife).to receive(:download_cookbook_to).and_return(downloader)

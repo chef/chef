@@ -235,6 +235,36 @@ describe Chef::ResourceCollection do
       ).to eql(resource)
       expect(run_context.resource_collection.all_resources.size).to eql(0)
     end
+
+    it "removes pending delayed notifications" do
+      recipe.declare_resource(:zen_master, "one")
+      recipe.declare_resource(:zen_master, "two") do
+        notifies :win, "zen_master[one]"
+      end
+      recipe.delete_resource(:zen_master, "two")
+      resource = recipe.declare_resource(:zen_master, "two")
+      expect(resource.delayed_notifications).to eql([])
+    end
+
+    it "removes pending immediate notifications" do
+      recipe.declare_resource(:zen_master, "one")
+      recipe.declare_resource(:zen_master, "two") do
+        notifies :win, "zen_master[one]", :immediate
+      end
+      recipe.delete_resource(:zen_master, "two")
+      resource = recipe.declare_resource(:zen_master, "two")
+      expect(resource.immediate_notifications).to eql([])
+    end
+
+    it "removes pending before notifications" do
+      recipe.declare_resource(:zen_master, "one")
+      recipe.declare_resource(:zen_master, "two") do
+        notifies :win, "zen_master[one]", :before
+      end
+      recipe.delete_resource(:zen_master, "two")
+      resource = recipe.declare_resource(:zen_master, "two")
+      expect(resource.before_notifications).to eql([])
+    end
   end
 
   describe "run_context helpers" do

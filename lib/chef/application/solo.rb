@@ -29,6 +29,7 @@ require "fileutils"
 require "chef/mixin/shell_out"
 require "pathname"
 require "chef-config/mixin/dot_d"
+require "mixlib/archive"
 
 class Chef::Application::Solo < Chef::Application
   include Chef::Mixin::ShellOut
@@ -249,6 +250,13 @@ class Chef::Application::Solo < Chef::Application
         ARGV[dash_r] = "--recipe-url"
       end
 
+      # For back compat reasons, we need to ensure that we try and use the cache_path as a repo first
+      Chef::Log.debug "Current chef_repo_path is #{Chef::Config.chef_repo_path}"
+
+      if !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+        Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Chef::Config[:cache_path])
+      end
+
       Chef::Config[:local_mode] = true
     else
       configure_legacy_mode!
@@ -274,8 +282,7 @@ class Chef::Application::Solo < Chef::Application
       FileUtils.mkdir_p(recipes_path)
       tarball_path = File.join(recipes_path, "recipes.tgz")
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      result = shell_out!("tar zxvf #{tarball_path} -C #{recipes_path}")
-      Chef::Log.debug "#{result.stdout}"
+      Mixlib::Archive.new(tarball_path).extract(Chef::Config.chef_repo_path, perms: false, ignore: /^\.$/)
     end
 
     # json_attribs shuld be fetched after recipe_url tarball is unpacked.

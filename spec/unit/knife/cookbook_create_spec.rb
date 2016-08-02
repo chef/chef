@@ -22,6 +22,7 @@ require "tmpdir"
 describe Chef::Knife::CookbookCreate do
   before(:each) do
     Chef::Config[:node_name] = "webmonkey.example.com"
+    Chef::Config[:treat_deprecation_warnings_as_errors] = false
     @knife = Chef::Knife::CookbookCreate.new
     @knife.config = {}
     @knife.name_args = ["foobar"]

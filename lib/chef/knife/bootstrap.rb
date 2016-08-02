@@ -101,6 +101,14 @@ class Chef
         :description => "The proxy server for the node being bootstrapped",
         :proc => Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
 
+      option :bootstrap_proxy_user,
+        :long => "--bootstrap-proxy-user PROXY_USER",
+        :description => "The proxy authentication username for the node being bootstrapped"
+
+      option :bootstrap_proxy_pass,
+        :long => "--bootstrap-proxy-pass PROXY_PASS",
+        :description => "The proxy authentication password for the node being bootstrapped"
+
       option :bootstrap_no_proxy,
         :long => "--bootstrap-no-proxy [NO_PROXY_URL|NO_PROXY_IP]",
         :description => "Do not proxy locations for the node being bootstrapped; this option is used internally by Opscode",
@@ -224,6 +232,7 @@ class Chef
           unless valid_values.include?(v)
             raise "Invalid value '#{v}' for --node-ssl-verify-mode. Valid values are: #{valid_values.join(", ")}"
           end
+          v
         }
 
       option :node_verify_api_cert,

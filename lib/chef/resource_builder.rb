@@ -104,7 +104,11 @@ class Chef
     end
 
     def is_trivial_resource?(resource)
-      identicalish_resources?(resource_class.new(name, run_context), resource)
+      trivial_resource = resource_class.new(name, run_context)
+      # force un-lazy the name property on the created trivial resource
+      name_property = resource_class.properties.find { |sym, p| p.name_property? }
+      trivial_resource.send(name_property[0]) unless name_property.nil?
+      identicalish_resources?(trivial_resource, resource)
     end
 
     # this is an equality test specific to checking for 3694 cloning warnings
@@ -124,9 +128,10 @@ class Chef
     end
 
     def emit_cloned_resource_warning
-      Chef::Log.warn("Cloning resource attributes for #{resource} from prior resource (CHEF-3694)")
-      Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
-      Chef::Log.warn("Current  #{resource}: #{resource.source_line}") if resource.source_line
+      message = "Cloning resource attributes for #{resource} from prior resource (CHEF-3694)"
+      message << "\nPrevious #{prior_resource}: #{prior_resource.source_line}" if prior_resource.source_line
+      message << "\nCurrent  #{resource}: #{resource.source_line}" if resource.source_line
+      Chef.log_deprecation(message)
     end
 
     def emit_harmless_cloning_debug

@@ -3,6 +3,8 @@ class TopCookbooks < Chef::Resource
 
   property :command, String, name_property: true
 
+  # Disabling all windows tests until winrm issue is properly settled.
+  #
   action :run do
     cookbook_kitchen "#{command} docker" do
     end
@@ -33,8 +35,6 @@ class TopCookbooks < Chef::Resource
       repository "adamedx/winbox"
     end
 
-    # Temporarily disabling windows and chocolatey to eliminate 
-    # transient errors on the builders
     # cookbook_kitchen "#{command} windows" do
     # end
 

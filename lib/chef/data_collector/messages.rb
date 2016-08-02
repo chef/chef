@@ -68,17 +68,18 @@ class Chef
           "id"                     => run_status.run_id,
           "message_version"        => "1.0.0",
           "message_type"           => "run_converge",
+          "node"                   => run_status.node,
           "node_name"              => run_status.node.name,
           "organization_name"      => organization,
-          "resources"              => reporter_data[:completed_resources].map(&:for_json),
+          "resources"              => reporter_data[:resources].map(&:report_data),
           "run_id"                 => run_status.run_id,
           "run_list"               => run_status.node.run_list.for_json,
           "start_time"             => run_status.start_time.utc.iso8601,
           "end_time"               => run_status.end_time.utc.iso8601,
           "source"                 => collector_source,
           "status"                 => reporter_data[:status],
-          "total_resource_count"   => reporter_data[:completed_resources].count,
-          "updated_resource_count" => reporter_data[:completed_resources].select { |r| r.status == "updated" }.count,
+          "total_resource_count"   => reporter_data[:resources].count,
+          "updated_resource_count" => reporter_data[:resources].select { |r| r.report_data["status"] == "updated" }.count,
         }
 
         message["error"] = {
@@ -89,36 +90,6 @@ class Chef
         } if run_status.exception
 
         message
-      end
-
-      #
-      # Message payload that is sent to the DataCollector server at the
-      # end of a Chef run.
-      #
-      # @param run_status [Chef::RunStatus] The RunStatus instance for this node/run.
-      #
-      # @return [Hash] A hash containing the node object and related metadata.
-      #
-      def self.node_update_message(run_status)
-        {
-          "entity_name"       => run_status.node.name,
-          "entity_type"       => "node",
-          "entity_uuid"       => node_uuid,
-          "id"                => SecureRandom.uuid,
-          "message_version"   => "1.1.0",
-          "message_type"      => "action",
-          "organization_name" => organization,
-          "recorded_at"       => Time.now.utc.iso8601,
-          "remote_hostname"   => run_status.node["fqdn"],
-          "requestor_name"    => run_status.node.name,
-          "requestor_type"    => "client",
-          "run_id"            => run_status.run_id,
-          "service_hostname"  => chef_server_fqdn(run_status),
-          "source"            => collector_source,
-          "task"              => "update",
-          "user_agent"        => Chef::HTTP::HTTPRequest::DEFAULT_UA,
-          "data"              => run_status.node,
-        }
       end
     end
   end

@@ -260,6 +260,18 @@ class Chef
     end
 
     #
+    # Token class to hold an unresolved subscribes call with an associated
+    # run context.
+    #
+    # @api private
+    # @see Resource#subscribes
+    class UnresolvedSubscribes < self
+      # The full key ise given as the name in {Resource#subscribes}
+      alias_method :to_s, :name
+      alias_method :declared_key, :name
+    end
+
+    #
     # Subscribes to updates from other resources, causing a particular action to
     # run on *this* resource when the other resource is updated.
     #
@@ -326,7 +338,7 @@ class Chef
       resources = [resources].flatten
       resources.each do |resource|
         if resource.is_a?(String)
-          resource = Chef::Resource.new(resource, run_context)
+          resource = UnresolvedSubscribes.new(resource, run_context)
         end
         if resource.run_context.nil?
           resource.run_context = run_context
@@ -1530,23 +1542,6 @@ class Chef
     end
 
     # @api private
-    def self.register_deprecated_lwrp_class(resource_class, class_name)
-      if Chef::Resource.const_defined?(class_name, false)
-        Chef::Log.warn "#{class_name} already exists!  Deprecation class overwrites #{resource_class}"
-        Chef::Resource.send(:remove_const, class_name)
-      end
-
-      if !Chef::Config[:treat_deprecation_warnings_as_errors]
-        Chef::Resource.const_set(class_name, resource_class)
-        deprecated_constants[class_name.to_sym] = resource_class
-      end
-    end
-
-    def self.deprecated_constants
-      @deprecated_constants ||= {}
-    end
-
-    # @api private
     def lookup_provider_constant(name, action = :nothing)
       begin
         self.class.provider_base.const_get(convert_to_class_name(name.to_s))
@@ -1556,6 +1551,27 @@ class Chef
         else
           raise e
         end
+      end
+    end
+
+    module DeprecatedLWRPClass
+
+      # @api private
+      def register_deprecated_lwrp_class(resource_class, class_name)
+        if Chef::Resource.const_defined?(class_name, false)
+          Chef::Log.warn "#{class_name} already exists!  Deprecation class overwrites #{resource_class}"
+          Chef::Resource.send(:remove_const, class_name)
+        end
+
+        if !Chef::Config[:treat_deprecation_warnings_as_errors]
+          Chef::Resource.const_set(class_name, resource_class)
+          Chef::Resource.deprecated_constants[class_name.to_sym] = resource_class
+        end
+      end
+
+      def deprecated_constants
+        raise "Deprecated constants should be called only on Chef::Resource" unless self == Chef::Resource
+        @deprecated_constants ||= {}
       end
     end
 
@@ -1569,6 +1585,7 @@ class Chef
         end
       end
     end
+    extend DeprecatedLWRPClass
   end
 end
 

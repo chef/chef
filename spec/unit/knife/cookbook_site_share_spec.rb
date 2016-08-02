@@ -83,11 +83,11 @@ describe Chef::Knife::CookbookSiteShare do
       @knife.run
     end
 
-    it "should print error and exit when given only 1 argument and cannot determine category" do
+    it "should use a default category when given only 1 argument and cannot determine category" do
       @knife.name_args = ["cookbook_name"]
-      expect(@noauth_rest).to receive(:get).with("https://supermarket.chef.io/api/v1/cookbooks/cookbook_name").and_return(@bad_category_response)
-      expect(@knife.ui).to receive(:fatal)
-      expect { @knife.run }.to raise_error(SystemExit)
+      expect(@noauth_rest).to receive(:get).with("https://supermarket.chef.io/api/v1/cookbooks/cookbook_name") { raise Net::HTTPServerException.new("404 Not Found", OpenStruct.new(code: "404")) }
+      expect(@knife).to receive(:do_upload)
+      expect { @knife.run }.to_not raise_error
     end
 
     it "should print error and exit when given only 1 argument and Chef::ServerAPI throws an exception" do

@@ -154,6 +154,7 @@ class Chef
         do_contents_changes
         do_acl_changes
         do_selinux
+        do_resolv_conf_fixup
         load_resource_attributes_from_file(@new_resource)
       end
 
@@ -442,6 +443,13 @@ class Chef
           else
             Chef::Log.debug "selinux utilities can not be found. Skipping selinux permission fixup."
           end
+        end
+      end
+
+      def do_resolv_conf_fixup
+        # reload /etc/resolv.conf after we edit it -- only on linux -- and see lib/chef/application.rb
+        if new_resource.path == "/etc/resolv.conf" && RbConfig::CONFIG["host_os"] =~ /linux/
+          Resolv::DefaultResolver.replace_resolvers [Resolv::DNS.new("/etc/resolv.conf")]
         end
       end
 

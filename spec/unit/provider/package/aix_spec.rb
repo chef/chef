@@ -73,6 +73,19 @@ describe Chef::Provider::Package::Aix do
       expect(@new_resource.version).to eq("3.3.12.0")
     end
 
+    it "should warn if the package is not a fileset" do
+      info = "samba.base:samba.base.samples:3.3.12.0::COMMITTED:I:Samba for AIX:
+  /etc/objrepos:samba.base:3.3.12.0::COMMITTED:I:Samba for AIX:"
+      status = double("Status", :stdout => info, :exitstatus => 0)
+      expect(@provider).to receive(:shell_out).with("installp -L -d /tmp/samba.base", timeout: 900).and_return(status)
+      expect(@provider).to receive(:shell_out).with("lslpp -lcq samba.base", timeout: 900).and_return(@empty_status)
+      expect(Chef::Log).to receive(:warn).once.with(%r{bff package by product name})
+      @provider.load_current_resource
+
+      expect(@provider.current_resource.package_name).to eq("samba.base")
+      expect(@new_resource.version).to eq("3.3.12.0")
+    end
+
     it "should return the current version installed if found by lslpp" do
       status = double("Status", :stdout => @bffinfo, :exitstatus => 0)
       @stdout = StringIO.new(@bffinfo)

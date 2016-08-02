@@ -237,7 +237,7 @@ class Chef
         newcron = ""
         newcron << "# Chef Name: #{new_resource.name}\n"
         [ :mailto, :path, :shell, :home ].each do |v|
-          newcron << "#{v.to_s.upcase}=#{@new_resource.send(v)}\n" if @new_resource.send(v)
+          newcron << "#{v.to_s.upcase}=\"#{@new_resource.send(v)}\"\n" if @new_resource.send(v)
         end
         @new_resource.environment.each do |name, value|
           newcron << "#{name}=#{value}\n"

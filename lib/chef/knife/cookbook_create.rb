@@ -56,6 +56,10 @@ class Chef
         :description => "Email address of cookbook maintainer"
 
       def run
+        Chef::Log.deprecation <<EOF
+This command is being deprecated in favor of `chef generate cookbook` and will soon return an error.
+Please use `chef generate cookbook` instead of this command.
+EOF
         self.config = Chef::Config.merge!(config)
         if @name_args.length < 1
           show_usage

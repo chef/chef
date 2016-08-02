@@ -106,7 +106,12 @@ class Chef
     # for back compat, need to raise an error that inherits from ArgumentError
     class CookbookNotFoundInRepo < ArgumentError; end
     class RecipeNotFound < ArgumentError; end
+    # AttributeNotFound really means the attribute file could not be found
     class AttributeNotFound < RuntimeError; end
+    # NoSuchAttribute is raised on access by node.read!("foo", "bar") when node["foo"]["bar"] does not exist.
+    class NoSuchAttribute < RuntimeError; end
+    # AttributeTypeMismatch is raised by node.write!("foo", "bar", "baz") when e.g. node["foo"] = "bar" (overwriting String with Hash)
+    class AttributeTypeMismatch < RuntimeError; end
     class MissingCookbookDependency < StandardError; end # CHEF-5120
     class InvalidCommandOption < RuntimeError; end
     class CommandTimeout < RuntimeError; end

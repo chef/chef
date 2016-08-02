@@ -78,12 +78,9 @@ class Chef
           private
 
           def uninstall_command(uninstall_string)
-            uninstall_string.delete!('"')
+            uninstall_string = "\"#{uninstall_string}\"" if ::File.exist?(uninstall_string)
             uninstall_string = [
-              %q{/d"},
-              ::File.dirname(uninstall_string),
-              %q{" },
-              ::File.basename(uninstall_string),
+              uninstall_string,
               expand_options(new_resource.options),
               " ",
               unattended_flags,

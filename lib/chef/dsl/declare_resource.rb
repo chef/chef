@@ -71,7 +71,15 @@ class Chef
       #   delete_resource!(:template, '/x/y.txy')
       #
       def delete_resource!(type, name, run_context: self.run_context)
-        run_context.resource_collection.delete("#{type}[#{name}]")
+        run_context.resource_collection.delete("#{type}[#{name}]").tap do |resource|
+          # Purge any pending notifications too. This will not raise an exception
+          # if there are no notifications.
+          if resource
+            run_context.before_notification_collection.delete(resource.declared_key)
+            run_context.immediate_notification_collection.delete(resource.declared_key)
+            run_context.delayed_notification_collection.delete(resource.declared_key)
+          end
+        end
       end
 
       # Lookup a resource in the resource collection by name and delete it.  Returns

@@ -11,7 +11,7 @@ driver:
     cpus: 4
     memory: 4096
   synced_folders:
-    - ['..', '/home/vagrant/chef']
+    - ['../..', '/vagrant/code']
     - ['../../omnibus', '/home/vagrant/omnibus']
     - ['../../omnibus-software', '/home/vagrant/omnibus-software']
 
@@ -24,7 +24,12 @@ provisioner:
   attributes:
     vagrant:
       this_key_exists_so_we_have_a_vagrant_key: true
-  chef_omnibus_install_options: -P angrychef
+    omnibus:
+      build_user: vagrant
+      build_user_group: vagrant
+      build_user_password: vagrant
+  product_name: angrychef
+  product_version: latest
   chef_omnibus_root: /opt/angrychef
 
 platforms:
@@ -91,12 +96,30 @@ platforms:
       # at `C:\vagrant\code\chef`
       - ['../..', '/vagrant/code']
     provisioner:
+      attributes:
+        omnibus:
+          build_user:          vagrant
+          build_user_group:    Administrators
+          build_user_password: vagrant
       chef_omnibus_root: /opscode/angrychef
-
-attribute_defaults: &attribute_defaults
-  build_user:          vagrant
-  build_user_group:    vagrant
-  build_user_password: vagrant
+  # By adding an `i386` to the name the Omnibus cookbook's `load-omnibus-toolchain.bat`
+  # will load the 32-bit version of the MinGW toolchain.
+  - name: windows-2012r2-standard-i386
+    driver:
+      box: chef/windows-server-2012r2-standard # private
+      synced_folders:
+      # We have to mount this repos enclosing folder as the Omnibus build
+      # gets cranky if the mounted ChefDK source folder is a symlink. This
+      # mounts at `C:\vagrant\code` and the ChefDK source folder is available
+      # at `C:\vagrant\code\chef-dk`
+      - ['../..', '/vagrant/code']
+    provisioner:
+      attributes:
+        omnibus:
+          build_user:          vagrant
+          build_user_group:    Administrators
+          build_user_password: vagrant
+      chef_omnibus_root: /opscode/angrychef
 
 suites:
   # - name: angrychef
@@ -109,7 +132,6 @@ suites:
   - name: chef
     attributes:
       omnibus:
-        <<: *attribute_defaults
         install_dir: /opt/chef
     run_list:
       - omnibus::default

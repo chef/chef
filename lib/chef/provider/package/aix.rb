@@ -55,7 +55,11 @@ class Chef
               ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
               ret.stdout.each_line do |line|
                 case line
-                when /#{@new_resource.package_name}:/
+                when /:#{@new_resource.package_name}:/
+                  fields = line.split(":")
+                  @new_resource.version(fields[2])
+                when /^#{@new_resource.package_name}:/
+                  Chef::Log.warn("You are installing a bff package by product name. For idempotent installs, please install individual filesets")
                   fields = line.split(":")
                   @new_resource.version(fields[2])
                 end

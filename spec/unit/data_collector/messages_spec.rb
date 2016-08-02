@@ -18,6 +18,7 @@
 #
 
 require "spec_helper"
+require "ffi_yajl"
 require "chef/data_collector/messages/helpers"
 
 describe Chef::DataCollector::Messages do
@@ -61,19 +62,34 @@ describe Chef::DataCollector::Messages do
   end
 
   describe '#run_end_message' do
-    let(:run_status) { Chef::RunStatus.new(Chef::Node.new, Chef::EventDispatch::Dispatcher.new) }
-    let(:resource1)  { double("resource1", for_json: "resource_data", status: "updated") }
-    let(:resource2)  { double("resource2", for_json: "resource_data", status: "skipped") }
+    let(:node)       { Chef::Node.new }
+    let(:run_status) { Chef::RunStatus.new(node, Chef::EventDispatch::Dispatcher.new) }
+    let(:report1)  { double("report1", report_data: { "status" => "updated" }) }
+    let(:report2)  { double("report2", report_data: { "status" => "skipped" }) }
     let(:reporter_data) do
       {
         run_status: run_status,
-        completed_resources: [resource1, resource2],
+        resources: [report1, report2],
       }
     end
 
     before do
       allow(run_status).to receive(:start_time).and_return(Time.now)
       allow(run_status).to receive(:end_time).and_return(Time.now)
+    end
+
+    it "includes a valid node object in the payload" do
+      message = Chef::DataCollector::Messages.run_end_message(reporter_data)
+      expect(message["node"]).to be_an_instance_of(Chef::Node)
+    end
+
+    it "returns a sane JSON representation of the node object" do
+      node.chef_environment = "my_test_environment"
+      node.run_list.add("recipe[my_test_cookbook::default]")
+      message = FFI_Yajl::Parser.parse(Chef::DataCollector::Messages.run_end_message(reporter_data).to_json)
+
+      expect(message["node"]["chef_environment"]).to eq("my_test_environment")
+      expect(message["node"]["run_list"]).to eq(["recipe[my_test_cookbook::default]"])
     end
 
     context "when the run was successful" do
@@ -86,6 +102,7 @@ describe Chef::DataCollector::Messages do
           expanded_run_list
           message_type
           message_version
+          node
           node_name
           organization_name
           resources
@@ -136,6 +153,7 @@ describe Chef::DataCollector::Messages do
           expanded_run_list
           message_type
           message_version
+          node
           node_name
           organization_name
           resources
@@ -167,48 +185,6 @@ describe Chef::DataCollector::Messages do
         end
         expect(extra_fields).to eq([])
       end
-    end
-  end
-
-  describe '#node_update_message' do
-    let(:run_status) { Chef::RunStatus.new(Chef::Node.new, Chef::EventDispatch::Dispatcher.new) }
-
-    let(:required_fields) do
-      %w{
-        entity_name
-        entity_type
-        entity_uuid
-        id
-        message_type
-        message_version
-        organization_name
-        recorded_at
-        remote_hostname
-        requestor_name
-        requestor_type
-        run_id
-        service_hostname
-        source
-        task
-        user_agent
-      }
-    end
-    let(:optional_fields) { %w{data} }
-
-    it "is not missing any required fields" do
-      missing_fields = required_fields.select do |key|
-        !Chef::DataCollector::Messages.node_update_message(run_status).key?(key)
-      end
-
-      expect(missing_fields).to eq([])
-    end
-
-    it "does not have any extra fields" do
-      extra_fields = Chef::DataCollector::Messages.node_update_message(run_status).keys.select do |key|
-        !required_fields.include?(key) && !optional_fields.include?(key)
-      end
-
-      expect(extra_fields).to eq([])
     end
   end
 end

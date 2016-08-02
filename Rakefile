@@ -29,12 +29,13 @@ require_relative "tasks/cbgb"
 require_relative "tasks/dependencies"
 require_relative "tasks/changelog"
 
-ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef") do |package|
+ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef", "chef") do |package|
   package.component_paths = ["chef-config"]
   package.generate_version_class = true
 end
 # Add a conservative dependency update to version:bump (which was created by PackageTask)
-task "version:bump" => %w{version:bump_patch version:update bundle:install}
+task "version:bump" => %w{version:bump_patch version:update}
+task "version:bump" => %w{version:bump_patch version:update}
 
 task :pedant, :chef_zero_spec
 

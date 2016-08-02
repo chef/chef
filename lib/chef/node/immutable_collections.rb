@@ -1,3 +1,21 @@
+#--
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require "chef/node/common_api"
 
 class Chef
   class Node
@@ -124,6 +142,7 @@ class Chef
     class ImmutableMash < Mash
 
       include Immutablize
+      include CommonAPI
 
       alias :internal_set :[]=
       private :internal_set
@@ -144,6 +163,10 @@ class Chef
         :replace,
         :select!,
         :shift,
+        :write,
+        :write!,
+        :unlink,
+        :unlink!,
       ]
 
       def initialize(mash_data)
@@ -167,13 +190,15 @@ class Chef
       end
 
       def method_missing(symbol, *args)
-        if args.empty?
+        if symbol == :to_ary
+          super
+        elsif args.empty?
           if key?(symbol)
             self[symbol]
           else
             raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
           end
-        # This will raise a ImmutableAttributeModification error:
+          # This will raise a ImmutableAttributeModification error:
         elsif symbol.to_s =~ /=$/
           key_to_set = symbol.to_s[/^(.+)=$/, 1]
           self[key_to_set] = (args.length == 1 ? args[0] : args)

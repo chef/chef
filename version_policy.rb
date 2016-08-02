@@ -26,8 +26,8 @@ OMNIBUS_OVERRIDES = {
   ## according to comment in omnibus-sw, the very latest versions don't work on solaris
   # https://github.com/chef/omnibus-software/blob/aefb7e79d29ca746c3f843673ef5e317fa3cba54/config/software/libtool.rb#L23
   "libtool" => "2.4.2",
-  "libxml2" => "2.9.3",
-  "libxslt" => "1.1.28",
+  "libxml2" => "2.9.4",
+  "libxslt" => "1.1.29",
   "libyaml" => "0.1.6",
   "makedepend" => "1.0.5",
   "ncurses" => "5.9",

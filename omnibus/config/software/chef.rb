@@ -69,13 +69,6 @@ build do
   block { log.info(log_key) { "" } }
   bundle "install --verbose", env: project_env
 
-  # For whatever reason, nokogiri software def deletes this (rather small) directory
-  block { log.info(log_key) { "" } }
-  block "Remove mini_portile test dir" do
-    mini_portile = shellout!("#{bundle_bin} show mini_portile").stdout.chomp
-    remove_directory File.join(mini_portile, "test")
-  end
-
   # Check that it worked
   block { log.info(log_key) { "" } }
   bundle "check", env: project_env

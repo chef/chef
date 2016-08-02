@@ -1,5 +1,40 @@
 # Change Log
 
+## [v12.12.15](https://github.com/chef/chef/tree/v12.12.15) (2016-07-08)
+[Full Changelog](https://github.com/chef/chef/compare/v12.12.13...v12.12.15)
+
+**Fixed Bugs:**
+
+- Fix for #5094 12.12.13 node.default_unless issue [\#5097](https://github.com/chef/chef/pull/5097) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v12.12.13](https://github.com/chef/chef/tree/v12.12.13) (2016-07-01)
+[Full Changelog](https://github.com/chef/chef/compare/v12.11.18...v12.12.13)
+
+**Implemented Enhancements:**
+
+- Tweak 3694 warnings [\#5075](https://github.com/chef/chef/pull/5075) ([lamont-granquist](https://github.com/lamont-granquist))
+- Adding node object to Data collector run\_converge message [\#5065](https://github.com/chef/chef/pull/5065) ([adamleff](https://github.com/adamleff))
+- Attribute API improvements [\#5029](https://github.com/chef/chef/pull/5029) ([lamont-granquist](https://github.com/lamont-granquist))
+- Remove deprecated Thread.exclusive around require call. [\#5068](https://github.com/chef/chef/pull/5068) ([maxlazio](https://github.com/maxlazio))
+- Ensure that chef-solo uses the expected repo dir [\#5059](https://github.com/chef/chef/pull/5059) ([thommay](https://github.com/thommay))
+- Expand data\_collector resource list to include all resources [\#5058](https://github.com/chef/chef/pull/5058) ([adamleff](https://github.com/adamleff))
+- Turn off fips with an empty environment var [\#5048](https://github.com/chef/chef/pull/5048) ([mwrock](https://github.com/mwrock))
+- Deprecate knife-supermarket gem [\#4896](https://github.com/chef/chef/pull/4896) ([thommay](https://github.com/thommay))
+- Update Nokogiri [\#5042](https://github.com/chef/chef/pull/5042) ([mwrock](https://github.com/mwrock))
+- Remote resource should respect sensitive flag [\#5025](https://github.com/chef/chef/pull/5025) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit))
+- Convert the 3694 warning to a deprecation so it will be subject to the usual deprecation formatting \(collected at the bottom, can be made an error, etc\). [\#5022](https://github.com/chef/chef/pull/5022) ([coderanger](https://github.com/coderanger))
+- Deprecate `knife cookbook create` in favor of `chef generate cookbook`. [\#5021](https://github.com/chef/chef/pull/5021) ([tylercloke](https://github.com/tylercloke))
+
+**Fixed Bugs:**
+
+- Fixes windows_package uninstall scenarios by calling uninstall string directly [\#5050](https://github.com/chef/chef/pull/5050) ([mwrock](https://github.com/mwrock))
+- Fix gem_package idempotency [\#5046](https://github.com/chef/chef/pull/5046) ([thommay](https://github.com/thommay))
+- Undefined local variable lookup in multiplexed_dir.rb [\#5027](https://github.com/chef/chef/issues/5027) ([robdimarco](https://github.com/robdimarco))
+- Correctly write out data collector metadata file [\#5019](https://github.com/chef/chef/pull/5019) ([adamleff](https://github.com/adamleff))
+- Eliminate missing constant errors for LWRP class [\#5000](https://github.com/chef/chef/pull/5000) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit))
+- Updated_resource_count to data collector should only include updated resources [\#5006](https://github.com/chef/chef/pull/5006) ([adamleff](https://github.com/adamleff))
+- Don't mask directory deletion errors [\#4991](https://github.com/chef/chef/pull/4991) ([jaymzh](https://github.com/jaymzh))
+
 ## [v12.11.18](https://github.com/chef/chef/tree/v12.11.18) (2016-06-02)
 [Full Changelog](https://github.com/chef/chef/compare/v12.11.17...v12.11.18)
 
