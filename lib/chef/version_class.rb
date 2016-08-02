@@ -34,8 +34,13 @@ class Chef
 
     def <=>(v)
       [:major, :minor, :patch].each do |method|
-        ans = (self.send(method) <=> v.send(method))
-        return ans if ans != 0
+        version = self.send(method)
+        begin
+          ans = (version <=> v.send(method))
+        rescue NoMethodError # if the other thing isn't a version object, return nil
+          return nil
+        end
+        return ans unless ans == 0
       end
       0
     end

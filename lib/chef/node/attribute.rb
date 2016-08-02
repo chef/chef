@@ -530,9 +530,9 @@ class Chef
             self[key_to_set] = (args.length == 1 ? args[0] : args)
           else
             raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'. To set an attribute, use `#{symbol}=value' instead."
-          else
-            raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'."
           end
+        else
+          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'."
         end
       end
 
