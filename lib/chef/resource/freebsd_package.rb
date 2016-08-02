@@ -45,7 +45,7 @@ class Chef
       def ships_with_pkgng?
         # It was not until __FreeBSD_version 1000017 that pkgng became
         # the default binary package manager. See '/usr/ports/Mk/bsd.port.mk'.
-        node.automatic[:os_version].to_i >= 1000017
+        node[:os_version].to_i >= 1000017
       end
 
       def assign_provider
