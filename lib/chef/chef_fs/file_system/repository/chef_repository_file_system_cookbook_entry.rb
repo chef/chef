@@ -120,6 +120,7 @@ class Chef
           end
 
           def delete(recurse)
+            FileSystemCache.instance.delete!(file_path)
             begin
               if dir?
                 if !recurse

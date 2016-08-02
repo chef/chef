@@ -84,6 +84,7 @@ class Chef
             if child.exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
             end
+            FileSystemCache.instance.delete!(child.file_path)
             if file_contents
               child.write(file_contents)
             else
@@ -122,6 +123,7 @@ class Chef
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self)
             end
             begin
+              FileSystemCache.instance.delete!(file_path)
               Dir.mkdir(file_path)
             rescue Errno::EEXIST
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self)
@@ -138,6 +140,7 @@ class Chef
                 raise MustDeleteRecursivelyError.new(self, $!)
               end
               FileUtils.rm_r(file_path)
+              FileSystemCache.instance.delete!(file_path)
             else
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             end
@@ -148,6 +151,10 @@ class Chef
           end
 
           protected
+
+          def write(data)
+            raise FileSystemError.new(self, nil, "attempted to write to a directory entry")
+          end
 
           def make_child_entry(child_name)
             raise "Not Implemented"

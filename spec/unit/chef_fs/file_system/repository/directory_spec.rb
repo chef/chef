@@ -76,6 +76,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
   context "#create_child" do
     it "creates a new TestFile" do
       expect(TestFile).to receive(:new).with("test_child", test_directory).and_return(file_double)
+      allow(file_double).to receive(:file_path).and_return("#{test_directory}/test_child")
       expect(file_double).to receive(:write).with("test")
       test_directory.create_child("test_child", "test")
     end
