@@ -41,6 +41,14 @@ class Chef::Application::Client < Chef::Application
     :long  => "--config CONFIG",
     :description => "The configuration file to use"
 
+  option :config_option,
+    :long         => "--config-option OPTION=VALUE",
+    :description  => "Override a single configuration option",
+    :proc         => lambda { |option, existing|
+      (existing ||= []) << option
+      existing
+    }
+
   option :formatter,
     :short        => "-F FORMATTER",
     :long         => "--format FORMATTER",
