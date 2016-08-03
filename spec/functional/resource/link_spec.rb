@@ -582,9 +582,9 @@ describe Chef::Resource::Link do
               resource.run_action(:create)
               # Windows and Unix have different definitions of exists? here, and that's OK.
               if windows?
-                expect(File.exists?(target_file)).to be_truthy
+                expect(File.exists?(target_file) || File.symlink?(target_file)).to be_truthy
               else
-                expect(File.exists?(target_file)).to be_falsey
+                expect(File.exists?(target_file) || File.symlink?(target_file)).to be_falsey
               end
               expect(symlink?(target_file)).to be_truthy
               expect(readlink(target_file)).to eq(canonicalize(@other_target))

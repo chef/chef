@@ -164,11 +164,15 @@ class Chef
           super
         elsif args.empty?
           self[symbol]
-        elsif symbol.to_s =~ /=$/
-          key_to_set = symbol.to_s[/^(.+)=$/, 1]
-          self[key_to_set] = (args.length == 1 ? args[0] : args)
+        elsif symbol.to_s =~ /^\w/
+          if symbol.to_s.end_with?("=")
+            key_to_set = symbol.to_s[/^(.+)=$/, 1]
+            self[key_to_set] = (args.length == 1 ? args[0] : args)
+          else
+            raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'. To set an attribute, use `#{symbol}=value' instead."
+          end
         else
-          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'. To set an attribute, use `#{symbol}=value' instead."
+          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'."
         end
       end
 

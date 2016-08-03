@@ -523,12 +523,16 @@ class Chef
           else
             raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
           end
-        elsif symbol.to_s =~ /=$/
-          Chef.log_deprecation %q{method setting of node attributes (node.foo="bar") is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]="bar")}
-          key_to_set = symbol.to_s[/^(.+)=$/, 1]
-          self[key_to_set] = (args.length == 1 ? args[0] : args)
+        elsif symbol.to_s =~ /^\w/
+          if symbol.to_s.end_with?("=")
+            Chef.log_deprecation %q{method setting of node attributes (node.foo="bar") is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]="bar")}
+            key_to_set = symbol.to_s[/^(.+)=$/, 1]
+            self[key_to_set] = (args.length == 1 ? args[0] : args)
+          else
+            raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'. To set an attribute, use `#{symbol}=value' instead."
+          end
         else
-          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
+          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'."
         end
       end
 
