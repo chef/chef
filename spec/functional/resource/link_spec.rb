@@ -580,12 +580,7 @@ describe Chef::Resource::Link do
             it "links to the target file" do
               skip("OS X/FreeBSD/AIX fails to create hardlinks to broken symlinks") if os_x? || freebsd? || aix?
               resource.run_action(:create)
-              # Windows and Unix have different definitions of exists? here, and that's OK.
-              if windows?
-                expect(File.exists?(target_file)).to be_truthy
-              else
-                expect(File.exists?(target_file)).to be_falsey
-              end
+              expect(File.exists?(target_file) || File.symlink?(target_file)).to be_truthy
               expect(symlink?(target_file)).to be_truthy
               expect(readlink(target_file)).to eq(canonicalize(@other_target))
             end
