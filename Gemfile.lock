@@ -28,7 +28,7 @@ PATH
       iniparse (~> 1.4)
       mixlib-archive (>= 0.2.0)
       mixlib-authentication (~> 1.4)
-      mixlib-cli (~> 1.4, < 1.7)
+      mixlib-cli (~> 1.7)
       mixlib-log (~> 1.3)
       mixlib-shellout (~> 2.0)
       net-sftp (~> 2.1, >= 2.1.2)
@@ -224,7 +224,7 @@ GEM
       mixlib-log
     mixlib-authentication (1.4.1)
       mixlib-log
-    mixlib-cli (1.6.0)
+    mixlib-cli (1.7.0)
     mixlib-config (2.2.1)
     mixlib-install (1.1.0)
       artifactory
