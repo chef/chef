@@ -30,9 +30,9 @@ namespace :bundle do
       puts "-------------------------------------------------------------------"
       puts "Updating Gemfile.lock ..."
       puts "-------------------------------------------------------------------"
-      bundle "install #{args}", delete_gemfile_lock: true
+      bundle "update #{args}"
       platforms.each do |platform|
-        bundle "lock", platform: platform
+        bundle "update #{args}", platform: platform
       end
     end
   end
