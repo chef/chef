@@ -75,7 +75,7 @@ GEM
       buff-extensions (~> 1.0)
       varia_model (~> 0.4)
     buff-extensions (1.0.0)
-    buff-ignore (1.2.0)
+    buff-ignore (1.1.1)
     buff-ruby_engine (0.1.0)
     buff-shell_out (0.2.0)
       buff-ruby_engine (~> 0.1.0)
@@ -133,7 +133,7 @@ GEM
       artifactory
       mixlib-shellout
       mixlib-versioning
-    mixlib-log (1.6.0)
+    mixlib-log (1.7.0)
     mixlib-shellout (2.2.6)
     mixlib-shellout (2.2.6-universal-mingw32)
       win32-process (~> 0.8.2)
@@ -149,7 +149,7 @@ GEM
     nori (2.6.0)
     octokit (4.3.0)
       sawyer (~> 0.7.0, >= 0.5.3)
-    ohai (8.17.1)
+    ohai (8.18.0)
       chef-config (>= 12.5.0.alpha.1, < 13)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -174,11 +174,11 @@ GEM
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
     retryable (2.0.4)
-    ridley (4.6.0)
+    ridley (4.6.1)
       addressable
       buff-config (~> 1.0)
       buff-extensions (~> 1.0)
-      buff-ignore (~> 1.1)
+      buff-ignore (~> 1.1.1)
       buff-shell_out (~> 0.1)
       celluloid (~> 0.16.0)
       celluloid-io (~> 0.16.1)

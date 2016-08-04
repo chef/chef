@@ -114,7 +114,7 @@ GEM
       buff-extensions (~> 1.0)
       varia_model (~> 0.4)
     buff-extensions (1.0.0)
-    buff-ignore (1.2.0)
+    buff-ignore (1.1.1)
     buff-ruby_engine (0.1.0)
     buff-shell_out (0.2.0)
       buff-ruby_engine (~> 0.1.0)
@@ -131,7 +131,7 @@ GEM
     cleanroom (1.0.0)
     coderay (1.1.1)
     diff-lcs (1.2.5)
-    docker-api (1.29.2)
+    docker-api (1.30.0)
       excon (>= 0.38.0)
       json
     erubis (2.7.0)
@@ -183,7 +183,7 @@ GEM
       artifactory
       mixlib-shellout
       mixlib-versioning
-    mixlib-log (1.6.0)
+    mixlib-log (1.7.0)
     mixlib-shellout (2.2.6)
     mixlib-versioning (1.1.0)
     molinillo (0.4.5)
@@ -202,11 +202,11 @@ GEM
       slop (~> 3.4)
     rainbow (2.1.0)
     retryable (2.0.4)
-    ridley (4.6.0)
+    ridley (4.6.1)
       addressable
       buff-config (~> 1.0)
       buff-extensions (~> 1.0)
-      buff-ignore (~> 1.1)
+      buff-ignore (~> 1.1.1)
       buff-shell_out (~> 0.1)
       celluloid (~> 0.16.0)
       celluloid-io (~> 0.16.1)
