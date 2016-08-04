@@ -35,6 +35,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     @new_resource.manage_home false
     @new_resource.force false
     @new_resource.non_unique false
+    @new_resource.create_user_group nil
     @current_resource = Chef::Resource::User.new("adam", @run_context)
     @current_resource.comment "Adam Jacob"
     @current_resource.uid 1000
@@ -46,6 +47,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     @current_resource.manage_home false
     @current_resource.force false
     @current_resource.non_unique false
+    @current_resource.create_user_group nil
     @current_resource.supports({ :manage_home => false, :non_unique => false })
   end
 
@@ -97,6 +99,28 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       it "should set useradd -r" do
         @new_resource.system(true)
         expect(provider.useradd_options).to eq([ "-r" ])
+      end
+    end
+
+    describe "when we want to create a user-private group" do
+      after do
+        @new_resource.create_user_group(nil)
+      end
+
+      it "should set useradd -U" do
+        @new_resource.create_user_group(true)
+        expect(provider.useradd_options).to include("-U")
+      end
+    end
+
+    describe "when we do not want to create a user-private group" do
+      after do
+        @new_resource.create_user_group(nil)
+      end
+
+      it "should set useradd -N" do
+        @new_resource.create_user_group(false)
+        expect(provider.useradd_options).to include("-N")
       end
     end
 

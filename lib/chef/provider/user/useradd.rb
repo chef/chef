@@ -141,6 +141,14 @@ class Chef
         def useradd_options
           opts = []
           opts << "-r" if new_resource.system
+          # The default behavior is to follow whatever is in the
+          # USERGROUPS_ENAB variable in /etc/login.defs.
+          case new_resource.create_user_group
+          when true
+            opts << "-U"
+          when false
+            opts << "-N"
+          end
           opts
         end
 

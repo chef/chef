@@ -42,8 +42,10 @@ describe Chef::Provider::User::Useradd, metadata do
 
   # Utility code for /etc/passwd interaction, avoid any caching of user records:
   PwEntry = Struct.new(:name, :passwd, :uid, :gid, :gecos, :home, :shell)
+  GrEntry = Struct.new(:name, :group, :passwd, :gid, :member)
 
   class UserNotFound < StandardError; end
+  class GroupNotFound < StandardError; end
 
   def pw_entry
     passwd_file = File.open("/etc/passwd", "rb") { |f| f.read }
@@ -52,6 +54,16 @@ describe Chef::Provider::User::Useradd, metadata do
       PwEntry.new(*passwd_entry.split(":"))
     else
       raise UserNotFound, "no entry matching #{matcher.inspect} found in /etc/passwd"
+    end
+  end
+
+  def gr_entry
+    group_file = File.open("/etc/group", "rb") { |f| f.read }
+    matcher = /^#{Regexp.escape(groupname)}.+$/
+    if group_entry = group_file.scan(matcher).first
+      GrEntry.new(*group_entry.split(":"))
+    else
+      raise GroupNotFound, "no entry matching #{matcher.inspect} found in /etc/group"
     end
   end
 
@@ -135,6 +147,10 @@ describe Chef::Provider::User::Useradd, metadata do
   end
 
   let(:username) do
+    "cf-test"
+  end
+
+  let(:groupname) do
     "cf-test"
   end
 
@@ -294,6 +310,22 @@ describe Chef::Provider::User::Useradd, metadata do
 
         it "ensures the user has the properties of a system user" do
           expect(pw_entry.uid.to_i).to be < uid_min.to_i
+        end
+      end
+
+      context "when a user-private group is desired", skip: aix? do
+        let(:create_user_group) { true }
+
+        it "creates a group of the same name" do
+          expect(gr_entry.name).to eq(groupname)
+        end
+      end
+
+      context "when a user-private group is not desired", skip: aix? do
+        let(:create_user_group) { false }
+
+        it "does not create a group of the same name" do
+          expect { gr_entry.name }.to raise(GroupNotFound)
         end
       end
     end # when the user does not exist beforehand
