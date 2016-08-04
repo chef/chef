@@ -32,7 +32,7 @@ OMNIBUS_OVERRIDES = {
   "makedepend" => "1.0.5",
   "ncurses" => "5.9",
   "pkg-config-lite" => "0.28-1",
-  "ruby" => "2.1.8",
+  "ruby" => "2.1.9",
   # Leave dev-kit pinned to 4.5 on 32-bit, because 4.7 is 20MB larger and we don't want
   # to unnecessarily make the client any fatter. (Since it's different between
   # 32 and 64, we have to do it in the project file still.)
@@ -74,14 +74,12 @@ OMNIBUS_RUBYGEMS_AT_LATEST_VERSION = {
 # stove - halite pins to ~> 3.2 in 1.2.1
 # rubocop - chef-style pins to 0.39.0 in 0.3.1
 #
-ACCEPTABLE_OUTDATED_GEMS = %w{
-  gherkin
-  jwt
-  mini_portile2
-  slop
-  stove
-  rubocop
-}
+ACCEPTABLE_OUTDATED_GEMS = [
+  "json",       # aws-sdk-v1 disallows JSON 2.x (no fix pending yet)
+  "rack",       # Rack 2.0+ requires Ruby 2.2
+  "rubocop",    # chef-style pins to 0.39.0 in 0.3.1
+  "slop",       # expected to disappear with pry 0.11
+]
 
 #
 # Some gems are part of our bundle (must be installed) but not important

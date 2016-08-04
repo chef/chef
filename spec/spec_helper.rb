@@ -226,6 +226,7 @@ RSpec.configure do |config|
 end
 
 require "webrick/utils"
+require "thread"
 
 #    Webrick uses a centralized/synchronized timeout manager. It works by
 #    starting a thread to check for timeouts on an interval. The timeout
@@ -244,7 +245,12 @@ module WEBrick
   module Utils
     class TimeoutHandler
       def initialize
-        @timeout_info = Hash.new
+      end
+
+      def register(*args)
+      end
+
+      def cancel(*args)
       end
     end
   end

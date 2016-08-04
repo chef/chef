@@ -1,13 +1,16 @@
 GIT
-  remote: https://github.com/chef/omnibus-software.git
-  revision: 5e767a6d220f024256439b0a8415eefe923967dc
+  remote: git://github.com/chef/omnibus-software.git
+  revision: dc55a789ee9cfb25aa243c3778ae8dabd5eeed7a
+  branch: ksubrama/ruby23
   specs:
     omnibus-software (4.0.0)
+      chef-sugar (>= 3.4.0)
       omnibus (>= 5.2.0)
 
 GIT
-  remote: https://github.com/chef/omnibus.git
-  revision: 29d390ec93709ceec2667038aed6769ee29a0646
+  remote: git://github.com/chef/omnibus.git
+  revision: 45daf5afbef664bb1866561671ec94ccfe307bc6
+  branch: ksubrama/gcc_investigate
   specs:
     omnibus (5.4.0)
       aws-sdk (~> 2)
@@ -36,15 +39,15 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.4.0)
-    artifactory (2.3.2)
+    artifactory (2.3.3)
     awesome_print (1.7.0)
-    aws-sdk (2.4.2)
-      aws-sdk-resources (= 2.4.2)
-    aws-sdk-core (2.4.2)
+    aws-sdk (2.5.0)
+      aws-sdk-resources (= 2.5.0)
+    aws-sdk-core (2.5.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.4.2)
-      aws-sdk-core (= 2.4.2)
-    berkshelf (4.3.3)
+    aws-sdk-resources (2.5.0)
+      aws-sdk-core (= 2.5.0)
+    berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
       buff-config (~> 1.0)
@@ -56,6 +59,7 @@ GEM
       faraday (~> 0.9)
       httpclient (~> 2.7)
       minitar (~> 0.5, >= 0.5.4)
+      mixlib-archive (~> 0.1)
       octokit (~> 4.0)
       retryable (~> 2.0)
       ridley (~> 4.5)
@@ -71,7 +75,7 @@ GEM
       buff-extensions (~> 1.0)
       varia_model (~> 0.4)
     buff-extensions (1.0.0)
-    buff-ignore (1.1.1)
+    buff-ignore (1.2.0)
     buff-ruby_engine (0.1.0)
     buff-shell_out (0.2.0)
       buff-ruby_engine (~> 0.1.0)
@@ -109,7 +113,7 @@ GEM
     iostruct (0.0.4)
     ipaddress (0.8.3)
     jmespath (1.3.1)
-    json (1.8.3)
+    json (2.0.2)
     kitchen-vagrant (0.19.0)
       test-kitchen (~> 1.4)
     libyajl2 (1.2.0)
@@ -119,11 +123,13 @@ GEM
       multi_json (~> 1.10)
     method_source (0.8.2)
     minitar (0.5.4)
+    mixlib-archive (0.2.0)
+      mixlib-log
     mixlib-authentication (1.4.1)
       mixlib-log
-    mixlib-cli (1.6.0)
+    mixlib-cli (1.7.0)
     mixlib-config (2.2.1)
-    mixlib-install (1.0.12)
+    mixlib-install (1.1.0)
       artifactory
       mixlib-shellout
       mixlib-versioning
@@ -138,7 +144,7 @@ GEM
     multipart-post (1.2.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
-    net-ssh (3.1.1)
+    net-ssh (3.2.0)
     nio4r (1.2.1)
     nori (2.6.0)
     octokit (4.3.0)
@@ -157,7 +163,7 @@ GEM
       wmi-lite (~> 1.0)
     plist (3.2.0)
     progressbar (0.21.0)
-    pry (0.10.3)
+    pry (0.10.4)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
@@ -167,8 +173,8 @@ GEM
     pry-stack_explorer (0.4.9.2)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    retryable (2.0.3)
-    ridley (4.5.1)
+    retryable (2.0.4)
+    ridley (4.6.0)
       addressable
       buff-config (~> 1.0)
       buff-extensions (~> 1.0)
@@ -199,7 +205,7 @@ GEM
       molinillo (~> 0.4.2)
       semverse (~> 1.1)
     systemu (2.6.5)
-    test-kitchen (1.9.2)
+    test-kitchen (1.10.2)
       mixlib-install (~> 1.0, >= 1.0.4)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
@@ -222,7 +228,7 @@ GEM
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
       rubyntlm (~> 0.6.0)
-    winrm-fs (0.4.2)
+    winrm-fs (0.4.3)
       erubis (~> 2.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 1.1)
