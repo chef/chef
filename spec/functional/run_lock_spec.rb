@@ -258,11 +258,12 @@ describe Chef::RunLock do
 
     it "test returns true and acquires the lock" do
       run_lock = Chef::RunLock.new(lockfile)
+      from_tests, to_fork = IO.pipe
       p1 = fork do
         expect(run_lock.test).to eq(true)
-        run_lock.save_pid
-        sleep 2
-        exit! 1
+        # Wait for the test to tell us we can exit before exiting
+        from_tests.readline
+        exit! 0
       end
 
       wait_on_lock
@@ -272,23 +273,29 @@ describe Chef::RunLock do
         exit! 0
       end
 
-      Process.waitpid2(p2)
-      Process.waitpid2(p1)
+      pid, exit_status = Process.waitpid2(p2)
+      expect(exit_status).to eq(0)
+      to_fork.puts "you can exit now"
+      pid, exit_status = Process.waitpid2(p1)
+      expect(exit_status).to eq(0)
     end
 
     it "test returns without waiting when the lock is acquired" do
       run_lock = Chef::RunLock.new(lockfile)
+      from_tests, to_fork = IO.pipe
       p1 = fork do
         run_lock.acquire
-        run_lock.save_pid
-        sleep 2
-        exit! 1
+        # Wait for the test to tell us we can exit before exiting
+        from_tests.readline
+        exit! 0
       end
 
       wait_on_lock
-
       expect(run_lock.test).to eq(false)
-      Process.waitpid2(p1)
+
+      to_fork.puts "you can exit now"
+      pid, exit_status = Process.waitpid2(p1)
+      expect(exit_status).to eq(0)
     end
 
   end
