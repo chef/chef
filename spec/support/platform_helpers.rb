@@ -138,10 +138,6 @@ def freebsd?
   !!(RUBY_PLATFORM =~ /freebsd/)
 end
 
-def linux?
-  !!(RUBY_PLATFORM =~ /linux/)
-end
-
 def debian_family?
   !!(ohai[:platform_family] == "debian")
 end
