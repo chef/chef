@@ -8,9 +8,7 @@ Want to try Chef? Get started with [learnchef](https://learn.chef.io)
 * Documentation: [http://docs.chef.io](http://docs.chef.io)
 * Source: [http://github.com/chef/chef/tree/master](http://github.com/chef/chef/tree/master)
 * Tickets/Issues: [https://github.com/chef/chef/issues](https://github.com/chef/chef/issues)
-* IRC: `#chef` and `#chef-hacking` on Freenode
-  - Join via browser: [#chef](https://webchat.freenode.net/?channels=chef), [#chef-hacking](https://webchat.freenode.net/?channels=chef-hacking)
-  - View logs: [#chef](https://botbot.me/freenode/chef/), [#chef-hacking](https://botbot.me/freenode/chef-hacking/)
+* Slack: [Chef Community Slack](https://community-slack.chef.io/)
 * Mailing list: [https://discourse.chef.io](https://discourse.chef.io)
 
 Chef is a configuration management tool designed to bring automation to your

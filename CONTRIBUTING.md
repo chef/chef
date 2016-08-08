@@ -116,11 +116,11 @@ Announcements of releases are made to the [chef mailing list](https://discourse.
 
 Chef is made possible by a strong community of developers and system administrators. If you have any questions or if you would like to get involved in the Chef community you can check out:
 
-- [chef](https://discourse.chef.io/) mailing list
-- [#chef](https://botbot.me/freenode/chef/) and [#chef-hacking](https://botbot.me/freenode/chef-hacking/) IRC channels on irc.freenode.net
+- [Chef Mailing List](https://discourse.chef.io/)
+- [Chef Community Slack](https://community-slack.chef.io/)
 
 Also here are some additional pointers to some awesome Chef content:
 
 - [Chef Docs](https://docs.chef.io/)
 - [Learn Chef](https://learn.chef.io/)
-- [Chef Inc](https://www.chef.io/)
+- [Chef Inc.](https://www.chef.io/)
