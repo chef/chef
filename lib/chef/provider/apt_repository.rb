@@ -254,4 +254,4 @@ class Chef
   end
 end
 
-Chef::Provider::Noop.provides :apt_resource
+Chef::Provider::Noop.provides :apt_repository

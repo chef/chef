@@ -16,15 +16,17 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/dsl/declare_resource"
+require "chef/provider"
+require "chef/provider/noop"
 
 class Chef
   class Provider
     class AptUpdate < Chef::Provider
       use_inline_resources
 
-      provides :apt_update, os: "linux"
+      provides :apt_update do
+        uses_apt?
+      end
 
       APT_CONF_DIR = "/etc/apt/apt.conf.d"
       STAMP_DIR = "/var/lib/apt/periodic"
@@ -75,6 +77,13 @@ class Chef
         declare_resource(:execute, "apt-get -q update")
       end
 
+      def self.uses_apt?
+        ENV["PATH"] ||= ""
+        paths = %w{ /bin /usr/bin /sbin /usr/sbin } + ENV["PATH"].split(::File::PATH_SEPARATOR)
+        paths.any? { |path| ::File.executable?(::File.join(path, "apt-get")) }
+      end
     end
   end
 end
+
+Chef::Provider::Noop.provides :apt_update
