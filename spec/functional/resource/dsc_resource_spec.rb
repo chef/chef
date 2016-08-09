@@ -77,7 +77,7 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
         new_resource.run_action(:run)
         expect(new_resource).to be_updated
         reresource =
-           Chef::Resource::DscResource.new("dsc_resource_retest", run_context)
+          Chef::Resource::DscResource.new("dsc_resource_retest", run_context)
         reresource.resource :File
         reresource.property :Contents, test_text
         reresource.property :DestinationPath, tmp_file_name
