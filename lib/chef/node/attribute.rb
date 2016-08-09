@@ -542,7 +542,7 @@ class Chef
         }.join(", ") << ">"
       end
 
-       private
+      private
 
        # Helper method for merge_all/merge_defaults/merge_overrides.
        #

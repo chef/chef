@@ -66,7 +66,7 @@ class Chef
           shell_out!("chuser account_locked=false #{new_resource.username}")
         end
 
-      private
+        private
 
         def add_password
           if @current_resource.password != @new_resource.password && @new_resource.password

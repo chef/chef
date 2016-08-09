@@ -160,7 +160,7 @@ class Chef
         pattern
       end
 
-    private
+      private
 
       def regexp
         calculate
