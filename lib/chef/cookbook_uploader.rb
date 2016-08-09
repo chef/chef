@@ -55,7 +55,7 @@ class Chef
         checksum_files.merge!(cb.checksums)
       end
 
-      checksums = checksum_files.inject({}) { |memo, elt| memo[elt.first] = nil ; memo }
+      checksums = checksum_files.inject({}) { |memo, elt| memo[elt.first] = nil; memo }
       new_sandbox = rest.post("sandboxes", { :checksums => checksums })
 
       Chef::Log.info("Uploading files")

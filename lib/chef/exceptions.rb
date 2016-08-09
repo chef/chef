@@ -184,7 +184,7 @@ class Chef
 
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.
-    class CookbookVersionConflict < ArgumentError ; end
+    class CookbookVersionConflict < ArgumentError; end
 
     # does not follow X.Y.Z format. ArgumentError?
     class InvalidPlatformVersion < ArgumentError; end
