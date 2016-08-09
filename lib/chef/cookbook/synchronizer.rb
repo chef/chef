@@ -291,7 +291,7 @@ class Chef
     end
 
     def server_api
-      Thread.current[:server_api] ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url])
+      Thread.current[:server_api] ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], keepalives: true)
     end
 
   end

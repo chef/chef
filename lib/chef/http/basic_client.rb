@@ -34,6 +34,7 @@ class Chef
       attr_reader :url
       attr_reader :http_client
       attr_reader :ssl_policy
+      attr_reader :keepalives
 
       # Instantiate a BasicClient.
       # === Arguments:
@@ -43,6 +44,7 @@ class Chef
       def initialize(url, opts = {})
         @url = url
         @ssl_policy = opts[:ssl_policy] || DefaultSSLPolicy
+        @keepalives = opts[:keepalives] || false
         @http_client = build_http_client
       end
 
@@ -114,7 +116,11 @@ class Chef
 
         http_client.read_timeout = config[:rest_timeout]
         http_client.open_timeout = config[:rest_timeout]
-        http_client.start
+        if keepalives
+          http_client.start
+        else
+          http_client
+        end
       end
 
       def config

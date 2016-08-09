@@ -77,6 +77,9 @@ class Chef
 
     attr_reader :middlewares
 
+    # [Boolean] if we're doing keepalives or not
+    attr_reader :keepalives
+
     # Create a HTTP client object. The supplied +url+ is used as the base for
     # all subsequent requests. For example, when initialized with a base url
     # http://localhost:4000, a call to +get+ with 'nodes' will make an
@@ -87,6 +90,7 @@ class Chef
       @sign_on_redirect = true
       @redirects_followed = 0
       @redirect_limit = 10
+      @keepalives = options[:keepalives] || false
       @options = options
 
       @middlewares = []
@@ -227,30 +231,37 @@ class Chef
     end
 
     def http_client(base_url = nil)
-      # the per-host per-port cache here gets peristent connections correct in the
-      # face of redirects to different servers
-      @http_client ||= {}
-      @http_client[base_url.host] ||= {}
-      @http_client[base_url.host][base_url.port] ||=
-        begin
-          base_url ||= url
-          if chef_zero_uri?(base_url)
-            # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up webrick
-            # via chef-zero and that hits DNS (at *require* time) which may timeout,
-            # when for most knife/chef-client work we never need/want this loaded.
-
-            unless defined?(SocketlessChefZeroClient)
-              require "chef/http/socketless_chef_zero_client"
-            end
-
-            SocketlessChefZeroClient.new(base_url)
-          else
-            BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
-          end
-        end
+      base_url ||= url
+      client = build_http_client(base_url)
+      if keepalives && !base_url.nil?
+        # only reuse the http_client if we want keepalives and have a base_url
+        @http_client ||= {}
+        # the per-host per-port cache here gets peristent connections correct when
+        # redirecting to different servers
+        @http_client[base_url.host] ||= {}
+        @http_client[base_url.host][base_url.port] ||= client
+      else
+        client
+      end
     end
 
-    protected
+    private
+
+    def build_http_client(base_url)
+      if chef_zero_uri?(base_url)
+        # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up webrick
+        # via chef-zero and that hits DNS (at *require* time) which may timeout,
+        # when for most knife/chef-client work we never need/want this loaded.
+
+        unless defined?(SocketlessChefZeroClient)
+          require "chef/http/socketless_chef_zero_client"
+        end
+
+        SocketlessChefZeroClient.new(base_url)
+      else
+        BasicClient.new(base_url, ssl_policy: Chef::HTTP::APISSLPolicy, keepalives: keepalives)
+      end
+    end
 
     def create_url(path)
       return path if path.is_a?(URI)
