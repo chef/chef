@@ -90,7 +90,7 @@ GRAPH
   selinux (0.9.0)
   seven_zip (2.0.1)
     windows (>= 1.2.2)
-  sudo (2.9.0)
+  sudo (2.10.0)
   ubuntu (1.2.0)
     apt (>= 0.0.0)
   users (3.0.0)
