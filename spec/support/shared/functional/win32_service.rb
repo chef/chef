@@ -23,9 +23,7 @@ shared_context "using Win32::Service" do
       # We can only uninstall when the service is stopped.
       if test_service_state != "stopped"
         ::Win32::Service.send("stop", "spec-service")
-        while test_service_state != "stopped"
-          sleep 1
-        end
+        sleep 1 while test_service_state != "stopped"
       end
 
       ::Win32::Service.delete("spec-service")

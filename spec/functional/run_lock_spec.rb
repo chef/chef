@@ -48,9 +48,7 @@ describe Chef::RunLock do
     WAIT_ON_LOCK_TIME = 1.0
     def wait_on_lock
       Timeout.timeout(WAIT_ON_LOCK_TIME) do
-        until File.exist?(lockfile)
-          sleep 0.1
-        end
+        sleep 0.1 until File.exist?(lockfile)
       end
     rescue Timeout::Error
       raise "Lockfile never created, abandoning test"
@@ -393,9 +391,7 @@ describe Chef::RunLock do
           # Send it the kill signal over and over until it dies
           Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
             Process.kill(:KILL, pid)
-            until Process.waitpid2(pid, Process::WNOHANG)
-              sleep(0.05)
-            end
+            sleep(0.05) until Process.waitpid2(pid, Process::WNOHANG)
           end
           example.log_event("#{name}.stop finished (stopped pid #{pid})")
         # Process not found is perfectly fine when we're trying to kill a process :)
