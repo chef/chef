@@ -488,7 +488,7 @@ describe Chef::DataCollector::Reporter do
 
     context "when an unexpected exception is raised by the block" do
       it "re-raises the exception" do
-        expect { reporter.send(:disable_reporter_on_error) { raise RuntimeError, "bummer" } }.to raise_error(RuntimeError)
+        expect { reporter.send(:disable_reporter_on_error) { raise "bummer" } }.to raise_error(RuntimeError)
       end
     end
 
