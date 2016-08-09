@@ -194,12 +194,12 @@ class Chef
       end
 
       def action_reconfig
-        if @current_resource.version == nil then
+        if @current_resource.version == nil
           Chef::Log.debug("#{@new_resource} is NOT installed - nothing to do")
           return
         end
 
-        unless @new_resource.response_file then
+        unless @new_resource.response_file
           Chef::Log.debug("#{@new_resource} no response_file provided - nothing to do")
           return
         end

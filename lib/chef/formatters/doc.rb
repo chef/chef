@@ -32,9 +32,9 @@ class Chef
 
       def pretty_elapsed_time
         time = elapsed_time
-        if time < 60 then
+        if time < 60
           message = Time.at(time).utc.strftime("%S seconds")
-        elsif time < 3600 then
+        elsif time < 3600
           message = Time.at(time).utc.strftime("%M minutes %S seconds")
         else
           message = Time.at(time).utc.strftime("%H hours %M minutes %S seconds")
