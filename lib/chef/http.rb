@@ -232,16 +232,15 @@ class Chef
 
     def http_client(base_url = nil)
       base_url ||= url
-      client = build_http_client(base_url)
       if keepalives && !base_url.nil?
         # only reuse the http_client if we want keepalives and have a base_url
         @http_client ||= {}
         # the per-host per-port cache here gets peristent connections correct when
         # redirecting to different servers
         @http_client[base_url.host] ||= {}
-        @http_client[base_url.host][base_url.port] ||= client
+        @http_client[base_url.host][base_url.port] ||= build_http_client(base_url)
       else
-        client
+        build_http_client(base_url)
       end
     end
 
