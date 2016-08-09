@@ -138,8 +138,8 @@ shared_context "use Windows permissions", :windows_only do
 
   RSpec::Matchers.define :have_expected_properties do |mask, type, flags|
     match do |ace|
-      ace.mask == mask
-      ace.type == type
+      ace.mask == mask &&
+      ace.type == type &&
       ace.flags == flags
     end
   end
