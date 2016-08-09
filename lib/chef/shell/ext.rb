@@ -39,13 +39,13 @@ module Shell
         # irb breaks if you prematurely define IRB::JobMangager
         # so these methods need to be defined at the latest possible time.
         unless jobs.respond_to?(:select_session_by_context)
-          def jobs.select_session_by_context(&block)
+          def jobs.select_session_by_context(&block)  # rubocop:disable Lint/NestedMethodDefinition
             @jobs.select { |job| block.call(job[1].context.main) }
           end
         end
 
         unless jobs.respond_to?(:session_select)
-          def jobs.select_shell_session(target_context)
+          def jobs.select_shell_session(target_context)  # rubocop:disable Lint/NestedMethodDefinition
             session = if target_context.kind_of?(Class)
                         select_session_by_context { |main| main.kind_of?(target_context) }
                       else
