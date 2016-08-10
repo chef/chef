@@ -18,14 +18,17 @@
 
 require "chef/provider"
 require "chef/provider/noop"
+require "chef/mixin/which"
 
 class Chef
   class Provider
     class AptUpdate < Chef::Provider
       use_inline_resources
 
+      extend Chef::Mixin::Which
+
       provides :apt_update do
-        uses_apt?
+        which("apt-get")
       end
 
       APT_CONF_DIR = "/etc/apt/apt.conf.d"
@@ -77,11 +80,6 @@ class Chef
         declare_resource(:execute, "apt-get -q update")
       end
 
-      def self.uses_apt?
-        ENV["PATH"] ||= ""
-        paths = %w{ /bin /usr/bin /sbin /usr/sbin } + ENV["PATH"].split(::File::PATH_SEPARATOR)
-        paths.any? { |path| ::File.executable?(::File.join(path, "apt-get")) }
-      end
     end
   end
 end

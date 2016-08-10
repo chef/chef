@@ -38,13 +38,13 @@ describe Chef::Resource::AptUpdate do
     expect(resource.frequency).to eql(400)
   end
 
-  it "should resolve to a Noop class when uses_apt? is false" do
-    expect(Chef::Provider::AptUpdate).to receive(:uses_apt?).and_return(false)
+  it "should resolve to a Noop class when apt-get is not found" do
+    expect(Chef::Provider::AptUpdate).to receive(:which).with("apt-get").and_return(false)
     expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
   end
 
-  it "should resolve to a AptUpdate class when uses_apt? is true" do
-    expect(Chef::Provider::AptUpdate).to receive(:uses_apt?).and_return(true)
+  it "should resolve to a AptUpdate class when apt-get is found" do
+    expect(Chef::Provider::AptUpdate).to receive(:which).with("apt-get").and_return(true)
     expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::AptUpdate)
   end
 end

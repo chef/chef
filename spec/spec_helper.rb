@@ -152,6 +152,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :solaris_only => true unless solaris?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
+  config.filter_run_excluding :linux_only => true unless linux?
   config.filter_run_excluding :aix_only => true unless aix?
   config.filter_run_excluding :debian_family_only => true unless debian_family?
   config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
