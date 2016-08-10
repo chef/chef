@@ -7,33 +7,6 @@ GIT
       rubocop (= 0.39.0)
 
 GIT
-  remote: https://github.com/jkeiser/github.git
-  revision: 77ddc2f14fb19ca677987752afedf4044fbd929c
-  branch: pin-less
-  specs:
-    github_api (0.14.4)
-      addressable (~> 2.4.0)
-      descendants_tracker (~> 0.0.4)
-      faraday (~> 0.8, < 0.10)
-      hashie (>= 3.4)
-      oauth2 (~> 1.0)
-
-GIT
-  remote: https://github.com/jkeiser/travis.rb
-  revision: 279c289a0fbeff984949bd7d266723c547c59c96
-  branch: update-typheous
-  specs:
-    travis (1.8.2)
-      backports
-      faraday (~> 0.9)
-      faraday_middleware (~> 0.9, >= 0.9.1)
-      gh (~> 0.13)
-      highline (~> 1.6)
-      launchy (~> 2.1)
-      pusher-client (~> 0.4)
-      typhoeus (~> 1.0)
-
-GIT
   remote: https://github.com/rubysec/bundler-audit.git
   revision: b7123d7b294f244165d9469f22b37a559e235fc2
   specs:
@@ -128,12 +101,12 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.3.3)
     ast (2.3.0)
-    aws-sdk (2.5.0)
-      aws-sdk-resources (= 2.5.0)
-    aws-sdk-core (2.5.0)
+    aws-sdk (2.5.2)
+      aws-sdk-resources (= 2.5.2)
+    aws-sdk-core (2.5.2)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.5.0)
-      aws-sdk-core (= 2.5.0)
+    aws-sdk-resources (2.5.2)
+      aws-sdk-core (= 2.5.2)
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
@@ -191,7 +164,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.10.0)
       faraday (>= 0.7.4, < 0.10)
-    fauxhai (3.7.0)
+    fauxhai (3.8.0)
       net-ssh
     ffi (1.9.14)
     ffi (1.9.14-x86-mingw32)
@@ -216,6 +189,12 @@ GEM
       net-http-persistent (>= 2.7)
       net-http-pipeline
     gherkin (4.0.0)
+    github_api (0.14.5)
+      addressable (~> 2.4.0)
+      descendants_tracker (~> 0.0.4)
+      faraday (~> 0.8, < 0.10)
+      hashie (>= 3.4)
+      oauth2 (~> 1.0)
     github_changelog_generator (1.13.1)
       colorize (~> 0.7)
       github_api (~> 0.12)
@@ -231,7 +210,7 @@ GEM
       thor
     hashie (3.4.4)
     highline (1.7.8)
-    httpclient (2.8.0)
+    httpclient (2.8.1)
     inifile (3.0.0)
     iniparse (1.4.2)
     ipaddress (0.8.3)
@@ -388,7 +367,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.60.3)
+    specinfra (2.60.4)
       net-scp
       net-ssh (>= 2.7, < 4.0)
       net-telnet
@@ -401,10 +380,19 @@ GEM
     thor (0.19.1)
     thread_safe (0.3.5)
     tomlrb (1.2.3)
+    travis (1.8.2)
+      backports
+      faraday (~> 0.9)
+      faraday_middleware (~> 0.9, >= 0.9.1)
+      gh (~> 0.13)
+      highline (~> 1.6)
+      launchy (~> 2.1)
+      pusher-client (~> 0.4)
+      typhoeus (~> 0.6, >= 0.6.8)
     treetop (1.6.8)
       polyglot (~> 0.3)
-    typhoeus (1.1.0)
-      ethon (>= 0.9.0)
+    typhoeus (0.8.0)
+      ethon (>= 0.8.0)
     ubuntu_ami (0.4.1)
     unicode-display_width (1.1.0)
     uuidtools (2.1.5)
@@ -459,7 +447,6 @@ DEPENDENCIES
   chefspec
   chefstyle!
   foodcritic
-  github_api!
   github_changelog_generator
   halite
   knife-windows
@@ -478,7 +465,7 @@ DEPENDENCIES
   ruby-shadow
   simplecov
   tomlrb
-  travis!
+  travis
   yard
 
 BUNDLED WITH
