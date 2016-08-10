@@ -17,6 +17,7 @@
 name "chef-remove-docs"
 
 license :project_license
+skip_transitive_dependency_licensing true
 
 build do
   # This is where we get the definitions below

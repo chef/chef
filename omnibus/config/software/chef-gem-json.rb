@@ -8,3 +8,4 @@ BuildChefGem::GemInstallSoftwareDef.define(self, __FILE__)
 license "Ruby"
 license_file "https://github.com/flori/json/blob/master/README.md"
 license_file "https://www.ruby-lang.org/en/about/license.txt"
+skip_transitive_dependency_licensing true

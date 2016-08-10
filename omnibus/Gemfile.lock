@@ -1,22 +1,31 @@
 GIT
+  remote: git://github.com/chef/license_scout.git
+  revision: b9393f9330c3cafb59083aa60e93b31b0188fb05
+  specs:
+    license_scout (0.1.0)
+      ffi-yajl (~> 2.2)
+      mixlib-shellout (~> 2.2)
+
+GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: b1a068c75d4eb0833c6c3884f7e0692ab1f29fb1
-  branch: ksubrama/ruby23
+  revision: 676b89e48a213f34567f847c1c2aa20f08d5a2b7
+  branch: sersut/ff-ksubrama/ruby23
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
-      omnibus (>= 5.2.0)
+      omnibus (>= 5.5.0)
 
 GIT
   remote: git://github.com/chef/omnibus.git
-  revision: 7461ec540c52251800258286ba8984725125ebe2
-  branch: ksubrama/gcc_investigate
+  revision: 96d4695285c9530ff3b6b8160bc46e3ac6b19dd0
+  branch: sersut/ff-ksubrama/gcc_investigate
   specs:
-    omnibus (5.4.0)
+    omnibus (5.5.0)
       aws-sdk (~> 2)
       chef-sugar (~> 3.3)
       cleanroom (~> 1.0)
       ffi-yajl (~> 2.2)
+      license_scout
       mixlib-shellout (~> 2.0)
       mixlib-versioning
       ohai (~> 8.0)
@@ -41,12 +50,12 @@ GEM
     addressable (2.4.0)
     artifactory (2.3.3)
     awesome_print (1.7.0)
-    aws-sdk (2.5.3)
-      aws-sdk-resources (= 2.5.3)
-    aws-sdk-core (2.5.3)
+    aws-sdk (2.5.4)
+      aws-sdk-resources (= 2.5.4)
+    aws-sdk-core (2.5.4)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.5.3)
-      aws-sdk-core (= 2.5.3)
+    aws-sdk-resources (2.5.4)
+      aws-sdk-core (= 2.5.4)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -149,14 +158,14 @@ GEM
     nori (2.6.0)
     octokit (4.3.0)
       sawyer (~> 0.7.0, >= 0.5.3)
-    ohai (8.19.1)
+    ohai (8.19.2)
       chef-config (>= 12.5.0.alpha.1, < 13)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
       mixlib-cli
       mixlib-config (~> 2.0)
-      mixlib-log
+      mixlib-log (>= 1.7.1, < 2.0)
       mixlib-shellout (~> 2.0)
       plist (~> 3.1)
       systemu (~> 2.6.4)
@@ -243,6 +252,7 @@ PLATFORMS
 DEPENDENCIES
   berkshelf (~> 4.0)
   kitchen-vagrant (~> 0.19.0)
+  license_scout!
   omnibus!
   omnibus-software!
   pedump!

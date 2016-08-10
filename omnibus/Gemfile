@@ -1,7 +1,8 @@
 source "https://rubygems.org"
 
-gem "omnibus", github: "chef/omnibus", branch: "ksubrama/gcc_investigate"
-gem "omnibus-software", github: "chef/omnibus-software", branch: "ksubrama/ruby23"
+gem "omnibus", github: "chef/omnibus", branch: "sersut/ff-ksubrama/gcc_investigate"
+gem "omnibus-software", github: "chef/omnibus-software", branch: "sersut/ff-ksubrama/ruby23"
+gem "license_scout", github: "chef/license_scout"
 
 # pedump pessimistically pins multipart-post to a version from 2013 which makes
 # bundler very unhappy. Remove this when upstream has merged zed-0xff/pedump#6 .
