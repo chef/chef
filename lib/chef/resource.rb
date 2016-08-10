@@ -497,7 +497,7 @@ class Chef
       state_properties = self.class.state_properties
       state_properties.each do |property|
         if property.identity? || property.is_set?(self)
-          state[property.name] = send(property.name)
+          state[property.name] = property.sensitive? ? "*sensitive value suppressed*" : send(property.name)
         end
       end
       state
