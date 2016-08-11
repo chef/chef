@@ -33,7 +33,7 @@ describe "HTTP Connection" do
     it "calls .start when doing keepalives" do
       basic_client = Chef::HTTP::BasicClient.new(uri, keepalives: true)
       expect(basic_client).to receive(:configure_ssl)
-      net_http_mock = instance_double(Net::HTTP, proxy_address: nil, "proxy_port=": nil, "read_timeout=": nil, "open_timeout=": nil)
+      net_http_mock = instance_double(Net::HTTP, proxy_address: nil, "proxy_port=" => nil, "read_timeout=" => nil, "open_timeout=" => nil)
       expect(net_http_mock).to receive(:start).and_return(net_http_mock)
       expect(Net::HTTP).to receive(:new).and_return(net_http_mock)
       expect(basic_client.http_client).to eql(net_http_mock)
@@ -42,7 +42,7 @@ describe "HTTP Connection" do
     it "does not call .start when not doing keepalives" do
       basic_client = Chef::HTTP::BasicClient.new(uri)
       expect(basic_client).to receive(:configure_ssl)
-      net_http_mock = instance_double(Net::HTTP, proxy_address: nil, "proxy_port=": nil, "read_timeout=": nil, "open_timeout=": nil)
+      net_http_mock = instance_double(Net::HTTP, proxy_address: nil, "proxy_port=" => nil, "read_timeout=" => nil, "open_timeout=" => nil)
       expect(net_http_mock).not_to receive(:start)
       expect(Net::HTTP).to receive(:new).and_return(net_http_mock)
       expect(basic_client.http_client).to eql(net_http_mock)

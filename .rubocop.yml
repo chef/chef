@@ -1,5 +1,4 @@
 AllCops:
-  TargetRubyVersion: 2.2
   Exclude:
     - "spec/data/**/*"
     - "vendor/**/*"
