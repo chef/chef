@@ -17,5 +17,3 @@ if windows?
   dependency "ruby-windows-devkit"
   dependency "ruby-windows-devkit-bash"
 end
-
-dependency "clean-static-libs"
