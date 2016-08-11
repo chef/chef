@@ -26,7 +26,7 @@ Chef is built to last. We strive to ensure high quality throughout the Chef expe
 
 The Chef Code Review process happens on Github pull requests. See [this article](https://help.github.com/articles/using-pull-requests) if you're not familiar with Github Pull Requests.
 
-Once you a pull request, the **Chef Engineering Team** or **Chef Core Committers** will review your code and respond to you with any feedback they might have. The process at this point is as follows:
+Once you open a pull request, the **Chef Engineering Team** or **Chef Core Committers** will review your code and respond to you with any feedback they might have. The process at this point is as follows:
 
 1. 2 thumbs-ups are required from the **Chef Engineering Team** or **Chef Core Committers** for all merges.
 2. When ready, your pull request will be tagged with label `Ready For Merge`.
