@@ -45,7 +45,10 @@ class Chef
         @url = url
         @ssl_policy = opts[:ssl_policy] || DefaultSSLPolicy
         @keepalives = opts[:keepalives] || false
-        @http_client = build_http_client
+      end
+
+      def http_client
+        @http_client ||= build_http_client
       end
 
       def host
