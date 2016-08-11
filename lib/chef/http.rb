@@ -237,8 +237,12 @@ class Chef
         @http_client ||= {}
         # the per-host per-port cache here gets peristent connections correct when
         # redirecting to different servers
-        @http_client[base_url.host] ||= {}
-        @http_client[base_url.host][base_url.port] ||= build_http_client(base_url)
+        if base_url.is_a?(String) # sigh, this kind of abuse can't happen with strongly typed languages
+          @http_client[base_url] ||= build_http_client(base_url)
+        else
+          @http_client[base_url.host] ||= {}
+          @http_client[base_url.host][base_url.port] ||= build_http_client(base_url)
+        end
       else
         build_http_client(base_url)
       end
