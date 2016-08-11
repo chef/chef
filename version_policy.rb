@@ -79,6 +79,7 @@ ACCEPTABLE_OUTDATED_GEMS = [
   "rack",       # Rack 2.0+ requires Ruby 2.2
   "rubocop",    # chef-style pins to 0.39.0 in 0.3.1
   "slop",       # expected to disappear with pry 0.11
+  "typhoeus",   # until https://github.com/travis-ci/travis.rb/pull/426 is fixed
 ]
 
 #
