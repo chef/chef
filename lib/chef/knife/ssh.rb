@@ -164,9 +164,7 @@ class Chef
       end
 
       def configure_session
-        list = config[:manual] ?
-               @name_args[0].split(" ") :
-               search_nodes
+        list = config[:manual] ? @name_args[0].split(" ") : search_nodes
         if list.length == 0
           if @action_nodes.length == 0
             ui.fatal("No nodes returned from search")

@@ -187,8 +187,7 @@ class Chef
             end
             crontab << line
           end
-          description = cron_found ? "remove #{@new_resource.name} from crontab" :
-            "save unmodified crontab"
+          description = cron_found ? "remove #{@new_resource.name} from crontab" : "save unmodified crontab"
           converge_by(description) do
             write_crontab crontab
             Chef::Log.info("#{@new_resource} deleted crontab entry")

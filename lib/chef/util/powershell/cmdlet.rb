@@ -62,8 +62,11 @@ class Chef
             json_depth = @output_format_options[:depth]
           end
 
-          json_command = @json_format ? " | convertto-json -compress -depth #{json_depth} "\
-                                        "> #{streams[:json].path}" : ""
+          json_command = if @json_format
+                           " | convertto-json -compress -depth #{json_depth} > #{streams[:json].path}"
+                         else
+                           ""
+                         end
           redirections = "4> '#{streams[:verbose].path}'"
           command_string = "powershell.exe -executionpolicy bypass -noprofile -noninteractive "\
                            "-command \"trap [Exception] {write-error -exception "\
