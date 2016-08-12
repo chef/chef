@@ -599,12 +599,12 @@ class Chef
       end
     end
 
-    def <=>(o)
-      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != o.name
+    def <=>(other)
+      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != other.name
       # FIXME: can we change the interface to the Metadata class such
       # that metadata.version returns a Chef::Version instance instead
       # of a string?
-      Chef::Version.new(self.version) <=> Chef::Version.new(o.version)
+      Chef::Version.new(self.version) <=> Chef::Version.new(other.version)
     end
 
     private

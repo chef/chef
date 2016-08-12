@@ -642,8 +642,8 @@ class Chef
       end
     end
 
-    def <=>(other_node)
-      self.name <=> other_node.name
+    def <=>(other)
+      self.name <=> other.name
     end
 
     private
