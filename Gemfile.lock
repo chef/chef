@@ -241,7 +241,7 @@ GEM
       artifactory
       mixlib-shellout
       mixlib-versioning
-    mixlib-log (1.7.0)
+    mixlib-log (1.7.1)
     mixlib-shellout (2.2.6)
     mixlib-shellout (2.2.6-universal-mingw32)
       win32-process (~> 0.8.2)
@@ -279,7 +279,7 @@ GEM
       rack (>= 1.2, < 3)
     octokit (4.3.0)
       sawyer (~> 0.7.0, >= 0.5.3)
-    ohai (8.18.0)
+    ohai (8.19.1)
       chef-config (>= 12.5.0.alpha.1, < 13)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
