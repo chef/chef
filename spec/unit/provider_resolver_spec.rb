@@ -554,7 +554,7 @@ describe Chef::ProviderResolver do
         timestamped_deploy:     [ Chef::Resource::TimestampedDeploy, Chef::Provider::Deploy::Timestamped ],
         user:                   [ Chef::Resource::User, Chef::Provider::User::Useradd ],
         whyrun_safe_ruby_block: [ Chef::Resource::WhyrunSafeRubyBlock, Chef::Provider::WhyrunSafeRubyBlock ],
-  
+
         # We want to check that these are unsupported:
         apt_package: nil,
         bff_package: nil,
@@ -569,7 +569,7 @@ describe Chef::ProviderResolver do
         yum_package: nil,
         windows_package: nil,
         windows_service: nil,
-  
+
         "linux" => {
           apt_package:     [ Chef::Resource::AptPackage, Chef::Provider::Package::Apt ],
           dpkg_package:    [ Chef::Resource::DpkgPackage, Chef::Provider::Package::Dpkg ],
@@ -577,12 +577,12 @@ describe Chef::ProviderResolver do
           paludis_package: [ Chef::Resource::PaludisPackage, Chef::Provider::Package::Paludis ],
           rpm_package:     [ Chef::Resource::RpmPackage, Chef::Provider::Package::Rpm ],
           yum_package:     [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
-  
+
           "debian" => {
             ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig::Debian ],
             package:  [ Chef::Resource::AptPackage, Chef::Provider::Package::Apt ],
     #        service: [ Chef::Resource::DebianService, Chef::Provider::Service::Debian ],
-  
+
             "debian" => {
               "7.0" => {
               },
@@ -623,21 +623,21 @@ describe Chef::ProviderResolver do
               },
             },
           },
-  
+
           "arch" => {
             # TODO should be Chef::Resource::PacmanPackage
             package: [ Chef::Resource::Package, Chef::Provider::Package::Pacman ],
-  
+
             "arch" => {
               "3.1.4" => {
               },
             },
           },
-  
+
           "freebsd" => {
             group: [ Chef::Resource::Group, Chef::Provider::Group::Pw ],
             user:  [ Chef::Resource::User, Chef::Provider::User::Pw ],
-  
+
             "freebsd" => {
               "3.1.4" => {
               },
@@ -663,24 +663,24 @@ describe Chef::ProviderResolver do
               },
             },
           },
-  
+
           "gentoo" => {
             # TODO should be Chef::Resource::PortagePackage
             package:         [ Chef::Resource::Package, Chef::Provider::Package::Portage ],
             portage_package: [ Chef::Resource::PortagePackage, Chef::Provider::Package::Portage ],
     #        service: [ Chef::Resource::GentooService, Chef::Provider::Service::Gentoo ],
-  
+
             "gentoo" => {
               "3.1.4" => {
               },
             },
           },
-  
+
           "rhel" => {
     #        service: [ Chef::Resource::SystemdService, Chef::Provider::Service::Systemd ],
             package:  [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
             ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig::Redhat ],
-  
+
             %w{amazon xcp xenserver ibm_powerkvm cloudlinux parallels} => {
               "3.1.4" => {
     #            service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
@@ -701,23 +701,23 @@ describe Chef::ProviderResolver do
               },
             },
           },
-  
+
         },
-  
+
         "darwin" => {
           %w{mac_os_x mac_os_x_server} => {
             group:   [ Chef::Resource::Group, Chef::Provider::Group::Dscl ],
             package: [ Chef::Resource::HomebrewPackage, Chef::Provider::Package::Homebrew ],
             osx_profile: [ Chef::Resource::OsxProfile, Chef::Provider::OsxProfile],
             user:    [ Chef::Resource::User, Chef::Provider::User::Dscl ],
-  
+
             "mac_os_x" => {
               "10.9.2" => {
               },
             },
           },
         },
-  
+
         "windows" => {
           batch:             [ Chef::Resource::Batch, Chef::Provider::Batch ],
           dsc_script:        [ Chef::Resource::DscScript, Chef::Provider::DscScript ],
@@ -730,7 +730,7 @@ describe Chef::ProviderResolver do
           user:              [ Chef::Resource::User, Chef::Provider::User::Windows ],
           windows_package:   [ Chef::Resource::WindowsPackage, Chef::Provider::Package::Windows ],
           windows_service:   [ Chef::Resource::WindowsService, Chef::Provider::Service::Windows ],
-  
+
           "windows" => {
             %w{mswin mingw32 windows} => {
               "10.9.2" => {
@@ -738,7 +738,7 @@ describe Chef::ProviderResolver do
             },
           },
         },
-  
+
         "aix" => {
           bff_package: [ Chef::Resource::BffPackage, Chef::Provider::Package::Aix ],
           cron: [ Chef::Resource::Cron, Chef::Provider::Cron::Aix ],
@@ -750,7 +750,7 @@ describe Chef::ProviderResolver do
           rpm_package: [ Chef::Resource::RpmPackage, Chef::Provider::Package::Rpm ],
           user: [ Chef::Resource::User, Chef::Provider::User::Aix ],
     #      service: [ Chef::Resource::AixService, Chef::Provider::Service::Aix ],
-  
+
           "aix" => {
             "aix" => {
               "5.6" => {
@@ -758,7 +758,7 @@ describe Chef::ProviderResolver do
             },
           },
         },
-  
+
         "hpux" => {
           "hpux" => {
             "hpux" => {
@@ -768,7 +768,7 @@ describe Chef::ProviderResolver do
             },
           },
         },
-  
+
         "netbsd" => {
           "netbsd" => {
             "netbsd" => {
@@ -778,11 +778,11 @@ describe Chef::ProviderResolver do
             },
           },
         },
-  
+
         "openbsd" => {
           group: [ Chef::Resource::Group, Chef::Provider::Group::Usermod ],
           package: [ Chef::Resource::OpenbsdPackage, Chef::Provider::Package::Openbsd ],
-  
+
           "openbsd" => {
             "openbsd" => {
               "3.1.4" => {
@@ -790,24 +790,24 @@ describe Chef::ProviderResolver do
             },
           },
         },
-  
+
         "solaris2" => {
           group:           [ Chef::Resource::Group, Chef::Provider::Group::Usermod ],
           ips_package:     [ Chef::Resource::IpsPackage, Chef::Provider::Package::Ips ],
           package:         [ Chef::Resource::SolarisPackage, Chef::Provider::Package::Solaris ],
           mount:           [ Chef::Resource::Mount, Chef::Provider::Mount::Solaris ],
           solaris_package: [ Chef::Resource::SolarisPackage, Chef::Provider::Package::Solaris ],
-  
+
           "smartos" => {
             smartos_package: [ Chef::Resource::SmartosPackage, Chef::Provider::Package::SmartOS ],
             package:         [ Chef::Resource::SmartosPackage, Chef::Provider::Package::SmartOS ],
-  
+
             "smartos" => {
               "3.1.4" => {
               },
             },
           },
-  
+
           "solaris2" => {
             "nexentacore" => {
               "3.1.4" => {
@@ -835,9 +835,9 @@ describe Chef::ProviderResolver do
               },
             },
           },
-  
+
         },
-  
+
         "solaris" => {
           "solaris" => {
             "solaris" => {
@@ -846,7 +846,7 @@ describe Chef::ProviderResolver do
             },
           },
         },
-  
+
         "exherbo" => {
           "exherbo" => {
             "exherbo" => {
