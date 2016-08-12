@@ -28,13 +28,13 @@ describe "LWRP" do
   include Chef::Mixin::ConvertToClassName
 
   before do
-    @original_VERBOSE = $VERBOSE
+    @original_verbose = $VERBOSE
     $VERBOSE = nil
     Chef::Resource::LWRPBase.class_eval { @loaded_lwrps = {} }
   end
 
   after do
-    $VERBOSE = @original_VERBOSE
+    $VERBOSE = @original_verbose
   end
 
   def get_lwrp(name)
