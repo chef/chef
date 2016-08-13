@@ -1,5 +1,13 @@
 # Change Log
 
+## [v12.13.37](https://github.com/chef/chef/tree/v12.13.37) (2016-08-12)
+[Full Changelog](https://github.com/chef/chef/compare/v12.13.30...v12.13.37)
+
+**Enhancements:**
+
+- Bumping ohai and mixlib-log to fix regression [\#5197](https://github.com/chef/chef/pull/5197) ([mwrock](https://github.com/mwrock))
+- Remove requires in Chef::Recipe that are no longer necessary [\#5189](https://github.com/chef/chef/pull/5189) ([lamont-granquist](https://github.com/lamont-granquist))
+
 ## [v12.13.30](https://github.com/chef/chef/tree/v12.13.30) (2016-08-05)
 [Full Changelog](https://github.com/chef/chef/compare/v12.12.15...v12.13.30)
 
