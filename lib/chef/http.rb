@@ -77,6 +77,9 @@ class Chef
 
     attr_reader :middlewares
 
+    # [Boolean] if we're doing keepalives or not
+    attr_reader :keepalives
+
     # Create a HTTP client object. The supplied +url+ is used as the base for
     # all subsequent requests. For example, when initialized with a base url
     # http://localhost:4000, a call to +get+ with 'nodes' will make an
@@ -87,6 +90,7 @@ class Chef
       @sign_on_redirect = true
       @redirects_followed = 0
       @redirect_limit = 10
+      @keepalives = options[:keepalives] || false
       @options = options
 
       @middlewares = []
@@ -228,6 +232,25 @@ class Chef
 
     def http_client(base_url = nil)
       base_url ||= url
+      if keepalives && !base_url.nil?
+        # only reuse the http_client if we want keepalives and have a base_url
+        @http_client ||= {}
+        # the per-host per-port cache here gets peristent connections correct when
+        # redirecting to different servers
+        if base_url.is_a?(String) # sigh, this kind of abuse can't happen with strongly typed languages
+          @http_client[base_url] ||= build_http_client(base_url)
+        else
+          @http_client[base_url.host] ||= {}
+          @http_client[base_url.host][base_url.port] ||= build_http_client(base_url)
+        end
+      else
+        build_http_client(base_url)
+      end
+    end
+
+    private
+
+    def build_http_client(base_url)
       if chef_zero_uri?(base_url)
         # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up webrick
         # via chef-zero and that hits DNS (at *require* time) which may timeout,
@@ -239,11 +262,9 @@ class Chef
 
         SocketlessChefZeroClient.new(base_url)
       else
-        BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
+        BasicClient.new(base_url, ssl_policy: Chef::HTTP::APISSLPolicy, keepalives: keepalives)
       end
     end
-
-    protected
 
     def create_url(path)
       return path if path.is_a?(URI)

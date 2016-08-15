@@ -414,6 +414,13 @@ describe Chef::CookbookSynchronizer do
       and_return("/file-cache/cookbooks/cookbook_a/templates/default/apache2.conf.erb")
   end
 
+  describe "#server_api" do
+    it "sets keepalive to true" do
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], keepalives: true)
+      synchronizer.server_api
+    end
+  end
+
   describe "when syncing cookbooks with the server" do
     let(:server_api) { double("Chef::ServerAPI (mock)") }
 
