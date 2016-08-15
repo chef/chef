@@ -791,6 +791,11 @@ module ChefConfig
     default :normal_attribute_whitelist, nil
     default :override_attribute_whitelist, nil
 
+    # Pull down all the rubygems versions from rubygems and cache them the first time we do a gem_package or
+    # chef_gem install.  This is memory-expensive and will grow without bounds, but will reduce network
+    # round trips.
+    default :rubygems_cache_enabled, false
+
     config_context :windows_service do
       # Set `watchdog_timeout` to the number of seconds to wait for a chef-client run
       # to finish
