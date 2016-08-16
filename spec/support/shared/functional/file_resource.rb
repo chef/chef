@@ -1035,6 +1035,7 @@ shared_context Chef::Resource::File do
   end
 
   before do
+    FileUtils.rm_rf(test_file_dir)
     FileUtils.mkdir_p(test_file_dir)
   end
 
