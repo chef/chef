@@ -48,7 +48,7 @@ describe "chef_repo_path tests", :workstation do
 
         directory "chef_repo2" do
           file "clients/client3.json", {}
-          file "cookbooks/cookbook3/metadata.rb", ""
+          file "cookbooks/cookbook3/metadata.rb", "name 'cookbook3'"
           file "data_bags/bag3/item3.json", {}
           file "environments/env3.json", {}
           file "nodes/node3.json", {}
@@ -76,6 +76,75 @@ describe "chef_repo_path tests", :workstation do
 /roles/role3.json
 /users/
 /users/user3.json
+EOM
+      end
+
+      it "knife list --local -Rfp --chef-repo-path chef_r~1 / grabs chef_repo2 stuff", :windows_only do
+        Chef::Config.delete(:chef_repo_path)
+        knife("list --local -Rfp --chef-repo-path #{path_to('chef_r~1')} /").should_succeed <<EOM
+/clients/
+/clients/client3.json
+/cookbooks/
+/cookbooks/cookbook3/
+/cookbooks/cookbook3/metadata.rb
+/data_bags/
+/data_bags/bag3/
+/data_bags/bag3/item3.json
+/environments/
+/environments/env3.json
+/nodes/
+/nodes/node3.json
+/roles/
+/roles/role3.json
+/users/
+/users/user3.json
+EOM
+      end
+
+      it "knife list --local -Rfp --chef-repo-path chef_r~1 / grabs chef_repo2 stuff", :windows_only do
+        Chef::Config.delete(:chef_repo_path)
+        knife("list -z -Rfp --chef-repo-path #{path_to('chef_r~1')} /").should_succeed <<EOM
+/acls/
+/acls/clients/
+/acls/clients/client3.json
+/acls/containers/
+/acls/cookbook_artifacts/
+/acls/cookbooks/
+/acls/cookbooks/cookbook3.json
+/acls/data_bags/
+/acls/data_bags/bag3.json
+/acls/environments/
+/acls/environments/env3.json
+/acls/groups/
+/acls/nodes/
+/acls/nodes/node3.json
+/acls/organization.json
+/acls/policies/
+/acls/policy_groups/
+/acls/roles/
+/acls/roles/role3.json
+/clients/
+/clients/client3.json
+/containers/
+/cookbook_artifacts/
+/cookbooks/
+/cookbooks/cookbook3/
+/cookbooks/cookbook3/metadata.rb
+/data_bags/
+/data_bags/bag3/
+/data_bags/bag3/item3.json
+/environments/
+/environments/env3.json
+/groups/
+/invitations.json
+/members.json
+/nodes/
+/nodes/node3.json
+/org.json
+/policies/
+/policy_groups/
+/roles/
+/roles/role3.json
 EOM
       end
 
