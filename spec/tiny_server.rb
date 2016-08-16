@@ -20,7 +20,7 @@ require "rubygems"
 require "webrick"
 require "webrick/https"
 require "rack"
-#require 'thin'
+require "thread"
 require "singleton"
 require "open-uri"
 require "chef/config"
@@ -62,45 +62,18 @@ module TinyServer
     end
 
     def start
+      started = Queue.new
       @server_thread = Thread.new do
         @server = Server.setup(@options) do
           run API.instance
         end
         @old_handler = trap(:INT, "EXIT")
-        @server.start
-      end
-      block_until_started
-      trap(:INT, @old_handler)
-    end
-
-    def url
-      "http://localhost:#{@options[:Port]}"
-    end
-
-    def block_until_started
-      200.times do
-        if started? && !@server.nil?
-          return true
+        @server.start do
+          started << true
         end
       end
-      raise "ivar weirdness" if started? && @server.nil?
-      raise "TinyServer failed to boot :/"
-    end
-
-    def started?
-      open(url)
-      true
-    rescue OpenURI::HTTPError
-      true
-    rescue Errno::ECONNREFUSED, EOFError, Errno::ECONNRESET => e
-      sleep 0.1
-      true
-      # If the host has ":::1 localhost" in its hosts file and if IPv6
-      # is not enabled we can get NetworkUnreachable exception...
-    rescue Errno::ENETUNREACH, Net::ReadTimeout, IO::EAGAINWaitReadable,
-        Errno::EHOSTUNREACH => e
-      sleep 0.1
-      false
+      started.pop
+      trap(:INT, @old_handler)
     end
 
     def stop
