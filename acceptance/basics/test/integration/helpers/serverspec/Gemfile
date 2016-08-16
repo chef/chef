@@ -4,4 +4,5 @@ source "https://rubygems.org"
 # released, we need to include rake and rspec-core in the Gemfile
 gem "rake"
 gem "rspec-core"
-gem "mixlib-shellout"
+gem "busser-serverspec"
+gem "serverspec"

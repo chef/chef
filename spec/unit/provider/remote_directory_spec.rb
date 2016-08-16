@@ -121,7 +121,7 @@ describe Chef::Provider::RemoteDirectory do
       @node.automatic_attrs[:platform] = :just_testing
       @node.automatic_attrs[:platform_version] = :just_testing
 
-      @destination_dir = Dir.mktmpdir << "/remote_directory_test"
+      @destination_dir = make_canonical_temp_directory << "/remote_directory_test"
       @resource.path(@destination_dir)
     end
 
