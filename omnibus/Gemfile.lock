@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: b9393f9330c3cafb59083aa60e93b31b0188fb05
+  revision: 3f33a3cb48cf4a796b2017a8fb25cf1cb22bf3ab
   specs:
     license_scout (0.1.0)
       ffi-yajl (~> 2.2)
