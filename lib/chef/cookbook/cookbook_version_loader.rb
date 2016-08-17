@@ -3,6 +3,7 @@ require "chef/cookbook_version"
 require "chef/cookbook/chefignore"
 require "chef/cookbook/metadata"
 require "chef/util/path_helper"
+require "find"
 
 class Chef
   class Cookbook
@@ -223,27 +224,19 @@ class Chef
       # however if the file is named ".uploaded-cookbook-version.json" it is
       # assumed to be managed by chef-zero and not part of the cookbook.
       def load_all_files
-        Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(cookbook_path), "*"), File::FNM_DOTMATCH).each do |fs_entry|
-          if File.directory?(fs_entry)
-            dir_relpath = Chef::Util::PathHelper.relative_path_from(@cookbook_path, fs_entry)
+        return unless File.exist?(cookbook_path)
+        # The trailing / tells find to traverse the top level symlink
+        Find.find("#{cookbook_path}/") do |path|
+          relative_path = Chef::Util::PathHelper.relative_path_from(@cookbook_path, path)
+          path = Pathname.new(path).cleanpath.to_s
 
-            next if dir_relpath.to_s.start_with?(".")
+          # Skip top-level directories starting with "."
+          if File.directory?(path) && relative_path.to_s.start_with?(".") && relative_path.to_s != "."
+            Find.prune
 
-            Dir.glob(File.join(fs_entry, "**/*"), File::FNM_DOTMATCH).each do |file|
-              next if File.directory?(file)
-              file = Pathname.new(file).cleanpath.to_s
-              name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
-              cookbook_settings[:all_files][name] = file
-            end
-          elsif File.file?(fs_entry)
-            file = Pathname.new(fs_entry).cleanpath.to_s
-
-            next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
-
-            name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
-            cookbook_settings[:all_files][name] = file
-          else # pipes, devices, other weirdness
-            next
+          # Add files to the list of files
+          elsif File.file?(path) && File.basename(relative_path) != UPLOADED_COOKBOOK_VERSION_FILE
+            cookbook_settings[:all_files][relative_path] = path
           end
         end
       end
