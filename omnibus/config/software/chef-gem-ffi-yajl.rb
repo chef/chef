@@ -7,5 +7,6 @@ BuildChefGem::GemInstallSoftwareDef.define(self, __FILE__)
 
 license "MIT"
 license_file "https://github.com/chef/ffi-yajl/blob/master/LICENSE"
+skip_transitive_dependency_licensing true
 
 dependency "chef-gem-libyajl2"

@@ -7,3 +7,4 @@ BuildChefGem::GemInstallSoftwareDef.define(self, __FILE__)
 
 license "Apache-2.0"
 license_file "https://github.com/chef/libyajl2-gem/blob/master/LICENSE"
+skip_transitive_dependency_licensing true

@@ -1,6 +1,7 @@
 name "chef-complete"
 
 license :project_license
+skip_transitive_dependency_licensing true
 
 dependency "chef"
 dependency "chef-appbundle"
