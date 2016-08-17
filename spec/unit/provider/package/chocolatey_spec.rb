@@ -462,18 +462,18 @@ describe "behavior when Chocolatey is not installed" do
     Chef::Provider::Package::Chocolatey.new(new_resource, run_context)
   end
 
-  before {
+  before do
     # the shellout sometimes returns "", but test nil to be safe.
     allow(provider).to receive(:choco_install_path).and_return(nil)
     provider.instance_variable_set("@choco_install_path", nil)
 
     # we don't care what this returns, but we have to let it be called.
     allow(provider).to receive(:shell_out!).and_return(double(:stdout => ""))
-  }
+  end
 
-  let(:error_regex) {
+  let(:error_regex) do
     /Could not locate.*install.*cookbook.*PowerShell.*GetEnvironmentVariable/m
-  }
+  end
 
   context "#choco_exe" do
     it "triggers a MissingLibrary exception when Chocolatey is not installed" do

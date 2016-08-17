@@ -24,16 +24,16 @@ describe Chef::Provider::Env::Windows, :windows_only do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
   context "when environment variable is not PATH" do
-    let(:new_resource) {
+    let(:new_resource) do
       new_resource = Chef::Resource::Env.new("CHEF_WINDOWS_ENV_TEST")
       new_resource.value("foo")
       new_resource
-    }
-    let(:provider) {
+    end
+    let(:provider) do
       provider = Chef::Provider::Env::Windows.new(new_resource, run_context)
       allow(provider).to receive(:env_obj).and_return(double("null object").as_null_object)
       provider
-    }
+    end
 
     describe "action_create" do
       before do
@@ -76,16 +76,16 @@ describe Chef::Provider::Env::Windows, :windows_only do
     describe "for PATH" do
       let(:system_root) { "%SystemRoot%" }
       let(:system_root_value) { 'D:\Windows' }
-      let(:new_resource) {
+      let(:new_resource) do
         new_resource = Chef::Resource::Env.new("PATH")
         new_resource.value(system_root)
         new_resource
-      }
-      let(:provider) {
+      end
+      let(:provider) do
         provider = Chef::Provider::Env::Windows.new(new_resource, run_context)
         allow(provider).to receive(:env_obj).and_return(double("null object").as_null_object)
         provider
-      }
+      end
 
       before do
         stub_const("ENV", { "PATH" => "" })

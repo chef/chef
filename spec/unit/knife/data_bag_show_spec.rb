@@ -45,8 +45,9 @@ describe Chef::Knife::DataBagShow do
   let(:bag_name) { "sudoing_admins" }
   let(:item_name) { "ME" }
 
-  let(:data_bag_contents) { { "id" => "id", "baz" => "http://localhost:4000/data/bag_o_data/baz",
-                              "qux" => "http://localhost:4000/data/bag_o_data/qux" } }
+  let(:data_bag_contents) do
+    { "id" => "id", "baz" => "http://localhost:4000/data/bag_o_data/baz",
+      "qux" => "http://localhost:4000/data/bag_o_data/qux" } end
   let(:enc_hash) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(data_bag_contents, secret) }
   let(:data_bag) { Chef::DataBagItem.from_hash(data_bag_contents) }
   let(:data_bag_with_encoded_hash) { Chef::DataBagItem.from_hash(enc_hash) }

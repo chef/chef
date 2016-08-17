@@ -151,7 +151,7 @@ describe "Chef::Platform#supports_msi?" do
   end
 end
 
-describe 'Chef::Platform#supports_dsc?' do
+describe "Chef::Platform#supports_dsc?" do
   it "returns false if powershell is not present" do
     node = Chef::Node.new
     expect(Chef::Platform.supports_dsc?(node)).to be_falsey
@@ -174,7 +174,7 @@ describe 'Chef::Platform#supports_dsc?' do
   end
 end
 
-describe 'Chef::Platform#supports_dsc_invoke_resource?' do
+describe "Chef::Platform#supports_dsc_invoke_resource?" do
   it "returns false if powershell is not present" do
     node = Chef::Node.new
     expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_falsey
@@ -195,7 +195,7 @@ describe 'Chef::Platform#supports_dsc_invoke_resource?' do
   end
 end
 
-describe 'Chef::Platform#dsc_refresh_mode_disabled?' do
+describe "Chef::Platform#dsc_refresh_mode_disabled?" do
   let(:node) { instance_double("Chef::Node") }
   let(:cmdlet) { instance_double("Chef::Util::Powershell::Cmdlet") }
   let(:cmdlet_result) { instance_double("Chef::Util::Powershell::CmdletResult") }

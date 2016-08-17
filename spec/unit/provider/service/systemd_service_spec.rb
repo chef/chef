@@ -21,7 +21,7 @@ require "spec_helper"
 
 describe Chef::Provider::Service::Systemd do
 
-  let(:node) {
+  let(:node) do
     node = Chef::Node.new
     node.default["etc"] = Hash.new
     node.default["etc"]["passwd"] = {
@@ -30,7 +30,7 @@ describe Chef::Provider::Service::Systemd do
       },
     }
     node
-  }
+  end
 
   let(:events) { Chef::EventDispatch::Dispatcher.new }
 

@@ -236,11 +236,11 @@ describe Chef::Knife::Bootstrap do
     end
 
     context "with bootstrap_attribute options" do
-      let(:jsonfile) {
+      let(:jsonfile) do
         file = Tempfile.new (["node", ".json"])
         File.open(file.path, "w") { |f| f.puts '{"foo":{"bar":"baz"}}' }
         file
-      }
+      end
 
       it "should have foo => {bar => baz} in the first_boot from cli" do
         knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
@@ -478,8 +478,9 @@ describe Chef::Knife::Bootstrap do
     end
 
     context "when client_d_dir is set" do
-      let(:client_d_dir) { Chef::Util::PathHelper.cleanpath(
-        File.join(File.dirname(__FILE__), "../../data/client.d_00")) }
+      let(:client_d_dir) do
+        Chef::Util::PathHelper.cleanpath(
+        File.join(File.dirname(__FILE__), "../../data/client.d_00")) end
 
       it "creates /etc/chef/client.d" do
         expect(rendered_template).to match("mkdir -p /etc/chef/client\.d")
@@ -497,8 +498,9 @@ describe Chef::Knife::Bootstrap do
       end
 
       context "a nested directory structure" do
-        let(:client_d_dir) { Chef::Util::PathHelper.cleanpath(
-          File.join(File.dirname(__FILE__), "../../data/client.d_01")) }
+        let(:client_d_dir) do
+          Chef::Util::PathHelper.cleanpath(
+          File.join(File.dirname(__FILE__), "../../data/client.d_01")) end
         it "creates a file foo/bar.rb" do
           expect(rendered_template).to match("cat > /etc/chef/client.d/foo/bar.rb <<'EOP'")
           expect(rendered_template).to match("1 / 0")

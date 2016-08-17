@@ -33,13 +33,13 @@ def static_provider_resolution(opts = {})
   platform_version = opts[:platform_version]
 
   describe resource_class, "static provider initialization" do
-    let(:node) {
+    let(:node) do
       node = Chef::Node.new
       node.automatic_attrs[:os] = os
       node.automatic_attrs[:platform_family] = platform_family
       node.automatic_attrs[:platform_version] = platform_version
       node
-    }
+    end
     let(:events) { Chef::EventDispatch::Dispatcher.new }
     let(:run_context) { Chef::RunContext.new(node, {}, events) }
     let(:resource) { resource_class.new("foo", run_context) }

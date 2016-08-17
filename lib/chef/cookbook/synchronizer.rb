@@ -152,11 +152,11 @@ class Chef
         queue << lambda do |lock|
           full_file_path = sync_file(file)
 
-          lock.synchronize {
+          lock.synchronize do
             # Save the full_path of the downloaded file to be restored in the manifest later
             save_full_file_path(file, full_file_path)
             mark_file_synced(file)
-          }
+          end
         end
       end
 

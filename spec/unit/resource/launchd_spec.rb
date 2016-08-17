@@ -4,10 +4,11 @@ require "spec_helper"
 
 describe Chef::Resource::Launchd do
   @launchd = Chef::Resource::Launchd.new("io.chef.chef-client")
-  let(:resource) { Chef::Resource::Launchd.new(
+  let(:resource) do
+    Chef::Resource::Launchd.new(
     "io.chef.chef-client",
     run_context
-  )}
+  ) end
 
   it "should create a new Chef::Resource::Launchd" do
     expect(resource).to be_a_kind_of(Chef::Resource)

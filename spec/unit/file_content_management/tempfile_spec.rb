@@ -19,11 +19,11 @@
 require "spec_helper"
 
 describe Chef::FileContentManagement::Tempfile do
-  let(:resource) {
+  let(:resource) do
     r = Chef::Resource::File.new("new_file")
     r.path "/foo/bar/new_file"
     r
-  }
+  end
 
   subject { described_class.new(resource) }
 

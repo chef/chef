@@ -24,52 +24,52 @@ describe Chef::Provider::User::Dscl do
   before do
     allow(ChefConfig).to receive(:windows?) { false }
   end
-  let(:shellcmdresult) {
+  let(:shellcmdresult) do
     Struct.new(:stdout, :stderr, :exitstatus)
-  }
-  let(:node) {
+  end
+  let(:node) do
     node = Chef::Node.new
     allow(node).to receive(:[]).with(:platform_version).and_return(mac_version)
     allow(node).to receive(:[]).with(:platform).and_return("mac_os_x")
     node
-  }
+  end
 
-  let(:events) {
+  let(:events) do
     Chef::EventDispatch::Dispatcher.new
-  }
+  end
 
-  let(:run_context) {
+  let(:run_context) do
     Chef::RunContext.new(node, {}, events)
-  }
+  end
 
-  let(:new_resource) {
+  let(:new_resource) do
     r = Chef::Resource::User.new("toor")
     r.password(password)
     r.salt(salt)
     r.iterations(iterations)
     r
-  }
+  end
 
-  let(:provider) {
+  let(:provider) do
     Chef::Provider::User::Dscl.new(new_resource, run_context)
-  }
+  end
 
-  let(:mac_version) {
+  let(:mac_version) do
     "10.9.1"
-  }
+  end
 
   let(:password) { nil }
   let(:salt) { nil }
   let(:iterations) { nil }
 
-  let(:salted_sha512_password) {
+  let(:salted_sha512_password) do
     "0f543f021c63255e64e121a3585601b8ecfedf6d2\
 705ddac69e682a33db5dbcdb9b56a2520bc8fff63a\
 2ba6b7984c0737ff0b7949455071581f7affcd536d\
 402b6cdb097"
-  }
+  end
 
-  let(:salted_sha512_pbkdf2_password) {
+  let(:salted_sha512_pbkdf2_password) do
     "c734b6e4787c3727bb35e29fdd92b97c\
 1de12df509577a045728255ec7c6c5f5\
 c18efa05ed02b682ffa7ebc05119900e\
@@ -78,24 +78,24 @@ b1d4880833aa7a190afc13e2bf0936b8\
 9464a8c234f3919082400b4f939bb77b\
 c5adbbac718b7eb99463a7b679571e0f\
 1c9fef2ef08d0b9e9c2bcf644eed2ffc"
-  }
+  end
 
-  let(:salted_sha512_pbkdf2_salt) {
+  let(:salted_sha512_pbkdf2_salt) do
     "2d942d8364a9ccf2b8e5cb7ed1ff58f78\
 e29dbfee7f9db58859144d061fd0058"
-  }
+  end
 
-  let(:salted_sha512_pbkdf2_iterations) {
+  let(:salted_sha512_pbkdf2_iterations) do
     25000
-  }
+  end
 
-  let(:vagrant_sha_512) {
+  let(:vagrant_sha_512) do
     "6f75d7190441facc34291ebbea1fc756b242d4f\
 e9bcff141bccb84f1979e27e539539aa31f9f7dcc92c0cea959\
 ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
-  }
+  end
 
-  let(:vagrant_sha_512_pbkdf2) {
+  let(:vagrant_sha_512_pbkdf2) do
     "12601a90db17cbf\
 8ba4808e6382fb0d3b9d8a6c1a190477bf680ab21afb\
 6065467136e55cc208a6f74156e3daf20fb13369ef4b\
@@ -103,15 +103,15 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 47cca84341a7f93a27147343f89fb843fb46c0017d2\
 64afa4976baacf941b915bd1ec1ca24c30b3e759e02\
 403e02f59fe7ff5938a7636c"
-  }
+  end
 
-  let(:vagrant_sha_512_pbkdf2_salt) {
+  let(:vagrant_sha_512_pbkdf2_salt) do
     "ee954be472fdc60ddf89484781433993625f006af6ec810c08f49a7e413946a1"
-  }
+  end
 
-  let(:vagrant_sha_512_pbkdf2_iterations) {
+  let(:vagrant_sha_512_pbkdf2_iterations) do
     34482
-  }
+  end
 
   describe "when shelling out to dscl" do
     it "should run dscl with the supplied cmd /Path args" do
@@ -214,9 +214,9 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
   end
 
   describe "when modifying the home directory" do
-    let(:current_resource) {
+    let(:current_resource) do
       new_resource.dup
-    }
+    end
 
     before do
       new_resource.supports({ :manage_home => true })
@@ -307,9 +307,9 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     end
 
     describe "when on Mac 10.6" do
-      let(:mac_version) {
+      let(:mac_version) do
         "10.6.5"
-      }
+      end
 
       it "should raise an error" do
         expect { run_requirements }.to raise_error(Chef::Exceptions::User)
@@ -317,9 +317,9 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     end
 
     describe "when on Mac 10.7" do
-      let(:mac_version) {
+      let(:mac_version) do
         "10.7.5"
-      }
+      end
 
       describe "when password is SALTED-SHA512" do
         let(:password) { salted_sha512_password }
@@ -340,9 +340,9 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
     [ "10.9", "10.10"].each do |version|
       describe "when on Mac #{version}" do
-        let(:mac_version) {
+        let(:mac_version) do
           "#{version}.2"
-        }
+        end
 
         describe "when password is SALTED-SHA512" do
           let(:password) { salted_sha512_password }
@@ -413,9 +413,9 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       let(:password) { "something" } # Load password during load_current_resource
 
       describe "on 10.7" do
-        let(:mac_version) {
+        let(:mac_version) do
           "10.7.5"
-        }
+        end
 
         let(:user_plist_file) { "10.7" }
 
@@ -478,9 +478,9 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
       end
 
       describe "on 10.8" do
-        let(:mac_version) {
+        let(:mac_version) do
           "10.8.3"
-        }
+        end
 
         let(:user_plist_file) { "10.8" }
 
@@ -504,9 +504,9 @@ e68d1f9821b26689312366")
 
       describe "on 10.7 upgraded to 10.8" do
         # In this scenario user password is still in 10.7 format
-        let(:mac_version) {
+        let(:mac_version) do
           "10.8.3"
-        }
+        end
 
         let(:user_plist_file) { "10.7-8" }
 
@@ -542,9 +542,9 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       end
 
       describe "on 10.9" do
-        let(:mac_version) {
+        let(:mac_version) do
           "10.9.1"
-        }
+        end
 
         let(:user_plist_file) { "10.9" }
 
@@ -646,9 +646,9 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
   describe "prepare_password_shadow_info" do
     describe "when on Mac 10.7" do
-      let(:mac_version) {
+      let(:mac_version) do
         "10.7.1"
-      }
+      end
 
       describe "when the password is plain text" do
         let(:password) { "vagrant" }
@@ -676,9 +676,9 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
     ["10.8", "10.9", "10.10"].each do |version|
       describe "when on Mac #{version}" do
-        let(:mac_version) {
+        let(:mac_version) do
           "#{version}.1"
-        }
+        end
 
         describe "when the password is plain text" do
           let(:password) { "vagrant" }

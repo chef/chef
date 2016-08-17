@@ -25,12 +25,12 @@ describe Chef::Provider::Script, "action_run" do
 
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
-  let(:new_resource) {
+  let(:new_resource) do
     new_resource = Chef::Resource::Script.new("run some perl code")
     new_resource.code "$| = 1; print 'i like beans'"
     new_resource.interpreter "perl"
     new_resource
-  }
+  end
 
   let(:provider) { Chef::Provider::Script.new(new_resource, run_context) }
 
@@ -87,9 +87,9 @@ describe Chef::Provider::Script, "action_run" do
     end
 
     describe "when running the script" do
-      let (:default_opts) {
+      let (:default_opts) do
         { timeout: 3600, returns: 0, log_level: :info, log_tag: "script[run some perl code]" }
-      }
+      end
 
       before do
         allow(STDOUT).to receive(:tty?).and_return(false)

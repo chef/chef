@@ -78,19 +78,19 @@ describe Chef::Knife::KeyShow do
   let(:actor) { "charmander" }
   let(:keyname) { "charmander" }
   let(:ui) { instance_double("Chef::Knife::UI") }
-  let(:expected_hash) {
+  let(:expected_hash) do
     {
       actor_field_name => "charmander",
       "name" => "charmander-key",
       "public_key" => "some-public-key",
       "expiration_date" => "infinity",
     }
-  }
+  end
 
   shared_examples_for "key show run command" do
-    let(:key_show_object) {
+    let(:key_show_object) do
       described_class.new(keyname, actor, load_method, ui)
-    }
+    end
 
     before do
       allow(key_show_object).to receive(:display_output)

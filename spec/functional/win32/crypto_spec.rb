@@ -22,7 +22,7 @@ if Chef::Platform.windows?
 end
 
 describe "Chef::ReservedNames::Win32::Crypto", :windows_only do
-  describe '#encrypt' do
+  describe "#encrypt" do
     before(:all) do
       new_node = Chef::Node.new
       new_node.consume_external_attrs(OHAI_SYSTEM.data, {})

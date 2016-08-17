@@ -159,12 +159,13 @@ describe Chef::Knife do
 
   describe "the headers include X-Remote-Request-Id" do
 
-    let(:headers) {{ "Accept" => "application/json",
-                     "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
-                     "X-Chef-Version" => Chef::VERSION,
-                     "Host" => "api.opscode.piab",
-                     "X-REMOTE-REQUEST-ID" => request_id,
-    }}
+    let(:headers) do
+      { "Accept" => "application/json",
+        "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+        "X-Chef-Version" => Chef::VERSION,
+        "Host" => "api.opscode.piab",
+        "X-REMOTE-REQUEST-ID" => request_id,
+    } end
 
     let(:request_id) { "1234" }
 

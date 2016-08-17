@@ -197,9 +197,9 @@ class Chef
       private
 
       def headers_extracted_from_options
-        options.reject { |name, _| KNOWN_OPTIONS.include?(name) }.map { |name, value|
+        options.reject { |name, _| KNOWN_OPTIONS.include?(name) }.map do |name, value|
           [name.to_s.split("_").map { |segment| segment.capitalize }.join("-"), value]
-        }
+        end
       end
 
     end

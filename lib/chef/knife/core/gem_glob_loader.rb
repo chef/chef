@@ -81,9 +81,9 @@ class Chef
           files = []
 
           if check_load_path
-            files = $LOAD_PATH.map { |load_path|
+            files = $LOAD_PATH.map do |load_path|
               Dir["#{File.expand_path glob, Chef::Util::PathHelper.escape_glob_dir(load_path)}#{Gem.suffix_pattern}"]
-            }.flatten.select { |file| File.file? file.untaint }
+            end.flatten.select { |file| File.file? file.untaint }
           end
 
           gem_files = latest_gem_specs.map do |spec|

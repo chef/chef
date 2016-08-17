@@ -151,15 +151,15 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       let(:old_run_as_user) { new_resource.run_as_user }
       let(:old_run_as_password) { new_resource.run_as_password }
 
-      before {
+      before do
         new_resource.run_as_user(".\\wallace")
         new_resource.run_as_password("Wensleydale")
-      }
+      end
 
-      after {
+      after do
         new_resource.run_as_user(old_run_as_user)
         new_resource.run_as_password(old_run_as_password)
-      }
+      end
 
       it "calls #grant_service_logon if the :run_as_user and :run_as_password attributes are present" do
         expect(Win32::Service).to receive(:start)
@@ -409,17 +409,17 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
   shared_context "testing private methods" do
 
-    let(:private_methods) {
+    let(:private_methods) do
       described_class.private_instance_methods
-    }
+    end
 
-    before {
+    before do
       described_class.send(:public, *private_methods)
-    }
+    end
 
-    after {
+    after do
       described_class.send(:private, *private_methods)
-    }
+    end
   end
 
   describe "grant_service_logon" do

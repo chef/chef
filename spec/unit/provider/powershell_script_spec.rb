@@ -20,7 +20,7 @@ require "spec_helper"
 describe Chef::Provider::PowershellScript, "action_run" do
 
   let(:powershell_version) { nil }
-  let(:node) {
+  let(:node) do
     node = Chef::Node.new
     node.default["kernel"] = Hash.new
     node.default["kernel"][:machine] = :x86_64.to_s
@@ -28,14 +28,14 @@ describe Chef::Provider::PowershellScript, "action_run" do
       node.default[:languages] = { :powershell => { :version => powershell_version } }
     end
     node
-  }
+  end
 
-  let(:provider) {
+  let(:provider) do
     empty_events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, {}, empty_events)
     new_resource = Chef::Resource::PowershellScript.new("run some powershell code", run_context)
     Chef::Provider::PowershellScript.new(new_resource, run_context)
-  }
+  end
 
   context "when setting interpreter flags" do
     context "on nano" do

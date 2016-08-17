@@ -27,7 +27,7 @@ describe Chef::Knife::ClientEdit do
   end
 
   describe "run" do
-    let(:data) {
+    let(:data) do
       {
         "name" => "adam",
         "validator" => false,
@@ -35,7 +35,7 @@ describe Chef::Knife::ClientEdit do
         "chef_type" => "client",
         "create_key" => true,
       }
-    }
+    end
 
     it "should edit the client" do
       allow(Chef::ApiClientV1).to receive(:load).with("adam").and_return(data)

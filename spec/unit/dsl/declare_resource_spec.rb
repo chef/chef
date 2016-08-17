@@ -50,17 +50,17 @@ describe Chef::ResourceCollection do
 
   describe "#edit_resource!" do
     it "raises if nothing is found" do
-      expect {
+      expect do
         recipe.edit_resource!(:zen_master, "monkey") do
           something true
         end
-      }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      end.to raise_error(Chef::Exceptions::ResourceNotFound)
     end
 
     it "raises if nothing is found and no block is given" do
-      expect {
+      expect do
         recipe.edit_resource!(:zen_master, "monkey")
-      }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      end.to raise_error(Chef::Exceptions::ResourceNotFound)
     end
 
     it "edits the resource if it finds one" do
@@ -131,20 +131,20 @@ describe Chef::ResourceCollection do
 
   describe "#find_resource!" do
     it "raises if nothing is found" do
-      expect {
+      expect do
         recipe.find_resource!(:zen_master, "monkey")
-      }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      end.to raise_error(Chef::Exceptions::ResourceNotFound)
     end
 
     it "raises if given a block" do
       resource = recipe.declare_resource(:zen_master, "monkey") do
         something false
       end
-      expect {
+      expect do
         recipe.find_resource!(:zen_master, "monkey") do
           something false
         end
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "returns the resource if it finds one" do
@@ -221,9 +221,9 @@ describe Chef::ResourceCollection do
 
   describe "#delete_resource!" do
     it "raises if nothing is found" do
-      expect {
+      expect do
         recipe.delete_resource!(:zen_master, "monkey")
-      }.to raise_error(Chef::Exceptions::ResourceNotFound)
+      end.to raise_error(Chef::Exceptions::ResourceNotFound)
     end
 
     it "deletes and returns the resource if it finds one" do

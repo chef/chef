@@ -174,10 +174,11 @@ describe Chef::Provider::Service::Openbsd do
       end
 
       context "when the enable variable partial matches (left) some other service and we are disabled" do
-        let(:lines) { [
+        let(:lines) do
+          [
           %Q{thing_#{provider.builtin_service_enable_variable_name}="YES"},
           %Q{#{provider.builtin_service_enable_variable_name}="NO"},
-        ] }
+        ] end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -185,10 +186,11 @@ describe Chef::Provider::Service::Openbsd do
       end
 
       context "when the enable variable partial matches (right) some other service and we are disabled" do
-        let(:lines) { [
+        let(:lines) do
+          [
           %Q{#{provider.builtin_service_enable_variable_name}_thing="YES"},
           %Q{#{provider.builtin_service_enable_variable_name}},
-        ] }
+        ] end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -196,10 +198,11 @@ describe Chef::Provider::Service::Openbsd do
       end
 
       context "when the enable variable partial matches (left) some other disabled service and we are enabled" do
-        let(:lines) { [
+        let(:lines) do
+          [
           %Q{thing_#{provider.builtin_service_enable_variable_name}="NO"},
           %Q{#{provider.builtin_service_enable_variable_name}="YES"},
-        ] }
+        ] end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true
@@ -207,10 +210,11 @@ describe Chef::Provider::Service::Openbsd do
       end
 
       context "when the enable variable partial matches (right) some other disabled service and we are enabled" do
-        let(:lines) { [
+        let(:lines) do
+          [
           %Q{#{provider.builtin_service_enable_variable_name}_thing="NO"},
           %Q{#{provider.builtin_service_enable_variable_name}="YES"},
-        ] }
+        ] end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true

@@ -18,7 +18,7 @@ describe "Resource.load_current_value" do
   before { Namer.incrementing_value = 0 }
 
   let(:resource_name) { :"load_current_value_dsl#{Namer.current_index}" }
-  let(:resource_class) {
+  let(:resource_class) do
     result = Class.new(Chef::Resource) do
       def self.to_s; resource_name.to_s; end
 
@@ -37,7 +37,7 @@ describe "Resource.load_current_value" do
     end
     result.resource_name resource_name
     result
-  }
+  end
 
   # Pull on resource_class to initialize it
   before { resource_class }
@@ -56,11 +56,11 @@ describe "Resource.load_current_value" do
       let(:resource) do
         e = self
         r = nil
-        converge {
+        converge do
           r = public_send(e.resource_name, "blah") do
             x "desired"
           end
-        }
+        end
         r
       end
 
@@ -83,17 +83,17 @@ describe "Resource.load_current_value" do
       end
 
       context "and identity: :i and :d with desired_state: false" do
-        before {
+        before do
           resource_class.class_eval do
             property :i, identity: true
             property :d, desired_state: false
           end
-        }
+        end
 
-        before {
+        before do
           resource.i "desired_i"
           resource.d "desired_d"
-        }
+        end
 
         it "i, name and d are passed to load_current_value, but not x" do
           expect(resource.current_value.x).to eq "loaded 2 (d=desired_d, i=desired_i, name=blah)"
@@ -101,17 +101,17 @@ describe "Resource.load_current_value" do
       end
 
       context "and name_property: :i and :d with desired_state: false" do
-        before {
+        before do
           resource_class.class_eval do
             property :i, name_property: true
             property :d, desired_state: false
           end
-        }
+        end
 
-        before {
+        before do
           resource.i "desired_i"
           resource.d "desired_d"
-        }
+        end
 
         it "i, name and d are passed to load_current_value, but not x" do
           expect(resource.current_value.x).to eq "loaded 2 (d=desired_d, i=desired_i, name=blah)"
@@ -123,10 +123,10 @@ describe "Resource.load_current_value" do
       let(:resource) do
         e = self
         r = nil
-        converge {
+        converge do
           r = public_send(e.resource_name, "blah") do
           end
-        }
+        end
         r
       end
 
@@ -135,16 +135,16 @@ describe "Resource.load_current_value" do
       end
     end
 
-    let (:subresource_name) {
+    let (:subresource_name) do
       :"load_current_value_subresource_dsl#{Namer.current_index}"
-    }
-    let (:subresource_class) {
+    end
+    let (:subresource_class) do
       r = Class.new(resource_class) do
         property :y, default: lazy { "default_y #{Namer.incrementing_value}" }
       end
       r.resource_name subresource_name
       r
-    }
+    end
 
     # Pull on subresource_class to initialize it
     before { subresource_class }
@@ -152,11 +152,11 @@ describe "Resource.load_current_value" do
     let(:subresource) do
       e = self
       r = nil
-      converge {
+      converge do
         r = public_send(e.subresource_name, "blah") do
           x "desired"
         end
-      }
+      end
       r
     end
 
@@ -170,14 +170,14 @@ describe "Resource.load_current_value" do
     end
 
     context "And a child resource class with load_current_value" do
-      before {
+      before do
         subresource_class.load_current_value do
           y "loaded_y #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }.
             select { |name, p| p.is_set?(self) }.
             map { |name, p| "#{name}=#{p.get(self)}" }.
             join(", ") })"
         end
-      }
+      end
 
       it "the overridden load_current_value is used" do
         current_resource = subresource.current_value
@@ -187,7 +187,7 @@ describe "Resource.load_current_value" do
     end
 
     context "and a child resource class with load_current_value calling super()" do
-      before {
+      before do
         subresource_class.load_current_value do
           super()
           y "loaded_y #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }.
@@ -195,7 +195,7 @@ describe "Resource.load_current_value" do
             map { |name, p| "#{name}=#{p.get(self)}" }.
             join(", ") })"
         end
-      }
+      end
 
       it "the original load_current_value is called as well as the child one" do
         current_resource = subresource.current_value

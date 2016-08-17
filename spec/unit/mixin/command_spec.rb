@@ -49,22 +49,24 @@ describe Chef::Mixin::Command, :volatile do
       end
 
       it "should end when the child process reads from STDIN and a block is given" do
-        expect {Timeout.timeout(10) do
-          popen4("ruby -e 'while gets; end'", :waitlast => true) do |pid, stdin, stdout, stderr|
-            (1..5).each { |i| stdin.puts "#{i}" }
+        expect do
+          Timeout.timeout(10) do
+            popen4("ruby -e 'while gets; end'", :waitlast => true) do |pid, stdin, stdout, stderr|
+              (1..5).each { |i| stdin.puts "#{i}" }
+            end
           end
-        end
-        }.not_to raise_error
+        end.not_to raise_error
       end
 
       describe "when a process detaches but doesn't close STDOUT and STDERR [CHEF-584]" do
 
         it "returns immediately after the first child process exits" do
-          expect {Timeout.timeout(10) do
-            evil_forker = "exit if fork; 10.times { sleep 1}"
-            popen4("ruby -e '#{evil_forker}'") do |pid, stdin, stdout, stderr|
-            end
-          end}.not_to raise_error
+          expect do
+            Timeout.timeout(10) do
+              evil_forker = "exit if fork; 10.times { sleep 1}"
+              popen4("ruby -e '#{evil_forker}'") do |pid, stdin, stdout, stderr|
+              end
+            end end.not_to raise_error
         end
 
       end
@@ -92,10 +94,11 @@ describe Chef::Mixin::Command, :volatile do
           # btm
           # Serdar - During Solaris tests, we've seen that processes
           # are taking a long time to exit. Bumping timeout now to 10.
-          expect {Timeout.timeout(10) do
-            evil_forker = "exit if fork; 10.times { sleep 1}"
-            run_command(:command => "ruby -e '#{evil_forker}'")
-          end}.not_to raise_error
+          expect do
+            Timeout.timeout(10) do
+              evil_forker = "exit if fork; 10.times { sleep 1}"
+              run_command(:command => "ruby -e '#{evil_forker}'")
+            end end.not_to raise_error
         end
 
       end

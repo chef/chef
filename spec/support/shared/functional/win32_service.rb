@@ -37,7 +37,7 @@ shared_context "using Win32::Service" do
 
   # Definition for the test-service
 
-  let(:test_service) {
+  let(:test_service) do
     {
       :service_name => "spec-service",
       :service_display_name => "Spec Test Service",
@@ -45,13 +45,13 @@ shared_context "using Win32::Service" do
       :service_file_path => File.expand_path(File.join(File.dirname(__FILE__), "../../platforms/win32/spec_service.rb")),
       :delayed_start => true,
     }
-  }
+  end
 
   # Test service creates a file for us to verify that it is running.
   # Since our test service is running as Local System we should look
   # for the file it creates under SYSTEM temp directory
 
-  let(:test_service_file) {
+  let(:test_service_file) do
     "#{ENV['SystemDrive']}\\windows\\temp\\spec_service_file"
-  }
+  end
 end

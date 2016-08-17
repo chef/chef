@@ -19,11 +19,11 @@ describe "chef-client" do
     #
     # just a normal file
     # (expected_content should be uncompressed)
-    @api.get("/recipes.tgz", 200) {
+    @api.get("/recipes.tgz", 200) do
       File.open(recipes_filename, "rb") do |f|
         f.read
       end
-    }
+    end
   end
 
   def stop_tiny_server

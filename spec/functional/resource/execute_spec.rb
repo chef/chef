@@ -21,11 +21,11 @@ require "functional/resource/base"
 require "timeout"
 
 describe Chef::Resource::Execute do
-  let(:resource) {
+  let(:resource) do
     resource = Chef::Resource::Execute.new("foo_resource", run_context)
     resource.command("echo hello")
     resource
-  }
+  end
 
   describe "when guard is ruby block" do
     it "guard can still run" do
@@ -41,10 +41,10 @@ describe Chef::Resource::Execute do
     end
 
     let(:guard) { "ruby -e 'exit 0'" }
-    let!(:guard_resource) {
+    let!(:guard_resource) do
       interpreter = Chef::GuardInterpreter::ResourceGuardInterpreter.new(resource, guard, nil)
       interpreter.send(:get_interpreter_resource, resource)
-    }
+    end
 
     it "executes the guard and not the regular resource" do
       expect_any_instance_of(Chef::GuardInterpreter::ResourceGuardInterpreter).to receive(:get_interpreter_resource).and_return(guard_resource)

@@ -21,11 +21,11 @@ require "functional/resource/base"
 
 describe Chef::Resource::Bash, :unix_only do
   let(:code) { "echo hello" }
-  let(:resource) {
+  let(:resource) do
     resource = Chef::Resource::Bash.new("foo_resource", run_context)
     resource.code(code)
     resource
-  }
+  end
 
   describe "when setting the command attribute" do
     let (:command) { "wizard racket" }

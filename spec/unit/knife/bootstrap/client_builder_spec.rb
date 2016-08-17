@@ -33,12 +33,12 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
 
   let(:rest) { double("Chef::ServerAPI") }
 
-  let(:client_builder) {
+  let(:client_builder) do
     client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(knife_config: knife_config, chef_config: chef_config, ui: ui)
     allow(client_builder).to receive(:rest).and_return(rest)
     allow(client_builder).to receive(:node_name).and_return(node_name)
     client_builder
-  }
+  end
 
   context "#sanity_check!" do
     let(:response_404) { OpenStruct.new(:code => "404") }

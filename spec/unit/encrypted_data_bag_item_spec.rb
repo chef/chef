@@ -320,11 +320,12 @@ end
 describe Chef::EncryptedDataBagItem do
   subject { described_class }
   let(:encrypted_data_bag_item) { subject.new(encoded_data, secret) }
-  let(:plaintext_data) {{
+  let(:plaintext_data) do
+    {
       "id" => "item_name",
       "greeting" => "hello",
       "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true } },
-  }}
+  } end
   let(:secret) { "abc123SECRET" }
   let(:encoded_data) { subject.encrypt_data_bag_item(plaintext_data, secret) }
 

@@ -461,21 +461,21 @@ describe Chef::Cookbook::Metadata do
       expect(metadata.grouping("/db/mysql/databases/tuning", group)).to eq(group)
     end
     it "should not accept anything but a string for display_name" do
-      expect {
+      expect do
         metadata.grouping("db/mysql/databases", :title => "foo")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.grouping("db/mysql/databases", :title => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but a string for the description" do
-      expect {
+      expect do
         metadata.grouping("db/mysql/databases", :description => "foo")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.grouping("db/mysql/databases", :description => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
   end
 
@@ -498,63 +498,63 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should not accept anything but a string for display_name" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :display_name => "foo")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :display_name => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but a string for the description" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :description => "foo")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :description => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but a string for the source_url" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :source_url => "foo")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :source_url => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but a string for the issues_url" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :issues_url => "foo")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :issues_url => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but true or false for the privacy flag" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :privacy => true)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :privacy => false)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :privacy => "true")
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should not accept anything but an array of strings for choice" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :choice => %w{dedicated shared})
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :choice => [10, "shared"])
-      }.to raise_error(ArgumentError)
-      expect {
+      end.to raise_error(ArgumentError)
+      expect do
         metadata.attribute("db/mysql/databases", :choice => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should set choice to empty array by default" do
@@ -563,15 +563,15 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should let calculated be true or false" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :calculated => true)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :calculated => false)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :calculated => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should set calculated to false by default" do
@@ -580,55 +580,55 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "accepts String for the attribute type" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :type => "string")
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "accepts Array for the attribute type" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :type => "array")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :type => Array.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "accepts symbol for the attribute type" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :type => "symbol")
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "should let type be hash (backwards compatibility only)" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :type => "hash")
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "should let required be required, recommended or optional" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :required => "required")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :required => "recommended")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :required => "optional")
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "should convert required true to required" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :required => true)
-      }.not_to raise_error
+      end.not_to raise_error
       #attrib = metadata.attributes["db/mysql/databases"][:required].should == "required"
     end
 
     it "should convert required false to optional" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :required => false)
-      }.not_to raise_error
+      end.not_to raise_error
       #attrib = metadata.attributes["db/mysql/databases"][:required].should == "optional"
     end
 
@@ -638,12 +638,12 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should make sure recipes is an array" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :recipes => [])
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :required => Hash.new)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should set recipes to an empty array by default" do
@@ -652,24 +652,24 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "should allow the default value to be a string, array, hash, boolean or numeric" do
-      expect {
+      expect do
         metadata.attribute("db/mysql/databases", :default => [])
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :default => {})
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :default => "alice in chains")
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :default => 1337)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :default => true)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         metadata.attribute("db/mysql/databases", :required => :not_gonna_do_it)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should limit the types allowed in the choice array" do
@@ -678,87 +678,87 @@ describe Chef::Cookbook::Metadata do
         :choice => %w{test1 test2},
         :default => "test1",
       }
-      expect {
+      expect do
         metadata.attribute("test_cookbook/test", options)
-      }.not_to raise_error
+      end.not_to raise_error
 
       options = {
         :type => "boolean",
         :choice => [ true, false ],
         :default => true,
       }
-      expect {
+      expect do
         metadata.attribute("test_cookbook/test", options)
-      }.not_to raise_error
+      end.not_to raise_error
 
       options = {
         :type => "numeric",
         :choice => [ 1337, 420 ],
         :default => 1337,
       }
-      expect {
+      expect do
         metadata.attribute("test_cookbook/test", options)
-      }.not_to raise_error
+      end.not_to raise_error
 
       options = {
         :type => "numeric",
         :choice => [ true, "false" ],
         :default => false,
       }
-      expect {
+      expect do
         metadata.attribute("test_cookbook/test", options)
-      }.to raise_error(Chef::Exceptions::ValidationFailed)
+      end.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "should error if default used with calculated" do
-      expect {
+      expect do
         attrs = {
           :calculated => true,
           :default => [ "I thought you said calculated" ],
         }
         metadata.attribute("db/mysql/databases", attrs)
-      }.to raise_error(ArgumentError)
-      expect {
+      end.to raise_error(ArgumentError)
+      expect do
         attrs = {
           :calculated => true,
           :default => "I thought you said calculated",
         }
         metadata.attribute("db/mysql/databases", attrs)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should allow a default that is a choice" do
-      expect {
+      expect do
         attrs = {
           :choice => %w{a b c},
           :default => "b",
         }
         metadata.attribute("db/mysql/databases", attrs)
-      }.not_to raise_error
-      expect {
+      end.not_to raise_error
+      expect do
         attrs = {
           :choice => %w{a b c d e},
           :default => %w{b d},
         }
         metadata.attribute("db/mysql/databases", attrs)
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "should error if default is not a choice" do
-      expect {
+      expect do
         attrs = {
           :choice => %w{a b c},
           :default => "d",
         }
         metadata.attribute("db/mysql/databases", attrs)
-      }.to raise_error(ArgumentError)
-      expect {
+      end.to raise_error(ArgumentError)
+      expect do
         attrs = {
           :choice => %w{a b c d e},
           :default => %w{b z},
         }
         metadata.attribute("db/mysql/databases", attrs)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
   end
 

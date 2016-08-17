@@ -128,9 +128,9 @@ describe Chef::Knife::CookbookMetadata do
       it "should print an error and exit when an #{description} syntax exception is encountered" do
         exception = klass.new("#{description} blah")
         allow(Chef::Cookbook::Metadata).to receive(:new).and_raise(exception)
-        expect {
+        expect do
           @knife.generate_metadata_from_file("foobar", "#{@cookbook_dir}/foobar/metadata.rb")
-        }.to raise_error(SystemExit)
+        end.to raise_error(SystemExit)
         expect(@stderr.string).to match /error: the cookbook 'foobar' contains invalid or obsolete metadata syntax/im
         expect(@stderr.string).to match /in #{@cookbook_dir}\/foobar\/metadata\.rb/im
         expect(@stderr.string).to match /#{description} blah/im
@@ -166,9 +166,9 @@ describe Chef::Knife::CookbookMetadata do
           and_return(@json_data)
         exception = klass.new("#{description} blah")
         allow(Chef::Cookbook::Metadata).to receive(:validate_json).and_raise(exception)
-        expect {
+        expect do
           @knife.validate_metadata_json(@cookbook_dir, "foobar")
-        }.to raise_error(SystemExit)
+        end.to raise_error(SystemExit)
         expect(@stderr.string).to match /error: the cookbook 'foobar' contains invalid or obsolete metadata syntax/im
         expect(@stderr.string).to match /in #{@cookbook_dir}\/foobar\/metadata\.json/im
         expect(@stderr.string).to match /#{description} blah/im

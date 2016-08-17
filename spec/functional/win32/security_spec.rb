@@ -45,27 +45,27 @@ describe "Chef::Win32::Security", :windows_only do
   end
 
   describe "access_check" do
-    let(:security_descriptor) {
+    let(:security_descriptor) do
       Chef::ReservedNames::Win32::Security.get_file_security(
         "C:\\Program Files")
-    }
+    end
 
     let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_ALL_ACCESS }
 
-    let(:token) {
+    let(:token) do
       Chef::ReservedNames::Win32::Security.open_process_token(
         Chef::ReservedNames::Win32::Process.get_current_process,
         token_rights).duplicate_token(:SecurityImpersonation)
-    }
+    end
 
-    let(:mapping) {
+    let(:mapping) do
       mapping = Chef::ReservedNames::Win32::Security::GENERIC_MAPPING.new
       mapping[:GenericRead] = Chef::ReservedNames::Win32::Security::FILE_GENERIC_READ
       mapping[:GenericWrite] = Chef::ReservedNames::Win32::Security::FILE_GENERIC_WRITE
       mapping[:GenericExecute] = Chef::ReservedNames::Win32::Security::FILE_GENERIC_EXECUTE
       mapping[:GenericAll] = Chef::ReservedNames::Win32::Security::FILE_ALL_ACCESS
       mapping
-    }
+    end
 
     let(:desired_access) { Chef::ReservedNames::Win32::Security::FILE_GENERIC_READ }
 
@@ -76,11 +76,11 @@ describe "Chef::Win32::Security", :windows_only do
   end
 
   describe "Chef::Win32::Security::Token" do
-    let(:token) {
+    let(:token) do
       Chef::ReservedNames::Win32::Security.open_process_token(
         Chef::ReservedNames::Win32::Process.get_current_process,
         token_rights)
-    }
+    end
     context "with all rights" do
       let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_ALL_ACCESS }
 

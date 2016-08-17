@@ -34,10 +34,11 @@ describe Chef::Knife::Status do
   end
 
   describe "run" do
-    let(:opts) {{ filter_result:
+    let(:opts) do
+      { filter_result:
                  { name: ["name"], ipaddress: ["ipaddress"], ohai_time: ["ohai_time"],
                    ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
-                   platform_version: ["platform_version"], chef_environment: ["chef_environment"] } }}
+                   platform_version: ["platform_version"], chef_environment: ["chef_environment"] } } end
 
     it "should default to searching for everything" do
       expect(@query).to receive(:search).with(:node, "*:*", opts)

@@ -78,9 +78,9 @@ describe Chef::Knife::KeyList do
   let(:ui) { instance_double("Chef::Knife::UI") }
 
   shared_examples_for "key list run command" do
-    let(:key_list_object) {
+    let(:key_list_object) do
       described_class.new(actor, list_method, ui, config)
-    }
+    end
 
     before do
       allow(Chef::Key).to receive(list_method).and_return(http_response)
@@ -191,26 +191,26 @@ describe Chef::Knife::KeyList do
   context "when list_method is :list_by_user" do
     it_should_behave_like "key list run command" do
       let(:list_method) { :list_by_user }
-      let(:http_response) {
+      let(:http_response) do
         [
           { "uri" => "https://api.opscode.piab/users/charmander/keys/non-expired1", "name" => "non-expired1", "expired" => false },
           { "uri" => "https://api.opscode.piab/users/charmander/keys/non-expired2", "name" => "non-expired2", "expired" => false },
           { "uri" => "https://api.opscode.piab/users/mary/keys/out-of-date",        "name" => "out-of-date", "expired" => true },
         ]
-      }
+      end
     end
   end
 
   context "when list_method is :list_by_client" do
     it_should_behave_like "key list run command" do
       let(:list_method) { :list_by_client }
-      let(:http_response) {
+      let(:http_response) do
         [
           { "uri" => "https://api.opscode.piab/organizations/pokemon/clients/charmander/keys/non-expired1", "name" => "non-expired1", "expired" => false },
           { "uri" => "https://api.opscode.piab/organizations/pokemon/clients/charmander/keys/non-expired2", "name" => "non-expired2", "expired" => false },
           { "uri" => "https://api.opscode.piab/organizations/pokemon/clients/mary/keys/out-of-date",        "name" => "out-of-date", "expired" => true },
         ]
-      }
+      end
     end
   end
 end

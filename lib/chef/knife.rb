@@ -233,8 +233,6 @@ class Chef
       end
     end
 
-    private
-
     OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack terremark bluebox}
 
     def self.path_from_caller(caller_line)
@@ -285,8 +283,6 @@ class Chef
     end
 
     reset_config_path!
-
-    public
 
     # Create a new instance of the current class configured for the given
     # arguments and options

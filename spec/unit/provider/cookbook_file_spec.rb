@@ -26,12 +26,12 @@ describe Chef::Provider::CookbookFile do
   let(:node) { double("Chef::Node") }
   let(:events) { double("Chef::Events").as_null_object } # mock all the methods
   let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
-  let(:enclosing_directory) {
+  let(:enclosing_directory) do
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
-  }
-  let(:resource_path) {
+  end
+  let(:resource_path) do
     canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
-  }
+  end
 
   # Subject
 

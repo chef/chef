@@ -27,11 +27,11 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
   let(:test1_1) { File.join(apt_data, "chef-integration-test_1.1-1_amd64.deb") }
   let(:test2_0) { File.join(apt_data, "chef-integration-test2_1.0-1_amd64.deb") }
 
-  let(:run_context) {
+  let(:run_context) do
     node = TEST_NODE.dup
     events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, {}, events)
-  }
+  end
 
   let(:dpkg_package) { Chef::Resource::DpkgPackage.new(test1_0, run_context) }
 
