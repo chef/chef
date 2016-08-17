@@ -225,17 +225,29 @@ class Chef
       # assumed to be managed by chef-zero and not part of the cookbook.
       def load_all_files
         return unless File.exist?(cookbook_path)
-        # The trailing / tells find to traverse the top level symlink
-        Find.find("#{cookbook_path}/") do |path|
-          relative_path = Chef::Util::PathHelper.relative_path_from(@cookbook_path, path)
-          path = Pathname.new(path).cleanpath.to_s
 
+        # If cookbook_path is a symlink, Find on Windows Ruby 2.3 will not traverse it.
+        # Dir.entries will do so on all platforms, so we iterate the top level using
+        # Dir.entries. Since we have different behavior at the top anyway (hidden
+        # directories at the top level are not included for backcompat), this
+        # actually keeps things a bit cleaner.
+        Dir.entries(cookbook_path).each do |top_filename|
           # Skip top-level directories starting with "."
-          if File.directory?(path) && relative_path.to_s.start_with?(".") && relative_path.to_s != "."
-            Find.prune
+          top_path = File.join(cookbook_path, top_filename)
+          next if File.directory?(top_path) && top_filename.start_with?(".")
 
-          # Add files to the list of files
-          elsif File.file?(path) && File.basename(relative_path) != UPLOADED_COOKBOOK_VERSION_FILE
+          # Use Find.find because it:
+          # (a) returns any children, recursively
+          # (b) includes top_path as well
+          # (c) skips symlinks, which is backcompat (no judgement on whether it was *right*)
+          Find.find(top_path) do |path|
+            # Only add files, not directories
+            next unless File.file?(path)
+            # Don't add .uploaded-cookbook-version.json
+            next if File.basename(path) == UPLOADED_COOKBOOK_VERSION_FILE
+
+            relative_path = Chef::Util::PathHelper.relative_path_from(cookbook_path, path)
+            path = Pathname.new(path).cleanpath.to_s
             cookbook_settings[:all_files][relative_path] = path
           end
         end
