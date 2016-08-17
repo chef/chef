@@ -420,8 +420,6 @@ class Chef
       @redirects_followed = 0
     end
 
-    private
-
     def chef_zero_uri?(uri)
       uri = URI.parse(uri) unless uri.respond_to?(:scheme)
       uri.scheme == "chefzero"
