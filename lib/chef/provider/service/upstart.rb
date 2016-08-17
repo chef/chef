@@ -80,8 +80,11 @@ class Chef
           shared_resource_requirements
           requirements.assert(:all_actions) do |a|
             if !@command_success
-              whyrun_msg = @new_resource.status_command ? "Provided status command #{@new_resource.status_command} failed." :
-                "Could not determine upstart state for service"
+              whyrun_msg = if @new_resource.status_command
+                             "Provided status command #{@new_resource.status_command} failed."
+                           else
+                             "Could not determine upstart state for service"
+                           end
             end
             a.assertion { @command_success }
             # no failure here, just document the assumptions made.

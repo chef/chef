@@ -48,7 +48,7 @@ class Chef::Util::DSC
       configuration_document_location = find_configuration_document(configuration_name)
 
       if ! configuration_document_location
-        raise RuntimeError, "No DSC configuration for '#{configuration_name}' was generated from supplied DSC script"
+        raise "No DSC configuration for '#{configuration_name}' was generated from supplied DSC script"
       end
 
       configuration_document = get_configuration_document(configuration_document_location)

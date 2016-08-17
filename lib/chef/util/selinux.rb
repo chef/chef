@@ -78,7 +78,7 @@ class Chef
           when 0
             return true
           else
-            raise RuntimeError, "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
+            raise "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
           end
         else
           # We assume selinux is not enabled if selinux utils are not

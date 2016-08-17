@@ -279,7 +279,7 @@ class Chef
               status = NetUserEnum(servername, level, filter, bufptr, prefmaxlen, entriesread, totalentries, resume_handle)
 
               if status == NERR_Success || status == ERROR_MORE_DATA
-                entriesread.read_long.times.collect do |i|
+                Array.new(entriesread.read_long) do |i|
                   user_info = USER_INFO_3.new(bufptr.read_pointer + i * USER_INFO_3.size)
                   # Check if the account is the Administrator account
                   # RID for the Administrator account is always 500 and it's privilage is set to USER_PRIV_ADMIN

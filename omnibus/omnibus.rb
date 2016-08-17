@@ -26,8 +26,10 @@
 
 # Windows architecture defaults - set to x86 unless otherwise specified.
 # ------------------------------
-windows_arch   %w{x86 x64}.include?((ENV["OMNIBUS_WINDOWS_ARCH"] || "").downcase) ?
-                ENV["OMNIBUS_WINDOWS_ARCH"].downcase.to_sym : :x86
+env_omnibus_windows_arch = (ENV["OMNIBUS_WINDOWS_ARCH"] || "").downcase
+env_omnibus_windows_arch = :x86 unless %w{x86 x64}.include?(env_omnibus_windows_arch)
+
+windows_arch   env_omnibus_windows_arch
 
 # Disable git caching
 # ------------------------------

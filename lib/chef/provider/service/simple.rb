@@ -108,7 +108,7 @@ class Chef
           shell_out_with_systems_locale!(@new_resource.reload_command)
         end
 
-      protected
+        protected
 
         def determine_current_status!
           if @new_resource.status_command

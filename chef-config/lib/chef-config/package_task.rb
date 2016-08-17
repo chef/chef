@@ -182,7 +182,7 @@ module ChefConfig
           IO.write(version_file_path, new_version)
         end
 
-        def update_version_rb
+        def update_version_rb # rubocop:disable Lint/NestedMethodDefinition
           puts "Updating #{version_rb_path} to include version #{version} ..."
           contents = <<-VERSION_RB
 # Copyright:: Copyright 2010-2016, Chef Software, Inc.
@@ -223,7 +223,7 @@ end
           IO.write(version_rb_path, contents)
         end
 
-        def update_gemfile_lock
+        def update_gemfile_lock # rubocop:disable Lint/NestedMethodDefinition
           if File.exist?(gemfile_lock_path)
             puts "Updating #{gemfile_lock_path} to include version #{version} ..."
             contents = IO.read(gemfile_lock_path)

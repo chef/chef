@@ -31,7 +31,7 @@ class Chef
   # inspired by http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
   class CookbookSiteStreamingUploader
 
-    DefaultHeaders = { "accept" => "application/json", "x-chef-version" => ::Chef::VERSION }
+    DefaultHeaders = { "accept" => "application/json", "x-chef-version" => ::Chef::VERSION } # rubocop:disable Style/ConstantName
 
     class << self
 
@@ -149,11 +149,11 @@ class Chef
           alias :to_s :body
 
           # BUGBUG this makes the response compatible with what respsonse_steps expects to test headers (response.headers[] -> response[])
-          def headers
+          def headers # rubocop:disable Lint/NestedMethodDefinition
             self
           end
 
-          def status
+          def status  # rubocop:disable Lint/NestedMethodDefinition
             code.to_i
           end
         end

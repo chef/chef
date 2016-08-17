@@ -243,16 +243,16 @@ class Chef
             self.new(*args)
           end
 
-          def <=>(y)
-            compare_versions(y)
+          def <=>(other)
+            compare_versions(other)
           end
 
-          def compare(y)
-            compare_versions(y, false)
+          def compare(other)
+            compare_versions(other, false)
           end
 
-          def partial_compare(y)
-            compare_versions(y, true)
+          def partial_compare(other)
+            compare_versions(other, true)
           end
 
           # RPM::Version rpm_version_to_s equivalent
@@ -352,8 +352,8 @@ class Chef
           alias :name :n
           alias :arch :a
 
-          def <=>(y)
-            compare(y)
+          def <=>(other)
+            compare(other)
           end
 
           def compare(y)

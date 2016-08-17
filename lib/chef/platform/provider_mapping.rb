@@ -197,8 +197,11 @@ class Chef
 
       def resource_matching_provider(platform, version, resource_type)
         if resource_type.kind_of?(Chef::Resource)
-          class_name = resource_type.class.name ? resource_type.class.name.split("::").last :
-            convert_to_class_name(resource_type.resource_name.to_s)
+          class_name = if resource_type.class.name
+                         resource_type.class.name.split("::").last
+                       else
+                         convert_to_class_name(resource_type.resource_name.to_s)
+                       end
 
           if Chef::Provider.const_defined?(class_name, false)
             Chef::Log.warn("Class Chef::Provider::#{class_name} does not declare 'provides #{convert_to_snake_case(class_name).to_sym.inspect}'.")

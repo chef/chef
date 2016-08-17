@@ -111,8 +111,6 @@ module KnifeSupport
     end
   end
 
-  private
-
   class KnifeResult
 
     include ::RSpec::Matchers

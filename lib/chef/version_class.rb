@@ -32,11 +32,11 @@ class Chef
       "#{@major}.#{@minor}.#{@patch}"
     end
 
-    def <=>(v)
+    def <=>(other)
       [:major, :minor, :patch].each do |method|
         version = self.send(method)
         begin
-          ans = (version <=> v.send(method))
+          ans = (version <=> other.send(method))
         rescue NoMethodError # if the other thing isn't a version object, return nil
           return nil
         end

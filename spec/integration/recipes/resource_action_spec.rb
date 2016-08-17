@@ -139,26 +139,6 @@ module ResourceActionSpec
           attr_accessor :ruby_block_converged
         end
 
-        public
-
-        def foo_public
-          "foo_public!"
-        end
-
-        protected
-
-        def foo_protected
-          "foo_protected!"
-        end
-
-        private
-
-        def foo_private
-          "foo_private!"
-        end
-
-        public
-
         action :access_recipe_dsl do
           ActionJackson.ran_action = :access_recipe_dsl
           ruby_block "hi there" do
@@ -198,6 +178,22 @@ module ResourceActionSpec
         action :access_class_method do
           ActionJackson.ran_action = :access_class_method
           ActionJackson.succeeded = ActionJackson.ruby_block_converged
+        end
+
+        def foo_public
+          "foo_public!"
+        end
+
+        protected
+
+        def foo_protected
+          "foo_protected!"
+        end
+
+        private
+
+        def foo_private
+          "foo_private!"
         end
       end
 

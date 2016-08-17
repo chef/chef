@@ -722,7 +722,7 @@ class Chef
         end
       end
 
-    private
+      private
 
       # Helper to match a gem style version (ohai_version/chef_version) against a set of
       # Gem::Dependency version constraints.  If none are present, it always matches.  if

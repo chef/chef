@@ -63,7 +63,7 @@ class Chef
           node[:platform_version] = config[:platform_version] if config.has_key?(:platform_version)
 
           class << node
-            def attribute?(name)
+            def attribute?(name) # rubocop:disable Lint/NestedMethodDefinition
               has_key?(name)
             end
           end

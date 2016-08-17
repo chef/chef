@@ -40,7 +40,7 @@ class Chef
           @current_resource.service_name(@new_resource.service_name)
 
           [@init_command, @status_command].each do |cmd|
-            unless ::File.executable? cmd then
+            unless ::File.executable? cmd
               raise Chef::Exceptions::Service, "#{cmd} not executable!"
             end
           end

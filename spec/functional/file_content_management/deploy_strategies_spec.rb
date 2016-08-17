@@ -209,7 +209,7 @@ describe Chef::FileContentManagement::Deploy::MvUnix, :unix_only do
 end
 
 # On Unix we won't have loaded the file, avoid undefined constant errors:
-class Chef::FileContentManagement::Deploy::MvWindows ; end
+class Chef::FileContentManagement::Deploy::MvWindows; end
 
 describe Chef::FileContentManagement::Deploy::MvWindows, :windows_only do
 

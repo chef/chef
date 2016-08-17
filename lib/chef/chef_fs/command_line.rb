@@ -242,48 +242,50 @@ class Chef
         return [ [ :error, old_entry, new_entry, nil, nil, e ] ]
       end
 
-      private
+      class << self
+        private
 
-      def self.sort_keys(json_object)
-        if json_object.is_a?(Array)
-          json_object.map { |o| sort_keys(o) }
-        elsif json_object.is_a?(Hash)
-          new_hash = {}
-          json_object.keys.sort.each { |key| new_hash[key] = sort_keys(json_object[key]) }
-          new_hash
-        else
-          json_object
-        end
-      end
-
-      def self.canonicalize_json(json_text)
-        parsed_json = Chef::JSONCompat.parse(json_text)
-        sorted_json = sort_keys(parsed_json)
-        Chef::JSONCompat.to_json_pretty(sorted_json)
-      end
-
-      def self.diff_text(old_path, new_path, old_value, new_value)
-        # Copy to tempfiles before diffing
-        # TODO don't copy things that are already in files!  Or find an in-memory diff algorithm
-        begin
-          new_tempfile = Tempfile.new("new")
-          new_tempfile.write(new_value)
-          new_tempfile.close
-
-          begin
-            old_tempfile = Tempfile.new("old")
-            old_tempfile.write(old_value)
-            old_tempfile.close
-
-            result = Chef::Util::Diff.new.udiff(old_tempfile.path, new_tempfile.path)
-            result = result.gsub(/^--- #{old_tempfile.path}/, "--- #{old_path}")
-            result = result.gsub(/^\+\+\+ #{new_tempfile.path}/, "+++ #{new_path}")
-            result
-          ensure
-            old_tempfile.close!
+        def sort_keys(json_object)
+          if json_object.is_a?(Array)
+            json_object.map { |o| sort_keys(o) }
+          elsif json_object.is_a?(Hash)
+            new_hash = {}
+            json_object.keys.sort.each { |key| new_hash[key] = sort_keys(json_object[key]) }
+            new_hash
+          else
+            json_object
           end
-        ensure
-          new_tempfile.close!
+        end
+
+        def canonicalize_json(json_text)
+          parsed_json = Chef::JSONCompat.parse(json_text)
+          sorted_json = sort_keys(parsed_json)
+          Chef::JSONCompat.to_json_pretty(sorted_json)
+        end
+
+        def diff_text(old_path, new_path, old_value, new_value)
+          # Copy to tempfiles before diffing
+          # TODO don't copy things that are already in files!  Or find an in-memory diff algorithm
+          begin
+            new_tempfile = Tempfile.new("new")
+            new_tempfile.write(new_value)
+            new_tempfile.close
+
+            begin
+              old_tempfile = Tempfile.new("old")
+              old_tempfile.write(old_value)
+              old_tempfile.close
+
+              result = Chef::Util::Diff.new.udiff(old_tempfile.path, new_tempfile.path)
+              result = result.gsub(/^--- #{old_tempfile.path}/, "--- #{old_path}")
+              result = result.gsub(/^\+\+\+ #{new_tempfile.path}/, "+++ #{new_path}")
+              result
+            ensure
+              old_tempfile.close!
+            end
+          ensure
+            new_tempfile.close!
+          end
         end
       end
     end

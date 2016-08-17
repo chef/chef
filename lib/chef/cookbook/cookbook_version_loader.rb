@@ -168,7 +168,7 @@ class Chef
           when /\.json$/
             apply_json_metadata(metadata_file)
           else
-            raise RuntimeError, "Invalid metadata file: #{metadata_file} for cookbook: #{cookbook_version}"
+            raise "Invalid metadata file: #{metadata_file} for cookbook: #{cookbook_version}"
           end
         end
 

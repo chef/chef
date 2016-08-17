@@ -33,9 +33,7 @@ module AppServerSupport
       end
     end
     Timeout.timeout(30) do
-      until server && server.status == :Running
-        sleep(0.01)
-      end
+      sleep(0.01) until server && server.status == :Running
     end
     [server, thread]
   end

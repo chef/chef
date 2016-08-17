@@ -1229,9 +1229,9 @@ describe Chef::Provider::Package::Yum::RPMPackage do
 
     it "should always have at least one provide, itself" do
       expect(@rpm.provides.size).to eq(1)
-      @rpm.provides[0].name == "testing"
-      @rpm.provides[0].version.evr == "1:1.6.5-9.36.el5"
-      @rpm.provides[0].flag == :==
+      expect(@rpm.provides[0].name).to eql("testing")
+      expect(@rpm.provides[0].version.evr).to eql("1:1.6.5-9.36.el5")
+      expect(@rpm.provides[0].flag).to eql(:==)
     end
   end
 
@@ -1253,9 +1253,9 @@ describe Chef::Provider::Package::Yum::RPMPackage do
 
     it "should always have at least one provide, itself" do
       expect(@rpm.provides.size).to eq(1)
-      @rpm.provides[0].name == "testing"
-      @rpm.provides[0].version.evr == "1:1.6.5-9.36.el5"
-      @rpm.provides[0].flag == :==
+      expect(@rpm.provides[0].name).to eql("testing")
+      expect(@rpm.provides[0].version.evr).to eql("1:1.6.5-9.36.el5")
+      expect(@rpm.provides[0].flag).to eql(:==)
     end
   end
 

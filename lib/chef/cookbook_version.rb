@@ -599,12 +599,12 @@ class Chef
       end
     end
 
-    def <=>(o)
-      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != o.name
+    def <=>(other)
+      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != other.name
       # FIXME: can we change the interface to the Metadata class such
       # that metadata.version returns a Chef::Version instance instead
       # of a string?
-      Chef::Version.new(self.version) <=> Chef::Version.new(o.version)
+      Chef::Version.new(self.version) <=> Chef::Version.new(other.version)
     end
 
     private
@@ -623,7 +623,7 @@ class Chef
     # For each filename, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def filenames_by_name(filenames)
-      filenames.select { |filename| filename =~ /\.rb$/ }.inject({}) { |memo, filename| memo[File.basename(filename, ".rb")] = filename ; memo }
+      filenames.select { |filename| filename =~ /\.rb$/ }.inject({}) { |memo, filename| memo[File.basename(filename, ".rb")] = filename; memo }
     end
 
     def file_vendor

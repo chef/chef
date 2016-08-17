@@ -70,7 +70,7 @@ class Chef
           shell_out!("passwd", "-u", new_resource.username)
         end
 
-      private
+        private
 
         def manage_password
           if @current_resource.password != @new_resource.password && @new_resource.password
