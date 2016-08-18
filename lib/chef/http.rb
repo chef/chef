@@ -248,6 +248,7 @@ class Chef
       end
     end
 
+    # @api private
     def build_http_client(base_url)
       if chef_zero_uri?(base_url)
         # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up webrick
