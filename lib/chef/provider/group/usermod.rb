@@ -57,7 +57,7 @@ class Chef
           # This provider only supports adding members with
           # append. Only if the action is create we will go
           # ahead and add members.
-          if @new_resource.action == :create
+          if @new_resource.action.include?(:create)
             members.each do |member|
               add_member(member)
             end
