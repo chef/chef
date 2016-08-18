@@ -112,7 +112,11 @@ EOM
       file "cookbooks/x/recipes/default.rb", <<EOM
 ruby_block "sleeping" do
   block do
-    sleep 0.1
+    retries = 200
+    while IO.read(Chef::Config[:log_location]) !~ /Chef client [0-9]+ is running, will wait for it to finish and then run./
+      sleep 0.1
+      last if ( retries -= 1 ) <= 0
+    end
   end
 end
 EOM
@@ -125,7 +129,7 @@ file_cache_path "#{path_to('config/cache')}"
 EOM
       # We have a timeout protection here so that if due to some bug
       # run_lock gets stuck we can discover it.
-      expect {
+      expect do
         Timeout.timeout(120) do
           chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..")
 
@@ -140,7 +144,7 @@ EOM
           Process.waitpid(s1)
           Process.waitpid(s2)
         end
-      }.not_to raise_error
+      end.not_to raise_error
 
       # Unfortunately file / directory helpers in integration tests
       # are implemented using before(:each) so we need to do all below
@@ -151,10 +155,7 @@ EOM
       expect(run_log.lines.reject { |l| !l.include? "INFO: Chef Run complete in" }.length).to eq(2)
 
       # second run should have a message which indicates it's waiting for the first run
-      pid_lines = run_log.lines.reject { |l| !l.include? "Chef-client pid:" }
-      expect(pid_lines.length).to eq(2)
-      pids = pid_lines.map { |l| l.split(" ").last }
-      expect(run_log).to include("Chef client #{pids[0]} is running, will wait for it to finish and then run.")
+      expect(run_log).to match(/Chef client [0-9]+ is running, will wait for it to finish and then run./)
     end
 
   end
