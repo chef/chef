@@ -31,8 +31,9 @@ shared_examples_for "an application that loads a dot d" do
   context "when client_d_dir is set to a directory with configuration" do
     # We're not going to mock out globbing the directory. We want to
     # make sure that we are correctly globbing.
-    let(:client_d_dir) { Chef::Util::PathHelper.cleanpath(
-      File.join(File.dirname(__FILE__), "../../../data/client.d_00")) }
+    let(:client_d_dir) do
+      Chef::Util::PathHelper.cleanpath(
+      File.join(File.dirname(__FILE__), "../../../data/client.d_00")) end
 
     it "loads the configuration in order" do
       expect(IO).to receive(:read).with(Pathname.new("#{client_d_dir}/00-foo.rb").cleanpath.to_s).and_return("foo 0")
@@ -45,8 +46,9 @@ shared_examples_for "an application that loads a dot d" do
   end
 
   context "when client_d_dir is set to a directory without configuration" do
-    let(:client_d_dir) { Chef::Util::PathHelper.cleanpath(
-      File.join(File.dirname(__FILE__), "../../data/client.d_01")) }
+    let(:client_d_dir) do
+      Chef::Util::PathHelper.cleanpath(
+      File.join(File.dirname(__FILE__), "../../data/client.d_01")) end
 
     # client.d_01 has a nested folder with a rb file that if
     # executed, would raise an exception. If it is executed,
@@ -60,8 +62,9 @@ shared_examples_for "an application that loads a dot d" do
 
   context "when client_d_dir is set to a directory containing a directory named foo.rb" do
     # foo.rb as a directory should be ignored
-    let(:client_d_dir) { Chef::Util::PathHelper.cleanpath(
-      File.join(File.dirname(__FILE__), "../../data/client.d_02")) }
+    let(:client_d_dir) do
+      Chef::Util::PathHelper.cleanpath(
+      File.join(File.dirname(__FILE__), "../../data/client.d_02")) end
 
     it "does not raise an exception" do
       expect { app.reconfigure }.not_to raise_error

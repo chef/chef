@@ -25,7 +25,7 @@ class TestMessage
 end
 
 describe Chef::DataCollector::Messages::Helpers do
-  describe '#organization' do
+  describe "#organization" do
     context "when the run is a solo run" do
       it "returns the data collector organization" do
         allow(TestMessage).to receive(:solo_run?).and_return(true)
@@ -43,7 +43,7 @@ describe Chef::DataCollector::Messages::Helpers do
     end
   end
 
-  describe '#data_collector_organization' do
+  describe "#data_collector_organization" do
     context "when the org is specified in the config" do
       it "returns the org from the config" do
         Chef::Config[:data_collector][:organization] = "org1"
@@ -58,7 +58,7 @@ describe Chef::DataCollector::Messages::Helpers do
     end
   end
 
-  describe '#chef_server_organization' do
+  describe "#chef_server_organization" do
     context "when the URL is properly formatted" do
       it "returns the org from the parsed URL" do
         Chef::Config[:chef_server_url] = "http://mycompany.com/organizations/myorg"
@@ -74,7 +74,7 @@ describe Chef::DataCollector::Messages::Helpers do
     end
   end
 
-  describe '#collector_source' do
+  describe "#collector_source" do
     context "when the run is a solo run" do
       it "returns chef_solo" do
         allow(TestMessage).to receive(:solo_run?).and_return(true)
@@ -90,7 +90,7 @@ describe Chef::DataCollector::Messages::Helpers do
     end
   end
 
-  describe '#solo_run?' do
+  describe "#solo_run?" do
     context "when :solo is set in Chef::Config" do
       it "returns true" do
         Chef::Config[:solo] = true
@@ -116,7 +116,7 @@ describe Chef::DataCollector::Messages::Helpers do
     end
   end
 
-  describe '#node_uuid' do
+  describe "#node_uuid" do
     context "when the node UUID can be read" do
       it "returns the read-in node UUID" do
         allow(TestMessage).to receive(:read_node_uuid).and_return("read_uuid")
@@ -133,7 +133,7 @@ describe Chef::DataCollector::Messages::Helpers do
     end
   end
 
-  describe '#generate_node_uuid' do
+  describe "#generate_node_uuid" do
     it "generates a new UUID, stores it, and returns it" do
       expect(SecureRandom).to receive(:uuid).and_return("generated_uuid")
       expect(TestMessage).to receive(:update_metadata).with("node_uuid", "generated_uuid")
@@ -141,7 +141,7 @@ describe Chef::DataCollector::Messages::Helpers do
     end
   end
 
-  describe '#read_node_uuid' do
+  describe "#read_node_uuid" do
     it "reads the node UUID from metadata" do
       expect(TestMessage).to receive(:metadata).and_return({ "node_uuid" => "read_uuid" })
       expect(TestMessage.read_node_uuid).to eq("read_uuid")
@@ -170,7 +170,7 @@ describe Chef::DataCollector::Messages::Helpers do
     end
   end
 
-  describe '#update_metadata' do
+  describe "#update_metadata" do
     it "updates the file" do
       allow(TestMessage).to receive(:metadata_filename).and_return("fake_metadata_file.json")
       allow(TestMessage).to receive(:metadata).and_return({ "key" => "current_value" })

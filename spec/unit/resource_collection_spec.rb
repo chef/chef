@@ -98,11 +98,11 @@ describe Chef::ResourceCollection do
     it "should allow you to iterate over every resource in the collection" do
       load_up_resources
       results = Array.new
-      expect {
+      expect do
         rc.each do |r|
           results << r.name
         end
-      }.not_to raise_error
+      end.not_to raise_error
       results.each_index do |i|
         case i
         when 0
@@ -120,11 +120,11 @@ describe Chef::ResourceCollection do
     it "should allow you to iterate over every resource by index" do
       load_up_resources
       results = Array.new
-      expect {
+      expect do
         rc.each_index do |i|
           results << rc[i].name
         end
-      }.not_to raise_error
+      end.not_to raise_error
       results.each_index do |i|
         case i
         when 0

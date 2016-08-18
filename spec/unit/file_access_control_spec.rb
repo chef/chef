@@ -43,7 +43,7 @@ describe Chef::FileAccessControl do
     end
 
     describe "class methods" do
-      it 'responds to #writable?' do
+      it "responds to #writable?" do
         expect(Chef::FileAccessControl).to respond_to(:writable?)
       end
     end

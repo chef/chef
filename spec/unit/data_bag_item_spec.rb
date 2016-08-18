@@ -91,12 +91,12 @@ describe Chef::DataBagItem do
   end
 
   describe "object_name" do
-    let(:data_bag_item) {
+    let(:data_bag_item) do
       data_bag_item = Chef::DataBagItem.new
       data_bag_item.data_bag("dreams")
       data_bag_item.raw_data = { "id" => "the_beatdown" }
       data_bag_item
-    }
+    end
 
     it "should return an object name based on the bag name and the raw_data id" do
       expect(data_bag_item.object_name).to eq("data_bag_item_dreams_the_beatdown")
@@ -110,12 +110,12 @@ describe Chef::DataBagItem do
   end
 
   describe "class method name" do
-    let(:data_bag_item) {
+    let(:data_bag_item) do
       data_bag_item = Chef::DataBagItem.new
       data_bag_item.data_bag("dreams")
       data_bag_item.raw_data = { "id" => "the_beatdown", "name" => "Bruce" }
       data_bag_item
-    }
+    end
 
     it "should return the object name" do
       expect(data_bag_item.name).to eq(data_bag_item.object_name)
@@ -128,11 +128,11 @@ describe Chef::DataBagItem do
   end
 
   describe "when used like a Hash" do
-    let(:data_bag_item) {
+    let(:data_bag_item) do
       data_bag_item = Chef::DataBagItem.new
       data_bag_item.raw_data = { "id" => "journey", "trials" => "been through" }
       data_bag_item
-    }
+    end
 
     it "responds to keys" do
       expect(data_bag_item.keys).to include("id")
@@ -158,9 +158,9 @@ describe Chef::DataBagItem do
 
   describe "from_hash" do
     context "when hash contains raw_data" do
-      let(:data_bag_item) {
+      let(:data_bag_item) do
         Chef::DataBagItem.from_hash({ "raw_data" => { "id" => "whoa", "name" => "Bruce", "i_know" => "kung_fu" } })
-      }
+      end
 
       it "should have the id key set" do
         expect(data_bag_item["id"]).to eq("whoa")
@@ -172,9 +172,9 @@ describe Chef::DataBagItem do
     end
 
     context "when hash does not contain raw_data" do
-      let(:data_bag_item) {
+      let(:data_bag_item) do
         Chef::DataBagItem.from_hash({ "id" => "whoa", "name" => "Bruce", "i_know" => "kung_fu" })
-      }
+      end
 
       it "should have the id key set" do
         expect(data_bag_item["id"]).to eq("whoa")
@@ -187,12 +187,12 @@ describe Chef::DataBagItem do
   end
 
   describe "to_hash" do
-    let(:data_bag_item) {
+    let(:data_bag_item) do
       data_bag_item = Chef::DataBagItem.new
       data_bag_item.data_bag("still_lost")
       data_bag_item.raw_data = { "id" => "whoa", "name" => "Bruce", "i_know" => "kung_fu" }
       data_bag_item
-    }
+    end
 
     let!(:original_data_bag_keys) { data_bag_item.keys }
 
@@ -223,12 +223,12 @@ describe Chef::DataBagItem do
   end
 
   describe "when deserializing from JSON" do
-    let(:data_bag_item) {
+    let(:data_bag_item) do
       data_bag_item = Chef::DataBagItem.new
       data_bag_item.data_bag("mars_volta")
       data_bag_item.raw_data = { "id" => "octahedron", "name" => "Bruce", "snooze" => { "finally" => :world_will } }
       data_bag_item
-    }
+    end
 
     let(:deserial) { Chef::DataBagItem.from_hash(Chef::JSONCompat.parse(Chef::JSONCompat.to_json(data_bag_item))) }
 
@@ -275,13 +275,13 @@ describe Chef::DataBagItem do
   describe "save" do
     let(:server) { instance_double(Chef::ServerAPI) }
 
-    let(:data_bag_item) {
+    let(:data_bag_item) do
       data_bag_item = Chef::DataBagItem.new
       data_bag_item["id"] = "heart of darkness"
       data_bag_item.raw_data = { "id" => "heart_of_darkness", "author" => "Conrad" }
       data_bag_item.data_bag("books")
       data_bag_item
-    }
+    end
 
     before do
       expect(Chef::ServerAPI).to receive(:new).and_return(server)
@@ -320,12 +320,12 @@ describe Chef::DataBagItem do
   describe "destroy" do
     let(:server) { instance_double(Chef::ServerAPI) }
 
-    let(:data_bag_item) {
+    let(:data_bag_item) do
       data_bag_item = Chef::DataBagItem.new
       data_bag_item.data_bag("a_baggy_bag")
       data_bag_item.raw_data = { "id" => "some_id" }
       data_bag_item
-    }
+    end
 
     it "should set default parameters" do
       expect(Chef::ServerAPI).to receive(:new).and_return(server)

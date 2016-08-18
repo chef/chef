@@ -43,7 +43,7 @@ class Chef
           exit 1
         end
 
-        delete_object(Chef::ApiClientV1, @client_name, "client") {
+        delete_object(Chef::ApiClientV1, @client_name, "client") do
           object = Chef::ApiClientV1.load(@client_name)
           if object.validator
             unless config[:delete_validators]
@@ -52,7 +52,7 @@ class Chef
             end
           end
           object.destroy
-        }
+        end
       end
 
     end

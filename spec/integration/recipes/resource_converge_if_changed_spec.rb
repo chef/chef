@@ -19,7 +19,7 @@ describe "Resource::ActionClass#converge_if_changed" do
 
   context "when the resource has identity, state and control properties" do
     let(:resource_name) { :"converge_if_changed_dsl#{Namer.current_index}" }
-    let(:resource_class) {
+    let(:resource_class) do
       result = Class.new(Chef::Resource) do
         def self.to_s; resource_name.to_s; end
 
@@ -36,7 +36,7 @@ describe "Resource::ActionClass#converge_if_changed" do
       end
       result.resource_name resource_name
       result
-    }
+    end
     let(:converged_recipe) { converge(converge_recipe) }
     let(:resource) { converged_recipe.resources.first }
 
@@ -70,13 +70,13 @@ describe "Resource::ActionClass#converge_if_changed" do
         end
 
         context "and state1 is set to a new value" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 state1 'new_state1'
               end
             EOM
-          }
+          end
 
           it "the resource updates state1" do
             expect(resource.converged).to eq 1
@@ -90,14 +90,14 @@ describe "Resource::ActionClass#converge_if_changed" do
         end
 
         context "and state1 and state2 are set to new values" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 state1 'new_state1'
                 state2 'new_state2'
               end
             EOM
-          }
+          end
 
           it "the resource updates state1 and state2" do
             expect(resource.converged).to eq 1
@@ -112,7 +112,7 @@ EOM
         end
 
         context "and state1 and state2 are set to new sensitive values" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 sensitive true
@@ -120,7 +120,7 @@ EOM
                 state2 'new_state2'
               end
             EOM
-          }
+          end
 
           it "the resource updates state1 and state2" do
             expect(resource.converged).to eq 1
@@ -135,14 +135,14 @@ EOM
         end
 
         context "and state1 is set to its current value but state2 is set to a new value" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 state1 'current_state1'
                 state2 'new_state2'
               end
             EOM
-          }
+          end
 
           it "the resource updates state2" do
             expect(resource.converged).to eq 1
@@ -156,14 +156,14 @@ EOM
         end
 
         context "and state1 and state2 are set to their current values" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 state1 'current_state1'
                 state2 'current_state2'
               end
             EOM
-          }
+          end
 
           it "the resource updates nothing" do
             expect(resource.converged).to eq 0
@@ -175,14 +175,14 @@ EOM
         end
 
         context "and identity1 and control1 are set to new values" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 identity1 'new_identity1'
                 control1 'new_control1'
               end
             EOM
-          }
+          end
 
           # Because the identity value is copied over to the new resource, by
           # default they do not register as "changed"
@@ -205,14 +205,14 @@ EOM
         end
 
         context "and identity1 and control1 are set to new values" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 identity1 'new_identity1'
                 control1 'new_control1'
               end
             EOM
-          }
+          end
 
           # Control values are not desired state and are therefore not considered
           # a reason for converging.
@@ -252,14 +252,14 @@ EOM
         end
 
         context "and state1 and state2 are set" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 state1 'new_state1'
                 state2 'new_state2'
               end
             EOM
-          }
+          end
 
           it "the resource is created" do
             expect(resource.converged).to eq 1
@@ -275,7 +275,7 @@ EOM
         end
 
         context "and state1 and state2 are set with sensitive property" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 sensitive true
@@ -283,7 +283,7 @@ EOM
                 state2 'new_state2'
               end
             EOM
-          }
+          end
 
           it "the resource is created" do
             expect(resource.converged).to eq 1
@@ -334,13 +334,13 @@ EOM
 
         context "and state1 is set to a new value" do
 
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 state1 'new_state1'
               end
             EOM
-          }
+          end
 
           it "the resource updates state1" do
             expect(resource.converged).to eq 1
@@ -354,14 +354,14 @@ EOM
         end
 
         context "and state1 and state2 are set to new values" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 state1 'new_state1'
                 state2 'new_state2'
               end
             EOM
-          }
+          end
 
           it "the resource updates state1 and state2" do
             expect(resource.converged).to eq 2
@@ -377,14 +377,14 @@ EOM
         end
 
         context "and state1 is set to its current value but state2 is set to a new value" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 state1 'current_state1'
                 state2 'new_state2'
               end
             EOM
-          }
+          end
 
           it "the resource updates state2" do
             expect(resource.converged).to eq 1
@@ -398,14 +398,14 @@ EOM
         end
 
         context "and state1 and state2 are set to their current values" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 state1 'current_state1'
                 state2 'current_state2'
               end
             EOM
-          }
+          end
 
           it "the resource updates nothing" do
             expect(resource.converged).to eq 0
@@ -425,9 +425,9 @@ EOM
         end
 
         context "and nothing is set" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             "#{resource_name} 'blah'"
-          }
+          end
 
           it "the resource is created" do
             expect(resource.converged).to eq 2
@@ -443,14 +443,14 @@ EOM
         end
 
         context "and state1 and state2 are set to new values" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 state1 'new_state1'
                 state2 'new_state2'
               end
             EOM
-          }
+          end
 
           it "the resource is created" do
             expect(resource.converged).to eq 2
@@ -466,7 +466,7 @@ EOM
         end
 
         context "and state1 and state2 are set to new sensitive values" do
-          let(:converge_recipe) {
+          let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
                 sensitive true
@@ -474,7 +474,7 @@ EOM
                 state2 'new_state2'
               end
             EOM
-          }
+          end
 
           it "the resource is created" do
             expect(resource.converged).to eq 2

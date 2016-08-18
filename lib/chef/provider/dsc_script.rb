@@ -32,12 +32,12 @@ class Chef
         @dsc_resource = dsc_resource
         @resource_converged = false
         @operations = {
-          :set => Proc.new { |config_manager, document, shellout_flags|
+          :set => Proc.new do |config_manager, document, shellout_flags|
             config_manager.set_configuration(document, shellout_flags)
-          },
-          :test => Proc.new { |config_manager, document, shellout_flags|
+          end,
+          :test => Proc.new do |config_manager, document, shellout_flags|
             config_manager.test_configuration(document, shellout_flags)
-          } }
+          end }
       end
 
       def action_run

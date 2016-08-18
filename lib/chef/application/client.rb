@@ -204,9 +204,9 @@ class Chef::Application::Client < Chef::Application
     :description  => "Replace current run list with specified items for a single run",
     :proc         => lambda {|items|
       items = items.split(",")
-      items.compact.map {|item|
+      items.compact.map do |item|
         Chef::RunList::RunListItem.new(item)
-      }
+      end
     }
 
   option :runlist,
@@ -215,9 +215,9 @@ class Chef::Application::Client < Chef::Application
     :description  => "Permanently replace current run list with specified items",
     :proc         => lambda {|items|
       items = items.split(",")
-      items.compact.map {|item|
+      items.compact.map do |item|
         Chef::RunList::RunListItem.new(item)
-      }
+      end
     }
   option :why_run,
     :short        => "-W",

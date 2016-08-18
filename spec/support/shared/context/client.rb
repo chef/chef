@@ -230,8 +230,9 @@ shared_context "audit phase failed with error" do
 end
 
 shared_context "audit phase completed with failed controls" do
-  let(:audit_runner) { instance_double("Chef::Audit::Runner", :failed? => true,
-                                                              :num_failed => 1, :num_total => 3) }
+  let(:audit_runner) do
+    instance_double("Chef::Audit::Runner", :failed? => true,
+                                           :num_failed => 1, :num_total => 3) end
 
   let(:audit_error) do
     err = Chef::Exceptions::AuditsFailed.new(audit_runner.num_failed, audit_runner.num_total)

@@ -168,9 +168,9 @@ class Chef::Application::Solo < Chef::Application
     :description  => "Replace current run list with specified items",
     :proc         => lambda {|items|
       items = items.split(",")
-      items.compact.map {|item|
+      items.compact.map do |item|
         Chef::RunList::RunListItem.new(item)
-      }
+      end
     }
 
   option :client_fork,

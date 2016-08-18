@@ -106,13 +106,13 @@ class Chef
 
         def service_currently_enabled?(priority)
           enabled = false
-          priority.each { |runlevel, arguments|
+          priority.each do |runlevel, arguments|
             Chef::Log.debug("#{new_resource} runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
             # if we are in a update-rc.d default startup runlevel && we start in this runlevel
             if %w{ 1 2 3 4 5 S }.include?(runlevel) && arguments[0] == :start
               enabled = true
             end
-          }
+          end
 
           enabled
         end

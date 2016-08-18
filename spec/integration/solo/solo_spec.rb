@@ -125,7 +125,7 @@ file_cache_path "#{path_to('config/cache')}"
 EOM
       # We have a timeout protection here so that if due to some bug
       # run_lock gets stuck we can discover it.
-      expect {
+      expect do
         Timeout.timeout(120) do
           chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..")
 
@@ -143,7 +143,7 @@ EOM
           Process.waitpid(s1)
           Process.waitpid(s2)
         end
-      }.not_to raise_error
+      end.not_to raise_error
 
       # Unfortunately file / directory helpers in integration tests
       # are implemented using before(:each) so we need to do all below

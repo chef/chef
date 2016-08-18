@@ -199,9 +199,9 @@ CRONTAB
 # Chef Name: foo[bar] (baz)
 21 */4 * * * some_prog 1234567
 CRONTAB
-        expect {
+        expect do
           @provider.load_current_resource
-        }.not_to raise_error
+        end.not_to raise_error
       end
     end
 

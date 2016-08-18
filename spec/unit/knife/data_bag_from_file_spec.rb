@@ -72,11 +72,12 @@ describe Chef::Knife::DataBagFromFile do
   let(:loader) { double("Knife::Core::ObjectLoader") }
 
   let(:data_bags_path) { "data_bags" }
-  let(:plain_data) { {
+  let(:plain_data) do
+    {
       "id" => "item_name",
       "greeting" => "hello",
       "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true } },
-  } }
+  } end
   let(:enc_data) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(plain_data, secret) }
 
   let(:rest) { double("Chef::ServerAPI") }

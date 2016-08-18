@@ -32,13 +32,13 @@ describe Chef::Formatters::APIErrorFormatting do
       let(:min_version) { "2" }
       let(:max_version) { "5" }
       let(:request_version) { "30" }
-      let(:return_hash) {
+      let(:return_hash) do
         {
           "min_version" => min_version,
           "max_version" => max_version,
           "request_version" => request_version,
         }
-      }
+      end
 
       before do
         # mock out the header

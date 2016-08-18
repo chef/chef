@@ -46,9 +46,9 @@ begin
       out << format_person(source["Org"]["Lead"]["person"]) + "\n\n"
 
       out << format_components(source["Org"]["Components"])
-      File.open(TARGET, "w") { |fn|
+      File.open(TARGET, "w") do |fn|
         fn.write out
-      }
+      end
     end
 
     desc "Synchronize GitHub teams"

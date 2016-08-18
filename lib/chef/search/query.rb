@@ -29,7 +29,7 @@ class Chef
       attr_accessor :rest
       attr_reader :config
 
-      def initialize(url = nil, config:Chef::Config)
+      def initialize(url = nil, config: Chef::Config)
         @config = config
         @url = url
       end
@@ -146,7 +146,7 @@ WARNDEP
         qstr
       end
 
-      def call_rest_service(type, query:"*:*", rows:nil, start:0, sort:"X_CHEF_id_CHEF_X asc", filter_result:nil)
+      def call_rest_service(type, query: "*:*", rows: nil, start: 0, sort: "X_CHEF_id_CHEF_X asc", filter_result: nil)
         query_string = create_query_string(type, query, rows, start, sort)
 
         if filter_result

@@ -20,13 +20,13 @@ require "spec_helper"
 
 describe Chef::Provider::Template::Content do
 
-  let(:enclosing_directory) {
+  let(:enclosing_directory) do
     canonicalize_path(Dir.mktmpdir)
-  }
+  end
 
-  let(:resource_path) {
+  let(:resource_path) do
     canonicalize_path(File.expand_path(File.join(enclosing_directory, "openldap_stuff.conf")))
-  }
+  end
 
   let(:new_resource) do
     double("Chef::Resource::Template (new)",
@@ -46,10 +46,10 @@ describe Chef::Provider::Template::Content do
          :helper_modules => [])
   end
 
-  let(:rendered_file_locations) {
+  let(:rendered_file_locations) do
     [Dir.tmpdir + "/openldap_stuff.conf",
      enclosing_directory + "/openldap_stuff.conf"]
-  }
+  end
 
   let(:run_context) do
     cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
@@ -101,9 +101,9 @@ describe Chef::Provider::Template::Content do
   end
 
   context "when creating a tempfile in destdir fails" do
-    let(:enclosing_directory) {
+    let(:enclosing_directory) do
       canonicalize_path("/nonexisting/path")
-    }
+    end
 
     it "returns a tempfile in the tempdir when :file_deployment_uses_destdir is set to :auto" do
       Chef::Config[:file_staging_uses_destdir] = :auto

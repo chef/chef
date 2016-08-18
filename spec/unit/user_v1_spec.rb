@@ -332,7 +332,7 @@ describe Chef::UserV1 do
         @user.password "some_password"
       end
 
-      let(:payload) {
+      let(:payload) do
         {
           :username => "some_username",
           :display_name => "some_display_name",
@@ -342,7 +342,7 @@ describe Chef::UserV1 do
           :email => "some_email",
           :password => "some_password",
         }
-      }
+      end
 
       context "when server API V1 is valid on the Chef Server receiving the request" do
         context "when the user submits valid data" do
@@ -354,7 +354,7 @@ describe Chef::UserV1 do
       end
 
       context "when server API V1 is not valid on the Chef Server receiving the request" do
-        let(:payload) {
+        let(:payload) do
           {
             :username => "some_username",
             :display_name => "some_display_name",
@@ -365,7 +365,7 @@ describe Chef::UserV1 do
             :password => "some_password",
             :public_key => "some_public_key",
           }
-        }
+        end
 
         before do
           @user.public_key "some_public_key"
@@ -442,7 +442,7 @@ describe Chef::UserV1 do
     end # update
 
     describe "create" do
-      let(:payload) {
+      let(:payload) do
         {
           :username => "some_username",
           :display_name => "some_display_name",
@@ -451,7 +451,7 @@ describe Chef::UserV1 do
           :email => "some_email",
           :password => "some_password",
         }
-      }
+      end
       before do
         @user.username "some_username"
         @user.display_name "some_display_name"
@@ -506,11 +506,11 @@ describe Chef::UserV1 do
     # DEPRECATION
     # This can be removed after API V0 support is gone
     describe "reregister" do
-      let(:payload) {
+      let(:payload) do
         {
           "username" => "some_username",
         }
-      }
+      end
 
       before do
         @user.username "some_username"

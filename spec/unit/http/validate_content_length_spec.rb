@@ -37,25 +37,25 @@ describe Chef::HTTP::ValidateContentLength do
   let(:content_length_value) { 23 }
   let(:streaming_length) { 23 }
   let(:response_body) { "Thanks for checking in." }
-  let(:response_headers) {
+  let(:response_headers) do
     {
       "content-length" => content_length_value,
     }
-  }
+  end
 
-  let(:response) {
+  let(:response) do
     m = double("HttpResponse", :body => response_body)
     allow(m).to receive(:[]) do |key|
       response_headers[key]
     end
 
     m
-  }
+  end
 
-  let(:middleware) {
+  let(:middleware) do
     client = TestClient.new(url)
     client.middlewares[0]
-  }
+  end
 
   def run_content_length_validation
     stream_handler = middleware.stream_response_handler(response)
@@ -169,12 +169,12 @@ describe Chef::HTTP::ValidateContentLength do
   end
 
   describe "when Transfer-Encoding & Content-Length is set" do
-    let(:response_headers) {
+    let(:response_headers) do
       {
         "content-length" => content_length_value,
         "transfer-encoding" => "chunked",
       }
-    }
+    end
 
     %w{direct streaming}.each do |req_type|
       describe "when running #{req_type} request" do

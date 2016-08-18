@@ -38,9 +38,9 @@ describe "LWRPs with inline resources" do
 
     it "this is totally a bug, but for backcompat purposes, it adds the resources to the main resource collection and does not get marked updated" do
       r = nil
-      expect_recipe {
+      expect_recipe do
         r = lwrp_inline_resources_test "hi"
-      }.to have_updated("ruby_block[run a]", :run)
+      end.to have_updated("ruby_block[run a]", :run)
       expect(r.ran_a).to eq "ran a"
     end
   end
@@ -64,11 +64,11 @@ describe "LWRPs with inline resources" do
     # https://github.com/chef/chef/issues/4334
     it "does not warn spuriously" do
       expect(Chef::Log).to_not receive(:warn).with(/is declared in both/)
-      expect_recipe {
+      expect_recipe do
         lwrp_shadowed_property_test "fnord" do
           action :fiddle
         end
-      }
+      end
     end
   end
 
@@ -104,11 +104,11 @@ describe "LWRPs with inline resources" do
 
     it "resources declared in b are executed immediately inline" do
       r = nil
-      expect_recipe {
+      expect_recipe do
         r = lwrp_inline_resources_test2 "hi" do
           action :b
         end
-      }.to have_updated("lwrp_inline_resources_test2[hi]", :b).
+      end.to have_updated("lwrp_inline_resources_test2[hi]", :b).
         and have_updated("ruby_block[run a]", :run).
         and have_updated("ruby_block[run b]", :run)
       expect(r.ran_b).to eq "ran b: ran_a value was \"ran a\""

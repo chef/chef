@@ -316,13 +316,13 @@ class Chef
           error_message << error_locations.join("\n")
           existing_files = segment_filenames(segment)
           # Strip the root_dir prefix off all files for readability
-          pretty_existing_files = existing_files.map { |path|
+          pretty_existing_files = existing_files.map do |path|
             if root_dir
               path[root_dir.length + 1..-1]
             else
               path
             end
-          }
+          end
           # Show the files that the cookbook does have. If the user made a typo,
           # hopefully they'll see it here.
           unless pretty_existing_files.empty?

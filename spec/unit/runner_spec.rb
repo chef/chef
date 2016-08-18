@@ -392,12 +392,12 @@ Multiple failures occurred:
     it "should resolve resource references in notifications when resources are defined lazily" do
       first_resource.action = :nothing
 
-      lazy_resources = lambda {
+      lazy_resources = lambda do
         last_resource = Chef::Resource::Cat.new("peanut", run_context)
         run_context.resource_collection << last_resource
         last_resource.notifies(:purr, first_resource.to_s, :delayed)
         last_resource.action = :purr
-      }
+      end
       second_resource = Chef::Resource::RubyBlock.new("myblock", run_context)
       run_context.resource_collection << second_resource
       second_resource.block { lazy_resources.call }

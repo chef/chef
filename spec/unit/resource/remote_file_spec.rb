@@ -86,15 +86,15 @@ describe Chef::Resource::RemoteFile do
     end
 
     it "should only accept a single argument if a delayed evalutor is used" do
-      expect {
+      expect do
         @resource.source("http://opscode.com/", Chef::DelayedEvaluator.new { "http://opscode.com/" })
-      }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+      end.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
     it "should only accept a single array item if a delayed evalutor is used" do
-      expect {
+      expect do
         @resource.source(["http://opscode.com/", Chef::DelayedEvaluator.new { "http://opscode.com/" }])
-      }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+      end.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
     it "does not accept a non-URI as the source" do
@@ -102,10 +102,10 @@ describe Chef::Resource::RemoteFile do
     end
 
     it "does not accept a non-URI as the source when read from a delayed evaluator" do
-      expect {
+      expect do
         @resource.source(Chef::DelayedEvaluator.new { "not-a-uri" })
         @resource.source
-      }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+      end.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
     it "should raise an exception when source is an empty array" do

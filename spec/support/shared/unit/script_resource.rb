@@ -57,18 +57,18 @@ shared_examples_for "a script resource" do
   end
 
   describe "when executing guards" do
-    let(:resource) {
+    let(:resource) do
       resource = script_resource
       resource.run_context = run_context
       resource.code "echo hi"
       resource
-    }
-    let(:node) {
+    end
+    let(:node) do
       node = Chef::Node.new
       node.automatic[:platform] = "debian"
       node.automatic[:platform_version] = "6.0"
       node
-    }
+    end
     let(:events) { Chef::EventDispatch::Dispatcher.new }
     let(:run_context) { Chef::RunContext.new(node, {}, events) }
 

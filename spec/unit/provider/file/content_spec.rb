@@ -28,12 +28,12 @@ describe Chef::Provider::File::Content do
     double("Chef::Provider::File::Resource (current)")
   end
 
-  let(:enclosing_directory) {
+  let(:enclosing_directory) do
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
-  }
-  let(:resource_path) {
+  end
+  let(:resource_path) do
     canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
-  }
+  end
 
   let(:new_resource) do
     double("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path)
@@ -77,9 +77,9 @@ describe Chef::Provider::File::Content do
     end
 
     context "when creating a tempfiles in destdir fails" do
-      let(:enclosing_directory) {
+      let(:enclosing_directory) do
         canonicalize_path("/nonexisting/path")
-      }
+      end
 
       it "returns a tempfile in the tempdir when :file_deployment_uses_destdir is set to :auto" do
         Chef::Config[:file_staging_uses_destdir] = :auto

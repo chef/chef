@@ -27,17 +27,17 @@ describe Chef::Resource::Env, :windows_only do
     let(:env_value2) { "value2" }
 
     let(:env_value_expandable) { "%SystemRoot%" }
-    let(:test_run_context) {
+    let(:test_run_context) do
       node = Chef::Node.new
       node.default["os"] = "windows"
       node.default["platform"] = "windows"
       node.default["platform_version"] = "6.1"
       empty_events = Chef::EventDispatch::Dispatcher.new
       Chef::RunContext.new(node, {}, empty_events)
-    }
-    let(:test_resource) {
+    end
+    let(:test_resource) do
       Chef::Resource::Env.new("unknown", test_run_context)
-    }
+    end
 
     before(:each) do
       resource_lower = Chef::Resource::Env.new(chef_env_test_lower_case, test_run_context)

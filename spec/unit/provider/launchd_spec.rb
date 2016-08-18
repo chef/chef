@@ -51,7 +51,8 @@ describe Chef::Provider::Launchd do
 </plist>
 XML
 
-    let(:test_hash) do {
+    let(:test_hash) do
+      {
       "Label" => "call.mom.weekly",
       "Program" => "/Library/scripts/call_mom.sh",
       "StartCalendarInterval" => {

@@ -39,9 +39,9 @@ describe Chef::Provider::Service::Debian do
       expect(File).to receive(:exists?).with("/usr/sbin/update-rc.d") .and_return(false)
 
       @provider.define_resource_requirements
-      expect {
+      expect do
         @provider.process_resource_requirements
-      }.to raise_error(Chef::Exceptions::Service)
+      end.to raise_error(Chef::Exceptions::Service)
     end
 
     context "when update-rc.d shows init linked to rc*.d/" do
@@ -108,9 +108,9 @@ describe Chef::Provider::Service::Debian do
 
       it "raises an error" do
         @provider.define_resource_requirements
-        expect {
+        expect do
           @provider.process_resource_requirements
-        }.to raise_error(Chef::Exceptions::Service)
+        end.to raise_error(Chef::Exceptions::Service)
       end
     end
 

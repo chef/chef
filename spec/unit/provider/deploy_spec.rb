@@ -167,9 +167,9 @@ describe Chef::Provider::Deploy do
     allow(@provider).to receive(:deploy) { raise "Unexpected error" }
     allow(@provider).to receive(:previous_release_path).and_return("previous_release")
     expect(@provider).not_to receive(:rollback)
-    expect {
+    expect do
       @provider.run_action(:deploy)
-    }.to raise_exception(RuntimeError, "Unexpected error")
+    end.to raise_exception(RuntimeError, "Unexpected error")
   end
 
   it "rollbacks to previous release if error happens on deploy" do
@@ -178,9 +178,9 @@ describe Chef::Provider::Deploy do
     allow(@provider).to receive(:deploy) { raise "Unexpected error" }
     allow(@provider).to receive(:previous_release_path).and_return("previous_release")
     expect(@provider).to receive(:rollback)
-    expect {
+    expect do
       @provider.run_action(:deploy)
-    }.to raise_exception(RuntimeError, "Unexpected error")
+    end.to raise_exception(RuntimeError, "Unexpected error")
   end
 
   describe "on systems without broken Dir.glob results" do
@@ -232,17 +232,17 @@ describe Chef::Provider::Deploy do
         #FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
         #@provider.run_action(:rollback)
         #@provider.release_path.should eql(NIL) -- no check needed since assertions will fail
-        expect {
+        expect do
           @provider.run_action(:rollback)
-        }.to raise_exception(RuntimeError, "There is no release to rollback to!")
+        end.to raise_exception(RuntimeError, "There is no release to rollback to!")
       end
 
       it "an exception is raised when there are no releases" do
         all_releases = []
         allow(Dir).to receive(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
-        expect {
+        expect do
           @provider.run_action(:rollback)
-        }.to raise_exception(RuntimeError, "There is no release to rollback to!")
+        end.to raise_exception(RuntimeError, "There is no release to rollback to!")
       end
     end
   end

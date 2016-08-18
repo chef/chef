@@ -55,7 +55,7 @@ describe Chef::ChefFS::FileSystem do
   end
 
   context "with a populated filesystem" do
-    let(:fs) {
+    let(:fs) do
       memory_fs("", {
         :a => {
           :aa => {
@@ -69,7 +69,7 @@ describe Chef::ChefFS::FileSystem do
         :x => "",
         :y => {},
       })
-    }
+    end
     context "list" do
       it "/**" do
         list_should_yield_paths(fs, "/**", "/", "/a", "/x", "/y", "/a/aa", "/a/aa/c", "/a/aa/zz", "/a/ab", "/a/ab/c")

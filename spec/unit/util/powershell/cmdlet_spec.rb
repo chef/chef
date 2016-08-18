@@ -25,7 +25,7 @@ describe Chef::Util::Powershell::Cmdlet do
     @cmdlet = Chef::Util::Powershell::Cmdlet.new(@node, "Some-Commandlet")
   end
 
-  describe '#validate_switch_name!' do
+  describe "#validate_switch_name!" do
     it "should not raise an error if a name contains all upper case letters" do
       @cmdlet.send(:validate_switch_name!, "HELLO")
     end
@@ -40,14 +40,14 @@ describe Chef::Util::Powershell::Cmdlet do
 
     %w{! @ # $ % ^ & * & * ( ) - = + \{ \} . ? < > \\ /}.each do |sym|
       it "raises an Argument error if it configuration name contains #{sym}" do
-        expect {
+        expect do
           @cmdlet.send(:validate_switch_name!, "Hello#{sym}")
-        }.to raise_error(ArgumentError)
+        end.to raise_error(ArgumentError)
       end
     end
   end
 
-  describe '#escape_parameter_value' do
+  describe "#escape_parameter_value" do
     # Is this list really complete?
     %w{` " # '}.each do |c|
       it "escapse #{c}" do
@@ -60,23 +60,23 @@ describe Chef::Util::Powershell::Cmdlet do
     end
   end
 
-  describe '#escape_string_parameter_value' do
+  describe "#escape_string_parameter_value" do
     it "surrounds a string with ''" do
       expect(@cmdlet.send(:escape_string_parameter_value, "stuff")).to eql("'stuff'")
     end
   end
 
-  describe '#command_switches_string' do
+  describe "#command_switches_string" do
     it "raises an ArgumentError if the key is not a symbol" do
-      expect {
+      expect do
         @cmdlet.send(:command_switches_string, { "foo" => "bar" })
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "does not allow invalid switch names" do
-      expect {
+      expect do
         @cmdlet.send(:command_switches_string, { :foo! => "bar" })
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "ignores switches with a false value" do

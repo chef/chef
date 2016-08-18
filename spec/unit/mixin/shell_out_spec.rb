@@ -25,7 +25,7 @@ require "spec_helper"
 describe Chef::Mixin::ShellOut do
   let(:shell_out_class) { Class.new { include Chef::Mixin::ShellOut } }
   subject(:shell_out_obj) { shell_out_class.new }
-  describe '#run_command_compatible_options' do
+  describe "#run_command_compatible_options" do
     subject { shell_out_obj.run_command_compatible_options(command_args) }
     let(:command_args) { [ cmd, options ] }
     let(:cmd) { "echo '#{rand(1000)}'" }

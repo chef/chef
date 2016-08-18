@@ -19,10 +19,11 @@
 require "spec_helper"
 
 describe Chef::Resource::OsxProfile do
-  let(:resource) { Chef::Resource::OsxProfile.new(
+  let(:resource) do
+    Chef::Resource::OsxProfile.new(
     "Test Profile Resource",
     run_context)
-  }
+  end
 
   it "should create a new Chef::Resource::OsxProfile" do
     expect(resource).to be_a_kind_of(Chef::Resource)

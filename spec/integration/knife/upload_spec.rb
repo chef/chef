@@ -1064,7 +1064,7 @@ EOM
 
       when_the_repository "has a modified, extra and missing file for the cookbook" do
         before do
-          file "cookbooks/x-1.0.0/metadata.rb", cb_metadata("x", "1.0.0", '#modified')
+          file "cookbooks/x-1.0.0/metadata.rb", cb_metadata("x", "1.0.0", "#modified")
           file "cookbooks/x-1.0.0/y.rb", "hi"
         end
 

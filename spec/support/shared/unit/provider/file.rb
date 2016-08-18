@@ -459,11 +459,11 @@ shared_examples_for Chef::Provider::File do
     context "do_validate_content" do
       before { setup_normal_file }
 
-      let(:tempfile) {
+      let(:tempfile) do
         t = double("Tempfile", :path => "/tmp/foo-bar-baz", :closed? => true)
         allow(content).to receive(:tempfile).and_return(t)
         t
-      }
+      end
 
       context "with user-supplied verifications" do
         it "calls #verify on each verification with tempfile path" do

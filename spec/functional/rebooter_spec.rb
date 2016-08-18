@@ -50,15 +50,15 @@ describe Chef::Platform::Rebooter do
 
   let(:rebooter) { Chef::Platform::Rebooter }
 
-  describe '#reboot_if_needed!' do
+  describe "#reboot_if_needed!" do
 
-    it 'should not call #shell_out! when reboot has not been requested' do
+    it "should not call #shell_out! when reboot has not been requested" do
       expect(rebooter).to receive(:shell_out!).exactly(0).times
       expect(rebooter).to receive(:reboot_if_needed!).once.and_call_original
       rebooter.reboot_if_needed!(run_context.node)
     end
 
-    describe 'calling #shell_out! to reboot' do
+    describe "calling #shell_out! to reboot" do
 
       before(:each) do
         run_context.request_reboot(reboot_info)
@@ -77,7 +77,7 @@ describe Chef::Platform::Rebooter do
         end
       end
 
-      describe 'when using #reboot_if_needed!' do
+      describe "when using #reboot_if_needed!" do
         include_context "test a reboot method"
 
         it "should produce the correct string on Windows" do
@@ -89,7 +89,7 @@ describe Chef::Platform::Rebooter do
         end
       end
 
-      describe 'when using #reboot!' do
+      describe "when using #reboot!" do
         include_context "test a reboot method"
 
         it "should produce the correct string on Windows" do

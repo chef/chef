@@ -50,12 +50,12 @@ describe Chef::Mixin::ApiVersionRequestHandling do
       context "when x-ops-server-api-version header exists" do
         let(:min_server_version) { 2 }
         let(:max_server_version) { 4 }
-        let(:return_hash) {
+        let(:return_hash) do
           {
             "min_version" => min_server_version,
             "max_version" => max_server_version,
           }
-        }
+        end
 
         before(:each) do
           allow(response).to receive(:[]).with("x-ops-server-api-version").and_return(Chef::JSONCompat.to_json(return_hash))

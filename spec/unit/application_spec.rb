@@ -361,7 +361,7 @@ describe Chef::Application do
         end
       end
 
-      context 'when called with an Array-like argument (#size)' do
+      context "when called with an Array-like argument (#size)" do
         before do
           allow(app).to receive(:fork_chef_client).and_return(true)
           allow(app).to receive(:run_with_graceful_exit_option).and_return(true)

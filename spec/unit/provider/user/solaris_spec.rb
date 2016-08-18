@@ -25,9 +25,9 @@ require "spec_helper"
 
 describe Chef::Provider::User::Solaris do
 
-  let(:shellcmdresult) {
+  let(:shellcmdresult) do
     Struct.new(:stdout, :stderr, :exitstatus)
-  }
+  end
 
   subject(:provider) do
     p = described_class.new(@new_resource, @run_context)
