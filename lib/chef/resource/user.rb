@@ -41,6 +41,7 @@ class Chef
         @manage_home = false
         @force = false
         @non_unique = false
+        @create_user_group = nil
         @supports = {
           :manage_home => false,
           :non_unique => false,
@@ -155,6 +156,13 @@ class Chef
         )
       end
 
+      def create_user_group(arg = nil)
+        set_or_return(
+          :create_user_group,
+          arg,
+          :kind_of => [ TrueClass, FalseClass, NilClass ]
+        )
+      end
     end
   end
 end
