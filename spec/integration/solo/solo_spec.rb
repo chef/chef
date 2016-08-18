@@ -112,7 +112,7 @@ EOM
       file "cookbooks/x/recipes/default.rb", <<EOM
 ruby_block "sleeping" do
   block do
-    sleep 10
+    sleep 0.1
   end
 end
 EOM
@@ -132,9 +132,6 @@ EOM
           # Instantiate the first chef-solo run
           s1 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
 -l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
-
-          # Give it some time to progress
-          sleep 5
 
           # Instantiate the second chef-solo run
           s2 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
@@ -158,18 +155,6 @@ EOM
       expect(pid_lines.length).to eq(2)
       pids = pid_lines.map { |l| l.split(" ").last }
       expect(run_log).to include("Chef client #{pids[0]} is running, will wait for it to finish and then run.")
-
-      # second run should start after first run ends
-      starts = [ ]
-      ends = [ ]
-      run_log.lines.each_with_index do |line, index|
-        if line.include? "Chef-client pid:"
-          starts << index
-        elsif line.include? "INFO: Chef Run complete in"
-          ends << index
-        end
-      end
-      expect(starts[1]).to be > ends[0]
     end
 
   end
