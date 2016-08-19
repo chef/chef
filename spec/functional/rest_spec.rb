@@ -83,11 +83,11 @@ describe Chef::REST do
     Chef::Config[:treat_deprecation_warnings_as_errors] = false
   end
 
-  before(:all) do
+  before(:each) do
     start_tiny_server
   end
 
-  after(:all) do
+  after(:each) do
     stop_tiny_server
   end
 

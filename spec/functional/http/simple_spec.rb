@@ -26,11 +26,11 @@ describe Chef::HTTP::Simple do
   let(:http_client) { described_class.new(source) }
   let(:http_client_disable_gzip) { described_class.new(source, { :disable_gzip => true } ) }
 
-  before(:all) do
+  before(:each) do
     start_tiny_server
   end
 
-  after(:all) do
+  after(:each) do
     stop_tiny_server
   end
 
