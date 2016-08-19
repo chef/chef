@@ -21,7 +21,7 @@
 require "spec_helper"
 require "chef/provider/user/useradd"
 
-describe Chef::Provider::User::Useradd do
+describe Chef::Provider::User::Linux do
 
   subject(:provider) do
     p = described_class.new(@new_resource, @run_context)
@@ -46,6 +46,36 @@ describe Chef::Provider::User::Useradd do
       allow(provider).to receive(:universal_options).and_return([])
       expect(provider).not_to receive(:shell_out!)
       provider.manage_user
+    end
+  end
+
+  describe "manage_home behavior" do
+    before(:each) do
+      @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
+      @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
+    end
+
+    it "sets supports manage_home to true" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      expect( @new_resource.supports[:manage_home] ).to be true
+    end
+
+    it "sets supports non-unique to true" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      expect( @new_resource.supports[:non_unique] ).to be true
+    end
+
+    it "defaults manage_home to true" do
+      expect( @new_resource.manage_home ).to be true
+    end
+
+    it "by default manage_home is true and we do not -M" do
+      expect( provider.useradd_options ).to eql([])
+    end
+
+    it "setting manage_home to false includes -M" do
+      @new_resource.manage_home false
+      expect( provider.useradd_options ).to eql(["-M"])
     end
   end
 end

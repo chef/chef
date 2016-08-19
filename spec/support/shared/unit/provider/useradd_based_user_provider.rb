@@ -18,13 +18,18 @@
 # limitations under the License.
 #
 
+# XXX: this used to be shared by solaris and linux classes, but at some
+# point became linux-specific.  it is now a misnomer to call these 'shared'
+# examples and they should either realy get turned into shared examples or
+# should be copypasta'd back directly into the linux tests.
+
 shared_examples_for "a useradd-based user provider" do |supported_useradd_options|
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::User.new("adam", @run_context)
+    @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
     @new_resource.comment "Adam Jacob"
     @new_resource.uid 1000
     @new_resource.gid 1000
@@ -35,7 +40,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     @new_resource.manage_home false
     @new_resource.force false
     @new_resource.non_unique false
-    @current_resource = Chef::Resource::User.new("adam", @run_context)
+    @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
     @current_resource.comment "Adam Jacob"
     @current_resource.uid 1000
     @current_resource.gid 1000
@@ -46,7 +51,6 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     @current_resource.manage_home false
     @current_resource.force false
     @current_resource.non_unique false
-    @current_resource.supports({ :manage_home => false, :non_unique => false })
   end
 
   describe "when setting option" do
@@ -102,9 +106,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     describe "when the resource has a different home directory and supports home directory management" do
       before do
-        allow(@new_resource).to receive(:home).and_return("/wowaweea")
-        allow(@new_resource).to receive(:supports).and_return({ :manage_home => true,
-                                                                :non_unique => false })
+        @new_resource.home "/wowaweea"
+        @new_resource.manage_home true
       end
 
       it "should set -m -d /homedir" do
@@ -126,32 +129,20 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       end
     end
 
-    describe "when the resource supports non_unique ids" do
-      before do
-        allow(@new_resource).to receive(:supports).and_return({ :manage_home => false,
-                                                                :non_unique => true })
-      end
-
-      it "should set -m -o" do
-        expect(provider.universal_options).to eql([ "-o" ])
-      end
+    it "when non_unique is false should not set -m" do
+      @new_resource.non_unique false
+      expect(provider.universal_options).to eql([ ])
     end
 
-    describe "when the resource supports non_unique ids (using real attributes)" do
-      before do
-        allow(@new_resource).to receive(:manage_home).and_return(false)
-        allow(@new_resource).to receive(:non_unique).and_return(true)
-      end
-
-      it "should set -m -o" do
-        expect(provider.universal_options).to eql([ "-o" ])
-      end
+    it "when non_unique is true should set -o" do
+      @new_resource.non_unique true
+      expect(provider.universal_options).to eql([ "-o" ])
     end
   end
 
   describe "when creating a user" do
     before(:each) do
-      @current_resource = Chef::Resource::User.new(@new_resource.name, @run_context)
+      @current_resource = Chef::Resource::User::LinuxUser.new(@new_resource.name, @run_context)
       @current_resource.username(@new_resource.username)
       provider.current_resource = @current_resource
       provider.new_resource.manage_home true
@@ -246,15 +237,12 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     end
 
     it "should run userdel with the new resources user name and -r if manage_home is true" do
-      @new_resource.supports({ :manage_home => true,
-                               :non_unique => false })
+      @new_resource.manage_home true
       expect(provider).to receive(:shell_out!).with("userdel", "-r", @new_resource.username).and_return(true)
       provider.remove_user
     end
 
     it "should run userdel with the new resources user name if non_unique is true" do
-      @new_resource.supports({ :manage_home => false,
-                               :non_unique => true })
       expect(provider).to receive(:shell_out!).with("userdel", @new_resource.username).and_return(true)
       provider.remove_user
     end
@@ -420,9 +408,9 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       end
     end
     it "should return true if the current home does not exist but a home is specified by the new resource" do
-      @new_resource = Chef::Resource::User.new("adam", @run_context)
-      @current_resource = Chef::Resource::User.new("adam", @run_context)
-      provider = Chef::Provider::User::Useradd.new(@new_resource, @run_context)
+      @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
+      @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
+      provider = Chef::Provider::User::Linux.new(@new_resource, @run_context)
       provider.current_resource = @current_resource
       @current_resource.home nil
       @new_resource.home "/home/kitten"

@@ -29,7 +29,7 @@ describe Chef::Resource::User, "initialize" do
   end
 
   it "should set the resource_name to :user" do
-    expect(@resource.resource_name).to eql(:user)
+    expect(@resource.resource_name).to eql(:user_resource_abstract_base_class)
   end
 
   it "should set the username equal to the argument to initialize" do

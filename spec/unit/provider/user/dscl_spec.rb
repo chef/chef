@@ -43,7 +43,7 @@ describe Chef::Provider::User::Dscl do
   end
 
   let(:new_resource) do
-    r = Chef::Resource::User.new("toor")
+    r = Chef::Resource::User::DsclUser.new("toor")
     r.password(password)
     r.salt(salt)
     r.iterations(iterations)
