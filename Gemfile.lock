@@ -1,14 +1,4 @@
 GIT
-  remote: git://github.com/sethvargo/chefspec.git
-  revision: b8754bdbdffc26e2744dcb5d18fd5ee5e82a703a
-  branch: master
-  specs:
-    chefspec (4.7.0)
-      chef (>= 12.0)
-      fauxhai (~> 3.6)
-      rspec (~> 3.0)
-
-GIT
   remote: https://github.com/chef/chefstyle.git
   revision: c36dcbd6c2c21d2e19db77d9fbdf2402d0bacccf
   branch: master
@@ -23,6 +13,16 @@ GIT
     bundler-audit (0.5.0)
       bundler (~> 1.2)
       thor (~> 0.18)
+
+GIT
+  remote: https://github.com/sethvargo/chefspec
+  revision: b8754bdbdffc26e2744dcb5d18fd5ee5e82a703a
+  branch: master
+  specs:
+    chefspec (4.7.0)
+      chef (>= 12.0)
+      fauxhai (~> 3.6)
+      rspec (~> 3.0)
 
 PATH
   remote: .
