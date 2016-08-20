@@ -480,7 +480,7 @@ describe Chef::ProviderResolver do
         end
       end
 
-      on_platform %w{freebsd netbsd}, platform_version: "3.1.4" do
+      on_platform "freebsd", os: "freebsd", platform_version: "10.3" do
         it "returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
           stub_service_providers
           stub_service_configs(:usr_local_etc_rcd)
@@ -507,7 +507,41 @@ describe Chef::ProviderResolver do
           expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
         end
 
-        it "foo" do
+        it "always returns a freebsd provider by default?" do
+          stub_service_providers
+          stub_service_configs
+          expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
+        end
+      end
+
+      on_platform "netbsd", os: "netbsd", platform_version: "7.0.1" do
+        it "returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
+          stub_service_providers
+          stub_service_configs(:usr_local_etc_rcd)
+          expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
+        end
+
+        it "returns a Freebsd provider if it finds the /etc/rc.d initscript" do
+          stub_service_providers
+          stub_service_configs(:etc_rcd)
+          expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
+        end
+
+        it "always returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
+          # should only care about :usr_local_etc_rcd stub in the service configs
+          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
+          stub_service_configs(:usr_local_etc_rcd, :initd, :upstart, :xinetd, :systemd)
+          expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
+        end
+
+        it "always returns a Freebsd provider if it finds the /usr/local/etc/rc.d initscript" do
+          # should only care about :etc_rcd stub in the service configs
+          stub_service_providers(:debian, :invokercd, :insserv, :upstart, :redhat, :systemd)
+          stub_service_configs(:etc_rcd, :initd, :upstart, :xinetd, :systemd)
+          expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
+        end
+
+        it "always returns a freebsd provider by default?" do
           stub_service_providers
           stub_service_configs
           expect(resolved_provider).to eql(Chef::Provider::Service::Freebsd)
@@ -552,7 +586,12 @@ describe Chef::ProviderResolver do
         subversion:             [ Chef::Resource::Subversion, Chef::Provider::Subversion ],
         template:               [ Chef::Resource::Template, Chef::Provider::Template ],
         timestamped_deploy:     [ Chef::Resource::TimestampedDeploy, Chef::Provider::Deploy::Timestamped ],
-        user:                   [ Chef::Resource::User, Chef::Provider::User::Useradd ],
+        aix_user:               [ Chef::Resource::User::AixUser, Chef::Provider::User::Aix ],
+        dscl_user:              [ Chef::Resource::User::DsclUser, Chef::Provider::User::Dscl ],
+        linux_user:             [ Chef::Resource::User::LinuxUser, Chef::Provider::User::Linux ],
+        pw_user:                [ Chef::Resource::User::PwUser, Chef::Provider::User::Pw ],
+        solaris_user:           [ Chef::Resource::User::SolarisUser, Chef::Provider::User::Solaris ],
+        windows_user:           [ Chef::Resource::User::WindowsUser, Chef::Provider::User::Windows ],
         whyrun_safe_ruby_block: [ Chef::Resource::WhyrunSafeRubyBlock, Chef::Provider::WhyrunSafeRubyBlock ],
 
         # We want to check that these are unsupported:
@@ -634,15 +673,6 @@ describe Chef::ProviderResolver do
             },
           },
 
-          "freebsd" => {
-            group: [ Chef::Resource::Group, Chef::Provider::Group::Pw ],
-            user:  [ Chef::Resource::User, Chef::Provider::User::Pw ],
-
-            "freebsd" => {
-              "3.1.4" => {
-              },
-            },
-          },
           "suse" => {
             group: [ Chef::Resource::Group, Chef::Provider::Group::Gpasswd ],
             "suse" => {
@@ -704,12 +734,24 @@ describe Chef::ProviderResolver do
 
         },
 
+        "freebsd" => {
+          "freebsd" => {
+            group: [ Chef::Resource::Group, Chef::Provider::Group::Pw ],
+            user:  [ Chef::Resource::User::PwUser, Chef::Provider::User::Pw ],
+
+            "freebsd" => {
+              "10.3" => {
+              },
+            },
+          },
+        },
+
         "darwin" => {
           %w{mac_os_x mac_os_x_server} => {
             group:   [ Chef::Resource::Group, Chef::Provider::Group::Dscl ],
             package: [ Chef::Resource::HomebrewPackage, Chef::Provider::Package::Homebrew ],
             osx_profile: [ Chef::Resource::OsxProfile, Chef::Provider::OsxProfile],
-            user:    [ Chef::Resource::User, Chef::Provider::User::Dscl ],
+            user:    [ Chef::Resource::User::DsclUser, Chef::Provider::User::Dscl ],
 
             "mac_os_x" => {
               "10.9.2" => {
@@ -727,7 +769,7 @@ describe Chef::ProviderResolver do
           package:           [ Chef::Resource::WindowsPackage, Chef::Provider::Package::Windows ],
           powershell_script: [ Chef::Resource::PowershellScript, Chef::Provider::PowershellScript ],
           service:           [ Chef::Resource::WindowsService, Chef::Provider::Service::Windows ],
-          user:              [ Chef::Resource::User, Chef::Provider::User::Windows ],
+          user:              [ Chef::Resource::User::WindowsUser, Chef::Provider::User::Windows ],
           windows_package:   [ Chef::Resource::WindowsPackage, Chef::Provider::Package::Windows ],
           windows_service:   [ Chef::Resource::WindowsService, Chef::Provider::Service::Windows ],
 
@@ -748,7 +790,7 @@ describe Chef::ProviderResolver do
           # TODO should be Chef::Resource::BffPackage
           package: [ Chef::Resource::Package, Chef::Provider::Package::Aix ],
           rpm_package: [ Chef::Resource::RpmPackage, Chef::Provider::Package::Rpm ],
-          user: [ Chef::Resource::User, Chef::Provider::User::Aix ],
+          user: [ Chef::Resource::User::AixUser, Chef::Provider::User::Aix ],
     #      service: [ Chef::Resource::AixService, Chef::Provider::Service::Aix ],
 
           "aix" => {
@@ -815,7 +857,7 @@ describe Chef::ProviderResolver do
             },
             "omnios" => {
               "3.1.4" => {
-                user: [ Chef::Resource::User, Chef::Provider::User::Solaris ],
+                user: [ Chef::Resource::User::SolarisUser, Chef::Provider::User::Solaris ],
               },
             },
             "openindiana" => {
@@ -827,7 +869,7 @@ describe Chef::ProviderResolver do
               },
             },
             "solaris2" => {
-              user: [ Chef::Resource::User, Chef::Provider::User::Solaris ],
+              user: [ Chef::Resource::User::SolarisUser, Chef::Provider::User::Solaris ],
               "5.11" => {
                 package: [ Chef::Resource::IpsPackage, Chef::Provider::Package::Ips ],
               },

@@ -21,6 +21,7 @@ require "chef/resource"
 class Chef
   class Resource
     class User < Chef::Resource
+      resource_name :user_resource_abstract_base_class # this prevents magickal class name DSL wiring
       identity_attr :username
 
       state_attrs :uid, :gid, :home
@@ -42,8 +43,8 @@ class Chef
         @force = false
         @non_unique = false
         @supports = {
-          :manage_home => false,
-          :non_unique => false,
+          manage_home: false,
+          non_unique: false,
         }
         @iterations = 27855
         @salt = nil
@@ -154,7 +155,6 @@ class Chef
           :kind_of => [ TrueClass, FalseClass ]
         )
       end
-
     end
   end
 end

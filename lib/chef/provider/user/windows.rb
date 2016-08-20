@@ -26,7 +26,7 @@ class Chef
   class Provider
     class User
       class Windows < Chef::Provider::User
-
+        provides :windows_user
         provides :user, os: "windows"
 
         def initialize(new_resource, run_context)

@@ -35,7 +35,7 @@ group(:integration) do
   gem "chef-provisioning-aws"
   gem "chef-rewind"
   gem "chef-sugar"
-  gem "chefspec"
+  gem "chefspec", git: "https://github.com/sethvargo/chefspec", branch: "master"
   gem "halite"
   gem "poise"
   gem "knife-windows"

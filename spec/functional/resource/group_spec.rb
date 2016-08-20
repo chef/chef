@@ -85,8 +85,14 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     end
   end
 
+  def node
+    node = Chef::Node.new
+    node.consume_external_attrs(ohai.data, {})
+    node
+  end
+
   def user(username)
-    usr = Chef::Resource::User.new("#{username}", run_context)
+    usr = Chef::Resource.resource_for_node(:user, node).new(username, run_context)
     if ohai[:platform_family] == "windows"
       usr.password("ComplexPass11!")
     end

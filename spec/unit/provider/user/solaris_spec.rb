@@ -44,8 +44,8 @@ describe Chef::Provider::User::Solaris do
       @events = Chef::EventDispatch::Dispatcher.new
       @run_context = Chef::RunContext.new(@node, {}, @events)
 
-      @new_resource = Chef::Resource::User.new("adam", @run_context)
-      @current_resource = Chef::Resource::User.new("adam", @run_context)
+      @new_resource = Chef::Resource::User::SolarisUser.new("adam", @run_context)
+      @current_resource = Chef::Resource::User::SolarisUser.new("adam", @run_context)
 
       @new_resource.password "hocus-pocus"
 
@@ -81,7 +81,7 @@ describe Chef::Provider::User::Solaris do
       @events = Chef::EventDispatch::Dispatcher.new
       @run_context = Chef::RunContext.new(@node, {}, @events)
 
-      @new_resource = Chef::Resource::User.new("dave")
+      @new_resource = Chef::Resource::User::SolarisUser.new("dave")
       @current_resource = @new_resource.dup
 
       @provider = Chef::Provider::User::Solaris.new(@new_resource, @run_context)

@@ -24,7 +24,7 @@ describe Chef::Provider::User::Pw do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::User.new("adam")
+    @new_resource = Chef::Resource::User::PwUser.new("adam")
     @new_resource.comment   "Adam Jacob"
     @new_resource.uid       1000
     @new_resource.gid       1000
@@ -34,7 +34,7 @@ describe Chef::Provider::User::Pw do
 
     @new_resource.supports :manage_home => true
 
-    @current_resource = Chef::Resource::User.new("adam")
+    @current_resource = Chef::Resource::User::PwUser.new("adam")
     @current_resource.comment  "Adam Jacob"
     @current_resource.uid      1000
     @current_resource.gid      1000
@@ -170,7 +170,6 @@ describe Chef::Provider::User::Pw do
       end
 
       it "logs an appropriate message" do
-        expect(Chef::Log).to receive(:debug).with("user[adam] no change needed to password")
         @provider.modify_password
       end
     end
@@ -194,7 +193,6 @@ describe Chef::Provider::User::Pw do
       end
 
       it "logs an appropriate message" do
-        expect(Chef::Log).to receive(:debug).with("user[adam] no change needed to password")
         @provider.modify_password
       end
     end
@@ -206,7 +204,6 @@ describe Chef::Provider::User::Pw do
       end
 
       it "should log an appropriate message" do
-        expect(Chef::Log).to receive(:debug).with("user[adam] updating password")
         @provider.modify_password
       end
 
@@ -236,7 +233,7 @@ describe Chef::Provider::User::Pw do
 
   describe "when loading the current state" do
     before do
-      @provider.new_resource = Chef::Resource::User.new("adam")
+      @provider.new_resource = Chef::Resource::User::PwUser.new("adam")
     end
 
     it "should raise an error if the required binary /usr/sbin/pw doesn't exist" do
