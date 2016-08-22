@@ -137,7 +137,7 @@ describe Chef::Provider::User::Useradd, metadata do
   let(:system) { false }
   let(:comment) { nil }
 
-  def user_resource
+  let(:user_resource) do
     r = resource_for_platform("TEST USER RESOURCE", run_context)
     r.username(username)
     r.uid(uid)
