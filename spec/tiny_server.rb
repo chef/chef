@@ -27,63 +27,75 @@ require "chef/config"
 
 module TinyServer
 
-  class Server < Rack::Server
-
-    attr_writer :app
-
-    def self.setup(options = nil, &block)
-      tiny_app = new(options)
-      app_code = Rack::Builder.new(&block).to_app
-      tiny_app.app = app_code
-      tiny_app
-    end
-
-    def shutdown
-      server.shutdown
-    end
-  end
-
   class Manager
 
     # 5 == debug, 3 == warning
     LOGGER = WEBrick::Log.new(STDOUT, 3)
     DEFAULT_OPTIONS = {
-      :server => "webrick",
-      :Port => 9000,
-      :Host => "localhost",
-      :environment => :none,
-      :Logger => LOGGER,
-      :AccessLog => [] # Remove this option to enable the access log when debugging.
+      Port: 9000,
+      Host: "localhost",
+      Logger: LOGGER,
+      # SSLEnable: options[:ssl],
+      # SSLCertName: [ [ 'CN', WEBrick::Utils::getservername ] ],
+      AccessLog: [], # Remove this option to enable the access log when debugging.
     }
 
-    def initialize(options = nil)
-      @options = options ? DEFAULT_OPTIONS.merge(options) : DEFAULT_OPTIONS
+    def initialize(**options)
+      @options = DEFAULT_OPTIONS.merge(options)
       @creator = caller.first
     end
 
-    def start
-      started = Queue.new
+    attr_reader :options
+    attr_reader :creator
+    attr_reader :server
+
+    def start(timeout = 5)
+      raise "Server already started!" if server
+
+      # Create the server (but don't start yet)
+      start_queue = Queue.new
+      @server = create_server(StartCallback: proc { start_queue << true })
+
       @server_thread = Thread.new do
-        @server = Server.setup(@options) do
-          run API.instance
-        end
-        @old_handler = trap(:INT, "EXIT")
-        @server.start do
-          started << true
-        end
+        # Ensure any exceptions will cause the main rspec thread to fail too
+        Thread.current.abort_on_exception = true
+        server.start
       end
-      started.pop
-      trap(:INT, @old_handler)
+
+      # Wait for the StartCallback to tell us we've started
+      Timeout.timeout(timeout) do
+        start_queue.pop
+      end
     end
 
-    def stop
-      # yes, this is terrible.
-      @server.shutdown
-      @server_thread.kill
-      @server_thread.join
-      @server_thread = nil
+    def stop(timeout = 5)
+      if server
+        server.shutdown
+        @server = nil
+      end
+
+      if server_thread
+        begin
+          # Wait for a normal shutdown
+          server_thread.join(timeout)
+        rescue
+          # If it wouldn't shut down normally, kill it.
+          server_thread.kill
+          server_thread.join(timeout)
+        end
+        @server_thread = nil
+      end
     end
 
+    private
+
+    attr_reader :server_thread
+
+    def create_server(**extra_options)
+      server = WEBrick::HTTPServer.new(**options, **extra_options)
+      server.mount("/", Rack::Handler::WEBrick, API.instance)
+      server
+    end
   end
 
   class API

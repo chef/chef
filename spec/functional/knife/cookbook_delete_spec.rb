@@ -20,9 +20,13 @@ require "spec_helper"
 require "tiny_server"
 
 describe Chef::Knife::CookbookDelete do
-  before(:all) do
+  before(:each) do
     @server = TinyServer::Manager.new
     @server.start
+  end
+
+  after(:each) do
+    @server.stop
   end
 
   before(:each) do
@@ -33,10 +37,6 @@ describe Chef::Knife::CookbookDelete do
     Chef::Config[:node_name] = nil
     Chef::Config[:client_key] = nil
     Chef::Config[:chef_server_url] = "http://localhost:9000"
-  end
-
-  after(:all) do
-    @server.stop
   end
 
   context "when the cookbook doesn't exist" do

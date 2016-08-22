@@ -476,11 +476,11 @@ end
 
   # Fails on appveyor, but works locally on windows and on windows hosts in Ci.
   context "when using recipe-url", :skip_appveyor do
-    before(:all) do
+    before(:each) do
       start_tiny_server
     end
 
-    after(:all) do
+    after(:each) do
       stop_tiny_server
     end
 

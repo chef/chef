@@ -21,13 +21,13 @@ require "tiny_server"
 
 describe Chef::Knife::Ssh do
 
-  before(:all) do
+  before(:each) do
     Chef::Knife::Ssh.load_deps
     @server = TinyServer::Manager.new
     @server.start
   end
 
-  after(:all) do
+  after(:each) do
     @server.stop
   end
 
