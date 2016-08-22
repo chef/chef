@@ -18,6 +18,7 @@
 
 require "chef/knife"
 require "chef/knife/core/node_presenter"
+require "addressable/uri"
 
 class Chef
   class Knife
@@ -85,8 +86,7 @@ class Chef
         end
 
         q = Chef::Search::Query.new
-        escaped_query = URI.escape(@query,
-                           Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+        escaped_query = Addressable::URI.encode_component(@query, Addressable::URI::CharacterClasses::QUERY)
 
         result_items = []
         result_count = 0

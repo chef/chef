@@ -28,6 +28,7 @@ PATH
   remote: .
   specs:
     chef (12.14.20)
+      addressable
       bundler (>= 1.10)
       chef-config (= 12.14.20)
       chef-zero (~> 4.8)
@@ -56,6 +57,7 @@ PATH
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
     chef (12.14.20-universal-mingw32)
+      addressable
       bundler (>= 1.10)
       chef-config (= 12.14.20)
       chef-zero (~> 4.8)

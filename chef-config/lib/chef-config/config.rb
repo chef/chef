@@ -30,6 +30,7 @@ require "chef-config/mixin/fuzzy_hostname_matcher"
 
 require "mixlib/shellout"
 require "uri"
+require "addressable/uri"
 require "openssl"
 
 module ChefConfig
@@ -870,6 +871,13 @@ module ChefConfig
       export_no_proxy(no_proxy) if no_proxy
     end
 
+    # Character classes for Addressable
+    # See https://www.ietf.org/rfc/rfc3986.txt 3.2.1
+    # The user part may not have a : in it
+    USER = Addressable::URI::CharacterClasses::UNRESERVED + Addressable::URI::CharacterClasses::SUB_DELIMS
+    # The password part may have any valid USERINFO characters
+    PASSWORD = USER + "\\:"
+
     # Builds a proxy uri and exports it to the appropriate environment variables. Examples:
     #   http://username:password@hostname:port
     #   https://username@hostname:port
@@ -884,19 +892,17 @@ module ChefConfig
       path = "#{scheme}://#{path}" unless path.include?("://")
       # URI.split returns the following parts:
       # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
-      parts = URI.split(URI.encode(path))
-      # URI::Generic.build requires an integer for the port, but URI::split gives
-      # returns a string for the port.
-      parts[3] = parts[3].to_i if parts[3]
+      uri = Addressable::URI.encode(path, Addressable::URI)
+
       if user && !user.empty?
-        userinfo = URI.encode(URI.encode(user), "@:")
+        userinfo = Addressable::URI.encode_component(user, USER)
         if pass
-          userinfo << ":#{URI.encode(URI.encode(pass), '@:')}"
+          userinfo << ":#{Addressable::URI.encode_component(pass, PASSWORD)}"
         end
-        parts[1] = userinfo
+        uri.userinfo = userinfo
       end
 
-      path = URI::Generic.build(parts).to_s
+      path = uri.to_s
       ENV["#{scheme}_proxy".downcase] = path unless ENV["#{scheme}_proxy".downcase]
       ENV["#{scheme}_proxy".upcase] = path unless ENV["#{scheme}_proxy".upcase]
     end
