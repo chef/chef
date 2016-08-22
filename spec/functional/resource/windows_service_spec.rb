@@ -28,7 +28,7 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
   let(:password) { "1a2b3c4X!&narf" }
 
   let(:user_resource) do
-    r = Chef::Resource::User.new(username, run_context)
+    r = Chef::Resource::User::WindowsUser.new(username, run_context)
     r.username(username)
     r.password(password)
     r.comment("temp spec user")
