@@ -173,7 +173,7 @@ GEM
       net-ssh
     ffi (1.9.14)
     ffi (1.9.14-x86-mingw32)
-    ffi-win32-extensions (1.0.2)
+    ffi-win32-extensions (1.0.3)
       ffi
     ffi-yajl (2.3.0)
       libyajl2 (~> 1.2)
@@ -463,7 +463,6 @@ DEPENDENCIES
   pry-byebug
   pry-remote
   pry-stack_explorer
-  rack (< 2.0)
   rake
   rb-readline
   ruby-prof
