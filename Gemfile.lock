@@ -101,6 +101,7 @@ PATH
   remote: chef-config
   specs:
     chef-config (12.14.20)
+      addressable
       fuzzyurl
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -244,7 +245,7 @@ GEM
     mixlib-authentication (1.4.1)
       mixlib-log
     mixlib-cli (1.7.0)
-    mixlib-config (2.2.1)
+    mixlib-config (2.2.2)
     mixlib-install (1.1.0)
       artifactory
       mixlib-shellout
