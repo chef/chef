@@ -21,10 +21,8 @@ require "spec_helper"
 require "functional/resource/base"
 require "chef/mixin/shell_out"
 
-def resource_for_platform(username, run_context, &block)
-  usr = Chef::Resource.resource_for_node(:user, node).new(username, run_context)
-  usr.instance_eval(&block) if block_given?
-  usr
+def resource_for_platform(username, run_context)
+  Chef::Resource.resource_for_node(:user, node).new(username, run_context)
 end
 
 metadata = {
@@ -83,9 +81,9 @@ describe Chef::Provider::User::Useradd, metadata do
     end
 
     ["cf-test"].each do |u|
-      resource_for_platform("DELETE USER", run_context) do
-        username("cf-test")
-      end.run_action(:remove)
+      r = resource_for_platform("DELETE USER", run_context)
+      r.username("cf-test")
+      r.run_action(:remove)
     end
   end
 
@@ -131,10 +129,7 @@ describe Chef::Provider::User::Useradd, metadata do
     Chef::RunContext.new(node, {}, events)
   end
 
-  let(:username) do
-    "cf-test"
-  end
-
+  let(:username) { "cf-test" }
   let(:uid) { nil }
   let(:home) { nil }
   let(:manage_home) { false }
@@ -142,16 +137,16 @@ describe Chef::Provider::User::Useradd, metadata do
   let(:system) { false }
   let(:comment) { nil }
 
-  let(:user_resource) do
-    resource_for_platform("TEST USER RESOURCE", run_context) do
-      username(username)
-      uid(uid)
-      home(home)
-      comment(comment)
-      manage_home(manage_home)
-      password(password)
-      system(system)
-    end
+  def user_resource
+    r = resource_for_platform("TEST USER RESOURCE", run_context)
+    r.username(username)
+    r.uid(uid)
+    r.home(home)
+    r.comment(comment)
+    r.manage_home(manage_home)
+    r.password(password)
+    r.system(system)
+    r
   end
 
   let(:expected_shadow) do
@@ -307,16 +302,16 @@ describe Chef::Provider::User::Useradd, metadata do
       let(:existing_comment) { nil }
 
       let(:existing_user) do
-        resource_for_platform("TEST USER RESOURCE", run_context) do
+        r = resource_for_platform("TEST USER RESOURCE", run_context)
           # username is identity attr, must match.
-          username(username)
-          uid(existing_uid)
-          home(existing_home)
-          comment(existing_comment)
-          manage_home(existing_manage_home)
-          password(existing_password)
-          system(existing_system)
-        end
+        r.username(username)
+        r.uid(existing_uid)
+        r.home(existing_home)
+        r.comment(existing_comment)
+        r.manage_home(existing_manage_home)
+        r.password(existing_password)
+        r.system(existing_system)
+        r
       end
 
       before do
