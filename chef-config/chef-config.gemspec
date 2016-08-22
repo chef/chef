@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "mixlib-shellout", "~> 2.0"
   spec.add_dependency "mixlib-config", "~> 2.0"
   spec.add_dependency "fuzzyurl"
+  spec.add_dependency "addressable"
 
   spec.add_development_dependency "rake", "~> 10.0"
 
