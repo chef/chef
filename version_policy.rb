@@ -75,9 +75,9 @@ OMNIBUS_RUBYGEMS_AT_LATEST_VERSION = {
 # rubocop - chef-style pins to 0.39.0 in 0.3.1
 #
 ACCEPTABLE_OUTDATED_GEMS = [
-  "json",       # aws-sdk-v1 disallows JSON 2.x (no fix pending yet)
-  "rack",       # Rack 2.0+ requires Ruby 2.2
-  "rubocop",    # chef-style pins to 0.39.0 in 0.3.1
+  "json",       # aws-sdk-v1 pins this because Ruby 2.0; chef-provisioning fix to abandon v1 TBD
+  "rack",       # chef-zero pins this because Ruby 2.0, will be fixed in 5.0
+  "rubocop",    # chefstyle pins this, will often be somewhat behind
   "slop",       # expected to disappear with pry 0.11
   "typhoeus",   # until https://github.com/travis-ci/travis.rb/pull/426 is fixed
 ]
