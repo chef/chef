@@ -105,11 +105,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
   end
 
   def remove_user(username)
-    if ! windows_domain_user?(username)
-      u = user(username)
-      u.manage_home false # jekins hosts throw mail spool file not owned by user if we use manage_home true
-      u.run_action(:remove)
-    end
+    user(username).run_action(:remove) if ! windows_domain_user?(username)
     # TODO: User shouldn't exist
   end
 

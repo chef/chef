@@ -76,7 +76,7 @@ describe "Chef::Resource::User with Chef::Provider::User::Dscl provider", metada
   let(:iterations) { nil }
 
   let(:user_resource) do
-    r = Chef::Resource::User::DsclUser.new("TEST USER RESOURCE", run_context)
+    r = Chef::Resource::User.new("TEST USER RESOURCE", run_context)
     r.username(username)
     r.uid(uid)
     r.gid(gid)
