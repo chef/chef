@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: c36dcbd6c2c21d2e19db77d9fbdf2402d0bacccf
+  revision: 0f9d895058964f3a14b439bd3216c0785219459f
   branch: master
   specs:
-    chefstyle (0.4.0)
-      rubocop (= 0.42.0)
+    chefstyle (0.3.1)
+      rubocop (= 0.39.0)
 
 GIT
   remote: https://github.com/rubysec/bundler-audit.git
@@ -13,16 +13,6 @@ GIT
     bundler-audit (0.5.0)
       bundler (~> 1.2)
       thor (~> 0.18)
-
-GIT
-  remote: https://github.com/sethvargo/chefspec
-  revision: b8754bdbdffc26e2744dcb5d18fd5ee5e82a703a
-  branch: master
-  specs:
-    chefspec (4.7.0)
-      chef (>= 12.0)
-      fauxhai (~> 3.6)
-      rspec (~> 3.0)
 
 PATH
   remote: .
@@ -114,12 +104,12 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.3.3)
     ast (2.3.0)
-    aws-sdk (2.5.5)
-      aws-sdk-resources (= 2.5.5)
-    aws-sdk-core (2.5.5)
+    aws-sdk (2.5.3)
+      aws-sdk-resources (= 2.5.3)
+    aws-sdk-core (2.5.3)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.5.5)
-      aws-sdk-core (= 2.5.5)
+    aws-sdk-resources (2.5.3)
+      aws-sdk-core (= 2.5.3)
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
@@ -156,6 +146,10 @@ GEM
     cheffish (3.0.0)
       chef-zero (~> 4.3)
       net-ssh
+    chefspec (4.7.0)
+      chef (>= 11.14)
+      fauxhai (~> 3.2)
+      rspec (~> 3.0)
     coderay (1.1.1)
     colorize (0.8.1)
     cucumber-core (1.5.0)
@@ -180,7 +174,7 @@ GEM
       ffi
     ffi-yajl (2.3.0)
       libyajl2 (~> 1.2)
-    foodcritic (7.1.0)
+    foodcritic (7.0.1)
       cucumber-core (>= 1.3)
       erubis
       nokogiri (>= 1.5, < 2.0)
@@ -218,7 +212,7 @@ GEM
       thor
     hashie (3.4.4)
     highline (1.7.8)
-    httpclient (2.8.2.2)
+    httpclient (2.8.1)
     inifile (3.0.0)
     iniparse (1.4.2)
     ipaddress (0.8.3)
@@ -288,14 +282,14 @@ GEM
       rack (>= 1.2, < 3)
     octokit (4.3.0)
       sawyer (~> 0.7.0, >= 0.5.3)
-    ohai (8.19.2)
+    ohai (8.19.1)
       chef-config (>= 12.5.0.alpha.1, < 13)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
       mixlib-cli
       mixlib-config (~> 2.0)
-      mixlib-log (>= 1.7.1, < 2.0)
+      mixlib-log
       mixlib-shellout (~> 2.0)
       plist (~> 3.1)
       systemu (~> 2.6.4)
@@ -349,8 +343,8 @@ GEM
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.42.0)
-      parser (>= 2.3.1.1, < 3.0)
+    rubocop (0.39.0)
+      parser (>= 2.3.0.7, < 3.0)
       powerpack (~> 0.1)
       rainbow (>= 1.99.1, < 3.0)
       ruby-progressbar (~> 1.7)
@@ -375,7 +369,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.61.1)
+    specinfra (2.60.4)
       net-scp
       net-ssh (>= 2.7, < 4.0)
       net-telnet
@@ -452,7 +446,7 @@ DEPENDENCIES
   chef-rewind
   chef-sugar
   cheffish
-  chefspec!
+  chefspec
   chefstyle!
   foodcritic
   github_changelog_generator

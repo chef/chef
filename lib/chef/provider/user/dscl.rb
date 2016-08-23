@@ -48,7 +48,6 @@ class Chef
         attr_accessor :authentication_authority
         attr_accessor :password_shadow_conversion_algorithm
 
-        provides :dscl_user
         provides :user, os: "darwin"
 
         def define_resource_requirements
