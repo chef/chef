@@ -25,10 +25,22 @@ def resource_for_platform(username, run_context)
   Chef::Resource.resource_for_node(:user, node).new(username, run_context)
 end
 
+# ideally we could somehow pass an array of [ ...::Aix, ...::Linux ] to the
+# filter, but we have to pick the right one for the O/S.
+def user_provider_filter
+  case ohai[:os]
+  when "aix"
+    Chef::Provider::User::Aix
+  when "linux"
+    Chef::Provider::User::Linux
+  end
+end
+
 metadata = {
   :unix_only => true,
   :requires_root => true,
   :not_supported_on_mac_osx => true,
+  :provider => { :user => user_provider_filter },
 }
 
 describe Chef::Provider::User::Useradd, metadata do
