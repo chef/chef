@@ -22,8 +22,7 @@ class Chef
   class Provider
     class User
       class Pw < Chef::Provider::User
-        provides :pw_user
-        provides :user, os: "freebsd"
+        provides :user, platform: %w{freebsd}
 
         def load_current_resource
           super

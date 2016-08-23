@@ -85,14 +85,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     end
   end
 
-  def node
-    node = Chef::Node.new
-    node.consume_external_attrs(ohai.data, {})
-    node
-  end
-
   def user(username)
-    usr = Chef::Resource.resource_for_node(:user, node).new(username, run_context)
+    usr = Chef::Resource::User.new("#{username}", run_context)
     if ohai[:platform_family] == "windows"
       usr.password("ComplexPass11!")
     end
@@ -105,11 +99,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
   end
 
   def remove_user(username)
-    if ! windows_domain_user?(username)
-      u = user(username)
-      u.manage_home false # jekins hosts throw mail spool file not owned by user if we use manage_home true
-      u.run_action(:remove)
-    end
+    user(username).run_action(:remove) if ! windows_domain_user?(username)
     # TODO: User shouldn't exist
   end
 

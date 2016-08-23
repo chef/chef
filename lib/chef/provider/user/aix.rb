@@ -14,14 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/provider/user/useradd"
-
 class Chef
   class Provider
     class User
       class Aix < Chef::Provider::User::Useradd
-        provides :user, os: "aix"
-        provides :aix_user
+        provides :user, platform: %w{aix}
 
         UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
 

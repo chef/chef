@@ -21,14 +21,19 @@ require "spec_helper"
 require "functional/resource/base"
 require "chef/mixin/shell_out"
 
-def resource_for_platform(username, run_context)
-  Chef::Resource.resource_for_node(:user, node).new(username, run_context)
+def user_provider_for_platform
+  case ohai[:platform]
+  when "aix"
+    Chef::Provider::User::Aix
+  else
+    Chef::Provider::User::Useradd
+  end
 end
 
-metadata = {
-  :unix_only => true,
-  :requires_root => true,
-  :not_supported_on_mac_osx => true,
+metadata = { :unix_only => true,
+             :requires_root => true,
+             :not_supported_on_mac_osx => true,
+             :provider => { :user => user_provider_for_platform },
 }
 
 describe Chef::Provider::User::Useradd, metadata do
@@ -81,7 +86,7 @@ describe Chef::Provider::User::Useradd, metadata do
     end
 
     ["cf-test"].each do |u|
-      r = resource_for_platform("DELETE USER", run_context)
+      r = Chef::Resource::User.new("DELETE USER", run_context)
       r.username("cf-test")
       r.run_action(:remove)
     end
@@ -129,7 +134,10 @@ describe Chef::Provider::User::Useradd, metadata do
     Chef::RunContext.new(node, {}, events)
   end
 
-  let(:username) { "cf-test" }
+  let(:username) do
+    "cf-test"
+  end
+
   let(:uid) { nil }
   let(:home) { nil }
   let(:manage_home) { false }
@@ -138,7 +146,7 @@ describe Chef::Provider::User::Useradd, metadata do
   let(:comment) { nil }
 
   let(:user_resource) do
-    r = resource_for_platform("TEST USER RESOURCE", run_context)
+    r = Chef::Resource::User.new("TEST USER RESOURCE", run_context)
     r.username(username)
     r.uid(uid)
     r.home(home)
@@ -234,8 +242,15 @@ describe Chef::Provider::User::Useradd, metadata do
           expect(pw_entry.home).to eq(home)
         end
 
-        it "does not create the home dir without `manage_home'" do
-          expect(File).not_to exist(home)
+        if %w{rhel fedora wrlinux}.include?(OHAI_SYSTEM["platform_family"])
+          # Inconsistent behavior. See: CHEF-2205
+          it "creates the home dir when not explicitly asked to on RHEL (XXX)" do
+            expect(File).to exist(home)
+          end
+        else
+          it "does not create the home dir without `manage_home'" do
+            expect(File).not_to exist(home)
+          end
         end
 
         context "and manage_home is enabled" do
@@ -295,8 +310,8 @@ describe Chef::Provider::User::Useradd, metadata do
       let(:existing_comment) { nil }
 
       let(:existing_user) do
-        r = resource_for_platform("TEST USER RESOURCE", run_context)
-          # username is identity attr, must match.
+        r = Chef::Resource::User.new("TEST USER RESOURCE", run_context)
+        # username is identity attr, must match.
         r.username(username)
         r.uid(existing_uid)
         r.home(existing_home)
