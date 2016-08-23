@@ -251,8 +251,8 @@ GEM
       mixlib-shellout
       mixlib-versioning
     mixlib-log (1.7.1)
-    mixlib-shellout (2.2.6)
-    mixlib-shellout (2.2.6-universal-mingw32)
+    mixlib-shellout (2.2.7)
+    mixlib-shellout (2.2.7-universal-mingw32)
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
     mixlib-versioning (1.1.0)
