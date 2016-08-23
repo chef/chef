@@ -283,7 +283,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
 
       context "and raises a ruby exception during evaluation" do
 
-        let(:config_content) { ":foo\n:bar\nraise 'oops'\n:baz\n" }
+        let(:config_content) { "raise 'oops'" }
 
         it "raises a ConfigurationError" do
           expect { config_loader.load }.to raise_error(ChefConfig::ConfigurationError)
