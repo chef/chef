@@ -31,7 +31,7 @@ PATH
       addressable
       bundler (>= 1.10)
       chef-config (= 12.14.31)
-      chef-zero (~> 4.8)
+      chef-zero (>= 4.8)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
       ffi-yajl (~> 2.2)
@@ -60,7 +60,7 @@ PATH
       addressable
       bundler (>= 1.10)
       chef-config (= 12.14.31)
-      chef-zero (~> 4.8)
+      chef-zero (>= 4.8)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
       ffi (~> 1.9)
