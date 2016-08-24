@@ -100,7 +100,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
       it "should set useradd -r" do
         @new_resource.system(true)
-        expect(provider.useradd_options).to eq([ "-r" ])
+        expect(provider.useradd_options).to eq([ "-r", "-m" ])
       end
     end
 
@@ -112,7 +112,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
       it "should set -m -d /homedir" do
         expect(provider.universal_options).to eq(%w{-d /wowaweea -m})
-        expect(provider.useradd_options).to eq([])
+        expect(provider.useradd_options).to eq([ "-m" ])  # FIXME: repeated -m
       end
     end
 
@@ -125,7 +125,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
       it "should set -m -d /homedir" do
         expect(provider.universal_options).to eql(%w{-d /wowaweea -m})
-        expect(provider.useradd_options).to eq([])
+        expect(provider.useradd_options).to eq([ "-m" ])  # FIXME: repeated -m
       end
     end
 
@@ -158,7 +158,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       command.concat([ "-s", "/usr/bin/zsh",
                        "-u", "1000",
                        "-d", "/Users/mud",
-                       "-m",
+                       "-m", "-m", # FIXME: repeated -m
                        "adam" ])
       expect(provider).to receive(:shell_out!).with(*command).and_return(true)
       provider.create_user
@@ -179,7 +179,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         command.concat(["-p", "abracadabra"]) if supported_useradd_options.key?("password")
         command.concat([ "-s", "/usr/bin/zsh",
                          "-u", "1000",
-                         "-r",
+                         "-r", "-m",
                          "adam" ])
         expect(provider).to receive(:shell_out!).with(*command).and_return(true)
         provider.create_user
