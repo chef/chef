@@ -317,6 +317,9 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         expect(provider).to receive(:shell_out).
           with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
           and_return(passwd_status)
+        # ubuntu returns 252 on user-does-not-exist so will raise if #error! is called or if
+        # shell_out! is used
+        allow(passwd_status).to receive(:error!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
         Chef::Config[:why_run] = true
       end
 
