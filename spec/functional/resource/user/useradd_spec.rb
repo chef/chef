@@ -94,6 +94,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
     ["cf-test"].each do |u|
       r = resource_for_platform("DELETE USER", run_context)
+      r.manage_home true
       r.username("cf-test")
       r.run_action(:remove)
     end
