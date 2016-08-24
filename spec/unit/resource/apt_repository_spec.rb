@@ -38,13 +38,13 @@ describe Chef::Resource::AptRepository do
     expect(resource.distribution).to eql(nil)
   end
 
-  it "should resolve to a Noop class when uses_apt? is false" do
-    expect(Chef::Provider::AptRepository).to receive(:uses_apt?).and_return(false)
+  it "should resolve to a Noop class when apt-get is not found" do
+    expect(Chef::Provider::AptRepository).to receive(:which).with("apt-get").and_return(false)
     expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
   end
 
-  it "should resolve to a AptRepository class when uses_apt? is true" do
-    expect(Chef::Provider::AptRepository).to receive(:uses_apt?).and_return(true)
+  it "should resolve to a AptRepository class when apt-get is found" do
+    expect(Chef::Provider::AptRepository).to receive(:which).with("apt-get").and_return(true)
     expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::AptRepository)
   end
 end

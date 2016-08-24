@@ -29,7 +29,6 @@ GRAPH
     sudo (>= 0.0.0)
     ubuntu (>= 0.0.0)
     users (>= 0.0.0)
-    yum-epel (>= 0.0.0)
   build-essential (6.0.3)
     compat_resource (>= 12.10)
     mingw (>= 1.1)

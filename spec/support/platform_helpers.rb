@@ -126,6 +126,10 @@ def unix?
   !windows?
 end
 
+def linux?
+  !!(RUBY_PLATFORM =~ /linux/)
+end
+
 def os_x?
   !!(RUBY_PLATFORM =~ /darwin/)
 end
