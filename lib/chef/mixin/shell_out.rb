@@ -78,6 +78,36 @@ class Chef
         return my_command_args
       end
 
+      # Helper for sublcasses to convert an array of string args into a string.  It
+      # will compact nil or empty strings in the array and will join the array elements
+      # with spaces, without introducing any double spaces for nil/empty elements.
+      #
+      # @param args [String] variable number of string arguments
+      # @return [String] nicely concatenated string or empty string
+      def a_to_s(*args)
+        clean_array(*args).join(" ")
+      end
+
+      # Helper for sublcasses to reject nil and empty strings out of an array.  It allows
+      # using the array form of shell_out (which avoids the need to surround arguments with
+      # quote marks to deal with shells).
+      #
+      # Usage:
+      #   shell_out!(*clean_array("useradd", universal_options, useradd_options, new_resource.username))
+      #
+      # universal_options and useradd_options can be nil, empty array, empty string, strings or arrays
+      # and the result makes sense.
+      #
+      # keeping this separate from shell_out!() makes it a bit easier to write expectations against the
+      # shell_out args and be able to omit nils and such in the tests (and to test that the nils are
+      # being rejected correctly).
+      #
+      # @param args [String] variable number of string arguments
+      # @return [Array] array of strings with nil and null string rejection
+      def clean_array(*args)
+        args.flatten.reject { |i| i.nil? || i == "" }.map(&:to_s)
+      end
+
       private
 
       def shell_out_command(*command_args)

@@ -39,16 +39,6 @@ describe Chef::Provider::User::Linux do
 
   include_examples "a useradd-based user provider", supported_useradd_options
 
-  describe "manage_user" do
-    # CHEF-5247: Chef::Provider::User::Solaris subclasses Chef::Provider::User::Useradd, but does not use usermod to change passwords.
-    # Thus, a call to Solaris#manage_user calls Solaris#manage_password and Useradd#manage_user, but the latter should be a no-op.
-    it "should not run the command if universal_options is an empty array" do
-      allow(provider).to receive(:universal_options).and_return([])
-      expect(provider).not_to receive(:shell_out!)
-      provider.manage_user
-    end
-  end
-
   describe "manage_home behavior" do
     before(:each) do
       @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
@@ -66,16 +56,21 @@ describe Chef::Provider::User::Linux do
     end
 
     it "defaults manage_home to true" do
-      expect( @new_resource.manage_home ).to be true
+      expect( @new_resource.manage_home ).to be false
     end
 
-    it "by default manage_home is true and we do not -M" do
-      expect( provider.useradd_options ).to eql([])
+    it "by default manage_home is false and we use -M" do
+      expect( provider.useradd_options ).to eql(["-M"])
     end
 
     it "setting manage_home to false includes -M" do
       @new_resource.manage_home false
       expect( provider.useradd_options ).to eql(["-M"])
+    end
+
+    it "setting manage_home to true includes -m" do
+      @new_resource.manage_home true
+      expect( provider.useradd_options ).to eql(["-m"])
     end
   end
 end

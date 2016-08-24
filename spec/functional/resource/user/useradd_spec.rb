@@ -94,6 +94,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
     ["cf-test"].each do |u|
       r = resource_for_platform("DELETE USER", run_context)
+      r.manage_home true
       r.username("cf-test")
       r.run_action(:remove)
     end
@@ -255,6 +256,14 @@ describe Chef::Provider::User::Useradd, metadata do
 
           it "ensures the user's home directory exists" do
             expect(File).to exist(home)
+          end
+        end
+
+        context "and manage_home is the default" do
+          let(:manage_home) { nil }
+
+          it "does not create the home dir without `manage_home'" do
+            expect(File).not_to exist(home)
           end
         end
       end
