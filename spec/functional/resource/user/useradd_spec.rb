@@ -88,7 +88,7 @@ describe Chef::Provider::User::Useradd, metadata do
   end
 
   def try_cleanup
-    ["/home/cheftestfoo", "/home/cheftestbar"].each do |f|
+    ["/home/cheftestfoo", "/home/cheftestbar", "/home/cf-test"].each do |f|
       FileUtils.rm_rf(f) if File.exists? f
     end
 
