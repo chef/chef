@@ -58,8 +58,8 @@ describe Chef::Provider::SystemdUnit do
 
   let(:user_cmd_opts) do
     {
-      "user" => "joe",
-      "environment" => {
+      :user => "joe",
+      :environment => {
         "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/1000/bus",
       },
     }
