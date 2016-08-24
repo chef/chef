@@ -258,7 +258,7 @@ describe Chef::Provider::User::Useradd, metadata do
           end
         end
 
-        context "and maange_home is the default" do
+        context "and manage_home is the default" do
           let(:manage_home) { nil }
 
           it "does not create the home dir without `manage_home'" do

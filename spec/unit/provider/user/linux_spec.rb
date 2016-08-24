@@ -56,16 +56,21 @@ describe Chef::Provider::User::Linux do
     end
 
     it "defaults manage_home to true" do
-      expect( @new_resource.manage_home ).to be true
+      expect( @new_resource.manage_home ).to be false
     end
 
-    it "by default manage_home is true and we do not -M" do
-      expect( provider.useradd_options ).to eql(["-m"])
+    it "by default manage_home is false and we use -M" do
+      expect( provider.useradd_options ).to eql(["-M"])
     end
 
     it "setting manage_home to false includes -M" do
       @new_resource.manage_home false
       expect( provider.useradd_options ).to eql(["-M"])
+    end
+
+    it "setting manage_home to true includes -m" do
+      @new_resource.manage_home true
+      expect( provider.useradd_options ).to eql(["-m"])
     end
   end
 end
