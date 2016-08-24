@@ -32,7 +32,7 @@ OMNIBUS_OVERRIDES = {
   "makedepend" => "1.0.5",
   "ncurses" => "5.9",
   "pkg-config-lite" => "0.28-1",
-  "ruby" => "2.1.9",
+  "ruby" => "2.3.1",
   # Leave dev-kit pinned to 4.5 on 32-bit, because 4.7 is 20MB larger and we don't want
   # to unnecessarily make the client any fatter. (Since it's different between
   # 32 and 64, we have to do it in the project file still.)
@@ -75,9 +75,9 @@ OMNIBUS_RUBYGEMS_AT_LATEST_VERSION = {
 # rubocop - chef-style pins to 0.39.0 in 0.3.1
 #
 ACCEPTABLE_OUTDATED_GEMS = [
-  "json",       # aws-sdk-v1 disallows JSON 2.x (no fix pending yet)
-  "rack",       # Rack 2.0+ requires Ruby 2.2
-  "rubocop",    # chef-style pins to 0.39.0 in 0.3.1
+  "json",       # aws-sdk-v1 pins this because Ruby 2.0; chef-provisioning fix to abandon v1 TBD
+  "rack",       # chef-zero pins this because Ruby 2.0, will be fixed in 5.0
+  "rubocop",    # chefstyle pins this, will often be somewhat behind
   "slop",       # expected to disappear with pry 0.11
   "typhoeus",   # until https://github.com/travis-ci/travis.rb/pull/426 is fixed
 ]

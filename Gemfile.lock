@@ -31,7 +31,7 @@ PATH
       addressable
       bundler (>= 1.10)
       chef-config (= 12.14.31)
-      chef-zero (~> 4.8)
+      chef-zero (>= 4.8)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
       ffi-yajl (~> 2.2)
@@ -60,7 +60,7 @@ PATH
       addressable
       bundler (>= 1.10)
       chef-config (= 12.14.31)
-      chef-zero (~> 4.8)
+      chef-zero (>= 4.8)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
       ffi (~> 1.9)
@@ -251,8 +251,8 @@ GEM
       mixlib-shellout
       mixlib-versioning
     mixlib-log (1.7.1)
-    mixlib-shellout (2.2.6)
-    mixlib-shellout (2.2.6-universal-mingw32)
+    mixlib-shellout (2.2.7)
+    mixlib-shellout (2.2.7-universal-mingw32)
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
     mixlib-versioning (1.1.0)
