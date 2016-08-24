@@ -111,21 +111,21 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       end
 
       it "should set -m -d /homedir" do
-        expect(provider.universal_options).to eq(%w{-d /wowaweea -m})
-        expect(provider.useradd_options).to eq([ "-m" ])  # FIXME: repeated -m
+        expect(provider.universal_options).to eq(%w{-d /wowaweea})
+        expect(provider.usermod_options).to eq(%w{-m})
       end
     end
 
     describe "when the resource has a different home directory and supports home directory management (using real attributes)" do
       before do
-        allow(@new_resource).to receive(:home).and_return("/wowaweea")
-        allow(@new_resource).to receive(:manage_home).and_return(true)
-        allow(@new_resource).to receive(:non_unique).and_return(false)
+        @new_resource.home("/wowaweea")
+        @new_resource.manage_home true
+        @new_resource.non_unique false
       end
 
       it "should set -m -d /homedir" do
-        expect(provider.universal_options).to eql(%w{-d /wowaweea -m})
-        expect(provider.useradd_options).to eq([ "-m" ])  # FIXME: repeated -m
+        expect(provider.universal_options).to eq(%w{-d /wowaweea})
+        expect(provider.usermod_options).to eq(%w{-m})
       end
     end
 
@@ -158,7 +158,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       command.concat([ "-s", "/usr/bin/zsh",
                        "-u", "1000",
                        "-d", "/Users/mud",
-                       "-m", "-m", # FIXME: repeated -m
+                       "-m",
                        "adam" ])
       expect(provider).to receive(:shell_out!).with(*command).and_return(true)
       provider.create_user
@@ -220,7 +220,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     end
 
     it "CHEF-3429: does not set -m if we aren't changing the home directory" do
-      expect(provider).to receive(:updating_home?).and_return(false)
+      expect(provider).to receive(:updating_home?).at_least(:once).and_return(false)
       command = ["usermod",
                   "-g", "23",
                   "adam" ]

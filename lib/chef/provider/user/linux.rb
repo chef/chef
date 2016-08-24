@@ -28,7 +28,7 @@ class Chef
         end
 
         def manage_user
-          shell_out!(*clean_array("usermod", universal_options, new_resource.username))
+          shell_out!(*clean_array("usermod", universal_options, usermod_options, new_resource.username))
         end
 
         def remove_user
@@ -51,15 +51,18 @@ class Chef
           opts << "-p" << new_resource.password if should_set?(:password)
           opts << "-s" << new_resource.shell if should_set?(:shell)
           opts << "-u" << new_resource.uid if should_set?(:uid)
+          opts << "-d" << new_resource.home if updating_home?
+          opts << "-o" if new_resource.non_unique
+          opts
+        end
+
+        def usermod_options
+          opts = []
           if updating_home?
-            opts << "-d" << new_resource.home
             if new_resource.manage_home
               opts << "-m"
-            else
-              opts << "-M"
             end
           end
-          opts << "-o" if new_resource.non_unique
           opts
         end
 
