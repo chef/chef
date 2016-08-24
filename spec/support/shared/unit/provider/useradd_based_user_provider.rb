@@ -257,7 +257,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
   describe "when checking the lock" do
     # lazy initialize so we can modify stdout and stderr strings
     let(:passwd_s_status) do
-      double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => @stdout, :stderr => @stderr)
+      double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => @stdout, :stderr => @stderr, :error! => nil)
     end
 
     before(:each) do
@@ -272,7 +272,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     end
 
     it "should return false if status begins with P" do
-      expect(provider).to receive(:shell_out!).
+      expect(provider).to receive(:shell_out).
         with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
         and_return(passwd_s_status)
       expect(provider.check_lock).to eql(false)
@@ -280,7 +280,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     it "should return false if status begins with N" do
       @stdout = "root N"
-      expect(provider).to receive(:shell_out!).
+      expect(provider).to receive(:shell_out).
         with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
         and_return(passwd_s_status)
       expect(provider.check_lock).to eql(false)
@@ -288,55 +288,33 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     it "should return true if status begins with L" do
       @stdout = "root L"
-      expect(provider).to receive(:shell_out!).
+      expect(provider).to receive(:shell_out).
         with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
         and_return(passwd_s_status)
       expect(provider.check_lock).to eql(true)
     end
 
-    it "should raise a Chef::Exceptions::User if passwd -S fails on anything other than redhat/centos" do
-      @node.automatic_attrs[:platform] = "ubuntu"
-      expect(provider).to receive(:shell_out!).
+    it "should raise a ShellCommandFailed exception if passwd -S exits with something other than 0 or 1" do
+      expect(passwd_s_status).to receive(:error!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      expect(provider).to receive(:shell_out).
         with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
         and_return(passwd_s_status)
-      expect(passwd_s_status).to receive(:exitstatus).and_return(1)
-      expect { provider.check_lock }.to raise_error(Chef::Exceptions::User)
+      expect { provider.check_lock }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
 
-    %w{redhat centos}.each do |os|
-      it "should not raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is version 0.73-1" do
-        @node.automatic_attrs[:platform] = os
-        expect(passwd_s_status).to receive(:exitstatus).and_return(1)
-        expect(provider).to receive(:shell_out!).
-          with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
-          and_return(passwd_s_status)
-        rpm_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-1\n", :stderr => "")
-        expect(provider).to receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
-        expect { provider.check_lock }.not_to raise_error
-      end
-
-      it "should raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is not version 0.73-1" do
-        @node.automatic_attrs[:platform] = os
-        expect(passwd_s_status).to receive(:exitstatus).and_return(1)
-        expect(provider).to receive(:shell_out!).
-          with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
-          and_return(passwd_s_status)
-        rpm_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-2\n", :stderr => "")
-        expect(provider).to receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
-        expect { provider.check_lock }.to raise_error(Chef::Exceptions::User)
-      end
-
-      it "should raise a ShellCommandFailed exception if passwd -S exits with something other than 0 or 1 on #{os}" do
-        @node.automatic_attrs[:platform] = os
-        expect(provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-        expect { provider.check_lock }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
-      end
+    it "should raise an error if the output isn't parsable" do
+      expect(passwd_s_status).to receive(:stdout).and_return("")
+      expect(passwd_s_status).to receive(:stderr).and_return("")
+      expect(provider).to receive(:shell_out).
+        with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
+        and_return(passwd_s_status)
+      expect { provider.check_lock }.to raise_error(Chef::Exceptions::User)
     end
 
     context "when in why run mode" do
       before do
         passwd_status = double("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "", :stderr => "passwd: user 'chef-test' does not exist\n")
-        expect(provider).to receive(:shell_out!).
+        expect(provider).to receive(:shell_out).
           with("passwd", "-S", @new_resource.username, { :returns => [0, 1] }).
           and_return(passwd_status)
         Chef::Config[:why_run] = true
