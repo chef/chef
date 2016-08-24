@@ -225,8 +225,8 @@ class Chef
         @systemctl_opts ||=
           if new_resource.user
             {
-              "user" => new_resource.user,
-              "environment" => {
+              :user => new_resource.user,
+              :environment => {
                 "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/#{node['etc']['passwd'][new_resource.user]['uid']}/bus",
               },
             }
