@@ -119,7 +119,7 @@ class Chef
             end
           else
             begin
-              if upstart_state == "running"
+              if upstart_goal_state == "start"
                 @current_resource.running true
               else
                 @current_resource.running false
@@ -223,7 +223,7 @@ class Chef
           conf.write_file
         end
 
-        def upstart_state
+        def upstart_goal_state
           command = "/sbin/status #{@job}"
           status = popen4(command) do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
@@ -234,7 +234,7 @@ class Chef
               # service (goal) state
               line =~ UPSTART_STATE_FORMAT
               data = Regexp.last_match
-              return data[2]
+              return data[1]
             end
           end
         end

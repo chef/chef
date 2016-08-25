@@ -105,17 +105,21 @@ describe Chef::Provider::Service::Upstart do
     end
 
     describe "when the status command uses the new format" do
-      before do
-      end
-
-      it "should set running to true if the status command returns 0" do
+      it "should set running to true if the goal state is 'start'" do
         @stdout = StringIO.new("rsyslog start/running")
         allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
         expect(@current_resource.running).to be_truthy
       end
 
-      it "should set running to false if the status command returns anything except 0" do
+      it "should set running to true if the goal state is 'start' but current state is not 'running'" do
+        @stdout = StringIO.new("rsyslog start/starting")
+        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.load_current_resource
+        expect(@current_resource.running).to be_truthy
+      end
+
+      it "should set running to false if the goal state is 'stop'" do
         @stdout = StringIO.new("rsyslog stop/waiting")
         allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
@@ -124,17 +128,21 @@ describe Chef::Provider::Service::Upstart do
     end
 
     describe "when the status command uses the new format with an instance" do
-      before do
-      end
-
-      it "should set running to true if the status command returns 0" do
+      it "should set running to true if the goal state is 'start'" do
         @stdout = StringIO.new("rsyslog (test) start/running, process 100")
         allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
         expect(@current_resource.running).to be_truthy
       end
 
-      it "should set running to false if the status command returns anything except 0" do
+      it "should set running to true if the goal state is 'start' but current state is not 'running'" do
+        @stdout = StringIO.new("rsyslog (test) start/starting, process 100")
+        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.load_current_resource
+        expect(@current_resource.running).to be_truthy
+      end
+
+      it "should set running to false if the goal state is 'stop'" do
         @stdout = StringIO.new("rsyslog (test) stop/waiting, process 100")
         allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
@@ -143,14 +151,21 @@ describe Chef::Provider::Service::Upstart do
     end
 
     describe "when the status command uses the old format" do
-      it "should set running to true if the status command returns 0" do
+      it "should set running to true if the goal state is 'start'" do
         @stdout = StringIO.new("rsyslog (start) running, process 32225")
         allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
         expect(@current_resource.running).to be_truthy
       end
 
-      it "should set running to false if the status command returns anything except 0" do
+      it "should set running to true if the goal state is 'start' but current state is not 'running'" do
+        @stdout = StringIO.new("rsyslog (start) starting, process 32225")
+        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.load_current_resource
+        expect(@current_resource.running).to be_truthy
+      end
+
+      it "should set running to false if the goal state is 'stop'" do
         @stdout = StringIO.new("rsyslog (stop) waiting")
         allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
@@ -214,8 +229,8 @@ describe Chef::Provider::Service::Upstart do
       end
     end
 
-    it "should track state when we fail to obtain service status via upstart_state" do
-      expect(@provider).to receive(:upstart_state).and_raise Chef::Exceptions::Exec
+    it "should track state when we fail to obtain service status via upstart_goal_state" do
+      expect(@provider).to receive(:upstart_goal_state).and_raise Chef::Exceptions::Exec
       @provider.load_current_resource
       expect(@provider.instance_variable_get("@command_success")).to eq(false)
     end
