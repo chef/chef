@@ -79,6 +79,9 @@ class Chef
         #     part of desired state. Defaults to `true`.
         #   @option options [Boolean] :identity `true` if this property
         #     is part of object identity. Defaults to `false`.
+        #   @option options [Boolean] :sensitive `true` if this property could
+        #     contain sensitive information and whose value should be redacted
+        #     in any resource reporting / auditing output. Defaults to `false`.
         #
         # @example Bare property
         #   property :x

@@ -169,6 +169,26 @@ describe Chef::Resource do
     end
   end
 
+  describe "#state_for_resource_reporter" do
+    context "when a property is marked as sensitive" do
+      it "suppresses the sensitive property's value" do
+        resource_class = Class.new(Chef::Resource) { property :foo, String, sensitive: true }
+        resource = resource_class.new("sensitive_property_tests")
+        resource.foo = "some value"
+        expect(resource.state_for_resource_reporter[:foo]).to eq("*sensitive value suppressed*")
+      end
+    end
+
+    context "when a property is not marked as sensitive" do
+      it "does not suppress the property's value" do
+        resource_class = Class.new(Chef::Resource) { property :foo, String }
+        resource = resource_class.new("sensitive_property_tests")
+        resource.foo = "some value"
+        expect(resource.state_for_resource_reporter[:foo]).to eq("some value")
+      end
+    end
+  end
+
   describe "load_from" do
     let(:prior_resource) do
       prior_resource = Chef::Resource.new("funk")
