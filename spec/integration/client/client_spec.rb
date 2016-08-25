@@ -475,28 +475,31 @@ end
   end
 
   # Fails on appveyor, but works locally on windows and on windows hosts in Ci.
-  context "when using recipe-url", :skip_appveyor do
-    before(:each) do
-      start_tiny_server
-    end
+  when_the_repository "is empty" do
 
-    after(:each) do
-      stop_tiny_server
-    end
+    context "when using recipe-url", :skip_appveyor do
+      before(:each) do
+        start_tiny_server
+      end
 
-    let(:tmp_dir) { Dir.mktmpdir("recipe-url") }
+      after(:each) do
+        stop_tiny_server
+      end
 
-    it "should complete with success when passed -z and --recipe-url" do
-      file "config/client.rb", <<EOM
-chef_repo_path "#{tmp_dir}"
+      let(:tmp_dir) { Dir.mktmpdir("recipe-url") }
+
+      it "should complete with success when passed -z and --recipe-url" do
+        file "config/client.rb", <<EOM
+cookbook_path "#{path_to('cookbooks')}"
 EOM
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", :cwd => tmp_dir)
-      result.error!
-    end
+        result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", :cwd => tmp_dir)
+        result.error!
+      end
 
-    it "should fail when passed --recipe-url and not passed -z" do
-      result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => tmp_dir)
-      expect(result.exitstatus).not_to eq(0)
+      it "should fail when passed --recipe-url and not passed -z" do
+        result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => tmp_dir)
+        expect(result.exitstatus).not_to eq(0)
+      end
     end
   end
 end
