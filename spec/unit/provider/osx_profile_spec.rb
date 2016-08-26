@@ -239,9 +239,7 @@ describe Chef::Provider::OsxProfile do
     end
 
     it "should work with spaces in the identifier" do
-      new_resource.identifier "com.testprofile.screensaver settings"
-      new_resource.action(:remove)
-      provider.load_current_resource
+      provider.action = :remove
       provider.define_resource_requirements
       expect { provider.process_resource_requirements }.not_to raise_error
     end
