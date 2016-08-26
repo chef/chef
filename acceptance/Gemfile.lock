@@ -64,7 +64,7 @@ GIT
 
 GIT
   remote: git://github.com/winrb/winrm.git
-  revision: d6ae35d857234676916054344070d601519ec102
+  revision: dd376892db3c5212708664f1c41c57bb54b8e2ac
   branch: winrm-v2
   specs:
     winrm (2.0.0)
@@ -82,12 +82,12 @@ GEM
   specs:
     addressable (2.4.0)
     artifactory (2.3.3)
-    aws-sdk (2.5.5)
-      aws-sdk-resources (= 2.5.5)
-    aws-sdk-core (2.5.5)
+    aws-sdk (2.5.6)
+      aws-sdk-resources (= 2.5.6)
+    aws-sdk-core (2.5.6)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.5.5)
-      aws-sdk-core (= 2.5.5)
+    aws-sdk-resources (2.5.6)
+      aws-sdk-core (= 2.5.6)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
