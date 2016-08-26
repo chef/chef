@@ -94,44 +94,32 @@ class Chef
           new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
         end
 
-        # FIXME: see if we can clean this up
         def check_lock
-          # we can get an exit code of 1 even when it's successful on
-          # rhel/centos (redhat bug 578534). See additional error checks below.
-          passwd_s = shell_out!("passwd", "-S", new_resource.username, :returns => [0, 1])
-          if whyrun_mode? && passwd_s.stdout.empty? && passwd_s.stderr.match(/does not exist/)
-            # if we're in whyrun mode and the user is not yet created we assume it would be
-            return false
-          end
+          # there's an old bug in rhel (https://bugzilla.redhat.com/show_bug.cgi?id=578534)
+          # which means that both 0 and 1 can be success.
+          passwd_s = shell_out("passwd", "-S", new_resource.username, returns: [ 0, 1 ])
 
-          raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if passwd_s.stdout.empty?
-
-          status_line = passwd_s.stdout.split(" ")
-          case status_line[1]
-          when /^P/
-            @locked = false
-          when /^N/
-            @locked = false
-          when /^L/
-            @locked = true
-          end
-
-          unless passwd_s.exitstatus == 0
-            raise_lock_error = false
-            if %w{redhat centos}.include?(node[:platform])
-              passwd_version_check = shell_out!("rpm -q passwd")
-              passwd_version = passwd_version_check.stdout.chomp
-
-              unless passwd_version == "passwd-0.73-1"
-                raise_lock_error = true
-              end
+          # checking "does not exist" has to come before exit code handling since centos and ubuntu differ in exit codes
+          if passwd_s.stderr =~ /does not exist/
+            if whyrun_mode?
+              return false
             else
-              raise_lock_error = true
+              raise Chef::Exceptions::User, "User #{new_resource.username} does not exist when checking lock status for #{new_resource}"
             end
-
-            raise Chef::Exceptions::User, "Cannot determine if #{new_resource} is locked!" if raise_lock_error
           end
 
+          # now raise if we didn't get a 0 or 1 (see above)
+          passwd_s.error!
+
+          # now the actual output parsing
+          @locked = nil
+          status_line = passwd_s.stdout.split(" ")
+          @locked = false if status_line[1] =~ /^[PN]/
+          @locked = true if status_line[1] =~ /^L/
+
+          raise Chef::Exceptions::User, "Cannot determine if user #{new_resource.username} is locked for #{new_resource}" if @locked.nil?
+
+          # FIXME: should probably go on the current_resource
           @locked
         end
       end
