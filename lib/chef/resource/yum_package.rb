@@ -27,18 +27,19 @@ class Chef
 
       # Install a specific arch
       property :arch, [ String, Array ]
-      property :flush_cache, Hash, default: { before: false, after: false }, coerce: proc { |v|
-        # TODO these append rather than set. This is probably wrong behavior, but we're preserving it until we know
-        if v.is_a?(Array)
-          v.each { |arg| flush_cache[arg] = true }
-          flush_cache
-        elsif v.any?
-          v
-        else
-          # TODO calling flush_cache({}) does a get instead of a set. This is probably wrong behavior, but we're preserving it until we know
-          flush_cache
-        end
-      }
+      # the {} on the proc here is because rspec chokes if it's do...end
+      property :flush_cache,
+               Hash,
+               default: { before: false, after: false },
+               coerce: proc { |v|
+                 if v.is_a?(Array)
+                   v.each_with_object({}) { |arg, obj| obj[arg] = true }
+                 elsif v.any?
+                   v
+                 else
+                   { before: v, after: v }
+                 end
+               }
       property :allow_downgrade, [ true, false ], default: false
       property :yum_binary, String
 
