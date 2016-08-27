@@ -27,8 +27,9 @@ class Chef
 
       # Install a specific arch
       property :arch, [ String, Array ]
+      # the {} on the proc here is because rspec chokes if it's do...end
       property :flush_cache, Hash, default: { before: false, after: false },
-        coerce: proc do |v|
+        coerce: proc { |v|
           if v.is_a?(Array)
             v.each_with_object({}) { |arg, obj| obj[arg] = true }
           elsif v.any?
@@ -36,7 +37,7 @@ class Chef
           else
             { before: v, after: v }
           end
-        end
+        }
       property :allow_downgrade, [ true, false ], default: false
       property :yum_binary, String
 
