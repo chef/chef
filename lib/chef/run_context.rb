@@ -658,9 +658,11 @@ ERROR_MESSAGE
       }.map { |x| x.to_sym }
 
       # Verify that we didn't miss any methods
-      missing_methods = superclass.instance_methods(false) - instance_methods(false) - CHILD_STATE
-      if !missing_methods.empty?
-        raise "ERROR: not all methods of RunContext accounted for in ChildRunContext! All methods must be marked as child methods with CHILD_STATE or delegated to the parent_run_context. Missing #{missing_methods.join(", ")}."
+      unless @__skip_method_checking # hook specifically for compat_resource
+        missing_methods = superclass.instance_methods(false) - instance_methods(false) - CHILD_STATE
+        if !missing_methods.empty?
+          raise "ERROR: not all methods of RunContext accounted for in ChildRunContext! All methods must be marked as child methods with CHILD_STATE or delegated to the parent_run_context. Missing #{missing_methods.join(", ")}."
+        end
       end
     end
   end
