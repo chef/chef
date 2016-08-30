@@ -238,6 +238,12 @@ describe Chef::Provider::OsxProfile do
         ).to eql(new_resource.identifier)
     end
 
+    it "should work with spaces in the identifier" do
+      provider.action = :remove
+      provider.define_resource_requirements
+      expect { provider.process_resource_requirements }.not_to raise_error
+    end
+
     it "should build the shellout remove command correctly" do
       new_resource.identifier "com.testprofile.screensaver"
       new_resource.action(:remove)
