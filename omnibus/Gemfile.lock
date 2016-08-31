@@ -1,15 +1,16 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: bd8e0da834e45c51e3957598d8a9238ca19187d5
+  revision: dfbf29902b32121a48cec6e8eecb06ec8fdb3ff4
   specs:
     license_scout (0.1.0)
+      berkshelf (~> 4.3)
       ffi-yajl (~> 2.2)
       mixlib-shellout (~> 2.2)
 
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: 676b89e48a213f34567f847c1c2aa20f08d5a2b7
-  branch: sersut/ff-ksubrama/ruby23
+  revision: b377584c65146e68fa1b48d8f3ce54bb2401dada
+  branch: lcg/ruby23
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -50,12 +51,12 @@ GEM
     addressable (2.4.0)
     artifactory (2.3.3)
     awesome_print (1.7.0)
-    aws-sdk (2.5.5)
-      aws-sdk-resources (= 2.5.5)
-    aws-sdk-core (2.5.5)
+    aws-sdk (2.5.7)
+      aws-sdk-resources (= 2.5.7)
+    aws-sdk-core (2.5.7)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.5.5)
-      aws-sdk-core (= 2.5.5)
+    aws-sdk-resources (2.5.7)
+      aws-sdk-core (= 2.5.7)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -137,7 +138,7 @@ GEM
     mixlib-authentication (1.4.1)
       mixlib-log
     mixlib-cli (1.7.0)
-    mixlib-config (2.2.2)
+    mixlib-config (2.2.3)
     mixlib-install (1.1.0)
       artifactory
       mixlib-shellout
