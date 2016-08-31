@@ -1,9 +1,8 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: dfbf29902b32121a48cec6e8eecb06ec8fdb3ff4
+  revision: bd8e0da834e45c51e3957598d8a9238ca19187d5
   specs:
     license_scout (0.1.0)
-      berkshelf (~> 4.3)
       ffi-yajl (~> 2.2)
       mixlib-shellout (~> 2.2)
 
