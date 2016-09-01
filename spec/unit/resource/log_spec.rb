@@ -76,13 +76,13 @@ describe Chef::Resource::Log do
       expect(@resource.update_resource_count).to eq(true)
     end
 
-    it 'accepts a boolean value for update_resource_count attribute' do
+    it "accepts a boolean value for update_resource_count attribute" do
       @resource.update_resource_count false
       expect(@resource.update_resource_count).to eq(false)
     end
 
-    it 'raises error if a non-boolean value is passed for update_resource_count attribute' do
-      expect{ @resource.update_resource_count "abc" }.to raise_error(Chef::Exceptions::ValidationFailed)
+    it "raises error if a non-boolean value is passed for update_resource_count attribute" do
+      expect { @resource.update_resource_count "abc" }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
   end
 end

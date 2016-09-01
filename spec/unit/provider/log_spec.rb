@@ -74,7 +74,7 @@ describe Chef::Provider::Log::ChefLog do
   end
 
   context "when update_resource_count attribute is passed" do
-    it 'updates the resource count if update_resource_count=true' do
+    it "updates the resource count if update_resource_count=true" do
       new_resource.update_resource_count true
       expect(new_resource).to receive(:updated_by_last_action)
       provider.run_action(:write)
