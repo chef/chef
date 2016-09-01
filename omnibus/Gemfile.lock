@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: 9867577e4dfbcbe7039e8399e942f8083ff22a81
+  revision: c1daa55c0a17b2f3192f22edcc0909b685aa4591
   branch: lcg/ruby23
   specs:
     omnibus-software (4.0.0)
