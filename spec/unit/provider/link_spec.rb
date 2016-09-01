@@ -250,7 +250,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     end
   end
 
-  describe 'action_delete' do
+  describe "action_delete" do
     before(:each) do
       stat = double("stats", :ino => 5)
       allow(stat).to receive(:uid).and_return(501)
@@ -262,46 +262,46 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       provider.load_current_resource
     end
 
-    shared_context 'delete link to directories on Windows' do
+    shared_context "delete link to directories on Windows" do
       before do
         allow(::File).to receive(:directory?).with(
           "#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
       end
 
-      it 'invokes Dir.delete method to delete the link' do
+      it "invokes Dir.delete method to delete the link" do
         expect(::Dir).to receive(:delete).with(provider.new_resource.target_file)
         expect(Chef::Log).to receive(:info).with("#{provider.new_resource} deleted")
         provider.run_action(:delete)
       end
     end
 
-    shared_context 'delete link to directories on Linux' do
+    shared_context "delete link to directories on Linux" do
       before do
         allow(::File).to receive(:directory?).with(
           "#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
       end
 
-      it 'invokes File.delete method to delete the link' do
+      it "invokes File.delete method to delete the link" do
         expect(::File).to receive(:delete).with(provider.new_resource.target_file)
         expect(Chef::Log).to receive(:info).with("#{provider.new_resource} deleted")
         provider.run_action(:delete)
       end
     end
 
-    shared_context 'delete link to files' do
+    shared_context "delete link to files" do
       before do
         allow(::File).to receive(:directory?).with(
           "#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
       end
 
-      it 'invokes File.delete method to delete the link' do
+      it "invokes File.delete method to delete the link" do
         expect(::File).to receive(:delete).with(provider.new_resource.target_file)
         expect(Chef::Log).to receive(:info).with("#{provider.new_resource} deleted")
         provider.run_action(:delete)
       end
     end
 
-    shared_context 'soft links prerequisites' do
+    shared_context "soft links prerequisites" do
       before(:each) do
         allow(provider.file_class).to receive(:symlink?).with(
           "#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
@@ -310,7 +310,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       end
     end
 
-    shared_context 'hard links prerequisites' do
+    shared_context "hard links prerequisites" do
       let(:new_resource) do
         result = Chef::Resource::Link.new("#{CHEF_SPEC_DATA}/fofile-link")
         result.to "#{CHEF_SPEC_DATA}/fofile"
@@ -337,7 +337,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       end
     end
 
-    context 'on Windows platform' do
+    context "on Windows platform" do
       let(:resource_link) do
         Chef::Resource::Link.new(provider.new_resource.name)
       end
@@ -349,57 +349,57 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         allow(Chef::Platform).to receive(:windows?).and_return(true)
       end
 
-      context 'soft links' do
-        include_context 'soft links prerequisites'
+      context "soft links" do
+        include_context "soft links prerequisites"
 
-        context 'to directories' do
-          include_context 'delete link to directories on Windows'
+        context "to directories" do
+          include_context "delete link to directories on Windows"
         end
 
-        context 'to files' do
-          include_context 'delete link to files'
+        context "to files" do
+          include_context "delete link to files"
         end
       end
 
-      context 'hard links' do
-        include_context 'hard links prerequisites'
+      context "hard links" do
+        include_context "hard links prerequisites"
 
-        context 'to directories' do
-          include_context 'delete link to directories on Windows'
+        context "to directories" do
+          include_context "delete link to directories on Windows"
         end
 
-        context 'to files' do
-          include_context 'delete link to files'
+        context "to files" do
+          include_context "delete link to files"
         end
       end
     end
 
-    context 'on Linux platform' do
+    context "on Linux platform" do
       before(:each) do
         allow(Chef::Platform).to receive(:windows?).and_return(false)
       end
 
-      context 'soft links' do
-        include_context 'soft links prerequisites'
+      context "soft links" do
+        include_context "soft links prerequisites"
 
-        context 'to directories' do
-          include_context 'delete link to directories on Linux'
+        context "to directories" do
+          include_context "delete link to directories on Linux"
         end
 
-        context 'to files' do
-          include_context 'delete link to files'
+        context "to files" do
+          include_context "delete link to files"
         end
       end
 
-      context 'hard links' do
-        include_context 'hard links prerequisites'
+      context "hard links" do
+        include_context "hard links prerequisites"
 
-        context 'to directories' do
-          include_context 'delete link to directories on Linux'
+        context "to directories" do
+          include_context "delete link to directories on Linux"
         end
 
-        context 'to files' do
-          include_context 'delete link to files'
+        context "to files" do
+          include_context "delete link to files"
         end
       end
     end
