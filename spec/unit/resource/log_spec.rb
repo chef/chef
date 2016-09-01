@@ -70,4 +70,19 @@ describe Chef::Resource::Log do
       expect(@resource.identity).to eq("ery day I'm loggin-in")
     end
   end
+
+  context "update_resource_count attribute" do
+    it "sets the default value of update_resource_count as true" do
+      expect(@resource.update_resource_count).to eq(true)
+    end
+
+    it 'accepts a boolean value for update_resource_count attribute' do
+      @resource.update_resource_count false
+      expect(@resource.update_resource_count).to eq(false)
+    end
+
+    it 'raises error if a non-boolean value is passed for update_resource_count attribute' do
+      expect{ @resource.update_resource_count "abc" }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+  end
 end

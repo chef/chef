@@ -72,4 +72,18 @@ describe Chef::Provider::Log::ChefLog do
     expect(Chef::Log).to receive(:info).with(log_str).and_return(true)
     provider.run_action(:write)
   end
+
+  context "when update_resource_count attribute is passed" do
+    it 'updates the resource count if update_resource_count=true' do
+      new_resource.update_resource_count true
+      expect(new_resource).to receive(:updated_by_last_action)
+      provider.run_action(:write)
+    end
+
+    it "doesn't update the resource count if update_resource_count=false" do
+      new_resource.update_resource_count false
+      expect(new_resource).not_to receive(:updated_by_last_action)
+      provider.run_action(:write)
+    end
+  end
 end
