@@ -43,7 +43,7 @@ describe Chef::Resource::ChefGem, "gem_binary" do
   end
 
   it "should set the gem_binary based on computing it from RbConfig" do
-    expect(resource.compile_time).to be nil
+    expect(resource.compile_time).to be false
   end
 
   context "when building the resource" do
@@ -59,10 +59,7 @@ describe Chef::Resource::ChefGem, "gem_binary" do
       Chef::Recipe.new("hjk", "test", run_context)
     end
 
-    let(:chef_gem_compile_time) { nil }
-
     let(:resource) do
-      Chef::Config[:chef_gem_compile_time] = chef_gem_compile_time
       Chef::Resource::ChefGem.new("foo", run_context)
     end
 
@@ -70,22 +67,13 @@ describe Chef::Resource::ChefGem, "gem_binary" do
       expect(Chef::Resource::ChefGem).to receive(:new).and_return(resource)
     end
 
-    it "runs the install at compile-time by default", chef: "< 13" do
-      expect(resource).to receive(:run_action).with(:install)
-      expect(Chef::Log).to receive(:deprecation).at_least(:once)
-      recipe.chef_gem "foo"
-    end
-
-    # the default behavior will change in Chef-13
-    it "does not runs the install at compile-time by default", chef: ">= 13" do
+    it "by default does not install at compile-time" do
       expect(resource).not_to receive(:run_action).with(:install)
-      expect(Chef::Log).not_to receive(:deprecation)
       recipe.chef_gem "foo"
     end
 
     it "compile_time true installs at compile-time" do
       expect(resource).to receive(:run_action).with(:install)
-      expect(Chef::Log).not_to receive(:deprecation)
       recipe.chef_gem "foo" do
         compile_time true
       end
@@ -93,16 +81,14 @@ describe Chef::Resource::ChefGem, "gem_binary" do
 
     it "compile_time false does not install at compile-time" do
       expect(resource).not_to receive(:run_action).with(:install)
-      expect(Chef::Log).not_to receive(:deprecation)
       recipe.chef_gem "foo" do
         compile_time false
       end
     end
 
     describe "when Chef::Config[:chef_gem_compile_time] is explicitly true" do
-      let(:chef_gem_compile_time) { true }
-
       before do
+        Chef::Config[:chef_gem_compile_time] = true
         expect(Chef::Log).not_to receive(:deprecation)
       end
 
@@ -128,9 +114,8 @@ describe Chef::Resource::ChefGem, "gem_binary" do
 
     describe "when Chef::Config[:chef_gem_compile_time] is explicitly false" do
 
-      let(:chef_gem_compile_time) { false }
-
       before do
+        Chef::Config[:chef_gem_compile_time] = false
         expect(Chef::Log).not_to receive(:deprecation)
       end
 
