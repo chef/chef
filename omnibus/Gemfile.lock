@@ -1,14 +1,14 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: bd8e0da834e45c51e3957598d8a9238ca19187d5
+  revision: 6e501d31d3957a95388422595db8fe5937092b15
   specs:
-    license_scout (0.1.0)
+    license_scout (0.1.2)
       ffi-yajl (~> 2.2)
       mixlib-shellout (~> 2.2)
 
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: c1daa55c0a17b2f3192f22edcc0909b685aa4591
+  revision: f0f4bb4beab18a9b6adbc0a34bcd2f0caf10be5c
   branch: lcg/ruby23
   specs:
     omnibus-software (4.0.0)
@@ -50,12 +50,12 @@ GEM
     addressable (2.4.0)
     artifactory (2.3.3)
     awesome_print (1.7.0)
-    aws-sdk (2.5.7)
-      aws-sdk-resources (= 2.5.7)
-    aws-sdk-core (2.5.7)
+    aws-sdk (2.5.8)
+      aws-sdk-resources (= 2.5.8)
+    aws-sdk-core (2.5.8)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.5.7)
-      aws-sdk-core (= 2.5.7)
+    aws-sdk-resources (2.5.8)
+      aws-sdk-core (= 2.5.8)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -216,7 +216,7 @@ GEM
       molinillo (~> 0.4.2)
       semverse (~> 1.1)
     systemu (2.6.5)
-    test-kitchen (1.11.1)
+    test-kitchen (1.12.0)
       mixlib-install (~> 1.0, >= 1.0.4)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
