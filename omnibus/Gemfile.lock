@@ -137,7 +137,7 @@ GEM
     mixlib-authentication (1.4.1)
       mixlib-log
     mixlib-cli (1.7.0)
-    mixlib-config (2.2.3)
+    mixlib-config (2.2.4)
     mixlib-install (1.1.0)
       artifactory
       mixlib-shellout
