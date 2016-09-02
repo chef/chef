@@ -115,7 +115,7 @@ ruby_block "sleeping" do
     retries = 200
     while IO.read(Chef::Config[:log_location]) !~ /Chef client [0-9]+ is running, will wait for it to finish and then run./
       sleep 0.1
-      last if ( retries -= 1 ) <= 0
+      raise "we ran out of retries" if ( retries -= 1 ) <= 0
     end
   end
 end
@@ -151,11 +151,11 @@ EOM
       # checks in one example.
       run_log = File.read(path_to("logs/runs.log"))
 
-      # both of the runs should succeed
-      expect(run_log.lines.reject { |l| !l.include? "INFO: Chef Run complete in" }.length).to eq(2)
-
       # second run should have a message which indicates it's waiting for the first run
       expect(run_log).to match(/Chef client [0-9]+ is running, will wait for it to finish and then run./)
+
+      # both of the runs should succeed
+      expect(run_log.lines.reject { |l| !l.include? "INFO: Chef Run complete in" }.length).to eq(2)
     end
 
   end
