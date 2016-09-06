@@ -21,6 +21,7 @@ require "chef/resource/windows_package"
 require "chef/provider/package"
 require "chef/util/path_helper"
 require "chef/mixin/checksum"
+require 'pry'
 
 class Chef
   class Provider
@@ -51,7 +52,6 @@ class Chef
             current_resource.version(package_provider.installed_version)
             new_resource.version(package_provider.package_version) if package_provider.package_version
           end
-
           current_resource
         end
 
@@ -62,6 +62,10 @@ class Chef
               Chef::Log.debug("#{new_resource} is MSI")
               require "chef/provider/package/windows/msi"
               Chef::Provider::Package::Windows::MSI.new(resource_for_provider, uninstall_registry_entries)
+            when :cab
+              Chef::Log.debug("#{new_resource} is CAB")
+              require "chef/provider/package/windows/cab"
+              Chef::Provider::Package::Windows::CAB.new(resource_for_provider)
             else
               Chef::Log.debug("#{new_resource} is EXE with type '#{installer_type}'")
               require "chef/provider/package/windows/exe"
@@ -77,6 +81,8 @@ class Chef
           # must be on disk to do so, we have to make this choice in the provider.
           @installer_type ||= begin
             return :msi if msi?
+
+            return :cab if cab?
 
             if new_resource.installer_type
               new_resource.installer_type
@@ -264,6 +270,11 @@ class Chef
           else
             ::File.extname(source_location).casecmp(".msi").zero?
           end
+        end
+
+        def cab?
+          return true if new_resource.installer_type == :cab
+          ::File.extname(source_location).casecmp(".cab").zero?
         end
       end
     end
