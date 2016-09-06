@@ -17,8 +17,8 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus.git
-  revision: 96d4695285c9530ff3b6b8160bc46e3ac6b19dd0
-  branch: sersut/ff-ksubrama/gcc_investigate
+  revision: 98c9af20a0f79b6ac205613f509b4725eea47f7b
+  branch: rhass/COOL-502_with_gcc_investigate
   specs:
     omnibus (5.5.0)
       aws-sdk (~> 2)
