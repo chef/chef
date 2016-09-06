@@ -111,6 +111,13 @@ shared_examples_for "a registry key" do
         @provider.load_current_resource
         @provider.action_create
       end
+      it "should not set the value if the key exists but the datatype of data does not match" do
+        @new_resource.values( testval3_data_string )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval3 )
+        expect(@double_registry).not_to receive(:set_value)
+        @provider.load_current_resource
+        @provider.action_create
+      end
       it "should set the value if the key exists but the type does not match" do
         expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval1_wrong_type )
         expect(@double_registry).to receive(:set_value).with(keyname, testval1)
@@ -279,7 +286,8 @@ describe Chef::Provider::RegistryKey do
     let(:testval1_wrong_type) { { :name => "one", :type => :multi_string, :data => "1" } }
     let(:testval1_wrong_data) { { :name => "one", :type => :string, :data => "2" } }
     let(:testval2) { { :name => "two", :type => :string, :data => "2" } }
-
+    let(:testval3) { { :name => "three", :type => :dword, :data => 12345 } }
+    let(:testval3_data_string) { { :name => "three", :type => :dword, :data => "12345" } }
     it_should_behave_like "a registry key"
   end
 
@@ -289,6 +297,8 @@ describe Chef::Provider::RegistryKey do
     let(:testval1_wrong_type) { { :name => "one", :type => :string, :data => 255.chr * 1 } }
     let(:testval1_wrong_data) { { :name => "one", :type => :binary, :data => 254.chr * 1 } }
     let(:testval2) { { :name => "two", :type => :binary, :data => 0.chr * 1 } }
+    let(:testval3) { { :name => "three", :type => :binary, :data => 0.chr * 1 } }
+    let(:testval3_data_string) { { :name => "three", :type => :binary, :data => 0.chr * 1 } }
 
     it_should_behave_like "a registry key"
   end
