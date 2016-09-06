@@ -133,16 +133,21 @@ EOM
         Timeout.timeout(120) do
           chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..")
 
+          threads = []
+
           # Instantiate the first chef-solo run
-          s1 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
--l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
+          threads << Thread.new do
+            s1 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default'  -l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
+            Process.waitpid(s1)
+          end
 
           # Instantiate the second chef-solo run
-          s2 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
--l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
+          threads << Thread.new do
+            s2 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default'  -l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
+            Process.waitpid(s2)
+          end
 
-          Process.waitpid(s1)
-          Process.waitpid(s2)
+          threads.each(&:join)
         end
       end.not_to raise_error
 
