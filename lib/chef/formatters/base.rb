@@ -203,12 +203,12 @@ class Chef
       end
 
       # Delegates to #file_loaded
-      def recipe_file_loaded(path)
+      def recipe_file_loaded(path, recipe)
         file_loaded(path)
       end
 
       # Delegates to #file_load_failed
-      def recipe_file_load_failed(path, exception)
+      def recipe_file_load_failed(path, exception, recipe)
         file_load_failed(path, exception)
       end
 

@@ -137,13 +137,14 @@ class Chef
         @events.recipe_load_start(run_list_expansion.recipes.size)
         run_list_expansion.recipes.each do |recipe|
           begin
+            path = resolve_recipe(recipe)
             @run_context.load_recipe(recipe)
+            @events.recipe_file_loaded(path, recipe)
           rescue Chef::Exceptions::RecipeNotFound => e
             @events.recipe_not_found(e)
             raise
           rescue Exception => e
-            path = resolve_recipe(recipe)
-            @events.recipe_file_load_failed(path, e)
+            @events.recipe_file_load_failed(path, e, recipe)
             raise
           end
         end
