@@ -336,6 +336,12 @@ class Chef
 
     # extracts the settings from the Chef::Config[:knife] sub-hash that correspond
     # to knife cli options -- in preparation for merging config values with cli values
+    #
+    # NOTE: due to weirdness in mixlib-config #has_key? is only true if the value has
+    # been set by the user -- the Chef::Config defaults return #has_key?() of false and
+    # this code DEPENDS on that functionality since applying the default values in
+    # Chef::Config[:knife] would break the defaults in the cli that we would otherwise
+    # overwrite.
     def config_file_settings
       cli_keys.each_with_object({}) do |key, memo|
         memo[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
