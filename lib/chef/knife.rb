@@ -329,31 +329,29 @@ class Chef
       exit(1)
     end
 
-    # Returns a subset of the Chef::Config[:knife] Hash that is relevant to the
-    # currently executing knife command. This is used by #configure_chef to
-    # apply settings from knife.rb to the +config+ hash.
-    def config_file_settings
-      config_file_settings = {}
-      self.class.options.keys.each do |key|
-        config_file_settings[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
-      end
-      config_file_settings
+    # keys from mixlib-cli options
+    def cli_keys
+      self.class.options.keys
     end
 
-    # Apply Config in this order:
-    # defaults from mixlib-cli
-    # settings from config file, via Chef::Config[:knife]
-    # config from command line
+    # extracts the settings from the Chef::Config[:knife] sub-hash that correspond
+    # to knife cli options -- in preparation for merging config values with cli values
+    def config_file_settings
+      cli_keys.each_with_object({}) do |key, memo|
+        memo[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
+      end
+    end
+
+    # config is merged in this order (inverse of precedence)
+    #  default_config       - mixlib-cli defaults (accessor from the mixin)
+    #  config_file_settings - Chef::Config[:knife] sub-hash
+    #  config               - mixlib-cli settings (accessor from the mixin)
     def merge_configs
-      # Apply config file settings on top of mixlib-cli defaults
-      combined_config = default_config.merge(config_file_settings)
-      # Apply user-supplied options on top of the above combination
-      combined_config = combined_config.merge(config)
-      # replace the config hash from mixlib-cli with our own.
-      # Need to use the mutate-in-place #replace method instead of assigning to
-      # the instance variable because other code may have a reference to the
-      # original config hash object.
-      config.replace(combined_config)
+      # other code may have a handle to the config object, so use Hash#replace to deliberately
+      # update-in-place.
+      config.replace(
+        default_config.merge(config_file_settings).merge(config)
+      )
     end
 
     # Catch-all method that does any massaging needed for various config
