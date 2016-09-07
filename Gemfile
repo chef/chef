@@ -40,6 +40,7 @@ group(:integration) do
   gem "poise"
   gem "knife-windows"
   gem "foodcritic"
+  gem "oc-chef-pedant", git: "https://github.com/chef/chef-server"
 end
 
 group(:docgen) do
