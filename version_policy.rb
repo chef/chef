@@ -79,6 +79,7 @@ ACCEPTABLE_OUTDATED_GEMS = [
   "rubocop",    # chefstyle pins this, will often be somewhat behind
   "slop",       # expected to disappear with pry 0.11
   "typhoeus",   # Until the travis gem updates to 1.0.
+  "cucumber-core", # Until cucumber 2.0
 ]
 
 #
