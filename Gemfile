@@ -41,7 +41,11 @@ group(:integration) do
   gem "poise-boiler", git: "https://github.com/poise/poise-boiler"
   gem "knife-windows"
   gem "foodcritic"
-  gem "cucumber-core", "< 2.0.0"
+
+  # We pin this so nobody brings in a cucumber-core incompatible with cucumber latest
+  gem "cucumber", ">= 2.4.0"
+  # We pin oc-chef-pedant to prevent it from updating out of lockstep with chef-zero
+  gem "oc-chef-pedant", git: "https://github.com/chef/chef-server"
 end
 
 group(:docgen) do
