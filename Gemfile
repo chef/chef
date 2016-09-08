@@ -38,8 +38,10 @@ group(:integration) do
   gem "chefspec"
   gem "halite"
   gem "poise"
+  gem "poise-boiler", git: "https://github.com/poise/poise-boiler"
   gem "knife-windows"
   gem "foodcritic"
+  gem "cucumber-core", "< 2.0.0"
 end
 
 group(:docgen) do

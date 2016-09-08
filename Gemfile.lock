@@ -7,6 +7,39 @@ GIT
       rubocop (= 0.42.0)
 
 GIT
+  remote: https://github.com/poise/poise-boiler
+  revision: 9b8d1393b0dc06af625e3dcc4c0e0a53b2975657
+  specs:
+    poise-boiler (1.11.1.pre)
+      bundler
+      chefspec (~> 5.0)
+      codeclimate-test-reporter (~> 0.4)
+      codecov (~> 0.0, >= 0.0.2)
+      foodcritic (~> 7.0)
+      fuubar (~> 2.0)
+      git (~> 1.2)
+      halite (~> 1.2)
+      kitchen-docker (>= 2.6.0.rc.0)
+      kitchen-ec2 (~> 1.0)
+      kitchen-sync (~> 2.1)
+      kitchen-vagrant
+      mixlib-shellout (>= 1.4, < 3.0)
+      poise-profiler (~> 1.0)
+      pry
+      pry-byebug
+      rake (>= 10.4, < 12.0)
+      rspec (~> 3.2)
+      rspec-its (~> 1.2)
+      simplecov (~> 0.9)
+      test-kitchen (~> 1.7, >= 1.7.1)
+      travis (~> 1.8, >= 1.8.1)
+      vagrant-wrapper
+      winrm (~> 2.0)
+      winrm-fs (~> 1.0)
+      yard (~> 0.8)
+      yard-classmethods (~> 1.0)
+
+GIT
   remote: https://github.com/rubysec/bundler-audit.git
   revision: b7123d7b294f244165d9469f22b37a559e235fc2
   specs:
@@ -104,12 +137,12 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.3.3)
     ast (2.3.0)
-    aws-sdk (2.5.6)
-      aws-sdk-resources (= 2.5.6)
-    aws-sdk-core (2.5.6)
+    aws-sdk (2.5.10)
+      aws-sdk-resources (= 2.5.10)
+    aws-sdk-core (2.5.10)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.5.6)
-      aws-sdk-core (= 2.5.6)
+    aws-sdk-resources (2.5.10)
+      aws-sdk-core (= 2.5.10)
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
@@ -121,14 +154,14 @@ GEM
     chef-api (0.7.0)
       logify (~> 0.1)
       mime-types
-    chef-provisioning (2.0.0)
+    chef-provisioning (2.0.1)
       cheffish (~> 4.0)
       inifile (>= 2.0.2)
       mixlib-install (~> 1.0)
       net-scp (~> 1.0)
       net-ssh (>= 2.9, < 4.0)
       net-ssh-gateway (~> 1.2.0)
-      winrm (~> 1.3)
+      winrm-fs (~> 1.0)
     chef-provisioning-aws (2.0.0)
       aws-sdk (>= 2.1.26, < 3.0)
       aws-sdk-v1 (>= 1.59.0)
@@ -137,7 +170,7 @@ GEM
       ubuntu_ami (~> 0.4, >= 0.4.1)
     chef-rewind (0.0.9)
     chef-sugar (3.4.0)
-    chef-zero (5.0.0)
+    chef-zero (5.1.0)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
       mixlib-log (~> 1.3)
@@ -150,6 +183,12 @@ GEM
       chef (>= 12.0)
       fauxhai (~> 3.6)
       rspec (~> 3.0)
+    codeclimate-test-reporter (0.6.0)
+      simplecov (>= 0.7.1, < 1.0.0)
+    codecov (0.1.5)
+      json
+      simplecov
+      url
     coderay (1.1.1)
     colorize (0.8.1)
     cucumber-core (1.5.0)
@@ -162,6 +201,7 @@ GEM
     erubis (2.7.0)
     ethon (0.9.0)
       ffi (>= 1.3.0)
+    excon (0.52.0)
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.10.0)
@@ -182,6 +222,9 @@ GEM
       rufus-lru (~> 1.0)
       treetop (~> 1.4)
       yajl-ruby (~> 1.1)
+    fuubar (2.2.0)
+      rspec-core (~> 3.0)
+      ruby-progressbar (~> 1.4)
     fuzzyurl (0.9.0)
     gh (0.14.0)
       addressable
@@ -191,6 +234,7 @@ GEM
       net-http-persistent (>= 2.7)
       net-http-pipeline
     gherkin (4.0.0)
+    git (1.3.0)
     github_api (0.14.5)
       addressable (~> 2.4.0)
       descendants_tracker (~> 0.0.4)
@@ -212,15 +256,28 @@ GEM
       thor
     hashie (3.4.4)
     highline (1.7.8)
-    httpclient (2.8.2.2)
+    httpclient (2.8.2.3)
     inifile (3.0.0)
     iniparse (1.4.2)
     ipaddress (0.8.3)
     jmespath (1.3.1)
     json (1.8.3)
     jwt (1.5.4)
-    knife-windows (1.5.0)
-      winrm (~> 1.7)
+    kitchen-docker (2.6.0.rc.0)
+      test-kitchen (>= 1.0.0)
+    kitchen-ec2 (1.1.0)
+      aws-sdk (~> 2)
+      excon
+      multi_json
+      retryable (~> 2.0)
+      test-kitchen (~> 1.4, >= 1.4.1)
+    kitchen-sync (2.1.1)
+      net-sftp
+      test-kitchen (>= 1.0.0)
+    kitchen-vagrant (0.20.0)
+      test-kitchen (~> 1.4)
+    knife-windows (1.6.0)
+      winrm-elevated (~> 1.0)
     launchy (2.4.3)
       addressable (~> 2.3)
     libyajl2 (1.2.0)
@@ -239,7 +296,7 @@ GEM
     mixlib-authentication (1.4.1)
       mixlib-log
     mixlib-cli (1.7.0)
-    mixlib-config (2.2.2)
+    mixlib-config (2.2.4)
     mixlib-install (1.1.0)
       artifactory
       mixlib-shellout
@@ -282,7 +339,7 @@ GEM
       rack (>= 1.2, < 3)
     octokit (4.3.0)
       sawyer (~> 0.7.0, >= 0.5.3)
-    ohai (8.19.2)
+    ohai (8.20.0)
       chef-config (>= 12.5.0.alpha.1, < 13)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -299,6 +356,8 @@ GEM
     pkg-config (1.1.7)
     plist (3.2.0)
     poise (2.7.1)
+      halite (~> 1.0)
+    poise-profiler (1.0.1)
       halite (~> 1.0)
     polyglot (0.3.5)
     powerpack (0.1.1)
@@ -328,7 +387,7 @@ GEM
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
       rspec-mocks (~> 3.5.0)
-    rspec-core (3.5.2)
+    rspec-core (3.5.3)
       rspec-support (~> 3.5.0)
     rspec-expectations (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -353,11 +412,13 @@ GEM
     ruby-progressbar (1.8.1)
     ruby-shadow (2.5.0)
     rubyntlm (0.6.0)
+    rubyzip (1.2.0)
     rufus-lru (1.1.0)
+    safe_yaml (1.0.4)
     sawyer (0.7.0)
       addressable (>= 2.3.5, < 2.5)
       faraday (~> 0.8, < 0.10)
-    serverspec (2.36.0)
+    serverspec (2.36.1)
       multi_json
       rspec (~> 3.0)
       rspec-its
@@ -369,7 +430,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.61.2)
+    specinfra (2.61.3)
       net-scp
       net-ssh (>= 2.7, < 4.0)
       net-telnet
@@ -379,6 +440,14 @@ GEM
       logify (~> 0.2)
     syslog-logger (1.6.8)
     systemu (2.6.5)
+    test-kitchen (1.12.0)
+      mixlib-install (~> 1.0, >= 1.0.4)
+      mixlib-shellout (>= 1.2, < 3.0)
+      net-scp (~> 1.1)
+      net-ssh (>= 2.9, < 4.0)
+      net-ssh-gateway (~> 1.2.0)
+      safe_yaml (~> 1.0)
+      thor (~> 0.18)
     thor (0.19.1)
     thread_safe (0.3.5)
     tomlrb (1.2.3)
@@ -396,8 +465,10 @@ GEM
     typhoeus (0.8.0)
       ethon (>= 0.8.0)
     ubuntu_ami (0.4.1)
-    unicode-display_width (1.1.0)
+    unicode-display_width (1.1.1)
+    url (0.3.2)
     uuidtools (2.1.5)
+    vagrant-wrapper (2.0.3)
     websocket (1.2.3)
     win32-api (1.5.3-universal-mingw32)
     win32-dir (0.5.1)
@@ -419,17 +490,28 @@ GEM
       ffi-win32-extensions
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
-    winrm (1.8.1)
+    winrm (2.0.1)
       builder (>= 2.1.2)
+      erubis (~> 2.7)
       gssapi (~> 1.2)
       gyoku (~> 1.0)
       httpclient (~> 2.2, >= 2.2.0.2)
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
       rubyntlm (~> 0.6.0)
+    winrm-elevated (1.0.0)
+      winrm (~> 2.0)
+      winrm-fs (~> 1.0)
+    winrm-fs (1.0.0)
+      erubis (~> 2.7)
+      logging (>= 1.6.1, < 3.0)
+      rubyzip (~> 1.1)
+      winrm (~> 2.0)
     wmi-lite (1.0.0)
     yajl-ruby (1.2.1)
     yard (0.9.5)
+    yard-classmethods (1.0.0)
+      yard
 
 PLATFORMS
   ruby
@@ -448,6 +530,7 @@ DEPENDENCIES
   cheffish
   chefspec
   chefstyle!
+  cucumber-core (< 2.0.0)
   foodcritic
   github_changelog_generator
   halite
@@ -456,6 +539,7 @@ DEPENDENCIES
   nokogiri
   octokit
   poise
+  poise-boiler!
   pry
   pry-byebug
   pry-remote
