@@ -5,6 +5,9 @@ cache: bundler
 # Early warning system to catch if Rubygems breaks something
 before_install:
   - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+  # Travis recently upgraded to bundler 1.13 which is breaking our builds.
+  # We will uninstall it while we work out 1,13 compatibility issues
+  - gem uninstall bundler -a
   - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
   - rm -f .bundle/config
 
