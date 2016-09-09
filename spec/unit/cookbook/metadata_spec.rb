@@ -948,5 +948,24 @@ describe Chef::Cookbook::Metadata do
       end
     end
 
+    describe "from_file" do
+      it "ignores unknown metadata fields in metadata.rb files" do
+        expect(Chef::Log).to receive(:warn).with(/ignoring method some_spiffy_new_metadata_field/)
+        Tempfile.open("metadata.rb") do |f|
+          f.write <<-EOF
+            some_spiffy_new_metadata_field "stuff its set to"
+          EOF
+          f.close
+          metadata.from_file(f.path)
+        end
+      end
+    end
+
+    describe "from_json" do
+      it "ignores unknown metadata fields in metdata.json files" do
+        json = %q{{ "some_spiffy_new_metadata_field": "stuff its set to" }}
+        metadata.from_json(json)
+      end
+    end
   end
 end
