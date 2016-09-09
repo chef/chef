@@ -950,7 +950,7 @@ describe Chef::Cookbook::Metadata do
 
     describe "from_file" do
       it "ignores unknown metadata fields in metadata.rb files" do
-        expect(Chef::Log).to receive(:warn).with(/ignoring method some_spiffy_new_metadata_field/)
+        expect(Chef::Log).to receive(:debug).with(/ignoring method some_spiffy_new_metadata_field/)
         Tempfile.open("metadata.rb") do |f|
           f.write <<-EOF
             some_spiffy_new_metadata_field "stuff its set to"
