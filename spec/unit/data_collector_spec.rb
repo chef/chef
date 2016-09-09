@@ -160,7 +160,7 @@ describe Chef::DataCollector::Reporter do
     Chef::Config[:data_collector][:server_url] = "http://my-data-collector-server.mycompany.com"
   end
 
-  describe '#run_started' do
+  describe "#run_started" do
     before do
       allow(reporter).to receive(:update_run_status)
       allow(reporter).to receive(:send_to_data_collector)
@@ -182,7 +182,7 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
-  describe '#run_completed' do
+  describe "#run_completed" do
     it "sends the run completion" do
       node = Chef::Node.new
 
@@ -191,35 +191,35 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
-  describe '#run_failed' do
+  describe "#run_failed" do
     it "updates the exception and sends the run completion" do
       expect(reporter).to receive(:send_run_completion).with(status: "failure")
       reporter.run_failed("test_exception")
     end
   end
 
-  describe '#converge_start' do
+  describe "#converge_start" do
     it "stashes the run_context for later use" do
       reporter.converge_start("test_context")
       expect(reporter.run_context).to eq("test_context")
     end
   end
 
-  describe '#converge_complete' do
+  describe "#converge_complete" do
     it "detects and processes any unprocessed resources" do
       expect(reporter).to receive(:detect_unprocessed_resources)
       reporter.converge_complete
     end
   end
 
-  describe '#converge_failed' do
+  describe "#converge_failed" do
     it "detects and processes any unprocessed resources" do
       expect(reporter).to receive(:detect_unprocessed_resources)
       reporter.converge_failed("exception")
     end
   end
 
-  describe '#resource_current_state_loaded' do
+  describe "#resource_current_state_loaded" do
     let(:new_resource)     { double("new_resource") }
     let(:action)           { double("action") }
     let(:current_resource) { double("current_resource") }
@@ -245,7 +245,7 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
-  describe '#resource_up_to_date' do
+  describe "#resource_up_to_date" do
     let(:new_resource)    { double("new_resource") }
     let(:action)          { double("action") }
     let(:resource_report) { double("resource_report") }
@@ -273,7 +273,7 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
-  describe '#resource_skipped' do
+  describe "#resource_skipped" do
     let(:new_resource)    { double("new_resource") }
     let(:action)          { double("action") }
     let(:conditional)     { double("conditional") }
@@ -311,7 +311,7 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
-  describe '#resource_updated' do
+  describe "#resource_updated" do
     let(:resource_report) { double("resource_report") }
 
     before do
@@ -325,7 +325,7 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
-  describe '#resource_failed' do
+  describe "#resource_failed" do
     let(:new_resource)    { double("new_resource") }
     let(:action)          { double("action") }
     let(:exception)       { double("exception") }
@@ -368,7 +368,7 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
-  describe '#resource_completed' do
+  describe "#resource_completed" do
     let(:new_resource)    { double("new_resource") }
     let(:resource_report) { double("resource_report") }
 
@@ -418,14 +418,14 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
-  describe '#run_list_expanded' do
+  describe "#run_list_expanded" do
     it "sets the expanded run list" do
       reporter.run_list_expanded("test_run_list")
       expect(reporter.expanded_run_list).to eq("test_run_list")
     end
   end
 
-  describe '#run_list_expand_failed' do
+  describe "#run_list_expand_failed" do
     let(:node)         { double("node") }
     let(:error_mapper) { double("error_mapper") }
     let(:exception)    { double("exception") }
@@ -441,7 +441,7 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
-  describe '#cookbook_resolution_failed' do
+  describe "#cookbook_resolution_failed" do
     let(:error_mapper)      { double("error_mapper") }
     let(:exception)         { double("exception") }
     let(:expanded_run_list) { double("expanded_run_list") }
@@ -458,7 +458,7 @@ describe Chef::DataCollector::Reporter do
 
   end
 
-  describe '#cookbook_sync_failed' do
+  describe "#cookbook_sync_failed" do
     let(:cookbooks)    { double("cookbooks") }
     let(:error_mapper) { double("error_mapper") }
     let(:exception)    { double("exception") }
@@ -474,7 +474,7 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
-  describe '#disable_reporter_on_error' do
+  describe "#disable_reporter_on_error" do
     context "when no exception is raise by the block" do
       it "does not disable the reporter" do
         expect(reporter).not_to receive(:disable_data_collector_reporter)
@@ -488,7 +488,7 @@ describe Chef::DataCollector::Reporter do
 
     context "when an unexpected exception is raised by the block" do
       it "re-raises the exception" do
-        expect { reporter.send(:disable_reporter_on_error) { raise RuntimeError, "bummer" } }.to raise_error(RuntimeError)
+        expect { reporter.send(:disable_reporter_on_error) { raise "bummer" } }.to raise_error(RuntimeError)
       end
     end
 
@@ -521,7 +521,7 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
-  describe '#validate_data_collector_server_url!' do
+  describe "#validate_data_collector_server_url!" do
     context "when server_url is empty" do
       it "raises an exception" do
         Chef::Config[:data_collector][:server_url] = ""

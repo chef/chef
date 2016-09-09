@@ -230,14 +230,25 @@ class Chef
     end
 
     #
+    # Whether this property is sensitive or not.
+    #
+    # Defaults to false.
+    #
+    # @return [Boolean]
+    #
+    def sensitive?
+      options.fetch(:sensitive, false)
+    end
+
+    #
     # Validation options.  (See Chef::Mixin::ParamsValidate#validate.)
     #
     # @return [Hash<Symbol,Object>]
     #
     def validation_options
-      @validation_options ||= options.reject { |k, v|
-        [:declared_in, :name, :instance_variable_name, :desired_state, :identity, :default, :name_property, :coerce, :required, :nillable].include?(k)
-      }
+      @validation_options ||= options.reject do |k, v|
+        [:declared_in, :name, :instance_variable_name, :desired_state, :identity, :default, :name_property, :coerce, :required, :nillable, :sensitive].include?(k)
+      end
     end
 
     #

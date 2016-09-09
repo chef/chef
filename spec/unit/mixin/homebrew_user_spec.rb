@@ -51,11 +51,11 @@ describe Chef::Mixin::HomebrewUser do
     let(:user) { nil }
     let(:brew_owner) { 2001 }
     let(:default_brew_path) { "/usr/local/bin/brew" }
-    let(:stat_double) {
+    let(:stat_double) do
       d = double()
       expect(d).to receive(:uid).and_return(brew_owner)
       d
-    }
+    end
 
     context "debug statement prints owner name" do
 

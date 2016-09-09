@@ -8,9 +8,7 @@ Want to try Chef? Get started with [learnchef](https://learn.chef.io)
 * Documentation: [http://docs.chef.io](http://docs.chef.io)
 * Source: [http://github.com/chef/chef/tree/master](http://github.com/chef/chef/tree/master)
 * Tickets/Issues: [https://github.com/chef/chef/issues](https://github.com/chef/chef/issues)
-* IRC: `#chef` and `#chef-hacking` on Freenode
-  - Join via browser: [#chef](https://webchat.freenode.net/?channels=chef), [#chef-hacking](https://webchat.freenode.net/?channels=chef-hacking)
-  - View logs: [#chef](https://botbot.me/freenode/chef/), [#chef-hacking](https://botbot.me/freenode/chef-hacking/)
+* Slack: [Chef Community Slack](https://community-slack.chef.io/)
 * Mailing list: [https://discourse.chef.io](https://discourse.chef.io)
 
 Chef is a configuration management tool designed to bring automation to your
@@ -38,9 +36,9 @@ Install these via your platform's preferred method (`apt`, `yum`, `ports`,
 * git
 * C compiler, header files, etc. On Ubuntu/Debian, use the
   `build-essential` package.
-* ruby 2.0.0 or later
+* ruby 2.1.0 or later
 * rubygems
-* bundler
+* bundler gem
 
 ### Chef Installation
 
@@ -77,10 +75,10 @@ The general development process is:
 4. Push your feature branch to github and open a pull request against
    master.
 
-Once your repository is set up, you can start working on the code. We do use
-TDD with RSpec, so you'll need to get a development environment running.
-Follow the above procedure ("Installing from Git") to get your local
-copy of the source running.
+Once your repository is set up, you can start working on the code. We do utilize
+RSpec for test driven development, so you'll need to get a development 
+environment running. Follow the above procedure ("Installing from Git") to get
+your local copy of the source running.
 
 ## Reporting Issues
 
@@ -142,12 +140,12 @@ Chef is an amalgam of many components. These components update all the time, nec
 
 ## Chef Packages
 
-Chef is distributed as packages for debian, rhel, ubuntu, windows and os/x. It includes a large number of components from various sources, and these are versioned and maintained separately from chef project, which bundles them all together conveniently for the user.
+Chef is distributed as packages for debian, rhel, ubuntu, windows, solaris, aix, and os x. It includes a large number of components from various sources, and these are versioned and maintained separately from chef project, which bundles them all together conveniently for the user.
 
 These packages go through several milestones:
 - `master`: When code is checked in to master, the patch version of chef is bumped (e.g. 0.9.10 -> 0.9.11) and a build is kicked off automatically to create and test the packages in Chef's Jenkins cluster.
 - `unstable`: When a package is built, it enters the unstable channel. When all packages for all OS's have successfully built, the test phase is kicked off in Jenkins across all supported OS's. These builds are password-protected and generally only available to the test systems.
-- `current`: If the packages pass all the tests on all supported OS's, it is promoted as a unit to `current`, and is available via Chef's artifactory by running `curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -P chef`
+- `current`: If the packages pass all the tests on all supported OS's, it is promoted as a unit to `current`, and is available via Chef's artifactory by running `curl https://www.chef.io/chef/install.sh | sudo bash -s -- -c current -P chef`
 - `stable`: Periodically, Chef will pick a release to "bless" for folks who would like a slower update schedule than "every time a build passes the tests." When this happens, it is manually promoted to stable and an announcement is sent to the list. It can be reached at https://downloads.chef.io or installed using the `curl` command without specifying `-c current`. Packages in `stable` are no longer available in `current`.
 
 Additionally, periodically Chef will update the desired versions of chef components and check that in to `master`, triggering a new build with the updated components in it.

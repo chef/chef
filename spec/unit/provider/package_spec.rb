@@ -396,13 +396,13 @@ describe Chef::Provider::Package do
 
     describe "when installing the preseed file to the cache location" do
       let(:response_file_destination) { Dir.tmpdir + "/preseed--java--java-6.seed" }
-      let(:response_file_resource) {
+      let(:response_file_resource) do
         response_file_resource = Chef::Resource::CookbookFile.new(response_file_destination, run_context)
         response_file_resource.cookbook_name = "java"
         response_file_resource.backup(false)
         response_file_resource.source("java.response")
         response_file_resource
-      }
+      end
 
       before do
         expect(provider).to receive(:preseed_resource).with("java", "6").and_return(response_file_resource)

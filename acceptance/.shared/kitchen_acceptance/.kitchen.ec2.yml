@@ -14,7 +14,6 @@ driver:
   aws_ssh_key_id: <%= ENV['AWS_SSH_KEY_ID'] || ENV['USER'] || ENV['USERNAME'] %>
   # test-specific stuff
   region: us-west-2
-  availability_zone: a
   subnet_id: subnet-19ac017c
   security_group_ids: ["sg-e401eb83", "sg-96274af3"]
   instance_type: m3.large

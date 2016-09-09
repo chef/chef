@@ -1,0 +1,8 @@
+source "https://rubygems.org"
+
+# Until https://github.com/test-kitchen/busser-serverspec/pull/42 is merged and
+# released, we need to include rake and rspec-core in the Gemfile
+gem "rake"
+gem "rspec-core"
+gem "busser-serverspec"
+gem "serverspec"

@@ -159,19 +159,22 @@ class Chef
           # Find the newest gem version available from Gem.sources that satisfies
           # the constraints of +gem_dependency+
           def find_newest_remote_version(gem_dependency, *sources)
-            available_gems = dependency_installer.find_gems_with_sources(gem_dependency)
-            spec, source = if available_gems.respond_to?(:last)
-                             # DependencyInstaller sorts the results such that the last one is
-                             # always the one it considers best.
-                             spec_with_source = available_gems.last
-                             spec_with_source && spec_with_source
-                           else
-                             # Rubygems 2.0 returns a Gem::Available set, which is a
-                             # collection of AvailableSet::Tuple structs
-                             available_gems.pick_best!
-                             best_gem = available_gems.set.first
-                             best_gem && [best_gem.spec, best_gem.source]
-                           end
+            spec, source =
+              if Chef::Config[:rubygems_cache_enabled]
+                # This code caches every gem on rubygems.org and uses lots of RAM
+                available_gems = dependency_installer.find_gems_with_sources(gem_dependency)
+                available_gems.pick_best!
+                best_gem = available_gems.set.first
+                best_gem && [best_gem.spec, best_gem.source]
+              else
+                # Use the API that 'gem install' calls which does not pull down the rubygems universe
+                begin
+                  rs = dependency_installer.resolve_dependencies gem_dependency.name, gem_dependency.requirement
+                  rs.specs.select { |s| s.name == gem_dependency.name }.first
+                rescue Gem::UnsatisfiableDependencyError
+                  nil
+                end
+              end
 
             version = spec && spec.version
             if version
@@ -519,9 +522,7 @@ class Chef
               install_via_gem_command(name, version)
             end
           elsif @new_resource.gem_binary.nil?
-            # domain is used by Gem::DependencyInstaller rather than by Chef code
-            # domain can be :local, :remote or :both
-            @gem_env.install(@new_resource.source, domain: :local)
+            @gem_env.install(@new_resource.source)
           else
             install_via_gem_command(name, version)
           end

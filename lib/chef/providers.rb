@@ -58,6 +58,7 @@ require "chef/provider/systemd_unit"
 require "chef/provider/template"
 require "chef/provider/user"
 require "chef/provider/whyrun_safe_ruby_block"
+require "chef/provider/yum_repository"
 
 require "chef/provider/env/windows"
 
@@ -101,12 +102,13 @@ require "chef/provider/service/macosx"
 require "chef/provider/service/aixinit"
 require "chef/provider/service/aix"
 
+require "chef/provider/user/aix"
 require "chef/provider/user/dscl"
+require "chef/provider/user/linux"
 require "chef/provider/user/pw"
+require "chef/provider/user/solaris"
 require "chef/provider/user/useradd"
 require "chef/provider/user/windows"
-require "chef/provider/user/solaris"
-require "chef/provider/user/aix"
 
 require "chef/provider/group/aix"
 require "chef/provider/group/dscl"

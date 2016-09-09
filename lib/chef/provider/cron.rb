@@ -187,8 +187,7 @@ class Chef
             end
             crontab << line
           end
-          description = cron_found ? "remove #{@new_resource.name} from crontab" :
-            "save unmodified crontab"
+          description = cron_found ? "remove #{@new_resource.name} from crontab" : "save unmodified crontab"
           converge_by(description) do
             write_crontab crontab
             Chef::Log.info("#{@new_resource} deleted crontab entry")
@@ -237,7 +236,7 @@ class Chef
         newcron = ""
         newcron << "# Chef Name: #{new_resource.name}\n"
         [ :mailto, :path, :shell, :home ].each do |v|
-          newcron << "#{v.to_s.upcase}=#{@new_resource.send(v)}\n" if @new_resource.send(v)
+          newcron << "#{v.to_s.upcase}=\"#{@new_resource.send(v)}\"\n" if @new_resource.send(v)
         end
         @new_resource.environment.each do |name, value|
           newcron << "#{name}=#{value}\n"

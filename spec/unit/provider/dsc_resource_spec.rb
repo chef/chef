@@ -28,11 +28,11 @@ describe Chef::Provider::DscResource do
   end
 
   context "when Powershell does not support Invoke-DscResource" do
-    let (:node) {
+    let (:node) do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = "4.0"
       node
-    }
+    end
     it "raises a ProviderNotFound exception" do
       expect(provider).not_to receive(:meta_configuration)
       expect { provider.run_action(:run) }.to raise_error(
@@ -44,11 +44,11 @@ describe Chef::Provider::DscResource do
 
     context "when RefreshMode is not set to Disabled" do
       context "and the WMF 5 is a preview release" do
-        let (:node) {
+        let (:node) do
           node = Chef::Node.new
           node.automatic[:languages][:powershell][:version] = "5.0.10018.0"
           node
-        }
+        end
         it "raises an exception" do
           expect(provider).to receive(:dsc_refresh_mode_disabled?).and_return(false)
           expect { provider.run_action(:run) }.to raise_error(
@@ -56,11 +56,11 @@ describe Chef::Provider::DscResource do
         end
       end
       context "and the WMF is 5 RTM or newer" do
-        let (:node) {
+        let (:node) do
           node = Chef::Node.new
           node.automatic[:languages][:powershell][:version] = "5.0.10586.0"
           node
-        }
+        end
         it "does not raises an exception" do
           expect(provider).to receive(:test_resource)
           expect(provider).to receive(:set_resource)
@@ -72,11 +72,11 @@ describe Chef::Provider::DscResource do
   end
 
   context "when the LCM supports Invoke-DscResource" do
-    let (:node) {
+    let (:node) do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = "5.0.10018.0"
       node
-    }
+    end
     let (:resource_result) { double("CmdletResult", return_value: { "InDesiredState" => true }, stream: "description") }
     let (:invoke_dsc_resource) { double("cmdlet", run!: resource_result) }
     let (:store) { double("ResourceStore", find: resource_records) }
@@ -153,10 +153,11 @@ describe Chef::Provider::DscResource do
       end
 
       context "multiple resource are found" do
-        let (:resource_records) { [
+        let (:resource_records) do
+          [
           { "Module" => { "Name" => "ModuleName1" } },
           { "Module" => { "Name" => "ModuleName2" } },
-        ] }
+        ] end
 
         it "raises MultipleDscResourcesFound" do
           expect { provider.run_action(:run) }.to raise_error(Chef::Exceptions::MultipleDscResourcesFound)

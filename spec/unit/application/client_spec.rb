@@ -74,6 +74,8 @@ describe Chef::Application::Client, "reconfigure" do
   end
 
   before do
+    Chef::Config.reset
+
     allow(Kernel).to receive(:trap).and_return(:ok)
     allow(::File).to receive(:read).and_call_original
     allow(::File).to receive(:read).with(Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_return("")
@@ -139,6 +141,39 @@ describe Chef::Application::Client, "reconfigure" do
       context "with a non-integer value" do
         it_behaves_like "sets the configuration", "--daemonize foo",
                         :daemonize => true
+      end
+    end
+
+    describe "--config-option" do
+      context "with a single value" do
+        it_behaves_like "sets the configuration", "--config-option chef_server_url=http://example",
+                        :chef_server_url => "http://example"
+      end
+
+      context "with two values" do
+        it_behaves_like "sets the configuration", "--config-option chef_server_url=http://example --config-option policy_name=web",
+                        :chef_server_url => "http://example", :policy_name => "web"
+      end
+
+      context "with a boolean value" do
+        it_behaves_like "sets the configuration", "--config-option minimal_ohai=true",
+                        :minimal_ohai => true
+      end
+
+      context "with an empty value" do
+        it "should terminate with message" do
+          expect(Chef::Application).to receive(:fatal!).with('Unparsable config option ""').and_raise("so ded")
+          ARGV.replace(["--config-option", ""])
+          expect { app.reconfigure }.to raise_error "so ded"
+        end
+      end
+
+      context "with an invalid value" do
+        it "should terminate with message" do
+          expect(Chef::Application).to receive(:fatal!).with('Unparsable config option "asdf"').and_raise("so ded")
+          ARGV.replace(["--config-option", "asdf"])
+          expect { app.reconfigure }.to raise_error "so ded"
+        end
       end
     end
   end

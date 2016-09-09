@@ -152,10 +152,9 @@ RSpec.configure do |config|
   config.filter_run_excluding :solaris_only => true unless solaris?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
+  config.filter_run_excluding :linux_only => true unless linux?
   config.filter_run_excluding :aix_only => true unless aix?
   config.filter_run_excluding :debian_family_only => true unless debian_family?
-  config.filter_run_excluding :linux_only => true unless linux?
-  config.filter_run_excluding :non_linux_only => true if linux?
   config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
   config.filter_run_excluding :selinux_only => true unless selinux_enabled?
   config.filter_run_excluding :requires_root => true unless root?
@@ -226,6 +225,7 @@ RSpec.configure do |config|
 end
 
 require "webrick/utils"
+require "thread"
 
 #    Webrick uses a centralized/synchronized timeout manager. It works by
 #    starting a thread to check for timeouts on an interval. The timeout
@@ -244,7 +244,12 @@ module WEBrick
   module Utils
     class TimeoutHandler
       def initialize
-        @timeout_info = Hash.new
+      end
+
+      def register(*args)
+      end
+
+      def cancel(*args)
       end
     end
   end

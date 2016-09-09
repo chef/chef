@@ -55,11 +55,11 @@ describe Chef::Resource::RemoteFile do
   let(:default_mode) { (0666 & ~File.umask).to_s(8) }
 
   context "when fetching files over HTTP" do
-    before(:all) do
+    before(:each) do
       start_tiny_server
     end
 
-    after(:all) do
+    after(:each) do
       stop_tiny_server
     end
 
@@ -97,7 +97,7 @@ describe Chef::Resource::RemoteFile do
 
   context "when fetching files over HTTPS" do
 
-    before(:all) do
+    before(:each) do
       cert_text = File.read(File.expand_path("ssl/chef-rspec.cert", CHEF_SPEC_DATA))
       cert = OpenSSL::X509::Certificate.new(cert_text)
       key_text = File.read(File.expand_path("ssl/chef-rspec.key", CHEF_SPEC_DATA))
@@ -111,7 +111,7 @@ describe Chef::Resource::RemoteFile do
       start_tiny_server(server_opts)
     end
 
-    after(:all) do
+    after(:each) do
       stop_tiny_server
     end
 
@@ -124,11 +124,11 @@ describe Chef::Resource::RemoteFile do
   end
 
   context "when dealing with content length checking" do
-    before(:all) do
+    before(:each) do
       start_tiny_server
     end
 
-    after(:all) do
+    after(:each) do
       stop_tiny_server
     end
 
@@ -232,7 +232,16 @@ describe Chef::Resource::RemoteFile do
       end
 
       it "should not create the file" do
-        expect { resource.run_action(:create) }.to raise_error
+        # This can legitimately raise either Errno::EADDRNOTAVAIL or Errno::ECONNREFUSED
+        # in different Ruby versions.
+        old_value = RSpec::Expectations.configuration.on_potential_false_positives
+        RSpec::Expectations.configuration.on_potential_false_positives = :nothing
+        begin
+          expect { resource.run_action(:create) }.to raise_error
+        ensure
+          RSpec::Expectations.configuration.on_potential_false_positives = old_value
+        end
+
         expect(File).not_to exist(path)
       end
     end

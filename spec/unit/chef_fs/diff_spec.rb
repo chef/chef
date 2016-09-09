@@ -32,7 +32,7 @@ describe "diff", :uses_diff => true do
   include FileSystemSupport
 
   context "with two filesystems with all types of difference" do
-    let(:a) {
+    let(:a) do
       memory_fs("a", {
         :both_dirs => {
           :sub_both_dirs => { :subsub => nil },
@@ -58,8 +58,8 @@ describe "diff", :uses_diff => true do
         :dir_in_a_file_in_b => {},
         :file_in_a_dir_in_b => nil,
       }, /cannot_be_in_a/)
-    }
-    let(:b) {
+    end
+    let(:b) do
       memory_fs("b", {
         :both_dirs => {
           :sub_both_dirs => { :subsub => nil },
@@ -85,7 +85,7 @@ describe "diff", :uses_diff => true do
         :dir_in_a_file_in_b => nil,
         :file_in_a_dir_in_b => {},
       }, /cannot_be_in_b/)
-    }
+    end
     it "Chef::ChefFS::CommandLine.diff_print(/)" do
       results = []
       Chef::ChefFS::CommandLine.diff_print(pattern("/"), a, b, nil, nil) do |diff|

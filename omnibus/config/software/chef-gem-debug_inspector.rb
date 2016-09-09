@@ -7,3 +7,4 @@ BuildChefGem::GemInstallSoftwareDef.define(self, __FILE__)
 
 license "MIT"
 license_file "https://github.com/banister/debug_inspector/blob/master/README.md"
+skip_transitive_dependency_licensing true

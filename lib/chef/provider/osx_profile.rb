@@ -66,33 +66,33 @@ class Chef
       def define_resource_requirements
         requirements.assert(:remove) do |a|
           if @new_profile_identifier
-            a.assertion {
+            a.assertion do
               !@new_profile_identifier.nil? &&
                 !@new_profile_identifier.end_with?(".mobileconfig") &&
-                /^\w+(?:\.\w+)+$/.match(@new_profile_identifier)
-            }
+                /^\w+(?:(\.| )\w+)+$/.match(@new_profile_identifier)
+            end
             a.failure_message RuntimeError, "when removing using the identifier attribute, it must match the profile identifier"
           else
             new_profile_name = @new_resource.profile_name
-            a.assertion {
+            a.assertion do
               !new_profile_name.end_with?(".mobileconfig") &&
-                /^\w+(?:\.\w+)+$/.match(new_profile_name)
-            }
+                /^\w+(?:(\.| )\w+)+$/.match(new_profile_name)
+            end
             a.failure_message RuntimeError, "When removing by resource name, it must match the profile identifier "
           end
         end
 
         requirements.assert(:install) do |a|
           if @new_profile_hash.is_a?(Hash)
-            a.assertion {
+            a.assertion do
               @new_profile_hash.include?("PayloadIdentifier")
-            }
+            end
             a.failure_message RuntimeError, "The specified profile does not seem to be valid"
           end
           if @new_profile_hash.is_a?(String)
-            a.assertion {
+            a.assertion do
               @new_profile_hash.end_with?(".mobileconfig")
-            }
+            end
             a.failure_message RuntimeError, "#{new_profile_hash}' is not a valid profile"
           end
         end

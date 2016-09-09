@@ -147,10 +147,6 @@ class Chef
         end
       end
 
-      def remove_user
-        raise NotImplementedError
-      end
-
       def action_manage
         if @user_exists && compare_user
           converge_by("manage user #{@new_resource.username}") do
@@ -158,10 +154,6 @@ class Chef
             Chef::Log.info("#{@new_resource} managed")
           end
         end
-      end
-
-      def manage_user
-        raise NotImplementedError
       end
 
       def action_modify
@@ -184,14 +176,6 @@ class Chef
         end
       end
 
-      def check_lock
-        raise NotImplementedError
-      end
-
-      def lock_user
-        raise NotImplementedError
-      end
-
       def action_unlock
         if check_lock() == true
           converge_by("unlock user #{@new_resource.username}") do
@@ -203,7 +187,27 @@ class Chef
         end
       end
 
+      def create_user
+        raise NotImplementedError
+      end
+
+      def remove_user
+        raise NotImplementedError
+      end
+
+      def manage_user
+        raise NotImplementedError
+      end
+
+      def lock_user
+        raise NotImplementedError
+      end
+
       def unlock_user
+        raise NotImplementedError
+      end
+
+      def check_lock
         raise NotImplementedError
       end
     end

@@ -207,7 +207,7 @@ class Chef
 
       def self.members_to_lgrmi3(members)
         buf = FFI::MemoryPointer.new(LOCALGROUP_MEMBERS_INFO_3, members.size)
-        members.size.times.collect do |i|
+        Array.new(members.size) do |i|
           member_info = LOCALGROUP_MEMBERS_INFO_3.new(
             buf + i * LOCALGROUP_MEMBERS_INFO_3.size)
           member_info[:lgrmi3_domainandname] = FFI::MemoryPointer.from_string(wstring(members[i]))

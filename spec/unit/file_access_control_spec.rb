@@ -43,7 +43,7 @@ describe Chef::FileAccessControl do
     end
 
     describe "class methods" do
-      it 'responds to #writable?' do
+      it "responds to #writable?" do
         expect(Chef::FileAccessControl).to respond_to(:writable?)
       end
     end
@@ -67,7 +67,7 @@ describe Chef::FileAccessControl do
 
     it "raises a Chef::Exceptions::UserIDNotFound error when Etc can't find the user's name" do
       expect(Etc).to receive(:getpwnam).with("toor").and_raise(ArgumentError)
-      expect { @fac.target_uid ; @provider_requirements.run(:create) }.to raise_error(Chef::Exceptions::UserIDNotFound, "cannot determine user id for 'toor', does the user exist on this system?")
+      expect { @fac.target_uid; @provider_requirements.run(:create) }.to raise_error(Chef::Exceptions::UserIDNotFound, "cannot determine user id for 'toor', does the user exist on this system?")
     end
 
     it "does not attempt to resolve the uid if the user is not specified" do
@@ -84,7 +84,7 @@ describe Chef::FileAccessControl do
 
     it "raises an ArgumentError if the resource's owner is set to something wack" do
       @resource.instance_variable_set(:@owner, :diaf)
-      expect { @fac.target_uid ; @provider_requirements.run(:create) }.to raise_error(ArgumentError)
+      expect { @fac.target_uid; @provider_requirements.run(:create) }.to raise_error(ArgumentError)
     end
 
     it "uses the resource's uid for the target uid when the resource's owner is specified by an integer" do

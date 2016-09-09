@@ -1103,18 +1103,18 @@ describe "Chef::Resource.property" do
 
   context "property_type" do
     it "property_types validate their defaults" do
-      expect {
+      expect do
         module ::PropertySpecPropertyTypes
           include Chef::Mixin::Properties
           property_type(is: [:a, :b], default: :c)
         end
-      }.to raise_error(Chef::Exceptions::DeprecatedFeatureError, /Default value :c is invalid for property <property type>./)
-      expect {
+      end.to raise_error(Chef::Exceptions::DeprecatedFeatureError, /Default value :c is invalid for property <property type>./)
+      expect do
         module ::PropertySpecPropertyTypes
           include Chef::Mixin::Properties
           property_type(is: [:a, :b], default: :b)
         end
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     context "With property_type ABType (is: [:a, :b]) and CDType (is: [:c, :d])" do

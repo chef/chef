@@ -199,9 +199,9 @@ CRONTAB
 # Chef Name: foo[bar] (baz)
 21 */4 * * * some_prog 1234567
 CRONTAB
-        expect {
+        expect do
           @provider.load_current_resource
-        }.not_to raise_error
+        end.not_to raise_error
       end
     end
 
@@ -462,10 +462,10 @@ CRONTAB
         @new_resource.environment "TEST" => "LOL"
         expect(@provider).to receive(:write_crontab).with(<<-ENDCRON)
 # Chef Name: cronhole some stuff
-MAILTO=foo@example.com
-PATH=/usr/bin:/my/custom/path
-SHELL=/bin/foosh
-HOME=/home/foo
+MAILTO="foo@example.com"
+PATH="/usr/bin:/my/custom/path"
+SHELL="/bin/foosh"
+HOME="/home/foo"
 TEST=LOL
 30 * * * * /bin/true
         ENDCRON
@@ -524,10 +524,10 @@ TEST=LOL
 
 # Another comment
 # Chef Name: cronhole some stuff
-MAILTO=foo@example.com
-PATH=/usr/bin:/my/custom/path
-SHELL=/bin/foosh
-HOME=/home/foo
+MAILTO="foo@example.com"
+PATH="/usr/bin:/my/custom/path"
+SHELL="/bin/foosh"
+HOME="/home/foo"
 TEST=LOL
 30 * * * * /bin/true
         ENDCRON
@@ -585,10 +585,10 @@ TEST=LOL
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
-MAILTO=foo@example.com
-PATH=/usr/bin:/my/custom/path
-SHELL=/bin/foosh
-HOME=/home/foo
+MAILTO="foo@example.com"
+PATH="/usr/bin:/my/custom/path"
+SHELL="/bin/foosh"
+HOME="/home/foo"
 TEST=LOL
 30 * * * * /bin/true
 # Chef Name: something else
@@ -679,10 +679,10 @@ HOME=/home/foo
 0 2 * * * /some/other/command
 
 # Chef Name: cronhole some stuff
-MAILTO=foo@example.com
-PATH=/usr/bin:/my/custom/path
-SHELL=/bin/foosh
-HOME=/home/foo
+MAILTO="foo@example.com"
+PATH="/usr/bin:/my/custom/path"
+SHELL="/bin/foosh"
+HOME="/home/foo"
 30 * * * * /bin/true
 
 # Chef Name: something else

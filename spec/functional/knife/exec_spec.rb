@@ -20,9 +20,13 @@ require "spec_helper"
 require "tiny_server"
 
 describe Chef::Knife::Exec do
-  before(:all) do
-    @server = TinyServer::Manager.new#(:debug => true)
+  before(:each) do
+    @server = TinyServer::Manager.new #(:debug => true)
     @server.start
+  end
+
+  after(:each) do
+    @server.stop
   end
 
   before(:each) do
@@ -35,10 +39,6 @@ describe Chef::Knife::Exec do
     Chef::Config[:chef_server_url] = "http://localhost:9000"
 
     $output = StringIO.new
-  end
-
-  after(:all) do
-    @server.stop
   end
 
   it "executes a script in the context of the chef-shell main context" do

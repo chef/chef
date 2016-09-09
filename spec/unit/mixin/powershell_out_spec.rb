@@ -22,9 +22,9 @@ describe Chef::Mixin::PowershellOut do
   let(:shell_out_class) { Class.new { include Chef::Mixin::PowershellOut } }
   subject(:object) { shell_out_class.new }
   let(:architecture) { "something" }
-  let(:flags) {
+  let(:flags) do
     "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy Unrestricted -InputFormat None"
-  }
+  end
 
   describe "#powershell_out" do
     it "runs a command and returns the shell_out object" do

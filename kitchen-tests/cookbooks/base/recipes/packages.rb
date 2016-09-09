@@ -7,3 +7,11 @@ pkgs = %w{lsof tcpdump strace zsh dmidecode ltrace bc curl wget telnet subversio
 pkgs.each do |pkg|
   multipackage pkgs
 end
+
+gems = %w{fpm aws-sdk}
+
+gems.each do |gem|
+  chef_gem gem do
+    compile_time false
+  end
+end

@@ -64,7 +64,7 @@ class Chef
             $VERBOSE = nil
             ps.last.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
-            cid = fork {
+            cid = fork do
               pw.last.close
               STDIN.reopen pw.first
               pw.first.close
@@ -111,7 +111,7 @@ class Chef
               end
               ps.last.close unless ps.last.closed?
               exit!
-            }
+            end
           ensure
             $VERBOSE = verbose
           end

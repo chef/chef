@@ -194,12 +194,12 @@ class Chef
       end
 
       def action_reconfig
-        if @current_resource.version == nil then
+        if @current_resource.version == nil
           Chef::Log.debug("#{@new_resource} is NOT installed - nothing to do")
           return
         end
 
-        unless @new_resource.response_file then
+        unless @new_resource.response_file
           Chef::Log.debug("#{@new_resource} no response_file provided - nothing to do")
           return
         end
@@ -587,16 +587,6 @@ class Chef
           args << { :timeout => new_resource.timeout ? new_resource.timeout : 900 }
         end
         args
-      end
-
-      # Helper for sublcasses to convert an array of string args into a string.  It
-      # will compact nil or empty strings in the array and will join the array elements
-      # with spaces, without introducing any double spaces for nil/empty elements.
-      #
-      # @param args [String] variable number of string arguments
-      # @return [String] nicely concatenated string or empty string
-      def a_to_s(*args)
-        args.flatten.reject { |i| i.nil? || i == "" }.join(" ")
       end
     end
   end

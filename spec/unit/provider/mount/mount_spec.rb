@@ -82,7 +82,7 @@ describe Chef::Provider::Mount::Mount do
 
     it "should raise an error if the mount device does not exist" do
       allow(::File).to receive(:exists?).with("/dev/sdz1").and_return false
-      expect { @provider.load_current_resource();@provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
+      expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
     it "should not call mountable? with load_current_resource - CHEF-1565" do
@@ -99,25 +99,25 @@ describe Chef::Provider::Mount::Mount do
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
       expect(::File).to receive(:exists?).with("").and_return(false)
-      expect { @provider.load_current_resource();@provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
+      expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
     it "should raise an error if the mount point does not exist" do
       allow(::File).to receive(:exists?).with("/tmp/foo").and_return false
-      expect { @provider.load_current_resource();@provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
+      expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
     %w{tmpfs fuse cgroup}.each do |fstype|
       it "does not expect the device to exist for #{fstype}" do
         @new_resource.fstype(fstype)
         @new_resource.device("whatever")
-        expect { @provider.load_current_resource();@provider.mountable? }.not_to raise_error
+        expect { @provider.load_current_resource(); @provider.mountable? }.not_to raise_error
       end
     end
 
     it "does not expect the device to exist if it's none" do
       @new_resource.device("none")
-      expect { @provider.load_current_resource();@provider.mountable? }.not_to raise_error
+      expect { @provider.load_current_resource(); @provider.mountable? }.not_to raise_error
     end
 
     it "should set mounted true if the mount point is found in the mounts list" do

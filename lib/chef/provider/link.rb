@@ -141,9 +141,16 @@ class Chef
 
       def action_delete
         if @current_resource.to # Exists
-          converge_by("delete link at #{@new_resource.target_file}") do
-            ::File.delete(@new_resource.target_file)
-            Chef::Log.info("#{@new_resource} deleted")
+          if Chef::Platform.windows? && ::File.directory?(@current_resource.target_file)
+            converge_by("delete link to dir at #{@new_resource.target_file}") do
+              ::Dir.delete(@new_resource.target_file)
+              Chef::Log.info("#{@new_resource} deleted")
+            end
+          else
+            converge_by("delete link to file at #{@new_resource.target_file}") do
+              ::File.delete(@new_resource.target_file)
+              Chef::Log.info("#{@new_resource} deleted")
+            end
           end
         end
       end

@@ -126,7 +126,7 @@ module Shell
     end
 
     def shorten_node_inspect
-      def @node.inspect
+      def @node.inspect # rubocop:disable Lint/NestedMethodDefinition
         "<Chef::Node:0x#{self.object_id.to_s(16)} @name=\"#{self.name}\">"
       end
     end

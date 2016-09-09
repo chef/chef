@@ -32,7 +32,7 @@ OMNIBUS_OVERRIDES = {
   "makedepend" => "1.0.5",
   "ncurses" => "5.9",
   "pkg-config-lite" => "0.28-1",
-  "ruby" => "2.1.8",
+  "ruby" => "2.3.1",
   # Leave dev-kit pinned to 4.5 on 32-bit, because 4.7 is 20MB larger and we don't want
   # to unnecessarily make the client any fatter. (Since it's different between
   # 32 and 64, we have to do it in the project file still.)
@@ -44,7 +44,7 @@ OMNIBUS_OVERRIDES = {
 
   ## These can float as they are frequently updated in a way that works for us
   #override "cacerts" =>"???",
-  #override "openssl" =>"???",
+  "openssl" => "1.0.2h",
 }
 
 #
@@ -74,14 +74,12 @@ OMNIBUS_RUBYGEMS_AT_LATEST_VERSION = {
 # stove - halite pins to ~> 3.2 in 1.2.1
 # rubocop - chef-style pins to 0.39.0 in 0.3.1
 #
-ACCEPTABLE_OUTDATED_GEMS = %w{
-  gherkin
-  jwt
-  mini_portile2
-  slop
-  stove
-  rubocop
-}
+ACCEPTABLE_OUTDATED_GEMS = [
+  "json",       # aws-sdk-v1 pins this because Ruby 2.0; chef-provisioning fix to abandon v1 TBD
+  "rubocop",    # chefstyle pins this, will often be somewhat behind
+  "slop",       # expected to disappear with pry 0.11
+  "typhoeus",   # Until the travis gem updates to 1.0.
+]
 
 #
 # Some gems are part of our bundle (must be installed) but not important

@@ -840,7 +840,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true, :requires_git => tr
         end
 
         def run_action(action)
-          raise RuntimeError, "network error"
+          raise "network error"
         end
       end
 

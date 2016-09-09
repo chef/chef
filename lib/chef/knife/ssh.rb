@@ -164,9 +164,7 @@ class Chef
       end
 
       def configure_session
-        list = config[:manual] ?
-               @name_args[0].split(" ") :
-               search_nodes
+        list = config[:manual] ? @name_args[0].split(" ") : search_nodes
         if list.length == 0
           if @action_nodes.length == 0
             ui.fatal("No nodes returned from search")
@@ -548,24 +546,24 @@ class Chef
         configure_session
 
         exit_status =
-        case @name_args[1]
-        when "interactive"
-          interactive
-        when "screen"
-          screen
-        when "tmux"
-          tmux
-        when "macterm"
-          macterm
-        when "cssh"
-          cssh
-        when "csshx"
-          Chef::Log.warn("knife ssh csshx will be deprecated in a future release")
-          Chef::Log.warn("please use knife ssh cssh instead")
-          cssh
-        else
-          ssh_command(@name_args[1..-1].join(" "))
-        end
+          case @name_args[1]
+          when "interactive"
+            interactive
+          when "screen"
+            screen
+          when "tmux"
+            tmux
+          when "macterm"
+            macterm
+          when "cssh"
+            cssh
+          when "csshx"
+            Chef::Log.warn("knife ssh csshx will be deprecated in a future release")
+            Chef::Log.warn("please use knife ssh cssh instead")
+            cssh
+          else
+            ssh_command(@name_args[1..-1].join(" "))
+          end
 
         session.close
         if exit_status != 0

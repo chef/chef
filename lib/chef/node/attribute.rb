@@ -537,12 +537,12 @@ class Chef
       end
 
       def inspect
-        "#<#{self.class} " << (COMPONENTS + [:@merged_attributes, :@properties]).map {|iv|
+        "#<#{self.class} " << (COMPONENTS + [:@merged_attributes, :@properties]).map do |iv|
           "#{iv}=#{instance_variable_get(iv).inspect}"
-        }.join(", ") << ">"
+        end.join(", ") << ">"
       end
 
-       private
+      private
 
        # Helper method for merge_all/merge_defaults/merge_overrides.
        #

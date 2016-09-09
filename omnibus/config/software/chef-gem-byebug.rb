@@ -7,3 +7,4 @@ BuildChefGem::GemInstallSoftwareDef.define(self, __FILE__)
 
 license "MIT"
 license_file "https://github.com/deivid-rodriguez/byebug/blob/master/LICENSE"
+skip_transitive_dependency_licensing true

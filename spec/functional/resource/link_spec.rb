@@ -388,6 +388,14 @@ describe Chef::Resource::Link do
             symlink(other_dir, target_file)
           end
           include_context "create symbolic link succeeds"
+          include_context "delete succeeds"
+        end
+        context "and the link already exists and points at the target" do
+          before do
+            symlink(to, target_file)
+          end
+          include_context "create symbolic link is noop"
+          include_context "delete succeeds"
         end
       end
       context "when the link destination is a symbolic link" do
@@ -406,6 +414,19 @@ describe Chef::Resource::Link do
             include_context "create symbolic link succeeds"
             include_context "delete is noop"
           end
+          context "and the destination itself has another symbolic link" do
+            context "to a link that exist" do
+              before do
+                symlink(to, target_file)
+              end
+              include_context "create symbolic link is noop"
+              include_context "delete succeeds"
+            end
+            context "to a link that does not exist" do
+              include_context "create symbolic link succeeds"
+              include_context "delete is noop"
+            end
+          end
         end
         context "to a file that does not exist" do
           before(:each) do
@@ -417,6 +438,19 @@ describe Chef::Resource::Link do
           context "and the link does not yet exist" do
             include_context "create symbolic link succeeds"
             include_context "delete is noop"
+          end
+          context "and the destination itself has another symbolic link" do
+            context "to a link that exist" do
+              before do
+                symlink(to, target_file)
+              end
+              include_context "create symbolic link is noop"
+              include_context "delete succeeds"
+            end
+            context "to a link that does not exist" do
+              include_context "create symbolic link succeeds"
+              include_context "delete is noop"
+            end
           end
         end
       end
@@ -580,12 +614,7 @@ describe Chef::Resource::Link do
             it "links to the target file" do
               skip("OS X/FreeBSD/AIX fails to create hardlinks to broken symlinks") if os_x? || freebsd? || aix?
               resource.run_action(:create)
-              # Windows and Unix have different definitions of exists? here, and that's OK.
-              if windows?
-                expect(File.exists?(target_file)).to be_truthy
-              else
-                expect(File.exists?(target_file)).to be_falsey
-              end
+              expect(File.exists?(target_file) || File.symlink?(target_file)).to be_truthy
               expect(symlink?(target_file)).to be_truthy
               expect(readlink(target_file)).to eq(canonicalize(@other_target))
             end

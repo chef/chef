@@ -80,9 +80,9 @@ describe Chef::Knife::KeyDelete do
   let(:ui) { instance_double("Chef::Knife::UI") }
 
   shared_examples_for "key delete run command" do
-    let(:key_delete_object) {
+    let(:key_delete_object) do
       described_class.new(keyname, actor, actor_field_name, ui)
-    }
+    end
 
     before do
       allow_any_instance_of(Chef::Key).to receive(:destroy)

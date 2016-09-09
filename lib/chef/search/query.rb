@@ -21,6 +21,7 @@ require "chef/exceptions"
 require "chef/server_api"
 
 require "uri"
+require "addressable/uri"
 
 class Chef
   class Search
@@ -29,7 +30,7 @@ class Chef
       attr_accessor :rest
       attr_reader :config
 
-      def initialize(url = nil, config:Chef::Config)
+      def initialize(url = nil, config: Chef::Config)
         @config = config
         @url = url
       end
@@ -134,19 +135,21 @@ WARNDEP
         args_h
       end
 
-      def escape(s)
-        s && URI.escape(s.to_s)
+      QUERY_PARAM_VALUE = Addressable::URI::CharacterClasses::QUERY + "\\&\\;"
+
+      def escape_value(s)
+        s && Addressable::URI.encode_component(s.to_s, QUERY_PARAM_VALUE)
       end
 
       def create_query_string(type, query, rows, start, sort)
-        qstr = "search/#{type}?q=#{escape(query)}"
-        qstr += "&sort=#{escape(sort)}" if sort
-        qstr += "&start=#{escape(start)}" if start
-        qstr += "&rows=#{escape(rows)}" if rows
+        qstr = "search/#{type}?q=#{escape_value(query)}"
+        qstr += "&sort=#{escape_value(sort)}" if sort
+        qstr += "&start=#{escape_value(start)}" if start
+        qstr += "&rows=#{escape_value(rows)}" if rows
         qstr
       end
 
-      def call_rest_service(type, query:"*:*", rows:nil, start:0, sort:"X_CHEF_id_CHEF_X asc", filter_result:nil)
+      def call_rest_service(type, query: "*:*", rows: nil, start: 0, sort: "X_CHEF_id_CHEF_X asc", filter_result: nil)
         query_string = create_query_string(type, query, rows, start, sort)
 
         if filter_result

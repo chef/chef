@@ -124,6 +124,29 @@ describe Chef::Resource::Conditional do
         expect(@conditional.continue?).to be_falsey
       end
     end
+
+    describe "after running a block that returns a string value" do
+      before do
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource) { "some command" }
+      end
+
+      it "logs a warning" do
+        expect(Chef::Log).to receive(:warn).with("only_if block for [] returned \"some command\", did you mean to run a command? If so use 'only_if \"some command\"' in your code.")
+        @conditional.evaluate
+      end
+    end
+
+    describe "after running a block that returns a string value on a sensitive resource" do
+      before do
+        @parent_resource.sensitive(true)
+        @conditional = Chef::Resource::Conditional.only_if(@parent_resource) { "some command" }
+      end
+
+      it "logs a warning" do
+        expect(Chef::Log).to receive(:warn).with("only_if block for [] returned a string, did you mean to run a command?")
+        @conditional.evaluate
+      end
+    end
   end
 
   describe "when created as a `not_if`" do
@@ -202,6 +225,29 @@ describe Chef::Resource::Conditional do
 
       it "indicates that resource convergence should continue" do
         expect(@conditional.continue?).to be_truthy
+      end
+    end
+
+    describe "after running a block that returns a string value" do
+      before do
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource) { "some command" }
+      end
+
+      it "logs a warning" do
+        expect(Chef::Log).to receive(:warn).with("not_if block for [] returned \"some command\", did you mean to run a command? If so use 'not_if \"some command\"' in your code.")
+        @conditional.evaluate
+      end
+    end
+
+    describe "after running a block that returns a string value on a sensitive resource" do
+      before do
+        @parent_resource.sensitive(true)
+        @conditional = Chef::Resource::Conditional.not_if(@parent_resource) { "some command" }
+      end
+
+      it "logs a warning" do
+        expect(Chef::Log).to receive(:warn).with("not_if block for [] returned a string, did you mean to run a command?")
+        @conditional.evaluate
       end
     end
   end

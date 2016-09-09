@@ -41,6 +41,14 @@ class Chef::Application::Client < Chef::Application
     :long  => "--config CONFIG",
     :description => "The configuration file to use"
 
+  option :config_option,
+    :long         => "--config-option OPTION=VALUE",
+    :description  => "Override a single configuration option",
+    :proc         => lambda { |option, existing|
+      (existing ||= []) << option
+      existing
+    }
+
   option :formatter,
     :short        => "-F FORMATTER",
     :long         => "--format FORMATTER",
@@ -196,9 +204,9 @@ class Chef::Application::Client < Chef::Application
     :description  => "Replace current run list with specified items for a single run",
     :proc         => lambda {|items|
       items = items.split(",")
-      items.compact.map {|item|
+      items.compact.map do |item|
         Chef::RunList::RunListItem.new(item)
-      }
+      end
     }
 
   option :runlist,
@@ -207,9 +215,9 @@ class Chef::Application::Client < Chef::Application
     :description  => "Permanently replace current run list with specified items",
     :proc         => lambda {|items|
       items = items.split(",")
-      items.compact.map {|item|
+      items.compact.map do |item|
         Chef::RunList::RunListItem.new(item)
-      }
+      end
     }
   option :why_run,
     :short        => "-W",

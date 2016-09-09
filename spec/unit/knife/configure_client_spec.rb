@@ -33,9 +33,9 @@ describe Chef::Knife::ConfigureClient do
     it "should print usage and exit when a directory is not provided" do
       expect(@knife).to receive(:show_usage)
       expect(@knife.ui).to receive(:fatal).with(/must provide the directory/)
-      expect {
+      expect do
         @knife.run
-      }.to raise_error SystemExit
+      end.to raise_error SystemExit
     end
 
     describe "when specifing a directory" do

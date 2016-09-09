@@ -233,60 +233,65 @@ class Chef
       end
     end
 
-    private
-
     OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack terremark bluebox}
 
-    def self.path_from_caller(caller_line)
-      caller_line.split(/:\d+/).first
-    end
+    class << self
+      private
 
-    # :nodoc:
-    # Error out and print usage. probably because the arguments given by the
-    # user could not be resolved to a subcommand.
-    def self.subcommand_not_found!(args)
-      ui.fatal("Cannot find subcommand for: '#{args.join(' ')}'")
-
-      # Mention rehash when the subcommands cache(plugin_manifest.json) is used
-      if subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::HashedCommandLoader) ||
-          subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::CustomManifestLoader)
-        ui.info("If this is a recently installed plugin, please run 'knife rehash' to update the subcommands cache.")
+      # @api private
+      def path_from_caller(caller_line)
+        caller_line.split(/:\d+/).first
       end
 
-      if category_commands = guess_category(args)
-        list_commands(category_commands)
-      elsif missing_plugin = ( OFFICIAL_PLUGINS.find { |plugin| plugin == args[0] } )
-        ui.info("The #{missing_plugin} commands were moved to plugins in Chef 0.10")
-        ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}`")
-        ui.info("Use `chef gem install knife-#{missing_plugin}` instead if using ChefDK")
-      else
-        list_commands
-      end
+      # :nodoc:
+      # Error out and print usage. probably because the arguments given by the
+      # user could not be resolved to a subcommand.
+      # @api private
+      def subcommand_not_found!(args)
+        ui.fatal("Cannot find subcommand for: '#{args.join(' ')}'")
 
-      exit 10
-    end
-
-    def self.list_commands(preferred_category = nil)
-      category_desc = preferred_category ? preferred_category + " " : ""
-      msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
-      subcommand_loader.list_commands(preferred_category).sort.each do |category, commands|
-        next if category =~ /deprecated/i
-        msg "** #{category.upcase} COMMANDS **"
-        commands.sort.each do |command|
-          subcommand_loader.load_command(command)
-          msg subcommands[command].banner if subcommands[command]
+        # Mention rehash when the subcommands cache(plugin_manifest.json) is used
+        if subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::HashedCommandLoader) ||
+            subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::CustomManifestLoader)
+          ui.info("If this is a recently installed plugin, please run 'knife rehash' to update the subcommands cache.")
         end
-        msg
-      end
-    end
 
-    def self.reset_config_path!
-      @@chef_config_dir = nil
+        if category_commands = guess_category(args)
+          list_commands(category_commands)
+        elsif missing_plugin = ( OFFICIAL_PLUGINS.find { |plugin| plugin == args[0] } )
+          ui.info("The #{missing_plugin} commands were moved to plugins in Chef 0.10")
+          ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}`")
+          ui.info("Use `chef gem install knife-#{missing_plugin}` instead if using ChefDK")
+        else
+          list_commands
+        end
+
+        exit 10
+      end
+
+      # @api private
+      def list_commands(preferred_category = nil)
+        category_desc = preferred_category ? preferred_category + " " : ""
+        msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
+        subcommand_loader.list_commands(preferred_category).sort.each do |category, commands|
+          next if category =~ /deprecated/i
+          msg "** #{category.upcase} COMMANDS **"
+          commands.sort.each do |command|
+            subcommand_loader.load_command(command)
+            msg subcommands[command].banner if subcommands[command]
+          end
+          msg
+        end
+      end
+
+      # @api private
+      def reset_config_path!
+        @@chef_config_dir = nil
+      end
+
     end
 
     reset_config_path!
-
-    public
 
     # Create a new instance of the current class configured for the given
     # arguments and options
@@ -324,31 +329,35 @@ class Chef
       exit(1)
     end
 
-    # Returns a subset of the Chef::Config[:knife] Hash that is relevant to the
-    # currently executing knife command. This is used by #configure_chef to
-    # apply settings from knife.rb to the +config+ hash.
-    def config_file_settings
-      config_file_settings = {}
-      self.class.options.keys.each do |key|
-        config_file_settings[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
-      end
-      config_file_settings
+    # keys from mixlib-cli options
+    def cli_keys
+      self.class.options.keys
     end
 
-    # Apply Config in this order:
-    # defaults from mixlib-cli
-    # settings from config file, via Chef::Config[:knife]
-    # config from command line
+    # extracts the settings from the Chef::Config[:knife] sub-hash that correspond
+    # to knife cli options -- in preparation for merging config values with cli values
+    #
+    # NOTE: due to weirdness in mixlib-config #has_key? is only true if the value has
+    # been set by the user -- the Chef::Config defaults return #has_key?() of false and
+    # this code DEPENDS on that functionality since applying the default values in
+    # Chef::Config[:knife] would break the defaults in the cli that we would otherwise
+    # overwrite.
+    def config_file_settings
+      cli_keys.each_with_object({}) do |key, memo|
+        memo[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
+      end
+    end
+
+    # config is merged in this order (inverse of precedence)
+    #  default_config       - mixlib-cli defaults (accessor from the mixin)
+    #  config_file_settings - Chef::Config[:knife] sub-hash
+    #  config               - mixlib-cli settings (accessor from the mixin)
     def merge_configs
-      # Apply config file settings on top of mixlib-cli defaults
-      combined_config = default_config.merge(config_file_settings)
-      # Apply user-supplied options on top of the above combination
-      combined_config = combined_config.merge(config)
-      # replace the config hash from mixlib-cli with our own.
-      # Need to use the mutate-in-place #replace method instead of assigning to
-      # the instance variable because other code may have a reference to the
-      # original config hash object.
-      config.replace(combined_config)
+      # other code may have a handle to the config object, so use Hash#replace to deliberately
+      # update-in-place.
+      config.replace(
+        default_config.merge(config_file_settings).merge(config)
+      )
     end
 
     # Catch-all method that does any massaging needed for various config

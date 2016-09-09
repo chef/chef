@@ -193,6 +193,7 @@ class Chef
           f.group "root"
           f.mode "0644"
           f.content new_resource.to_ini
+          f.verify systemd_analyze_cmd if systemd_analyze_path
         end.run_action(action)
       end
 
@@ -224,14 +225,22 @@ class Chef
         @systemctl_opts ||=
           if new_resource.user
             {
-              "user" => new_resource.user,
-              "environment" => {
+              :user => new_resource.user,
+              :environment => {
                 "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/#{node['etc']['passwd'][new_resource.user]['uid']}/bus",
               },
             }
           else
             {}
           end
+      end
+
+      def systemd_analyze_cmd
+        @systemd_analyze_cmd ||= "#{systemd_analyze_path} verify %{path}"
+      end
+
+      def systemd_analyze_path
+        @systemd_analyze_path ||= which("systemd-analyze")
       end
     end
   end

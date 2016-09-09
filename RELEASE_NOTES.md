@@ -1,35 +1,33 @@
 *This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team.
 Please see `https://docs.chef.io/release/<major>-<minor>/release_notes.html` for the official Chef release notes.*
 
-# Chef Client Release Notes 12.12:
+# Chef Client Release Notes 12.13:
 
-## Attribute read/write/unlink/exist? APIs
+Highlights for this release:
 
-On the node object:
+- Ohai 8.18 includes a new plugin for gathering available user shells. Additionally for OS X users there is a new hardware plugin that gathers system information, and we’ve added detection of VMware and VirtualBox installations.
 
-- `node.read("foo", "bar", "baz")` equals `node["foo"]["bar"]["baz"] `but with safety (nil instead of exception)
-- `node.read!("foo", "bar", "baz")` equals `node["foo"]["bar"]["baz"]` and does raises NoMethodError
+## Updated Dependencies
 
-- `node.write(:default, "foo", "bar", "baz")` equals `node.default["foo"]["bar"] = "baz"` and autovivifies and replaces intermediate non-hash objects (very safe) 
-- `node.write!(:default, "foo", "bar", "baz")` equals `node.default["foo"]["bar"] = "baz"` and while it autovivifies it can raise if you hit a non-hash on an intermediate key (NoMethodError)
-- there is still no non-autovivifying writer, and i don't think anyone really wants one.
-- `node.exist?("foo", "bar")` can be used to see if `node["foo"]["bar"]` exists
+- ruby - 2.1.9 (was 2.1.8)
 
-On node levels:
+### Updated Gems
 
-- `node.default.read/read!("foo")` operates similarly to `node.read("foo")` but only on default level
-- `node.default.write/write!("foo", "bar")` is `node.write/write!(:default, "foo", "bar")`
-- `node.default.unlink/unlink!("foo")` is `node.unlink/unlink!(:default, "foo")`
-- `node.default.exist?("foo", "bar")` can be used to see if `node.default["foo"]["bar"]` exists
-
-Deprecations:
-
-- node.set is deprecated
-- node.set_unless is deprecated
-
-## `data_collector` enhancements
-
-- Adds `node` to the `data_collector` message
-- `data_collector` reports on all resources and not just those that have been processed
-
-## `knife cookbook create` is deprecated. Use the chef-dk's `chef generate cookbook` instead.
+- chef-zero - 4.8.0 (was 4.7.0)
+- cheffish - 2.0.5 (was 2.0.4)
+- compat_resource - 12.10.7 (was 12.10.6)
+- ffi - 1.9.14 (was 1.9.10)
+- ffi-yajl - 2.3.0 (was 2.2.3)
+- fuzzyurl - 0.9.0 (was 0.8.0)
+- mixlib-cli - 1.7.0 (was 1.6.0)
+- mixlib-log - 1.7.0 (was 1.6.0)
+- ohai - 8.18.0 (was 8.17.1)
+- pry - 0.10.4 (was 0.10.3)
+- rspec - 3.5.0 (was 3.4.0)
+- rspec-core - 3.5.2 (was 3.4.4)
+- rspec-expectations - 3.5.0 (was 3.4.0)
+- rspec-mocks - 3.5.0 (was 3.4.1)
+- rspec-support - 3.5.0 (was 3.4.1)
+- simplecov - 0.12.0 (was 0.11.2)
+- specinfra - 2.60.3 (was 2.59.4)
+- mixlib-archive - 0.2.0 (added to package)

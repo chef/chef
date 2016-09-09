@@ -304,24 +304,24 @@ describe Chef::CookbookVersion, "file specificity" do
   it "should raise a FileNotFound exception without match" do
     node = Chef::Node.new
 
-    expect {
+    expect do
       @cookbook.preferred_manifest_record(node, :files, "doesn't_exist.rb")
-    }.to raise_error(Chef::Exceptions::FileNotFound)
+    end.to raise_error(Chef::Exceptions::FileNotFound)
   end
   it "should raise a FileNotFound exception consistently without match" do
     node = Chef::Node.new
 
-    expect {
+    expect do
       @cookbook.preferred_manifest_record(node, :files, "doesn't_exist.rb")
-    }.to raise_error(Chef::Exceptions::FileNotFound)
+    end.to raise_error(Chef::Exceptions::FileNotFound)
 
-    expect {
+    expect do
       @cookbook.preferred_manifest_record(node, :files, "doesn't_exist.rb")
-    }.to raise_error(Chef::Exceptions::FileNotFound)
+    end.to raise_error(Chef::Exceptions::FileNotFound)
 
-    expect {
+    expect do
       @cookbook.preferred_manifest_record(node, :files, "doesn't_exist.rb")
-    }.to raise_error(Chef::Exceptions::FileNotFound)
+    end.to raise_error(Chef::Exceptions::FileNotFound)
   end
 
   describe "when fetching the contents of a directory by file specificity" do

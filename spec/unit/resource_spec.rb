@@ -95,7 +95,7 @@ describe Chef::Resource do
   end
 
   describe "when an identity attribute has been declared" do
-    let(:file_resource) {
+    let(:file_resource) do
       file_resource_class = Class.new(Chef::Resource) do
         identity_attr :path
         attr_accessor :path
@@ -104,7 +104,7 @@ describe Chef::Resource do
       file_resource = file_resource_class.new("identity-attr-test")
       file_resource.path = "/tmp/foo.txt"
       file_resource
-    }
+    end
 
     it "gives the value of its identity attribute" do
       expect(file_resource.identity).to eq("/tmp/foo.txt")
@@ -140,7 +140,7 @@ describe Chef::Resource do
   end
 
   describe "when a set of state attributes has been declared" do
-    let(:file_resource) {
+    let(:file_resource) do
       file_resource_class = Class.new(Chef::Resource) do
 
         state_attrs :checksum, :owner, :group, :mode
@@ -157,7 +157,7 @@ describe Chef::Resource do
       file_resource.group = "wheel"
       file_resource.mode = "0644"
       file_resource
-    }
+    end
 
     it "describes its state" do
       resource_state = file_resource.state
@@ -169,15 +169,35 @@ describe Chef::Resource do
     end
   end
 
+  describe "#state_for_resource_reporter" do
+    context "when a property is marked as sensitive" do
+      it "suppresses the sensitive property's value" do
+        resource_class = Class.new(Chef::Resource) { property :foo, String, sensitive: true }
+        resource = resource_class.new("sensitive_property_tests")
+        resource.foo = "some value"
+        expect(resource.state_for_resource_reporter[:foo]).to eq("*sensitive value suppressed*")
+      end
+    end
+
+    context "when a property is not marked as sensitive" do
+      it "does not suppress the property's value" do
+        resource_class = Class.new(Chef::Resource) { property :foo, String }
+        resource = resource_class.new("sensitive_property_tests")
+        resource.foo = "some value"
+        expect(resource.state_for_resource_reporter[:foo]).to eq("some value")
+      end
+    end
+  end
+
   describe "load_from" do
-    let(:prior_resource) {
+    let(:prior_resource) do
       prior_resource = Chef::Resource.new("funk")
       prior_resource.supports(:funky => true)
       prior_resource.source_line
       prior_resource.allowed_actions << :funkytown
       prior_resource.action(:funkytown)
       prior_resource
-    }
+    end
     before(:each) do
       resource.allowed_actions << :funkytown
       run_context.resource_collection << prior_resource
@@ -236,9 +256,9 @@ describe Chef::Resource do
 
     it "should raise an exception if told to act in other than :delay or :immediate(ly)" do
       run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
-      expect {
+      expect do
         resource.notifies :reload, run_context.resource_collection.find(:zen_master => "coffee"), :someday
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should allow multiple notified resources appear in the actions hash" do
@@ -503,12 +523,12 @@ describe Chef::Resource do
   end
 
   describe "retries" do
-    let(:retriable_resource) {
+    let(:retriable_resource) do
       retriable_resource = Chef::Resource::Cat.new("precious", run_context)
       retriable_resource.provider = Chef::Provider::SnakeOil
       retriable_resource.action = :purr
       retriable_resource
-    }
+    end
 
     before do
       node.automatic_attrs[:platform] = "fubuntu"
@@ -563,11 +583,11 @@ describe Chef::Resource do
     end
 
     it "warns when setting provider_base" do
-      expect {
+      expect do
         class OverrideProviderBaseTest2 < Chef::Resource
           provider_base Chef::Provider::Package
         end
-      }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
+      end.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
     end
 
   end
@@ -607,11 +627,11 @@ describe Chef::Resource do
   end
 
   describe "when invoking its action" do
-    let(:resource) {
+    let(:resource) do
       resource = Chef::Resource.new("provided", run_context)
       resource.provider = Chef::Provider::SnakeOil
       resource
-    }
+    end
     before do
       node.automatic_attrs[:platform] = "fubuntu"
       node.automatic_attrs[:platform_version] = "10.04"
@@ -797,11 +817,11 @@ describe Chef::Resource do
   end
 
   describe "when resource action is :nothing" do
-    let(:resource1) {
+    let(:resource1) do
       resource1 = Chef::Resource::Cat.new("sugar", run_context)
       resource1.action = :nothing
       resource1
-    }
+    end
     before do
       node.automatic_attrs[:platform] = "fubuntu"
       node.automatic_attrs[:platform_version] = "10.04"

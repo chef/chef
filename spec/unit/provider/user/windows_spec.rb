@@ -30,10 +30,10 @@ end
 describe Chef::Provider::User::Windows do
   before(:each) do
     @node = Chef::Node.new
-    @new_resource = Chef::Resource::User.new("monkey")
+    @new_resource = Chef::Resource::User::WindowsUser.new("monkey")
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @current_resource = Chef::Resource::User.new("monkey")
+    @current_resource = Chef::Resource::User::WindowsUser.new("monkey")
 
     @net_user = double("Chef::Util::Windows::NetUser")
     allow(Chef::Util::Windows::NetUser).to receive(:new).and_return(@net_user)
@@ -89,7 +89,7 @@ describe Chef::Provider::User::Windows do
 
     describe "and the attributes do not match" do
       before do
-        @current_resource = Chef::Resource::User.new("adam")
+        @current_resource = Chef::Resource::User::WindowsUser.new("adam")
         @current_resource.comment   "Adam Jacob-foo"
         @current_resource.uid       1111
         @current_resource.gid       1111

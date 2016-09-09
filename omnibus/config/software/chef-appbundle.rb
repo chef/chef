@@ -2,6 +2,7 @@ name "chef-appbundle"
 default_version "local_source"
 
 license :project_license
+skip_transitive_dependency_licensing true
 
 source path: project.files_path
 

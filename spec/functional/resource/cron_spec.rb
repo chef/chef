@@ -120,7 +120,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
       return if %w{aix solaris}.include?(ohai[:platform])
       # Test if the attribute exists on newly created cron
       cron_should_exists(cron_name, "")
-      expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{attribute.upcase}=#{value}\"").exitstatus).to eq(0)
+      expect(shell_out("crontab -l -u #{new_resource.user} | grep '#{attribute.upcase}=\"#{value}\"'").exitstatus).to eq(0)
     end
 
     after do
@@ -145,6 +145,13 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     it "should create a crontab entry for home attribute" do
       new_resource.home "/home/opscode"
       create_and_validate_with_attribute(new_resource, "home", "/home/opscode")
+    end
+
+    %i{ home mailto path shell }.each do |attr|
+      it "supports an empty string for #{attr} attribute" do
+        new_resource.send(attr, "")
+        create_and_validate_with_attribute(new_resource, attr.to_s, "")
+      end
     end
   end
 

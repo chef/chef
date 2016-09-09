@@ -28,10 +28,7 @@ require "mixlib/cli"
 require "tmpdir"
 require "rbconfig"
 require "chef/application/exit_code"
-require "resolv"
-# on linux, we replace the glibc resolver with the ruby resolv library, which
-# supports reloading.
-require "resolv-replace" if RbConfig::CONFIG["host_os"] =~ /linux/
+require "yaml"
 
 class Chef
   class Application
@@ -112,7 +109,22 @@ class Chef
         config_content = config_fetcher.read_config
         apply_config(config_content, config[:config_file])
       end
+      extra_config_options = config.delete(:config_option)
       Chef::Config.merge!(config)
+      if extra_config_options
+        extra_parsed_options = extra_config_options.inject({}) do |memo, option|
+          # Sanity check value.
+          Chef::Application.fatal!("Unparsable config option #{option.inspect}") if option.empty? || !option.include?("=")
+          # Split including whitespace if someone does truly odd like
+          # --config-option "foo = bar"
+          key, value = option.split(/\s*=\s*/, 2)
+          # Call to_sym because Chef::Config expects only symbol keys. Also
+          # runs a simple parse on the string for some common types.
+          memo[key.to_sym] = YAML.safe_load(value)
+          memo
+        end
+        Chef::Config.merge!(extra_parsed_options)
+      end
     end
 
     def set_specific_recipes
@@ -336,6 +348,13 @@ class Chef
     class << self
       def debug_stacktrace(e)
         message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+
+        cause = e.cause if e.respond_to?(:cause)
+        while cause != nil
+          message << "\n\n>>>> Caused by #{cause.class}: #{cause}\n#{cause.backtrace.join("\n")}"
+          cause = cause.respond_to?(:cause) ? cause.cause : nil
+        end
+
         chef_stacktrace_out = "Generated at #{Time.now}\n"
         chef_stacktrace_out += message
 

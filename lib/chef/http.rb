@@ -77,6 +77,9 @@ class Chef
 
     attr_reader :middlewares
 
+    # [Boolean] if we're doing keepalives or not
+    attr_reader :keepalives
+
     # Create a HTTP client object. The supplied +url+ is used as the base for
     # all subsequent requests. For example, when initialized with a base url
     # http://localhost:4000, a call to +get+ with 'nodes' will make an
@@ -87,6 +90,7 @@ class Chef
       @sign_on_redirect = true
       @redirects_followed = 0
       @redirect_limit = 10
+      @keepalives = options[:keepalives] || false
       @options = options
 
       @middlewares = []
@@ -228,6 +232,33 @@ class Chef
 
     def http_client(base_url = nil)
       base_url ||= url
+      if keepalives && !base_url.nil?
+        # only reuse the http_client if we want keepalives and have a base_url
+        @http_client ||= {}
+        # the per-host per-port cache here gets peristent connections correct when
+        # redirecting to different servers
+        if base_url.is_a?(String) # sigh, this kind of abuse can't happen with strongly typed languages
+          @http_client[base_url] ||= build_http_client(base_url)
+        else
+          @http_client[base_url.host] ||= {}
+          @http_client[base_url.host][base_url.port] ||= build_http_client(base_url)
+        end
+      else
+        build_http_client(base_url)
+      end
+    end
+
+    # DEPRECATED: This is only kept around to provide access to cache control data in
+    # lib/chef/provider/remote_file/http.rb
+    # FIXME: Find a better API.
+    def last_response
+      @last_response
+    end
+
+    private
+
+    # @api private
+    def build_http_client(base_url)
       if chef_zero_uri?(base_url)
         # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up webrick
         # via chef-zero and that hits DNS (at *require* time) which may timeout,
@@ -239,12 +270,11 @@ class Chef
 
         SocketlessChefZeroClient.new(base_url)
       else
-        BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
+        BasicClient.new(base_url, ssl_policy: Chef::HTTP::APISSLPolicy, keepalives: keepalives)
       end
     end
 
-    protected
-
+    # @api private
     def create_url(path)
       return path if path.is_a?(URI)
       if path =~ /^(http|https|chefzero):\/\//i
@@ -259,6 +289,7 @@ class Chef
       end
     end
 
+    # @api private
     def apply_request_middleware(method, url, headers, data)
       middlewares.inject([method, url, headers, data]) do |req_data, middleware|
         Chef::Log.debug("Chef::HTTP calling #{middleware.class}#handle_request")
@@ -266,6 +297,7 @@ class Chef
       end
     end
 
+    # @api private
     def apply_response_middleware(response, rest_request, return_value)
       middlewares.reverse.inject([response, rest_request, return_value]) do |res_data, middleware|
         Chef::Log.debug("Chef::HTTP calling #{middleware.class}#handle_response")
@@ -273,6 +305,7 @@ class Chef
       end
     end
 
+    # @api private
     def apply_stream_complete_middleware(response, rest_request, return_value)
       middlewares.reverse.inject([response, rest_request, return_value]) do |res_data, middleware|
         Chef::Log.debug("Chef::HTTP calling #{middleware.class}#handle_stream_complete")
@@ -280,6 +313,7 @@ class Chef
       end
     end
 
+    # @api private
     def log_failed_request(response, return_value)
       return_value ||= {}
       error_message = "HTTP Request Returned #{response.code} #{response.message}: "
@@ -287,12 +321,14 @@ class Chef
       Chef::Log.info(error_message)
     end
 
+    # @api private
     def success_response?(response)
       response.kind_of?(Net::HTTPSuccess) || response.kind_of?(Net::HTTPRedirection)
     end
 
     # Runs a synchronous HTTP request, with no middleware applied (use #request
     # to have the middleware applied). The entire response will be loaded into memory.
+    # @api private
     def send_http_request(method, url, headers, body, &response_handler)
       headers = build_headers(method, url, headers, body)
 
@@ -328,6 +364,7 @@ class Chef
     # Wraps an HTTP request with retry logic.
     # === Arguments
     # url:: URL of the request, used for error messages
+    # @api private
     def retrying_http_errors(url)
       http_attempts = 0
       begin
@@ -377,18 +414,22 @@ class Chef
       end
     end
 
+    # @api private
     def http_retry_delay
       config[:http_retry_delay]
     end
 
+    # @api private
     def http_retry_count
       config[:http_retry_count]
     end
 
+    # @api private
     def config
       Chef::Config
     end
 
+    # @api private
     def follow_redirect
       raise Chef::Exceptions::RedirectLimitExceeded if @redirects_followed >= redirect_limit
       @redirects_followed += 1
@@ -399,13 +440,13 @@ class Chef
       @redirects_followed = 0
     end
 
-    private
-
+    # @api private
     def chef_zero_uri?(uri)
       uri = URI.parse(uri) unless uri.respond_to?(:scheme)
       uri.scheme == "chefzero"
     end
 
+    # @api private
     def redirected_to(response)
       return nil  unless response.kind_of?(Net::HTTPRedirection)
       # Net::HTTPNotModified is undesired subclass of Net::HTTPRedirection so test for this
@@ -413,6 +454,7 @@ class Chef
       response["location"]
     end
 
+    # @api private
     def build_headers(method, url, headers = {}, json_body = false)
       headers = @default_headers.merge(headers)
       headers["Content-Length"] = json_body.bytesize.to_s if json_body
@@ -420,6 +462,7 @@ class Chef
       headers
     end
 
+    # @api private
     def stream_to_tempfile(url, response, &progress_block)
       content_length = response["Content-Length"]
       tf = Tempfile.open("chef-rest")
@@ -441,19 +484,6 @@ class Chef
     rescue Exception
       tf.close! if tf
       raise
-    end
-
-    public
-
-    ############################################################################
-    # DEPRECATED
-    ############################################################################
-
-    # This is only kept around to provide access to cache control data in
-    # lib/chef/provider/remote_file/http.rb
-    # Find a better API.
-    def last_response
-      @last_response
     end
 
   end

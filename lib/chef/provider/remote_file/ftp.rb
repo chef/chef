@@ -153,9 +153,9 @@ class Chef
         def parse_path
           path = uri.path.sub(%r{\A/}, "%2F") # re-encode the beginning slash because uri library decodes it.
           directories = path.split(%r{/}, -1)
-          directories.each {|d|
+          directories.each do |d|
             d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
-          }
+          end
           unless filename = directories.pop
             raise ArgumentError, "no filename: #{path.inspect}"
           end

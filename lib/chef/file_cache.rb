@@ -85,7 +85,7 @@ class Chef
             File.join(create_cache_path(File.join(file_path_array), true), file_name)
           )
         else
-          raise RuntimeError, "Cannot move #{file} to #{path}!"
+          raise "Cannot move #{file} to #{path}!"
         end
       end
 

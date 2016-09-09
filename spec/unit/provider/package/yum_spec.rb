@@ -312,7 +312,8 @@ describe Chef::Provider::Package::Yum do
     end
 
     context "when the package name isn't found" do
-      let(:yum_cache) { double(
+      let(:yum_cache) do
+        double(
           "Chef::Provider::Yum::YumCache",
           :reload_installed => true,
           :reset => true,
@@ -322,7 +323,7 @@ describe Chef::Provider::Package::Yum do
           :version_available? => true,
           :disable_extra_repo_control => true
       )
-      }
+      end
 
       before do
         allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(yum_cache)
@@ -1063,21 +1064,21 @@ describe Chef::Provider::Package::Yum::RPMVersion do
   end
 
   it "should raise an error unless passed 1 or 3 args" do
-    expect {
+    expect do
       Chef::Provider::Package::Yum::RPMVersion.new()
-    }.to raise_error(ArgumentError)
-    expect {
+    end.to raise_error(ArgumentError)
+    expect do
       Chef::Provider::Package::Yum::RPMVersion.new("1:1.6.5-9.36.el5")
-    }.not_to raise_error
-    expect {
+    end.not_to raise_error
+    expect do
       Chef::Provider::Package::Yum::RPMVersion.new("1:1.6.5-9.36.el5", "extra")
-    }.to raise_error(ArgumentError)
-    expect {
+    end.to raise_error(ArgumentError)
+    expect do
       Chef::Provider::Package::Yum::RPMVersion.new("1", "1.6.5", "9.36.el5")
-    }.not_to raise_error
-    expect {
+    end.not_to raise_error
+    expect do
       Chef::Provider::Package::Yum::RPMVersion.new("1", "1.6.5", "9.36.el5", "extra")
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   # thanks version_class_spec.rb!
@@ -1229,9 +1230,9 @@ describe Chef::Provider::Package::Yum::RPMPackage do
 
     it "should always have at least one provide, itself" do
       expect(@rpm.provides.size).to eq(1)
-      @rpm.provides[0].name == "testing"
-      @rpm.provides[0].version.evr == "1:1.6.5-9.36.el5"
-      @rpm.provides[0].flag == :==
+      expect(@rpm.provides[0].name).to eql("testing")
+      expect(@rpm.provides[0].version.evr).to eql("1:1.6.5-9.36.el5")
+      expect(@rpm.provides[0].flag).to eql(:==)
     end
   end
 
@@ -1253,37 +1254,37 @@ describe Chef::Provider::Package::Yum::RPMPackage do
 
     it "should always have at least one provide, itself" do
       expect(@rpm.provides.size).to eq(1)
-      @rpm.provides[0].name == "testing"
-      @rpm.provides[0].version.evr == "1:1.6.5-9.36.el5"
-      @rpm.provides[0].flag == :==
+      expect(@rpm.provides[0].name).to eql("testing")
+      expect(@rpm.provides[0].version.evr).to eql("1:1.6.5-9.36.el5")
+      expect(@rpm.provides[0].flag).to eql(:==)
     end
   end
 
   it "should raise an error unless passed 4 or 6 args" do
-    expect {
+    expect do
       Chef::Provider::Package::Yum::RPMPackage.new()
-    }.to raise_error(ArgumentError)
-    expect {
+    end.to raise_error(ArgumentError)
+    expect do
       Chef::Provider::Package::Yum::RPMPackage.new("testing")
-    }.to raise_error(ArgumentError)
-    expect {
+    end.to raise_error(ArgumentError)
+    expect do
       Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5")
-    }.to raise_error(ArgumentError)
-    expect {
+    end.to raise_error(ArgumentError)
+    expect do
       Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5", "x86_64")
-    }.to raise_error(ArgumentError)
-    expect {
+    end.to raise_error(ArgumentError)
+    expect do
       Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5", "x86_64", [])
-    }.not_to raise_error
-    expect {
+    end.not_to raise_error
+    expect do
       Chef::Provider::Package::Yum::RPMPackage.new("testing", "1", "1.6.5", "9.36.el5", "x86_64")
-    }.to raise_error(ArgumentError)
-    expect {
+    end.to raise_error(ArgumentError)
+    expect do
       Chef::Provider::Package::Yum::RPMPackage.new("testing", "1", "1.6.5", "9.36.el5", "x86_64", [])
-    }.not_to raise_error
-    expect {
+    end.not_to raise_error
+    expect do
       Chef::Provider::Package::Yum::RPMPackage.new("testing", "1", "1.6.5", "9.36.el5", "x86_64", [], "extra")
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   describe "<=>" do
@@ -1397,27 +1398,27 @@ describe Chef::Provider::Package::Yum::RPMDependency do
   end
 
   it "should raise an error unless passed 3 or 5 args" do
-    expect {
+    expect do
       Chef::Provider::Package::Yum::RPMDependency.new()
-    }.to raise_error(ArgumentError)
-    expect {
+    end.to raise_error(ArgumentError)
+    expect do
       Chef::Provider::Package::Yum::RPMDependency.new("testing")
-    }.to raise_error(ArgumentError)
-    expect {
+    end.to raise_error(ArgumentError)
+    expect do
       Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5")
-    }.to raise_error(ArgumentError)
-    expect {
+    end.to raise_error(ArgumentError)
+    expect do
       Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :==)
-    }.not_to raise_error
-    expect {
+    end.not_to raise_error
+    expect do
       Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :==, "extra")
-    }.to raise_error(ArgumentError)
-    expect {
+    end.to raise_error(ArgumentError)
+    expect do
       Chef::Provider::Package::Yum::RPMDependency.new("testing", "1", "1.6.5", "9.36.el5", :==)
-    }.not_to raise_error
-    expect {
+    end.not_to raise_error
+    expect do
       Chef::Provider::Package::Yum::RPMDependency.new("testing", "1", "1.6.5", "9.36.el5", :==, "extra")
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   describe "parse" do
@@ -1485,12 +1486,12 @@ describe Chef::Provider::Package::Yum::RPMDependency do
     it "should raise an error unless a RPMDependency is passed" do
       @rpmprovide = Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :==)
       @rpmrequire = Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :>=)
-      expect {
+      expect do
         @rpmprovide.satisfy?("hi")
-      }.to raise_error(ArgumentError)
-      expect {
+      end.to raise_error(ArgumentError)
+      expect do
         @rpmprovide.satisfy?(@rpmrequire)
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "should validate dependency satisfaction logic for standard examples" do
@@ -1712,12 +1713,12 @@ describe Chef::Provider::Package::Yum::RPMDb do
     it "should raise an error unless a RPMDependency is passed" do
       @rpmprovide = Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :==)
       @rpmrequire = Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :>=)
-      expect {
+      expect do
         @rpmdb.whatprovides("hi")
-      }.to raise_error(ArgumentError)
-      expect {
+      end.to raise_error(ArgumentError)
+      expect do
         @rpmdb.whatprovides(@rpmrequire)
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "should return an Array of packages statisfying a RPMDependency" do
@@ -1748,13 +1749,13 @@ describe Chef::Provider::Package::Yum::YumCache do
     end
   end
 
-  let(:yum_exe) {
+  let(:yum_exe) do
     StringIO.new("#!/usr/bin/python\n\naldsjfa\ldsajflkdsjf\lajsdfj")
-  }
+  end
 
-  let(:bin_exe) {
+  let(:bin_exe) do
     StringIO.new(SecureRandom.random_bytes)
-  }
+  end
 
   before(:each) do
     @stdin = double("STDIN", :nil_object => true)

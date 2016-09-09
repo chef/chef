@@ -241,9 +241,9 @@ describe Chef::DataBag do
       it "should raise an error if the configured data_bag_path is invalid" do
         file_dir_stub(@paths.first, false)
 
-        expect {
+        expect do
           Chef::DataBag.load("foo")
-        }.to raise_error Chef::Exceptions::InvalidDataBagPath, "Data bag path '/var/chef/data_bags' is invalid"
+        end.to raise_error Chef::Exceptions::InvalidDataBagPath, "Data bag path '/var/chef/data_bags' is invalid"
       end
 
     end

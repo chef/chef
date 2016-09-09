@@ -28,13 +28,13 @@ describe "LWRP" do
   include Chef::Mixin::ConvertToClassName
 
   before do
-    @original_VERBOSE = $VERBOSE
+    @original_verbose = $VERBOSE
     $VERBOSE = nil
     Chef::Resource::LWRPBase.class_eval { @loaded_lwrps = {} }
   end
 
   after do
-    $VERBOSE = @original_VERBOSE
+    $VERBOSE = @original_verbose
   end
 
   def get_lwrp(name)
@@ -232,9 +232,9 @@ describe "LWRP" do
       end
 
       it "allows to user to user the resource_name" do
-        expect {
+        expect do
           klass.resource_name(:foo)
-        }.to_not raise_error
+        end.to_not raise_error
       end
 
       it "returns the set value for the resource" do
@@ -741,7 +741,7 @@ describe "LWRP" do
       end
     end
 
-    let(:recipe) {
+    let(:recipe) do
       cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
       cookbook_loader = Chef::CookbookLoader.new(cookbook_repo)
       cookbook_loader.load_cookbooks
@@ -750,7 +750,7 @@ describe "LWRP" do
       events = Chef::EventDispatch::Dispatcher.new
       run_context = Chef::RunContext.new(node, cookbook_collection, events)
       Chef::Recipe.new("hjk", "test", run_context)
-    }
+    end
 
     it "lets you extend the recipe DSL" do
       expect(Chef::Recipe).to receive(:include).with(MyAwesomeDSLExensionClass)

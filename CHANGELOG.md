@@ -1,5 +1,48 @@
 # Change Log
 
+## [v12.13.37](https://github.com/chef/chef/tree/v12.13.37) (2016-08-12)
+[Full Changelog](https://github.com/chef/chef/compare/v12.13.30...v12.13.37)
+
+**Enhancements:**
+
+- Bumping ohai and mixlib-log to fix regression [\#5197](https://github.com/chef/chef/pull/5197) ([mwrock](https://github.com/mwrock))
+- Remove requires in Chef::Recipe that are no longer necessary [\#5189](https://github.com/chef/chef/pull/5189) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v12.13.30](https://github.com/chef/chef/tree/v12.13.30) (2016-08-05)
+[Full Changelog](https://github.com/chef/chef/compare/v12.12.15...v12.13.30)
+
+**Enhancements:**
+
+- noop apt_update similar to apt_repository [\#5173](https://github.com/chef/chef/pull/5173) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump dependencies to bring in Ohai 8.18 [\#5168](https://github.com/chef/chef/pull/5168) ([tas50](https://github.com/tas50))
+- Make Chef work with Ruby 2.3, update Ruby to 2.1.9 [\#5165](https://github.com/chef/chef/pull/5165) ([jkeiser](https://github.com/jkeiser))
+- Log cause chain for exceptions [\#3354](https://github.com/chef/chef/pull/3354) ([jaym](https://github.com/jaym))
+- First pass on --config-option handling. [\#5045](https://github.com/chef/chef/pull/5045) ([coderanger](https://github.com/coderanger))
+- Add bootstrap proxy authentication support. [\#4059](https://github.com/chef/chef/pull/4059) ([yossigo](https://github.com/yossigo))
+- Support setting an empty string for cron attrs [\#5127](https://github.com/chef/chef/pull/5127) ([thommay](https://github.com/thommay))
+- Also clear notifications when deleting a resource. [\#5146](https://github.com/chef/chef/pull/5146) ([coderanger](https://github.com/coderanger))
+- Clean up subscribes internals and notification storage. [\#5145](https://github.com/chef/chef/pull/5145) ([coderanger](https://github.com/coderanger))
+- Cache ChefFS children [\#5131](https://github.com/chef/chef/pull/5131) ([thommay](https://github.com/thommay))
+- Update to rspec 3.5 [\#5126](https://github.com/chef/chef/pull/5126) ([thommay](https://github.com/thommay))
+- Add `chef\_data\_bag\_item` to Cheffish DSL methods [\#5125](https://github.com/chef/chef/pull/5125) ([danielsdeleo](https://github.com/danielsdeleo))
+- replace glibc resolver with ruby resolver [\#5123](https://github.com/chef/chef/pull/5123) ([lamont-granquist](https://github.com/lamont-granquist))
+- The user must specify a category for a new cookbook [\#5091](https://github.com/chef/chef/pull/5091) ([thommay](https://github.com/thommay))
+- Warn if not installing an individual bff fileset [\#5093](https://github.com/chef/chef/pull/5093) ([mwrock](https://github.com/mwrock))
+- Use Mixlib::Archive to extract tarballs [\#5080](https://github.com/chef/chef/pull/5080) ([thommay](https://github.com/thommay))
+- Data Collector server URL validation, and disable on host down [\#5076](https://github.com/chef/chef/pull/5076) ([adamleff](https://github.com/adamleff))
+
+**Fixed Bugs:**
+
+- Don't log error for reporting audit data in when in chef-zero [\#5016](https://github.com/chef/chef/pull/5016) ([erichelgeson](https://github.com/erichelgeson))
+- Invalidate the file system cache on deletion [\#5154](https://github.com/chef/chef/pull/5154) ([thommay](https://github.com/thommay))
+- Root ACLs are a top level json file not a sub-directory [\#5155](https://github.com/chef/chef/pull/5155) ([thommay](https://github.com/thommay))
+- Install nokogiri and pin mixlib-cli [\#5118](https://github.com/chef/chef/pull/5118) ([ksubrama](https://github.com/ksubrama))
+- Ensure that the valid option is given back to the option parser [\#5114](https://github.com/chef/chef/pull/5114) ([dldinternet](https://github.com/dldinternet))
+- Fixed regex for zypper version 1.13.\*.  [\#5109](https://github.com/chef/chef/pull/5109) ([yeoldegrove](https://github.com/yeoldegrove))
+- add back method\_missing support to set\_unless [\#5103](https://github.com/chef/chef/pull/5103) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix \#5094 node.default\_unless issue in 12.12.13 [\#5097](https://github.com/chef/chef/pull/5097) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix \#5078 using cwd parameter instead of Dir.pwd [\#5079](https://github.com/chef/chef/pull/5079) ([Tensibai](https://github.com/Tensibai))
+
 ## [v12.12.15](https://github.com/chef/chef/tree/v12.12.15) (2016-07-08)
 [Full Changelog](https://github.com/chef/chef/compare/v12.12.13...v12.12.15)
 
@@ -94,7 +137,7 @@
 - Update rubygems provider to support local install of gems if so specified [\#4847](https://github.com/chef/chef/pull/4847) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit))
 - fix details in with\_run\_context [\#4839](https://github.com/chef/chef/pull/4839) ([lamont-granquist](https://github.com/lamont-granquist))
 - Lock dependencies of chef through a `Gemfile.lock` [\#4820](https://github.com/chef/chef/pull/4820) ([jkeiser](https://github.com/jkeiser))
-- add better resource manipulation API [\#4834](https://github.com/chef/chef/pull/4834) ([lamont-granquist](https://github.com/lamont-granquist)) 
+- add better resource manipulation API [\#4834](https://github.com/chef/chef/pull/4834) ([lamont-granquist](https://github.com/lamont-granquist))
 - add nillable apt\_repository and nillable properties [\#4832](https://github.com/chef/chef/pull/4832) ([lamont-granquist](https://github.com/lamont-granquist))
 
 ## [v12.9](https://github.com/chef/chef/tree/v12.9.38) (2016-04-09)

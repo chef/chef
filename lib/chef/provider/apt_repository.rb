@@ -19,6 +19,7 @@
 require "chef/resource"
 require "chef/dsl/declare_resource"
 require "chef/mixin/shell_out"
+require "chef/mixin/which"
 require "chef/http/simple"
 require "chef/provider/noop"
 
@@ -28,9 +29,10 @@ class Chef
       use_inline_resources
 
       include Chef::Mixin::ShellOut
+      extend Chef::Mixin::Which
 
       provides :apt_repository do
-        uses_apt?
+        which("apt-get")
       end
 
       def whyrun_supported?
@@ -102,12 +104,6 @@ class Chef
 
           end
         end
-      end
-
-      def self.uses_apt?
-        ENV["PATH"] ||= ""
-        paths = %w{ /bin /usr/bin /sbin /usr/sbin } + ENV["PATH"].split(::File::PATH_SEPARATOR)
-        paths.any? { |path| ::File.executable?(::File.join(path, "apt-get")) }
       end
 
       def is_key_id?(id)
@@ -254,4 +250,4 @@ class Chef
   end
 end
 
-Chef::Provider::Noop.provides :apt_resource
+Chef::Provider::Noop.provides :apt_repository

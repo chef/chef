@@ -112,7 +112,11 @@ EOM
       file "cookbooks/x/recipes/default.rb", <<EOM
 ruby_block "sleeping" do
   block do
-    sleep 10
+    retries = 200
+    while IO.read(Chef::Config[:log_location]) !~ /Chef client [0-9]+ is running, will wait for it to finish and then run./
+      sleep 0.1
+      raise "we ran out of retries" if ( retries -= 1 ) <= 0
+    end
   end
 end
 EOM
@@ -125,51 +129,38 @@ file_cache_path "#{path_to('config/cache')}"
 EOM
       # We have a timeout protection here so that if due to some bug
       # run_lock gets stuck we can discover it.
-      expect {
+      expect do
         Timeout.timeout(120) do
           chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..")
 
-          # Instantiate the first chef-solo run
-          s1 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
--l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
+          threads = []
 
-          # Give it some time to progress
-          sleep 5
+          # Instantiate the first chef-solo run
+          threads << Thread.new do
+            s1 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default'  -l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
+            Process.waitpid(s1)
+          end
 
           # Instantiate the second chef-solo run
-          s2 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
--l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
+          threads << Thread.new do
+            s2 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default'  -l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
+            Process.waitpid(s2)
+          end
 
-          Process.waitpid(s1)
-          Process.waitpid(s2)
+          threads.each(&:join)
         end
-      }.not_to raise_error
+      end.not_to raise_error
 
       # Unfortunately file / directory helpers in integration tests
       # are implemented using before(:each) so we need to do all below
       # checks in one example.
       run_log = File.read(path_to("logs/runs.log"))
 
+      # second run should have a message which indicates it's waiting for the first run
+      expect(run_log).to match(/Chef client [0-9]+ is running, will wait for it to finish and then run./)
+
       # both of the runs should succeed
       expect(run_log.lines.reject { |l| !l.include? "INFO: Chef Run complete in" }.length).to eq(2)
-
-      # second run should have a message which indicates it's waiting for the first run
-      pid_lines = run_log.lines.reject { |l| !l.include? "Chef-client pid:" }
-      expect(pid_lines.length).to eq(2)
-      pids = pid_lines.map { |l| l.split(" ").last }
-      expect(run_log).to include("Chef client #{pids[0]} is running, will wait for it to finish and then run.")
-
-      # second run should start after first run ends
-      starts = [ ]
-      ends = [ ]
-      run_log.lines.each_with_index do |line, index|
-        if line.include? "Chef-client pid:"
-          starts << index
-        elsif line.include? "INFO: Chef Run complete in"
-          ends << index
-        end
-      end
-      expect(starts[1]).to be > ends[0]
     end
 
   end

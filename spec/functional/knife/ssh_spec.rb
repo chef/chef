@@ -21,13 +21,13 @@ require "tiny_server"
 
 describe Chef::Knife::Ssh do
 
-  before(:all) do
+  before(:each) do
     Chef::Knife::Ssh.load_deps
     @server = TinyServer::Manager.new
     @server.start
   end
 
-  after(:all) do
+  after(:each) do
     @server.stop
   end
 
@@ -276,9 +276,9 @@ describe Chef::Knife::Ssh do
     Chef::Config[:client_key] = nil
     Chef::Config[:chef_server_url] = "http://localhost:9000"
 
-    @api.get("/search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0", 200) {
+    @api.get("/search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0", 200) do
       %({"total":1, "start":0, "rows":[{"name":"i-xxxxxxxx", "json_class":"Chef::Node", "automatic":{"fqdn":"the.fqdn", "ec2":{"public_hostname":"the_public_hostname"}},"recipes":[]}]})
-    }
+    end
   end
 
 end

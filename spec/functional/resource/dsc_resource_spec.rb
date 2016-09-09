@@ -21,17 +21,17 @@ require "spec_helper"
 describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
   let(:event_dispatch) { Chef::EventDispatch::Dispatcher.new }
 
-  let(:node) {
+  let(:node) do
     Chef::Node.new.tap do |n|
       n.consume_external_attrs(OHAI_SYSTEM.data, {})
     end
-  }
+  end
 
   let(:run_context) { Chef::RunContext.new(node, {}, event_dispatch) }
 
-  let(:new_resource) {
+  let(:new_resource) do
     Chef::Resource::DscResource.new("dsc_resource_test", run_context)
-  }
+  end
 
   context "when Powershell does not support Invoke-DscResource"
   context "when Powershell supports Invoke-DscResource" do
@@ -77,7 +77,7 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
         new_resource.run_action(:run)
         expect(new_resource).to be_updated
         reresource =
-           Chef::Resource::DscResource.new("dsc_resource_retest", run_context)
+          Chef::Resource::DscResource.new("dsc_resource_retest", run_context)
         reresource.resource :File
         reresource.property :Contents, test_text
         reresource.property :DestinationPath, tmp_file_name

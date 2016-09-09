@@ -16,7 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "pp"
 
 module GemspecBackcompatCreator
   def gemspec(name, version)
@@ -64,7 +63,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     begin
       @gem_env.with_gem_sources("http://gems.example.org") do
         sources_in_block = Gem.sources
-        raise RuntimeError, "sources should be reset even in case of an error"
+        raise "sources should be reset even in case of an error"
       end
     rescue RuntimeError
     end
@@ -78,7 +77,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     begin
       @gem_env.with_gem_sources(nil) do
         sources_in_block = Gem.sources
-        raise RuntimeError, "sources should be reset even in case of an error"
+        raise "sources should be reset even in case of an error"
       end
     rescue RuntimeError
     end
@@ -86,51 +85,61 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     expect(Gem.sources).to eq(normal_sources)
   end
 
-  it "finds a matching gem candidate version" do
-    dep = Gem::Dependency.new("rspec", ">= 0")
-    dep_installer = Gem::DependencyInstaller.new
-    allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-    latest = [[gemspec("rspec", Gem::Version.new("1.3.0")), "https://rubygems.org/"]]
-    expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(latest)
-    expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new("rspec", ">= 0"))).to eq(Gem::Version.new("1.3.0"))
+  context "new default rubygems behavior" do
+    before do
+      Chef::Config[:rubygems_cache_enabled] = false
+    end
+
+    it "finds a matching gem candidate version on rubygems 2.0.0+" do
+      dep = Gem::Dependency.new("rspec", ">= 0")
+      dep_installer = Gem::DependencyInstaller.new
+      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
+      expect(dep_installer).not_to receive(:find_gems_with_sources).with(dep).and_call_original
+      expect(@gem_env.candidate_version_from_remote(dep)).to be_kind_of(Gem::Version)
+    end
+
+    it "gives the candidate version as nil if none is found" do
+      dep = Gem::Dependency.new("lksdjflksdjflsdkfj", ">= 0")
+      dep_installer = Gem::DependencyInstaller.new
+      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
+      expect(dep_installer).not_to receive(:find_gems_with_sources).with(dep).and_call_original
+      expect(@gem_env.candidate_version_from_remote(dep)).to be_nil
+    end
+
+    it "finds a matching gem from a specific gemserver when explicit sources are given (to a server that doesn't respond to api requests)" do
+      dep = Gem::Dependency.new("rspec", ">= 0")
+      dep_installer = Gem::DependencyInstaller.new
+      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
+      expect(dep_installer).not_to receive(:find_gems_with_sources).with(dep).and_call_original
+      expect(@gem_env.candidate_version_from_remote(dep, "http://production.cf.rubygems.org")).to be_kind_of(Gem::Version)
+    end
   end
 
-  it "finds a matching gem candidate version on rubygems 2.0.0+" do
-    dep = Gem::Dependency.new("rspec", ">= 0")
-    dep_installer = Gem::DependencyInstaller.new
-    allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-    best_gem = double("best gem match", :spec => gemspec("rspec", Gem::Version.new("1.3.0")), :source => "https://rubygems.org")
-    available_set = double("Gem::AvailableSet test double")
-    expect(available_set).to receive(:pick_best!)
-    expect(available_set).to receive(:set).and_return([best_gem])
-    expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(available_set)
-    expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new("rspec", ">= 0"))).to eq(Gem::Version.new("1.3.0"))
-  end
+  context "old rubygems caching behavior" do
+    before do
+      Chef::Config[:rubygems_cache_enabled] = true
+    end
 
-  it "gives the candidate version as nil if none is found" do
-    dep = Gem::Dependency.new("rspec", ">= 0")
-    latest = []
-    dep_installer = Gem::DependencyInstaller.new
-    allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-    expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(latest)
-    expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new("rspec", ">= 0"))).to be_nil
+    it "finds a matching gem candidate version on rubygems 2.0.0+" do
+      dep = Gem::Dependency.new("rspec", ">= 0")
+      expect(@gem_env.candidate_version_from_remote(dep)).to be_kind_of(Gem::Version)
+    end
+
+    it "gives the candidate version as nil if none is found" do
+      dep = Gem::Dependency.new("lksdjflksdjflsdkfj", ">= 0")
+      expect(@gem_env.candidate_version_from_remote(dep)).to be_nil
+    end
+
+    it "finds a matching gem from a specific gemserver when explicit sources are given" do
+      dep = Gem::Dependency.new("rspec", ">= 0")
+      expect(@gem_env.candidate_version_from_remote(dep, "http://production.cf.rubygems.org")).to be_kind_of(Gem::Version)
+    end
   end
 
   it "finds a matching candidate version from a .gem file when the path to the gem is supplied" do
     location = CHEF_SPEC_DATA + "/gems/chef-integration-test-0.1.0.gem"
     expect(@gem_env.candidate_version_from_file(Gem::Dependency.new("chef-integration-test", ">= 0"), location)).to eq(Gem::Version.new("0.1.0"))
     expect(@gem_env.candidate_version_from_file(Gem::Dependency.new("chef-integration-test", ">= 0.2.0"), location)).to be_nil
-  end
-
-  it "finds a matching gem from a specific gemserver when explicit sources are given" do
-    dep = Gem::Dependency.new("rspec", ">= 0")
-    latest = [[gemspec("rspec", Gem::Version.new("1.3.0")), "https://rubygems.org/"]]
-
-    expect(@gem_env).to receive(:with_gem_sources).with("http://gems.example.com").and_yield
-    dep_installer = Gem::DependencyInstaller.new
-    allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-    expect(dep_installer).to receive(:find_gems_with_sources).with(dep).and_return(latest)
-    expect(@gem_env.candidate_version_from_remote(Gem::Dependency.new("rspec", ">=0"), "http://gems.example.com")).to eq(Gem::Version.new("1.3.0"))
   end
 
   it "installs a gem with a hash of options for the dependency installer" do
@@ -545,7 +554,6 @@ describe Chef::Provider::Package::Rubygems do
           expect(provider.candidate_version).to eq("0.1.0")
         end
       end
-
     end
 
     describe "when installing a gem" do
@@ -586,10 +594,9 @@ describe Chef::Provider::Package::Rubygems do
 
         context "when source is a path" do
           let(:source) { CHEF_SPEC_DATA + "/gems/chef-integration-test-0.1.0.gem" }
-          let(:domain) { { domain: :local } }
 
           it "installs the gem from file via the gems api" do
-            expect(provider.gem_env).to receive(:install).with(source, domain)
+            expect(provider.gem_env).to receive(:install).with(source)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end
@@ -597,11 +604,10 @@ describe Chef::Provider::Package::Rubygems do
 
         context "when the gem name is a file path and source is nil" do
           let(:gem_name) { CHEF_SPEC_DATA + "/gems/chef-integration-test-0.1.0.gem" }
-          let(:domain) { { domain: :local } }
 
           it "installs the gem from file via the gems api" do
             expect(new_resource.source).to eq(gem_name)
-            expect(provider.gem_env).to receive(:install).with(gem_name, domain)
+            expect(provider.gem_env).to receive(:install).with(gem_name)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end

@@ -30,17 +30,12 @@ env:
 
 matrix:
   include:
-  - rvm: 2.1
+  - rvm: 2.2.5
     sudo: true
     script: sudo -E $(which bundle) exec rake spec;
     # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
-  - rvm: 2.2
-    sudo: true
-    script: sudo -E $(which bundle) exec rake spec;
-    # also remove integration / external tests
-    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
-  - rvm: 2.3.0
+  - rvm: 2.3.1
     sudo: true
     script: sudo -E $(which bundle) exec rake spec;
     # also remove integration / external tests
@@ -52,13 +47,13 @@ matrix:
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - env:
       CHEFSTYLE: 1
-    rvm: 2.1
+    rvm: 2.3.1
     script: bundle exec rake style
     # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - env:
       AUDIT_CHECK: 1
-    rvm: 2.1
+    rvm: 2.3.1
     script: bundle exec bundle-audit check --update
     # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
@@ -68,23 +63,23 @@ matrix:
   - env:
       TEST_GEM: chef-provisioning
     script: tasks/bin/run_external_test $TEST_GEM rake spec
-    rvm: 2.2
+    rvm: 2.3.1
   - env:
       TEST_GEM: chef-provisioning-aws
     script: tasks/bin/run_external_test $TEST_GEM rake spec
-    rvm: 2.2
+    rvm: 2.3.1
   - env:
       TEST_GEM: chef-sugar
     script: tasks/bin/run_external_test $TEST_GEM rake
-    rvm: 2.2
+    rvm: 2.3.1
   - env:
       - TEST_GEM: chef-zero
     script: tasks/bin/run_external_test $TEST_GEM rake spec cheffs
-    rvm: 2.2
+    rvm: 2.3.1
   - env:
       TEST_GEM: cheffish
     script: tasks/bin/run_external_test $TEST_GEM rake spec
-    rvm: 2.2
+    rvm: 2.3.1
   - env:
       TEST_GEM: chefspec
     # The chefspec tests + bundler cache + "gem update --system" interact badly :/
@@ -93,32 +88,33 @@ matrix:
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
       - bundle config --local without server:docgen:maintenance:omnibus_package:development:ruby_prof:pry
     script: tasks/bin/run_external_test $TEST_GEM rake
-    rvm: 2.2.0
+    rvm: 2.3.1
   - env:
       TEST_GEM: foodcritic
     script: tasks/bin/run_external_test $TEST_GEM rake test
-    rvm: 2.2
+    rvm: 2.3.1
   - env:
       TEST_GEM: halite
     script: tasks/bin/run_external_test $TEST_GEM rake spec
-    rvm: 2.2
+    rvm: 2.3.1
   - env:
       TEST_GEM: knife-windows
     script: tasks/bin/run_external_test $TEST_GEM rake unit_spec
-    rvm: 2.2
+    rvm: 2.3.1
   - env:
       TEST_GEM: poise
     script: tasks/bin/run_external_test $TEST_GEM rake spec
-    rvm: 2.2
+    rvm: 2.3.1
   ### START TEST KITCHEN ONLY ###
   #
-  - rvm: 2.2
+  - rvm: 2.3.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -129,13 +125,14 @@ matrix:
     env:
       - UBUNTU=12.04
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.2
+  - rvm: 2.3.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -146,13 +143,14 @@ matrix:
     env:
       - UBUNTU=14.04
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.2
+  - rvm: 2.3.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -163,13 +161,14 @@ matrix:
     env:
       - UBUNTU=16.04
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.2
+  - rvm: 2.3.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -180,30 +179,33 @@ matrix:
     env:
       - DEBIAN=7
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.2
+  - rvm: 2.3.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
       - bundle exec kitchen test debian-8
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
       - DEBIAN=8
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.2
+  - rvm: 2.3.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -214,13 +216,14 @@ matrix:
     env:
       - CENTOS=6
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.2
+  - rvm: 2.3.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -231,13 +234,14 @@ matrix:
     env:
       - CENTOS=7
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.2
+  - rvm: 2.3.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -249,7 +253,7 @@ matrix:
       - FEDORA=23
       - KITCHEN_YAML=.kitchen.travis.yml
     ### END TEST KITCHEN ONLY ###
-  - rvm: 2.2
+  - rvm: 2.3.1
     sudo: required
     dist: trusty
     before_install:
@@ -257,6 +261,7 @@ matrix:
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
       - sudo apt-get update
       - sudo apt-get -y install squid3 git curl
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     env:
       - PROXY_TESTS_DIR=proxy_tests/files/default/scripts
       - PROXY_TESTS_REPO=$PROXY_TESTS_DIR/repo
@@ -270,7 +275,6 @@ matrix:
       - sudo cat /var/log/squid3/access.log
 
   allow_failures:
-    - rvm: 2.3.0
     - rvm: rbx
 
 notifications:

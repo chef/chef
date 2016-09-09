@@ -41,7 +41,7 @@ describe Chef::Knife::NodeEditor do
 
   subject { described_class.new(node, ui, config) }
 
-  describe '#view' do
+  describe "#view" do
     it "returns a Hash with only the name, chef_environment, normal, " +
       "policy_name, policy_group, and run_list properties" do
       expected = node_data.select do |key,|
@@ -61,7 +61,7 @@ describe Chef::Knife::NodeEditor do
     end
   end
 
-  describe '#apply_updates' do
+  describe "#apply_updates" do
     context "when the node name is changed" do
       before(:each) do
         allow(ui).to receive(:warn)
@@ -143,7 +143,7 @@ describe Chef::Knife::NodeEditor do
     end
   end
 
-  describe '#updated?' do
+  describe "#updated?" do
     context "before the node has been edited" do
       it "returns false" do
         expect(subject.updated?).to be false

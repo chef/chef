@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require_relative "bundler_patch"
 
 platforms = ARGV.shift
 platforms = platforms.split(" ").map { |p| Gem::Platform.new(p) }

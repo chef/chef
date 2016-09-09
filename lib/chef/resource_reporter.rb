@@ -26,11 +26,11 @@ require "chef/event_dispatch/base"
 class Chef
   class ResourceReporter < EventDispatch::Base
 
-    class ResourceReport < Struct.new(:new_resource,
-                                      :current_resource,
-                                      :action,
-                                      :exception,
-                                      :elapsed_time)
+    ResourceReport = Struct.new(:new_resource,
+                                :current_resource,
+                                :action,
+                                :exception,
+                                :elapsed_time) do
 
       def self.new_with_current_state(new_resource, action, current_resource)
         report = new

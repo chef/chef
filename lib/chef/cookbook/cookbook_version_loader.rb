@@ -3,6 +3,7 @@ require "chef/cookbook_version"
 require "chef/cookbook/chefignore"
 require "chef/cookbook/metadata"
 require "chef/util/path_helper"
+require "find"
 
 class Chef
   class Cookbook
@@ -168,7 +169,7 @@ class Chef
           when /\.json$/
             apply_json_metadata(metadata_file)
           else
-            raise RuntimeError, "Invalid metadata file: #{metadata_file} for cookbook: #{cookbook_version}"
+            raise "Invalid metadata file: #{metadata_file} for cookbook: #{cookbook_version}"
           end
         end
 
@@ -223,27 +224,31 @@ class Chef
       # however if the file is named ".uploaded-cookbook-version.json" it is
       # assumed to be managed by chef-zero and not part of the cookbook.
       def load_all_files
-        Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(cookbook_path), "*"), File::FNM_DOTMATCH).each do |fs_entry|
-          if File.directory?(fs_entry)
-            dir_relpath = Chef::Util::PathHelper.relative_path_from(@cookbook_path, fs_entry)
+        return unless File.exist?(cookbook_path)
 
-            next if dir_relpath.to_s.start_with?(".")
+        # If cookbook_path is a symlink, Find on Windows Ruby 2.3 will not traverse it.
+        # Dir.entries will do so on all platforms, so we iterate the top level using
+        # Dir.entries. Since we have different behavior at the top anyway (hidden
+        # directories at the top level are not included for backcompat), this
+        # actually keeps things a bit cleaner.
+        Dir.entries(cookbook_path).each do |top_filename|
+          # Skip top-level directories starting with "."
+          top_path = File.join(cookbook_path, top_filename)
+          next if File.directory?(top_path) && top_filename.start_with?(".")
 
-            Dir.glob(File.join(fs_entry, "**/*"), File::FNM_DOTMATCH).each do |file|
-              next if File.directory?(file)
-              file = Pathname.new(file).cleanpath.to_s
-              name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
-              cookbook_settings[:all_files][name] = file
-            end
-          elsif File.file?(fs_entry)
-            file = Pathname.new(fs_entry).cleanpath.to_s
+          # Use Find.find because it:
+          # (a) returns any children, recursively
+          # (b) includes top_path as well
+          # (c) skips symlinks, which is backcompat (no judgement on whether it was *right*)
+          Find.find(top_path) do |path|
+            # Only add files, not directories
+            next unless File.file?(path)
+            # Don't add .uploaded-cookbook-version.json
+            next if File.basename(path) == UPLOADED_COOKBOOK_VERSION_FILE
 
-            next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
-
-            name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
-            cookbook_settings[:all_files][name] = file
-          else # pipes, devices, other weirdness
-            next
+            relative_path = Chef::Util::PathHelper.relative_path_from(cookbook_path, path)
+            path = Pathname.new(path).cleanpath.to_s
+            cookbook_settings[:all_files][relative_path] = path
           end
         end
       end

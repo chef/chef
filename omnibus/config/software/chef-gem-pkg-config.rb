@@ -7,3 +7,4 @@ BuildChefGem::GemInstallSoftwareDef.define(self, __FILE__)
 
 license "LGPL-2.1"
 license_file "https://github.com/ruby-gnome2/pkg-config/blob/master/LGPL-2.1"
+skip_transitive_dependency_licensing true

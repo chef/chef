@@ -500,9 +500,9 @@ EOM
 
     shared_examples_for "confirm with negative answer" do
       it "confirm should exit 3" do
-        expect {
+        expect do
           run_confirm
-        }.to raise_error(SystemExit) { |e| expect(e.status).to eq(3) }
+        end.to raise_error(SystemExit) { |e| expect(e.status).to eq(3) }
       end
 
       it "confirm_without_exit should return false" do

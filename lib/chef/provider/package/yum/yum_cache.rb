@@ -197,7 +197,7 @@ class Chef
 
           def shabang?(file)
             ::File.open(file, "r") do |f|
-              f.read(2) == '#!'
+              f.read(2) == "#!"
             end
           rescue Errno::ENOENT
             false

@@ -33,6 +33,14 @@ class Chef::Application::Knife < Chef::Application
     :description => "The configuration file to use",
     :proc => lambda { |path| File.expand_path(path, Dir.pwd) }
 
+  option :config_option,
+    :long         => "--config-option OPTION=VALUE",
+    :description  => "Override a single configuration option",
+    :proc         => lambda { |option, existing|
+      (existing ||= []) << option
+      existing
+    }
+
   verbosity_level = 0
   option :verbosity,
     :short => "-V",

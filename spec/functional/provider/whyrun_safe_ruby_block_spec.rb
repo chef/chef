@@ -21,10 +21,10 @@ require "spec_helper"
 describe Chef::Resource::WhyrunSafeRubyBlock do
   let(:node) { Chef::Node.new }
 
-  let(:run_context) {
+  let(:run_context) do
     events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, {}, events)
-  }
+  end
 
   before do
     $evil_global_evil_laugh = :wahwah

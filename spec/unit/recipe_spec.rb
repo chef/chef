@@ -75,15 +75,15 @@ describe Chef::Recipe do
       end
 
       it "should require a name argument" do
-        expect {
+        expect do
           recipe.cat
-        }.to raise_error(ArgumentError)
+        end.to raise_error(ArgumentError)
       end
 
       it "should allow regular errors (not NameErrors) to pass unchanged" do
-        expect {
+        expect do
           recipe.cat("felix") { raise ArgumentError, "You Suck" }
-        }.to raise_error(ArgumentError)
+        end.to raise_error(ArgumentError)
       end
 
       it "should add our zen_master to the collection" do
@@ -288,9 +288,10 @@ describe Chef::Recipe do
       end
 
       it "validating resources via build_resource" do
-        expect {recipe.build_resource(:remote_file, "klopp") do
-          source Chef::DelayedEvaluator.new { "http://chef.io" }
-        end}.to_not raise_error
+        expect do
+          recipe.build_resource(:remote_file, "klopp") do
+            source Chef::DelayedEvaluator.new { "http://chef.io" }
+          end end.to_not raise_error
       end
 
     end

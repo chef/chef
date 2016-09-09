@@ -459,11 +459,11 @@ shared_examples_for Chef::Provider::File do
     context "do_validate_content" do
       before { setup_normal_file }
 
-      let(:tempfile) {
+      let(:tempfile) do
         t = double("Tempfile", :path => "/tmp/foo-bar-baz", :closed? => true)
         allow(content).to receive(:tempfile).and_return(t)
         t
-      }
+      end
 
       context "with user-supplied verifications" do
         it "calls #verify on each verification with tempfile path" do
@@ -683,31 +683,6 @@ shared_examples_for Chef::Provider::File do
       end
     end
 
-    context "do_resolv_conf_fixup" do
-      %w{/resolv.conf /etc/resolv.con /etc/foo/resolv.conf /c/resolv.conf}.each do |path|
-        context "when managing #{path}" do
-          let(:resource_path) { path }
-          it "does not reload the nameservers" do
-            expect(Resolv::DefaultResolver).not_to receive(:replace_resolvers)
-            provider.send(:do_resolv_conf_fixup)
-          end
-        end
-      end
-      context "when managing /etc/resolv.conf", linux_only: true do
-        let(:resource_path) { "/etc/resolv.conf" }
-        it "reloads the nameservers on linux" do
-          expect(Resolv::DefaultResolver).to receive(:replace_resolvers)
-          provider.send(:do_resolv_conf_fixup)
-        end
-      end
-      context "when managing /etc/resolv.conf", non_linux_only: true do
-        let(:resource_path) { "/etc/resolv.conf" }
-        it "does not reload the nameservers on non-linux" do
-          expect(Resolv::DefaultResolver).not_to receive(:replace_resolvers)
-          provider.send(:do_resolv_conf_fixup)
-        end
-      end
-    end
   end
 
   context "action delete" do

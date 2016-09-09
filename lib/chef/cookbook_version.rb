@@ -316,13 +316,13 @@ class Chef
           error_message << error_locations.join("\n")
           existing_files = segment_filenames(segment)
           # Strip the root_dir prefix off all files for readability
-          pretty_existing_files = existing_files.map { |path|
+          pretty_existing_files = existing_files.map do |path|
             if root_dir
               path[root_dir.length + 1..-1]
             else
               path
             end
-          }
+          end
           # Show the files that the cookbook does have. If the user made a typo,
           # hopefully they'll see it here.
           unless pretty_existing_files.empty?
@@ -599,12 +599,12 @@ class Chef
       end
     end
 
-    def <=>(o)
-      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != o.name
+    def <=>(other)
+      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != other.name
       # FIXME: can we change the interface to the Metadata class such
       # that metadata.version returns a Chef::Version instance instead
       # of a string?
-      Chef::Version.new(self.version) <=> Chef::Version.new(o.version)
+      Chef::Version.new(self.version) <=> Chef::Version.new(other.version)
     end
 
     private
@@ -623,7 +623,7 @@ class Chef
     # For each filename, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def filenames_by_name(filenames)
-      filenames.select { |filename| filename =~ /\.rb$/ }.inject({}) { |memo, filename| memo[File.basename(filename, ".rb")] = filename ; memo }
+      filenames.select { |filename| filename =~ /\.rb$/ }.inject({}) { |memo, filename| memo[File.basename(filename, ".rb")] = filename; memo }
     end
 
     def file_vendor

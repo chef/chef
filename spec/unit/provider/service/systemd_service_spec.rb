@@ -21,7 +21,7 @@ require "spec_helper"
 
 describe Chef::Provider::Service::Systemd do
 
-  let(:node) {
+  let(:node) do
     node = Chef::Node.new
     node.default["etc"] = Hash.new
     node.default["etc"]["passwd"] = {
@@ -30,7 +30,7 @@ describe Chef::Provider::Service::Systemd do
       },
     }
     node
-  }
+  end
 
   let(:events) { Chef::EventDispatch::Dispatcher.new }
 
@@ -196,14 +196,14 @@ describe Chef::Provider::Service::Systemd do
         context "when a user is specified" do
           it "should call '#{systemctl_path} --user start service_name' if no start command is specified" do
             current_resource.user("joe")
-            expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --user start #{service_name}", { "environment" => { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, "user" => "joe" }).and_return(shell_out_success)
+            expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --user start #{service_name}", { :environment => { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, :user => "joe" }).and_return(shell_out_success)
             provider.start_service
           end
 
           it "should not call '#{systemctl_path} --user start service_name' if it is already running" do
             current_resource.running(true)
             current_resource.user("joe")
-            expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --user start #{service_name}", { "environment" => { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, "user" => "joe" })
+            expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --user start #{service_name}", { :environment => { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, :user => "joe" })
             provider.start_service
           end
         end

@@ -80,8 +80,11 @@ class Chef
           shared_resource_requirements
           requirements.assert(:all_actions) do |a|
             if !@command_success
-              whyrun_msg = @new_resource.status_command ? "Provided status command #{@new_resource.status_command} failed." :
-                "Could not determine upstart state for service"
+              whyrun_msg = if @new_resource.status_command
+                             "Provided status command #{@new_resource.status_command} failed."
+                           else
+                             "Could not determine upstart state for service"
+                           end
             end
             a.assertion { @command_success }
             # no failure here, just document the assumptions made.
@@ -116,7 +119,7 @@ class Chef
             end
           else
             begin
-              if upstart_state == "running"
+              if upstart_goal_state == "start"
                 @current_resource.running true
               else
                 @current_resource.running false
@@ -224,7 +227,7 @@ class Chef
           conf.write_file
         end
 
-        def upstart_state
+        def upstart_goal_state
           command = "/sbin/status #{@job}"
           status = popen4(command) do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
@@ -235,7 +238,7 @@ class Chef
               # service (goal) state
               line =~ UPSTART_STATE_FORMAT
               data = Regexp.last_match
-              return data[2]
+              return data[1]
             end
           end
         end

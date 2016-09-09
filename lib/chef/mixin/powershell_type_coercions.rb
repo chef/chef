@@ -63,7 +63,7 @@ class Chef
       end
 
       def unsafe?(s)
-        ["'", '#', "`", '"'].any? do |x|
+        ["'", "#", "`", '"'].any? do |x|
           s.include? x
         end
       end

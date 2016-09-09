@@ -79,8 +79,6 @@ class Chef
           attr_reader :uninstall_string
           attr_reader :data
 
-          private
-
           UNINSTALL_SUBKEY = 'Software\Microsoft\Windows\CurrentVersion\Uninstall'.freeze
         end
       end

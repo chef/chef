@@ -19,8 +19,10 @@
 require "spec_helper"
 
 describe Chef::Resource::AptRepository do
-
-  let(:resource) { Chef::Resource::AptRepository.new("multiverse") }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) { Chef::Resource::AptRepository.new("multiverse", run_context) }
 
   it "should create a new Chef::Resource::AptUpdate" do
     expect(resource).to be_a_kind_of(Chef::Resource)
@@ -34,5 +36,15 @@ describe Chef::Resource::AptRepository do
   it "the default distribution should be nillable" do
     expect(resource.distribution(nil)).to eql(nil)
     expect(resource.distribution).to eql(nil)
+  end
+
+  it "should resolve to a Noop class when apt-get is not found" do
+    expect(Chef::Provider::AptRepository).to receive(:which).with("apt-get").and_return(false)
+    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
+  end
+
+  it "should resolve to a AptRepository class when apt-get is found" do
+    expect(Chef::Provider::AptRepository).to receive(:which).with("apt-get").and_return(true)
+    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::AptRepository)
   end
 end

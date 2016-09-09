@@ -42,7 +42,7 @@ class Chef
 
         all_cookbooks = Chef::CookbookVersion.list
         cookbooks_names = all_cookbooks.keys.grep(regex)
-        cookbooks_to_delete = cookbooks_names.inject({}) { |hash, name| hash[name] = all_cookbooks[name];hash }
+        cookbooks_to_delete = cookbooks_names.inject({}) { |hash, name| hash[name] = all_cookbooks[name]; hash }
         ui.msg "All versions of the following cookbooks will be deleted:"
         ui.msg ""
         ui.msg ui.list(cookbooks_to_delete.keys.sort, :columns_down)

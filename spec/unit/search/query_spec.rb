@@ -27,13 +27,13 @@ describe Chef::Search::Query do
     let(:query_string) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0" }
     let(:server_url) { "https://api.opscode.com/organizations/opscode/nodes" }
     let(:args) { { filter_key => filter_hash } }
-    let(:filter_hash) {
+    let(:filter_hash) do
       {
         "env" => [ "chef_environment" ],
         "ruby_plat" => %w{languages ruby platform},
       }
-    }
-    let(:response) {
+    end
+    let(:response) do
       {
         "rows" => [
           { "url" => "#{server_url}/my-name-is-node",
@@ -64,15 +64,15 @@ describe Chef::Search::Query do
         "start" => 0,
         "total" => 4,
       }
-    }
-    let(:response_rows) {
+    end
+    let(:response_rows) do
       [
         { "env" => "elysium", "ruby_plat" => "nudibranch" },
         { "env" => "hades", "ruby_plat" => "i386-mingw32" },
         { "env" => "elysium", "ruby_plat" => "centos" },
         { "env" => "moon", "ruby_plat" => "solaris2" },
       ]
-    }
+    end
   end
 
   before(:each) do
@@ -86,7 +86,8 @@ describe Chef::Search::Query do
     let(:query_string_with_rows) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=4" }
     let(:query_string_continue_with_rows) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=4&rows=4" }
 
-    let(:response) { {
+    let(:response) do
+      {
       "rows" => [
         { "name" => "my-name-is-node",
           "chef_environment" => "elysium",
@@ -147,28 +148,28 @@ describe Chef::Search::Query do
       ],
       "start" => 0,
       "total" => 4,
-    } }
+    } end
 
-    let(:big_response) {
+    let(:big_response) do
       r = response.dup
       r["total"] = 8
       r
-    }
+    end
 
-    let(:big_response_empty) {
+    let(:big_response_empty) do
       {
         "start" => 0,
         "total" => 8,
         "rows" => [],
       }
-    }
+    end
 
-    let(:big_response_end) {
+    let(:big_response_end) do
       r = response.dup
       r["start"] = 4
       r["total"] = 8
       r
-    }
+    end
 
     it "accepts a type as the first argument" do
       expect { query.search("node") }.not_to raise_error

@@ -2,7 +2,7 @@ require "spec_helper"
 require "chef/util/editor"
 
 describe Chef::Util::Editor do
-  describe '#initialize' do
+  describe "#initialize" do
     it "takes an Enumerable of lines" do
       editor = described_class.new(File.open(__FILE__))
       expect(editor.lines).to be == IO.readlines(__FILE__)
@@ -18,7 +18,7 @@ describe Chef::Util::Editor do
   subject(:editor) { described_class.new(input_lines) }
   let(:input_lines) { %w{one two two three} }
 
-  describe '#append_line_after' do
+  describe "#append_line_after" do
     context "when there is no match" do
       subject(:execute) { editor.append_line_after("missing", "new") }
 
@@ -44,7 +44,7 @@ describe Chef::Util::Editor do
     end
   end
 
-  describe '#append_line_if_missing' do
+  describe "#append_line_if_missing" do
     context "when there is no match" do
       subject(:execute) { editor.append_line_if_missing("missing", "new") }
 
@@ -70,7 +70,7 @@ describe Chef::Util::Editor do
     end
   end
 
-  describe '#remove_lines' do
+  describe "#remove_lines" do
     context "when there is no match" do
       subject(:execute) { editor.remove_lines("missing") }
 
@@ -96,7 +96,7 @@ describe Chef::Util::Editor do
     end
   end
 
-  describe '#replace' do
+  describe "#replace" do
     context "when there is no match" do
       subject(:execute) { editor.replace("missing", "new") }
 
@@ -123,7 +123,7 @@ describe Chef::Util::Editor do
     end
   end
 
-  describe '#replace_lines' do
+  describe "#replace_lines" do
     context "when there is no match" do
       subject(:execute) { editor.replace_lines("missing", "new") }
 

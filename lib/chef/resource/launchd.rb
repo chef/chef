@@ -68,7 +68,7 @@ class Chef
       property :hard_resource_limits, Hash
       property :inetd_compatibility, Hash
       property :init_groups, [ TrueClass, FalseClass ]
-      property :keep_alive, [ TrueClass, FalseClass ]
+      property :keep_alive, [ TrueClass, FalseClass, Hash ]
       property :launch_only_once, [ TrueClass, FalseClass ]
       property :ld_group, String
       property :limit_load_from_hosts, Array

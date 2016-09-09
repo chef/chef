@@ -75,7 +75,7 @@ describe "key edit commands that inherit knife" do
 end
 
 describe Chef::Knife::KeyEdit do
-  let(:public_key) {
+  let(:public_key) do
     "-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvPo+oNPB7uuNkws0fC02
 KxSwdyqPLu0fhI1pOweNKAZeEIiEz2PkybathHWy8snSXGNxsITkf3eyvIIKa8OZ
@@ -85,23 +85,23 @@ IjSmiN/ihHtlhV/VSnBJ5PzT/lRknlrJ4kACoz7Pq9jv+aAx5ft/xE9yDa2DYs0q
 Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
 0wIDAQAB
 -----END PUBLIC KEY-----"
-  }
+  end
   let(:config) { Hash.new }
   let(:actor) { "charmander" }
   let(:keyname) { "charmander-key" }
   let(:ui) { instance_double("Chef::Knife::UI") }
 
   shared_examples_for "key edit run command" do
-    let(:key_edit_object) {
+    let(:key_edit_object) do
       described_class.new(keyname, actor, actor_field_name, ui, config)
-    }
+    end
 
     context "when the command is run" do
-      let(:expected_hash) {
+      let(:expected_hash) do
         {
           actor_field_name => "charmander",
         }
-      }
+      end
       let(:new_keyname) { "charizard-key" }
 
       before do
@@ -126,12 +126,12 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
       end
 
       context "when key_name is passed" do
-        let(:expected_hash) {
+        let(:expected_hash) do
           {
             actor_field_name => "charmander",
             "name" => new_keyname,
           }
-        }
+        end
         before do
           key_edit_object.config[:key_name] = new_keyname
           allow_any_instance_of(Chef::Key).to receive(:update)
@@ -155,14 +155,14 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
       end
 
       context "when public_key, key_name, and expiration_date are passed" do
-        let(:expected_hash) {
+        let(:expected_hash) do
           {
             actor_field_name => "charmander",
             "public_key" => public_key,
             "name" => new_keyname,
             "expiration_date" => "infinity",
           }
-        }
+        end
         before do
           key_edit_object.config[:public_key] = "this-public-key"
           key_edit_object.config[:key_name] = new_keyname
@@ -177,12 +177,12 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
       end
 
       context "when create_key is passed" do
-        let(:expected_hash) {
+        let(:expected_hash) do
           {
             actor_field_name => "charmander",
             "create_key" => true,
           }
-        }
+        end
 
         before do
           key_edit_object.config[:create_key] = true
@@ -196,12 +196,12 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
       end
 
       context "when public_key is passed" do
-        let(:expected_hash) {
+        let(:expected_hash) do
           {
             actor_field_name => "charmander",
             "public_key" => public_key,
           }
-        }
+        end
         before do
           allow(key_edit_object).to receive(:update_key_from_hash).and_return(Chef::Key.from_hash(expected_hash))
           key_edit_object.config[:public_key] = "public_key_path"
@@ -214,13 +214,13 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
       end # when public_key is passed
 
       context "when the server returns a private key" do
-        let(:expected_hash) {
+        let(:expected_hash) do
           {
             actor_field_name => "charmander",
             "public_key" => public_key,
             "private_key" => "super_private",
           }
-        }
+        end
 
         before do
           allow(key_edit_object).to receive(:update_key_from_hash).and_return(Chef::Key.from_hash(expected_hash))

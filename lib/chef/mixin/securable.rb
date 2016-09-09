@@ -43,7 +43,7 @@ class Chef
           :mode,
           arg,
           :callbacks => {
-            "not in valid numeric range" => lambda { |m|
+            "not in valid numeric range" => lambda do |m|
               if m.kind_of?(String)
                 m =~ /^0/ || m = "0#{m}"
               end
@@ -54,7 +54,7 @@ class Chef
               else
                 Integer(m) <= 07777 && Integer(m) >= 0
               end
-            },
+            end,
           }
         )
       end

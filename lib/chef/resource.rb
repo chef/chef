@@ -497,7 +497,7 @@ class Chef
       state_properties = self.class.state_properties
       state_properties.each do |property|
         if property.identity? || property.is_set?(self)
-          state[property.name] = send(property.name)
+          state[property.name] = property.sensitive? ? "*sensitive value suppressed*" : send(property.name)
         end
       end
       state
@@ -1276,15 +1276,15 @@ class Chef
     # resolve_resource_reference on each in turn, causing them to
     # resolve lazy/forward references.
     def resolve_notification_references
-      run_context.before_notifications(self).each { |n|
+      run_context.before_notifications(self).each do |n|
         n.resolve_resource_reference(run_context.resource_collection)
-      }
-      run_context.immediate_notifications(self).each { |n|
+      end
+      run_context.immediate_notifications(self).each do |n|
         n.resolve_resource_reference(run_context.resource_collection)
-      }
-      run_context.delayed_notifications(self).each {|n|
+      end
+      run_context.delayed_notifications(self).each do |n|
         n.resolve_resource_reference(run_context.resource_collection)
-      }
+      end
     end
 
     # Helper for #notifies
@@ -1574,8 +1574,6 @@ class Chef
         @deprecated_constants ||= {}
       end
     end
-
-    private
 
     def self.remove_canonical_dsl
       if @resource_name
