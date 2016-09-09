@@ -594,10 +594,9 @@ describe Chef::Provider::Package::Rubygems do
 
         context "when source is a path" do
           let(:source) { CHEF_SPEC_DATA + "/gems/chef-integration-test-0.1.0.gem" }
-          let(:domain) { { domain: :local } }
 
           it "installs the gem from file via the gems api" do
-            expect(provider.gem_env).to receive(:install).with(source, domain)
+            expect(provider.gem_env).to receive(:install).with(source)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end
@@ -605,11 +604,10 @@ describe Chef::Provider::Package::Rubygems do
 
         context "when the gem name is a file path and source is nil" do
           let(:gem_name) { CHEF_SPEC_DATA + "/gems/chef-integration-test-0.1.0.gem" }
-          let(:domain) { { domain: :local } }
 
           it "installs the gem from file via the gems api" do
             expect(new_resource.source).to eq(gem_name)
-            expect(provider.gem_env).to receive(:install).with(gem_name, domain)
+            expect(provider.gem_env).to receive(:install).with(gem_name)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end
