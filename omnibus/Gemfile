@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gem "omnibus", github: "chef/omnibus", branch: "rhass/COOL-502_with_gcc_investigate"
 gem "omnibus-software", github: "chef/omnibus-software", branch: "lcg/ruby23"
 gem "license_scout", github: "chef/license_scout"
+gem "chef-zero", github: "chef/chef-zero"
 
 # pedump pessimistically pins multipart-post to a version from 2013 which makes
 # bundler very unhappy. Remove this when upstream has merged zed-0xff/pedump#6 .
