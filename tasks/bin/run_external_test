@@ -40,6 +40,7 @@ if [ -n "$PROJECT_BUNDLE_PATH" ]; then
   export BUNDLE_PATH=$PROJECT_BUNDLE_PATH
 fi
 export BUNDLE_FROZEN=
+rm -rf /home/travis/build/chef/chef/vendor/bundle/cache/bundler/git/chef-server-*
 bundle install
 export BUNDLE_FROZEN=true
 
