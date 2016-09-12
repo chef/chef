@@ -88,16 +88,16 @@ class Chef
         end
 
         def start_service
-          shell_out_with_systems_locale!(@new_resource.start_command)
+          shell_out_with_systems_locale!(@new_resource.start_command, timeout)
         end
 
         def stop_service
-          shell_out_with_systems_locale!(@new_resource.stop_command)
+          shell_out_with_systems_locale!(@new_resource.stop_command, timeout)
         end
 
         def restart_service
           if @new_resource.restart_command
-            shell_out_with_systems_locale!(@new_resource.restart_command)
+            shell_out_with_systems_locale!(@new_resource.restart_command, timeout)
           else
             stop_service
             sleep 1
@@ -106,7 +106,7 @@ class Chef
         end
 
         def reload_service
-          shell_out_with_systems_locale!(@new_resource.reload_command)
+          shell_out_with_systems_locale!(@new_resource.reload_command, timeout)
         end
 
         protected
@@ -170,6 +170,7 @@ class Chef
         def ps_cmd
           @run_context.node[:command] && @run_context.node[:command][:ps]
         end
+
       end
     end
   end

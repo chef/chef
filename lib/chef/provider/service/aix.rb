@@ -49,17 +49,17 @@ class Chef
 
         def start_service
           if @is_resource_group
-            shell_out!("startsrc -g #{@new_resource.service_name}")
+            shell_out!("startsrc -g #{@new_resource.service_name}", timeout)
           else
-            shell_out!("startsrc -s #{@new_resource.service_name}")
+            shell_out!("startsrc -s #{@new_resource.service_name}", timeout)
           end
         end
 
         def stop_service
           if @is_resource_group
-            shell_out!("stopsrc -g #{@new_resource.service_name}")
+            shell_out!("stopsrc -g #{@new_resource.service_name}", timeout)
           else
-            shell_out!("stopsrc -s #{@new_resource.service_name}")
+            shell_out!("stopsrc -s #{@new_resource.service_name}", timeout)
           end
         end
 
@@ -70,9 +70,9 @@ class Chef
 
         def reload_service
           if @is_resource_group
-            shell_out!("refresh -g #{@new_resource.service_name}")
+            shell_out!("refresh -g #{@new_resource.service_name}", timeout)
           else
-            shell_out!("refresh -s #{@new_resource.service_name}")
+            shell_out!("refresh -s #{@new_resource.service_name}", timeout)
           end
         end
 
