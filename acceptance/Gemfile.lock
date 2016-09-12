@@ -76,7 +76,7 @@ GEM
     hashie (3.4.4)
     hitimes (1.2.4)
     httpclient (2.7.2)
-    inspec (0.33.2)
+    inspec (0.34.0)
       hashie (~> 3.4)
       json (>= 1.8, < 3.0)
       method_source (~> 0.8)
