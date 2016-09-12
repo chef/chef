@@ -52,7 +52,6 @@ class Chef
         super
         @level = :info
         @message = name
-        @update_resource_count = true
       end
 
       def message(arg = nil)
@@ -69,14 +68,6 @@ class Chef
           :level,
           arg,
           :equal_to => [ :debug, :info, :warn, :error, :fatal ]
-        )
-      end
-
-      def update_resource_count(arg = nil)
-        set_or_return(
-          :update_resource_count,
-          arg,
-          :kind_of => [TrueClass, FalseClass]
         )
       end
 
