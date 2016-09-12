@@ -24,9 +24,9 @@ GIT
 
 GIT
   remote: https://github.com/poise/poise-boiler
-  revision: 9b8d1393b0dc06af625e3dcc4c0e0a53b2975657
+  revision: b2faa2bcfd128d5fcd781c2b727d05f6b818d74b
   specs:
-    poise-boiler (1.11.1.pre)
+    poise-boiler (1.12.1.pre)
       bundler
       chefspec (~> 5.0)
       codeclimate-test-reporter (~> 0.4)
@@ -291,7 +291,7 @@ GEM
     highline (1.7.8)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
-    httpclient (2.8.2.3)
+    httpclient (2.8.2.4)
     i18n (0.7.0)
     inifile (3.0.0)
     iniparse (1.4.2)
