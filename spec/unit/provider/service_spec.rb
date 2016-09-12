@@ -165,4 +165,5 @@ describe Chef::Provider::Service do
   it "delegates reload_service to subclasses" do
     expect { @provider.reload_service }.to raise_error(Chef::Exceptions::UnsupportedAction)
   end
+ 
 end

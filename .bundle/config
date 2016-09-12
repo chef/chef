@@ -1,2 +1,4 @@
 ---
 BUNDLE_FROZEN: '1'
+BUNDLE_PATH: "/tmp/bundles/"
+BUNDLE_DISABLE_SHARED_GEMS: true

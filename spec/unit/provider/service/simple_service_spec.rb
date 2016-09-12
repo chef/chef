@@ -38,6 +38,9 @@ aj        8119  6041  0 21:34 pts/3    00:00:03 vi simple_service_spec.rb
 NOMOCKINGSTRINGSPLZ
     @status = double("Status", :exitstatus => 0, :stdout => @stdout)
     allow(@provider).to receive(:shell_out!).and_return(@status)
+    @timeout = {:timeout => 600}
+    @timeout_user_value = 1
+    @timeout_user = {:timeout => @timeout_user_value}
   end
 
   it "should create a current resource with the name of the new resource" do
@@ -107,7 +110,7 @@ NOMOCKINGSTRINGSPLZ
   describe "when starting the service" do
     it "should call the start command if one is specified" do
       allow(@new_resource).to receive(:start_command).and_return("#{@new_resource.start_command}")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("#{@new_resource.start_command}")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("#{@new_resource.start_command}", @timeout)
       @provider.start_service()
     end
 
@@ -121,7 +124,7 @@ NOMOCKINGSTRINGSPLZ
   describe "when stopping a service" do
     it "should call the stop command if one is specified" do
       @new_resource.stop_command("/etc/init.d/themadness stop")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/themadness stop")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/themadness stop", @timeout)
       @provider.stop_service()
     end
 
@@ -135,7 +138,7 @@ NOMOCKINGSTRINGSPLZ
   describe Chef::Provider::Service::Simple, "restart_service" do
     it "should call the restart command if one has been specified" do
       @new_resource.restart_command("/etc/init.d/foo restart")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/foo restart")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/foo restart", @timeout)
       @provider.restart_service()
     end
 
@@ -163,6 +166,13 @@ NOMOCKINGSTRINGSPLZ
     it "should should run the user specified reload command if one is specified" do
       @new_resource.reload_command("kill -9 1")
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("kill -9 1")
+      @provider.reload_service()
+    end
+
+    it "should should run the user specified reload command if one is specified with user defined timeout" do
+      @new_resource.reload_command("kill -9 1")
+      @new_resource.timeout(@timeout_user_value)
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("kill -9 1", @timeout_user)
       @provider.reload_service()
     end
   end
