@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: dea545b10cbe209b89b30e782a58763407ba4526
+  revision: 8165dfd0524ee6076eda32727cbd0005c9348150
   specs:
     oc-chef-pedant (2.2.0)
-      activesupport (~> 3.2)
+      activesupport (~> 5.0)
       erubis (~> 2.7)
       mixlib-authentication (~> 1.4)
       mixlib-config (~> 2.0)
@@ -148,20 +148,22 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (3.2.22.4)
-      i18n (~> 0.6, >= 0.6.4)
-      multi_json (~> 1.0)
+    activesupport (5.0.0.1)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (~> 0.7)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
     addressable (2.4.0)
     appbundler (0.9.0)
       mixlib-cli (~> 1.4)
     artifactory (2.3.3)
     ast (2.3.0)
-    aws-sdk (2.5.10)
-      aws-sdk-resources (= 2.5.10)
-    aws-sdk-core (2.5.10)
+    aws-sdk (2.5.11)
+      aws-sdk-resources (= 2.5.11)
+    aws-sdk-core (2.5.11)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.5.10)
-      aws-sdk-core (= 2.5.10)
+    aws-sdk-resources (2.5.11)
+      aws-sdk-core (= 2.5.11)
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
@@ -210,6 +212,7 @@ GEM
       url
     coderay (1.1.1)
     colorize (0.8.1)
+    concurrent-ruby (1.0.2)
     cucumber (2.4.0)
       builder (>= 2.1.2)
       cucumber-core (~> 1.5.0)
@@ -324,6 +327,7 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
     mini_portile2 (2.1.0)
+    minitest (5.9.0)
     mixlib-archive (0.2.0)
       mixlib-log
     mixlib-authentication (1.4.1)
@@ -510,6 +514,8 @@ GEM
       polyglot (~> 0.3)
     typhoeus (0.8.0)
       ethon (>= 0.8.0)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
     ubuntu_ami (0.4.1)
     unf (0.1.4)
       unf_ext
