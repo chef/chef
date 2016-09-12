@@ -7,6 +7,11 @@ Please see `https://docs.chef.io/release/<major>-<minor>/release_notes.html` for
 
 * Upgraded Ruby version from 2.1.9 to 2.3.1 which adds several performance and functionality enhancements.
 * Added a small patch to Ruby 2.3.1 and improvements to the Ohai Network plugin in order to support chef client runs on Windows Nano Server.
+* Added the ability to mark a property of a custom resource as "sensitive." This will suppress the property's value when it's used in other outputs, such as messages used by the [Data Collector](https://github.com/chef/chef-rfc/blob/master/rfc077-mode-agnostic-data-collection.md). To use, add `sensitive: true` when definine the property. Example:
+
+```ruby
+property :db_password, String, sensitive: true
+```
 
 ## Highlighted bug fixes for this release:
 
