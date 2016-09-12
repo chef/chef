@@ -224,7 +224,7 @@ RUNNING_PS
       @provider.reload_service()
     end
 
-    it "should call 'reload' on the service with user defined timeout"
+    it "should call 'reload' on the service with user defined timeout" do
       @new_resource.supports({ :reload => true })
       @new_resource.timeout(@timeout_user_value)
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef reload", @timeout_user)
