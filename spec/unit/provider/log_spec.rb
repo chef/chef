@@ -73,15 +73,15 @@ describe Chef::Provider::Log::ChefLog do
     provider.run_action(:write)
   end
 
-  context "when supress_log_resource_count is passed in knife.rb" do
-    it "updates the resource count if supress_log_resource_count=false" do
-      Chef::Config[:knife][:supress_log_resource_count] = false
+  context "when count_log_resource_updates is passed in knife.rb" do
+    it "updates the resource count if count_log_resource_updates=true" do
+      Chef::Config[:count_log_resource_updates] = true
       expect(new_resource).to receive(:updated_by_last_action)
       provider.run_action(:write)
     end
 
-    it "doesn't update the resource count if supress_log_resource_count=true" do
-      Chef::Config[:knife][:supress_log_resource_count] = true
+    it "doesn't update the resource count if count_log_resource_updates=false" do
+      Chef::Config[:count_log_resource_updates] = false
       expect(new_resource).not_to receive(:updated_by_last_action)
       provider.run_action(:write)
     end
