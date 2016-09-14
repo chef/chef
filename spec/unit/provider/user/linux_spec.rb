@@ -77,6 +77,18 @@ describe Chef::Provider::User::Linux do
       expect( @new_resource.manage_home ).to be false
     end
 
+    it "supports[:manage_home] (incorectly) acts like manage_home" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      @new_resource.supports({ manage_home: true })
+      expect( provider.useradd_options ).to eql(["-m"])
+    end
+
+    it "supports[:manage_home] does not change behavior of manage_home: false", chef: ">= 13" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      @new_resource.supports({ manage_home: true })
+      expect( provider.useradd_options ).to eql(["-M"])
+    end
+
     it "by default manage_home is false and we use -M" do
       expect( provider.useradd_options ).to eql(["-M"])
     end
