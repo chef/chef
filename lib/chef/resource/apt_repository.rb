@@ -22,7 +22,7 @@ class Chef
   class Resource
     class AptRepository < Chef::Resource
       resource_name :apt_repository
-      provides :apt_repository
+      provides :apt_repository, os: "linux"
 
       property :repo_name, String, name_property: true
       property :uri, String
@@ -35,7 +35,6 @@ class Chef
       property :keyserver, [String, nil, false], default: "keyserver.ubuntu.com", nillable: true, coerce: proc { |x| x ? x : nil }
       property :key, [String, nil, false], default: nil, nillable: true, coerce: proc { |x| x ? x : nil }
       property :key_proxy, [String, nil, false], default: nil, nillable: true, coerce: proc { |x| x ? x : nil }
-
       property :cookbook, [String, nil, false], default: nil, desired_state: false, nillable: true, coerce: proc { |x| x ? x : nil }
       property :cache_rebuild, [TrueClass, FalseClass], default: true, desired_state: false
       property :sensitive, [TrueClass, FalseClass], default: false, desired_state: false
