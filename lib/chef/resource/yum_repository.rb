@@ -70,7 +70,7 @@ class Chef
       property :options, Hash
 
       default_action :create
-      allowed_actions :create, :remove, :make_cache, :add
+      allowed_actions :create, :remove, :make_cache, :add, :delete
     end
   end
 end
