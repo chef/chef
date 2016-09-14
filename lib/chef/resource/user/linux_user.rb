@@ -29,21 +29,24 @@ class Chef
         def initialize(name, run_context = nil)
           super
           @supports = {
-            manage_home: true,
-            non_unique: true,
+            manage_home: false,
+            non_unique: false,
           }
           @manage_home = false
         end
 
         def supports(args = {})
-          Chef.log_deprecation "setting supports on the linux_user resource is deprecated"
-          # setting is deliberately disabled
-          super({})
+          if args.key?(:manage_home)
+            Chef.log_deprecation "supports { manage_home: #{args[:manage_home]} } on the user resource is deprecated and will be removed in Chef 13, set manage_home: #{args[:manage_home]} instead"
+          end
+          if args.key?(:non_unique)
+            Chef.log_deprecation "supports { manage_home: #{args[:non_unique]} } on the user resource is deprecated and will be removed in Chef 13, set manage_home: #{args[:non_unique]} instead"
+          end
+          super
         end
 
         def supports=(args)
-          # setting is deliberately disabled
-          supports({})
+          supports(args)
         end
       end
     end

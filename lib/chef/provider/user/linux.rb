@@ -52,14 +52,14 @@ class Chef
           opts << "-s" << new_resource.shell if should_set?(:shell)
           opts << "-u" << new_resource.uid if should_set?(:uid)
           opts << "-d" << new_resource.home if updating_home?
-          opts << "-o" if new_resource.non_unique
+          opts << "-o" if non_unique
           opts
         end
 
         def usermod_options
           opts = []
           if updating_home?
-            if new_resource.manage_home
+            if manage_home
               opts << "-m"
             end
           end
@@ -69,7 +69,7 @@ class Chef
         def useradd_options
           opts = []
           opts << "-r" if new_resource.system
-          if new_resource.manage_home
+          if manage_home
             opts << "-m"
           else
             opts << "-M"
@@ -79,7 +79,7 @@ class Chef
 
         def userdel_options
           opts = []
-          opts << "-r" if new_resource.manage_home
+          opts << "-r" if manage_home
           opts << "-f" if new_resource.force
           opts
         end
@@ -121,6 +121,16 @@ class Chef
 
           # FIXME: should probably go on the current_resource
           @locked
+        end
+
+        def non_unique
+          # XXX: THIS GOES AWAY IN CHEF-13 AND BECOMES JUST new_resource.non_unique
+          new_resource.non_unique || new_resource.supports[:non_unique]
+        end
+
+        def manage_home
+          # XXX: THIS GOES AWAY IN CHEF-13 AND BECOMES JUST new_resource.manage_home
+          new_resource.manage_home || new_resource.supports[:manage_home]
         end
       end
     end

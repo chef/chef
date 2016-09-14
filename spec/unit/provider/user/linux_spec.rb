@@ -45,17 +45,35 @@ describe Chef::Provider::User::Linux do
       @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
     end
 
-    it "sets supports manage_home to true" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect( @new_resource.supports[:manage_home] ).to be true
+    it "supports manage_home does not exist", chef: ">= 13" do
+      expect( @new_resource.supports.key?(:manage_home) ).to be false
     end
 
-    it "sets supports non-unique to true" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect( @new_resource.supports[:non_unique] ).to be true
+    it "supports non_unique does not exist", chef: ">= 13" do
+      expect( @new_resource.supports.key?(:non_unique) ).to be false
     end
 
-    it "defaults manage_home to true" do
+    # supports is a method on the superclass so can't totally be removed, but we should aggressively NOP it to decisively break it
+    it "disables the supports API", chef: ">= 13" do
+      @new_resource.supports( { manage_home: true } )
+      expect( @new_resource.supports.key?(:manage_home) ).to be false
+    end
+
+    it "sets supports manage_home to false" do
+      expect( @new_resource.supports[:manage_home] ).to be false
+    end
+
+    it "sets supports non-unique to false" do
+      expect( @new_resource.supports[:non_unique] ).to be false
+    end
+
+    it "throws a deprecation warning on setting supports[:manage_home]" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      expect(Chef).to receive(:log_deprecation).with("supports { manage_home: true } on the user resource is deprecated and will be removed in Chef 13, set manage_home: true instead")
+      @new_resource.supports( { :manage_home => true } )
+    end
+
+    it "defaults manage_home to false" do
       expect( @new_resource.manage_home ).to be false
     end
 
