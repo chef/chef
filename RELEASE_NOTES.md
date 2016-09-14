@@ -9,9 +9,27 @@ Please see `https://docs.chef.io/release/<major>-<minor>/release_notes.html` for
 * Added a small patch to Ruby 2.3.1 and improvements to the Ohai Network plugin in order to support chef client runs on Windows Nano Server.
 * Added the ability to mark a property of a custom resource as "sensitive." This will suppress the property's value when it's used in other outputs, such as messages used by the [Data Collector](https://github.com/chef/chef-rfc/blob/master/rfc077-mode-agnostic-data-collection.md). To use, add `sensitive: true` when definine the property. Example:
 
-```ruby
-property :db_password, String, sensitive: true
-```
+  ```ruby
+  property :db_password, String, sensitive: true
+  ```
+
+* Ported the yum_repository resource from the yum cookbook to core chef. With this change you can create and remove repositories without depending on the yum cookbook. Example:
+
+  ```ruby
+  yum_repository 'OurCo' do
+    description 'OurCo yum repository'
+    mirrorlist 'http://artifacts.ourco.org/mirrorlist?repo=ourco-6&arch=$basearch'
+    gpgkey 'http://artifacts.ourco.org/pub/yum/RPM-GPG-KEY-OURCO-6'
+    action :create
+  end
+
+  yum 'Oldrepo' do
+    action :delete
+  end
+  ```
+
+* Support for Solaris releases before 10u11 has been removed
+* Upgraded Ohai to 8.20 with new / enhanced plugins. See the [ohai changelog](https://github.com/chef-cookbooks/ohai/blob/master/CHANGELOG.md)
 
 ## Highlighted bug fixes for this release:
 
