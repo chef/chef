@@ -158,8 +158,9 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
       @new_resource.values([{ :name => "number", :type => :dword, :data => "12345" }])
       @new_resource.run_action(:create)
 
+      expect(@new_resource).not_to be_updated_by_last_action
       expect(@registry.key_exists?(reg_child)).to eq(true)
-      expect(@registry.data_exists?(reg_child, { :name => "number", :type => :dword, :data => 12345 })).to eq(true)
+      expect(@registry.data_exists?(reg_child, { :name => "number", :type => :dword, :data => 12344 })).to eq(true)
     end
 
     it "creates a value if it does not exist" do
