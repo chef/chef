@@ -29,7 +29,7 @@ class Chef
       property :cost, String, regex: /^\d+$/
       property :clean_headers, [TrueClass, FalseClass], default: false # deprecated
       property :clean_metadata, [TrueClass, FalseClass], default: true
-      property :description, String, regex: /.*/, default: "Ye Ole Rpm Repo"
+      property :description, String, regex: /.*/, default: "YUM Repository"
       property :enabled, [TrueClass, FalseClass], default: true
       property :enablegroups, [TrueClass, FalseClass]
       property :exclude, String, regex: /.*/
