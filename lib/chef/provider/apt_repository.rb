@@ -54,9 +54,13 @@ class Chef
         # make sure we have apt-transport-https installed before we try to
         # apt-get update with a https repo defined
         if new_resource.uri =~ /^https/
+          declare_resource(:apt_update, new_resource.name) do
+            ignore_failure true
+            action :periodic
+          end
+
           declare_resource(:package, "apt-transport-https") do
             action :install
-            notifies :update, "apt_update[#{new_resource.name}]", :before
           end
         end
 
