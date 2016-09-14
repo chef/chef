@@ -29,7 +29,7 @@ class Chef
       property :cost, String, regex: /^\d+$/
       property :clean_headers, [TrueClass, FalseClass], default: false # deprecated
       property :clean_metadata, [TrueClass, FalseClass], default: true
-      property :description, String, regex: /.*/, default: "Ye Ole Rpm Repo"
+      property :description, String, regex: /.*/, default: "Yum Repository"
       property :enabled, [TrueClass, FalseClass], default: true
       property :enablegroups, [TrueClass, FalseClass]
       property :exclude, String, regex: /.*/
@@ -66,11 +66,14 @@ class Chef
       property :sslclientkey, String, regex: /.*/
       property :sslverify, [TrueClass, FalseClass]
       property :timeout, String, regex: /^\d+$/
-
       property :options, Hash
 
       default_action :create
-      allowed_actions :create, :remove, :make_cache, :add
+      allowed_actions :create, :remove, :make_cache, :add, :delete
+
+      # provide compatibility with the yum cookbook < 3.0 properties
+      alias_method :url, :baseurl
+      alias_method :keyurl, :gpgkey
     end
   end
 end
