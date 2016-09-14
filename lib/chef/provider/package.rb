@@ -453,6 +453,9 @@ class Chef
                 elsif current_version.nil?
                   Chef::Log.debug("#{new_resource} #{package_name} not installed, installing #{candidate_version}")
                   target_version_array.push(candidate_version)
+                elsif !version_requirement_satisfied?(current_version, candidate_version)
+                  Chef::Log.debug("#{new_resource} #{package_name} #{candidate_version} not installed, installing #{candidate_version}")
+                  target_version_array.push(candidate_version)
                 else
                   Chef::Log.debug("#{new_resource} #{package_name} #{current_version} already installed")
                   target_version_array.push(nil)
