@@ -76,10 +76,6 @@ class Chef
         File.basename(@new_resource.path)[/\..*/] || ""
       end
 
-      # kinda like File.extname, but greedier about the extension
-      def greedy_extname
-      end
-
       # Returns the possible directories for the tempfile to be created in.
       def tempfile_dirnames
         # in why-run mode we need to create a Tempfile to compare against, which we will never
