@@ -14,7 +14,7 @@
 - Rewrite linux\_user provider check\_lock [\#5248](https://github.com/chef/chef/pull/5248) ([lamont-granquist](https://github.com/lamont-granquist))
 - Allow flagging a resource property as sensitive [\#5185](https://github.com/chef/chef/pull/5185) ([adamleff](https://github.com/adamleff))
 - Rewrite linux useradd provider [\#5243](https://github.com/chef/chef/pull/5243) ([lamont-granquist](https://github.com/lamont-granquist))
-- Create and delete yum repositories [\#5187](https://github.com/chef/chef/pull/5187) ([thommay](https://github.com/thommay))
+- Add yum_repository resource from the yum cookbook [\#5187](https://github.com/chef/chef/pull/5187) ([thommay](https://github.com/thommay))
 - Verify systemd\_unit file during create [\#5210](https://github.com/chef/chef/pull/5210) ([mal](https://github.com/mal))
 - Add a warning for guard blocks that return a non-empty string [\#5233](https://github.com/chef/chef/pull/5233) ([coderanger](https://github.com/coderanger))
 - Forward package cookbook\_name to underlying remote\_file [\#5128](https://github.com/chef/chef/pull/5128) ([Annih](https://github.com/Annih))
