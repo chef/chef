@@ -219,6 +219,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     end
 
     before do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       new_resource.supports({ :manage_home => true })
       new_resource.home("/Users/toor")
 
@@ -237,6 +239,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     end
 
     it "moves the users home to the new location if it exists and the target location is different" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       new_resource.supports(:manage_home => true)
 
       current_home = CHEF_SPEC_DATA + "/old_home_dir"
@@ -856,6 +859,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
     describe "when Chef is removing the user" do
       it "removes the user from the groups and deletes home directory when the resource is configured to manage home" do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
         new_resource.supports({ :manage_home => true })
         expect(provider).to receive(:run_dscl).with("list /Groups").and_return("my_group\nyour_group\nreal_group\n")
         expect(provider).to receive(:run_dscl).with("read /Groups/my_group").and_raise(Chef::Exceptions::DsclCommandFailed) # Empty group

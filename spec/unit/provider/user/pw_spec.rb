@@ -32,6 +32,8 @@ describe Chef::Provider::User::Pw do
     @new_resource.shell     "/usr/bin/zsh"
     @new_resource.password  "abracadabra"
 
+    # XXX: rip out in Chef-13
+    Chef::Config[:treat_deprecation_warnings_as_errors] = false
     @new_resource.supports :manage_home => true
 
     @current_resource = Chef::Resource::User::PwUser.new("adam")
