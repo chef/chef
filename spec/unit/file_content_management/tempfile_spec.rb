@@ -87,7 +87,7 @@ describe Chef::FileContentManagement::Tempfile do
       expect(subject.send(:tempfile_open)).to be_a(Tempfile)
     end
 
-    it "should preserve the extention in the tempfile path" do
+    it "should preserve the extension in the tempfile path" do
       subject = tempfile_object_for_path("/foo/bar/new_file.html.erb")
       tempfile = subject.send(:tempfile_open)
       expect(tempfile.path).to match(/chef-new_file.*\.html\.erb$/)
