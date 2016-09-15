@@ -40,7 +40,7 @@ class Chef
 
         tempfile_dirnames.each do |tempfile_dirname|
           begin
-            tf = ::Tempfile.open(tempfile_basename, tempfile_dirname)
+            tf = ::Tempfile.open([tempfile_basename, tempfile_extension], tempfile_dirname)
             break
           rescue SystemCallError => e
             message = "Creating temp file under '#{tempfile_dirname}' failed with: '#{e.message}'"
@@ -63,10 +63,14 @@ class Chef
       # as the arguments to Tempfile.new() consistently.
       #
       def tempfile_basename
-        basename = ::File.basename(@new_resource.name)
+        basename = ::File.basename(@new_resource.name, File.extname(@new_resource.name))
         basename.insert 0, "chef-"
         basename.insert 0, "." unless Chef::Platform.windows? # dotfile if we're not on windows
         basename
+      end
+
+      def tempfile_extension
+        File.extname(@new_resource.name)
       end
 
       # Returns the possible directories for the tempfile to be created in.
