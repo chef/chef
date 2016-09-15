@@ -40,7 +40,7 @@ class Chef
             Chef.log_deprecation "supports { manage_home: #{args[:manage_home]} } on the user resource is deprecated and will be removed in Chef 13, set manage_home: #{args[:manage_home]} instead"
           end
           if args.key?(:non_unique)
-            Chef.log_deprecation "supports { manage_home: #{args[:non_unique]} } on the user resource is deprecated and will be removed in Chef 13, set manage_home: #{args[:non_unique]} instead"
+            Chef.log_deprecation "supports { non_unique: #{args[:non_unique]} } on the user resource is deprecated and will be removed in Chef 13, set non_unique: #{args[:non_unique]} instead"
           end
           super
         end
