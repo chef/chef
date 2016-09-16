@@ -27,6 +27,11 @@ class Chef
         Chef::Digester.checksum_for_file(file)
       end
 
+      def short_cksum(checksum)
+        return "none" if checksum.nil?
+        checksum.slice(0, 6)
+      end
+
     end
   end
 end

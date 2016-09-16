@@ -250,7 +250,7 @@ class Chef
         def validate_content!
           if new_resource.checksum
             source_checksum = checksum(source_location)
-            if new_resource.checksum != source_checksum
+            if new_resource.checksum.downcase != source_checksum
               raise Chef::Exceptions::ChecksumMismatch.new(short_cksum(new_resource.checksum), short_cksum(source_checksum))
             end
           end
