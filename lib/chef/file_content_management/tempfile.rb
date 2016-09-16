@@ -41,7 +41,9 @@ class Chef
         tempfile_dirnames.each do |tempfile_dirname|
           begin
             # preserving the file extension of the target filename should be considered a public API
+            puts "HERE"
             tf = ::Tempfile.open([tempfile_basename, tempfile_extension], tempfile_dirname)
+            puts "THERE"
             break
           rescue SystemCallError => e
             message = "Creating temp file under '#{tempfile_dirname}' failed with: '#{e.message}'"
@@ -64,18 +66,25 @@ class Chef
       # as the arguments to Tempfile.new() consistently.
       #
       def tempfile_basename
+        puts "FOO"
         basename = ::File.basename(@new_resource.path, tempfile_extension)
+        puts "BAR"
         # the leading "[.]chef-" here should be considered a public API and should not be changed
         basename.insert 0, "chef-"
+        puts "BAZ"
         basename.insert 0, "." unless Chef::Platform.windows? # dotfile if we're not on windows
+        puts "QUX"
         basename
       end
 
       # this is similar to File.extname() but greedy about the extension (from the first dot, not the last dot)
       def tempfile_extension
         # complexity here is due to supporting mangling non-UTF8 strings (e.g. latin-1 filenames with characters that are illegal in UTF-8)
+        puts "ONE"
         b = File.basename(@new_resource.path)
+        puts "TWO"
         i = b.index(".")
+        puts "THREE"
         i.nil? ? "" : b[i..-1]
       end
 
