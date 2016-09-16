@@ -28,7 +28,7 @@ end
 
 include_recipe "build-essential"
 
-include_recipe "#{cookbook_name}::packages"
+include_recipe "::packages"
 
 include_recipe "ntp"
 
@@ -50,3 +50,5 @@ include_recipe "openssh"
 include_recipe "nscd"
 
 include_recipe "logrotate"
+
+include_recipe "::tests"
