@@ -659,6 +659,10 @@ module ChefConfig
       ENV.key?("CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS")
     end
 
+    # Whether the resource count should be updated for log resource
+    # on running chef-client
+    default :count_log_resource_updates, true
+
     # knife configuration data
     config_context :knife do
       # XXX: none of these default values are applied to knife (and would create a backcompat
