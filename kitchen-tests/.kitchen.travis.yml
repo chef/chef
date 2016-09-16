@@ -21,7 +21,6 @@ provisioner:
 # disable file provider diffs so we don't overflow travis' line limit
   client_rb:
     diff_disabled: true
-    log_level: :debug
 
 verifier:
   name: inspec
@@ -117,3 +116,7 @@ suites:
     run_list:
       - recipe[base::default]
 #      - recipe[webapp::default]
+  attributes:
+    chef_client:
+      config:
+        log_level: ":debug"
