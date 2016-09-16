@@ -119,4 +119,4 @@ suites:
     attributes:
       chef_client:
         config:
-          log_level: ":debug"
+          log_level: "debug"
