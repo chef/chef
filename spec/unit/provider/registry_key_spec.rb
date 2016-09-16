@@ -19,23 +19,6 @@
 require "spec_helper"
 
 shared_examples_for "a registry key" do
-  before(:each) do
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
-
-    @new_resource = Chef::Resource::RegistryKey.new("windows is fun", @run_context)
-    @new_resource.key keyname
-    @new_resource.values( testval1 )
-    @new_resource.recursive false
-
-    @provider = Chef::Provider::RegistryKey.new(@new_resource, @run_context)
-
-    allow(@provider).to receive(:running_on_windows!).and_return(true)
-    @double_registry = double(Chef::Win32::Registry)
-    allow(@provider).to receive(:registry).and_return(@double_registry)
-  end
-
   describe "when first created" do
   end
 
@@ -273,6 +256,23 @@ shared_examples_for "a registry key" do
 end
 
 describe Chef::Provider::RegistryKey do
+  before(:each) do
+    @node = Chef::Node.new
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+
+    @new_resource = Chef::Resource::RegistryKey.new("windows is fun", @run_context)
+    @new_resource.key keyname
+    @new_resource.values( testval1 )
+    @new_resource.recursive false
+
+    @provider = Chef::Provider::RegistryKey.new(@new_resource, @run_context)
+
+    allow(@provider).to receive(:running_on_windows!).and_return(true)
+    @double_registry = double(Chef::Win32::Registry)
+    allow(@provider).to receive(:registry).and_return(@double_registry)
+  end
+
   context "when the key data is safe" do
     let(:keyname) { 'HKLM\Software\Opscode\Testing\Safe' }
     let(:testval1) { { :name => "one", :type => :string, :data => "1" } }
@@ -291,5 +291,23 @@ describe Chef::Provider::RegistryKey do
     let(:testval2) { { :name => "two", :type => :binary, :data => 0.chr * 1 } }
 
     it_should_behave_like "a registry key"
+  end
+
+  describe "action_create" do
+    context "when key exists and type matches" do
+      let(:keyname) { 'hklm\\software\\opscode\\testing\\dword' }
+      let(:dword_passed_as_integer) { { :name => "one", :type => :dword, :data => 12345 } }
+      let(:testval1) { { :name => "one", :type => :dword, :data => "12345" } }
+      before do
+        expect(@double_registry).to receive(:key_exists?).twice.with(keyname).and_return(true)
+      end
+
+      it "does not make a change for datatype of data value differing" do
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( dword_passed_as_integer )
+        expect(@double_registry).not_to receive(:set_value)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+    end
   end
 end

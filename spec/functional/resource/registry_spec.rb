@@ -153,6 +153,16 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
       expect(@registry.data_exists?(reg_child, { :name => "Color", :type => :string, :data => "Orange" })).to eq(true)
     end
 
+    it "does not create the key if it already exists with same value and type but datatype of data differs" do
+      @new_resource.key(reg_child)
+      @new_resource.values([{ :name => "number", :type => :dword, :data => "12345" }])
+      @new_resource.run_action(:create)
+
+      expect(@new_resource).not_to be_updated_by_last_action
+      expect(@registry.key_exists?(reg_child)).to eq(true)
+      expect(@registry.data_exists?(reg_child, { :name => "number", :type => :dword, :data => 12344 })).to eq(true)
+    end
+
     it "creates a value if it does not exist" do
       @new_resource.key(reg_child)
       @new_resource.values([{ :name => "Mango", :type => :string, :data => "Yellow" }])
