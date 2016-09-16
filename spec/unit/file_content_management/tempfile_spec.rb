@@ -37,9 +37,14 @@ describe Chef::FileContentManagement::Tempfile do
       expect(subject.send(:tempfile_basename)).to eql("chef-new_file")
     end
 
-    it "should strip the extension" do
+    it "should strip the extension", :unix_only do
       subject = tempfile_object_for_path("/foo/bar/new_file.html.erb")
       expect(subject.send(:tempfile_basename)).to eql(".chef-new_file")
+    end
+
+    it "should strip the extension", :windows_only do
+      subject = tempfile_object_for_path("/foo/bar/new_file.html.erb")
+      expect(subject.send(:tempfile_basename)).to eql("chef-new_file")
     end
   end
 
