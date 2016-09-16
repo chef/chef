@@ -10,13 +10,13 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.4.0)
-    artifactory (2.3.3)
-    aws-sdk (2.5.11)
-      aws-sdk-resources (= 2.5.11)
-    aws-sdk-core (2.5.11)
+    artifactory (2.5.0)
+    aws-sdk (2.6.1)
+      aws-sdk-resources (= 2.6.1)
+    aws-sdk-core (2.6.1)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.5.11)
-      aws-sdk-core (= 2.5.11)
+    aws-sdk-resources (2.6.1)
+      aws-sdk-core (= 2.6.1)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -53,7 +53,8 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.13.37)
+    chef-config (12.14.60)
+      addressable
       fuzzyurl
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -73,10 +74,10 @@ GEM
       ffi (>= 1.0.1)
     gyoku (1.3.1)
       builder (>= 2.1.2)
-    hashie (3.4.4)
+    hashie (3.4.6)
     hitimes (1.2.4)
     httpclient (2.7.2)
-    inspec (0.34.0)
+    inspec (0.34.1)
       hashie (~> 3.4)
       json (>= 1.8, < 3.0)
       method_source (~> 0.8)
@@ -92,7 +93,7 @@ GEM
       train (>= 0.19.0, < 1.0)
     jmespath (1.3.1)
     json (2.0.2)
-    kitchen-ec2 (1.1.0)
+    kitchen-ec2 (1.2.0)
       aws-sdk (~> 2)
       excon
       multi_json
@@ -114,7 +115,7 @@ GEM
     mixlib-authentication (1.4.1)
       mixlib-log
     mixlib-config (2.2.4)
-    mixlib-install (1.1.0)
+    mixlib-install (1.2.0)
       artifactory
       mixlib-shellout
       mixlib-versioning
@@ -174,7 +175,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
-    rubyntlm (0.6.0)
+    rubyntlm (0.6.1)
     rubyzip (1.2.0)
     safe_yaml (1.0.4)
     sawyer (0.7.0)
@@ -186,8 +187,8 @@ GEM
       molinillo (~> 0.4.2)
       semverse (~> 1.1)
     sslshake (1.0.12)
-    test-kitchen (1.12.0)
-      mixlib-install (~> 1.0, >= 1.0.4)
+    test-kitchen (1.13.0)
+      mixlib-install (~> 1.2)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
       net-ssh (>= 2.9, < 4.0)
@@ -197,7 +198,7 @@ GEM
     thor (0.19.1)
     timers (4.0.4)
       hitimes
-    train (0.19.0)
+    train (0.19.1)
       docker-api (~> 1.26)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
@@ -210,7 +211,7 @@ GEM
       hashie (>= 2.0.2, < 4.0.0)
     windows_chef_zero (2.0.0)
       test-kitchen (>= 1.2.1)
-    winrm (2.0.1)
+    winrm (2.0.2)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)
@@ -218,7 +219,7 @@ GEM
       httpclient (~> 2.2, >= 2.2.0.2)
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
-      rubyntlm (~> 0.6.0)
+      rubyntlm (~> 0.6.0, >= 0.6.1)
     winrm-elevated (1.0.0)
       winrm (~> 2.0)
       winrm-fs (~> 1.0)
