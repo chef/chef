@@ -73,7 +73,10 @@ class Chef
 
       # this is similar to File.extname() but greedy about the extension (from the first dot, not the last dot)
       def tempfile_extension
-        File.basename(@new_resource.path)[/\..*/] || ""
+        # complexity here is due to supporting mangling non-UTF8 strings (e.g. latin-1 filenames with characters that are illegal in UTF-8)
+        b = File.basename(@new_resource.path)
+        i = b.index(".")
+        i.nil? ? "" : b[i..-1]
       end
 
       # Returns the possible directories for the tempfile to be created in.
