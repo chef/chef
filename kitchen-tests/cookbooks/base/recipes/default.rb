@@ -7,6 +7,14 @@
 
 hostname "chef-travis-ci.chef.io"
 
+file "/tmp/chef-test-ümlauts" do
+  content "testing UTF-8 char in the filename"
+end
+
+file "/tmp/chef-test-\xFDmlaut" do
+  content "testing illegal UTF-8 char in the filename"
+end
+
 if node["platform_family"] == "debian"
   include_recipe "ubuntu"
   apt_update "packages"
@@ -28,7 +36,7 @@ end
 
 include_recipe "build-essential"
 
-include_recipe "#{cookbook_name}::packages"
+include_recipe "::packages"
 
 include_recipe "ntp"
 
@@ -50,3 +58,5 @@ include_recipe "openssh"
 include_recipe "nscd"
 
 include_recipe "logrotate"
+
+include_recipe "::tests"
