@@ -9,6 +9,7 @@ transport:
 
 provisioner:
   name: chef_github
+  log_level: debug
   root_path: /opt/kitchen
   require_chef_omnibus: latest
   chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
@@ -116,7 +117,3 @@ suites:
     run_list:
       - recipe[base::default]
 #      - recipe[webapp::default]
-    attributes:
-      chef_client:
-        config:
-          log_level: "debug"
