@@ -18,7 +18,7 @@ class TopCookbooks < Chef::Resource
     end
 
     cookbook_kitchen "#{command} learn-the-basics-windows" do
-      repository "mwrock/learn-chef-acceptance"
+      repository "learn-chef/learn-chef-acceptance"
       cookbook_relative_dir "cookbooks/learn-the-basics-windows"
     end
 

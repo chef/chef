@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: 6e501d31d3957a95388422595db8fe5937092b15
+  revision: dbd17c0a99a12e16dd7af27798df863366efc289
   specs:
     license_scout (0.1.2)
       ffi-yajl (~> 2.2)
@@ -48,14 +48,14 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.4.0)
-    artifactory (2.3.3)
+    artifactory (2.5.0)
     awesome_print (1.7.0)
-    aws-sdk (2.5.11)
-      aws-sdk-resources (= 2.5.11)
-    aws-sdk-core (2.5.11)
+    aws-sdk (2.6.1)
+      aws-sdk-resources (= 2.6.1)
+    aws-sdk-core (2.6.1)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.5.11)
-      aws-sdk-core (= 2.5.11)
+    aws-sdk-resources (2.6.1)
+      aws-sdk-core (= 2.6.1)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -95,7 +95,8 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.13.37)
+    chef-config (12.14.60)
+      addressable
       fuzzyurl
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
@@ -115,7 +116,7 @@ GEM
       ffi (>= 1.0.1)
     gyoku (1.3.1)
       builder (>= 2.1.2)
-    hashie (3.4.4)
+    hashie (3.4.6)
     hitimes (1.2.4)
     hitimes (1.2.4-x86-mingw32)
     httpclient (2.7.2)
@@ -138,7 +139,7 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (1.1.0)
+    mixlib-install (1.2.0)
       artifactory
       mixlib-shellout
       mixlib-versioning
@@ -204,7 +205,7 @@ GEM
       semverse (~> 1.1)
       varia_model (~> 0.4.0)
     ruby-progressbar (1.8.1)
-    rubyntlm (0.6.0)
+    rubyntlm (0.6.1)
     rubyzip (1.2.0)
     safe_yaml (1.0.4)
     sawyer (0.7.0)
@@ -216,8 +217,8 @@ GEM
       molinillo (~> 0.4.2)
       semverse (~> 1.1)
     systemu (2.6.5)
-    test-kitchen (1.12.0)
-      mixlib-install (~> 1.0, >= 1.0.4)
+    test-kitchen (1.13.0)
+      mixlib-install (~> 1.2)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
       net-ssh (>= 2.9, < 4.0)
@@ -232,19 +233,20 @@ GEM
       hashie (>= 2.0.2, < 4.0.0)
     win32-process (0.8.3)
       ffi (>= 1.0.0)
-    winrm (1.8.1)
+    winrm (2.0.2)
       builder (>= 2.1.2)
+      erubis (~> 2.7)
       gssapi (~> 1.2)
       gyoku (~> 1.0)
       httpclient (~> 2.2, >= 2.2.0.2)
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
-      rubyntlm (~> 0.6.0)
-    winrm-fs (0.4.3)
+      rubyntlm (~> 0.6.0, >= 0.6.1)
+    winrm-fs (1.0.0)
       erubis (~> 2.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 1.1)
-      winrm (~> 1.5)
+      winrm (~> 2.0)
     wmi-lite (1.0.0)
     zhexdump (0.0.2)
 
@@ -262,8 +264,8 @@ DEPENDENCIES
   pry
   pry-byebug
   pry-stack_explorer
-  test-kitchen (~> 1.9)
-  winrm-fs (~> 0.4.0)
+  test-kitchen (~> 1.13)
+  winrm-fs (~> 1.0)
 
 BUNDLED WITH
    1.12.5

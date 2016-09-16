@@ -17,9 +17,9 @@ group :development do
   gem "berkshelf", "~> 4.0"
 
   # Use Test Kitchen with Vagrant for converging the build environment
-  gem "test-kitchen",    "~> 1.9"
+  gem "test-kitchen",    "~> 1.13"
   gem "kitchen-vagrant", "~> 0.19.0"
-  gem "winrm-fs", "~> 0.4.0"
+  gem "winrm-fs", "~> 1.0"
   gem "pry"
   gem "pry-byebug"
   gem "pry-stack_explorer"
