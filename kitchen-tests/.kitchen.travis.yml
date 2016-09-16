@@ -116,7 +116,7 @@ suites:
     run_list:
       - recipe[base::default]
 #      - recipe[webapp::default]
-  attributes:
-    chef_client:
-      config:
-        log_level: ":debug"
+    attributes:
+      chef_client:
+        config:
+          log_level: ":debug"
