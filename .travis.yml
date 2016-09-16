@@ -44,6 +44,7 @@ matrix:
       - bundle exec kitchen test ubuntu-1204
     after_failure:
       - cat .kitchen/logs/kitchen.log
+      - cat /opt/kitchen/cache/chef-stacktrace.out
     env:
       - UBUNTU=12.04
       - KITCHEN_YAML=.kitchen.travis.yml
