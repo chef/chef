@@ -28,6 +28,10 @@ class Chef
         "#{new_resource || "<no resource>"} action #{action ? action.inspect : "<no action>"}"
       end
 
+      def whyrun_supported?
+        true
+      end
+
       #
       # If load_current_value! is defined on the resource, use that.
       #

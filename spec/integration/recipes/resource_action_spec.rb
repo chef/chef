@@ -9,54 +9,70 @@ module ResourceActionSpec
     shared_context "ActionJackson" do
       it "the default action is the first declared action" do
         converge <<-EOM, __FILE__, __LINE__ + 1
-        #{resource_dsl} "hi" do
-          foo "foo!"
-        end
-      EOM
+          #{resource_dsl} "hi" do
+            foo "foo!"
+          end
+        EOM
         expect(ActionJackson.ran_action).to eq :access_recipe_dsl
         expect(ActionJackson.succeeded).to eq true
       end
 
+      context "when running in whyrun mode" do
+        before do
+          Chef::Config[:why_run] = true
+        end
+
+        it "the default action runs" do
+          converge <<-EOM, __FILE__, __LINE__ + 1
+            #{resource_dsl} "hi" do
+              foo "foo!"
+            end
+          EOM
+          expect(ActionJackson.ran_action).to eq :access_recipe_dsl
+          expect(ActionJackson.succeeded).to eq true
+        end
+      end
+
       it "the action can access recipe DSL" do
         converge <<-EOM, __FILE__, __LINE__ + 1
-        #{resource_dsl} "hi" do
-          foo "foo!"
-          action :access_recipe_dsl
-        end
-      EOM
+          #{resource_dsl} "hi" do
+            foo "foo!"
+            action :access_recipe_dsl
+          end
+        EOM
         expect(ActionJackson.ran_action).to eq :access_recipe_dsl
         expect(ActionJackson.succeeded).to eq true
       end
 
       it "the action can access attributes" do
         converge <<-EOM, __FILE__, __LINE__ + 1
-        #{resource_dsl} "hi" do
-          foo "foo!"
-          action :access_attribute
-        end
-      EOM
+          #{resource_dsl} "hi" do
+            foo "foo!"
+            action :access_attribute
+          end
+        EOM
         expect(ActionJackson.ran_action).to eq :access_attribute
         expect(ActionJackson.succeeded).to eq "foo!"
       end
 
       it "the action can access public methods" do
         converge <<-EOM, __FILE__, __LINE__ + 1
-        #{resource_dsl} "hi" do
-          foo "foo!"
-          action :access_method
-        end
-      EOM
+          #{resource_dsl} "hi" do
+            foo "foo!"
+            action :access_method
+          end
+        EOM
         expect(ActionJackson.ran_action).to eq :access_method
         expect(ActionJackson.succeeded).to eq "foo_public!"
       end
 
       it "the action can access protected methods" do
         converge <<-EOM, __FILE__, __LINE__ + 1
-        #{resource_dsl} "hi" do
-          foo "foo!"
-          action :access_protected_method
-        end
-      EOM
+          #{resource_dsl} "hi" do
+            foo "foo!"
+            action :access_protected_method
+          end
+        EOM
         expect(ActionJackson.ran_action).to eq :access_protected_method
         expect(ActionJackson.succeeded).to eq "foo_protected!"
       end
@@ -64,39 +80,39 @@ module ResourceActionSpec
       it "the action cannot access private methods" do
         expect do
           converge(<<-EOM, __FILE__, __LINE__ + 1)
-          #{resource_dsl} "hi" do
-            foo "foo!"
-            action :access_private_method
-          end
-        EOM
+            #{resource_dsl} "hi" do
+              foo "foo!"
+              action :access_private_method
+            end
+          EOM
         end.to raise_error(NameError)
         expect(ActionJackson.ran_action).to eq :access_private_method
       end
 
       it "the action cannot access resource instance variables" do
         converge <<-EOM, __FILE__, __LINE__ + 1
-        #{resource_dsl} "hi" do
-          foo "foo!"
-          action :access_instance_variable
-        end
-      EOM
+          #{resource_dsl} "hi" do
+            foo "foo!"
+            action :access_instance_variable
+          end
+        EOM
         expect(ActionJackson.ran_action).to eq :access_instance_variable
         expect(ActionJackson.succeeded).to be_nil
       end
 
       it "the action does not compile until the prior resource has converged" do
         converge <<-EOM, __FILE__, __LINE__ + 1
-        ruby_block "wow" do
-          block do
-            ResourceActionSpec::ActionJackson.ruby_block_converged = "ruby_block_converged!"
+          ruby_block "wow" do
+            block do
+              ResourceActionSpec::ActionJackson.ruby_block_converged = "ruby_block_converged!"
+            end
           end
-        end
 
-        #{resource_dsl} "hi" do
-          foo "foo!"
-          action :access_class_method
-        end
-      EOM
+          #{resource_dsl} "hi" do
+            foo "foo!"
+            action :access_class_method
+          end
+        EOM
         expect(ActionJackson.ran_action).to eq :access_class_method
         expect(ActionJackson.succeeded).to eq "ruby_block_converged!"
       end
@@ -141,7 +157,7 @@ module ResourceActionSpec
 
         action :access_recipe_dsl do
           ActionJackson.ran_action = :access_recipe_dsl
-          ruby_block "hi there" do
+          whyrun_safe_ruby_block "hi there" do
             block do
               ActionJackson.succeeded = true
             end
