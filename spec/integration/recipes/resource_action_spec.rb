@@ -17,6 +17,22 @@ module ResourceActionSpec
         expect(ActionJackson.succeeded).to eq true
       end
 
+      context "when running in whyrun mode" do
+        before do
+          Chef::Config[:why_run] = true
+        end
+
+        it "the default action runs" do
+          converge <<-EOM, __FILE__, __LINE__ + 1
+            #{resource_dsl} "hi" do
+              foo "foo!"
+            end
+          EOM
+          expect(ActionJackson.ran_action).to eq :access_recipe_dsl
+          expect(ActionJackson.succeeded).to eq true
+        end
+      end
+
       it "the action can access recipe DSL" do
         converge <<-EOM, __FILE__, __LINE__ + 1
           #{resource_dsl} "hi" do
@@ -141,7 +157,7 @@ module ResourceActionSpec
 
         action :access_recipe_dsl do
           ActionJackson.ran_action = :access_recipe_dsl
-          ruby_block "hi there" do
+          whyrun_safe_ruby_block "hi there" do
             block do
               ActionJackson.succeeded = true
             end
