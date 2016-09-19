@@ -69,7 +69,7 @@ class Chef
       property :options, Hash
 
       default_action :create
-      allowed_actions :create, :remove, :make_cache, :add, :delete
+      allowed_actions :create, :remove, :make_cache, :add, :delete, :makecache
 
       # provide compatibility with the yum cookbook < 3.0 properties
       alias_method :url, :baseurl
