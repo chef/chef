@@ -123,12 +123,5 @@ module BuildChef
 
     # Freeze the location's Gemfile.lock.
     create_bundle_config(shared_gemfile, frozen: true)
-
-    # Clear the now-unnecessary git caches, cached gems, and git-checked-out gems
-    block "Delete bundler git cache and git installs" do
-      gemdir = shellout!("#{gem_bin} environment gemdir", env: env).stdout.chomp
-      remove_file "#{gemdir}/cache"
-      remove_file "#{gemdir}/bundler"
-    end
   end
 end
