@@ -36,6 +36,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     new_resource = Chef::Resource::WindowsPackage.new(resource_name)
     new_resource.source(resource_source) if resource_source
     new_resource.installer_type(installer_type) if installer_type
+    new_resource.checksum("jiie00u3bbs92vsbhvgvklb2lasgh20ah")
     new_resource
   end
   let(:provider) { Chef::Provider::Package::Windows.new(new_resource, run_context) }
@@ -392,6 +393,47 @@ describe Chef::Provider::Package::Windows, :windows_only do
           provider.run_action(:install)
         end
       end
+    end
+  end
+
+  shared_context "valid checksum" do
+    context "checksum is valid" do
+      before do
+        allow(provider).to receive(:checksum).and_return("jiie00u3bbs92vsbhvgvklb2lasgh20ah")
+      end
+
+      it "does not raise the checksum mismatch exception" do
+        expect { provider.send(:validate_content!) }.to_not raise_error
+      end
+    end
+  end
+
+  shared_context "invalid checksum" do
+    context "checksum is invalid" do
+      before do
+        allow(provider).to receive(:checksum).and_return("kiie30u3bbs92vsbhvgvklb2lasgh20ah")
+      end
+
+      it "raises the checksum mismatch exception" do
+        expect { provider.send(:validate_content!) }.to raise_error(
+          Chef::Exceptions::ChecksumMismatch)
+      end
+    end
+  end
+
+  describe "validate_content!" do
+    context "checksum is in lowercase" do
+      include_context "valid checksum"
+      include_context "invalid checksum"
+    end
+
+    context "checksum is in uppercase" do
+      before do
+        new_resource.checksum = new_resource.checksum.upcase
+      end
+
+      include_context "valid checksum"
+      include_context "invalid checksum"
     end
   end
 end
