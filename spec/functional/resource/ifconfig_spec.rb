@@ -51,7 +51,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => in
     end
   end
 
-  def interface_name
+  def fetch_first_interface_name
     shell_out("ifconfig | grep Ethernet | head -1 | cut -d' ' -f1").stdout.strip
   end
 
@@ -61,7 +61,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => in
     when "aix"
       "en0"
     when "ubuntu"
-      interface_name
+      fetch_first_interface_name
     else
       "eth0"
     end
