@@ -24,6 +24,7 @@ yum_repository "epel" do
   gpgcheck true
   mirrorlist "https://mirrors.fedoraproject.org/metalink?repo=epel-#{node['platform_version'].to_i}&arch=$basearch"
   only_if { node["platform_family"] == "rhel" }
+  action [ :add, :makecache ]
 end
 
 include_recipe "build-essential"

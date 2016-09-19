@@ -109,6 +109,7 @@ class Chef
 
       alias_method :action_add, :action_create
       alias_method :action_remove, :action_delete
+      alias_method :action_make_cache, :action_makecache
 
       def template_available?(path)
         !path.nil? && run_context.has_template_in_cookbook?(new_resource.cookbook_name, path)
