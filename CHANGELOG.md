@@ -1,5 +1,14 @@
 # Change Log
 
+## [v12.14.77](https://github.com/chef/chef/tree/v12.14.77) (2016-09-19)
+[Full Changelog](https://github.com/chef/chef/compare/v12.14.60...v12.14.77)
+
+**Fixed Bugs:**
+
+- Revert supports\[:manage\_home\] behavior [\#5322](https://github.com/chef/chef/pull/5322) ([lamont-granquist](https://github.com/lamont-granquist))
+- Preserve the extension of the file in the rendered tempfile in File providers [\#5327](https://github.com/chef/chef/pull/5327) ([lamont-granquist](https://github.com/lamont-granquist))
+- Allow the :delete action for yum\_repository + fix old property support [\#5320](https://github.com/chef/chef/pull/5320) ([tas50](https://github.com/tas50))
+
 ## [v12.14.60](https://github.com/chef/chef/tree/v12.14.60) (2016-09-09)
 [Full Changelog](https://github.com/chef/chef/compare/v12.13.37...v12.14.60)
 
