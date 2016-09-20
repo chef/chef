@@ -82,6 +82,14 @@ describe Chef::Provider::Group::Groupadd do
         new_resource.system(true)
         expect(provider.groupadd_options).to eq(" -r")
       end
+
+      context "on Solaris" do
+        before { node.automatic["platform"] = "solaris2" }
+        it "should not set groupadd -r if system is true" do
+          new_resource.system(true)
+          expect(provider.groupadd_options).not_to match(/-r/)
+        end
+      end
     end
 
     describe "when we want to create a non_unique gid group" do
