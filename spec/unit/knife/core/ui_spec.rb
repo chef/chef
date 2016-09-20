@@ -383,6 +383,13 @@ EOM
         expect(@ui.format_for_display(input)).to eq( { "chef.localdomain" => { "name" => "chef.localdomain" } })
       end
 
+      it "should return a 'class' attribute and not the node.class" do
+        input = Chef::Node.new
+        input.default["class"] = "classy!"
+        @ui.config[:attribute] = "class"
+        expect(@ui.format_for_display(input)).to eq( { nil => { "class" => "classy!" } } )
+      end
+
       it "should return the chef_environment attribute" do
         input = Chef::Node.new
         input.chef_environment = "production-partner-load-integration-preview-testing"
