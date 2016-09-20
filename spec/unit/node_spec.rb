@@ -784,6 +784,50 @@ describe Chef::Node do
         expect(node["passenger"]["root_path_2"]).to eql("passenger-4.0.57")
         expect(node[:passenger]["root_path_2"]).to eql("passenger-4.0.57")
       end
+
+      it "should deep merge array attributes defined as literals" do
+        node.default["attr_literal_hash"] = { "key" => { "inner" => "value" } }
+        expect(node[:attr_literal_hash][:key]).not_to be_nil
+        expect(node[:attr_literal_hash][:key]).to be_a_kind_of(Mash)
+        expect(node[:attr_literal_hash]["key"]).not_to be_nil
+        expect(node["attr_literal_hash"]["key"]).not_to be_nil
+        expect(node["attr_literal_hash"][:key]).not_to be_nil
+        expect(node[:attr_literal_hash][:key][:inner]).to eql("value")
+        expect(node[:attr_literal_hash]["key"][:inner]).to eql("value")
+        expect(node[:attr_literal_hash]["key"]["inner"]).to eql("value")
+        expect(node[:attr_literal_hash][:key]["inner"]).to eql("value")
+        expect(node["attr_literal_hash"][:key][:inner]).to eql("value")
+        expect(node["attr_literal_hash"]["key"][:inner]).to eql("value")
+        expect(node["attr_literal_hash"]["key"]["inner"]).to eql("value")
+        expect(node["attr_literal_hash"][:key]["inner"]).to eql("value")
+        expect(node["attr_literal_hash"][:key]["not_existing"]).to be_nil
+
+        node.default["attr_literal_array"] = [{ "key" => { "inner" => "value" } }]
+        expect(node[:attr_literal_array]).to be_a_kind_of(Array)
+        expect(node[:attr_literal_array].first[:key]).not_to be_nil
+        expect(node[:attr_literal_array].first["key"]).not_to be_nil
+        expect(node["attr_literal_array"].first["key"]).not_to be_nil
+        expect(node["attr_literal_array"].first[:key]).not_to be_nil
+        expect(node[:attr_literal_array].first[:key][:inner]).to eql("value")
+        expect(node[:attr_literal_array].first["key"][:inner]).to eql("value")
+        expect(node[:attr_literal_array].first["key"]["inner"]).to eql("value")
+        expect(node[:attr_literal_array].first[:key]["inner"]).to eql("value")
+        expect(node["attr_literal_array"].first[:key][:inner]).to eql("value")
+        expect(node["attr_literal_array"].first["key"][:inner]).to eql("value")
+        expect(node["attr_literal_array"].first["key"]["inner"]).to eql("value")
+        expect(node["attr_literal_array"].first[:key]["inner"]).to eql("value")
+        expect(node["attr_literal_array"].first[:key]["not_existing"]).to be_nil
+
+        node.default["nested_array_literal"] = [[ { "key" => "value" } ], [ { "key" => "value" } ]]
+        expect(node[:nested_array_literal]).to be_a_kind_of(Array)
+        expect(node[:nested_array_literal].first).to be_a_kind_of(Array)
+        expect(node[:nested_array_literal].last).to be_a_kind_of(Array)
+        expect(node[:nested_array_literal].first.first[:key]).not_to be_nil
+        expect(node[:nested_array_literal].first.first["key"]).to eql("value")
+        expect(node[:nested_array_literal].first.last[:key]).not_to be_nil
+        expect(node[:nested_array_literal].first.last["key"]).to eql("value")
+        expect(node[:nested_array_literal].first.last[:key]["not_existing"]).to be_nil
+      end
     end
 
     it "should raise an ArgumentError if you ask for an attribute that doesn't exist via method_missing" do

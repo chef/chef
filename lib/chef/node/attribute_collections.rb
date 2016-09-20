@@ -187,7 +187,7 @@ class Chef
         when Hash
           VividMash.new(root, value)
         when Array
-          AttrArray.new(root, value)
+          AttrArray.new(root, value.map { |e| convert_value(e) })
         else
           value
         end

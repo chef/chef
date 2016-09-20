@@ -452,9 +452,7 @@ class Chef
        #
 
       def merged_attributes(*path)
-        # immutablize(
-        merge_all(path)
-        # )
+        immutablize(merge_all(path))
       end
 
       def combined_override(*path)
