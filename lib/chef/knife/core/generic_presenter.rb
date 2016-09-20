@@ -187,7 +187,7 @@ class Chef
                 nil
               end
           end
-          # necessary for coercing hashable non-attribute objects hanging off the node into real hashes
+          # necessary (?) for coercing objects (the run_list object?) to hashes
           ( !data.kind_of?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
         end
 

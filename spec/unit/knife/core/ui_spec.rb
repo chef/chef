@@ -383,11 +383,18 @@ EOM
         expect(@ui.format_for_display(input)).to eq( { "chef.localdomain" => { "name" => "chef.localdomain" } })
       end
 
+      it "should return the chef_environment attribute" do
+        input = Chef::Node.new
+        input.chef_environment = "production-partner-load-integration-preview-testing"
+        @ui.config[:attribute] = "chef_environment"
+        expect(@ui.format_for_display(input)).to eq( { nil => { "chef_environment" => "production-partner-load-integration-preview-testing" } } )
+      end
+
       it "works with arrays" do
         input = Chef::Node.new
         input.default["array"] = %w{zero one two}
         @ui.config[:attribute] = "array.1"
-        expect(@ui.format_for_display(input)).to eq( nil => { "array.1" => "one" })
+        expect(@ui.format_for_display(input)).to eq( { nil => { "array.1" => "one" } } )
       end
 
       it "returns nil when given an attribute path that isn't a name or attribute" do
