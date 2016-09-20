@@ -140,7 +140,8 @@ class Chef
 
         def useradd_options
           opts = []
-          opts << "-r" if new_resource.system
+          # Solaris doesn't support system users.
+          opts << "-r" if new_resource.system && !node.platform?("solaris2")
           opts << "-M" unless managing_home_dir?
           opts
         end
