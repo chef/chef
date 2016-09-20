@@ -4,9 +4,7 @@ gem "omnibus", github: "chef/omnibus", branch: "rhass/COOL-502_with_gcc_investig
 gem "omnibus-software", github: "chef/omnibus-software", branch: "lcg/ruby23"
 gem "license_scout", github: "chef/license_scout"
 
-# pedump pessimistically pins multipart-post to a version from 2013 which makes
-# bundler very unhappy. Remove this when upstream has merged zed-0xff/pedump#6 .
-gem "pedump", git: "https://github.com/ksubrama/pedump.git", branch: "patch-1"
+gem "pedump"
 
 # This development group is installed by default when you run `bundle install`,
 # but if you are using Omnibus in a CI-based infrastructure, you do not need
