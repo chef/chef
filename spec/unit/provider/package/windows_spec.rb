@@ -36,7 +36,6 @@ describe Chef::Provider::Package::Windows, :windows_only do
     new_resource = Chef::Resource::WindowsPackage.new(resource_name)
     new_resource.source(resource_source) if resource_source
     new_resource.installer_type(installer_type) if installer_type
-    new_resource.checksum("jiie00u3bbs92vsbhvgvklb2lasgh20ah")
     new_resource
   end
   let(:provider) { Chef::Provider::Package::Windows.new(new_resource, run_context) }
@@ -422,6 +421,10 @@ describe Chef::Provider::Package::Windows, :windows_only do
   end
 
   describe "validate_content!" do
+    before(:each) do
+      new_resource.checksum("jiie00u3bbs92vsbhvgvklb2lasgh20ah")
+    end
+
     context "checksum is in lowercase" do
       include_context "valid checksum"
       include_context "invalid checksum"
