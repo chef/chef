@@ -24,18 +24,18 @@ describe Chef::Provider::Group::Groupadd do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:new_resource) do
     Chef::Resource::Group.new("aj").tap do |r|
-     r.gid 50
-     r.members %w{root aj}
-     r.system false
-     r.non_unique false
+      r.gid 50
+      r.members %w{root aj}
+      r.system false
+      r.non_unique false
     end
   end
   let(:current_resource) do
     Chef::Resource::Group.new("aj").tap do |r|
-     r.gid 50
-     r.members %w{root aj}
-     r.system false
-     r.non_unique false
+      r.gid 50
+      r.members %w{root aj}
+      r.system false
+      r.non_unique false
     end
   end
   let(:provider) do
@@ -105,7 +105,7 @@ describe Chef::Provider::Group::Groupadd do
     end
   end
 
-  describe  "create_group" do
+  describe "#create_group" do
     before do
       allow(provider).to receive(:run_command).and_return(true)
       allow(provider).to receive(:set_options).and_return(" monkey")
@@ -124,7 +124,7 @@ describe Chef::Provider::Group::Groupadd do
     end
   end
 
-  describe "manage group" do
+  describe "#manage_group" do
     before do
       allow(provider).to receive(:run_command).and_return(true)
       allow(provider).to receive(:set_options).and_return(" monkey")
@@ -142,7 +142,7 @@ describe Chef::Provider::Group::Groupadd do
     end
   end
 
-  describe "remove_group" do
+  describe "#remove_group" do
     before do
       allow(provider).to receive(:run_command).and_return(true)
       allow(provider).to receive(:set_options).and_return(" monkey")
@@ -160,7 +160,7 @@ describe Chef::Provider::Group::Groupadd do
     end
   end
 
-  describe "load_current_resource" do
+  describe "#load_current_resource" do
     before do
       allow(provider).to receive(:run_command).and_return(true)
       allow(provider).to receive(:set_options).and_return(" monkey")

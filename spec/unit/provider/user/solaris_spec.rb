@@ -29,7 +29,6 @@ describe Chef::Provider::User::Solaris do
     Struct.new(:stdout, :stderr, :exitstatus)
   end
 
-
   let(:node) do
     Chef::Node.new.tap do |node|
       node.automatic["platform"] = "solaris2"
