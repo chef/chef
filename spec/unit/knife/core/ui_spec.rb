@@ -377,10 +377,17 @@ EOM
       end
 
       it "should return the name attribute" do
-        allow_any_instance_of(Chef::Node).to receive(:name).and_return("chef.localdomain")
         input = Chef::Node.new
+        input.name("chef.localdomain")
         @ui.config[:attribute] = "name"
         expect(@ui.format_for_display(input)).to eq( { "chef.localdomain" => { "name" => "chef.localdomain" } })
+      end
+
+      it "works with arrays" do
+        input = Chef::Node.new
+        input.default["array"] = %w{zero one two}
+        @ui.config[:attribute] = "array.1"
+        expect(@ui.format_for_display(input)).to eq( nil => { "array.1" => "one" })
       end
 
       it "returns nil when given an attribute path that isn't a name or attribute" do

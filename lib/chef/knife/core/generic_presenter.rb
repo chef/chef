@@ -175,23 +175,19 @@ class Chef
 
         def extract_nested_value(data, nested_value_spec)
           nested_value_spec.split(".").each do |attr|
-            if data.nil?
-              nil # don't get no method error on nil
-              # Must check :[] before attr because spec can include
-              #   `keys` - want the key named `keys`, not a list of
-              #   available keys.
-            elsif data.respond_to?(:[]) && data.has_key?(attr)
-              data = data[attr]
-            elsif data.respond_to?(attr.to_sym)
-              data = data.send(attr.to_sym)
-            else
-              data = begin
-                       data.send(attr.to_sym)
-                     rescue NoMethodError
-                       nil
-                     end
-            end
+            data =
+              if data.is_a?(Array)
+                data[attr.to_i]
+              elsif data.respond_to?(:[], false) && data.key?(attr)
+                data[attr]
+              elsif data.respond_to?(attr.to_sym, false)
+                # handles -a chef_environment and other things that hang of the node and aren't really attributes
+                data.public_send(attr.to_sym)
+              else
+                nil
+              end
           end
+          # necessary for coercing hashable non-attribute objects hanging off the node into real hashes
           ( !data.kind_of?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
         end
 
