@@ -81,6 +81,16 @@ describe Chef::Provider::User::Solaris do
     end
   end
 
+  describe "#create_user" do
+    context "with a system user" do
+      before { new_resource.system(true) }
+      it "should not pass -r" do
+        expect(provider).to receive(:shell_out!).with("useradd", "-M", "adam")
+        provider.create_user
+      end
+    end
+  end
+
   describe "when managing user locked status" do
     describe "when determining if the user is locked" do
 
