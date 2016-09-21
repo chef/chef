@@ -112,7 +112,7 @@ EOM
       file "cookbooks/x/recipes/default.rb", <<EOM
 ruby_block "sleeping" do
   block do
-    retries = 200000
+    retries = 200
     while IO.read(Chef::Config[:log_location]) !~ /Chef client .* is running, will wait for it to finish and then run./
       sleep 0.1
       raise "we ran out of retries" if ( retries -= 1 ) <= 0
@@ -138,17 +138,13 @@ EOM
           # Instantiate the first chef-solo run
           threads << Thread.new do
             s1 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default'  -l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
-            puts "before waitpid1"
             Process.waitpid(s1)
-            puts "after waitpid1"
           end
 
           # Instantiate the second chef-solo run
           threads << Thread.new do
             s2 = Process.spawn("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default'  -l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
-            puts "before waitpid2"
             Process.waitpid(s2)
-            puts "after waitpid2"
           end
 
           threads.each(&:join)
