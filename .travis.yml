@@ -21,7 +21,6 @@ before_script:
 branches:
   only:
   - master
-  - 10-stable
   - 11-stable
 
 env:
