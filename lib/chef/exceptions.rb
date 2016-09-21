@@ -245,6 +245,10 @@ class Chef
     class Win32RegBadValueSize < ArgumentError; end
     class Win32RegTypesMismatch < ArgumentError; end
 
+    # incorrect input for registry_key create action throws following error
+    class RegKeyValuesTypeMissing < ArgumentError; end
+    class RegKeyValuesDataMissing < ArgumentError; end
+
     class InvalidEnvironmentPath < ArgumentError; end
     class EnvironmentNotFound < RuntimeError; end
 

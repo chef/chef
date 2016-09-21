@@ -311,3 +311,97 @@ describe Chef::Provider::RegistryKey do
     end
   end
 end
+
+describe Chef::Provider::RegistryKey, "key_missing?" do
+  let(:provider) { Chef::Provider::RegistryKey.new(nil, nil) }
+  let(:all_keys_present_in_all_hash) do
+    [ { :name => "input1_value1", :type => :string, :data => "my_value1" },
+      { :name => "input1_value2", :type => :string, :data => "my_value2" },
+    ]
+  end
+  let(:type_key_not_present_in_any_hash) do
+    [ { :name => "input2_value1", :data => "my_value1" },
+      { :name => "input2_value2", :data => "my_value2" },
+    ]
+  end
+  let(:type_key_not_present_in_some_hash) do
+    [ { :name => "input3_value1", :data => "my_value1" },
+      { :name => "input3_value2", :type => :string, :data => "my_value2" },
+    ]
+  end
+  let(:data_key_not_present_in_any_hash) do
+    [ { :name => "input4_value1", :type => :string },
+      { :name => "input4_value2", :type => :string },
+    ]
+  end
+  let(:data_key_not_present_in_some_hash) do
+    [ { :name => "input5_value1", :type => :string, :data => "my_value1" },
+      { :name => "input5_value2", :type => :string },
+    ]
+  end
+  let(:only_name_key_present_in_all_hash) do
+    [ { :name => "input6_value1" },
+      { :name => "input6_value2" },
+    ]
+  end
+
+  context "type key" do
+    context "when type key is present in all the values hash of registry_key resource" do
+      it "returns false" do
+        response = provider.key_missing?(all_keys_present_in_all_hash, :type)
+        expect(response).to be == false
+      end
+    end
+
+    context "when type key is not present in any of the values hash of registry_key resource" do
+      it "returns true" do
+        response = provider.key_missing?(type_key_not_present_in_any_hash, :type)
+        expect(response).to be == true
+      end
+    end
+
+    context "when type key is not present only in some of the values hash of registry_key resource" do
+      it "returns true" do
+        response = provider.key_missing?(type_key_not_present_in_some_hash, :type)
+        expect(response).to be == true
+      end
+    end
+
+    context "when only name key is present in all the values hash of registry_key resource" do
+      it "returns true" do
+        response = provider.key_missing?(only_name_key_present_in_all_hash, :type)
+        expect(response).to be == true
+      end
+    end
+  end
+
+  context "data key" do
+    context "when data key is present in all the values hash of registry_key resource" do
+      it "returns false" do
+        response = provider.key_missing?(all_keys_present_in_all_hash, :data)
+        expect(response).to be == false
+      end
+    end
+
+    context "when data key is not present in any of the values hash of registry_key resource" do
+      it "returns true" do
+        response = provider.key_missing?(data_key_not_present_in_any_hash, :data)
+        expect(response).to be == true
+      end
+    end
+
+    context "when data key is not present only in some of the values hash of registry_key resource" do
+      it "returns true" do
+        response = provider.key_missing?(data_key_not_present_in_some_hash, :data)
+        expect(response).to be == true
+      end
+    end
+
+    context "when only name key is present in all the values hash of registry_key resource" do
+      it "returns true" do
+        response = provider.key_missing?(only_name_key_present_in_all_hash, :data)
+        expect(response).to be == true
+      end
+    end
+  end
+end
