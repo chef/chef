@@ -198,7 +198,7 @@ GEM
     thor (0.19.1)
     timers (4.0.4)
       hitimes
-    train (0.19.1)
+    train (0.20.0)
       docker-api (~> 1.26)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
