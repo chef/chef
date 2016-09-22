@@ -722,6 +722,14 @@ class Chef
         end
       end
 
+      def method_missing(method, *args, &block)
+        if block_given?
+          super
+        else
+          Chef::Log.debug "ignoring method #{method} on cookbook with name #{name}, possible typo or future metadata?"
+        end
+      end
+
       private
 
       # Helper to match a gem style version (ohai_version/chef_version) against a set of
