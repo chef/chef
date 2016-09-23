@@ -1,11 +1,16 @@
-# Contributing to Chef
+# Contributing to Chef Projects
 
-We are glad you want to contribute to Chef!
+We're glad you want to contribute to a Chef project! This document should help answer common questions you may have during your first contribution.
 
-We utilize **Github Issues** for issue tracking and contributions. You can contribute in two ways:
+## Submitting Issues
 
-1. Reporting an issue or making a feature request [here](#issues).
-2. Adding features or fixing bugs yourself and contributing your code to Chef.
+Not every contribution comes in the form of code. Submitting, confirming, and triaging issues is an important task for any project. At Chef we use Github to track all project issues.
+
+If you are familiar with Chef and know the component that is causing you a problem you can file an issue in the corresponding Github project. All of our Open Source Software can be found in our [Github organization](https://github.com/chef/). All projects include Github issue templates to help gather information needed for a thorough review.
+
+We do ask that you not submit security concerns via Github. For details on submitting potential security issues please see <https://www.chef.io/security/>
+
+In addition to Github issues we also utilize a feedback site that helps our product team track and rank feature requests. If you have a feature request this is an excellent place to start <https://feedback.chef.io>
 
 ## Contribution Process
 
@@ -77,25 +82,6 @@ Date:   Wed Sep 18 11:44:40 2013 -0700
 ------------------------------------------------------------------------
 ```
 
-## Chef Issue Tracking
-
-Chef Issue Tracking is handled using Github Issues.
-
-If you are familiar with Chef and know the component that is causing you a problem or if you have a feature request on a specific component you can file an issue in the corresponding Github project. All of our Open Source Software can be found in our [Github organization](https://github.com/chef/).
-
-There is also a listing of the various Chef products and where to file issues that can be found in the Chef docs in the [community contributions section](https://docs.chef.io/community_contributions.html#issues-and-bug-reports).
-
-Otherwise you can file your issue in the [Chef project](https://github.com/chef/chef/issues) and we will make sure it gets filed against the appropriate project.
-
-### Useful Github Queries
-
-Contributions go through a review process to improve code quality and avoid regressions. Managing a large number of contributions requires a workflow to provide queues for work such as triage, code review, and merging. A semi-formal process has evolved over the life of the project. Chef maintains this process pending community development and acceptance of an [RFC](https://github.com/chef/chef-rfc). These queries will help track contributions through this process:
-
-- [Issues that are not assigned to a team](https://github.com/chef/chef/issues?q=is%3Aopen+-label%3AAIX+-label%3ABSD+-label%3Awindows+-label%3A%22Chef+Core%22++-label%3A%22Dev+Tools%22+-label%3AUbuntu+-label%3A%22Enterprise+Linux%22+-label%3A%22Ready+For+Merge%22+-label%3AMac+-label%3ASolaris+)
-- [Untriaged Issues](https://github.com/chef/chef/issues?q=is%3Aopen+is%3Aissue+-label%3ABug+-label%3AEnhancement+-label%3A%22Tech+Cleanup%22+-label%3A%22Ready+For+Merge%22)
-- [PRs to be Reviewed](https://github.com/chef/chef/labels/Pending%20Maintainer%20Review)
-- [Suitable for First Contribution](https://github.com/chef/chef/labels/Easy)
-
 ## Chef Release Cycles
 
 Our primary shipping vehicle is operating system specific packages that includes all the requirements of Chef. We call these [Omnibus packages](https://github.com/chef/omnibus)
@@ -108,7 +94,7 @@ Our version numbering roughly follows [Semantic Versioning](http://semver.org/) 
 - Y is a minor release, which adds both new features and bug fixes
 - Z is a patch release, which adds just bug fixes
 
-After shipping a release of Chef we bump the `Minor` version by one to start development of the next minor releaae. All merges to master trigger an increment of the `Patch` version, and a build through our internal testing pipeline. We do a `Minor` release approximately every month, which consist of shipping one of the already auto-incremented and tested `Patch` versions. For example after shiping 12.10.24, we incremented Chef to 12.11.0\. From there 18 commits where merged bringing the version to 12.11.18, which we shipped as an omnibus package.
+After shipping a release of Chef we bump the `Minor` version by one to start development of the next minor release. All merges to master trigger an increment of the `Patch` version, and a build through our internal testing pipeline. We do a `Minor` release approximately every month, which consist of shipping one of the already auto-incremented and tested `Patch` versions. For example after shiping 12.10.24, we incremented Chef to 12.11.0\. From there 18 commits where merged bringing the version to 12.11.18, which we shipped as an omnibus package.
 
 Announcements of releases are made to the [chef mailing list](https://discourse.chef.io/c/chef-release) when they are available.
 
