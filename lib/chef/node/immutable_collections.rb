@@ -16,6 +16,9 @@
 #
 
 require "chef/node/common_api"
+require "chef/node/mixin/path_tracking"
+require "chef/node/mixin/immutablize_array"
+require "chef/node/mixin/immutablize_hash"
 
 class Chef
   class Node
@@ -49,52 +52,9 @@ class Chef
       alias :internal_push :<<
       private :internal_push
 
-      # A list of methods that mutate Array. Each of these is overridden to
-      # raise an error, making this instances of this class more or less
-      # immutable.
-      DISALLOWED_MUTATOR_METHODS = [
-        :<<,
-        :[]=,
-        :clear,
-        :collect!,
-        :compact!,
-        :default=,
-        :default_proc=,
-        :delete,
-        :delete_at,
-        :delete_if,
-        :fill,
-        :flatten!,
-        :insert,
-        :keep_if,
-        :map!,
-        :merge!,
-        :pop,
-        :push,
-        :update,
-        :reject!,
-        :reverse!,
-        :replace,
-        :select!,
-        :shift,
-        :slice!,
-        :sort!,
-        :sort_by!,
-        :uniq!,
-        :unshift,
-      ]
-
       def initialize(array_data)
         array_data.each do |value|
           internal_push(immutablize(value))
-        end
-      end
-
-      # Redefine all of the methods that mutate a Hash to raise an error when called.
-      # This is the magic that makes this object "Immutable"
-      DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
-        define_method(mutator_method_name) do |*args, &block|
-          raise Exceptions::ImmutableAttributeModification
         end
       end
 
@@ -125,6 +85,13 @@ class Chef
         a
       end
 
+      # for consistency's sake -- integers 'converted' to integers
+      def convert_key(key)
+        key
+      end
+
+      prepend Chef::Node::Mixin::PathTracking
+      prepend Chef::Node::Mixin::ImmutablizeArray
     end
 
     # == ImmutableMash
@@ -140,34 +107,11 @@ class Chef
     #   it is stale.
     # * Values can be accessed in attr_reader-like fashion via method_missing.
     class ImmutableMash < Mash
-
       include Immutablize
       include CommonAPI
 
       alias :internal_set :[]=
       private :internal_set
-
-      DISALLOWED_MUTATOR_METHODS = [
-        :[]=,
-        :clear,
-        :collect!,
-        :default=,
-        :default_proc=,
-        :delete,
-        :delete_if,
-        :keep_if,
-        :map!,
-        :merge!,
-        :update,
-        :reject!,
-        :replace,
-        :select!,
-        :shift,
-        :write,
-        :write!,
-        :unlink,
-        :unlink!,
-      ]
 
       def initialize(mash_data)
         mash_data.each do |key, value|
@@ -180,14 +124,6 @@ class Chef
       end
 
       alias :attribute? :has_key?
-
-      # Redefine all of the methods that mutate a Hash to raise an error when called.
-      # This is the magic that makes this object "Immutable"
-      DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
-        define_method(mutator_method_name) do |*args, &block|
-          raise Exceptions::ImmutableAttributeModification
-        end
-      end
 
       def method_missing(symbol, *args)
         if symbol == :to_ary
@@ -238,7 +174,8 @@ class Chef
         h
       end
 
+      prepend Chef::Node::Mixin::PathTracking
+      prepend Chef::Node::Mixin::ImmutablizeHash
     end
-
   end
 end

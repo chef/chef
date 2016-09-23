@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+require "chef/node/mixin/immutablize_hash"
+require "chef/node/mixin/path_tracking"
 require "chef/node/immutable_collections"
 require "chef/node/attribute_collections"
 require "chef/decorator/unchain"
@@ -630,8 +632,14 @@ class Chef
           Chef::Mixin::DeepMerge.deep_merge(component_value, merged)
         end
       end
-
     end
 
+    # needed for PathTracking
+    def convert_key(key)
+      key.kind_of?(Symbol) ? key.to_s : key
+    end
+
+    prepend Chef::Node::Mixin::PathTracking
+    prepend Chef::Node::Mixin::ImmutablizeHash
   end
 end
