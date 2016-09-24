@@ -37,6 +37,33 @@ describe Chef::Node::VividMash do
     expect(root).to receive(:top_level_breadcrumb=).with(key).at_least(:once).and_call_original
   end
 
+  context "#[]=" do
+    it "deep converts values through arrays" do
+      allow(root).to receive(:reset_cache)
+      vivid[:foo] = [ { :bar => true } ]
+      expect(vivid["foo"].class).to eql(Chef::Node::AttrArray)
+      expect(vivid["foo"][0].class).to eql(Chef::Node::VividMash)
+      expect(vivid["foo"][0]["bar"]).to be true
+    end
+
+    it "deep converts values through nested arrays" do
+      allow(root).to receive(:reset_cache)
+      vivid[:foo] = [ [ { :bar => true } ] ]
+      expect(vivid["foo"].class).to eql(Chef::Node::AttrArray)
+      expect(vivid["foo"][0].class).to eql(Chef::Node::AttrArray)
+      expect(vivid["foo"][0][0].class).to eql(Chef::Node::VividMash)
+      expect(vivid["foo"][0][0]["bar"]).to be true
+    end
+
+    it "deep converts values through hashes" do
+      allow(root).to receive(:reset_cache)
+      vivid[:foo] = { baz: { :bar => true } }
+      expect(vivid["foo"]).to be_an_instance_of(Chef::Node::VividMash)
+      expect(vivid["foo"]["baz"]).to be_an_instance_of(Chef::Node::VividMash)
+      expect(vivid["foo"]["baz"]["bar"]).to be true
+    end
+  end
+
   context "#read" do
     before do
       # vivify the vividmash, then we're read-only so the cache should never be cleared afterwards

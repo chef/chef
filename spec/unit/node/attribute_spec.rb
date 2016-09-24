@@ -1171,7 +1171,29 @@ describe Chef::Node::Attribute do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
       expect { @attributes.new_key = "new value" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
-
   end
 
+  describe "deeply converting values" do
+    it "converts values through an array" do
+      @attributes.default[:foo] = [ { bar: true } ]
+      expect(@attributes["foo"].class).to eql(Chef::Node::ImmutableArray)
+      expect(@attributes["foo"][0].class).to eql(Chef::Node::ImmutableMash)
+      expect(@attributes["foo"][0]["bar"]).to be true
+    end
+
+    it "converts values through nested arrays" do
+      @attributes.default[:foo] = [ [ { bar: true } ] ]
+      expect(@attributes["foo"].class).to eql(Chef::Node::ImmutableArray)
+      expect(@attributes["foo"][0].class).to eql(Chef::Node::ImmutableArray)
+      expect(@attributes["foo"][0][0].class).to eql(Chef::Node::ImmutableMash)
+      expect(@attributes["foo"][0][0]["bar"]).to be true
+    end
+
+    it "converts values through nested hashes" do
+      @attributes.default[:foo] = { baz: { bar: true } }
+      expect(@attributes["foo"].class).to eql(Chef::Node::ImmutableMash)
+      expect(@attributes["foo"]["baz"].class).to eql(Chef::Node::ImmutableMash)
+      expect(@attributes["foo"]["baz"]["bar"]).to be true
+    end
+  end
 end

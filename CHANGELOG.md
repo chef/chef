@@ -1,5 +1,15 @@
 # Change Log
 
+## [v12.14.89](https://github.com/chef/chef/tree/v12.14.89) (2016-09-22)
+[Full Changelog](https://github.com/chef/chef/compare/v12.14.77...v12.14.89)
+
+**Fixed Bugs:**
+
+- Revert "Verify systemd\_unit file during create" [\#5326](https://github.com/chef/chef/pull/5326) ([mwrock](https://github.com/mwrock))
+- Fix method\_access and array handling in node presenter [\#5351](https://github.com/chef/chef/pull/5351) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fixed undefined short\_cksum method issue and checksum in uppercase issue for windows\_package resource. [\#5332](https://github.com/chef/chef/pull/5332) ([Aliasgar16](https://github.com/Aliasgar16))
+- Fix makecache action name in yum\_repository [\#5348](https://github.com/chef/chef/pull/5348) ([tas50](https://github.com/tas50))
+
 ## [v12.14.77](https://github.com/chef/chef/tree/v12.14.77) (2016-09-19)
 [Full Changelog](https://github.com/chef/chef/compare/v12.14.60...v12.14.77)
 
