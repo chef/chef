@@ -69,8 +69,9 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
       expect(@provider.groupadd_options).not_to match(/-r/)
     end
 
-    it "should set groupadd -r if system is true" do
-      @new_resource.system(true)
+    it "should set groupadd -r if system is true and platform is not solaris" do
+      allow(@new_resource).to receive(:system).and_return(true)
+      allow(Chef::Platform).to receive(:solaris?).and_return(false)
       expect(@provider.groupadd_options).to eq(" -r")
     end
   end
