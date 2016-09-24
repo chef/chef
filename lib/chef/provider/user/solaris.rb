@@ -73,6 +73,19 @@ class Chef
 
         private
 
+        # Override the version from {#Useradd} because Solaris doesn't support
+        # system users and therefore has no `-r` option.
+        #
+        # @since 12.15
+        # @api private
+        # @see Useradd#useradd_options
+        # @return [Array<String>]
+        def useradd_options
+          opts = []
+          opts << "-M" unless managing_home_dir?
+          opts
+        end
+
         def manage_password
           if @current_resource.password != @new_resource.password && @new_resource.password
             Chef::Log.debug("#{@new_resource} setting password to #{@new_resource.password}")
