@@ -18,23 +18,31 @@
 class Chef
   class Node
     module Mixin
-      module PathTracking
+      module StateTracking
         attr_reader :__path
+        attr_reader :__root
 
         def initialize(*args)
           super
           @__path = []
+          @__root = self
         end
 
         def [](key)
           ret = super
-          ret.__path = __path + [ convert_key(key) ] if ret.is_a?(PathTracking)
+          if ret.is_a?(StateTracking)
+            ret.__path = __path + [ convert_key(key) ]
+            ret.__root = __root
+          end
           ret
         end
 
         def []=(key, value)
           ret = super
-          ret.__path = __path + [ convert_key(key) ] if ret.is_a?(PathTracking)
+          if ret.is_a?(StateTracking)
+            ret.__path = __path + [ convert_key(key) ]
+            ret.__root = __root
+          end
           ret
         end
 
@@ -42,6 +50,10 @@ class Chef
 
         def __path=(path)
           @__path = path
+        end
+
+        def __root=(root)
+          @__root = root
         end
       end
     end

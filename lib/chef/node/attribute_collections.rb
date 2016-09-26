@@ -17,7 +17,7 @@
 #
 
 require "chef/node/common_api"
-require "chef/node/mixin/path_tracking"
+require "chef/node/mixin/state_tracking"
 
 class Chef
   class Node
@@ -105,12 +105,12 @@ class Chef
         end
       end
 
-      # needed for PathTracking
+      # needed for __path
       def convert_key(key)
         key
       end
 
-      prepend Chef::Node::Mixin::PathTracking
+      prepend Chef::Node::Mixin::StateTracking
     end
 
     # == VividMash
@@ -224,7 +224,7 @@ class Chef
         Mash.new(self)
       end
 
-      prepend Chef::Node::Mixin::PathTracking
+      prepend Chef::Node::Mixin::StateTracking
     end
   end
 end

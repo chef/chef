@@ -18,7 +18,7 @@
 #
 
 require "chef/node/mixin/immutablize_hash"
-require "chef/node/mixin/path_tracking"
+require "chef/node/mixin/state_tracking"
 require "chef/node/immutable_collections"
 require "chef/node/attribute_collections"
 require "chef/decorator/unchain"
@@ -634,12 +634,12 @@ class Chef
       end
     end
 
-    # needed for PathTracking
+    # needed for __path
     def convert_key(key)
       key.kind_of?(Symbol) ? key.to_s : key
     end
 
-    prepend Chef::Node::Mixin::PathTracking
+    prepend Chef::Node::Mixin::StateTracking
     prepend Chef::Node::Mixin::ImmutablizeHash
   end
 end

@@ -16,7 +16,7 @@
 #
 
 require "chef/node/common_api"
-require "chef/node/mixin/path_tracking"
+require "chef/node/mixin/state_tracking"
 require "chef/node/mixin/immutablize_array"
 require "chef/node/mixin/immutablize_hash"
 
@@ -90,7 +90,7 @@ class Chef
         key
       end
 
-      prepend Chef::Node::Mixin::PathTracking
+      prepend Chef::Node::Mixin::StateTracking
       prepend Chef::Node::Mixin::ImmutablizeArray
     end
 
@@ -174,7 +174,7 @@ class Chef
         h
       end
 
-      prepend Chef::Node::Mixin::PathTracking
+      prepend Chef::Node::Mixin::StateTracking
       prepend Chef::Node::Mixin::ImmutablizeHash
     end
   end
