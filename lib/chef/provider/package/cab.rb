@@ -18,13 +18,13 @@
 
 require "chef/provider/package"
 require "chef/resource/cab_package"
-require "chef/mixin/powershell_out"
+require "chef/mixin/shell_out"
 
 class Chef
   class Provider
     class Package
       class Cab < Chef::Provider::Package
-        include Chef::Mixin::PowershellOut
+        include Chef::Mixin::ShellOut
 
         provides :cab_package, os: "windows"
 
@@ -45,7 +45,10 @@ class Chef
         end
 
         def dism_command(command)
-          powershell_out("dism.exe /Online #{command} /NoRestart", { :timeout => @new_resource.timeout })
+          shellout = Mixlib::ShellOut.new("dism.exe /Online #{command} /NoRestart", { :timeout => @new_resource.timeout })
+          with_os_architecture(nil) do
+            shellout.run_command
+          end
         end
 
         def installed_version
@@ -63,7 +66,7 @@ class Chef
             find_version(stdout)
           else
             # Presuming this won't happen, otherwise we need to handle it
-            raise Chef::Exceptions::Package, "Found mutliple packages installed matching name #{package['name']}, found: #{found_packages.length} matches"
+            raise Chef::Exceptions::Package, "Found multiple packages installed matching name #{package['name']}, found: #{found_packages.length} matches"
           end
         end
 
@@ -102,7 +105,7 @@ class Chef
           section_headers = [ "Package information", "Custom Properties", "Features" ]
           text.each_line do |line|
             if line =~ /Error: (.*)/
-              errors << $1
+              errors << $1.strip
             elsif section_headers.any? { |header| line =~ /^(#{header})/ }
               in_section = $1.downcase.tr(" ", "_")
             elsif line =~ /(.*) ?: (.*)/
@@ -117,9 +120,9 @@ class Chef
             end
           end
           unless errors.empty?
-            if !(errors & ["0x80070003\r", "0x80070002\r"]).empty?
+            if errors.include?("0x80070003") || errors.include?("0x80070002")
               raise Chef::Exceptions::Package, "DISM: The system cannot find the path or file specified."
-            elsif errors.include?("740\r")
+            elsif errors.include?("740")
               raise Chef::Exceptions::Package, "DISM: Error 740: Elevated permissions are required to run DISM."
             else
               raise Chef::Exceptions::Package, "Unknown errors encountered parsing DISM output: #{errors}"

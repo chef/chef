@@ -51,13 +51,13 @@ The operation completed successfully
   before do
     new_resource.source = "C:\\Temp\\Test6.1-KB2664825-v3-x64.cab"
     installed_package_list_obj = double(stdout: installed_package_list_stdout)
-    allow(provider).to receive(:powershell_out).with("dism.exe /Online /Get-Packages /NoRestart", { timeout: timeout }).and_return(installed_package_list_obj)
+    allow(provider).to receive(:dism_command).with("/Get-Packages").and_return(installed_package_list_obj)
     package_version_obj = double(stdout: package_version_stdout)
-    allow(provider).to receive(:powershell_out).with("dism.exe /Online /Get-PackageInfo /PackagePath:\"#{new_resource.source}\" /NoRestart", { timeout: timeout }).and_return(package_version_obj)
+    allow(provider).to receive(:dism_command).with("/Get-PackageInfo /PackagePath:\"#{new_resource.source}\"").and_return(package_version_obj)
   end
 
   def allow_package_info(package_path = nil, package_name = nil)
-    get_pakage_info_stdout = <<-EOF
+    get_package_info_stdout = <<-EOF
 Deployment Image Servicing and Management tool
 Version: 6.1.7600.16385
 
@@ -72,15 +72,15 @@ State : Installed
 Dependency : Language Pack
 The operation completed successfully
     EOF
-    get_pakage_info_obj = double(stdout: get_pakage_info_stdout)
+    get_package_info_obj = double(stdout: get_package_info_stdout)
     if package_path
-      allow(provider).to receive(:powershell_out).with("dism.exe /Online /Get-PackageInfo /PackagePath:\"#{package_path}\" /NoRestart", { timeout: timeout }).and_return(get_pakage_info_obj)
+      allow(provider).to receive(:dism_command).with("/Get-PackageInfo /PackagePath:\"#{package_path}\"").and_return(get_package_info_obj)
     else
-      allow(provider).to receive(:powershell_out).with("dism.exe /Online /Get-PackageInfo /PackageName:\"#{package_name}\" /NoRestart", { timeout: timeout }).and_return(get_pakage_info_obj)
+      allow(provider).to receive(:dism_command).with("/Get-PackageInfo /PackageName:\"#{package_name}\"").and_return(get_package_info_obj)
     end
   end
 
-  def allow_get_packags
+  def allow_get_packages
     get_packages_stdout = <<-EOF
 Deployment Image Servicing and Management tool
 Version: 6.1.7600.16385
@@ -107,7 +107,7 @@ Install Time : 11/21/2010 3:40 AM
 The operation completed successfully.
     EOF
     get_packages_obj = double(stdout: get_packages_stdout)
-    allow(provider).to receive(:powershell_out).with("dism.exe /Online /Get-Packages /NoRestart", { timeout: timeout }).and_return(get_packages_obj)
+    allow(provider).to receive(:dism_command).with("/Get-Packages").and_return(get_packages_obj)
   end
 
   describe "#load_current_resource" do
@@ -142,7 +142,7 @@ The operation completed successfully.
   describe "#installed_version" do
     it "returns the current installed version of package" do
       allow_package_info(new_resource.source, nil)
-      allow_get_packags
+      allow_get_packages
       allow_package_info(nil, "Package_for_KB2664825~31bf3856ad364e35~amd64~~6.1.3.0")
       expect(provider.installed_version).to eql("6.1.3.0")
     end
@@ -158,7 +158,7 @@ The operation completed successfully.
 
     it "removes packages if package is installed" do
       allow_package_info(new_resource.source, nil)
-      allow_get_packags
+      allow_get_packages
       allow_package_info(nil, "Package_for_KB2664825~31bf3856ad364e35~amd64~~6.1.3.0")
       provider.load_current_resource
       expect(provider.installed_version).not_to eql(nil)
@@ -179,13 +179,40 @@ The operation completed successfully.
 
     it "does not install package if already installed" do
       allow_package_info(new_resource.source, nil)
-      allow_get_packags
+      allow_get_packages
       allow_package_info(nil, "Package_for_KB2664825~31bf3856ad364e35~amd64~~6.1.3.0")
       provider.load_current_resource
       expect(provider.installed_version).not_to eql(nil)
       expect(provider).not_to receive(:install_package)
       provider.run_action(:install)
       expect(new_resource).not_to be_updated_by_last_action
+    end
+  end
+
+  context "Invalid package source" do
+    def package_version_stdout
+      package_version_stdout = <<-EOF
+
+Deployment Image Servicing and Management tool
+Version: 6.1.7600.16385
+
+Image Version: 6.1.7600.16385
+
+An error occurred trying to open - c:\\temp\\test6.1-KB2664825-v3-x64.cab Error: 0x80070003
+Error: 3
+The system cannot find the path specified.
+The DISM log file can be found at C:\\Windows\\Logs\\DISM\\dism.log.
+      EOF
+    end
+
+    before do
+      new_resource.source = "C:\\Temp\\Test6.1-KB2664825-v3-x64.cab"
+      installed_package_list_obj = double(stdout: installed_package_list_stdout)
+      allow(provider).to receive(:dism_command).with("/Get-Packages").and_return(installed_package_list_obj)
+    end
+
+    it "raises error for invalid source path or file" do
+      expect { provider.load_current_resource }.to raise_error(Chef::Exceptions::Package, "DISM: The system cannot find the path or file specified.")
     end
   end
 end
