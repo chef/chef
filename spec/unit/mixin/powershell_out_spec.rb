@@ -18,7 +18,7 @@
 require "spec_helper"
 require "chef/mixin/powershell_out"
 
-describe Chef::Mixin::PowershellOut do
+describe Chef::Mixin::PowershellOut, :windows_only do
   let(:shell_out_class) { Class.new { include Chef::Mixin::PowershellOut } }
   subject(:object) { shell_out_class.new }
   let(:architecture) { "something" }
@@ -28,43 +28,24 @@ describe Chef::Mixin::PowershellOut do
 
   describe "#powershell_out" do
     it "runs a command and returns the shell_out object" do
-      ret = double("Mixlib::ShellOut")
-      expect(object).to receive(:shell_out).with(
-        "powershell.exe #{flags} -Command \"Get-Process\"",
-        {}
-      ).and_return(ret)
-      expect(object.powershell_out("Get-Process")).to eql(ret)
+      result = object.powershell_out("Get-Process")
+      expect(result.stderr).to be == ""
     end
 
     it "passes options" do
-      ret = double("Mixlib::ShellOut")
-      expect(object).to receive(:shell_out).with(
-        "powershell.exe #{flags} -Command \"Get-Process\"",
-        timeout: 600
-      ).and_return(ret)
-      expect(object.powershell_out("Get-Process", timeout: 600)).to eql(ret)
-    end
-  end
-
-  describe "#powershell_out!" do
-    it "runs a command and returns the shell_out object" do
-      mixlib_shellout = double("Mixlib::ShellOut")
-      expect(object).to receive(:shell_out).with(
-        "powershell.exe #{flags} -Command \"Get-Process\"",
-        {}
-      ).and_return(mixlib_shellout)
-      expect(mixlib_shellout).to receive(:error!)
-      expect(object.powershell_out!("Get-Process")).to eql(mixlib_shellout)
+      result = object.powershell_out("Get-Process", timeout: 600)
+      expect(result.stderr).to be == ""
     end
 
-    it "passes options" do
-      mixlib_shellout = double("Mixlib::ShellOut")
-      expect(object).to receive(:shell_out).with(
-        "powershell.exe #{flags} -Command \"Get-Process\"",
-        timeout: 600
-      ).and_return(mixlib_shellout)
-      expect(mixlib_shellout).to receive(:error!)
-      expect(object.powershell_out!("Get-Process", timeout: 600)).to eql(mixlib_shellout)
+    context "when double quote is passed in the powershell command" do
+      it "passes if double quote is appended with single escape" do
+        result = object.powershell_out("Write-Verbose \"Some String\" -Verbose")
+        expect(result.stderr).to be == ""
+      end
+
+      it "raises error if double quote is passed with double escape characters" do
+        expect { object.powershell_out("Write-Verbose \\\"Some String\\\" -Verbose") }.to raise_error("Please use single escape for special characters in powershell_out.")
+      end
     end
   end
 end
