@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: 81f1e5c0afc76bd86132464c8ad2b94d884a4845
+  revision: 4fd26d99d0617d6336ae372f026c190617800e6b
   specs:
     license_scout (0.1.2)
       ffi-yajl (~> 2.2)
@@ -38,12 +38,12 @@ GEM
     addressable (2.4.0)
     artifactory (2.5.0)
     awesome_print (1.7.0)
-    aws-sdk (2.6.2)
-      aws-sdk-resources (= 2.6.2)
-    aws-sdk-core (2.6.2)
+    aws-sdk (2.6.3)
+      aws-sdk-resources (= 2.6.3)
+    aws-sdk-core (2.6.3)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.2)
-      aws-sdk-core (= 2.6.2)
+    aws-sdk-resources (2.6.3)
+      aws-sdk-core (= 2.6.3)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -83,7 +83,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.14.77)
+    chef-config (12.14.89)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -127,7 +127,7 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (1.2.2)
+    mixlib-install (2.0.0)
       artifactory
       mixlib-shellout
       mixlib-versioning
@@ -211,8 +211,8 @@ GEM
       molinillo (~> 0.4.2)
       semverse (~> 1.1)
     systemu (2.6.5)
-    test-kitchen (1.13.0)
-      mixlib-install (~> 1.2)
+    test-kitchen (1.13.2)
+      mixlib-install (>= 1.2, < 3.0)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
       net-ssh (>= 2.9, < 4.0)
