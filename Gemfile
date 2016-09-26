@@ -38,7 +38,7 @@ group(:integration) do
   gem "chefspec"
   gem "halite"
   gem "poise"
-  gem "poise-boiler", git: "https://github.com/poise/poise-boiler"
+  gem "poise-boiler"
   gem "knife-windows"
   gem "foodcritic"
 
