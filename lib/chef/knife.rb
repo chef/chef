@@ -236,6 +236,20 @@ class Chef
     OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack terremark bluebox}
 
     class << self
+      def list_commands(preferred_category = nil)
+        category_desc = preferred_category ? preferred_category + " " : ""
+        msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
+        subcommand_loader.list_commands(preferred_category).sort.each do |category, commands|
+          next if category =~ /deprecated/i
+          msg "** #{category.upcase} COMMANDS **"
+          commands.sort.each do |command|
+            subcommand_loader.load_command(command)
+            msg subcommands[command].banner if subcommands[command]
+          end
+          msg
+        end
+      end
+
       private
 
       # @api private
@@ -267,21 +281,6 @@ class Chef
         end
 
         exit 10
-      end
-
-      # @api private
-      def list_commands(preferred_category = nil)
-        category_desc = preferred_category ? preferred_category + " " : ""
-        msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
-        subcommand_loader.list_commands(preferred_category).sort.each do |category, commands|
-          next if category =~ /deprecated/i
-          msg "** #{category.upcase} COMMANDS **"
-          commands.sort.each do |command|
-            subcommand_loader.load_command(command)
-            msg subcommands[command].banner if subcommands[command]
-          end
-          msg
-        end
       end
 
       # @api private
