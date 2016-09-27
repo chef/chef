@@ -115,7 +115,7 @@ GEM
     mixlib-authentication (1.4.1)
       mixlib-log
     mixlib-config (2.2.4)
-    mixlib-install (2.0.0)
+    mixlib-install (1.2.3)
       artifactory
       mixlib-shellout
       mixlib-versioning
@@ -239,6 +239,7 @@ DEPENDENCIES
   kitchen-ec2
   kitchen-inspec
   kitchen-vagrant
+  mixlib-install (= 1.2.3)
   test-kitchen
   windows_chef_zero
   winrm-elevated
