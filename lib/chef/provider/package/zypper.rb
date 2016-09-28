@@ -75,6 +75,28 @@ class Chef
           end
         end
 
+###        def package_locked?
+###          package_name_array.map do |package_name|
+####            lock = `zypper locks | grep "| #{package_name} "`.split("|").shift(2).last.strip
+###            package_name.lock = `zypper locks | grep "| #{package_name} "`
+###            if package_name.lock.empty?
+###              false
+###            else
+###              true
+###            end
+###          end
+###        end
+        def package_locked(name)
+          islocked = false
+          locked = shell_out_with_timeout!("zypper locks")
+          locked.stdout.each_line do |line|
+            if line.split('|').shift(2).last.strip == name.first
+              islocked = true
+            end
+          end
+          return islocked
+        end
+
         def load_current_resource
           @current_resource = Chef::Resource::ZypperPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
@@ -105,6 +127,14 @@ class Chef
 
         def purge_package(name, version)
           zypper_package("remove --clean-deps", name, version)
+        end
+
+        def lock_package(name) 
+          shell_out_with_timeout!(a_to_s("zypper", "addlock", name)) 
+        end
+
+        def unlock_package(name) 
+          shell_out_with_timeout!(a_to_s("zypper", "removelock", name)) 
         end
 
         private

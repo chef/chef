@@ -231,6 +231,24 @@ describe Chef::Provider::Package::Zypper do
     end
   end
 
+  describe "lock_package" do
+    it "should run zypper addlock with the package name" do
+      shell_out_expectation!(
+        "zypper addlock emacs"
+      )
+      provider.lock_package(["emacs"])
+    end
+  end
+
+  describe "unlock_package" do
+    it "should run zypper removelock with the package name" do
+      shell_out_expectation!(
+        "zypper removelock emacs"
+      )
+      provider.unlock_package(["emacs"])
+    end
+  end
+
   describe "on an older zypper" do
     before(:each) do
       allow(provider).to receive(:`).and_return("0.11.6")

@@ -321,6 +321,35 @@ describe Chef::Provider::Package do
     end
   end
 
+  describe "When locking the package" do
+    before(:each) do
+      allow(provider).to receive(:lock_package).and_return(true)
+    end
+
+    it "should lock the package if it is unlocked" do
+      expect(provider).to be_locking_package
+      expect(provider).to receive(:lock_package).with("emacs")
+      provider.run_action(:lock)
+      expect(new_resource).to be_updated
+      expect(new_resource).to be_updated_by_last_action
+    end
+
+    it "should not purge the package if it is not installed" do
+      current_resource.instance_variable_set(:@version, nil)
+      expect(provider).not_to be_locking_package
+
+      expect(provider).not_to receive(:lock_package)
+      provider.run_action(:lock)
+      expect(new_resource).not_to be_updated_by_last_action
+    end
+
+    it "should set the resource to updated if it purges the package" do
+      provider.run_action(:lock)
+      expect(new_resource).to be_updated
+    end
+
+  end
+
   describe "when running commands to be implemented by subclasses" do
     it "should raises UnsupportedAction for install" do
       expect { provider.install_package("emacs", "1.4.2") }.to raise_error(Chef::Exceptions::UnsupportedAction)
@@ -345,6 +374,14 @@ describe Chef::Provider::Package do
 
     it "should raise UnsupportedAction for reconfig" do
       expect { provider.reconfig_package("emacs", "1.4.2") }.to raise_error(Chef::Exceptions::UnsupportedAction)
+    end
+
+    it "should raise UnsupportedAction for lock" do
+      expect { provider.lock_package("emacs") }.to raise_error(Chef::Exceptions::UnsupportedAction)
+    end
+
+    it "should raise UnsupportedAction for unlock" do
+      expect { provider.unlock_package("emacs") }.to raise_error(Chef::Exceptions::UnsupportedAction)
     end
   end
 
