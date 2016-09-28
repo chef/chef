@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: f0f4bb4beab18a9b6adbc0a34bcd2f0caf10be5c
-  branch: lcg/ruby23
+  revision: 4ce91af05b8be7d46feac765d0fc24eb28e62c68
+  branch: shain/ruby_windows_monster
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -262,4 +262,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   1.12.5
+   1.13.1

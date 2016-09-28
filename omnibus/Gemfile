@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem "omnibus", github: "chef/omnibus", branch: "rhass/COOL-502_with_gcc_investigate"
-gem "omnibus-software", github: "chef/omnibus-software", branch: "lcg/ruby23"
+gem "omnibus-software", github: "chef/omnibus-software", branch: "shain/ruby_windows_monster"
 gem "license_scout", github: "chef/license_scout"
 
 gem "pedump"
