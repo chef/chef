@@ -329,7 +329,7 @@ user password using shadow hash.")
 
         def move_home
           Chef::Log.debug("#{new_resource} moving #{self} home from #{current_resource.home} to #{new_resource.home}")
-
+          new_resource.gid(20) if new_resource.gid.nil?
           src = current_resource.home
           FileUtils.mkdir_p(new_resource.home)
           files = ::Dir.glob("#{Chef::Util::PathHelper.escape_glob_dir(src)}/*", ::File::FNM_DOTMATCH) - ["#{src}/.", "#{src}/.."]
