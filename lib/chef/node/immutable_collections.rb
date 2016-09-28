@@ -27,9 +27,9 @@ class Chef
       def immutablize(value)
         case value
         when Hash
-          ImmutableMash.new(value)
+          ImmutableMash.new(__root, value)
         when Array
-          ImmutableArray.new(value)
+          ImmutableArray.new(__root, value)
         else
           value
         end
