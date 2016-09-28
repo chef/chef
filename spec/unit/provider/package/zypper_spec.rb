@@ -231,24 +231,6 @@ describe Chef::Provider::Package::Zypper do
     end
   end
 
-###  describe "lock_package" do
-###    it "should run zypper addlock with the package name" do
-###      shell_out_expectation!(
-###        "zypper addlock emacs"
-###      )
-###      provider.lock_package(["emacs"], [nil])
-###    end
-###  end
-###
-###  describe "unlock_package" do
-###    it "should run zypper removelock with the package name" do
-###      shell_out_expectation!(
-###        "zypper removelock emacs"
-###      )
-###      provider.unlock_package(["emacs"], [nil])
-###    end
-###  end
-
   describe "lock_package" do
     it "should run zypper addlock with the package name" do
       allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(true)

@@ -321,20 +321,6 @@ describe Chef::Provider::Package do
     end
   end
 
-###  describe "When locking the package" do
-###    before(:each) do
-###      allow(provider).to receive(:lock_package).and_return(true)
-###    end
-###
-###    it "should lock the package if it is already locked" do
-###      expect(provider).to be_locking_package
-###      expect(provider).to receive(:lock_package).with("emacs", nil)
-###      provider.run_action(:lock)
-###      expect(new_resource).to be_updated
-###      expect(new_resource).to be_updated_by_last_action
-###    end
-###  end
-
   describe "when running commands to be implemented by subclasses" do
     it "should raises UnsupportedAction for install" do
       expect { provider.install_package("emacs", "1.4.2") }.to raise_error(Chef::Exceptions::UnsupportedAction)
