@@ -156,7 +156,6 @@ class Chef
       end
 
       def [](key)
-        pp __root.class
         __root.top_level_breadcrumb ||= key
         value = super
         if !key?(key)

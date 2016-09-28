@@ -565,7 +565,7 @@ class Chef
 
         return nil if components.compact.empty?
 
-        components.inject(ImmutableMash.new(self, {})) do |merged, component|
+        components.inject(ImmutableMash.new({}, self)) do |merged, component|
           Chef::Mixin::DeepMerge.hash_only_merge!(merged, component)
         end
       end
