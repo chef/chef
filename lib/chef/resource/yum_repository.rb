@@ -35,7 +35,7 @@ class Chef
       property :exclude, String, regex: /.*/
       property :failovermethod, String, equal_to: %w{priority roundrobin}
       property :fastestmirror_enabled, [TrueClass, FalseClass]
-      property :gpgcheck, [TrueClass, FalseClass]
+      property :gpgcheck, [TrueClass, FalseClass], default: true
       property :gpgkey, [String, Array], regex: /.*/
       property :http_caching, String, equal_to: %w{packages all none}
       property :include_config, String, regex: /.*/
