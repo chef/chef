@@ -24,8 +24,8 @@ class Chef
 
         def initialize(*args)
           super
-          @__path = []
-          @__root = self
+          @__path ||= []
+          @__root ||= self
         end
 
         def [](key)
