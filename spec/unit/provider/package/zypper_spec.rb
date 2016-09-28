@@ -231,21 +231,85 @@ describe Chef::Provider::Package::Zypper do
     end
   end
 
+###  describe "lock_package" do
+###    it "should run zypper addlock with the package name" do
+###      shell_out_expectation!(
+###        "zypper addlock emacs"
+###      )
+###      provider.lock_package(["emacs"], [nil])
+###    end
+###  end
+###
+###  describe "unlock_package" do
+###    it "should run zypper removelock with the package name" do
+###      shell_out_expectation!(
+###        "zypper removelock emacs"
+###      )
+###      provider.unlock_package(["emacs"], [nil])
+###    end
+###  end
+
   describe "lock_package" do
     it "should run zypper addlock with the package name" do
+      allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(true)
       shell_out_expectation!(
-        "zypper addlock emacs"
+        "zypper --non-interactive addlock emacs"
       )
-      provider.lock_package(["emacs"])
+      provider.lock_package(["emacs"], [nil])
+    end
+    it "should run zypper addlock without gpg checks" do
+      allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
+      shell_out_expectation!(
+        "zypper --non-interactive --no-gpg-checks addlock emacs"
+      )
+      provider.lock_package(["emacs"], [nil])
+    end
+    it "should warn about gpg checks on zypper addlock" do
+      expect(Chef::Log).to receive(:warn).with(
+        /All packages will be installed without gpg signature checks/
+      )
+      shell_out_expectation!(
+        "zypper --non-interactive --no-gpg-checks addlock emacs"
+      )
+      provider.lock_package(["emacs"], [nil])
+    end
+    it "should run zypper addlock without gpg checks" do
+      shell_out_expectation!(
+        "zypper --non-interactive --no-gpg-checks addlock emacs"
+      )
+      provider.lock_package(["emacs"], [nil])
     end
   end
 
   describe "unlock_package" do
     it "should run zypper removelock with the package name" do
+      allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(true)
       shell_out_expectation!(
-        "zypper removelock emacs"
+        "zypper --non-interactive removelock emacs"
       )
-      provider.unlock_package(["emacs"])
+      provider.unlock_package(["emacs"], [nil])
+    end
+    it "should run zypper removelock without gpg checks" do
+      allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(false)
+      shell_out_expectation!(
+        "zypper --non-interactive --no-gpg-checks removelock emacs"
+      )
+      provider.unlock_package(["emacs"], [nil])
+    end
+    it "should warn about gpg checks on zypper removelock" do
+      expect(Chef::Log).to receive(:warn).with(
+        /All packages will be installed without gpg signature checks/
+      )
+      shell_out_expectation!(
+        "zypper --non-interactive --no-gpg-checks removelock emacs"
+      )
+      provider.unlock_package(["emacs"], [nil])
+    end
+    it "should run zypper removelock without gpg checks" do
+      shell_out_expectation!(
+        "zypper --non-interactive --no-gpg-checks removelock emacs"
+      )
+      provider.unlock_package(["emacs"], [nil])
     end
   end
 

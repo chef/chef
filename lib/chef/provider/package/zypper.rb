@@ -75,18 +75,7 @@ class Chef
           end
         end
 
-###        def package_locked?
-###          package_name_array.map do |package_name|
-####            lock = `zypper locks | grep "| #{package_name} "`.split("|").shift(2).last.strip
-###            package_name.lock = `zypper locks | grep "| #{package_name} "`
-###            if package_name.lock.empty?
-###              false
-###            else
-###              true
-###            end
-###          end
-###        end
-        def package_locked(name)
+        def package_locked(name, version)
           islocked = false
           locked = shell_out_with_timeout!("zypper locks")
           locked.stdout.each_line do |line|
@@ -129,12 +118,12 @@ class Chef
           zypper_package("remove --clean-deps", name, version)
         end
 
-        def lock_package(name) 
-          shell_out_with_timeout!(a_to_s("zypper", "addlock", name)) 
+        def lock_package(name, version) 
+          zypper_package("addlock", name, version)
         end
 
-        def unlock_package(name) 
-          shell_out_with_timeout!(a_to_s("zypper", "removelock", name)) 
+        def unlock_package(name, version) 
+          zypper_package("removelock", name, version)
         end
 
         private

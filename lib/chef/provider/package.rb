@@ -218,25 +218,12 @@ class Chef
         end
       end
 
-      def package_locked?
-        if !current_version_array.any?
-          # ! any? means it's all nil's, which means nothing is installed
-          false
-        elsif !new_version_array.any?
-          true # remove any version of all packages
-        elsif have_any_matching_version?
-          true # remove the version we have
-        else
-          false # we don't have the version we want to remove
-        end
-      end
-
       def action_lock
         multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
-          if package_locked(name) == true
+          if package_locked(name, version) == true
             Chef::Log.debug("#{new_resource} is already locked")
           else
-            lock_package(name)
+            lock_package(name, version)
             Chef::Log.info("#{@new_resource} locked")
           end
         end
@@ -244,10 +231,10 @@ class Chef
 
       def action_unlock
         multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
-          if package_locked(name) == false
+          if package_locked(name, version) == false
             Chef::Log.debug("#{new_resource} is already unlocked")
           else
-            unlock_package(name)
+            unlock_package(name, version)
             Chef::Log.info("#{@new_resource} unlocked")
           end
         end
@@ -287,11 +274,11 @@ class Chef
         raise( Chef::Exceptions::UnsupportedAction, "#{self} does not support :reconfig" )
       end
 
-      def lock_package(name)
+      def lock_package(name, version)
         raise( Chef::Exceptions::UnsupportedAction, "#{self} does not support :lock" )
       end
 
-      def unlock_package(name)
+      def unlock_package(name, version)
         raise( Chef::Exceptions::UnsupportedAction, "#{self} does not support :unlock" )
       end
 
