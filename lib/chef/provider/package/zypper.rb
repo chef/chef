@@ -79,7 +79,7 @@ class Chef
           islocked = false
           locked = shell_out_with_timeout!("zypper locks")
           locked.stdout.each_line do |line|
-            if line.split('|').shift(2).last.strip == name.first
+            if line.split("|").shift(2).last.strip == name.first
               islocked = true
             end
           end
@@ -118,11 +118,11 @@ class Chef
           zypper_package("remove --clean-deps", name, version)
         end
 
-        def lock_package(name, version) 
+        def lock_package(name, version)
           zypper_package("addlock", name, version)
         end
 
-        def unlock_package(name, version) 
+        def unlock_package(name, version)
           zypper_package("removelock", name, version)
         end
 

@@ -105,11 +105,11 @@ class Chef
           run_noninteractive("dpkg-reconfigure", name)
         end
 
-        def lock_package(name, version) 
+        def lock_package(name, version)
           run_noninteractive("apt-mark -q -y", new_resource.options, "hold", name)
         end
 
-        def unlock_package(name, version) 
+        def unlock_package(name, version)
           run_noninteractive("apt-mark -q -y", new_resource.options, "unhold", name)
         end
 
