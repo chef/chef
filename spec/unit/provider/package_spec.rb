@@ -321,6 +321,56 @@ describe Chef::Provider::Package do
     end
   end
 
+  describe "When locking the package" do
+    before(:each) do
+      allow(provider).to receive(:lock_package).and_return(true)
+    end
+
+    it "should lock the package if it is unlocked" do
+      allow(provider).to receive(:package_locked).and_return(false)
+      expect(provider).to receive(:lock_package)
+      provider.run_action(:lock)
+    end
+
+    it "should not lock the package if it is already locked" do
+      allow(provider).to receive(:package_locked).and_return(true)
+      expect(provider).not_to receive(:lock_package)
+      provider.run_action(:lock)
+      expect(new_resource).not_to be_updated_by_last_action
+    end
+
+    it "should set the resource to updated if it locks the package" do
+      allow(provider).to receive(:package_locked).and_return(false)
+      provider.run_action(:lock)
+      expect(new_resource).to be_updated
+    end
+  end
+
+  describe "When unlocking the package" do
+    before(:each) do
+      allow(provider).to receive(:unlock_package).and_return(true)
+    end
+
+    it "should unlock the package if it is locked" do
+      allow(provider).to receive(:package_locked).and_return(true)
+      expect(provider).to receive(:unlock_package)
+      provider.run_action(:unlock)
+    end
+
+    it "should not unlock the package if it is already unlocked" do
+      allow(provider).to receive(:package_locked).and_return(false)
+      expect(provider).not_to receive(:unlock_package)
+      provider.run_action(:unlock)
+      expect(new_resource).not_to be_updated_by_last_action
+    end
+
+    it "should set the resource to updated if it unlocks the package" do
+      allow(provider).to receive(:package_locked).and_return(true)
+      provider.run_action(:unlock)
+      expect(new_resource).to be_updated
+    end
+  end
+
   describe "when running commands to be implemented by subclasses" do
     it "should raises UnsupportedAction for install" do
       expect { provider.install_package("emacs", "1.4.2") }.to raise_error(Chef::Exceptions::UnsupportedAction)
