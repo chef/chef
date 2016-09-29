@@ -118,11 +118,11 @@ class Chef
         end
 
         def lock_package(name, version)
-          run_noninteractive("apt-mark -q -y", new_resource.options, "hold", name)
+          run_noninteractive("apt-mark", new_resource.options, "hold", name)
         end
 
         def unlock_package(name, version)
-          run_noninteractive("apt-mark -q -y", new_resource.options, "unhold", name)
+          run_noninteractive("apt-mark", new_resource.options, "unhold", name)
         end
 
         private

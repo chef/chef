@@ -398,7 +398,7 @@ mpg123 1.12.1-0ubuntu1
         describe "when locking a package" do
           it "should run apt-mark hold package" do
             expect(@provider).to receive(:shell_out!).with(
-              "apt-mark -q -y hold irssi",
+              "apt-mark hold irssi",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -409,7 +409,7 @@ mpg123 1.12.1-0ubuntu1
         describe "when unlocking a package" do
           it "should run apt-mark unhold package" do
             expect(@provider).to receive(:shell_out!).with(
-              "apt-mark -q -y unhold irssi",
+              "apt-mark unhold irssi",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
