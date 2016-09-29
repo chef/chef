@@ -218,27 +218,33 @@ class Chef
         end
       end
 
-      def action_lock
-        multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
-          if package_locked(name, version) == true
-            Chef::Log.debug("#{new_resource} is already locked")
-          else
-            lock_package(name, version)
-            Chef::Log.info("#{@new_resource} locked")
-          end
-        end
-      end
+       def action_lock
+         if package_locked(@new_resource.name, @new_resource.version) == false
+           description = @new_resource.version ? "version #{@new_resource.version} of " : ""
+           converge_by("lock #{description}package #{@current_resource.package_name}") do
+             multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
+               lock_package(name, version)
+               Chef::Log.info("#{@new_resource} locked")
+             end
+           end
+         else
+           Chef::Log.debug("#{new_resource} is already locked")
+         end
+       end
 
-      def action_unlock
-        multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
-          if package_locked(name, version) == false
-            Chef::Log.debug("#{new_resource} is already unlocked")
-          else
-            unlock_package(name, version)
-            Chef::Log.info("#{@new_resource} unlocked")
-          end
-        end
-      end
+       def action_unlock
+         if package_locked(@new_resource.name, @new_resource.version) == true
+           description = @new_resource.version ? "version #{@new_resource.version} of " : ""
+           converge_by("unlock #{description}package #{@current_resource.package_name}") do
+             multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
+               unlock_package(name, version)
+               Chef::Log.info("#{@new_resource} unlocked")
+             end
+           end
+         else
+           Chef::Log.debug("#{new_resource} is already unlocked")
+         end
+       end 
 
       # @todo use composition rather than inheritance
 

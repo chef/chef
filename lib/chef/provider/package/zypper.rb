@@ -79,7 +79,8 @@ class Chef
           islocked = false
           locked = shell_out_with_timeout!("zypper locks")
           locked.stdout.each_line do |line|
-            if line.split("|").shift(2).last.strip == name.first
+            line_package = line.split("|").shift(2).last.strip
+            if line_package == name
               islocked = true
             end
           end
