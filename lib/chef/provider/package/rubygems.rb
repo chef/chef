@@ -536,7 +536,6 @@ class Chef
         def install_via_gem_command(name, version)
           if @new_resource.source =~ /\.gem$/i
             name = @new_resource.source
-            src = " --local" unless source_is_remote?
           elsif @new_resource.clear_sources
             src = " --clear-sources"
             src << (@new_resource.source && " --source=#{@new_resource.source}" || "")

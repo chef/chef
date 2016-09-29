@@ -735,10 +735,9 @@ describe Chef::Provider::Package::Rubygems do
         context "when source is a path" do
           let(:source) { CHEF_SPEC_DATA + "/gems/chef-integration-test-0.1.0.gem" }
           let(:target_version) { ">= 0" }
-          let(:domain) { " --local" }
 
           it "installs the gem by shelling out to gem install" do
-            expect(provider).to receive(:shell_out!).with("#{gem_binary} install #{source} -q --no-rdoc --no-ri -v \"#{target_version}\"#{domain}", env: nil, timeout: 900)
+            expect(provider).to receive(:shell_out!).with("#{gem_binary} install #{source} -q --no-rdoc --no-ri -v \"#{target_version}\"", env: nil, timeout: 900)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end
@@ -747,11 +746,10 @@ describe Chef::Provider::Package::Rubygems do
         context "when the package is a path and source is nil" do
           let(:gem_name) { CHEF_SPEC_DATA + "/gems/chef-integration-test-0.1.0.gem" }
           let(:target_version) { ">= 0" }
-          let(:domain) { " --local" }
 
           it "installs the gem from file by shelling out to gem install when the package is a path and the source is nil" do
             expect(new_resource.source).to eq(gem_name)
-            expect(provider).to receive(:shell_out!).with("#{gem_binary} install #{gem_name} -q --no-rdoc --no-ri -v \"#{target_version}\"#{domain}", env: nil, timeout: 900)
+            expect(provider).to receive(:shell_out!).with("#{gem_binary} install #{gem_name} -q --no-rdoc --no-ri -v \"#{target_version}\"", env: nil, timeout: 900)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end
