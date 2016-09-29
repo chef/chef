@@ -188,19 +188,19 @@ class Chef
       attr_reader :automatic
 
       def initialize(normal, default, override, automatic)
-        @default = VividMash.new(self, default)
-        @env_default = VividMash.new(self, {})
-        @role_default = VividMash.new(self, {})
-        @force_default = VividMash.new(self, {})
+        @default        = VividMash.new(default, self)
+        @env_default    = VividMash.new({}, self)
+        @role_default   = VividMash.new({}, self)
+        @force_default  = VividMash.new({}, self)
 
-        @normal = VividMash.new(self, normal)
+        @normal         = VividMash.new(normal, self)
 
-        @override = VividMash.new(self, override)
-        @role_override = VividMash.new(self, {})
-        @env_override = VividMash.new(self, {})
-        @force_override = VividMash.new(self, {})
+        @override       = VividMash.new(override, self)
+        @role_override  = VividMash.new({}, self)
+        @env_override   = VividMash.new({}, self)
+        @force_override = VividMash.new({}, self)
 
-        @automatic = VividMash.new(self, automatic)
+        @automatic      = VividMash.new(automatic, self)
         super()
       end
 
@@ -232,59 +232,59 @@ class Chef
        # Set the cookbook level default attribute component to +new_data+.
       def default=(new_data)
         reset
-        @default = VividMash.new(self, new_data)
+        @default = VividMash.new(new_data, self)
       end
 
        # Set the role level default attribute component to +new_data+
       def role_default=(new_data)
         reset
-        @role_default = VividMash.new(self, new_data)
+        @role_default = VividMash.new(new_data, self)
       end
 
        # Set the environment level default attribute component to +new_data+
       def env_default=(new_data)
         reset
-        @env_default = VividMash.new(self, new_data)
+        @env_default = VividMash.new(new_data, self)
       end
 
        # Set the force_default (+default!+) level attributes to +new_data+
       def force_default=(new_data)
         reset
-        @force_default = VividMash.new(self, new_data)
+        @force_default = VividMash.new(new_data, self)
       end
 
        # Set the normal level attribute component to +new_data+
       def normal=(new_data)
         reset
-        @normal = VividMash.new(self, new_data)
+        @normal = VividMash.new(new_data, self)
       end
 
        # Set the cookbook level override attribute component to +new_data+
       def override=(new_data)
         reset
-        @override = VividMash.new(self, new_data)
+        @override = VividMash.new(new_data, self)
       end
 
        # Set the role level override attribute component to +new_data+
       def role_override=(new_data)
         reset
-        @role_override = VividMash.new(self, new_data)
+        @role_override = VividMash.new(new_data, self)
       end
 
        # Set the environment level override attribute component to +new_data+
       def env_override=(new_data)
         reset
-        @env_override = VividMash.new(self, new_data)
+        @env_override = VividMash.new(new_data, self)
       end
 
       def force_override=(new_data)
         reset
-        @force_override = VividMash.new(self, new_data)
+        @force_override = VividMash.new(new_data, self)
       end
 
       def automatic=(new_data)
         reset
-        @automatic = VividMash.new(self, new_data)
+        @automatic = VividMash.new(new_data, self)
       end
 
        #

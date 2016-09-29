@@ -27,8 +27,9 @@ describe Chef::Node::VividMash do
 
   let(:vivid) do
     expect(root).to receive(:reset_cache).at_least(:once).with(nil)
-    Chef::Node::VividMash.new(root,
-      { "one" => { "two" => { "three" => "four" } }, "array" => [ 0, 1, 2 ], "nil" => nil }
+    Chef::Node::VividMash.new(
+      { "one" => { "two" => { "three" => "four" } }, "array" => [ 0, 1, 2 ], "nil" => nil },
+      root
     )
   end
 

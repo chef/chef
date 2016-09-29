@@ -23,7 +23,7 @@ class Chef
         attr_reader :__root
 
         def initialize(*args)
-          super
+          super(*args)
           @__path ||= []
           @__root ||= self
         end

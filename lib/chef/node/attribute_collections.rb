@@ -69,7 +69,7 @@ class Chef
         end
       end
 
-      def initialize(root = self, data = [])
+      def initialize(data = [], root = self)
         @__root ||= root
         super(data)
         map! { |e| convert_value(e) }
@@ -95,9 +95,9 @@ class Chef
         when AttrArray
           value
         when Hash
-          VividMash.new(__root, value)
+          VividMash.new(value, __root)
         when Array
-          AttrArray.new(__root, value)
+          AttrArray.new(value, __root)
         else
           value
         end
@@ -150,7 +150,8 @@ class Chef
         end
       end
 
-      def initialize(root = self, data = {})
+      def initialize(data = {}, root = self)
+        puts caller unless root.class == Chef::Node::Attribute
         @__root ||= root
         super(data)
       end
@@ -159,7 +160,7 @@ class Chef
         __root.top_level_breadcrumb ||= key
         value = super
         if !key?(key)
-          value = self.class.new(__root)
+          value = self.class.new({}, __root)
           self[key] = value
         else
           value
@@ -208,9 +209,9 @@ class Chef
         when AttrArray
           value
         when Hash
-          VividMash.new(__root, value)
+          VividMash.new(value, __root)
         when Array
-          AttrArray.new(__root, value)
+          AttrArray.new(value, __root)
         else
           value
         end
