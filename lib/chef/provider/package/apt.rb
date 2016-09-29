@@ -70,6 +70,18 @@ class Chef
           @candidate_version ||= get_candidate_versions
         end
 
+        def package_locked(name, version)
+          islocked = false
+          locked = shell_out_with_timeout!("apt-mark showhold")
+          locked.stdout.each_line do |line|
+            line_package = line.strip
+            if line_package == name
+              islocked = true
+            end
+          end
+          return islocked
+        end
+
         def install_package(name, version)
           package_name = name.zip(version).map do |n, v|
             package_data[n][:virtual] ? n : "#{n}=#{v}"
