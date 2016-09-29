@@ -135,7 +135,6 @@ class Chef
           return islocked
         end
 
-
         # Standard Provider methods for Parent
         #
 
@@ -389,7 +388,6 @@ class Chef
         def unlock_package(name, version)
           yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} versionlock delete #{name}")
         end
-
 
         private
 
