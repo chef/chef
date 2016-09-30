@@ -1,41 +1,41 @@
 # Contributing to Chef Projects
 
-We're glad you want to contribute to a Chef project! This document should help answer common questions you may have during your first contribution.
+We're glad you want to contribute to a Chef project! This document will help answer common questions you may have during your first contribution.
 
 ## Submitting Issues
 
 Not every contribution comes in the form of code. Submitting, confirming, and triaging issues is an important task for any project. At Chef we use Github to track all project issues.
 
-If you are familiar with Chef and know the component that is causing you a problem you can file an issue in the corresponding Github project. All of our Open Source Software can be found in our [Github organization](https://github.com/chef/). All projects include Github issue templates to help gather information needed for a thorough review.
+If you are familiar with Chef and know the component, that is causing you a problem, you can file an issue in the corresponding Github project. All of our Open Source Software can be found in our [Github organization](https://github.com/chef/). All projects include Github issue templates to help gather information needed for a thorough review.
 
-We do ask that you not submit security concerns via Github. For details on submitting potential security issues please see <https://www.chef.io/security/>
+We ask you not to submit security concerns via Github. For details on submitting potential security issues please see <https://www.chef.io/security/>
 
-In addition to Github issues we also utilize a feedback site that helps our product team track and rank feature requests. If you have a feature request this is an excellent place to start <https://feedback.chef.io>
+In addition to Github issues, we also utilize a feedback site that helps our product team track and rank feature requests. If you have a feature request, this is an excellent place to start <https://feedback.chef.io>
 
 ## Contribution Process
 
-We have a 3 step process that utilizes **Github Issues**:
+We have a 3 step process for contributions:
 
 1. Sign or be added to an existing [Contributor License Agreement (CLA)](https://supermarket.chef.io/become-a-contributor).
-2. Create a Github Pull Request.
-3. Do [Code Review](#cr) with the **Chef Engineering Team** or **Chef Core Committers** on the pull request.
+2. Create a Github Pull Request for your change.
+3. Perform a [Code Review](#cr) with the project maintainers on the pull request.
 
-### Chef Pull Requests
+### Pull Request Requirements
 
-Chef is built to last. We strive to ensure high quality throughout the Chef experience. In order to ensure this, we require a couple of things for all pull requests to Chef:
+Chef Projects are built to last. We strive to ensure high quality throughout the experience. In order to ensure this, we require that all pull requests to Chef projects meet these specifications:
 
-1. **Tests:** To ensure high quality code and protect against future regressions, we require all the code in Chef to have at least unit test coverage. See the [spec/unit](https://github.com/chef/chef/tree/master/spec/unit) directory for the existing tests and use `bundle exec rake spec` to run them.
-2. **Green Travis Run:** We use [Travis CI](https://travis-ci.org/) in order to run our tests continuously on all the pull requests. We require the Travis runs to succeed on every pull request before being merged.
+1. **Tests:** To ensure high quality code and protect against future regressions, we require all the code in Chef Projects to have at least unit test coverage. We use [RSpec](http://rspec.info/) for unit testing.
+2. **Green CI Tests:** We use [Travis CI](https://travis-ci.org/) and [AppVeyor](https://www.appveyor.com/) CI systems to test all pull requests. We require these test runs to succeed on every pull request before being merged.
 
-### Chef Code Review Process
+### Code Review Process
 
-The Chef Code Review process happens on Github pull requests. See [this article](https://help.github.com/articles/using-pull-requests) if you're not familiar with Github Pull Requests.
+Code review takes place in Github pull requests. See [this article](https://help.github.com/articles/using-pull-requests) if you're not familiar with Github Pull Requests.
 
-Once you open a pull request, the **Chef Engineering Team** or **Chef Core Committers** will review your code and respond to you with any feedback they might have. The process at this point is as follows:
+Once you open a pull request, Chef engineers will review your code and respond to your pull request with any feedback they might have. The process at this point is as follows:
 
-1. 2 thumbs-ups are required from the **Chef Engineering Team** or **Chef Core Committers** for all merges.
+1. 2 thumbs-ups are required from project maintainers or core contributors. See the master maintainers document for Chef projects at <https://github.com/chef/chef/blob/master/MAINTAINERS.md>.
 2. When ready, your pull request will be tagged with label `Ready For Merge`.
-3. Your patch will be merged into `master` including necessary documentation updates and you will be included in `CHANGELOG.md`. Our goal is to have patches merged in 2 weeks after they are marked to be merged.
+3. Your change will be merged into the project's `master` branch and will be noted in the project's `CHANGELOG.md` at the time of release.
 
 If you would like to learn about when your code will be available in a release of Chef, read more about [Chef Release Cycles](#chef-release-cycles).
 
@@ -55,9 +55,9 @@ You can complete our [Individual CLA](https://supermarket.chef.io/icla-signature
 
 ### Chef Obvious Fix Policy
 
-Small contributions such as fixing spelling errors, where the content is small enough to not be considered intellectual property, can be submitted by a contributor as a patch, without a CLA.
+Small contributions, such as fixing spelling errors, where the content is small enough to not be considered intellectual property, can be submitted without a CLA.
 
-As a rule of thumb, changes are obvious fixes if they do not introduce any new functionality or creative thinking. As long as the change does not affect functionality, some likely examples include the following:
+As a rule of thumb, changes are obvious fixes if they do not introduce any new functionality or creative thinking. Assuming the change does not affect functionality, some common obvious fix examples include the following:
 
 - Spelling / grammar fixes
 - Typo correction, white space and formatting changes
@@ -82,7 +82,7 @@ Date:   Wed Sep 18 11:44:40 2013 -0700
 ------------------------------------------------------------------------
 ```
 
-## Chef Release Cycles
+## Release Cycles
 
 Our primary shipping vehicle is operating system specific packages that includes all the requirements of Chef. We call these [Omnibus packages](https://github.com/chef/omnibus)
 
@@ -109,4 +109,4 @@ Also here are some additional pointers to some awesome Chef content:
 
 - [Chef Docs](https://docs.chef.io/)
 - [Learn Chef](https://learn.chef.io/)
-- [Chef Inc.](https://www.chef.io/)
+- [Chef Website](https://www.chef.io/)
