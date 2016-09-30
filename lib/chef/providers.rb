@@ -83,6 +83,7 @@ require "chef/provider/package/zypper"
 require "chef/provider/package/solaris"
 require "chef/provider/package/smartos"
 require "chef/provider/package/aix"
+require "chef/provider/package/cab"
 
 require "chef/provider/service/arch"
 require "chef/provider/service/freebsd"
