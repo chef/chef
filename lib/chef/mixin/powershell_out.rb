@@ -37,9 +37,9 @@ class Chef
         result = run_command_with_os_architecture(script, options)
 
         if result.stderr.include? "A positional parameter cannot be found that accepts argument"
-          raise "Please use single escape for special characters in powershell_out."
+          raise Mixlib::ShellOut::ShellCommandFailed, "Please use single escape for special characters in powershell_out. \n #{result.stderr}"
         elsif result.stderr != ""
-          raise result.stderr
+          raise Mixlib::ShellOut::ShellCommandFailed, result.stderr
         end
         result
       end

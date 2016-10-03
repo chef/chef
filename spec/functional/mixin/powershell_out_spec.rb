@@ -33,7 +33,7 @@ describe Chef::Mixin::PowershellOut, windows_only: true do
     end
 
     it "raises exceptions when the command is invalid" do
-      expect { powershell_out!("this-is-not-a-valid-command").run_command }.to raise_error(RuntimeError)
+      expect { powershell_out!("this-is-not-a-valid-command").run_command }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
   end
 end

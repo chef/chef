@@ -44,7 +44,7 @@ describe Chef::Mixin::PowershellOut, :windows_only do
       end
 
       it "raises error if double quote is passed with double escape characters" do
-        expect { object.powershell_out("Write-Verbose \\\"Some String\\\" -Verbose") }.to raise_error("Please use single escape for special characters in powershell_out.")
+        expect { object.powershell_out("Write-Verbose \\\"Some String\\\" -Verbose") }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
       end
     end
   end
