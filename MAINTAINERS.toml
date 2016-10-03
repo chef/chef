@@ -47,6 +47,7 @@ another component.
         "lamont-granquist",
         "mcquin",
         "smurawski",
+        "tas50",
         "tyler-ball",
         "ranjib",
         "mwrock"
@@ -94,6 +95,7 @@ another component.
       maintainers = [
         "jtimberman",
         "lamont-granquist",
+        "tas50",
         "ranjib"
       ]
 
@@ -139,6 +141,7 @@ The specific components of Chef related to a given platform - including (but not
 
         maintainers = [
           "lamont-granquist",
+          "tas50",
           "thommay"
         ]
 
@@ -188,7 +191,8 @@ The specific components of Chef related to a given platform - including (but not
         lieutenant = "thommay"
 
         maintainers = [
-          "lamont-granquist"
+          "lamont-granquist",
+          "tas50"
         ]
 
       [Org.Components.Subsystems.CiscoNXOS]
@@ -224,7 +228,8 @@ The specific components of Chef related to a given platform - including (but not
         team = "client-opensuse"
 
         maintainers = [
-          "lamont-granquist"
+          "lamont-granquist",
+          "tas50"
         ]
 
       [Org.Components.Subsystems."SUSE Enterprise Linux"]
@@ -394,6 +399,8 @@ The specific components of Chef related to a given platform - including (but not
   [people.tas50]
     Name = "Tim Smith"
     GitHub = "tas50"
+    Twitter = "tas50"
+    IRC = "tas50"
 
   [people.jkeiser]
     Name = "John Keiser"
