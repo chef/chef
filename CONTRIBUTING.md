@@ -16,8 +16,8 @@ In addition to Github issues, we also utilize a feedback site that helps our pro
 
 We have a 3 step process for contributions:
 
-1. Commit changes to a git branch, making sure to sign those changes for the [Developer Certificate of Origin](#developer-certification-of-origin-dco)
-2. Create a Github Pull Request for your change, following the instructions in the pull request template
+1. Commit changes to a git branch, making sure to sign-off those changes for the [Developer Certificate of Origin](#developer-certification-of-origin-dco).
+2. Create a Github Pull Request for your change, following the instructions in the pull request template.
 3. Perform a [Code Review](#code-review-process) with the project maintainers on the pull request.
 
 ### Pull Request Requirements
@@ -31,9 +31,9 @@ Chef Projects are built to last. We strive to ensure high quality throughout the
 
 Code review takes place in Github pull requests. See [this article](https://help.github.com/articles/about-pull-requests/) if you're not familiar with Github Pull Requests.
 
-Once you open a pull request, Chef engineers will review your code and respond to your pull request with any feedback they might have. The process at this point is as follows:
+Once you open a pull request, project maintainers will review your code and respond to your pull request with any feedback they might have. The process at this point is as follows:
 
-1. 2 thumbs-ups are required from project maintainers or core contributors. See the master maintainers document for Chef projects at <https://github.com/chef/chef/blob/master/MAINTAINERS.md>.
+1. Two thumbs-up (:+1:) are required from project maintainers. See the master maintainers document for Chef projects at <https://github.com/chef/chef/blob/master/MAINTAINERS.md>.
 2. When ready, your pull request will be tagged with label `Ready For Merge`.
 3. Your change will be merged into the project's `master` branch and will be noted in the project's `CHANGELOG.md` at the time of release.
 
@@ -80,34 +80,17 @@ By making a contribution to this project, I certify that:
     involved.
 ```
 
-Subsequent developers who co-author or otherwise help shepherd the contribution in some way also add their own attestation so it's not unusual to end up with a contribution which looks like:
-
-```
- Author: Nathen Harvey <nharvey@chef.io>
-
- Committer: Adam Jacob <adam@chef.io>
-
-   Sprinkle extra delight on our DSL
-
-   Due to an oversight, we were only 96% delightful. Ensure the
-   delight now goes to 11.
-
-   Signed-off-by: Nathen Harvey <nharvey@chef.io>
-   Signed-off-by: Julia Cook <julia@ourcompany.com>
-   Signed-off-by: Adam Jacob <adam@chef.io>
-```
-
 For more information on the change see the Chef Blog post [Introducing Developer Certificate of Origin](https://blog.chef.io/2016/09/19/introducing-developer-certificate-of-origin/)
 
 #### DCO Sign-Off Methods
 
-The DCO requires a sign-off message in the following format appear on each commit in the pull request
+The DCO requires a sign-off message in the following format appear on each commit in the pull request:
 
 ```
-Signed-off-by: Joe Smith <joe.smith@email.com>
+Signed-off-by: Julia Child <juliachild@chef.io>
 ```
 
-The DCO text can either be manually added to your commit body, or you can add either **-s** or **--signoff** to your usual git commit commands. If you forget to add the sign-off you can also amend a previous commit with the sign-off by running **git commit –amend -s**
+The DCO text can either be manually added to your commit body, or you can add either **-s** or **--signoff** to your usual git commit commands. If you forget to add the sign-off you can also amend a previous commit with the sign-off by running **git commit –-amend -s**. If you've pushed your changes to Github already you'll need to force push your branch after this with **git push -f**.
 
 ### Chef Obvious Fix Policy
 
@@ -128,7 +111,7 @@ As a rule of thumb, changes are obvious fixes if they do not introduce any new f
 ```
 ------------------------------------------------------------------------
 commit 370adb3f82d55d912b0cf9c1d1e99b132a8ed3b5
-Author: juliachild <julia@chef.io>
+Author: Julia Child <juliachild@chef.io>
 Date:   Wed Sep 18 11:44:40 2015 -0700
 
   Fix typo in the README.
