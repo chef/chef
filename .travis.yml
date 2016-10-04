@@ -268,7 +268,7 @@ matrix:
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
-      - LEARNCHEF=1
+      - AWESOME_CUSTOMERS_UBUNTU=1
       - KITCHEN_YAML=.kitchen.travis.yml
   - rvm: 2.3.1
     services: docker
@@ -282,11 +282,11 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test awesome-customers-rhel-centos-7
+      - bundle exec kitchen test awesome-customers-rhel-centos-72
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
-      - LEARNCHEF=1
+      - AWESOME_CUSTOMERS_RHEL=1
       - KITCHEN_YAML=.kitchen.travis.yml
     ### END TEST KITCHEN ONLY ###
   - rvm: 2.3.1
