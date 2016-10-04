@@ -82,8 +82,6 @@ GRAPH
   nscd (4.1.0)
     compat_resource (>= 0.0.0)
   ntp (3.2.0)
-  ohai (4.2.2)
-    compat_resource (>= 12.14)
   openssh (2.1.0)
     iptables (>= 1.0)
   openssl (6.0.0)
