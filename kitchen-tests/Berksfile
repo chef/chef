@@ -11,3 +11,5 @@ cookbook "awesome_customers_ubuntu_wrapper", path: "cookbooks/awesome_customers_
 cookbook "awesome_customers_ubuntu", github: "learn-chef/awesome_customers_ubuntu"
 cookbook "awesome_customers_rhel_wrapper", path: "cookbooks/awesome_customers_rhel_wrapper"
 cookbook "awesome_customers_rhel", github: "learn-chef/awesome_customers_rhel"
+cookbook "awesome_customers_windows_wrapper", path: "cookbooks/awesome_customers_windows_wrapper"
+cookbook "awesome_customers_windows", github: "learn-chef/awesome_customers_windows"
