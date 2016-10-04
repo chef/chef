@@ -1,4 +1,9 @@
 DEPENDENCIES
+  awesome_customers_rhel
+    git: https://github.com/learn-chef/awesome_customers_rhel.git
+    revision: 1ac86593829610c0eab7a45d9c63c09a9cea1754
+  awesome_customers_rhel_wrapper
+    path: cookbooks/awesome_customers_rhel_wrapper
   awesome_customers_ubuntu
     git: https://github.com/learn-chef/awesome_customers_ubuntu.git
     revision: 71927c094d570e6fd0f8bfbcc02ebe3556af2a16
@@ -14,6 +19,15 @@ DEPENDENCIES
 GRAPH
   apt (4.0.2)
     compat_resource (>= 12.10)
+  awesome_customers_rhel (0.1.0)
+    database (~> 6.0)
+    firewall (~> 2.5)
+    httpd (~> 0.4)
+    mysql (~> 7.0)
+    mysql2_chef_gem (~> 1.1)
+    selinux (~> 0.9)
+  awesome_customers_rhel_wrapper (0.1.0)
+    awesome_customers_rhel (>= 0.0.0)
   awesome_customers_ubuntu (0.1.0)
     apt (~> 4.0)
     database (~> 6.0)
