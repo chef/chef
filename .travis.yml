@@ -282,7 +282,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test awesome-customers-rhel-centos-72
+      - bundle exec kitchen test awesome-customers-rhel-centos-7
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
