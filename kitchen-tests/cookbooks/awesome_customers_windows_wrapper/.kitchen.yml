@@ -1,0 +1,21 @@
+---
+driver:
+  name: vagrant
+  network:
+    - ["private_network", {ip: "192.168.34.34"}]
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: ubuntu-14.04
+
+suites:
+  - name: default
+    run_list:
+      - recipe[awesome_customers_ubuntu::default]
+    attributes:
+      awesome_customers_ubuntu:
+        database:
+          root_password: 'mysql_root_password'
+          admin_password: 'mysql_admin_password'
