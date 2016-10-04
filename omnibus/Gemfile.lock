@@ -127,7 +127,7 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (2.0.2)
+    mixlib-install (2.0.3)
       artifactory
       mixlib-shellout
       mixlib-versioning
