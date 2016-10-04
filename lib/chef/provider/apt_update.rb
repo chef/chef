@@ -73,7 +73,7 @@ class Chef
         end
 
         declare_resource(:file, "#{APT_CONF_DIR}/15update-stamp") do
-          content "APT::Update::Post-Invoke-Success {\"touch #{STAMP_DIR}/update-success-stamp 2>/dev/null || true\";};"
+          content "APT::Update::Post-Invoke-Success {\"touch #{STAMP_DIR}/update-success-stamp 2>/dev/null || true\";};\n"
           action :create_if_missing
         end
 
