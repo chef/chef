@@ -66,7 +66,7 @@ GRAPH
     compat_resource (>= 12.14)
     mingw (>= 1.1)
     seven_zip (>= 0.0.0)
-  chef-client (6.0.0)
+  chef-client (5.0.0)
     cron (>= 1.7.0)
     logrotate (>= 1.9.0)
     windows (>= 1.42.0)
