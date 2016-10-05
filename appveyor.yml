@@ -9,7 +9,7 @@ environment:
   machine_pass: Pass@word1
   machine_port: 5985
   KITCHEN_YAML: .kitchen.appveyor.yml
-  SSL_CERT_FILE: c:\projects\test_kitchen\certs.pem
+  SSL_CERT_FILE: c:\projects\chef\certs.pem
   matrix:
     - ruby_version: "23-x64"
     - ruby_version: "23"
@@ -25,7 +25,7 @@ install:
   - ps: net user /add $env:machine_user $env:machine_pass
   - ps: net localgroup administrators $env:machine_user /add
   - ps: $env:PATH="C:\Ruby$env:ruby_version\bin;$env:PATH"
-  - ps: Invoke-WebRequest -Uri http://curl.haxx.se/ca/cacert.pem -OutFile c:\projects\test_kitchen\certs.pem
+  - ps: Invoke-WebRequest -Uri http://curl.haxx.se/ca/cacert.pem -OutFile c:\projects\chef\certs.pem
   - ps: Write-Host $env:path
   - systeminfo
   - winrm quickconfig -q
