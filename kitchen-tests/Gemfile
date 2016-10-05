@@ -1,5 +1,11 @@
 source "https://rubygems.org"
 
+group :windows do
+  gem "winrm"
+  gem "winrm-fs"
+  gem "winrm-elevated"
+end
+
 gem "berkshelf"
 gem "kitchen-appbundle-updater"
 gem "kitchen-dokken"
