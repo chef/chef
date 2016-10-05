@@ -2,7 +2,7 @@
 driver:
   name: proxy
   host: localhost
-  reset_command: "echo hello"
+  reset_command: "exit 0"
   port: <%= ENV["machine_port"] %>
   username: <%= ENV["machine_user"] %>
   password: <%= ENV["machine_pass"] %>
@@ -10,7 +10,7 @@ driver:
 
 provisioner:
   name: chef_github
-  root_path: /opt/kitchen
+#  root_path: /opt/kitchen
   require_chef_omnibus: latest
   chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
   chef_omnibus_install_options: "-c current"
@@ -28,7 +28,10 @@ verifier:
   format: progress
 
 platforms:
-  - name: ubuntu-14.04  # does it matter?
+  - name: windows-2012R2
+    transport:
+      name: winrm
+      elevated: true
 
 suites:
   - name: awesome_customers_windows
