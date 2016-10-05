@@ -74,7 +74,9 @@ class Chef
         private
 
         # Override the version from {#Useradd} because Solaris doesn't support
-        # system users and therefore has no `-r` option.
+        # system users and therefore has no `-r` option. This also inverts the
+        # logic for manage_home as Solaris defaults to no-manage-home and only
+        # offers `-m`.
         #
         # @since 12.15
         # @api private
@@ -82,7 +84,7 @@ class Chef
         # @return [Array<String>]
         def useradd_options
           opts = []
-          opts << "-M" unless managing_home_dir?
+          opts << "-m" if managing_home_dir?
           opts
         end
 
