@@ -5,6 +5,9 @@ platform:
   - x64
 
 environment:
+  machine_user: test_user
+  machine_pass: Pass@word1
+  machine_port: 5985
   matrix:
     - ruby_version: "23-x64"
     - ruby_version: "23"
@@ -17,6 +20,8 @@ branches:
     - master
 
 install:
+  - ps: net user /add $env:machine_user $env:machine_pass
+  - ps: net localgroup administrators $env:machine_user /add
   - systeminfo
   - winrm quickconfig -q
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
