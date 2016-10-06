@@ -33,5 +33,9 @@ suites:
   - name: webapp
     run_list:
       - recipe[base::default]
-#      - recipe[webapp::default]
-    attributes:
+  - name: awesome_customers_ubuntu
+    run_list:
+      - recipe[awesome_customers_ubuntu_wrapper::default]
+  - name: awesome_customers_rhel
+    run_list:
+      - recipe[awesome_customers_rhel_wrapper::default]

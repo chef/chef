@@ -119,7 +119,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test ubuntu-1204
+      - bundle exec kitchen test webapp-ubuntu-1204
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -137,7 +137,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test ubuntu-1404
+      - bundle exec kitchen test webapp-ubuntu-1404
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -155,7 +155,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test ubuntu-1604
+      - bundle exec kitchen test webapp-ubuntu-1604
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -173,7 +173,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test debian-7
+      - bundle exec kitchen test webapp-debian-7
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -191,7 +191,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test debian-8
+      - bundle exec kitchen test webapp-debian-8
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     after_failure:
       - cat .kitchen/logs/kitchen.log
@@ -210,7 +210,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test centos-6
+      - bundle exec kitchen test webapp-centos-6
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -228,7 +228,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test centos-7
+      - bundle exec kitchen test webapp-centos-7
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
@@ -246,11 +246,47 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test fedora-23
+      - bundle exec kitchen test webapp-fedora-23
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
       - FEDORA=23
+      - KITCHEN_YAML=.kitchen.travis.yml
+  - rvm: 2.3.1
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test awesome-customers-ubuntu-ubuntu-1404
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - AWESOME_CUSTOMERS_UBUNTU=1
+      - KITCHEN_YAML=.kitchen.travis.yml
+  - rvm: 2.3.1
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+    before_script:
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
+    script:
+      - bundle exec kitchen test awesome-customers-rhel-centos-7
+    after_failure:
+      - cat .kitchen/logs/kitchen.log
+    env:
+      - AWESOME_CUSTOMERS_RHEL=1
       - KITCHEN_YAML=.kitchen.travis.yml
     ### END TEST KITCHEN ONLY ###
   - rvm: 2.3.1
