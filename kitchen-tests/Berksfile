@@ -6,3 +6,6 @@ cookbook "base", path: "cookbooks/base"
 cookbook "php", "~> 1.5.0"
 
 cookbook "resolver", github: "chef-cookbooks/resolver"
+
+cookbook "awesome_customers_windows_wrapper", path: "cookbooks/awesome_customers_windows_wrapper"
+cookbook "awesome_customers_windows", github: "learn-chef/awesome_customers_windows"
