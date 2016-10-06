@@ -26,6 +26,7 @@ class Chef
     class Service
       class Upstart < Chef::Provider::Service::Simple
 
+        # to maintain a local state of service across restart's internal calls
         attr_accessor :upstart_service_running
 
         provides :service, platform_family: "debian", override: true do |node|
