@@ -115,7 +115,7 @@ class Chef
         res = Chef::Resource::File.new(@path, run_context)
         res.name(@path) if @path
         res.backup(backup) if backup
-        res.content(content) if content
+        res.content(content) if content?
         res.group(group) if group
         res.mode(mode) if mode
         res.owner(owner) if owner
