@@ -24,27 +24,35 @@ describe Chef::Resource::AptUpdate do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::AptUpdate.new("update", run_context) }
 
-  it "should create a new Chef::Resource::AptUpdate" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::AptUpdate)
+  context "on linux", :linux_only do
+    it "should create a new Chef::Resource::AptUpdate" do
+      expect(resource).to be_a_kind_of(Chef::Resource)
+      expect(resource).to be_a_kind_of(Chef::Resource::AptUpdate)
+    end
+
+    it "the default frequency should be 1 day" do
+      expect(resource.frequency).to eql(86_400)
+    end
+
+    it "the frequency should accept integers" do
+      resource.frequency(400)
+      expect(resource.frequency).to eql(400)
+    end
+
+    it "should resolve to a Noop class when apt-get is not found" do
+      expect(Chef::Provider::AptUpdate).to receive(:which).with("apt-get").and_return(false)
+      expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
+    end
+
+    it "should resolve to a AptUpdate class when apt-get is found" do
+      expect(Chef::Provider::AptUpdate).to receive(:which).with("apt-get").and_return(true)
+      expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::AptUpdate)
+    end
   end
 
-  it "the default frequency should be 1 day" do
-    expect(resource.frequency).to eql(86_400)
-  end
-
-  it "the frequency should accept integers" do
-    resource.frequency(400)
-    expect(resource.frequency).to eql(400)
-  end
-
-  it "should resolve to a Noop class when apt-get is not found" do
-    expect(Chef::Provider::AptUpdate).to receive(:which).with("apt-get").and_return(false)
-    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
-  end
-
-  it "should resolve to a AptUpdate class when apt-get is found" do
-    expect(Chef::Provider::AptUpdate).to receive(:which).with("apt-get").and_return(true)
-    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::AptUpdate)
+  context "on windows", :windows_only do
+    it "should resolve to a NoOp provider" do
+      expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
+    end
   end
 end

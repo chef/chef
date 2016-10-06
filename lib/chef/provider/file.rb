@@ -344,7 +344,7 @@ class Chef
       end
 
       def do_validate_content
-        if new_resource.checksum && tempfile && ( new_resource.checksum != tempfile_checksum )
+        if new_resource.checksum && tempfile && ( new_resource.checksum.downcase != tempfile_checksum )
           raise Chef::Exceptions::ChecksumMismatch.new(short_cksum(new_resource.checksum), short_cksum(tempfile_checksum))
         end
 
@@ -460,11 +460,6 @@ class Chef
 
       def tempfile
         @tempfile ||= content.tempfile
-      end
-
-      def short_cksum(checksum)
-        return "none" if checksum.nil?
-        checksum.slice(0, 6)
       end
 
       def load_resource_attributes_from_file(resource)

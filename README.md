@@ -5,8 +5,8 @@
 
 Want to try Chef? Get started with [learnchef](https://learn.chef.io)
 
-* Documentation: [http://docs.chef.io](http://docs.chef.io)
-* Source: [http://github.com/chef/chef/tree/master](http://github.com/chef/chef/tree/master)
+* Documentation: [https://docs.chef.io](https://docs.chef.io)
+* Source: [https://github.com/chef/chef/tree/master](https://github.com/chef/chef/tree/master)
 * Tickets/Issues: [https://github.com/chef/chef/issues](https://github.com/chef/chef/issues)
 * Slack: [Chef Community Slack](https://community-slack.chef.io/)
 * Mailing list: [https://discourse.chef.io](https://discourse.chef.io)
@@ -18,14 +18,14 @@ This README focuses on developers who want to modify Chef source code.
 If you just want to use Chef, check out these resources:
 
 * [learnchef](https://learn.chef.io): Getting started guide
-* [docs.chef.io](http://docs.chef.io): Comprehensive User Docs
-* [Installer Downloads](https://www.chef.io/download-chef-client/): Install Chef as a complete package
+* [docs.chef.io](https://docs.chef.io): Comprehensive User Docs
+* [Installer Downloads](https://downloads.chef.io/chef-client/): Install Chef as a complete package
 
 ## Installing From Git
 
 **NOTE:** Unless you have a specific reason to install from source (to
 try a new feature, contribute a patch, or run chef on an OS for which no
-package is available), you should head to the [installer page](https://www.chef.io/download-chef-client/)
+package is available), you should head to the [downloads page](https://downloads.chef.io/chef-client/)
 to get a prebuilt package.
 
 ### Prerequisites
@@ -36,7 +36,7 @@ Install these via your platform's preferred method (`apt`, `yum`, `ports`,
 * git
 * C compiler, header files, etc. On Ubuntu/Debian, use the
   `build-essential` package.
-* ruby 2.1.0 or later
+* ruby 2.3.0 or later
 * rubygems
 * bundler gem
 
@@ -65,7 +65,7 @@ gem install pkg/chef-VERSION.gem
 
 Before working on the code, if you plan to contribute your changes, you need to
 read the
-[Chef Contributions document](http://docs.chef.io/community_contributions.html).
+[Chef Contributions document](https://docs.chef.io/community_contributions.html).
 
 The general development process is:
 
@@ -279,6 +279,7 @@ Chef - A configuration management system
 | **Copyright:**       | Copyright 2008-2016, Chef Software, Inc.
 | **License:**         | Apache License, Version 2.0
 
+```
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -290,3 +291,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+```

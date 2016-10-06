@@ -59,10 +59,6 @@ EOH
         allow(lcm).to receive(:run_configuration_cmdlet).and_return(lcm_status)
       end
       context "that returns successfully" do
-        before(:each) do
-          allow(lcm).to receive(:run_configuration_cmdlet).and_return(lcm_status)
-        end
-
         let(:lcm_standard_output) { normal_lcm_output }
         let(:lcm_standard_error) { nil }
         let(:lcm_cmdlet_success) { true }
@@ -136,6 +132,16 @@ EOH
 
     it "should not identify a message without a CimException reference as a resource import failure" do
       expect(lcm.send(:dsc_module_import_failure?, dsc_resource_import_failure_output.gsub("CimException", "ArgumentException"))).to be(false)
+    end
+  end
+
+  describe "#run_configuration_cmdlet" do
+    context "when invalid dsc script is given" do
+      it "raises exception" do
+        configuration_document = "invalid-config"
+        shellout_flags = { :cwd => nil, :environment => nil, :timeout => nil }
+        expect { lcm.send(:run_configuration_cmdlet, configuration_document, true, shellout_flags) }.to raise_error(Chef::Exceptions::PowershellCmdletException)
+      end
     end
   end
 end

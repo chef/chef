@@ -1,33 +1,44 @@
 *This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team.
-Please see `https://docs.chef.io/release/<major>-<minor>/release_notes.html` for the official Chef release notes.*
+Please see [https://docs.chef.io/release_notes.html](https://docs.chef.io/release_notes.html) for the official Chef release notes.*
 
-# Chef Client Release Notes 12.13:
+# Chef Client Release Notes 12.14:
 
-Highlights for this release:
+## Highlighted enhancements for this release:
 
-- Ohai 8.18 includes a new plugin for gathering available user shells. Additionally for OS X users there is a new hardware plugin that gathers system information, and we’ve added detection of VMware and VirtualBox installations.
+* Upgraded Ruby version from 2.1.9 to 2.3.1 which adds several performance and functionality enhancements.
+* Added a small patch to Ruby 2.3.1 and improvements to the Ohai Network plugin in order to support chef client runs on Windows Nano Server.
+* Added the ability to mark a property of a custom resource as "sensitive." This will suppress the property's value when it's used in other outputs, such as messages used by the [Data Collector](https://github.com/chef/chef-rfc/blob/master/rfc077-mode-agnostic-data-collection.md). To use, add `sensitive: true` when definine the property. Example:
 
-## Updated Dependencies
+  ```ruby
+  property :db_password, String, sensitive: true
+  ```
 
-- ruby - 2.1.9 (was 2.1.8)
+* Ported the yum_repository resource from the yum cookbook to core chef. With this change you can create and remove repositories without depending on the yum cookbook. Example:
 
-### Updated Gems
+  ```ruby
+  yum_repository 'OurCo' do
+    description 'OurCo yum repository'
+    mirrorlist 'http://artifacts.ourco.org/mirrorlist?repo=ourco-6&arch=$basearch'
+    gpgkey 'http://artifacts.ourco.org/pub/yum/RPM-GPG-KEY-OURCO-6'
+    action :create
+  end
 
-- chef-zero - 4.8.0 (was 4.7.0)
-- cheffish - 2.0.5 (was 2.0.4)
-- compat_resource - 12.10.7 (was 12.10.6)
-- ffi - 1.9.14 (was 1.9.10)
-- ffi-yajl - 2.3.0 (was 2.2.3)
-- fuzzyurl - 0.9.0 (was 0.8.0)
-- mixlib-cli - 1.7.0 (was 1.6.0)
-- mixlib-log - 1.7.0 (was 1.6.0)
-- ohai - 8.18.0 (was 8.17.1)
-- pry - 0.10.4 (was 0.10.3)
-- rspec - 3.5.0 (was 3.4.0)
-- rspec-core - 3.5.2 (was 3.4.4)
-- rspec-expectations - 3.5.0 (was 3.4.0)
-- rspec-mocks - 3.5.0 (was 3.4.1)
-- rspec-support - 3.5.0 (was 3.4.1)
-- simplecov - 0.12.0 (was 0.11.2)
-- specinfra - 2.60.3 (was 2.59.4)
-- mixlib-archive - 0.2.0 (added to package)
+  yum 'Oldrepo' do
+    action :delete
+  end
+  ```
+
+* Support for Solaris releases before 10u11 has been removed
+* Upgraded Ohai to 8.20 with new / enhanced plugins. See the [ohai changelog](https://github.com/chef-cookbooks/ohai/blob/master/CHANGELOG.md)
+
+## Highlighted bug fixes for this release:
+
+Fixed `chef_gem` for local gems with remote dependencies. A recent chef release introduced a breaking change which added the `--local` argument to `gem installs` for local gems prohibiting remote dependencies from being installed. Users who want to ensure that gem installs remain completely local should add `--local` to the `options` property:
+
+```
+chef_gem 'my-gem' do
+  source '/tmp/gems/my-gem.gem'
+  options '--local'
+  action :install
+end
+```

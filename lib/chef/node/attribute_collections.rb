@@ -73,6 +73,7 @@ class Chef
       def initialize(root, data)
         @root = root
         super(data)
+        map! { |e| convert_value(e) }
       end
 
       # For elements like Fixnums, true, nil...
@@ -84,6 +85,23 @@ class Chef
 
       def dup
         Array.new(map { |e| safe_dup(e) })
+      end
+
+      private
+
+      def convert_value(value)
+        case value
+        when VividMash
+          value
+        when AttrArray
+          value
+        when Hash
+          VividMash.new(root, value)
+        when Array
+          AttrArray.new(root, value)
+        else
+          value
+        end
       end
 
     end
@@ -183,6 +201,8 @@ class Chef
       def convert_value(value)
         case value
         when VividMash
+          value
+        when AttrArray
           value
         when Hash
           VividMash.new(root, value)

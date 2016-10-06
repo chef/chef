@@ -126,7 +126,8 @@ class Chef
 
         def groupadd_options
           opts = ""
-          opts << " -r" if @new_resource.system
+          # Solaris doesn't support system groups.
+          opts << " -r" if @new_resource.system && !node.platform?("solaris2")
           opts << " -o" if @new_resource.non_unique
           opts
         end

@@ -1,12 +1,10 @@
 source "https://rubygems.org"
 
 gem "omnibus", github: "chef/omnibus", branch: "rhass/COOL-502_with_gcc_investigate"
-gem "omnibus-software", github: "chef/omnibus-software", branch: "lcg/ruby23"
+gem "omnibus-software", github: "chef/omnibus-software", branch: "shain/ruby_windows_monster"
 gem "license_scout", github: "chef/license_scout"
 
-# pedump pessimistically pins multipart-post to a version from 2013 which makes
-# bundler very unhappy. Remove this when upstream has merged zed-0xff/pedump#6 .
-gem "pedump", git: "https://github.com/ksubrama/pedump.git", branch: "patch-1"
+gem "pedump"
 
 # This development group is installed by default when you run `bundle install`,
 # but if you are using Omnibus in a CI-based infrastructure, you do not need
@@ -17,9 +15,9 @@ group :development do
   gem "berkshelf", "~> 4.0"
 
   # Use Test Kitchen with Vagrant for converging the build environment
-  gem "test-kitchen",    "~> 1.9"
+  gem "test-kitchen",    "~> 1.13"
   gem "kitchen-vagrant", "~> 0.19.0"
-  gem "winrm-fs", "~> 0.4.0"
+  gem "winrm-fs", "~> 1.0"
   gem "pry"
   gem "pry-byebug"
   gem "pry-stack_explorer"

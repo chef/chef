@@ -21,12 +21,12 @@ before_script:
 branches:
   only:
   - master
-  - 10-stable
   - 11-stable
 
 env:
   global:
     - FORCE_FFI_YAJL=ext
+    - BUNDLE_ENABLE_TRAMPOLINE=1
 
 matrix:
   include:

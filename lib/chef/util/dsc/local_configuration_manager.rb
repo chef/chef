@@ -74,7 +74,7 @@ class Chef::Util::DSC
 
     def lcm_command_code(configuration_path, test_only_parameters)
       <<-EOH
-$ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -erroraction 'continue' -force #{test_only_parameters}
+$ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -erroraction 'stop' -force #{test_only_parameters}
 EOH
     end
 

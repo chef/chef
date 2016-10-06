@@ -99,8 +99,12 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     usr
   end
 
-  def create_user(username)
-    user(username).run_action(:create) if ! windows_domain_user?(username)
+  def create_user(username, uid = nil)
+    if ! windows_domain_user?(username)
+      user_to_create = user(username)
+      user_to_create.uid(uid) if uid
+      user_to_create.run_action(:create)
+    end
     # TODO: User should exist
   end
 
@@ -169,8 +173,11 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
 
     describe "when the users exist" do
       before do
+        high_uid = 30000
         (spec_members).each do |member|
-          create_user(member)
+          remove_user(member)
+          create_user(member, high_uid)
+          high_uid += 1
         end
       end
 
@@ -296,6 +303,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     group = Chef::Resource::Group.new(group_name, run_context)
     group.members(included_members)
     group.excluded_members(excluded_members)
+    group.gid(30000) unless ohai[:platform_family] == "mac_os_x"
     group
   end
 

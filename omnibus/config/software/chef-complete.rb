@@ -5,7 +5,7 @@ skip_transitive_dependency_licensing true
 
 dependency "chef"
 dependency "chef-appbundle"
-dependency "chef-remove-docs"
+dependency "chef-cleanup"
 
 dependency "gem-permissions"
 dependency "shebang-cleanup"

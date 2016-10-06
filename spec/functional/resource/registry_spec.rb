@@ -153,6 +153,16 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
       expect(@registry.data_exists?(reg_child, { :name => "Color", :type => :string, :data => "Orange" })).to eq(true)
     end
 
+    it "does not create the key if it already exists with same value and type but datatype of data differs" do
+      @new_resource.key(reg_child)
+      @new_resource.values([{ :name => "number", :type => :dword, :data => "12345" }])
+      @new_resource.run_action(:create)
+
+      expect(@new_resource).not_to be_updated_by_last_action
+      expect(@registry.key_exists?(reg_child)).to eq(true)
+      expect(@registry.data_exists?(reg_child, { :name => "number", :type => :dword, :data => 12344 })).to eq(true)
+    end
+
     it "creates a value if it does not exist" do
       @new_resource.key(reg_child)
       @new_resource.values([{ :name => "Mango", :type => :string, :data => "Yellow" }])
@@ -187,11 +197,35 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
       expect(@registry.value_exists?(reg_child + '\OpscodeTest', { :name => "Chef", :type => :multi_string, :data => %w{OpscodeOrange Rules} })).to eq(true)
     end
 
-    it "gives error if action create and parent does not exist and recursive is set to false" do
+    it "raises an error if action create and parent does not exist and recursive is set to false" do
       @new_resource.key(reg_child + '\Missing1\Missing2')
       @new_resource.values([{ :name => "OC", :type => :string, :data => "MissingData" }])
       @new_resource.recursive(false)
       expect { @new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::Win32RegNoRecursive)
+    end
+
+    it "raises an error if action create and type key missing in values hash" do
+      @new_resource.key(reg_child)
+      @new_resource.values([{ :name => "OC", :data => "my_data" }])
+      expect { @new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::RegKeyValuesTypeMissing)
+    end
+
+    it "raises an error if action create and data key missing in values hash" do
+      @new_resource.key(reg_child)
+      @new_resource.values([{ :name => "OC", :type => :string }])
+      expect { @new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::RegKeyValuesDataMissing)
+    end
+
+    it "raises an error if action create and only name key present in values hash" do
+      @new_resource.key(reg_child)
+      @new_resource.values([{ :name => "OC" }])
+      expect { @new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::RegKeyValuesTypeMissing)
+    end
+
+    it "does not raise an error if action create and all keys are present in values hash" do
+      @new_resource.key(reg_child)
+      @new_resource.values([{ :name => "OC", :type => :string, :data => "my_data" }])
+      expect { @new_resource.run_action(:create) }.to_not raise_error
     end
 
     it "creates missing keys if action create and parent does not exist and recursive is set to true" do
@@ -260,7 +294,7 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
         Chef::Config[:why_run] = true
       end
 
-      it "does not throw an exception if the keys do not exist but recursive is set to false" do
+      it "does not raise an exception if the keys do not exist but recursive is set to false" do
         @new_resource.key(reg_child + '\Slitheen\Raxicoricofallapatorius')
         @new_resource.values([{ :name => "BriskWalk", :type => :string, :data => "is good for health" }])
         @new_resource.recursive(false)
@@ -268,11 +302,40 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
         expect(@registry.key_exists?(reg_child + '\Slitheen')).to eq(false)
         expect(@registry.key_exists?(reg_child + '\Slitheen\Raxicoricofallapatorius')).to eq(false)
       end
+
       it "does not create key if the action is create" do
         @new_resource.key(reg_child + '\Slitheen')
         @new_resource.values([{ :name => "BriskWalk", :type => :string, :data => "is good for health" }])
         @new_resource.recursive(false)
         @new_resource.run_action(:create)
+        expect(@registry.key_exists?(reg_child + '\Slitheen')).to eq(false)
+      end
+
+      it "does not raise an exception if the action create and type key missing in values hash" do
+        @new_resource.key(reg_child + '\Slitheen')
+        @new_resource.values([{ :name => "BriskWalk", :data => "my_data" }])
+        @new_resource.run_action(:create) # should not raise_error
+        expect(@registry.key_exists?(reg_child + '\Slitheen')).to eq(false)
+      end
+
+      it "does not raise an exception if the action create and data key missing in values hash" do
+        @new_resource.key(reg_child + '\Slitheen')
+        @new_resource.values([{ :name => "BriskWalk", :type => :string }])
+        @new_resource.run_action(:create) # should not raise_error
+        expect(@registry.key_exists?(reg_child + '\Slitheen')).to eq(false)
+      end
+
+      it "does not raise an exception if the action create and only name key present in values hash" do
+        @new_resource.key(reg_child + '\Slitheen')
+        @new_resource.values([{ :name => "BriskWalk" }])
+        @new_resource.run_action(:create) # should not raise_error
+        expect(@registry.key_exists?(reg_child + '\Slitheen')).to eq(false)
+      end
+
+      it "does not raise an exception if the action create and all keys are present in values hash" do
+        @new_resource.key(reg_child + '\Slitheen')
+        @new_resource.values([{ :name => "BriskWalk", :type => :string, :data => "my_data" }])
+        @new_resource.run_action(:create) # should not raise_error
         expect(@registry.key_exists?(reg_child + '\Slitheen')).to eq(false)
       end
     end
@@ -320,11 +383,35 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
       expect(@registry.value_exists?(reg_child + '\Pyrovile', { :name => "Chef", :type => :multi_string, :data => %w{OpscodeOrange Rules} })).to eq(true)
     end
 
-    it "gives error if action create and parent does not exist and recursive is set to false" do
+    it "raises an error if action create and parent does not exist and recursive is set to false" do
       @new_resource.key(reg_child + '\Sontaran\Sontar')
       @new_resource.values([{ :name => "OC", :type => :string, :data => "MissingData" }])
       @new_resource.recursive(false)
       expect { @new_resource.run_action(:create_if_missing) }.to raise_error(Chef::Exceptions::Win32RegNoRecursive)
+    end
+
+    it "raises an error if action create_if_missing and type key missing in values hash" do
+      @new_resource.key(reg_child)
+      @new_resource.values([{ :name => "OC", :data => "my_data" }])
+      expect { @new_resource.run_action(:create_if_missing) }.to raise_error(Chef::Exceptions::RegKeyValuesTypeMissing)
+    end
+
+    it "raises an error if action create_if_missing and data key missing in values hash" do
+      @new_resource.key(reg_child)
+      @new_resource.values([{ :name => "OC", :type => :string }])
+      expect { @new_resource.run_action(:create_if_missing) }.to raise_error(Chef::Exceptions::RegKeyValuesDataMissing)
+    end
+
+    it "raises an error if action create_if_missing and only name key present in values hash" do
+      @new_resource.key(reg_child)
+      @new_resource.values([{ :name => "OC" }])
+      expect { @new_resource.run_action(:create_if_missing) }.to raise_error(Chef::Exceptions::RegKeyValuesTypeMissing)
+    end
+
+    it "does not raise an error if action create_if_missing and all keys are present in values hash" do
+      @new_resource.key(reg_child)
+      @new_resource.values([{ :name => "OC", :type => :string, :data => "my_data" }])
+      expect { @new_resource.run_action(:create_if_missing) }.to_not raise_error
     end
 
     it "creates missing keys if action create and parent does not exist and recursive is set to true" do
@@ -371,7 +458,7 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
         Chef::Config[:why_run] = true
       end
 
-      it "does not throw an exception if the keys do not exist but recursive is set to false" do
+      it "does not raise an exception if the keys do not exist but recursive is set to false" do
         @new_resource.key(reg_child + '\Zygons\Zygor')
         @new_resource.values([{ :name => "BriskWalk", :type => :string, :data => "is good for health" }])
         @new_resource.recursive(false)
@@ -379,11 +466,40 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
         expect(@registry.key_exists?(reg_child + '\Zygons')).to eq(false)
         expect(@registry.key_exists?(reg_child + '\Zygons\Zygor')).to eq(false)
       end
+
       it "does nothing if the action is create_if_missing" do
         @new_resource.key(reg_child + '\Zygons')
         @new_resource.values([{ :name => "BriskWalk", :type => :string, :data => "is good for health" }])
         @new_resource.recursive(false)
         @new_resource.run_action(:create_if_missing)
+        expect(@registry.key_exists?(reg_child + '\Zygons')).to eq(false)
+      end
+
+      it "does not raise an exception if the action create_if_missing and type key missing in values hash" do
+        @new_resource.key(reg_child + '\Zygons')
+        @new_resource.values([{ :name => "BriskWalk", :data => "my_data" }])
+        @new_resource.run_action(:create_if_missing) # should not raise_error
+        expect(@registry.key_exists?(reg_child + '\Zygons')).to eq(false)
+      end
+
+      it "does not raise an exception if the action create_if_missing and data key missing in values hash" do
+        @new_resource.key(reg_child + '\Zygons')
+        @new_resource.values([{ :name => "BriskWalk", :type => :string }])
+        @new_resource.run_action(:create_if_missing) # should not raise_error
+        expect(@registry.key_exists?(reg_child + '\Zygons')).to eq(false)
+      end
+
+      it "does not raise an exception if the action create_if_missing and only name key present in values hash" do
+        @new_resource.key(reg_child + '\Zygons')
+        @new_resource.values([{ :name => "BriskWalk" }])
+        @new_resource.run_action(:create_if_missing) # should not raise_error
+        expect(@registry.key_exists?(reg_child + '\Zygons')).to eq(false)
+      end
+
+      it "does not raise an exception if the action create_if_missing and all keys are present in values hash" do
+        @new_resource.key(reg_child + '\Zygons')
+        @new_resource.values([{ :name => "BriskWalk", :type => :string, :data => "my_data" }])
+        @new_resource.run_action(:create_if_missing) # should not raise_error
         expect(@registry.key_exists?(reg_child + '\Zygons')).to eq(false)
       end
     end

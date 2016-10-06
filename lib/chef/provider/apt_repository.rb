@@ -153,7 +153,7 @@ class Chef
       end
 
       def install_key_from_uri
-        key_name = new_resource.key.split(%r{\/}).last
+        key_name = new_resource.key.gsub(/[^0-9A-Za-z\-]/, "_")
         cached_keyfile = ::File.join(Chef::Config[:file_cache_path], key_name)
         type = if new_resource.key.start_with?("http")
                  :remote_file

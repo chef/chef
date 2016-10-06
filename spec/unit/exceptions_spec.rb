@@ -68,6 +68,8 @@ describe Chef::Exceptions do
     Chef::Exceptions::EnvironmentNotFound => RuntimeError,
     Chef::Exceptions::InvalidVersionConstraint => ArgumentError,
     Chef::Exceptions::IllegalVersionConstraint => NotImplementedError,
+    Chef::Exceptions::RegKeyValuesTypeMissing => ArgumentError,
+    Chef::Exceptions::RegKeyValuesDataMissing => ArgumentError,
   }
 
   exception_to_super_class.each do |exception, expected_super_class|

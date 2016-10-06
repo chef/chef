@@ -94,19 +94,11 @@ describe Chef::Resource::RegistryKey, "values" do
     expect(@resource.values).to eql([ { :name => "poosh", :type => :binary, :data => "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89" } ])
   end
 
-  it "should throw an exception if the name field is missing" do
+  it "should raise an exception if the name field is missing" do
     expect { @resource.values [ { :type => :string, :data => "carmen" } ] }.to raise_error(ArgumentError)
   end
 
-  it "should throw an exception if the type field is missing" do
-    expect { @resource.values [ { :name => "poosh", :data => "carmen" } ] }.to raise_error(ArgumentError)
-  end
-
-  it "should throw an exception if the data field is missing" do
-    expect { @resource.values [ { :name => "poosh", :type => :string } ] }.to raise_error(ArgumentError)
-  end
-
-  it "should throw an exception if extra fields are present" do
+  it "should raise an exception if extra fields are present" do
     expect { @resource.values [ { :name => "poosh", :type => :string, :data => "carmen", :screwdriver => "sonic" } ] }.to raise_error(ArgumentError)
   end
 
@@ -116,6 +108,30 @@ describe Chef::Resource::RegistryKey, "values" do
 
   it "should not allow an integer" do
     expect { @resource.send(:values, 100) }.to raise_error(ArgumentError)
+  end
+
+  it "should raise an exception if type of name is not string" do
+    expect { @resource.values([ { :name => 123, :type => :string, :data => "carmen" } ]) }.to raise_error(ArgumentError)
+  end
+
+  it "should not raise an exception if type of name is string" do
+    expect { @resource.values([ { :name => "123", :type => :string, :data => "carmen" } ]) }.to_not raise_error
+  end
+
+  context "type key not given" do
+    it "should not raise an exception" do
+      expect { @resource.values([ { :name => "123", :data => "carmen" } ]) }.to_not raise_error
+    end
+  end
+
+  context "type key given" do
+    it "should raise an exception if type of type is not symbol" do
+      expect { @resource.values([ { :name => "123", :type => "string", :data => "carmen" } ]) }.to raise_error(ArgumentError)
+    end
+
+    it "should not raise an exception if type of type is symbol" do
+      expect { @resource.values([ { :name => "123", :type => :string, :data => "carmen" } ]) }.to_not raise_error
+    end
   end
 end
 

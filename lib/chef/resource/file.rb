@@ -81,7 +81,7 @@ class Chef
       end
 
       def special_docker_files?(file)
-        %w{/etc/hosts /etc/hostname /etc/resolv.conf}.include?(Pathname(file).cleanpath.to_path)
+        %w{/etc/hosts /etc/hostname /etc/resolv.conf}.include?(Pathname(file.scrub).cleanpath.to_path)
       end
     end
   end

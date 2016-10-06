@@ -62,6 +62,9 @@ platforms:
       - RUN yum clean all
       - RUN yum -y install which initscripts net-tools sudo wget
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  attributes:
+    chef_client:
+      init_style: init
 
 - name: centos-7
   driver:
