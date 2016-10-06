@@ -124,7 +124,7 @@ class Chef
                   Chef::Log.debug("#{new_resource} setting home to #{new_resource.home}")
                 end
               end
-              opts << "-o" if new_resource.non_unique
+              opts << "-o" if non_unique?
               opts
             end
         end
@@ -152,10 +152,6 @@ class Chef
           # ::File.expand_path("\\tmp") => "C:/tmp"
           return true if @current_resource.home.nil? && new_resource.home
           new_resource.home && Pathname.new(@current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
-        end
-
-        def managing_home_dir?
-          new_resource.manage_home || new_resource.supports[:manage_home]
         end
 
       end
