@@ -46,7 +46,7 @@ class Chef
 
         def remove_user
           command = "pw userdel #{@new_resource.username}"
-          command << " -r" if @new_resource.supports[:manage_home]
+          command << " -r" if managing_home_dir?
           run_command(:command => command)
         end
 
@@ -87,7 +87,7 @@ class Chef
               end
             end
           end
-          if @new_resource.supports[:manage_home]
+          if managing_home_dir?
             Chef::Log.debug("#{@new_resource} is managing the users home directory")
             opts << " -m"
           end
