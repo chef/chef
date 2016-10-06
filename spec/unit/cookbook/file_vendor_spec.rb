@@ -94,4 +94,19 @@ describe Chef::Cookbook::FileVendor do
 
   end
 
+  context "when vendoring a cookbook with a name mismatch" do
+    let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "cookbooks") }
+
+    # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
+    let(:manifest) { { :cookbook_name => "name-mismatch" } }
+
+    before do
+      file_vendor_class.fetch_from_disk(cookbook_path)
+    end
+
+    it "retrieves the file from the correct location based on path to the cookbook that conatins the correct name metadata" do
+      file_vendor = file_vendor_class.create_from_manifest(manifest)
+      file_vendor.get_filename("metadata.rb")
+    end
+  end
 end
