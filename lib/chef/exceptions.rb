@@ -79,6 +79,7 @@ class Chef
     class Reboot < Exception; end
     class RebootPending < Exception; end
     class RebootFailed < Mixlib::ShellOut::ShellCommandFailed; end
+    class ClientUpgraded < Exception; end
     class PrivateKeyMissing < RuntimeError; end
     class CannotWritePrivateKey < RuntimeError; end
     class RoleNotFound < RuntimeError; end
