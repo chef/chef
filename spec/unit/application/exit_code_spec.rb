@@ -64,6 +64,10 @@ describe Chef::Application::ExitCode do
     it "validates a REBOOT_FAILED return code of 41" do
       expect(valid_rfc_exit_codes.include?(41)).to eq(true)
     end
+
+    it "validates a CLIENT_UPGRADED return code of 213" do
+      expect(valid_rfc_exit_codes.include?(213)).to eq(true)
+    end
   end
 
   context "when Chef::Config :exit_status is not configured" do
@@ -213,6 +217,12 @@ describe Chef::Application::ExitCode do
       reboot_error = Chef::Exceptions::RebootPending.new("BOOM")
       runtime_error = Chef::Exceptions::RunFailedWrappingError.new(reboot_error)
       expect(exit_codes.normalize_exit_code(runtime_error)).to eq(37)
+    end
+
+    it "returns CLIENT_UPGRADED when the client was upgraded during converge" do
+      client_upgraded_error = Chef::Exceptions::ClientUpgraded.new("BOOM")
+      runtime_error = Chef::Exceptions::RunFailedWrappingError.new(client_upgraded_error)
+      expect(exit_codes.normalize_exit_code(runtime_error)).to eq(213)
     end
 
     it "returns SIGINT_RECEIVED when a SIGINT is received." do
