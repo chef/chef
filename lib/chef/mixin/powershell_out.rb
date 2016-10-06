@@ -34,14 +34,7 @@ class Chef
         script = command_args.first
         options = command_args.last.is_a?(Hash) ? command_args.last : nil
 
-        result = run_command_with_os_architecture(script, options)
-
-        if result.stderr.include? "A positional parameter cannot be found that accepts argument"
-          raise Mixlib::ShellOut::ShellCommandFailed, "Please use single escape for special characters in powershell_out. \n #{result.stderr}"
-        elsif result.stderr != ""
-          raise Mixlib::ShellOut::ShellCommandFailed, result.stderr
-        end
-        result
+        run_command_with_os_architecture(script, options)
       end
 
       # Run a command under powershell with the same API as shell_out!
@@ -98,8 +91,7 @@ class Chef
           "-InputFormat None",
         ]
 
-        # without gsub user has to add double escape for double quotes in the recipe
-        "powershell.exe #{flags.join(' ')} -Command \"#{script.gsub('"', '\"')}\""
+        "powershell.exe #{flags.join(' ')} -Command \"#{script}\""
       end
     end
   end

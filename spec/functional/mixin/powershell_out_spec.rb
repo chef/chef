@@ -25,6 +25,10 @@ describe Chef::Mixin::PowershellOut, windows_only: true do
     it "runs a powershell command and collects stdout" do
       expect(powershell_out("get-process").run_command.stdout).to match /Handles\s+NPM\(K\)\s+PM\(K\)\s+WS\(K\)\s+VM\(M\)\s+CPU\(s\)\s+Id\s+/
     end
+
+    it "does not raise exceptions when the command is invalid" do
+      powershell_out("this-is-not-a-valid-command").run_command
+    end
   end
 
   describe "#powershell_out!" do
@@ -33,7 +37,7 @@ describe Chef::Mixin::PowershellOut, windows_only: true do
     end
 
     it "raises exceptions when the command is invalid" do
-      expect { powershell_out!("this-is-not-a-valid-command").run_command }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
+      expect { powershell_out!("this-is-not-a-valid-command").run_command }.to raise_exception(Mixlib::ShellOut::ShellCommandFailed)
     end
   end
 end
