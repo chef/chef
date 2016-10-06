@@ -33,7 +33,7 @@ ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef", "chef") do
   package.component_paths = ["chef-config"]
   package.generate_version_class = true
 end
-# Add a conservative dependency update to version:bump (which was created by PackageTask)
+# Add conservative dependency update to version:bump (which was created by PackageTask)
 task "version:bump" => %w{version:bump_patch version:update}
 task "version:bump" => %w{version:bump_patch version:update}
 
