@@ -35,6 +35,7 @@ class Chef
         REBOOT_NEEDED: 37,
         REBOOT_FAILED: 41,
         AUDIT_MODE_FAILURE: 42,
+        CLIENT_UPGRADED: 213,
       }
 
       DEPRECATED_RFC_062_EXIT_CODES = {
@@ -127,6 +128,8 @@ class Chef
             VALID_RFC_062_EXIT_CODES[:REBOOT_FAILED]
           elsif audit_failure?(exception)
             VALID_RFC_062_EXIT_CODES[:AUDIT_MODE_FAILURE]
+          elsif client_upgraded?(exception)
+            VALID_RFC_062_EXIT_CODES[:CLIENT_UPGRADED]
           else
             VALID_RFC_062_EXIT_CODES[:GENERIC_FAILURE]
           end
@@ -159,6 +162,12 @@ class Chef
         def audit_failure?(exception)
           resolve_exception_array(exception).any? do |e|
             e.is_a? Chef::Exceptions::AuditError
+          end
+        end
+
+        def client_upgraded?(exception)
+          resolve_exception_array(exception).any? do |e|
+            e.is_a? Chef::Exceptions::ClientUpgraded
           end
         end
 
