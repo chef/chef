@@ -52,8 +52,7 @@ class Chef
       alias :internal_push :<<
       private :internal_push
 
-      def initialize(array_data = [], root = self)
-        @__root = root
+      def initialize(array_data = [])
         array_data.each do |value|
           internal_push(immutablize(value))
         end
@@ -114,8 +113,7 @@ class Chef
       alias :internal_set :[]=
       private :internal_set
 
-      def initialize(mash_data = {}, root = self)
-        @__root = root
+      def initialize(mash_data = {})
         mash_data.each do |key, value|
           internal_set(key, immutablize(value))
         end

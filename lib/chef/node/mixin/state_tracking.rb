@@ -22,10 +22,14 @@ class Chef
         attr_reader :__path
         attr_reader :__root
 
-        def initialize(*args)
-          super(*args)
-          @__path ||= []
-          @__root ||= self
+        NULL = Object.new
+
+        def initialize(data = NULL, root = self)
+          # __path and __root must be nil when we call super so it knows
+          # to avoid resetting the cache on construction
+          data == NULL ? super() : super(data)
+          @__path = []
+          @__root = root
         end
 
         def [](key)
@@ -54,6 +58,12 @@ class Chef
 
         def __root=(root)
           @__root = root
+        end
+
+        private
+
+        def send_reset_cache(path = __path)
+          __root.reset_cache(path.first) if !__root.nil? && __root.respond_to?(:reset_cache) && !path.nil?
         end
       end
     end

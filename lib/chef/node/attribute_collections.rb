@@ -64,13 +64,12 @@ class Chef
       MUTATOR_METHODS.each do |mutator|
         define_method(mutator) do |*args, &block|
           ret = super(*args, &block)
-          __root.reset_cache(__root.top_level_breadcrumb)
+          send_reset_cache
           ret
         end
       end
 
-      def initialize(data = [], root = self)
-        @__root ||= root
+      def initialize(data = [])
         super(data)
         map! { |e| convert_value(e) }
       end
@@ -129,7 +128,6 @@ class Chef
       # object.
       MUTATOR_METHODS = [
         :clear,
-        :delete,
         :delete_if,
         :keep_if,
         :merge!,
@@ -143,21 +141,24 @@ class Chef
       # For all of the mutating methods on Mash, override them so that they
       # also invalidate the cached `merged_attributes` on the root Attribute
       # object.
+
+      def delete(key, &block)
+        send_reset_cache(__path + [ key ])
+        super
+      end
+
       MUTATOR_METHODS.each do |mutator|
         define_method(mutator) do |*args, &block|
-          __root.reset_cache(__root.top_level_breadcrumb)
+          send_reset_cache
           super(*args, &block)
         end
       end
 
-      def initialize(data = {}, root = self)
-        puts caller unless root.class == Chef::Node::Attribute
-        @__root ||= root
+      def initialize(data = {})
         super(data)
       end
 
       def [](key)
-        __root.top_level_breadcrumb ||= key
         value = super
         if !key?(key)
           value = self.class.new({}, __root)
@@ -168,9 +169,8 @@ class Chef
       end
 
       def []=(key, value)
-        __root.top_level_breadcrumb ||= key
         ret = super
-        __root.reset_cache(__root.top_level_breadcrumb)
+        send_reset_cache(__path + [ key ])
         ret
       end
 

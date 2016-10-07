@@ -19,14 +19,6 @@ class Chef
   class Node
     module Mixin
       module DeepMergeCache
-       # This is used to track the top level key as we descend through method chaining into
-       # a precedence level (e.g. node.default['foo']['bar']['baz']= results in 'foo' here).  We
-       # need this so that when we hit the end of a method chain which results in a mutator method
-       # that we can invalidate the whole top-level deep merge cache for the top-level key.  It is
-       # the responsibility of the accessor on the Chef::Node object to reset this to nil, and then
-       # the first VividMash#[] call can ||= and set this to the first key we encounter.
-        attr_accessor :top_level_breadcrumb
-
        # Cache of deep merged values by top-level key.  This is a simple hash which has keys that are the
        # top-level keys of the node object, and we save the computed deep-merge for that key here.  There is
        # no cache of subtrees.
@@ -36,7 +28,6 @@ class Chef
           @merged_attributes = nil
           @combined_override = nil
           @combined_default = nil
-          @top_level_breadcrumb = nil
           @deep_merge_cache = {}
         end
 
@@ -46,7 +37,7 @@ class Chef
        # must invalidate the entire cache and re-deep-merge the entire node object.
         def reset_cache(path = nil)
           if path.nil?
-            @deep_merge_cache = {}
+            deep_merge_cache.clear
           else
             deep_merge_cache.delete(path.to_s)
           end

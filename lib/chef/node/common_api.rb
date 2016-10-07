@@ -32,7 +32,6 @@ class Chef
       # - autovivifying / autoreplacing writer
       # - non-container-ey intermediate objects are replaced with hashes
       def write(*args, &block)
-        __root.top_level_breadcrumb = nil if respond_to?(:__root)
         value = block_given? ? yield : args.pop
         last = args.pop
         prev_memo = prev_key = nil
@@ -56,7 +55,6 @@ class Chef
       # something that is not a container ("schema violation" issues).
       #
       def write!(*args, &block)
-        __root.top_level_breadcrumb = nil if respond_to?(:__root)
         value = block_given? ? yield : args.pop
         last = args.pop
         obj = args.inject(self) do |memo, key|
@@ -71,7 +69,6 @@ class Chef
 
       # return true or false based on if the attribute exists
       def exist?(*path)
-        __root.top_level_breadcrumb = nil if respond_to?(:__root)
         path.inject(self) do |memo, key|
           return false unless valid_container?(memo, key)
           if memo.is_a?(Hash)
@@ -103,7 +100,6 @@ class Chef
       # non-autovivifying reader that throws an exception if the attribute does not exist
       def read!(*path)
         raise Chef::Exceptions::NoSuchAttribute unless exist?(*path)
-        __root.top_level_breadcrumb = nil if respond_to?(:__root)
         path.inject(self) do |memo, key|
           memo[key]
         end
@@ -112,10 +108,8 @@ class Chef
       # FIXME:(?) does anyone really like the autovivifying reader that we have and wants the same behavior?  readers that write?  ugh...
 
       def unlink(*path, last)
-        __root.top_level_breadcrumb = nil if respond_to?(:__root)
         hash = path.empty? ? self : read(*path)
         return nil unless hash.is_a?(Hash) || hash.is_a?(Array)
-        __root.top_level_breadcrumb ||= last
         hash.delete(last)
       end
 
