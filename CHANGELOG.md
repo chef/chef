@@ -1,5 +1,32 @@
 # Change Log
 
+## [v12.15.18](https://github.com/chef/chef/tree/v12.15.18) (2016-10-07)
+[Full Changelog](https://github.com/chef/chef/compare/v12.14.89...v12.15.18)
+
+**Enhancements:**
+
+- Adding support for rfc 62 exit code 213 [\#5428](https://github.com/chef/chef/pull/5428) ([jeremymv2](https://github.com/jeremymv2))
+- Allow raw_key to override the configured signing\_key [\#5314](https://github.com/chef/chef/pull/5314) ([thommay](https://github.com/thommay))
+- Set yum\_repository gpgcheck default to true [\#5398](https://github.com/chef/chef/pull/5398) ([shortdudey123](https://github.com/shortdudey123))
+- Allow deletion of registry\_key without the need for users to pass data key in values hash. [\#5359](https://github.com/chef/chef/pull/5359) ([Aliasgar16](https://github.com/Aliasgar16))
+- Adding support for cab files to Chef package provider on windows [\#5285](https://github.com/chef/chef/pull/5285) ([Vasu1105](https://github.com/Vasu1105))
+- Ignore unknown metadata fields in metadata.rb [\#5299](https://github.com/chef/chef/pull/5299) ([lamont-granquist](https://github.com/lamont-granquist))
+
+**Fixed Bugs:**
+
+- knife ssh: use the command line prompt for sudo if set [\#5427](https://github.com/chef/chef/pull/5427) ([lamont-granquist](https://github.com/lamont-granquist))
+- User provider: Fix manage\_home provider inconsistency for Mac and FreeBSD providers [\#5423](https://github.com/chef/chef/pull/5423) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix for "Chefspec template rendering fails when cookbook\_name != directory name" [\#5417](https://github.com/chef/chef/pull/5417) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix solaris handling for useradd -m/-M behavior [\#5408](https://github.com/chef/chef/pull/5408) ([coderanger](https://github.com/coderanger))
+- Normalize full key name to avoid resource update on identical key names [\#5290](https://github.com/chef/chef/pull/5290) ([bai](https://github.com/bai))
+- Add trailing newline to generated 15update-stamp [\#5382](https://github.com/chef/chef/pull/5382) ([pwalz](https://github.com/pwalz))
+- Invalid `dsc_scripts` should fail the run [\#5377](https://github.com/chef/chef/pull/5377) ([NimishaS](https://github.com/NimishaS))
+- Revert --local filter for gems installed from  paths [\#5379](https://github.com/chef/chef/pull/5379) ([mwrock](https://github.com/mwrock))
+- Fix knife list\_commands\(\) [\#5386](https://github.com/chef/chef/pull/5386) ([lamont-granquist](https://github.com/lamont-granquist))
+- Don't use -r for users or groups on Solaris. [\#5355](https://github.com/chef/chef/pull/5355) ([coderanger](https://github.com/coderanger))
+- Chef 12 Attribute Regression [\#5360](https://github.com/chef/chef/pull/5360) ([gbagnoli](https://github.com/gbagnoli))
+- Handling Errno::ETIMEDOUT [\#5358](https://github.com/chef/chef/pull/5358) ([NimishaS](https://github.com/NimishaS))
+
 ## [v12.14.89](https://github.com/chef/chef/tree/v12.14.89) (2016-09-22)
 [Full Changelog](https://github.com/chef/chef/compare/v12.14.77...v12.14.89)
 
