@@ -85,6 +85,7 @@ require "chef/provider/package/smartos"
 require "chef/provider/package/aix"
 require "chef/provider/package/cab"
 require "chef/provider/package/powershell"
+require "chef/provider/package/msu"
 
 require "chef/provider/service/arch"
 require "chef/provider/service/freebsd"
