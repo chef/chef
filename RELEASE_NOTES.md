@@ -30,6 +30,20 @@ Please see [https://docs.chef.io/release_notes.html](https://docs.chef.io/releas
 
 * Support for Solaris releases before 10u11 has been removed
 * Upgraded Ohai to 8.20 with new / enhanced plugins. See the [ohai changelog](https://github.com/chef-cookbooks/ohai/blob/master/CHANGELOG.md)
+* Added cab_package resource and provider which supports the installation of CAB/cabinet packages on Windows. Example:
+
+  ```ruby
+  cab_package 'Install .NET 3.5 sp1 via KB958488' do
+    source 'C:\Users\xyz\AppData\Local\Temp\Windows6.1-KB958488-x64.cab'
+    action :install
+  end
+
+  cab_package 'Remove .NET 3.5 sp1 via KB958488' do
+    source 'C:\Users\xyz\AppData\Local\Temp\Windows6.1-KB958488-x64.cab'
+    action :remove
+  end
+  ```
+  **NOTE:** cab_package resource does not support URLs in `source`.
 
 ## Highlighted bug fixes for this release:
 
