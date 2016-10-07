@@ -156,7 +156,6 @@ GEM
       chef-provisioning (~> 2.0)
       retryable (~> 2.0, >= 2.0.1)
       ubuntu_ami (~> 0.4, >= 0.4.1)
-    chef-rewind (0.0.9)
     chef-sugar (3.4.0)
     chef-zero (5.1.0)
       ffi-yajl (~> 2.2)
@@ -575,7 +574,6 @@ DEPENDENCIES
   chef-config!
   chef-provisioning
   chef-provisioning-aws
-  chef-rewind
   chef-sugar
   cheffish
   chefspec
