@@ -44,6 +44,17 @@ describe Chef::Mixin::PowershellOut do
       ).and_return(ret)
       expect(object.powershell_out("Get-Process", timeout: 600)).to eql(ret)
     end
+
+    context "when double quote is passed in the powershell command" do
+      it "passes if double quote is appended with single escape" do
+        result = object.powershell_out("Write-Verbose \"Some String\" -Verbose")
+        expect(result.stderr).to be == ""
+      end
+
+      it "suppresses error if double quote is passed with double escape characters" do
+        expect { object.powershell_out("Write-Verbose \\\"Some String\\\" -Verbose") }.not_to raise_error
+      end
+    end
   end
 
   describe "#powershell_out!" do
@@ -65,6 +76,17 @@ describe Chef::Mixin::PowershellOut do
       ).and_return(mixlib_shellout)
       expect(mixlib_shellout).to receive(:error!)
       expect(object.powershell_out!("Get-Process", timeout: 600)).to eql(mixlib_shellout)
+    end
+
+    context "when double quote is passed in the powershell command" do
+      it "passes if double quote is appended with single escape" do
+        result = object.powershell_out!("Write-Verbose \"Some String\" -Verbose")
+        expect(result.stderr).to be == ""
+      end
+
+      it "raises error if double quote is passed with double escape characters" do
+        expect { object.powershell_out!("Write-Verbose \\\"Some String\\\" -Verbose") }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
+      end
     end
   end
 end

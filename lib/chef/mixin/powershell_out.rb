@@ -91,7 +91,7 @@ class Chef
           "-InputFormat None",
         ]
 
-        "powershell.exe #{flags.join(' ')} -Command \"#{script}\""
+        "powershell.exe #{flags.join(' ')} -Command \"#{script.gsub('"', '\"')}\""
       end
     end
   end
