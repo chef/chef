@@ -19,24 +19,24 @@ class Chef
   class Node
     module Mixin
       module StateTracking
-        attr_reader :__path
-        attr_reader :__root
+        attr_reader :__path__
+        attr_reader :__root__
 
         NULL = Object.new
 
         def initialize(data = NULL, root = self)
-          # __path and __root must be nil when we call super so it knows
+          # __path__ and __root__ must be nil when we call super so it knows
           # to avoid resetting the cache on construction
           data == NULL ? super() : super(data)
-          @__path = []
-          @__root = root
+          @__path__ = []
+          @__root__ = root
         end
 
         def [](key)
           ret = super
           if ret.is_a?(StateTracking)
-            ret.__path = __path + [ convert_key(key) ]
-            ret.__root = __root
+            ret.__path__ = __path__ + [ convert_key(key) ]
+            ret.__root__ = __root__
           end
           ret
         end
@@ -44,26 +44,26 @@ class Chef
         def []=(key, value)
           ret = super
           if ret.is_a?(StateTracking)
-            ret.__path = __path + [ convert_key(key) ]
-            ret.__root = __root
+            ret.__path__ = __path__ + [ convert_key(key) ]
+            ret.__root__ = __root__
           end
           ret
         end
 
         protected
 
-        def __path=(path)
-          @__path = path
+        def __path__=(path)
+          @__path__ = path
         end
 
-        def __root=(root)
-          @__root = root
+        def __root__=(root)
+          @__root__ = root
         end
 
         private
 
-        def send_reset_cache(path = __path)
-          __root.reset_cache(path.first) if !__root.nil? && __root.respond_to?(:reset_cache) && !path.nil?
+        def send_reset_cache(path = __path__)
+          __root__.reset_cache(path.first) if !__root__.nil? && __root__.respond_to?(:reset_cache) && !path.nil?
         end
       end
     end

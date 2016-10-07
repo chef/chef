@@ -596,7 +596,7 @@ class Chef
         end
       end
 
-       # needed for __path
+       # needed for __path__
       def convert_key(key)
         key.kind_of?(Symbol) ? key.to_s : key
       end

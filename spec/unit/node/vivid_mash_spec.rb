@@ -36,7 +36,7 @@ describe Chef::Node::VividMash do
     end
 
     it "sets the root to the root object" do
-      expect(vivid["one"]["two"].__root).to eql(vivid)
+      expect(vivid["one"]["two"].__root__).to eql(vivid)
     end
 
     it "does not send reset cache" do
