@@ -292,7 +292,7 @@ user password using shadow hash.")
             return
           end
 
-          if new_resource.supports[:manage_home]
+          if managing_home_dir?
             validate_home_dir_specification!
 
             if (current_resource.home == new_resource.home) && !new_home_exists?
@@ -438,7 +438,7 @@ user password using shadow hash.")
         # and deleting home directory if needed.
         #
         def remove_user
-          if new_resource.supports[:manage_home]
+          if managing_home_dir?
             # Remove home directory
             FileUtils.rm_rf(current_resource.home)
           end

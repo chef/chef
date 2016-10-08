@@ -1,8 +1,13 @@
 source "https://supermarket.getchef.com"
 
-cookbook "webapp", path: "cookbooks/webapp"
+#cookbook "webapp", path: "cookbooks/webapp"
 cookbook "base", path: "cookbooks/base"
 
 cookbook "php", "~> 1.5.0"
 
 cookbook "resolver", github: "chef-cookbooks/resolver"
+
+cookbook "awesome_customers_ubuntu_wrapper", path: "cookbooks/awesome_customers_ubuntu_wrapper"
+cookbook "awesome_customers_ubuntu", github: "learn-chef/awesome_customers_ubuntu"
+cookbook "awesome_customers_rhel_wrapper", path: "cookbooks/awesome_customers_rhel_wrapper"
+cookbook "awesome_customers_rhel", github: "learn-chef/awesome_customers_rhel"

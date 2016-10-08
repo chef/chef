@@ -33,7 +33,6 @@ end
 group(:integration) do
   gem "chef-provisioning"
   gem "chef-provisioning-aws"
-  gem "chef-rewind"
   gem "chef-sugar"
   gem "chefspec"
   gem "halite"
