@@ -22,7 +22,8 @@ Please see [https://docs.chef.io/release_notes.html](https://docs.chef.io/releas
   ```
   **NOTE:** cab_package resource does not support URLs in `source`.
 
-* Added exit code 213 from [RFC062](https://github.com/chef/chef-rfc/blob/master/rfc062-exit-status.md)
+* Added exit code 213 (Chef Upgrades) from [RFC062](https://github.com/chef/chef-rfc/blob/master/rfc062-exit-status.md)
+  * This allows for easier testing of chef client upgrades in Test Kitchen (see https://github.com/chef-cookbooks/omnibus_updater)
 
 * Set `yum_repository` gpgcheck default to true.
 
