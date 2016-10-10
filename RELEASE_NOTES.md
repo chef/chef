@@ -29,7 +29,7 @@ Please see [https://docs.chef.io/release_notes.html](https://docs.chef.io/releas
 
 * Allow deletion of `registry_key` without the need for users to pass data key in values hash.
 
-* `knife ssh` now uses the command line prompt for sudo if set.
+* `knife ssh` will pass the -P option on the command line, if it is given, as the sudo password and will bypass prompting.
 
 ## Highlighted bug fixes for this release:
 
