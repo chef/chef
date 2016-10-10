@@ -119,7 +119,13 @@ class Chef
       #
       def edit_resource!(type, name, created_at = nil, run_context: self.run_context, &resource_attrs_block)
         resource = find_resource!(type, name, run_context: run_context)
-        resource.instance_eval(&resource_attrs_block) if block_given?
+        if block_given?
+          if defined?(new_resource)
+            resource.instance_exec(new_resource, &resource_attrs_block)
+          else
+            resource.instance_exec(&resource_attrs_block)
+          end
+        end
         resource
       end
 
