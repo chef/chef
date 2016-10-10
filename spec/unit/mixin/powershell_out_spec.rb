@@ -49,6 +49,7 @@ describe Chef::Mixin::PowershellOut, :windows_only do
       it "passes if double quote is appended with single escape" do
         result = object.powershell_out("Write-Verbose \"Some String\" -Verbose")
         expect(result.stderr).to be == ""
+        expect(result.stdout).to be == "VERBOSE: Some String\n"
       end
 
       it "suppresses error if double quote is passed with double escape characters" do
@@ -82,6 +83,7 @@ describe Chef::Mixin::PowershellOut, :windows_only do
       it "passes if double quote is appended with single escape" do
         result = object.powershell_out!("Write-Verbose \"Some String\" -Verbose")
         expect(result.stderr).to be == ""
+        expect(result.stdout).to be == "VERBOSE: Some String\n"
       end
 
       it "raises error if double quote is passed with double escape characters" do
