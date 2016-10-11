@@ -1,11 +1,11 @@
 # Change Log
 
-## [v12.15.18](https://github.com/chef/chef/tree/v12.15.18) (2016-10-07)
-[Full Changelog](https://github.com/chef/chef/compare/v12.14.89...v12.15.18)
+## [v12.15.19](https://github.com/chef/chef/tree/v12.15.19) (2016-10-07)
+[Full Changelog](https://github.com/chef/chef/compare/v12.14.89...v12.15.19)
 
 **Enhancements:**
 
-- Adding support for rfc 62 exit code 213 [\#5428](https://github.com/chef/chef/pull/5428) ([jeremymv2](https://github.com/jeremymv2))
+- Adding support for rfc 62 exit code 213 (Chef upgrades) [\#5428](https://github.com/chef/chef/pull/5428) ([jeremymv2](https://github.com/jeremymv2))
 - Allow raw_key to override the configured signing\_key [\#5314](https://github.com/chef/chef/pull/5314) ([thommay](https://github.com/thommay))
 - Set yum\_repository gpgcheck default to true [\#5398](https://github.com/chef/chef/pull/5398) ([shortdudey123](https://github.com/shortdudey123))
 - Allow deletion of registry\_key without the need for users to pass data key in values hash. [\#5359](https://github.com/chef/chef/pull/5359) ([Aliasgar16](https://github.com/Aliasgar16))
