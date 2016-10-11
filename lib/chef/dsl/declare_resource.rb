@@ -119,7 +119,7 @@ class Chef
       #
       def edit_resource!(type, name, created_at = nil, run_context: self.run_context, &resource_attrs_block)
         resource = find_resource!(type, name, run_context: run_context)
-        if block_given?
+        if resource_attrs_block
           if defined?(new_resource)
             resource.instance_exec(new_resource, &resource_attrs_block)
           else
@@ -206,7 +206,7 @@ class Chef
       def find_resource(type, name, created_at: nil, run_context: self.run_context, &resource_attrs_block)
         find_resource!(type, name, run_context: run_context)
       rescue Chef::Exceptions::ResourceNotFound
-        if block_given?
+        if resource_attrs_block
           declare_resource(type, name, created_at, run_context: run_context, &resource_attrs_block)
         end # returns nil otherwise
       end
