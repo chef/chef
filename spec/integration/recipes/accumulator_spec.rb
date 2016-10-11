@@ -46,10 +46,8 @@ describe "Accumulators" do
                 variables[:aliases][new_resource.address] ||= []
                 variables[:aliases][new_resource.address] += new_resource.recipients
                 action :nothing
+                delayed_action :create
               end
-            end
-            log "force delayed notification" do
-              notifies :create, "template[#{aliases_temppath}]", :delayed
             end
           end
         EOM
@@ -148,13 +146,11 @@ describe "Accumulators" do
                 source "aliases.erb"
                 variables[:aliases] = {}
                 action :nothing
+                delayed_action :create
               end
             end
             r.variables[:aliases][address] ||= []
             r.variables[:aliases][address] += new_resource.recipients
-            log "force delayed notification" do
-              notifies :create, "template[#{aliases_temppath}]", :delayed
-            end
           end
         EOM
 
