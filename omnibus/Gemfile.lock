@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: 4fd26d99d0617d6336ae372f026c190617800e6b
+  revision: ca9e8fe08581bc6352d6d23389dcfdcddc44a76b
   specs:
     license_scout (0.1.2)
       ffi-yajl (~> 2.2)
@@ -127,10 +127,11 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (2.1.0)
+    mixlib-install (2.1.1)
       artifactory
       mixlib-shellout
       mixlib-versioning
+      thor
     mixlib-log (1.7.1)
     mixlib-shellout (2.2.7)
     mixlib-shellout (2.2.7-universal-mingw32)
@@ -227,7 +228,7 @@ GEM
       hashie (>= 2.0.2, < 4.0.0)
     win32-process (0.8.3)
       ffi (>= 1.0.0)
-    winrm (2.0.3)
+    winrm (2.1.0)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)
