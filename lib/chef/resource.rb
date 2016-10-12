@@ -181,6 +181,31 @@ class Chef
     alias_method :action=, :action
 
     #
+    # Force a delayed notification into this resource's run_context.
+    #
+    # This should most likely be paired with action :nothing
+    #
+    # @param arg [Array[Symbol], Symbol] A list of actions (e.g. `:create`)
+    # @return [Array[Symbol]] the list of actions.
+    #
+    def delayed_action(arg = nil)
+      if arg
+        arg = Array(arg).map(&:to_sym)
+        arg.each do |action|
+          validate(
+            { action: action },
+            { action: { kind_of: Symbol, equal_to: allowed_actions } }
+          )
+          # the resource effectively sends a delayed notification to itself
+          run_context.add_delayed_action(Notification.new(self, action, self))
+        end
+        @delayed_action = arg
+      else
+        @delayed_action
+      end
+    end
+
+    #
     # Sets up a notification that will run a particular action on another resource
     # if and when *this* resource is updated by an action.
     #
