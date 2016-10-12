@@ -187,7 +187,7 @@ class Chef
     #
     # @param arg [Array[Symbol], Symbol] A list of actions (e.g. `:create`)
     #
-    def delayed_action(arg = nil)
+    def delayed_action(arg)
       arg = Array(arg).map(&:to_sym)
       arg.map do |action|
         validate(
