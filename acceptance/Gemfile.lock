@@ -11,12 +11,12 @@ GEM
   specs:
     addressable (2.4.0)
     artifactory (2.5.0)
-    aws-sdk (2.6.6)
-      aws-sdk-resources (= 2.6.6)
-    aws-sdk-core (2.6.6)
+    aws-sdk (2.6.9)
+      aws-sdk-resources (= 2.6.9)
+    aws-sdk-core (2.6.9)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.6)
-      aws-sdk-core (= 2.6.6)
+    aws-sdk-resources (2.6.9)
+      aws-sdk-core (= 2.6.9)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -53,7 +53,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.14.89)
+    chef-config (12.15.19)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)

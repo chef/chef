@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 1a7d867ed8deb6097a55a704559dc3796d9e1444
+  revision: 77a662df32c79865b2195cc398d7e121c7048ff3
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -125,12 +125,12 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.5.0)
     ast (2.3.0)
-    aws-sdk (2.6.6)
-      aws-sdk-resources (= 2.6.6)
-    aws-sdk-core (2.6.6)
+    aws-sdk (2.6.9)
+      aws-sdk-resources (= 2.6.9)
+    aws-sdk-core (2.6.9)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.6)
-      aws-sdk-core (= 2.6.6)
+    aws-sdk-resources (2.6.9)
+      aws-sdk-core (= 2.6.9)
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
