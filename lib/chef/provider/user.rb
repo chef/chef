@@ -113,15 +113,13 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If the users are identical
       def compare_user
-        changed = [ :comment, :home, :shell, :password ].select do |user_attrib|
-          !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
+        return true if !@new_resource.home.nil? && Pathname.new(@new_resource.home).cleanpath != Pathname.new(@current_resource.home).cleanpath
+
+        [ :comment, :shell, :password, :uid, :gid ].each do |user_attrib|
+          return true if !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib).to_s != @current_resource.send(user_attrib).to_s
         end
 
-        changed += [ :uid, :gid ].select do |user_attrib|
-          !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib).to_s != @current_resource.send(user_attrib).to_s
-        end
-
-        changed.any?
+        false
       end
 
       def action_create
