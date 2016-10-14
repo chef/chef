@@ -221,6 +221,12 @@ describe Chef::Provider::User do
     it "should return false if the objects are identical" do
       expect(@provider.compare_user).to eql(false)
     end
+
+    it "should ignore differences in trailing slash in home paths" do
+      @new_resource.home "/home/adam"
+      @current_resource.home "/home/adam/"
+      expect(@provider.compare_user).to eql(false)
+    end
   end
 
   describe "action_create" do
