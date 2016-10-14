@@ -116,7 +116,7 @@ class Chef
           options.delete(:name_property)
           preferred_default = :default
         end
-        Chef.log_deprecation("Cannot specify both default and name_property together on property #{self}. Only one (#{preferred_default}) will be obeyed. In Chef 13, this will become an error. Please remove one or the other from the property.")
+        Chef.deprecated(:custom_resource, "Cannot specify both default and name_property together on property #{self}. Only one (#{preferred_default}) will be obeyed. In Chef 13, this will become an error. Please remove one or the other from the property.")
       end
 
       # Validate the default early, so the user gets a good error message, and
@@ -287,13 +287,13 @@ class Chef
           input_to_stored_value(resource, value)
           # If nil is valid, and it would change the value, warn that this will change to a set.
           if !result.nil?
-            Chef.log_deprecation("An attempt was made to change #{name} from #{result.inspect} to nil by calling #{name}(nil). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil.")
+            Chef.deprecated(:custom_resource, "An attempt was made to change #{name} from #{result.inspect} to nil by calling #{name}(nil). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil.")
           end
         rescue Chef::Exceptions::DeprecatedFeatureError
           raise
         rescue
           # If nil is invalid, warn that this will become an error.
-          Chef.log_deprecation("nil is an invalid value for #{self}. In Chef 13, this warning will change to an error. Error: #{$!}")
+          Chef.deprecated(:custom_resource, "nil is an invalid value for #{self}. In Chef 13, this warning will change to an error. Error: #{$!}")
         end
 
         result
@@ -677,9 +677,9 @@ class Chef
         # warn and return the (possibly coerced) value to the user.
         if is_default
           if value.nil?
-            Chef.log_deprecation("Default value nil is invalid for property #{self}. Possible fixes: 1. Remove 'default: nil' if nil means 'undefined'. 2. Set a valid default value if there is a reasonable one. 3. Allow nil as a valid value of your property (for example, 'property #{name.inspect}, [ String, nil ], default: nil'). Error: #{$!}")
+            Chef.deprecated(:custom_resource, "Default value nil is invalid for property #{self}. Possible fixes: 1. Remove 'default: nil' if nil means 'undefined'. 2. Set a valid default value if there is a reasonable one. 3. Allow nil as a valid value of your property (for example, 'property #{name.inspect}, [ String, nil ], default: nil'). Error: #{$!}")
           else
-            Chef.log_deprecation("Default value #{value.inspect} is invalid for property #{self}. In Chef 13 this will become an error: #{$!}.")
+            Chef.deprecated(:custom_resource, "Default value #{value.inspect} is invalid for property #{self}. In Chef 13 this will become an error: #{$!}.")
           end
         else
           raise

@@ -201,7 +201,7 @@ class Chef
     end
 
     def set
-      Chef.log_deprecation("node.set is deprecated and will be removed in Chef 14, please use node.default/node.override (or node.normal only if you really need persistence)")
+      Chef.deprecated(:attributes, "node.set is deprecated and will be removed in Chef 14, please use node.default/node.override (or node.normal only if you really need persistence)")
       normal
     end
 
@@ -509,7 +509,7 @@ class Chef
 
     # Create a Chef::Node from JSON
     def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Node#from_hash")
+      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::Node#from_hash")
       from_hash(o)
     end
 

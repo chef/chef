@@ -37,7 +37,7 @@ class Chef
         # method_missing manually. Not a fan. Not. A. Fan.
         #
         if respond_to?(method_symbol)
-          Chef.log_deprecation("Calling method_missing(#{method_symbol.inspect}) directly is deprecated in Chef 12 and will be removed in Chef 13. Use public_send() or send() instead.")
+          Chef.deprecated(:internal_api, "Calling method_missing(#{method_symbol.inspect}) directly is deprecated in Chef 12 and will be removed in Chef 13. Use public_send() or send() instead.")
           return send(method_symbol, *args, &block)
         end
 
@@ -46,7 +46,7 @@ class Chef
         # never called.  DEPRECATED.
         #
         if run_context.definitions.has_key?(method_symbol.to_sym)
-          Chef.log_deprecation("Definition #{method_symbol} (#{run_context.definitions[method_symbol.to_sym]}) was added to the run_context without calling Chef::DSL::Definitions.add_definition(#{method_symbol.to_sym.inspect}).  This will become required in Chef 13.")
+          Chef.deprecated(:internal_api, "Definition #{method_symbol} (#{run_context.definitions[method_symbol.to_sym]}) was added to the run_context without calling Chef::DSL::Definitions.add_definition(#{method_symbol.to_sym.inspect}).  This will become required in Chef 13.")
           Chef::DSL::Definitions.add_definition(method_symbol)
           return send(method_symbol, *args, &block)
         end

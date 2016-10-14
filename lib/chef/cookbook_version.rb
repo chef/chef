@@ -54,12 +54,12 @@ class Chef
     attr_accessor :metadata_filenames
 
     def status=(new_status)
-      Chef.log_deprecation("Deprecated method `status' called. This method will be removed.")
+      Chef.deprecated(:internal_api, "Deprecated method `status' called. This method will be removed.")
       @status = new_status
     end
 
     def status
-      Chef.log_deprecation("Deprecated method `status' called. This method will be removed.")
+      Chef.deprecated(:internal_api, "Deprecated method `status' called. This method will be removed.")
       @status
     end
 
@@ -485,7 +485,7 @@ class Chef
     end
 
     def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::CookbookVersion#from_hash")
+      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::CookbookVersion#from_hash")
       from_hash(o)
     end
 
@@ -496,7 +496,7 @@ class Chef
     # @deprecated This method was used by the Ruby Chef Server and is no longer
     #   needed. There is no replacement.
     def generate_manifest_with_urls
-      Chef.log_deprecation("Deprecated method #generate_manifest_with_urls.")
+      Chef.deprecated(:internal_api, "Deprecated method #generate_manifest_with_urls.")
 
       rendered_manifest = manifest.dup
       COOKBOOK_SEGMENTS.each do |segment|

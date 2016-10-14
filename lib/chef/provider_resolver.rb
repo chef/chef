@@ -157,8 +157,8 @@ class Chef
             # perf concern otherwise.)
             handlers = providers.select { |handler| overrode_provides?(handler) && handler.provides?(node, resource) }
             handlers.each do |handler|
-              Chef.log_deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource.resource_name}, but provides #{resource.resource_name.inspect} was never called!")
-              Chef.log_deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
+              message = "#{handler}.provides? returned true when asked if it provides DSL #{resource.resource_name}, but provides #{resource.resource_name.inspect} was never called!  In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself."
+              Chef.deprecated(:custom_resource, message)
             end
           end
           handlers

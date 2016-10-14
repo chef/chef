@@ -186,7 +186,7 @@ class Chef
 
         if parse_output
           if object_class.nil?
-            Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please pass in the class to inflate or use #edit_hash")
+            Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please pass in the class to inflate or use #edit_hash")
             Chef::JSONCompat.from_json(output)
           else
             object_class.from_hash(Chef::JSONCompat.parse(output))

@@ -125,7 +125,7 @@ class Chef
     end
 
     def self.json_create(json)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Org#from_json or Chef::Org#load.")
+      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::Org#from_json or Chef::Org#load.")
       Chef::Org.from_json(json)
     end
 

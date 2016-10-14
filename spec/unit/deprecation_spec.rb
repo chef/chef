@@ -65,15 +65,8 @@ describe Chef::Deprecation do
     end
 
     context "deprecation warning messages" do
-      RSpec::Matchers.define_negated_matcher :a_non_empty_array, :be_empty
-
       it "should be enabled for deprecated methods" do
-        expect(Chef::Log).to receive(:warn).with(a_non_empty_array)
-        TestClass.new.deprecated_method(10)
-      end
-
-      it "should contain stack trace" do
-        expect(Chef::Log).to receive(:warn).with(a_string_including(".rb"))
+        expect(Chef).to receive(:deprecated).with(:internal_api, /Method.*of 'TestClass'/)
         TestClass.new.deprecated_method(10)
       end
     end

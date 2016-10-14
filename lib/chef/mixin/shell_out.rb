@@ -118,7 +118,7 @@ class Chef
       end
 
       def deprecate_option(old_option, new_option)
-        Chef.log_deprecation "DEPRECATION: Chef::Mixin::ShellOut option :#{old_option} is deprecated. Use :#{new_option}"
+        Chef.deprecated :internal_api, "Chef::Mixin::ShellOut option :#{old_option} is deprecated. Use :#{new_option}"
       end
 
       def io_for_live_stream

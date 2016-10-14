@@ -108,7 +108,7 @@ class Chef
         def verify_command(path, opts)
           # First implementation interpolated `file`; docs & RFC claim `path`
           # is interpolated. Until `file` can be deprecated, interpolate both.
-          Chef.log_deprecation(
+          Chef.deprecated(:verify_file,
             "%{file} is deprecated in verify command and will not be "\
             "supported in Chef 13. Please use %{path} instead."
           ) if @command.include?("%{file}")

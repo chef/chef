@@ -223,7 +223,7 @@ class Chef
       end
 
       def json_create(json)
-        Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Key#from_json or one of the load_by methods.")
+        Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::Key#from_json or one of the load_by methods.")
         Chef::Key.from_json(json)
       end
 
