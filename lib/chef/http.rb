@@ -329,10 +329,9 @@ class Chef
     # Runs a synchronous HTTP request, with no middleware applied (use #request
     # to have the middleware applied). The entire response will be loaded into memory.
     # @api private
-    def send_http_request(method, url, headers, body, &response_handler)
-      headers = build_headers(method, url, headers, body)
-
+    def send_http_request(method, url, base_headers, body, &response_handler)
       retrying_http_errors(url) do
+        headers = build_headers(method, url, base_headers, body)
         client = http_client(url)
         return_value = nil
         if block_given?
