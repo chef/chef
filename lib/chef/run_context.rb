@@ -85,6 +85,19 @@ class Chef
     attr_reader :parent_run_context
 
     #
+    # The root run context.
+    #
+    # @return [Chef::RunContext] The root run context.
+    #
+    def root_run_context
+      rc = self
+      until rc.parent_run_context.nil?
+        rc = rc.parent_run_context
+      end
+      rc
+    end
+
+    #
     # The collection of resources intended to be converged (and able to be
     # notified).
     #

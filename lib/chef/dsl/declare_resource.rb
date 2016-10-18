@@ -47,7 +47,7 @@ class Chef
           when Chef::RunContext
             rc
           when :root
-            Chef.run_context
+            run_context.root_run_context
           when :parent
             run_context.parent_run_context
           else
