@@ -408,11 +408,25 @@ class Chef
       config_loader = self.class.load_config(config[:config_file])
       config[:config_file] = config_loader.config_location
 
+      # For CLI options like `--config-option key=value`. These have to get
+      # parsed and applied separately.
+      extra_config_options = config.delete(:config_option)
+
       merge_configs
       apply_computed_config
-      Chef::Config.export_proxies
+
       # This has to be after apply_computed_config so that Mixlib::Log is configured
       Chef::Log.info("Using configuration from #{config[:config_file]}") if config[:config_file]
+
+      begin
+        Chef::Config.apply_extra_config_options(extra_config_options)
+      rescue ChefConfig::UnparsableConfigOption => e
+        ui.error e.message
+        show_usage
+        exit(1)
+      end
+
+      Chef::Config.export_proxies
     end
 
     def show_usage

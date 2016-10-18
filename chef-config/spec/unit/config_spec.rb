@@ -68,6 +68,91 @@ RSpec.describe ChefConfig::Config do
     end
   end
 
+  describe "parsing arbitrary config from the CLI" do
+
+    def apply_config
+      described_class.apply_extra_config_options(extra_config_options)
+    end
+
+    context "when no arbitrary config is given" do
+
+      let(:extra_config_options) { nil }
+
+      it "succeeds" do
+        expect { apply_config }.to_not raise_error
+      end
+
+    end
+
+    context "when given a simple string option" do
+
+      let(:extra_config_options) { [ "node_name=bobotclown" ] }
+
+      it "applies the string option" do
+        apply_config
+        expect(described_class[:node_name]).to eq("bobotclown")
+      end
+
+    end
+
+    context "when given a blank value" do
+
+      let(:extra_config_options) { [ "http_retries=" ] }
+
+      it "sets the value to nil" do
+        # ensure the value is actually changed in the test
+        described_class[:http_retries] = 55
+        apply_config
+        expect(described_class[:http_retries]).to eq(nil)
+      end
+    end
+
+    context "when given spaces between `key = value`" do
+
+      let(:extra_config_options) { [ "node_name = bobo" ] }
+
+      it "handles the extra spaces and applies the config option" do
+        apply_config
+        expect(described_class[:node_name]).to eq("bobo")
+      end
+
+    end
+
+    context "when given an integer value" do
+
+      let(:extra_config_options) { [ "http_retries=9000" ] }
+
+      it "converts to a numeric type and applies the config option" do
+        apply_config
+        expect(described_class[:http_retries]).to eq(9000)
+      end
+
+    end
+
+    context "when given a boolean" do
+
+      let(:extra_config_options) { [ "boolean_thing=true" ] }
+
+      it "converts to a boolean type and applies the config option" do
+        apply_config
+        expect(described_class[:boolean_thing]).to eq(true)
+      end
+
+    end
+
+    context "when given input that is not in key=value form" do
+
+      let(:extra_config_options) { [ "http_retries:9000" ] }
+
+      it "raises UnparsableConfigOption" do
+        message = 'Unparsable config option "http_retries:9000"'
+        expect { apply_config }.to raise_error(ChefConfig::UnparsableConfigOption, message)
+      end
+
+    end
+
+  end
+
   describe "when configuring formatters" do
       # if TTY and not(force-logger)
       #   formatter = configured formatter or default formatter

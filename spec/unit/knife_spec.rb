@@ -349,6 +349,37 @@ describe Chef::Knife do
         expect { knife.run_with_pretty_exceptions }.to raise_error(Exception)
       end
     end
+
+    describe "setting arbitrary configuration with --config-option" do
+
+      let(:stdout) { StringIO.new }
+
+      let(:stderr) { StringIO.new }
+
+      let(:stdin) { StringIO.new }
+
+      let(:ui) { Chef::Knife::UI.new(stdout, stderr, stdin, disable_editing: true) }
+
+      let(:subcommand) do
+        KnifeSpecs::TestYourself.options = Chef::Application::Knife.options.merge(KnifeSpecs::TestYourself.options)
+        KnifeSpecs::TestYourself.new(%w{--config-option badly_formatted_arg}).tap do |cmd|
+          cmd.ui = ui
+        end
+      end
+
+      it "sets arbitrary configuration via --config-option" do
+        Chef::Knife.run(%w{test yourself --config-option arbitrary_config_thing=hello}, Chef::Application::Knife.options)
+        expect(Chef::Config[:arbitrary_config_thing]).to eq("hello")
+      end
+
+      it "handles errors in arbitrary configuration" do
+        expect(subcommand).to receive(:exit).with(1)
+        subcommand.configure_chef
+        expect(stderr.string).to include("ERROR: Unparsable config option \"badly_formatted_arg\"")
+        expect(stdout.string).to include(subcommand.opt_parser.to_s)
+      end
+    end
+
   end
 
   describe "when first created" do

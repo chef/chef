@@ -32,6 +32,7 @@ require "mixlib/shellout"
 require "uri"
 require "addressable/uri"
 require "openssl"
+require "yaml"
 
 module ChefConfig
 
@@ -68,6 +69,25 @@ module ChefConfig
 
     def self.add_event_logger(logger)
       event_handlers << logger
+    end
+
+    def self.apply_extra_config_options(extra_config_options)
+      if extra_config_options
+        extra_parsed_options = extra_config_options.inject({}) do |memo, option|
+          # Sanity check value.
+          if option.empty? || !option.include?("=")
+            raise UnparsableConfigOption, "Unparsable config option #{option.inspect}"
+          end
+          # Split including whitespace if someone does truly odd like
+          # --config-option "foo = bar"
+          key, value = option.split(/\s*=\s*/, 2)
+          # Call to_sym because Chef::Config expects only symbol keys. Also
+          # runs a simple parse on the string for some common types.
+          memo[key.to_sym] = YAML.safe_load(value)
+          memo
+        end
+        merge!(extra_parsed_options)
+      end
     end
 
     # Config file to load (client.rb, knife.rb, etc. defaults set differently in knife, chef-client, etc.)
