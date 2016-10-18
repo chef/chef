@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 6fde9680c6efdcd0792bec840b7fe7f6fbee790f
+  revision: 77a662df32c79865b2195cc398d7e121c7048ff3
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -16,7 +16,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: c36dcbd6c2c21d2e19db77d9fbdf2402d0bacccf
+  revision: 6d24969bd7c5471e089bd47f45e4832d03e9f8a2
   branch: master
   specs:
     chefstyle (0.4.0)
@@ -125,12 +125,12 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.5.0)
     ast (2.3.0)
-    aws-sdk (2.6.5)
-      aws-sdk-resources (= 2.6.5)
-    aws-sdk-core (2.6.5)
+    aws-sdk (2.6.9)
+      aws-sdk-resources (= 2.6.9)
+    aws-sdk-core (2.6.9)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.5)
-      aws-sdk-core (= 2.6.5)
+    aws-sdk-resources (2.6.9)
+      aws-sdk-core (= 2.6.9)
     aws-sdk-v1 (1.66.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
@@ -178,6 +178,7 @@ GEM
       url
     coderay (1.1.1)
     concurrent-ruby (1.0.2)
+    connection_pool (2.2.0)
     cucumber (2.4.0)
       builder (>= 2.1.2)
       cucumber-core (~> 1.5.0)
@@ -299,10 +300,11 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (2.0.3)
+    mixlib-install (2.1.1)
       artifactory
       mixlib-shellout
       mixlib-versioning
+      thor
     mixlib-log (1.7.1)
     mixlib-shellout (2.2.7)
     mixlib-shellout (2.2.7-universal-mingw32)
@@ -313,7 +315,8 @@ GEM
     multi_test (0.1.2)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
-    net-http-persistent (2.9.4)
+    net-http-persistent (3.0.0)
+      connection_pool (~> 2.2)
     net-http-pipeline (1.0.1)
     net-http-spy (0.2.1)
     net-scp (1.2.1)
@@ -328,12 +331,10 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     net-telnet (0.1.1)
     netrc (0.11.0)
-    nokogiri (1.6.8)
+    nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
-    nokogiri (1.6.8-x86-mingw32)
+    nokogiri (1.6.8.1-x86-mingw32)
       mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
     nori (2.6.0)
     oauth2 (1.2.0)
       faraday (>= 0.8, < 0.10)
@@ -357,16 +358,15 @@ GEM
       wmi-lite (~> 1.0)
     parser (2.3.1.4)
       ast (~> 2.2)
-    pkg-config (1.1.7)
     plist (3.2.0)
     poise (2.7.1)
       halite (~> 1.0)
-    poise-boiler (1.13.0)
+    poise-boiler (1.13.1)
       bundler
       chefspec (~> 5.0)
       codeclimate-test-reporter (~> 0.4)
       codecov (~> 0.0, >= 0.0.2)
-      foodcritic (~> 8.0)
+      foodcritic (>= 7, < 9)
       fuubar (~> 2.0)
       git (~> 1.2)
       halite (~> 1.2)
@@ -461,19 +461,19 @@ GEM
     sawyer (0.7.0)
       addressable (>= 2.3.5, < 2.5)
       faraday (~> 0.8, < 0.10)
-    serverspec (2.36.1)
+    serverspec (2.37.1)
       multi_json
       rspec (~> 3.0)
       rspec-its
       specinfra (~> 2.53)
-    sfl (2.2)
+    sfl (2.3)
     simplecov (0.12.0)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.63.1)
+    specinfra (2.63.3)
       net-scp
       net-ssh (>= 2.7, < 4.0)
       net-telnet
@@ -539,7 +539,7 @@ GEM
       ffi-win32-extensions
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
-    winrm (2.0.3)
+    winrm (2.1.0)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)

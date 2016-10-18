@@ -45,7 +45,7 @@ OMNIBUS_OVERRIDES = {
 
   ## These can float as they are frequently updated in a way that works for us
   #override "cacerts" =>"???",
-  "openssl" => "1.0.2h",
+  "openssl" => "1.0.2j",
 }
 
 #
