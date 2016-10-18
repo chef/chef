@@ -666,6 +666,7 @@ ERROR_MESSAGE
         notifies_immediately
         notifies_delayed
         parent_run_context
+        root_run_context
         resource_collection
         resource_collection=
       }.map { |x| x.to_sym }
