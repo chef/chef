@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: ca9e8fe08581bc6352d6d23389dcfdcddc44a76b
+  revision: ed2fe16bff7b1b337c3ae23fee8d63cce018303c
   specs:
     license_scout (0.1.2)
       ffi-yajl (~> 2.2)
@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: 4ce91af05b8be7d46feac765d0fc24eb28e62c68
+  revision: cd69f8563fa8875c82a4e44652ffbfdac7ef201d
   branch: shain/ruby_windows_monster
   specs:
     omnibus-software (4.0.0)
@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus.git
-  revision: d025896dba3802f4ad01272a443a728e40d3e820
+  revision: 1b5c7a20da006403d5aac2ddc754e43fb97cb540
   branch: rhass/COOL-502_with_gcc_investigate
   specs:
     omnibus (5.5.0)
@@ -38,12 +38,12 @@ GEM
     addressable (2.4.0)
     artifactory (2.5.0)
     awesome_print (1.7.0)
-    aws-sdk (2.6.9)
-      aws-sdk-resources (= 2.6.9)
-    aws-sdk-core (2.6.9)
+    aws-sdk (2.6.10)
+      aws-sdk-resources (= 2.6.10)
+    aws-sdk-core (2.6.10)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.9)
-      aws-sdk-core (= 2.6.9)
+    aws-sdk-resources (2.6.10)
+      aws-sdk-core (= 2.6.10)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -150,7 +150,7 @@ GEM
     nori (2.6.0)
     octokit (4.3.0)
       sawyer (~> 0.7.0, >= 0.5.3)
-    ohai (8.20.0)
+    ohai (8.21.0)
       chef-config (>= 12.5.0.alpha.1, < 13)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
