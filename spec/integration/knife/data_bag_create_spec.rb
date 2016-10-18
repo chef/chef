@@ -34,12 +34,10 @@ describe "knife data bag create", :workstation do
     end
 
     it "creates a new data bag and item" do
-      pending "Deprecation warning must get fixed"
       knife("data bag create foo bar").should_succeed stdout: out, stderr: err
     end
 
     it "adds a new item to an existing bag" do
-      pending "Deprecation warning must get fixed"
       knife("data bag create foo").should_succeed stderr: err
       knife("data bag create foo bar").should_succeed stdout: out, stderr: exists
     end
@@ -50,7 +48,6 @@ describe "knife data bag create", :workstation do
     end
 
     it "fails to add an existing item" do
-      pending "Deprecation warning must get fixed"
       knife("data bag create foo bar").should_succeed stdout: out, stderr: err
       expect { knife("data bag create foo bar") }.to raise_error(Net::HTTPServerException)
     end
