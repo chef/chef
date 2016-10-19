@@ -91,9 +91,7 @@ class Chef
     #
     def root_run_context
       rc = self
-      until rc.parent_run_context.nil?
-        rc = rc.parent_run_context
-      end
+      rc = rc.parent_run_context until rc.parent_run_context.nil?
       rc
     end
 
