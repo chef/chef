@@ -89,7 +89,7 @@ class Chef
         )
       end
 
-      property :svn_password, String, sensitive: true
+      property :svn_password, String, sensitive: true, desired_state: false
 
       def svn_arguments(arg = nil)
         @svn_arguments, arg = nil, nil if arg == false
