@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus.git
-  revision: 1b5c7a20da006403d5aac2ddc754e43fb97cb540
+  revision: d8a531fd4b95fc73c5c279ba0a53cedd6b2a1196
   branch: rhass/COOL-502_with_gcc_investigate
   specs:
     omnibus (5.5.0)
@@ -38,12 +38,12 @@ GEM
     addressable (2.4.0)
     artifactory (2.5.0)
     awesome_print (1.7.0)
-    aws-sdk (2.6.10)
-      aws-sdk-resources (= 2.6.10)
-    aws-sdk-core (2.6.10)
+    aws-sdk (2.6.11)
+      aws-sdk-resources (= 2.6.11)
+    aws-sdk-core (2.6.11)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.10)
-      aws-sdk-core (= 2.6.10)
+    aws-sdk-resources (2.6.11)
+      aws-sdk-core (= 2.6.11)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
