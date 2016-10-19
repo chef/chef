@@ -17,6 +17,7 @@
 #
 
 require "chef/provider/group/groupadd"
+require "etc"
 
 class Chef
   class Provider
@@ -36,22 +37,40 @@ class Chef
             a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/sbin/groupmod for #{@new_resource.name}"
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end
+
+          requirements.assert(:create, :manage, :modify) do |a|
+            a.assertion do
+              begin
+                to_add(@new_resource.members).any? { |member| Etc.getpwnam(member) }
+              rescue
+                false
+              end
+            end
+            a.failure_message Chef::Exceptions::Group, "Could not add users #{to_add(@new_resource.members).join(", ")} to #{@new_resource.group_name}: one of these users does not exist"
+            a.whyrun "Could not find one of these users: #{to_add(@new_resource.members).join(", ")}. Assuming it will be created by a prior step"
+          end
         end
 
         def set_members(members)
-          to_delete = @current_resource.members - members
-          to_delete.each do |member|
+          to_remove(members).each do |member|
             remove_member(member)
           end
 
-          to_add = members - @current_resource.members
-          to_add.each do |member|
+          to_add(members).each do |member|
             add_member(member)
           end
         end
 
+        def to_add(members)
+          members - @current_resource.members
+        end
+
         def add_member(member)
           shell_out!("groupmod -A #{member} #{@new_resource.group_name}")
+        end
+
+        def to_remove(members)
+          @current_resource.members - members
         end
 
         def remove_member(member)
