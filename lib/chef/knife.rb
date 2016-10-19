@@ -539,7 +539,11 @@ class Chef
 
     # FIXME: yard with @yield
     def create_object(object, pretty_name = nil, object_class: nil)
-      output = edit_data(object, object_class: object_class)
+      output = if object_class
+                 edit_data(object, object_class: object_class)
+               else
+                 edit_hash(object)
+               end
 
       if Kernel.block_given?
         output = yield(output)
