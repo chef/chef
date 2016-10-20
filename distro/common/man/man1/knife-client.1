@@ -37,7 +37,7 @@ However, during the first chef\-client run, this private key does not exist. Ins
 .sp
 During the initial chef\-client run, the chef\-client will register with the Chef server using the private key assigned to the chef\-validator, after which the chef\-client will obtain a \fBclient.pem\fP private key for all future authentication requests to the Chef server\&.
 .sp
-After the initial chef\-client run has completed successfully, the chef\-validator is no longer required and may be deleted from the node. Use the \fBdelete_validation\fP recipe found in the \fBchef\-client\fP cookbook (\fI\%https://github.com/opscode\-cookbooks/chef\-client\fP) to remove the chef\-validator\&.
+After the initial chef\-client run has completed successfully, the chef\-validator is no longer required and may be deleted from the node. Use the \fBdelete_validation\fP recipe found in the \fBchef\-client\fP cookbook (\fI\%https://github.com/chef\-cookbooks/chef\-client\fP) to remove the chef\-validator\&.
 .sp
 The \fBknife client\fP subcommand is used to manage an API client list and their associated RSA public key\-pairs. This allows authentication requests to be made to the Chef server by any entity that uses the Chef server API, such as the chef\-client and knife\&.
 .SH COMMON OPTIONS

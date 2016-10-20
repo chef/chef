@@ -78,7 +78,7 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
     expect(loader.site_subcommands).to include(expected_command)
   end
 
-  # https://github.com/opscode/chef-dk/issues/227
+  # https://github.com/chef/chef-dk/issues/227
   #
   # `knife` in ChefDK isn't from a gem install, it's directly run from a clone
   # of the source, but there can be one or more versions of chef also installed

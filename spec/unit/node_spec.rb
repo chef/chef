@@ -756,9 +756,9 @@ describe Chef::Node do
     # In Chef-12.0 there is a deep_merge cache on the top level attribute which had a bug
     # where it cached node[:foo] separate from node['foo'].  These tests exercise those edge conditions.
     #
-    # https://github.com/opscode/chef/issues/2700
-    # https://github.com/opscode/chef/issues/2712
-    # https://github.com/opscode/chef/issues/2745
+    # https://github.com/chef/chef/issues/2700
+    # https://github.com/chef/chef/issues/2712
+    # https://github.com/chef/chef/issues/2745
     #
     describe "deep merge attribute cache edge conditions" do
       it "does not error with complicated attribute substitution" do

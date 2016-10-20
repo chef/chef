@@ -61,7 +61,7 @@ class Chef
           [:command_log_prepend, :log_tag] ]
 
       # CHEF-3090: Deprecate command_log_level and command_log_prepend
-      # Patterned after https://github.com/opscode/chef/commit/e1509990b559984b43e428d4d801c394e970f432
+      # Patterned after https://github.com/chef/chef/commit/e1509990b559984b43e428d4d801c394e970f432
       def run_command_compatible_options(command_args)
         return command_args unless command_args.last.is_a?(Hash)
 

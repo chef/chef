@@ -986,7 +986,7 @@ module ChefConfig
     # If there is no 'locale -a' then we return 'en_US.UTF-8' since that is the most commonly
     # available English UTF-8 locale.  However, all modern POSIXen should support 'locale -a'.
     def self.guess_internal_locale
-      # https://github.com/opscode/chef/issues/2181
+      # https://github.com/chef/chef/issues/2181
       # Some systems have the `locale -a` command, but the result has
       # invalid characters for the default encoding.
       #
