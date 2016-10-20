@@ -89,13 +89,7 @@ class Chef
         )
       end
 
-      def svn_password(arg = nil)
-        set_or_return(
-          :svn_password,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :svn_password, String, sensitive: true, desired_state: false
 
       def svn_arguments(arg = nil)
         @svn_arguments, arg = nil, nil if arg == false
