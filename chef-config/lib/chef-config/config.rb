@@ -67,7 +67,11 @@ module ChefConfig
     end
 
     def self.windows_installation_drive
-      File.expand_path(__FILE__).split('/', 2)[0] if ChefConfig.windows?
+      if ChefConfig.windows?
+        drive = File.expand_path(__FILE__).split('/', 2)[0]
+        drive = ENV["SYSTEMDRIVE"] if drive.to_s == ''
+        drive
+      end
     end
 
     def self.add_formatter(name, file_path = nil)
