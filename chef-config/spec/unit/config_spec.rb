@@ -223,7 +223,7 @@ RSpec.describe ChefConfig::Config do
         end
         if is_windows
           path = "/etc/chef/cookbooks"
-          describe "a windows system with chef installed on C: drive" do
+          context "a windows system with chef installed on C: drive" do
             before do
               allow(ChefConfig::Config).to receive(:windows_installation_drive).and_return("C:")
             end
@@ -231,7 +231,7 @@ RSpec.describe ChefConfig::Config do
               expect(ChefConfig::Config.platform_specific_path(path)).to eq("C:\\chef\\cookbooks")
             end
           end
-          describe "a windows system with chef installed on D: drive" do
+          context "a windows system with chef installed on D: drive" do
             before do
               allow(ChefConfig::Config).to receive(:windows_installation_drive).and_return("D:")
             end
@@ -370,6 +370,11 @@ RSpec.describe ChefConfig::Config do
         end
 
         describe "ChefConfig::Config[:cache_path]" do
+          before do
+            if is_windows
+              allow(File).to receive(:expand_path).and_return("#{ChefConfig::Config.env["SYSTEMDRIVE"]}/Path/To/Executable")
+            end
+          end
           context "when /var/chef exists and is accessible" do
             it "defaults to /var/chef" do
               allow(ChefConfig::Config).to receive(:path_accessible?).with(to_platform("/var/chef")).and_return(true)
