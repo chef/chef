@@ -243,6 +243,34 @@ describe Chef::Node do
       expect { node.sunshine = "is bright" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
+    it "does not allow modification of node attributes via hash methods" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      node.default["h4sh"] = { foo: "bar" }
+      expect { node["h4sh"].delete("foo") }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
+      expect { node.h4sh.delete("foo") }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
+    end
+
+    it "does not allow modification of node attributes via array methods" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      node.default["array"] = []
+      expect { node["array"] << "boom" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
+      expect { node.array << "boom" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
+    end
+
+    it "returns merged immutable attributes for arrays" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      node.default["array"] = []
+      expect( node["array"].class ).to eql(Chef::Node::ImmutableArray)
+      expect( node.array.class ).to eql(Chef::Node::ImmutableArray)
+    end
+
+    it "returns merged immutable attributes for hashes" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      node.default["h4sh"] = {}
+      expect( node["h4sh"].class ).to eql(Chef::Node::ImmutableMash)
+      expect( node.h4sh.class ).to eql(Chef::Node::ImmutableMash)
+    end
+
     it "should allow you get get an attribute via method_missing" do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
       node.default.sunshine = "is bright"
