@@ -89,9 +89,10 @@ class Chef
           end
 
           def current_installed_version
-            @current_installed_version ||= uninstall_entries.count == 0 ? nil : begin
-              uninstall_entries.map { |entry| entry.display_version }.uniq
-            end
+            @current_installed_version ||=
+              if uninstall_entries.count != 0
+                uninstall_entries.map { |entry| entry.display_version }.uniq
+              end
           end
 
           # http://unattended.sourceforge.net/installers.php

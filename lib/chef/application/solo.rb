@@ -166,7 +166,7 @@ class Chef::Application::Solo < Chef::Application
     :short        => "-o RunlistItem,RunlistItem...",
     :long         => "--override-runlist RunlistItem,RunlistItem...",
     :description  => "Replace current run list with specified items",
-    :proc         => lambda {|items|
+    :proc         => lambda { |items|
       items = items.split(",")
       items.compact.map do |item|
         Chef::RunList::RunListItem.new(item)

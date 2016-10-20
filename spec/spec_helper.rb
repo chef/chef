@@ -174,13 +174,13 @@ RSpec.configure do |config|
 
   running_platform_arch = `uname -m`.strip unless windows?
 
-  config.filter_run_excluding :arch => lambda {|target_arch|
+  config.filter_run_excluding :arch => lambda { |target_arch|
     running_platform_arch != target_arch
   }
 
   # Functional Resource tests that are provider-specific:
   # context "on platforms that use useradd", :provider => {:user => Chef::Provider::User::Useradd}} do #...
-  config.filter_run_excluding :provider => lambda {|criteria|
+  config.filter_run_excluding :provider => lambda { |criteria|
     type, target_provider = criteria.first
 
     node = TEST_NODE.dup
