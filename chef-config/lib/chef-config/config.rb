@@ -68,8 +68,8 @@ module ChefConfig
 
     def self.windows_installation_drive
       if ChefConfig.windows?
-        drive = File.expand_path(__FILE__).split('/', 2)[0]
-        drive = ENV["SYSTEMDRIVE"] if drive.to_s == ''
+        drive = File.expand_path(__FILE__).split("/", 2)[0]
+        drive = ENV["SYSTEMDRIVE"] if drive.to_s == ""
         drive
       end
     end
