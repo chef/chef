@@ -50,7 +50,7 @@ class Chef
               Chef::Log.debug("#{new_resource} checking package status and version for #{product_code}")
               get_installed_version(product_code)
             else
-              uninstall_entries.count == 0 ? nil : begin
+              if uninstall_entries.count != 0
                 uninstall_entries.map { |entry| entry.display_version }.uniq
               end
             end

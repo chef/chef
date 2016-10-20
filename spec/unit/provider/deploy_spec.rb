@@ -556,7 +556,7 @@ describe Chef::Provider::Deploy do
       @resource.deploy_to("/my/app")
       expect(mock_execution).to receive(:user).with("notCoolMan")
       expect(mock_execution).to receive(:group).with("Ggroup")
-      expect(mock_execution).to receive(:cwd) {|*args|
+      expect(mock_execution).to receive(:cwd) { |*args|
         if args.empty?
           nil
         else
