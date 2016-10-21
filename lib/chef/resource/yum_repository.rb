@@ -57,7 +57,7 @@ class Chef
       property :password, String, regex: /.*/
       property :repo_gpgcheck, [TrueClass, FalseClass]
       property :report_instanceid, [TrueClass, FalseClass]
-      property :repositoryid, String, regex: /.*/, name_attribute: true
+      property :repositoryid, String, regex: /.*/, name_property: true
       property :sensitive, [TrueClass, FalseClass], default: false
       property :skip_if_unavailable, [TrueClass, FalseClass]
       property :source, String, regex: /.*/
