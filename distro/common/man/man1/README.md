@@ -9,7 +9,7 @@ that are built into the chef-client are managed.
 ## Source Files
 
 The source files are located in the chef-docs repository:
-https://github.com/opscode/chef-docs
+https://github.com/chef/chef-docs
 
 Each Knife subcommand has its own source folder. The folder naming
 pattern begins with man_.
@@ -55,4 +55,4 @@ at docs.opscode.com/knife_foo.html.
 
 ## Questions?
 
-Open an [Issue](https://github.com/opscode/chef-docs/issues) and ask.
+Open an [Issue](https://github.com/chef/chef-docs/issues) and ask.

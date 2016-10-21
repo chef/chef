@@ -726,7 +726,7 @@ of partial templates.
   Typo fixes
 * [**Tim Smith**](https://github.com/tas50)
   Typo fixes
-* [Pull 2505](https://github.com/opscode/chef/pull/2505) Make Chef handle URIs in a case-insensitive manner
+* [Pull 2505](https://github.com/chef/chef/pull/2505) Make Chef handle URIs in a case-insensitive manner
 * [**Phil Dibowitz**](https://github.com/jaymzh):
   Drop SSL warnings now that we have a safe default
 * [Pull 2684](https://github.com/chef/chef/pull/2684) Remove ole_initialize/uninitialize which cause problems with Ruby >= 2
@@ -812,32 +812,32 @@ of partial templates.
 
 ## 12.0.3
 * [**Phil Dibowitz**](https://github.com/jaymzh):
-[Issue 2594](https://github.com/opscode/chef/issues/2594) Restore missing require in `digester`.
+[Issue 2594](https://github.com/chef/chef/issues/2594) Restore missing require in `digester`.
 
 ## 12.0.2
-* [Issue 2578](https://github.com/opscode/chef/issues/2578) Check that `installed` is not empty for `keg_only` formula in Homebrew provider
-* [Issue 2609](https://github.com/opscode/chef/issues/2609) Resolve the circular dependency between ProviderResolver and Resource.
-* [Issue 2596](https://github.com/opscode/chef/issues/2596) Fix nodes not writing to disk
-* [Issue 2580](https://github.com/opscode/chef/issues/2580) Make sure the relative paths are preserved when using link resource.
-* [Pull 2630](https://github.com/opscode/chef/pull/2630) Improve knife's SSL error messaging
-* [Issue 2606](https://github.com/opscode/chef/issues/2606) chef 12 ignores default_release for apt_package
-* [Issue 2602](https://github.com/opscode/chef/issues/2602) Fix `subscribes` resource notifications.
-* [Issue 2578](https://github.com/opscode/chef/issues/2578) Check that `installed` is not empty for `keg_only` formula in Homebrew provider.
+* [Issue 2578](https://github.com/chef/chef/issues/2578) Check that `installed` is not empty for `keg_only` formula in Homebrew provider
+* [Issue 2609](https://github.com/chef/chef/issues/2609) Resolve the circular dependency between ProviderResolver and Resource.
+* [Issue 2596](https://github.com/chef/chef/issues/2596) Fix nodes not writing to disk
+* [Issue 2580](https://github.com/chef/chef/issues/2580) Make sure the relative paths are preserved when using link resource.
+* [Pull 2630](https://github.com/chef/chef/pull/2630) Improve knife's SSL error messaging
+* [Issue 2606](https://github.com/chef/chef/issues/2606) chef 12 ignores default_release for apt_package
+* [Issue 2602](https://github.com/chef/chef/issues/2602) Fix `subscribes` resource notifications.
+* [Issue 2578](https://github.com/chef/chef/issues/2578) Check that `installed` is not empty for `keg_only` formula in Homebrew provider.
 * [**gh2k**](https://github.com/gh2k):
-  [Issue 2625](https://github.com/opscode/chef/issues/2625) Fix missing `shell_out!` for `windows_package` resource
+  [Issue 2625](https://github.com/chef/chef/issues/2625) Fix missing `shell_out!` for `windows_package` resource
 * [**BackSlasher**](https://github.com/BackSlasher):
-  [Issue 2634](https://github.com/opscode/chef/issues/2634) Fix `option ':command' is not a valid option` error in subversion provider.
+  [Issue 2634](https://github.com/chef/chef/issues/2634) Fix `option ':command' is not a valid option` error in subversion provider.
 * [**Seth Vargo**](https://github.com/sethvargo):
-  [Issue 2345](https://github.com/opscode/chef/issues/2345) Allow knife to install cookbooks with metadata.json.
+  [Issue 2345](https://github.com/chef/chef/issues/2345) Allow knife to install cookbooks with metadata.json.
 
 ## 12.0.1
 
-* [Issue 2552](https://github.com/opscode/chef/issues/2552) Create constant for LWRP before calling `provides`
-* [Issue 2545](https://github.com/opscode/chef/issues/2545) `path` attribute of `execute` resource is restored to provide backwards compatibility with Chef 11.
-* [Issue 2565](https://github.com/opscode/chef/issues/2565) Fix `Chef::Knife::Core::BootstrapContext` constructor for knife-windows compat.
-* [Issue 2566](https://github.com/opscode/chef/issues/2566) Make sure Client doesn't raise error when interval is set on Windows.
-* [Issue 2560](https://github.com/opscode/chef/issues/2560) Fix `uninitialized constant Windows::Constants` in `windows_eventlog`.
-* [Issue 2563](https://github.com/opscode/chef/issues/2563) Make sure the Chef Client rpm packages are signed with GPG keys correctly.
+* [Issue 2552](https://github.com/chef/chef/issues/2552) Create constant for LWRP before calling `provides`
+* [Issue 2545](https://github.com/chef/chef/issues/2545) `path` attribute of `execute` resource is restored to provide backwards compatibility with Chef 11.
+* [Issue 2565](https://github.com/chef/chef/issues/2565) Fix `Chef::Knife::Core::BootstrapContext` constructor for knife-windows compat.
+* [Issue 2566](https://github.com/chef/chef/issues/2566) Make sure Client doesn't raise error when interval is set on Windows.
+* [Issue 2560](https://github.com/chef/chef/issues/2560) Fix `uninitialized constant Windows::Constants` in `windows_eventlog`.
+* [Issue 2563](https://github.com/chef/chef/issues/2563) Make sure the Chef Client rpm packages are signed with GPG keys correctly.
 
 ## 12.0.0
 
@@ -950,7 +950,7 @@ of partial templates.
 * [**Ionuț Arțăriși**](https://github.com/mapleoin):
   Changed the default group provider to gpasswd on SLES versions 12 and higher.
 * [**Noah Kantrowitz**](https://github.com/coderanger):
-  Implemented [RFC017 - File Specificity Overhaul](https://github.com/opscode/chef-rfc/blob/master/rfc017-file-specificity.md).
+  Implemented [RFC017 - File Specificity Overhaul](https://github.com/chef/chef-rfc/blob/master/rfc017-file-specificity.md).
 * [**James Bence**](https://github.com/jbence):
   Improved the reliability of Git provider by making it to be more specific when selecting tags.
 * [**Jean Mertz**](https://github.com/JeanMertz):
@@ -988,7 +988,7 @@ of partial templates.
 ### Chef Contributions
 
 * ruby 1.9.3 support is dropped
-* Added RFC-023 Chef 12 Attribute Changes (https://github.com/opscode/chef-rfc/blob/master/rfc023-chef-12-attributes-changes.md)
+* Added RFC-023 Chef 12 Attribute Changes (https://github.com/chef/chef-rfc/blob/master/rfc023-chef-12-attributes-changes.md)
 * Added os/platform_family options to provides syntax on the Chef::Resource DSL
 * Added provides methods to the Chef::Provider DSL
 * Added supported?(resource, action) class method to all Providers for late-evaluation if a provider can handle a

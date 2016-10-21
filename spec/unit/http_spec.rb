@@ -74,7 +74,7 @@ describe Chef::HTTP do
       expect(http.create_url("///api/endpoint?url=http://foo.bar")).to eql(URI.parse("http://www.getchef.com/organization/org/api/endpoint?url=http://foo.bar"))
     end
 
-    # As per: https://github.com/opscode/chef/issues/2500
+    # As per: https://github.com/chef/chef/issues/2500
     it "should treat scheme part of the URI in a case-insensitive manner" do
       http = Chef::HTTP.allocate # Calling Chef::HTTP::new sets @url, don't want that.
       expect { http.create_url("HTTP://www1.chef.io/") }.not_to raise_error
