@@ -39,6 +39,9 @@ aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
 PS
     @status = double("Status", :exitstatus => 0, :stdout => @stdout)
     allow(@provider).to receive(:shell_out!).and_return(@status)
+    @timeout = {:timeout => 600}
+    @timeout_user_value = 1
+    @timeout_user = {:timeout => @timeout_user_value}
   end
 
   it "should create a current resource with the name of the new resource" do
@@ -100,7 +103,7 @@ PS
     end
 
     it "should use the init_command if one has been specified" do
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/opt/chef-server/service/erchef start")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/opt/chef-server/service/erchef start", @timeout)
       @provider.start_service
     end
 
@@ -164,12 +167,12 @@ RUNNING_PS
   describe "when starting the service" do
     it "should call the start command if one is specified" do
       @new_resource.start_command("/etc/init.d/chef startyousillysally")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef startyousillysally")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef startyousillysally", @timeout)
       @provider.start_service()
     end
 
     it "should call '/etc/init.d/service_name start' if no start command is specified" do
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} start")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} start", @timeout)
       @provider.start_service()
     end
   end
@@ -177,12 +180,12 @@ RUNNING_PS
   describe Chef::Provider::Service::Init, "stop_service" do
     it "should call the stop command if one is specified" do
       @new_resource.stop_command("/etc/init.d/chef itoldyoutostop")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef itoldyoutostop")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef itoldyoutostop", @timeout)
       @provider.stop_service()
     end
 
     it "should call '/etc/init.d/service_name stop' if no stop command is specified" do
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} stop")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} stop", @timeout)
       @provider.stop_service()
     end
   end
@@ -190,13 +193,13 @@ RUNNING_PS
   describe "when restarting a service" do
     it "should call 'restart' on the service_name if the resource supports it" do
       @new_resource.supports({ :restart => true })
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} restart")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} restart", @timeout)
       @provider.restart_service()
     end
 
     it "should call the restart_command if one has been specified" do
       @new_resource.restart_command("/etc/init.d/chef restartinafire")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} restartinafire")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/#{@new_resource.service_name} restartinafire", @timeout)
       @provider.restart_service()
     end
 
@@ -211,13 +214,27 @@ RUNNING_PS
   describe "when reloading a service" do
     it "should call 'reload' on the service if it supports it" do
       @new_resource.supports({ :reload => true })
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef reload")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef reload", @timeout)
       @provider.reload_service()
     end
 
-    it "should should run the user specified reload command if one is specified and the service doesn't support reload" do
+    it "should run the user specified reload command if one is specified and the service doesn't support reload" do
       @new_resource.reload_command("/etc/init.d/chef lollerpants")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef lollerpants")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef lollerpants", @timeout)
+      @provider.reload_service()
+    end
+
+    it "should call 'reload' on the service with user defined timeout" do
+      @new_resource.supports({ :reload => true })
+      @new_resource.timeout(@timeout_user_value)
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef reload", @timeout_user)
+      @provider.reload_service() 
+    end
+
+    it "should run the user specified reload command if one is specified and the service doesn't support reload and use user defined timeout" do
+      @new_resource.reload_command("/etc/init.d/chef lollerpants")
+      @new_resource.timeout(@timeout_user_value)
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef lollerpants", @timeout_user)
       @provider.reload_service()
     end
   end
@@ -225,7 +242,7 @@ RUNNING_PS
   describe "when a custom command has been specified" do
     before do
       @new_resource.start_command("/etc/init.d/chef startyousillysally")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef startyousillysally")
+      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/chef startyousillysally", @timeout)
     end
 
     it "should still pass all why run assertions" do

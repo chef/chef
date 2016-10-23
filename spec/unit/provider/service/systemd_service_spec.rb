@@ -54,6 +54,9 @@ describe Chef::Provider::Service::Systemd do
 
   before(:each) do
     allow(Chef::Resource::Service).to receive(:new).with(service_name).and_return(current_resource)
+    @timeout = {:timeout => 600}
+    @timeout_user_value = 1
+    @timeout_user = {:timeout => @timeout_user_value}
   end
 
   describe "load_current_resource" do
@@ -176,19 +179,19 @@ describe Chef::Provider::Service::Systemd do
 
         it "should call the start command if one is specified" do
           allow(new_resource).to receive(:start_command).and_return("/sbin/rsyslog startyousillysally")
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog startyousillysally")
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog startyousillysally", @timeout)
           provider.start_service
         end
 
         context "when a user is not specified" do
           it "should call '#{systemctl_path} --system start service_name' if no start command is specified" do
-            expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --system start #{service_name}", {}).and_return(shell_out_success)
+            expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --system start #{service_name}", @timeout).and_return(shell_out_success)
             provider.start_service
           end
 
           it "should not call '#{systemctl_path} --system start service_name' if it is already running" do
             current_resource.running(true)
-            expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --system start #{service_name}", {})
+            expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --system start #{service_name}", @timeout)
             provider.start_service
           end
         end
@@ -196,14 +199,14 @@ describe Chef::Provider::Service::Systemd do
         context "when a user is specified" do
           it "should call '#{systemctl_path} --user start service_name' if no start command is specified" do
             current_resource.user("joe")
-            expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --user start #{service_name}", { :environment => { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, :user => "joe" }).and_return(shell_out_success)
+            expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --user start #{service_name}", { :environment => { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, :user => "joe" }.merge(@timeout)).and_return(shell_out_success)
             provider.start_service
           end
 
           it "should not call '#{systemctl_path} --user start service_name' if it is already running" do
             current_resource.running(true)
             current_resource.user("joe")
-            expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --user start #{service_name}", { :environment => { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, :user => "joe" })
+            expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --user start #{service_name}", { :environment => { "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/10000/bus" }, :user => "joe" }.merge(@timeout))
             provider.start_service
           end
         end
@@ -211,13 +214,13 @@ describe Chef::Provider::Service::Systemd do
         it "should call the restart command if one is specified" do
           current_resource.running(true)
           allow(new_resource).to receive(:restart_command).and_return("/sbin/rsyslog restartyousillysally")
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog restartyousillysally")
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog restartyousillysally", @timeout)
           provider.restart_service
         end
 
         it "should call '#{systemctl_path} --system restart service_name' if no restart command is specified" do
           current_resource.running(true)
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --system restart #{service_name}", {}).and_return(shell_out_success)
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --system restart #{service_name}", @timeout).and_return(shell_out_success)
           provider.restart_service
         end
 
@@ -226,7 +229,7 @@ describe Chef::Provider::Service::Systemd do
             it "should call the reload command" do
               current_resource.running(true)
               allow(new_resource).to receive(:reload_command).and_return("/sbin/rsyslog reloadyousillysally")
-              expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog reloadyousillysally")
+              expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog reloadyousillysally", @timeout)
               provider.reload_service
             end
           end
@@ -234,7 +237,7 @@ describe Chef::Provider::Service::Systemd do
           context "when a reload command is not specified" do
             it "should call '#{systemctl_path} --system reload service_name' if the service is running" do
               current_resource.running(true)
-              expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --system reload #{service_name}", {}).and_return(shell_out_success)
+              expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --system reload #{service_name}", @timeout).and_return(shell_out_success)
               provider.reload_service
             end
 
@@ -249,19 +252,27 @@ describe Chef::Provider::Service::Systemd do
         it "should call the stop command if one is specified" do
           current_resource.running(true)
           allow(new_resource).to receive(:stop_command).and_return("/sbin/rsyslog stopyousillysally")
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog stopyousillysally")
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog stopyousillysally",@timeout)
+          provider.stop_service
+        end
+ 
+        it "should call the stop command if one is specified and have user defined timeout" do
+          current_resource.running(true)
+          allow(new_resource).to receive(:stop_command).and_return("/sbin/rsyslog stopyousillysally")
+          allow(new_resource).to receive(:timeout).and_return(@timeout_user_value)
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog stopyousillysally",@timeout_user)
           provider.stop_service
         end
 
         it "should call '#{systemctl_path} --system stop service_name' if no stop command is specified" do
           current_resource.running(true)
-          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --system stop #{service_name}", {}).and_return(shell_out_success)
+          expect(provider).to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --system stop #{service_name}", @timeout).and_return(shell_out_success)
           provider.stop_service
         end
 
         it "should not call '#{systemctl_path} --system stop service_name' if it is already stopped" do
           current_resource.running(false)
-          expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --system stop #{service_name}", {})
+          expect(provider).not_to receive(:shell_out_with_systems_locale!).with("#{systemctl_path} --system stop #{service_name}", @timeout)
           provider.stop_service
         end
       end

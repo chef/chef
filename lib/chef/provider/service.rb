@@ -26,6 +26,9 @@ class Chef
 
       include Chef::Mixin::Command
 
+      # depends on 'require mixlib' from above 'include mixin::command'
+      TIMEOUT = Mixlib::ShellOut::DEFAULT_READ_TIMEOUT
+
       def supports
         @supports ||= new_resource.supports.dup
       end
@@ -254,6 +257,12 @@ class Chef
         Chef.set_provider_priority_array :service, [ Systemd, Upstart, Insserv, Debian, Invokercd ], platform_family: "debian"
         Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ], platform_family: %w{rhel fedora suse}
       end
+
+      def timeout
+        _timeout = @new_resource.timeout.nil? ? TIMEOUT : @new_resource.timeout
+        {:timeout => _timeout}
+      end
+
     end
   end
 end

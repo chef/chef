@@ -29,6 +29,10 @@ describe Chef::Provider::Service::Aix do
 
     @provider = Chef::Provider::Service::Aix.new(@new_resource, @run_context)
     allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
+
+    @timeout = {:timeout => 600}
+    @timeout_user_value = 1
+    @timeout_user = {:timeout => @timeout_user_value}
   end
 
   describe "load current resource" do
@@ -134,13 +138,13 @@ describe Chef::Provider::Service::Aix do
 
     it "should call the start command for groups" do
       @provider.instance_eval("@is_resource_group = true")
-      expect(@provider).to receive(:shell_out!).with("startsrc -g #{@new_resource.service_name}")
+      expect(@provider).to receive(:shell_out!).with("startsrc -g #{@new_resource.service_name}", @timeout)
 
       @provider.start_service
     end
 
     it "should call the start command for subsystem" do
-      expect(@provider).to receive(:shell_out!).with("startsrc -s #{@new_resource.service_name}")
+      expect(@provider).to receive(:shell_out!).with("startsrc -s #{@new_resource.service_name}", @timeout)
 
       @provider.start_service
     end
@@ -153,13 +157,13 @@ describe Chef::Provider::Service::Aix do
 
     it "should call the stop command for groups" do
       @provider.instance_eval("@is_resource_group = true")
-      expect(@provider).to receive(:shell_out!).with("stopsrc -g #{@new_resource.service_name}")
+      expect(@provider).to receive(:shell_out!).with("stopsrc -g #{@new_resource.service_name}", @timeout)
 
       @provider.stop_service
     end
 
     it "should call the stop command for subsystem" do
-      expect(@provider).to receive(:shell_out!).with("stopsrc -s #{@new_resource.service_name}")
+      expect(@provider).to receive(:shell_out!).with("stopsrc -s #{@new_resource.service_name}", @timeout)
 
       @provider.stop_service
     end
@@ -172,13 +176,20 @@ describe Chef::Provider::Service::Aix do
 
     it "should call the reload command for groups" do
       @provider.instance_eval("@is_resource_group = true")
-      expect(@provider).to receive(:shell_out!).with("refresh -g #{@new_resource.service_name}")
+      expect(@provider).to receive(:shell_out!).with("refresh -g #{@new_resource.service_name}", @timeout)
 
       @provider.reload_service
     end
 
     it "should call the reload command for subsystem" do
-      expect(@provider).to receive(:shell_out!).with("refresh -s #{@new_resource.service_name}")
+      expect(@provider).to receive(:shell_out!).with("refresh -s #{@new_resource.service_name}", @timeout)
+
+      @provider.reload_service
+    end
+
+    it "should call the reload command for subsystem with user defined timeout" do
+      @provider.timeout(@timeout_user_value)
+      expect(@provider).to receive(:shell_out!).with("refresh -s #{@new_resource.service_name}", @timeout_user)
 
       @provider.reload_service
     end

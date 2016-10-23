@@ -100,6 +100,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
         super
       else
         options, args = get_systemctl_options_args
+        options = options.merge(timeout)
         shell_out_with_systems_locale!("#{systemctl_path} #{args} start #{new_resource.service_name}", options)
       end
     end
@@ -113,6 +114,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
         super
       else
         options, args = get_systemctl_options_args
+        options = options.merge(timeout)
         shell_out_with_systems_locale!("#{systemctl_path} #{args} stop #{new_resource.service_name}", options)
       end
     end
@@ -123,6 +125,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       super
     else
       options, args = get_systemctl_options_args
+      options = options.merge(timeout)
       shell_out_with_systems_locale!("#{systemctl_path} #{args} restart #{new_resource.service_name}", options)
     end
   end
@@ -133,6 +136,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     else
       if current_resource.running
         options, args = get_systemctl_options_args
+        options = options.merge(timeout)
         shell_out_with_systems_locale!("#{systemctl_path} #{args} reload #{new_resource.service_name}", options)
       else
         start_service

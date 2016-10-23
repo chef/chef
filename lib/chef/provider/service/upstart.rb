@@ -165,7 +165,7 @@ class Chef
             if @new_resource.start_command
               super
             else
-              shell_out_with_systems_locale!("/sbin/start #{@job}")
+              shell_out_with_systems_locale!("/sbin/start #{@job}", timeout)
             end
           end
         end
@@ -179,7 +179,7 @@ class Chef
             if @new_resource.stop_command
               super
             else
-              shell_out_with_systems_locale!("/sbin/stop #{@job}")
+              shell_out_with_systems_locale!("/sbin/stop #{@job}", timeout)
             end
           end
         end
@@ -191,7 +191,7 @@ class Chef
           # Older versions of upstart would fail on restart if the service was currently stopped, check for that. LP:430883
           else
             if @current_resource.running
-              shell_out_with_systems_locale!("/sbin/restart #{@job}")
+              shell_out_with_systems_locale!("/sbin/restart #{@job}", timeout)
             else
               start_service
             end
@@ -203,7 +203,7 @@ class Chef
             super
           else
             # upstart >= 0.6.3-4 supports reload (HUP)
-            shell_out_with_systems_locale!("/sbin/reload #{@job}")
+            shell_out_with_systems_locale!("/sbin/reload #{@job}", timeout)
           end
         end
 
