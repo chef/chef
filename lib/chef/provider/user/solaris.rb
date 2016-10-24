@@ -46,21 +46,14 @@ class Chef
         end
 
         def check_lock
-          shadow_line = shell_out!("getent", "shadow", new_resource.username).stdout.strip rescue nil
+          user = IO.read(@password_file).match(/^#{Regexp.escape(@new_resource.username)}:([^:]*):/)
 
-          # if the command fails we return nil, this can happen if the user
-          # in question doesn't exist
-          return nil if shadow_line.nil?
+          # If we're in whyrun mode, and the user is not created, we assume it will be
+          return false if whyrun_mode? && user.nil?
 
-          # convert "dave:NP:16507::::::\n" to "NP"
-          fields = shadow_line.split(":")
+          raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if user.nil?
 
-          # '*LK*...' and 'LK' are both considered locked,
-          # so look for LK at the beginning of the shadow entry
-          # optionally surrounded by '*'
-          @locked = !!fields[1].match(/^\*?LK\*?/)
-
-          @locked
+          @locked = !!(user[1] =~ /^\*?LK\*?/)
         end
 
         def lock_user
