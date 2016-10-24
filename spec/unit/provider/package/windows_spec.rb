@@ -26,9 +26,9 @@ describe Chef::Provider::Package::Windows, :windows_only do
     allow(Chef::FileCache).to receive(:create_cache_path).with("package/").and_return(cache_path)
   end
 
-  let(:node) { double("Chef::Node") }
-  let(:events) { double("Chef::Events").as_null_object } # mock all the methods
-  let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource_source) { "calculator.msi" }
   let(:resource_name) { "calculator" }
   let(:installer_type) { nil }

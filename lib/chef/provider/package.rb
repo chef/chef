@@ -31,6 +31,8 @@ class Chef
       include Chef::Mixin::ShellOut
       extend Chef::Mixin::SubclassDirective
 
+      use_inline_resources
+
       # subclasses declare this if they want all their arguments as arrays of packages and names
       subclass_directive :use_multipackage_api
       # subclasses declare this if they want sources (filenames) pulled from their package names
@@ -81,7 +83,7 @@ class Chef
         end
       end
 
-      def action_install
+      action :install do
         unless target_version_array.any?
           Chef::Log.debug("#{@new_resource} is already installed - nothing to do")
           return
@@ -116,7 +118,7 @@ class Chef
 
       private :install_description
 
-      def action_upgrade
+      action :upgrade do
         if !target_version_array.any?
           Chef::Log.debug("#{@new_resource} no versions to upgrade - nothing to do")
           return
@@ -146,7 +148,7 @@ class Chef
 
       private :upgrade_description
 
-      def action_remove
+      action :remove do
         if removing_package?
           description = @new_resource.version ? "version #{@new_resource.version} of " : ""
           converge_by("remove #{description}package #{@current_resource.package_name}") do
@@ -181,7 +183,7 @@ class Chef
         end
       end
 
-      def action_purge
+      action :purge do
         if removing_package?
           description = @new_resource.version ? "version #{@new_resource.version} of" : ""
           converge_by("purge #{description} package #{@current_resource.package_name}") do
@@ -193,7 +195,7 @@ class Chef
         end
       end
 
-      def action_reconfig
+      action :reconfig do
         if @current_resource.version == nil
           Chef::Log.debug("#{@new_resource} is NOT installed - nothing to do")
           return
