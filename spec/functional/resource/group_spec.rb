@@ -425,6 +425,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" end
       end
 
       it "does not raise an error on manage" do
+        allow(Etc).to receive(:getpwnam).and_return(double("User"))
         expect { group_resource.run_action(:manage) }.not_to raise_error
       end
     end

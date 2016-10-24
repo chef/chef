@@ -41,7 +41,7 @@ class Chef
           requirements.assert(:create, :manage, :modify) do |a|
             a.assertion do
               begin
-                to_add(@new_resource.members).any? { |member| Etc.getpwnam(member) }
+                to_add(@new_resource.members).all? { |member| Etc.getpwnam(member) }
               rescue
                 false
               end
