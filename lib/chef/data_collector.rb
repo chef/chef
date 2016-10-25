@@ -19,6 +19,8 @@
 #
 
 require "uri"
+require "chef/server_api"
+require "chef/http/simple_json"
 require "chef/event_dispatch/base"
 require "chef/data_collector/messages"
 require "chef/data_collector/resource_report"
@@ -65,8 +67,14 @@ class Chef
         @error_descriptions      = {}
         @expanded_run_list       = {}
         @deprecations            = Set.new
-        @http                    = Chef::HTTP.new(data_collector_server_url)
         @enabled                 = true
+
+        @http =
+          if data_collector_token.nil?
+            Chef::ServerAPI.new(data_collector_server_url)
+          else
+            Chef::HTTP::SimpleJSON.new(data_collector_server_url)
+          end
       end
 
       # see EventDispatch::Base#run_started
@@ -81,7 +89,7 @@ class Chef
 
         disable_reporter_on_error do
           send_to_data_collector(
-            Chef::DataCollector::Messages.run_start_message(current_run_status).to_json
+            Chef::DataCollector::Messages.run_start_message(current_run_status)
           )
         end
       end

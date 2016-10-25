@@ -23,6 +23,14 @@ require "chef/data_collector"
 require "chef/resource_builder"
 
 describe Chef::DataCollector do
+
+  # TODO:
+  # * auto-configure a URL that is relative to Chef Server URL,
+  #   like https://chef.example/organizations/:orgname/data_collector
+  # * Use an HTTP client that does signed header auth if no token is configured
+  # * register_reporter should be `true` for the auto-configure case
+  # * when talking to a server without automate/data collector, disabling the collector should not be noisy
+
   describe ".register_reporter?" do
     context "when no data collector URL is configured" do
       it "returns false" do
@@ -150,14 +158,52 @@ describe Chef::DataCollector do
       end
     end
   end
+
 end
 
 describe Chef::DataCollector::Reporter do
   let(:reporter) { described_class.new }
   let(:run_status) { Chef::RunStatus.new(Chef::Node.new, Chef::EventDispatch::Dispatcher.new) }
 
+  let(:token) { "supersecrettoken" }
+
   before do
     Chef::Config[:data_collector][:server_url] = "http://my-data-collector-server.mycompany.com"
+    Chef::Config[:data_collector][:token] = token
+  end
+
+  describe "selecting token or signed header authentication" do
+
+    context "when the token is set in the config" do
+
+      before do
+        Chef::Config[:client_key] = "/no/key/should/exist/at/this/path.pem"
+      end
+
+      it "configures an HTTP client that doesn't do signed header auth" do
+        # Initializing with the wrong kind of HTTP class should cause Chef::Exceptions::PrivateKeyMissing
+        expect { reporter.http }.to_not raise_error
+      end
+
+    end
+
+    context "when no token is set in the config" do
+
+      let(:token) { nil }
+
+      let(:client_key) { File.join(CHEF_SPEC_DATA, "ssl", "private_key.pem") }
+
+      before do
+        Chef::Config[:client_key] = client_key
+      end
+
+      it "configures an HTTP client that does signed header auth" do
+        expect { reporter.http }.to_not raise_error
+        expect(reporter.http.options).to have_key(:signing_key_filename)
+        expect(reporter.http.options[:signing_key_filename]).to eq(client_key)
+      end
+    end
+
   end
 
   describe "#run_started" do
@@ -177,7 +223,7 @@ describe Chef::DataCollector::Reporter do
         .to receive(:run_start_message)
         .with(run_status)
         .and_return(key: "value")
-      expect(reporter).to receive(:send_to_data_collector).with('{"key":"value"}')
+      expect(reporter).to receive(:send_to_data_collector).with({ key: "value" })
       reporter.run_started(run_status)
     end
   end
