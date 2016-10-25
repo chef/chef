@@ -33,12 +33,37 @@ class Chef
   # Provides methods for determinine whether a reporter should be registered.
   class DataCollector
 
-    # TODO: this probably should be false if running chef-solo and the user has
-    # not set a server_url, but maybe it will behave ok with the default?
+    # Whether or not to enable data collection:
+    # * always disabled for why run mode
+    # * disabled when the user sets `Chef::Config[:data_collector][:mode]` to a
+    #   value that excludes the mode (client or solo) that we are running as
+    # * disabled in solo mode if the user did not configure the auth token
+    # * disabled if `Chef::Config[:data_collector][:server_url]` is set to a
+    #   falsey value
     def self.register_reporter?
-      Chef::Config[:data_collector][:server_url] &&
-        !Chef::Config[:why_run] &&
-        self.reporter_enabled_for_current_mode?
+      return false if why_run?
+      return false unless reporter_enabled_for_current_mode?
+      if solo?
+        data_collector_url_configured? && token_auth_configured?
+      else
+        data_collector_url_configured?
+      end
+    end
+
+    def self.data_collector_url_configured?
+      !!Chef::Config[:data_collector][:server_url]
+    end
+
+    def self.why_run?
+      !!Chef::Config[:why_run]
+    end
+
+    def self.token_auth_configured?
+      !!Chef::Config[:data_collector][:token]
+    end
+
+    def self.solo?
+      !!Chef::Config[:solo] || !!Chef::Config[:local_mode]
     end
 
     def self.reporter_enabled_for_current_mode?

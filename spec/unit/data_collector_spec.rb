@@ -52,23 +52,93 @@ describe Chef::DataCollector do
       end
 
       context "when not operating in why_run mode" do
+
         before do
           Chef::Config[:why_run] = false
+          Chef::Config[:data_collector][:token] = token
         end
 
-        context "when report is enabled for current mode" do
-          it "returns true" do
-            allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(true)
-            expect(Chef::DataCollector.register_reporter?).to be_truthy
+        context "when a token is configured" do
+
+          let(:token) { "supersecrettoken" }
+
+          context "when report is enabled for current mode" do
+            it "returns true" do
+              allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(true)
+              expect(Chef::DataCollector.register_reporter?).to be_truthy
+            end
           end
+
+          context "when report is disabled for current mode" do
+            it "returns false" do
+              allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(false)
+              expect(Chef::DataCollector.register_reporter?).to be_falsey
+            end
+          end
+
         end
 
-        context "when report is disabled for current mode" do
-          it "returns false" do
-            allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(false)
-            expect(Chef::DataCollector.register_reporter?).to be_falsey
+        # `Chef::Config[:data_collector][:server_url]` defaults to a URL
+        # relative to the `chef_server_url`, so we use configuration of the
+        # token to infer whether a solo/local mode user intends for data
+        # collection to be enabled.
+        context "when a token is not configured" do
+
+          let(:token) { nil }
+
+          context "when report is enabled for current mode" do
+
+            before do
+              allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(true)
+            end
+
+            context "when the current mode is solo" do
+
+              before do
+                Chef::Config[:solo] = true
+              end
+
+              it "returns false" do
+                expect(Chef::DataCollector.register_reporter?).to be_falsey
+              end
+
+            end
+
+            context "when the current mode is local mode" do
+
+              before do
+                Chef::Config[:local_mode] = true
+              end
+
+              it "returns false" do
+                expect(Chef::DataCollector.register_reporter?).to be_falsey
+              end
+            end
+
+            context "when the current mode is client mode" do
+
+              before do
+                Chef::Config[:local_mode] = false
+                Chef::Config[:solo] = false
+              end
+
+              it "returns true" do
+                expect(Chef::DataCollector.register_reporter?).to be_truthy
+              end
+
+            end
+
           end
+
+          context "when report is disabled for current mode" do
+            it "returns false" do
+              allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(false)
+              expect(Chef::DataCollector.register_reporter?).to be_falsey
+            end
+          end
+
         end
+
       end
     end
   end
