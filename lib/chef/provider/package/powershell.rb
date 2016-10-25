@@ -28,7 +28,7 @@ class Chef
         provides :powershell_package, os: "windows"
 
         def load_current_resource
-          @current_resource = Chef::Resource::PowershellPackage.new(new_resource.name)		  
+          @current_resource = Chef::Resource::PowershellPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
           current_resource.version(build_current_versions)
           current_resource
@@ -38,7 +38,7 @@ class Chef
           super
           if powershell_out("$PSVersionTable.PSVersion.Major").stdout.strip().to_i < 5
             raise "Minimum installed Powershell Version required is 5"
-          end 
+          end
           requirements.assert(:install) do |a|
             a.assertion { candidates_exist_for_all_uninstalled? }
             a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
@@ -49,40 +49,50 @@ class Chef
         def candidate_version
           @candidate_version ||= build_candidate_versions
         end
-		
+
         def install_package(names, versions)
           # Installs the package specified with the version passed else latest version will be installed
-          names.each_with_index do |name,index|
-            powershell_out("Install-Package #{name} -Force -ForceBootstrap -RequiredVersion #{versions[index]}", { :timeout => @new_resource.timeout }).stdout
+          names.each_with_index do |name, index|
+            powershell_out("Install-Package #{name} -Force -ForceBootstrap -RequiredVersion #{versions[index]}", { :timeout => @new_resource.timeout })
           end
         end
 
         def remove_package(names, versions)
           # Removes the package, if no version is passed, all installed version  will be removed
-          names.each_with_index do |name,index|
-     	    if !versions.nil?
-              if versions.length > index
-                powershell_out( "Uninstall-Package #{name} -Force -RequiredVersion #{versions[index]}", { :timeout => @new_resource.timeout }).stdout
+          names.each_with_index do |name, index|
+            if !versions.nil?
+              if versions[index] != nil
+                powershell_out( "Uninstall-Package #{name} -Force -RequiredVersion #{versions[index]}", { :timeout => @new_resource.timeout })
+              else
+                powershell_out( "Uninstall-Package #{name} -Force", { :timeout => @new_resource.timeout })
               end
             end
             if new_resource.version.nil?
               stdout = 0
-              while stdout!="" do
+              while stdout != ""
                 stdout = powershell_out( "Uninstall-Package #{name} -Force", { :timeout => @new_resource.timeout }).stdout
-	        if !stdout.empty?
+                if !stdout.empty?
                   stdout = stdout.split(" ")
-	          Chef::Log.debug("Removed package #{name} with version #{stdout[stdout.index(name)+1]}")				
+                  Chef::Log.debug("Removed package #{name} with version #{stdout[stdout.index(name) + 1]}")
                 end
               end
-            end			  
+            end
           end
         end
 
-        # return array of latest available packages online	
-	def build_candidate_versions
+        # return array of latest available packages online
+        def build_candidate_versions
           versions = []
-          new_resource.package_name.map do |name|
-            stdout = powershell_out("Find-Package #{name}", { :timeout => @new_resource.timeout }).stdout
+          new_resource.package_name.each_with_index do |name, index|
+            if !new_resource.version.nil?
+              if new_resource.version[index] != nil
+                stdout = powershell_out("Find-Package #{name} -RequiredVersion #{new_resource.version[index]}", { :timeout => @new_resource.timeout }).stdout
+              else
+                stdout = powershell_out("Find-Package #{name}", { :timeout => @new_resource.timeout }).stdout
+              end
+            else
+              stdout = powershell_out("Find-Package #{name}", { :timeout => @new_resource.timeout }).stdout
+            end
             versions.push(find_version(stdout))
           end
           versions
@@ -91,34 +101,35 @@ class Chef
         #return array of currently installed version
         def build_current_versions
           version_list = []
-          new_resource.package_name.each_with_index do |name,index|
+          new_resource.package_name.each_with_index do |name, index|
             if !new_resource.version.nil?
-              if new_resource.version.length >= index+1
-                stdout =  powershell_out("Get-Package -Name #{name} -RequiredVersion #{new_resource.version[index]}", { :timeout => @new_resource.timeout }).stdout
+              if new_resource.version[index] != nil
+                stdout = powershell_out("Get-Package -Name #{name} -RequiredVersion #{new_resource.version[index]}", { :timeout => @new_resource.timeout }).stdout
               else
-                stdout =  powershell_out("Get-Package -Name #{name}", { :timeout => @new_resource.timeout }).stdout
+                stdout = powershell_out("Get-Package -Name #{name}", { :timeout => @new_resource.timeout }).stdout
               end
             else
-              stdout =  powershell_out("Get-Package -Name #{name}", { :timeout => @new_resource.timeout }).stdout
-            end			  
+              stdout = powershell_out("Get-Package -Name #{name}", { :timeout => @new_resource.timeout }).stdout
+            end
             if stdout.empty?
-              version_list.push(nil) 	            
-	    else
+              version_list.push(nil)
+            else
               stdout = stdout.split(" ")
-	      version_list.push(stdout[stdout.index(name)+1])
+              version_list.push(stdout[stdout.index(name) + 1])
             end
           end
           version_list
         end
 
-	def find_version(stdout)
+        def find_version(stdout)
           if stdout.empty?
-            raise "Version speicified by user not found for the package"
+            nil
+            #raise Chef::Exceptions::Package, "Invalid Package name pecified or proper version not passed"
           else
-            stdout.split(" ")[-2]	
+            stdout.split(" ")[-2]
           end
         end
-				
+
       end
     end
   end
