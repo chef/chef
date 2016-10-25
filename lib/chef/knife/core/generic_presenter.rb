@@ -28,12 +28,14 @@ class Chef
         # :nodoc:
         def self.included(includer)
           includer.class_eval do
-            @attrs_to_show = []
             option :attribute,
               :short => "-a ATTR1 [-a ATTR2]",
               :long => "--attribute ATTR1 [--attribute ATTR2] ",
-              :proc => lambda { |val| @attrs_to_show << val },
-              :description => "Show one or more attributes"
+              :description => "Show one or more attributes",
+              :proc => Proc.new { |a|
+                Chef::Config[:knife][:attribute] ||= []
+                Chef::Config[:knife][:attribute].push(a)
+              }
           end
         end
       end
