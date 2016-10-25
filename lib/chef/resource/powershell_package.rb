@@ -33,9 +33,9 @@ class Chef
       end
 
       property :package_name, [String, Array], coerce: proc { |x| [x].flatten }
-			
+
       property :version, [String, Array], coerce: proc { |x| [x].flatten }
-	  
+
     end
   end
 end
