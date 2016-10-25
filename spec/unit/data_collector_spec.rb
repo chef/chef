@@ -557,9 +557,9 @@ describe Chef::DataCollector::Reporter do
         end
 
         context "when raise-on-failure is disabled" do
-          it "logs a warning and does not raise an exception" do
+          it "logs an info message and does not raise an exception" do
             Chef::Config[:data_collector][:raise_on_failure] = false
-            expect(Chef::Log).to receive(:warn)
+            expect(Chef::Log).to receive(:info)
             expect { reporter.send(:disable_reporter_on_error) { raise exception_class.new("bummer") } }.not_to raise_error
           end
         end

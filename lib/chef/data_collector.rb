@@ -32,6 +32,9 @@ class Chef
   # == Chef::DataCollector
   # Provides methods for determinine whether a reporter should be registered.
   class DataCollector
+
+    # TODO: this probably should be false if running chef-solo and the user has
+    # not set a server_url, but maybe it will behave ok with the default?
     def self.register_reporter?
       Chef::Config[:data_collector][:server_url] &&
         !Chef::Config[:why_run] &&
@@ -271,7 +274,9 @@ class Chef
           Chef::Log.error(msg)
           raise
         else
-          Chef::Log.warn(msg)
+          # Make the message non-scary for folks who don't have automate:
+          msg << " (This is normal if you do not have Chef Automate)"
+          Chef::Log.info(msg)
         end
       end
 

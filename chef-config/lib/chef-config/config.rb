@@ -857,7 +857,7 @@ module ChefConfig
       # Full URL to the endpoint that will receive our data. If nil, the
       # data collector will not run.
       # Ex: http://my-data-collector.mycompany.com/ingest
-      default :server_url,       nil
+      default(:server_url) { File.join(config_parent.chef_server_url, "/data_collector") }
 
       # An optional pre-shared token to pass as an HTTP header (x-data-collector-token)
       # that can be used to determine whether or not the poster of this
