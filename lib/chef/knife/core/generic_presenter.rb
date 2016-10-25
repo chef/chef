@@ -174,7 +174,7 @@ class Chef
         end
 
         def extract_nested_value(data, nested_value_spec)
-          nested_value_spec.split(".").each do |attr|
+          extract_attribute_chain(nested_value_spec).each do |attr|
             data =
               if data.is_a?(Array)
                 data[attr.to_i]
@@ -189,6 +189,38 @@ class Chef
           end
           # necessary (?) for coercing objects (the run_list object?) to hashes
           ( !data.kind_of?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
+        end
+
+        # Some attribute keys have dots in them. We need to make sure that we
+        # differentiate between dots indicating nesting and dots that are part
+        # of attribute keys. We do that by recognizing keys wrapped in double
+        # or single quotes. This makes the assumption that the user passed
+        # the value in correctly as to preserve the quoting.
+        def extract_attribute_chain(nested_value_spec)
+          if nested_value_spec =~ /\"|\'/
+            extract_attribute_chain_with_quotes(nested_value_spec)
+          else
+            extract_attribute_chain_without_quotes(nested_value_spec)
+          end
+        end
+
+        def extract_attribute_chain_without_quotes(nested_value_spec)
+          nested_value_spec.split(".").reject { |c| c.empty? }
+        end
+
+        def extract_attribute_chain_with_quotes(nested_value_spec)
+          keys = []
+          quoted_string = /[\"|\']?([^"']*)[\"|\']?/
+          nested_value_spec.scan(quoted_string).reject { |c| c.empty? }.each do |w|
+            # The result of the quoted string regex is that keys that do not
+            # contain quotes will start or end with a .
+            if w[0] =~ /^\.|\.$/
+              keys << extract_attribute_chain_without_quotes(w[0])
+            else
+              keys << w[0]
+            end
+          end
+          keys.reject { |c| c.empty? }.flatten
         end
 
         def format_cookbook_list_for_display(item)

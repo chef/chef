@@ -410,6 +410,20 @@ EOM
         @ui.config[:attribute] = non_existing_path
         expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { non_existing_path => nil } })
       end
+
+      # ex: --attribute 'keys."with spaces".open.doors."with.dots"'
+      it "works with double-quoted strings that include spaces and dots" do
+        input = { "keys" => { "with spaces" => { "open" => { "doors" => { "with many.dots" => "when asked" } } } } }
+        @ui.config[:attribute] = "keys.\"with spaces\".open.doors.\"with many.dots\""
+        expect(@ui.format_for_display(input)).to eq({ nil => { "keys.\"with spaces\".open.doors.\"with many.dots\"" => "when asked" } })
+      end
+
+      # ex: --attribute "keys.'with spaces'.open.doors.'with.dots'"
+      it "works with single-quoted strings that include spaces and dots" do
+        input = { "keys" => { "with spaces" => { "open" => { "doors" => { "with many.dots" => "when asked" } } } } }
+        @ui.config[:attribute] = "keys.\'with spaces\'.open.doors.\'with many.dots\'"
+        expect(@ui.format_for_display(input)).to eq({ nil => { "keys.\'with spaces\'.open.doors.\'with many.dots\'" => "when asked" } })
+      end
     end
 
     describe "with --run-list passed" do
