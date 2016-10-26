@@ -17,6 +17,7 @@
 #
 
 require "chef/node/common_api"
+require "chef/node/mixin/state_tracking"
 
 class Chef
   class Node
@@ -63,15 +64,12 @@ class Chef
       MUTATOR_METHODS.each do |mutator|
         define_method(mutator) do |*args, &block|
           ret = super(*args, &block)
-          root.reset_cache(root.top_level_breadcrumb)
+          send_reset_cache
           ret
         end
       end
 
-      attr_reader :root
-
-      def initialize(root, data)
-        @root = root
+      def initialize(data = [])
         super(data)
         map! { |e| convert_value(e) }
       end
@@ -96,14 +94,20 @@ class Chef
         when AttrArray
           value
         when Hash
-          VividMash.new(root, value)
+          VividMash.new(value, __root__)
         when Array
-          AttrArray.new(root, value)
+          AttrArray.new(value, __root__)
         else
           value
         end
       end
 
+      # needed for __path__
+      def convert_key(key)
+        key
+      end
+
+      prepend Chef::Node::Mixin::StateTracking
     end
 
     # == VividMash
@@ -117,8 +121,6 @@ class Chef
     #   #fetch, work as normal).
     # * attr_accessor style element set and get are supported via method_missing
     class VividMash < Mash
-      attr_reader :root
-
       include CommonAPI
 
       # Methods that mutate a VividMash. Each of them is overridden so that it
@@ -126,7 +128,6 @@ class Chef
       # object.
       MUTATOR_METHODS = [
         :clear,
-        :delete,
         :delete_if,
         :keep_if,
         :merge!,
@@ -140,23 +141,27 @@ class Chef
       # For all of the mutating methods on Mash, override them so that they
       # also invalidate the cached `merged_attributes` on the root Attribute
       # object.
+
+      def delete(key, &block)
+        send_reset_cache(__path__ + [ key ])
+        super
+      end
+
       MUTATOR_METHODS.each do |mutator|
         define_method(mutator) do |*args, &block|
-          root.reset_cache(root.top_level_breadcrumb)
+          send_reset_cache
           super(*args, &block)
         end
       end
 
-      def initialize(root, data = {})
-        @root = root
+      def initialize(data = {})
         super(data)
       end
 
       def [](key)
-        root.top_level_breadcrumb ||= key
         value = super
         if !key?(key)
-          value = self.class.new(root)
+          value = self.class.new({}, __root__)
           self[key] = value
         else
           value
@@ -164,9 +169,8 @@ class Chef
       end
 
       def []=(key, value)
-        root.top_level_breadcrumb ||= key
         ret = super
-        root.reset_cache(root.top_level_breadcrumb)
+        send_reset_cache(__path__ + [ key ])
         ret
       end
 
@@ -205,9 +209,9 @@ class Chef
         when AttrArray
           value
         when Hash
-          VividMash.new(root, value)
+          VividMash.new(value, __root__)
         when Array
-          AttrArray.new(root, value)
+          AttrArray.new(value, __root__)
         else
           value
         end
@@ -217,6 +221,7 @@ class Chef
         Mash.new(self)
       end
 
+      prepend Chef::Node::Mixin::StateTracking
     end
   end
 end

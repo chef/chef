@@ -197,7 +197,6 @@ class Chef
     # Set a normal attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def normal
-      attributes.top_level_breadcrumb = nil
       attributes.normal
     end
 
@@ -209,14 +208,12 @@ class Chef
     # Set a default of this node, but auto-vivify any Mashes that might
     # be missing
     def default
-      attributes.top_level_breadcrumb = nil
       attributes.default
     end
 
     # Set an override attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def override
-      attributes.top_level_breadcrumb = nil
       attributes.override
     end
 
@@ -237,7 +234,6 @@ class Chef
     end
 
     def automatic_attrs
-      attributes.top_level_breadcrumb = nil
       attributes.automatic
     end
 

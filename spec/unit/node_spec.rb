@@ -1709,4 +1709,107 @@ describe Chef::Node do
     end
   end
 
+  describe "path tracking via __path__" do
+    it "works through hash keys" do
+      node.default["foo"] = { "bar" => { "baz" => "qux" } }
+      expect(node["foo"]["bar"].__path__).to eql(%w{foo bar})
+    end
+
+    it "works through the default level" do
+      node.default["foo"] = { "bar" => { "baz" => "qux" } }
+      expect(node.default["foo"]["bar"].__path__).to eql(%w{foo bar})
+    end
+
+    it "works through arrays" do
+      node.default["foo"] = [ { "bar" => { "baz" => "qux" } } ]
+      expect(node["foo"][0].__path__).to eql(["foo", 0])
+      expect(node["foo"][0]["bar"].__path__).to eql(["foo", 0, "bar"])
+    end
+
+    it "works through arrays at the default level" do
+      node.default["foo"] = [ { "bar" => { "baz" => "qux" } } ]
+      expect(node.default["foo"][0].__path__).to eql(["foo", 0])
+      expect(node.default["foo"][0]["bar"].__path__).to eql(["foo", 0, "bar"])
+    end
+
+    # if we set __path__ in the initializer we'd get this wrong, this is why we
+    # update the path on every #[] or #[]= operator
+    it "works on access when the node has been rearranged" do
+      node.default["foo"] = { "bar" => { "baz" => "qux" } }
+      a = node.default["foo"]
+      node.default["fizz"] = a
+      expect(node["fizz"]["bar"].__path__).to eql(%w{fizz bar})
+      expect(node["foo"]["bar"].__path__).to eql(%w{foo bar})
+    end
+
+    # We have a problem because the __path__ is stored on in each node, but the
+    # node can be wired up at multiple locations in the tree via pointers.  One
+    # solution would be to deep-dup the value in `#[]=(key, value)` and fix the
+    # __path__ on all the dup'd nodes.  The problem is that this would create an
+    # unusual situation where after assignment, you couldn't mutate the thing you
+    # hand a handle on.  I'm not entirely positive this behavior is the correct
+    # thing to support, but it is more hash-like (although if we start with a hash
+    # then convert_value does its thing and we *do* get dup'd on assignment).  This
+    # behavior likely makes any implementation of a deep merge cache built over the
+    # top of __path__ tracking have edge conditions where it will fail.
+    #
+    # Removing this support would be a breaking change.  The test is included here
+    # because it seems most likely that someone would break this behavior while trying
+    # to fix __path__ behavior.
+    it "does not dup in the background when a node is assigned" do
+      # get a handle on a vividmash (can't be a hash or else we convert_value it)
+      node.default["foo"] = { "bar" => { "baz" => "qux" } }
+      a = node.default["foo"]
+      # assign that somewhere else in the tree
+      node.default["fizz"] = a
+      # now upate the source
+      a["duptest"] = true
+      # the tree should have been updated
+      expect(node.default["fizz"]["duptest"]).to be true
+      expect(node["fizz"]["duptest"]).to be true
+    end
+  end
+
+  describe "root tracking via __root__" do
+    it "works through hash keys" do
+      node.default["foo"] = { "bar" => { "baz" => "qux" } }
+      expect(node["foo"]["bar"].__root__).to eql(node.attributes)
+    end
+
+    it "works through the default level" do
+      node.default["foo"] = { "bar" => { "baz" => "qux" } }
+      expect(node.default["foo"]["bar"].__root__).to eql(node.attributes)
+    end
+
+    it "works through arrays" do
+      node.default["foo"] = [ { "bar" => { "baz" => "qux" } } ]
+      expect(node["foo"][0].__root__).to eql(node.attributes)
+      expect(node["foo"][0]["bar"].__root__).to eql(node.attributes)
+    end
+
+    it "works through arrays at the default level" do
+      node.default["foo"] = [ { "bar" => { "baz" => "qux" } } ]
+      expect(node.default["foo"][0].__root__).to eql(node.attributes)
+      expect(node.default["foo"][0]["bar"].__root__).to eql(node.attributes)
+    end
+  end
+
+  describe "ways of abusing Chef 12 node state" do
+    # these tests abuse the top_level_breadcrumb state in Chef 12
+    it "derived attributes work correctly" do
+      node.default["v1"] = 1
+      expect(node["a"]).to eql(nil)
+      node.default["a"] = node["v1"]
+      expect(node["a"]).to eql(1)
+    end
+
+    it "works when saving nodes to variables" do
+      a = node.default["a"]
+      expect(node["a"]).to eql({})
+      node.default["b"] = 0
+      a["key"] = 1
+
+      expect(node["a"]["key"]).to eql(1)
+    end
+  end
 end
