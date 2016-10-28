@@ -34,25 +34,25 @@ describe Chef::Provider::Package::Powershell do
 
   let(:installed_package_stdout) do
     <<-EOF
-"\r\nName                           Version          Source           Summary                                               \r\n----                           -------          ------           -------                                               \r\nxCertificate                   2.1.0.0          https://www.p... This module includes DSC resources that simplify ad...\r\n\r\n\r\n"
+"\r\nName                           Version          Source           Summary                                               \r\n----                           -------          ------           -------                                               \r\nxCertificate                   2.1.0.0          PSGallery        This module includes DSC resources that simplify administration of certificates on a Windows Server"
     EOF
   end
 
   let(:package_version_stdout) do
     <<-EOF
-"\r\nName                           Version          Source           Summary                                               \r\n----                           -------          ------           -------                                               \r\nxCertificate                   2.1.0.0          https://www.p..."
+"\r\nName                           Version          Source           Summary                                               \r\n----                           -------          ------           -------                                               \r\nxCertificate                   2.1.0.0          https://www.powershellgallery... PowerShellGet"
     EOF
   end
 
   let(:installed_package_stdout_xnetworking) do
     <<-EOF
-"\r\nName                           Version          Source           Summary                                               \r\n----                           -------          ------           -------                                               \r\nxNetworking                   2.12.0.0          https://www.p... This module includes DSC resources that simplify ad..."
+"\r\nName                           Version          Source           Summary                                               \r\n----                           -------          ------           -------                                               \r\nxNetworking                   2.12.0.0          PSGallery        Module with DSC resources for Networking Area"
     EOF
   end
 
   let(:package_version_stdout_xnetworking) do
     <<-EOF
-"\r\nName                           Version          Source           Summary                                               \r\n----                           -------          ------           -------                                               \r\nxNetworking                   2.12.0.0          https://www.p..."
+"\r\nName                           Version          Source           Summary                                               \r\n----                           -------          ------           -------                                               \r\nxNetworking                   2.12.0.0          https://www.powershellgallery... PowerShellGet"
     EOF
   end
 
