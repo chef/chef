@@ -60,20 +60,14 @@ class Chef
         def remove_package(names, versions)
           # Removes the package, if no version is passed, all installed version  will be removed
           names.each_with_index do |name, index|
-            if !versions.nil?
-              if versions[index] != nil
-                powershell_out( "Uninstall-Package #{name} -Force -RequiredVersion #{versions[index]}", { :timeout => @new_resource.timeout })
-              else
-                powershell_out( "Uninstall-Package #{name} -Force", { :timeout => @new_resource.timeout })
-              end
-            end
-            if new_resource.version.nil?
-              stdout = 0
-              while stdout != ""
+            if versions && versions[index] != nil
+              powershell_out( "Uninstall-Package #{name} -Force -RequiredVersion #{versions[index]}", { :timeout => @new_resource.timeout })
+            else
+              stdout = "0"
+              until stdout.empty?
                 stdout = powershell_out( "Uninstall-Package #{name} -Force", { :timeout => @new_resource.timeout }).stdout
                 if !stdout.empty?
-                  stdout = stdout.split(" ")
-                  Chef::Log.debug("Removed package #{name} with version #{stdout[stdout.index(name) + 1]}")
+                  Chef::Log.info("Removed package #{name} with version #{parse_version(stdout.downcase, name.downcase)}")
                 end
               end
             end
@@ -84,16 +78,12 @@ class Chef
         def build_candidate_versions
           versions = []
           new_resource.package_name.each_with_index do |name, index|
-            if !new_resource.version.nil?
-              if new_resource.version[index] != nil
-                stdout = powershell_out("Find-Package #{name} -RequiredVersion #{new_resource.version[index]}", { :timeout => @new_resource.timeout }).stdout
-              else
-                stdout = powershell_out("Find-Package #{name}", { :timeout => @new_resource.timeout }).stdout
-              end
+            if new_resource.version && new_resource.version[index] != nil
+              stdout = powershell_out("Find-Package #{name} -RequiredVersion #{new_resource.version[index]}", { :timeout => @new_resource.timeout }).stdout
             else
               stdout = powershell_out("Find-Package #{name}", { :timeout => @new_resource.timeout }).stdout
             end
-            versions.push(find_version(stdout))
+            versions.push(parse_version(stdout.downcase, name.downcase))
           end
           versions
         end
@@ -102,31 +92,27 @@ class Chef
         def build_current_versions
           version_list = []
           new_resource.package_name.each_with_index do |name, index|
-            if !new_resource.version.nil?
-              if new_resource.version[index] != nil
-                stdout = powershell_out("Get-Package -Name #{name} -RequiredVersion #{new_resource.version[index]}", { :timeout => @new_resource.timeout }).stdout
-              else
-                stdout = powershell_out("Get-Package -Name #{name}", { :timeout => @new_resource.timeout }).stdout
-              end
+            if new_resource.version && new_resource.version[index] != nil
+              stdout = powershell_out("Get-Package -Name #{name} -RequiredVersion #{new_resource.version[index]}", { :timeout => @new_resource.timeout }).stdout
             else
               stdout = powershell_out("Get-Package -Name #{name}", { :timeout => @new_resource.timeout }).stdout
             end
-            if stdout.empty?
-              version_list.push(nil)
-            else
-              stdout = stdout.split(" ")
-              version_list.push(stdout[stdout.index(name) + 1])
-            end
+            version_list.push(parse_version(stdout.downcase, name.downcase))
           end
           version_list
         end
 
-        def find_version(stdout)
-          if stdout.empty?
+        def parse_version(output, name)
+          if output.empty?
             nil
-            #raise Chef::Exceptions::Package, "Invalid Package name pecified or proper version not passed"
+            #raise Chef::Exceptions::Package, "Invalid Package name specified or proper version not passed"
           else
-            stdout.split(" ")[-2]
+            #sample value of output variable
+            #Name                           Version          Source           Summary
+            #----                           -------          ------           -------
+            #xCertificate                   2.1.0.0          PSGallery        This module includes DSC resources that simplify administration of certificates on a Windows Server
+            output_list = output.split(" ")
+            output_list[output_list.index(name) + 1]
           end
         end
 
