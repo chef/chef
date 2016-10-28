@@ -41,6 +41,7 @@ To mention the team, use @chef/client-core
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Claire McQuin](https://github.com/mcquin)
 * [Steven Murawski](https://github.com/smurawski)
+* [Tim Smith](https://github.com/tas50)
 * [Tyler Ball](https://github.com/tyler-ball)
 * [Ranjib Dey](https://github.com/ranjib)
 * [Matt Wrock](https://github.com/mwrock)
@@ -84,6 +85,7 @@ To mention the team, use @chef/client-test-tools
 
 * [Joshua Timberman](https://github.com/jtimberman)
 * [Lamont Granquist](https://github.com/lamont-granquist)
+* [Tim Smith](https://github.com/tas50)
 * [Ranjib Dey](https://github.com/ranjib)
 
 ## Chef Provisioning
@@ -132,6 +134,7 @@ To mention the team, use @chef/client-ubuntu
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
+* [Tim Smith](https://github.com/tas50)
 * [Thom May](https://github.com/thommay)
 
 ## Windows
@@ -193,6 +196,7 @@ To mention the team, use @chef/client-debian
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
+* [Tim Smith](https://github.com/tas50)
 
 ## Cisco NX-OS
 
@@ -233,6 +237,7 @@ To mention the team, use @chef/client-opensuse
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
+* [Tim Smith](https://github.com/tas50)
 
 ## SUSE Enterprise Linux Server
 
