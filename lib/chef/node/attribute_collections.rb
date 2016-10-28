@@ -94,9 +94,9 @@ class Chef
         when AttrArray
           value
         when Hash
-          VividMash.new(value, __root__)
+          VividMash.new(value, __root__, __node__, __precedence__)
         when Array
-          AttrArray.new(value, __root__)
+          AttrArray.new(value, __root__, __node__, __precedence__)
         else
           value
         end
@@ -143,7 +143,7 @@ class Chef
       # object.
 
       def delete(key, &block)
-        send_reset_cache(__path__ + [ key ])
+        send_reset_cache(__path__, key)
         super
       end
 
@@ -170,7 +170,7 @@ class Chef
 
       def []=(key, value)
         ret = super
-        send_reset_cache(__path__ + [ key ])
+        send_reset_cache(__path__, key)
         ret
       end
 
@@ -209,9 +209,9 @@ class Chef
         when AttrArray
           value
         when Hash
-          VividMash.new(value, __root__)
+          VividMash.new(value, __root__, __node__, __precedence__)
         when Array
-          AttrArray.new(value, __root__)
+          AttrArray.new(value, __root__, __node__, __precedence__)
         else
           value
         end
