@@ -41,13 +41,29 @@ class Chef
     # * disabled if `Chef::Config[:data_collector][:server_url]` is set to a
     #   falsey value
     def self.register_reporter?
-      return false if why_run?
-      return false unless reporter_enabled_for_current_mode?
-      if solo?
-        data_collector_url_configured? && token_auth_configured?
-      else
-        data_collector_url_configured?
+      if why_run?
+        Chef::Log.debug("data collector is disabled for why run mode")
+        return false
       end
+      unless reporter_enabled_for_current_mode?
+        Chef::Log.debug("data collector is configured to only run in " \
+                        "#{Chef::Config[:data_collector][:mode].inspect} modes, disabling it")
+        return false
+      end
+      unless data_collector_url_configured?
+        Chef::Log.debug("data collector URL is not configured, disabling data collector")
+        return false
+      end
+      if solo? && !token_auth_configured?
+        Chef::Log.debug("Data collector token must be configured in solo mode, disabling data collector")
+        return false
+      end
+      if !solo? && token_auth_configured?
+        Chef::Log.warn("Data collector token authentication is not recommended for client-server mode" \
+                       "Please upgrade Chef Server to 12.9.2+ and remove the token from your config file " \
+                       "to use key based authentication instead")
+      end
+      true
     end
 
     def self.data_collector_url_configured?
