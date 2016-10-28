@@ -113,12 +113,7 @@ class Chef
         @deprecations            = Set.new
         @enabled                 = true
 
-        @http =
-          if data_collector_token.nil?
-            Chef::ServerAPI.new(data_collector_server_url)
-          else
-            Chef::HTTP::SimpleJSON.new(data_collector_server_url)
-          end
+        @http = setup_http_client
       end
 
       # see EventDispatch::Base#run_started
@@ -284,6 +279,19 @@ class Chef
       end
 
       private
+
+      # Selects the type of HTTP client to use based on whether we are using
+      # token-based or signed header authentication. Token authentication is
+      # intended to be used primarily for Chef Solo in which case no signing
+      # key will be available (in which case `Chef::ServerAPI.new()` would
+      # raise an exception.
+      def setup_http_client
+        if data_collector_token.nil?
+          Chef::ServerAPI.new(data_collector_server_url)
+        else
+          Chef::HTTP::SimpleJSON.new(data_collector_server_url)
+        end
+      end
 
       #
       # Yields to the passed-in block (which is expected to be some interaction
