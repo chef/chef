@@ -24,13 +24,6 @@ require "chef/resource_builder"
 
 describe Chef::DataCollector do
 
-  # TODO:
-  # * auto-configure a URL that is relative to Chef Server URL,
-  #   like https://chef.example/organizations/:orgname/data_collector
-  # * Use an HTTP client that does signed header auth if no token is configured
-  # * register_reporter should be `true` for the auto-configure case
-  # * when talking to a server without automate/data collector, disabling the collector should not be noisy
-
   describe ".register_reporter?" do
     context "when no data collector URL is configured" do
       it "returns false" do
