@@ -108,6 +108,24 @@ E
 
   end
 
+  describe "#cn_of" do
+    let(:certificate) { double("Certificate", subject: subject) }
+
+    describe "when the certificate has a common name" do
+      let(:subject) { [["CN", "common name"]] }
+      it "returns the common name" do
+        expect(ssl_fetch.cn_of(certificate)).to eq("common name")
+      end
+    end
+
+    describe "when the certificate does not have a common name" do
+      let(:subject) { [] }
+      it "returns nil" do
+        expect(ssl_fetch.cn_of(certificate)).to eq(nil)
+      end
+    end
+  end
+
   describe "fetching the remote cert chain" do
 
     let(:name_args) { %w{https://foo.example.com:8443} }
@@ -178,6 +196,26 @@ ERROR_TEXT
         expect(stderr).to include(expected_error_text)
       end
 
+    end
+
+    describe "when the certificate does not have a CN" do
+      let(:self_signed_crt_path) { File.join(CHEF_SPEC_DATA, "trusted_certs", "example_no_cn.crt") }
+      let(:self_signed_crt) { OpenSSL::X509::Certificate.new(File.read(self_signed_crt_path)) }
+
+      before do
+        expect(ssl_fetch).to receive(:proxified_socket).with("foo.example.com", 8443).and_return(tcp_socket)
+        expect(OpenSSL::SSL::SSLSocket).to receive(:new).with(tcp_socket, ssl_fetch.noverify_peer_ssl_context).and_return(ssl_socket)
+        expect(ssl_socket).to receive(:connect)
+        expect(ssl_socket).to receive(:peer_cert_chain).and_return([self_signed_crt])
+        expect(Time).to receive(:new).and_return(1)
+      end
+
+      it "fetches the certificate and writes it to a file in the trusted_certs_dir" do
+        run
+        stored_cert_path = File.join(trusted_certs_dir, "foo.example.com_1.crt")
+        expect(File).to exist(stored_cert_path)
+        expect(File.read(stored_cert_path)).to eq(File.read(self_signed_crt_path))
+      end
     end
 
   end
