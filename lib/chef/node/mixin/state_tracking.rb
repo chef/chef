@@ -68,7 +68,6 @@ class Chef
         private
 
         def send_attribute_changed_event(next_path, value)
-          puts "no node" unless __node__
           if __node__ && __node__.run_context && __node__.run_context.events
             __node__.run_context.events.attribute_changed(__precedence__, next_path, value)
           end

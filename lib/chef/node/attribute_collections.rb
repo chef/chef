@@ -34,7 +34,6 @@ class Chef
         :compact!,
         :default=,
         :default_proc=,
-        :delete,
         :delete_at,
         :delete_if,
         :fill,
@@ -67,6 +66,11 @@ class Chef
           send_reset_cache
           ret
         end
+      end
+
+      def delete(key, &block)
+        send_reset_cache(__path__, key)
+        super
       end
 
       def initialize(data = [])
