@@ -53,7 +53,7 @@ class Chef
 
           raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if user.nil?
 
-          @locked = !!(user[1] =~ /^\*?LK\*?/)
+          @locked = user[1].start_with?("*LK*")
         end
 
         def lock_user

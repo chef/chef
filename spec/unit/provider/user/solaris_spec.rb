@@ -123,11 +123,11 @@ describe Chef::Provider::User::Solaris do
 
       # locked shadow lines
       [
-        "adam:LK:::::::",
         "adam:*LK*:::::::",
         "adam:*LK*foobar:::::::",
         "adam:*LK*bahamas10:::::::",
         "adam:*LK*goonawaLK:::::::",
+        "adam:*LK*LKgir:::::::",
         "adam:*LK*L....:::::::",
       ].each do |shadow|
         context "for user 'adam' with entry '#{shadow}'" do
@@ -146,6 +146,7 @@ describe Chef::Provider::User::Solaris do
         "adam:foobar:::::::",
         "adam:bahamas10:::::::",
         "adam:goonawaLK:::::::",
+        "adam:LKgir:::::::",
         "adam:L...:::::::",
       ].each do |shadow|
         context "for user 'adam' with entry '#{shadow}'" do
