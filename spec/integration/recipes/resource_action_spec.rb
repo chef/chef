@@ -498,7 +498,7 @@ module ResourceActionSpec
       it "Raises an error when attempting to use a template in the action" do
         expect_converge do
           has_property_named_template "hi"
-        end.to raise_error(/Property template of has_property_named_template\[hi\] cannot be passed a block! If you meant to create a resource named template instead, you'll need to first rename the property./)
+        end.to raise_error(/Property `template` of `has_property_named_template\[hi\]` was incorrectly passed a block.  Possible property-resource collision.  To call a resource named `template` either rename the property or else use `declare_resource\(:template, ...\)`/)
       end
     end
 
