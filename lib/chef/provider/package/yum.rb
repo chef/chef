@@ -123,6 +123,18 @@ class Chef
           end
         end
 
+        def package_locked(name, version)
+          islocked = false
+          locked = shell_out_with_timeout!("yum versionlock")
+          locked.stdout.each_line do |line|
+            line_package = line.sub(/-[^-]*-[^-]*$/, "").split(":").last.strip
+            if line_package == name
+              islocked = true
+            end
+          end
+          return islocked
+        end
+
         # Standard Provider methods for Parent
         #
 
@@ -367,6 +379,14 @@ class Chef
 
         def purge_package(name, version)
           remove_package(name, version)
+        end
+
+        def lock_package(name, version)
+          yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} versionlock add #{name}")
+        end
+
+        def unlock_package(name, version)
+          yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} versionlock delete #{name}")
         end
 
         private

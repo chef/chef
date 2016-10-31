@@ -785,6 +785,24 @@ describe Chef::Provider::Package::Yum do
     end
   end
 
+  describe "when locking a package" do
+    it "should run yum versionlock add with the package name" do
+      expect(@provider).to receive(:yum_command).with(
+        "-d0 -e0 -y versionlock add emacs"
+      )
+      @provider.lock_package("emacs", nil)
+    end
+  end
+
+  describe "when unlocking a package" do
+    it "should run yum versionlock delete with the package name" do
+      expect(@provider).to receive(:yum_command).with(
+        "-d0 -e0 -y versionlock delete emacs"
+      )
+      @provider.unlock_package("emacs", nil)
+    end
+  end
+
   describe "when running yum" do
     it "should run yum once if it exits with a return code of 0" do
       @status = double("Status", :exitstatus => 0, :stdout => "", :stderr => "")
