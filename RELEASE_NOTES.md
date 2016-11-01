@@ -5,6 +5,31 @@ Please see [https://docs.chef.io/release_notes.html](https://docs.chef.io/releas
 
 ## Highlighted enhancements for this release:
 
+* Added msu_package resource and provider which supports the installation of Microsoft Update(MSU) packages on Windows. Example:
+
+  ```ruby
+  msu_package 'Install Windows 2012R2 Update KB2959977' do
+    source 'C:\Users\xyz\AppData\Local\Temp\Windows8.1-KB2959977-x64.msu'
+    action :install
+  end
+
+  msu_package 'Remove Windows 2012R2 Update KB2959977' do
+    source 'C:\Users\xyz\AppData\Local\Temp\Windows8.1-KB2959977-x64.msu'
+    action :remove
+  end
+
+  # Using URL in source
+  msu_package 'Install Windows 2012R2 Update KB2959977' do
+    source 'https://s3.amazonaws.com/my_bucket/Windows8.1-KB2959977-x64.msu'
+    action :install
+  end
+
+  msu_package 'Remove Windows 2012R2 Update KB2959977' do
+    source 'https://s3.amazonaws.com/my_bucket/Windows8.1-KB2959977-x64.msu'
+    action :remove
+  end
+  ```
+
 ### `attribute_changed` event hook
 
 In a cookbook library file, you can add this in order to print out all attribute changes in cookbooks:
