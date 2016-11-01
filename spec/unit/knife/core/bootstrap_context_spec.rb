@@ -30,6 +30,8 @@ describe Chef::Knife::Core::BootstrapContext do
   let(:run_list) { Chef::RunList.new("recipe[tmux]", "role[base]") }
   let(:chef_config) do
     {
+      :config_log_level => "info",
+      :config_log_location => "/tmp/log",
       :validation_key => File.join(CHEF_SPEC_DATA, "ssl", "private_key.pem"),
       :chef_server_url => "http://chef.example.com:4444",
       :validation_client_name => "chef-validator-testing",
@@ -68,16 +70,13 @@ describe Chef::Knife::Core::BootstrapContext do
 
   it "generates the config file data" do
     expected = <<-EXPECTED
-log_location     STDOUT
+log_level        :info
+log_location     "/tmp/log"
 chef_server_url  "http://chef.example.com:4444"
 validation_client_name "chef-validator-testing"
 # Using default node name (fqdn)
 EXPECTED
     expect(bootstrap_context.config_content).to eq expected
-  end
-
-  it "does not set a default log_level" do
-    expect(bootstrap_context.config_content).not_to match(/log_level/)
   end
 
   describe "alternate chef-client path" do
