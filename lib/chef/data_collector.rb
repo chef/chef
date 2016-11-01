@@ -23,6 +23,7 @@ require "chef/event_dispatch/base"
 require "chef/data_collector/messages"
 require "chef/data_collector/resource_report"
 require "ostruct"
+require "set"
 
 class Chef
 
@@ -54,7 +55,7 @@ class Chef
     class Reporter < EventDispatch::Base
       attr_reader :all_resource_reports, :status, :exception, :error_descriptions,
                   :expanded_run_list, :run_context, :run_status, :http,
-                  :current_resource_report, :enabled
+                  :current_resource_report, :enabled, :deprecations
 
       def initialize
         validate_data_collector_server_url!
@@ -63,6 +64,7 @@ class Chef
         @current_resource_loaded = nil
         @error_descriptions      = {}
         @expanded_run_list       = {}
+        @deprecations            = Set.new
         @http                    = Chef::HTTP.new(data_collector_server_url)
         @enabled                 = true
       end
@@ -223,6 +225,12 @@ class Chef
         )
       end
 
+      # see EventDispatch::Base#deprecation
+      # Append a received deprecation to the list of deprecations
+      def deprecation(message, location = caller(2..2)[0])
+        add_deprecation(message, location)
+      end
+
       private
 
       #
@@ -288,7 +296,8 @@ class Chef
             expanded_run_list: expanded_run_list,
             resources: all_resource_reports,
             status: opts[:status],
-            error_descriptions: error_descriptions
+            error_descriptions: error_descriptions,
+            deprecations: deprecations.to_a
           ).to_json
         )
       end
@@ -338,6 +347,10 @@ class Chef
 
       def update_error_description(discription_hash)
         @error_descriptions = discription_hash
+      end
+
+      def add_deprecation(message, location)
+        @deprecations << { message: message, location: location }
       end
 
       def create_resource_report(new_resource, action, current_resource = nil)
