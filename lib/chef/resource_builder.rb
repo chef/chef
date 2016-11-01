@@ -72,7 +72,7 @@ class Chef
       # Evaluate resource attribute DSL
       if block_given?
         if resource.lazy_block?
-          resource.block &block
+          resource.block(&block)
         else
           resource.resource_initializing = true
           begin
