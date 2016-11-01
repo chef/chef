@@ -60,7 +60,7 @@ class Chef
       end
       if !solo? && token_auth_configured?
         Chef::Log.warn("Data collector token authentication is not recommended for client-server mode" \
-                       "Please upgrade Chef Server to 12.9.2+ and remove the token from your config file " \
+                       "Please upgrade Chef Server to 12.11.0 and remove the token from your config file " \
                        "to use key based authentication instead")
       end
       true

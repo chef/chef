@@ -31,5 +31,19 @@ There will likely be some missed attribute changes and some bugs that need fixin
 added command line options to print out all attribute changes or filter them (hint: PRs accepted), or to add source
 file and line numbers to the event (hint: PRs accepted).
 
+* Added automatic connection to Chef Automate's Data Collector when
+  using a Chef Server that supports it:
+
+Chef Client will automatically attempt to connect to the Chef Server
+authenticated data collector proxy. If you have a supported version of
+Chef Server and have enabled this feature on the Chef Server, Chef
+Client run data will automatically be forwarded to Automate without
+additional Chef Client configuration. If you do not have Automate or the
+feature is disabled on the Chef Server, Chef Client will detect this and
+disable data collection.
+
+Note that Chef Server 12.11.0+ (not yet released as of the time this was
+written) is required for this feature.
+
 ## Highlighted bug fixes for this release:
 
