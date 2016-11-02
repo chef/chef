@@ -51,6 +51,11 @@ class Chef
         provides :dscl_user
         provides :user, os: "darwin"
 
+        # Just-in-case a recipe calls the user dscl provider without specifying
+        # a gid property. Avoids chown issues in move_home when the manage_home
+        # property is in use. #5393
+        STAFF_GROUP_ID = 20
+
         def define_resource_requirements
           super
 
@@ -264,12 +269,12 @@ user password using shadow hash.")
         #
         # Sets the group id for the user using dscl. Fails if a group doesn't
         # exist on the system with given group id. If `gid` is not specified, it
-        # sets a default Mac user group "staff", with id 20.
+        # sets a default Mac user group "staff", with id 20 using the CONSTANT
         #
         def dscl_set_gid
           if new_resource.gid.nil?
             # XXX: mutates the new resource
-            new_resource.gid(20)
+            new_resource.gid(STAFF_GROUP_ID)
           elsif !new_resource.gid.to_s.match(/^\d+$/)
             begin
               possible_gid = run_dscl("read /Groups/#{new_resource.gid} PrimaryGroupID").split(" ").last
@@ -329,7 +334,7 @@ user password using shadow hash.")
 
         def move_home
           Chef::Log.debug("#{new_resource} moving #{self} home from #{current_resource.home} to #{new_resource.home}")
-
+          new_resource.gid(STAFF_GROUP_ID) if new_resource.gid.nil?
           src = current_resource.home
           FileUtils.mkdir_p(new_resource.home)
           files = ::Dir.glob("#{Chef::Util::PathHelper.escape_glob_dir(src)}/*", ::File::FNM_DOTMATCH) - ["#{src}/.", "#{src}/.."]
