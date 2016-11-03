@@ -5,7 +5,7 @@ Please see [https://docs.chef.io/release_notes.html](https://docs.chef.io/releas
 
 ## Highlighted enhancements for this release:
 
-* Added `attribute_changed` event hook:
+### `attribute_changed` event hook
 
 In a cookbook library file, you can add this in order to print out all attribute changes in cookbooks:
 
@@ -31,8 +31,7 @@ There will likely be some missed attribute changes and some bugs that need fixin
 added command line options to print out all attribute changes or filter them (hint: PRs accepted), or to add source
 file and line numbers to the event (hint: PRs accepted).
 
-* Added automatic connection to Chef Automate's Data Collector when
-  using a Chef Server that supports it:
+### Automatic connection to Chef Automate's Data Collector with supported Chef Server
 
 Chef Client will automatically attempt to connect to the Chef Server
 authenticated data collector proxy. If you have a supported version of
