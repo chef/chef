@@ -50,70 +50,62 @@ class Chef
           @candidate_version ||= build_candidate_versions
         end
 
+        # Installs the package specified with the version passed else latest version will be installed
         def install_package(names, versions)
-          # Installs the package specified with the version passed else latest version will be installed
           names.each_with_index do |name, index|
-            powershell_out("Install-Package #{name} -Force -ForceBootstrap -RequiredVersion #{versions[index]}", { :timeout => @new_resource.timeout })
+            powershell_out("Install-Package '#{name}' -Force -ForceBootstrap -RequiredVersion #{versions[index]}", { :timeout => @new_resource.timeout })
           end
         end
 
+        # Removes the package for the version passed and if no version is passed, then all installed versions of the package are removed
         def remove_package(names, versions)
-          # Removes the package, if no version is passed, all installed version  will be removed
           names.each_with_index do |name, index|
             if versions && versions[index] != nil
-              powershell_out( "Uninstall-Package #{name} -Force -RequiredVersion #{versions[index]}", { :timeout => @new_resource.timeout })
+              powershell_out( "Uninstall-Package '#{name}' -Force -ForceBootstrap -RequiredVersion #{versions[index]}", { :timeout => @new_resource.timeout })
             else
-              stdout = "0"
-              until stdout.empty?
-                stdout = powershell_out( "Uninstall-Package #{name} -Force", { :timeout => @new_resource.timeout }).stdout
-                if !stdout.empty?
-                  Chef::Log.info("Removed package #{name} with version #{parse_version(stdout.downcase, name.downcase)}")
+              version = "0"
+              until version.empty?
+                version = powershell_out( "(Uninstall-Package '#{name}' -Force -ForceBootstrap | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => @new_resource.timeout }).stdout.strip()
+                if !version.empty?
+                  Chef::Log.info("Removed package '#{name}' with version #{version}")
                 end
               end
             end
           end
         end
 
-        # return array of latest available packages online
+        # Returns array of available available online
         def build_candidate_versions
           versions = []
           new_resource.package_name.each_with_index do |name, index|
             if new_resource.version && new_resource.version[index] != nil
-              stdout = powershell_out("Find-Package #{name} -RequiredVersion #{new_resource.version[index]}", { :timeout => @new_resource.timeout }).stdout
+              version = powershell_out("(Find-Package '#{name}' -RequiredVersion #{new_resource.version[index]} -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => @new_resource.timeout }).stdout.strip()
             else
-              stdout = powershell_out("Find-Package #{name}", { :timeout => @new_resource.timeout }).stdout
+              version = powershell_out("(Find-Package '#{name}' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => @new_resource.timeout }).stdout.strip()
             end
-            versions.push(parse_version(stdout.downcase, name.downcase))
+            if version.empty?
+              version = nil
+            end
+            versions.push(version)
           end
           versions
         end
 
-        #return array of currently installed version
+        # Returns version array of installed version on the system
         def build_current_versions
           version_list = []
           new_resource.package_name.each_with_index do |name, index|
             if new_resource.version && new_resource.version[index] != nil
-              stdout = powershell_out("Get-Package -Name #{name} -RequiredVersion #{new_resource.version[index]}", { :timeout => @new_resource.timeout }).stdout
+              version = powershell_out("(Get-Package -Name '#{name}' -RequiredVersion #{new_resource.version[index]} -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => @new_resource.timeout }).stdout.strip()
             else
-              stdout = powershell_out("Get-Package -Name #{name}", { :timeout => @new_resource.timeout }).stdout
+              version = powershell_out("(Get-Package -Name '#{name}' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => @new_resource.timeout }).stdout.strip()
             end
-            version_list.push(parse_version(stdout.downcase, name.downcase))
+            if version.empty?
+              version = nil
+            end
+            version_list.push(version)
           end
           version_list
-        end
-
-        def parse_version(output, name)
-          if output.empty?
-            nil
-            #raise Chef::Exceptions::Package, "Invalid Package name specified or proper version not passed"
-          else
-            #sample value of output variable
-            #Name                           Version          Source           Summary
-            #----                           -------          ------           -------
-            #xCertificate                   2.1.0.0          PSGallery        This module includes DSC resources that simplify administration of certificates on a Windows Server
-            output_list = output.split(" ")
-            output_list[output_list.index(name) + 1]
-          end
         end
 
       end
