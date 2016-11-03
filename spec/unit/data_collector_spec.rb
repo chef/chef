@@ -91,8 +91,8 @@ describe Chef::DataCollector do
                 Chef::Config[:solo] = true
               end
 
-              it "returns false" do
-                expect(Chef::DataCollector.register_reporter?).to be_falsey
+              it "returns true" do
+                expect(Chef::DataCollector.register_reporter?).to be(true)
               end
 
             end
@@ -104,7 +104,7 @@ describe Chef::DataCollector do
               end
 
               it "returns false" do
-                expect(Chef::DataCollector.register_reporter?).to be_falsey
+                expect(Chef::DataCollector.register_reporter?).to be(true)
               end
             end
 
