@@ -44,5 +44,46 @@ disable data collection.
 Note that Chef Server 12.11.0+ (not yet released as of the time this was
 written) is required for this feature.
 
-## Highlighted bug fixes for this release:
+### RFC018 Partially Implemented: Specify `--field-separator` for attribute filtering
 
+If you have periods (`.`) in your Chef Node attribute keys, you can now pass
+the `--field-separator` (or `-S`) flag along with your `--attribute` (or `-a`)
+flag to specify a custom nesting character other than `.`.
+
+In a situation where the *webapp* node has the following node data:
+```json
+{
+  "foo.bar": "baz",
+  "alpha": {
+    "beta": "omega"
+  }
+}
+```
+
+Running `knife node show` with the default field separator (`.`) won't show
+us the data we're expecting for some attributes:
+
+```shell
+$ knife node show webapp -a foo.bar
+webapp:
+  foo.bar:
+
+$ knife node show webapp -a alpha.beta
+webapp:
+  alpha.beta: omega
+```
+
+However, by specifying a field separator other than `.` we're now able to show
+the data.
+
+```shell
+$ knife node show webapp -S: -a foo.bar
+webapp:
+  foo.bar: baz
+
+$ knife node show webapp -S: -a alpha:beta
+webapp:
+  alpha:beta: omega
+```
+
+## Highlighted bug fixes for this release:
