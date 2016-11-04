@@ -46,3 +46,7 @@ spec/data/test-dir
 
 # acceptance binstubs
 acceptance/bin/*
+
+vendor/
+acceptance/vendor
+kitchen-tests/vendor
