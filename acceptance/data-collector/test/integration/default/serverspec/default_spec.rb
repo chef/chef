@@ -91,11 +91,6 @@ shared_examples_for "run_start payload check" do
       expect(missing_fields).to eq([])
     end
 
-    it "does not have any extra fields" do
-      payload = JSON.load(command("curl http://localhost:9292/cache/run_start").stdout)
-      extra_fields = payload.keys.select { |key| !required_fields.include?(key) && !optional_fields.include?(key) }
-      expect(extra_fields).to eq([])
-    end
   end
 end
 
@@ -131,11 +126,6 @@ shared_examples_for "run_converge.success payload check" do
       expect(missing_fields).to eq([])
     end
 
-    it "does not have any extra fields" do
-      payload = JSON.load(command("curl http://localhost:9292/cache/run_converge.success").stdout)
-      extra_fields = payload.keys.select { |key| !required_fields.include?(key) && !optional_fields.include?(key) }
-      expect(extra_fields).to eq([])
-    end
   end
 end
 
