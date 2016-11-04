@@ -359,7 +359,7 @@ class Chef
             status: opts[:status],
             error_descriptions: error_descriptions,
             deprecations: deprecations.to_a
-          ).to_json
+          )
         )
       end
 
