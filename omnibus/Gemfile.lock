@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: c6c4a7bbcdbc73733217764db3bd5d278f63533e
+  revision: 95a308e01848e7843c84fa9be6214fa06e30f436
   specs:
     license_scout (0.1.2)
       ffi-yajl (~> 2.2)
@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus.git
-  revision: 5b28abc2bf4b74a4bed515a38784a4aae7a72e90
+  revision: 0612bf6333b2a7b125e599228ec6c46cbaa3ed3d
   branch: rhass/COOL-502_with_gcc_investigate
   specs:
     omnibus (5.5.0)
@@ -38,12 +38,12 @@ GEM
     addressable (2.4.0)
     artifactory (2.5.0)
     awesome_print (1.7.0)
-    aws-sdk (2.6.14)
-      aws-sdk-resources (= 2.6.14)
-    aws-sdk-core (2.6.14)
+    aws-sdk (2.6.18)
+      aws-sdk-resources (= 2.6.18)
+    aws-sdk-core (2.6.18)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.14)
-      aws-sdk-core (= 2.6.14)
+    aws-sdk-resources (2.6.18)
+      aws-sdk-core (= 2.6.18)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -127,7 +127,7 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (2.1.5)
+    mixlib-install (2.1.6)
       artifactory
       mixlib-shellout
       mixlib-versioning
