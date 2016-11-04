@@ -291,19 +291,47 @@ describe Chef::DataCollector::Reporter do
     end
   end
 
-  describe "#run_completed" do
-    it "sends the run completion" do
-      node = Chef::Node.new
+  describe "when sending a message at chef run completion" do
 
-      expect(reporter).to receive(:send_run_completion).with(status: "success")
-      reporter.run_completed(node)
+    let(:node) { Chef::Node.new }
+
+    let(:run_status) do
+      instance_double("Chef::RunStatus",
+                      run_id: "run_id",
+                      node: node,
+                      start_time: Time.new,
+                      end_time: Time.new,
+                      exception: exception)
     end
-  end
 
-  describe "#run_failed" do
-    it "updates the exception and sends the run completion" do
-      expect(reporter).to receive(:send_run_completion).with(status: "failure")
-      reporter.run_failed("test_exception")
+    before do
+      reporter.send(:update_run_status, run_status)
+    end
+
+    describe "#run_completed" do
+
+      let(:exception) { nil }
+
+      it "sends the run completion" do
+        expect(reporter).to receive(:send_to_data_collector) do |message|
+          expect(message).to be_a(Hash)
+          expect(message["status"]).to eq("success")
+        end
+        reporter.run_completed(node)
+      end
+    end
+
+    describe "#run_failed" do
+
+      let(:exception) { StandardError.new("oops") }
+
+      it "updates the exception and sends the run completion" do
+        expect(reporter).to receive(:send_to_data_collector) do |message|
+          expect(message).to be_a(Hash)
+          expect(message["status"]).to eq("failure")
+        end
+        reporter.run_failed("test_exception")
+      end
     end
   end
 
