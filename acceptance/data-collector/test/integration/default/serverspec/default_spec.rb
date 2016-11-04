@@ -60,7 +60,7 @@ end
 
 shared_examples_for "counter checks" do |counters_to_check|
   counters_to_check.each do |counter, value|
-    it "counter #{counter} should equal #{value}" do
+    it "counter #{counter} should equal #{value.inspect}" do
       counter_values = JSON.load(command("curl http://localhost:9292/counters").stdout)
       expect(counter_values[counter]).to eq(value)
     end
@@ -116,6 +116,7 @@ shared_examples_for "run_converge.success payload check" do
         status
         total_resource_count
         updated_resource_count
+        deprecations
       }
     end
     let(:optional_fields) { [] }
@@ -152,6 +153,7 @@ shared_examples_for "run_converge.failure payload check" do
         status
         total_resource_count
         updated_resource_count
+        deprecations
       }
     end
     let(:optional_fields) { [] }
