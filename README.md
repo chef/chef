@@ -164,9 +164,7 @@ Whenever a change is checked in to `master`, the patch version of `chef` is bump
 
 After each "official" stable release we need to bump the minor version. To do this:
 
-1. Manually increment the minor version in the VERSION file that is in the root of this repo. and reset the patch version to 0. Assuming the current version is `12.10.57` you would edit `VERSION` to be `12.11.0`.
-2. Run `bundle exec rake version` which will copy the version to the respective `version.rb` files in chef and chef-config.
-3. Run `bundle exec rake bundle:install` to update the base Gemfile.lock
+1. Run `bundle exec rake version:bump_minor`
 
 Submit a PR with the changes made by the above.
 

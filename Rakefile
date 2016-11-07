@@ -37,6 +37,22 @@ end
 task "version:bump" => %w{version:bump_patch version:update}
 task "version:bump" => %w{version:bump_patch version:update}
 
+task "version:bump_minor" do
+  Rake::Task["changelog:archive"].invoke
+  maj, min, _build = Chef::VERSION.split(".")
+  File.open("VERSION", "w+") { |f| f.write("#{maj}.#{min.to_i + 1}.0") }
+  Rake::Task["version"].invoke
+  Rake::Task["bundle:install"].invoke
+end
+
+task "version:bump_major" do
+  Rake::Task["changelog:archive"].invoke
+  maj, _min, _build = Chef::VERSION.split(".")
+  File.open("VERSION", "w+") { |f| f.write("#{maj.to_i + 1}.0.0") }
+  Rake::Task["version"].invoke
+  Rake::Task["bundle:install"].invoke
+end
+
 task :pedant, :chef_zero_spec
 
 task :build_eventlog do
