@@ -4,10 +4,11 @@ begin
   namespace :changelog do
 
     # Take the current changelog and move it to HISTORY.md. Should be done when
-    # cutting a release
+    # cutting a release. Ignore the first two and last three lines (which just
+    # contain stuff that would get duplicated the next time we update).
     task :archive do
       changelog = File.readlines("CHANGELOG.md")
-      File.open("HISTORY.md", "w+") { |f| f.write(changelog[2..-1].join("")) }
+      File.open("HISTORY.md", "w+") { |f| f.write(changelog[2..-4].join("")) }
     end
 
     # Run this to just update the changelog for the current release. This will
