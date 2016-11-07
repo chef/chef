@@ -113,6 +113,7 @@ describe Chef::DataCollector::Messages do
           status
           total_resource_count
           updated_resource_count
+          deprecations
         }
       end
       let(:optional_fields) { %w{error} }
@@ -164,6 +165,7 @@ describe Chef::DataCollector::Messages do
           status
           total_resource_count
           updated_resource_count
+          deprecations
         }
       end
       let(:optional_fields) { [] }

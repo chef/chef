@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: ed2fe16bff7b1b337c3ae23fee8d63cce018303c
+  revision: 95a308e01848e7843c84fa9be6214fa06e30f436
   specs:
     license_scout (0.1.2)
       ffi-yajl (~> 2.2)
@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus.git
-  revision: d8a531fd4b95fc73c5c279ba0a53cedd6b2a1196
+  revision: 0612bf6333b2a7b125e599228ec6c46cbaa3ed3d
   branch: rhass/COOL-502_with_gcc_investigate
   specs:
     omnibus (5.5.0)
@@ -38,12 +38,12 @@ GEM
     addressable (2.4.0)
     artifactory (2.5.0)
     awesome_print (1.7.0)
-    aws-sdk (2.6.11)
-      aws-sdk-resources (= 2.6.11)
-    aws-sdk-core (2.6.11)
+    aws-sdk (2.6.18)
+      aws-sdk-resources (= 2.6.18)
+    aws-sdk-core (2.6.18)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.11)
-      aws-sdk-core (= 2.6.11)
+    aws-sdk-resources (2.6.18)
+      aws-sdk-core (= 2.6.18)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -127,7 +127,7 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (2.1.1)
+    mixlib-install (2.1.6)
       artifactory
       mixlib-shellout
       mixlib-versioning
@@ -148,7 +148,7 @@ GEM
       net-ssh (>= 2.6.5)
     nio4r (1.2.1)
     nori (2.6.0)
-    octokit (4.3.0)
+    octokit (4.4.1)
       sawyer (~> 0.7.0, >= 0.5.3)
     ohai (8.21.0)
       chef-config (>= 12.5.0.alpha.1, < 13)

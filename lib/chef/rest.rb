@@ -37,6 +37,7 @@ require "chef/config"
 require "chef/exceptions"
 require "chef/platform/query_helpers"
 require "chef/http/remote_request_id"
+require "chef/chef_class"
 
 class Chef
 

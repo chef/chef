@@ -28,6 +28,7 @@ describe Chef::Knife::UI do
       :verbosity => 0,
       :yes => nil,
       :format => "summary",
+      :field_separator => ".",
     }
     @ui = Chef::Knife::UI.new(@out, @err, @in, @config)
     Chef::Config[:treat_deprecation_warnings_as_errors] = false
@@ -409,6 +410,15 @@ EOM
         non_existing_path = "nope.nada.nothingtoseehere"
         @ui.config[:attribute] = non_existing_path
         expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { non_existing_path => nil } })
+      end
+
+      describe "when --field-separator is passed" do
+        it "honors that separator" do
+          input = { "keys" => { "with spaces" => { "open" => { "doors" => { "with many.dots" => "when asked" } } } } }
+          @ui.config[:field_separator] = ";"
+          @ui.config[:attribute] = "keys;with spaces;open;doors;with many.dots"
+          expect(@ui.format_for_display(input)).to eq({ nil => { "keys;with spaces;open;doors;with many.dots" => "when asked" } })
+        end
       end
     end
 

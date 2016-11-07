@@ -70,6 +70,18 @@ class Chef
           @candidate_version ||= get_candidate_versions
         end
 
+        def package_locked(name, version)
+          islocked = false
+          locked = shell_out_with_timeout!("apt-mark showhold")
+          locked.stdout.each_line do |line|
+            line_package = line.strip
+            if line_package == name
+              islocked = true
+            end
+          end
+          return islocked
+        end
+
         def install_package(name, version)
           package_name = name.zip(version).map do |n, v|
             package_data[n][:virtual] ? n : "#{n}=#{v}"
@@ -103,6 +115,14 @@ class Chef
         def reconfig_package(name, version)
           Chef::Log.info("#{new_resource} reconfiguring")
           run_noninteractive("dpkg-reconfigure", name)
+        end
+
+        def lock_package(name, version)
+          run_noninteractive("apt-mark", new_resource.options, "hold", name)
+        end
+
+        def unlock_package(name, version)
+          run_noninteractive("apt-mark", new_resource.options, "unhold", name)
         end
 
         private

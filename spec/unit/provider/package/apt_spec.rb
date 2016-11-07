@@ -395,6 +395,28 @@ mpg123 1.12.1-0ubuntu1
           end
         end
 
+        describe "when locking a package" do
+          it "should run apt-mark hold package" do
+            expect(@provider).to receive(:shell_out!).with(
+              "apt-mark hold irssi",
+              :env => { "DEBIAN_FRONTEND" => "noninteractive" },
+              :timeout => @timeout
+            )
+            @provider.lock_package("irssi", "0.8.12-7")
+          end
+        end
+
+        describe "when unlocking a package" do
+          it "should run apt-mark unhold package" do
+            expect(@provider).to receive(:shell_out!).with(
+              "apt-mark unhold irssi",
+              :env => { "DEBIAN_FRONTEND" => "noninteractive" },
+              :timeout => @timeout
+            )
+            @provider.unlock_package("irssi", "0.8.12-7")
+          end
+        end
+
         describe "when installing a virtual package" do
           it "should install the package without specifying a version" do
             @provider.package_data["libmysqlclient15-dev"][:virtual] = true

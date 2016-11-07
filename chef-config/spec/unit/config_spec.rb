@@ -1127,4 +1127,34 @@ RSpec.describe ChefConfig::Config do
 
   end
 
+  describe "data collector URL" do
+
+    context "when using default settings" do
+
+      context "for Chef Client" do
+
+        it "configures the data collector URL as a relative path to the Chef Server URL" do
+          ChefConfig::Config[:chef_server_url] = "https://chef.example/organizations/myorg"
+          expect(ChefConfig::Config[:data_collector][:server_url]).to eq("https://chef.example/organizations/myorg/data-collector")
+        end
+
+      end
+
+      context "for Chef Solo" do
+
+        before do
+          ChefConfig::Config[:solo] = true
+        end
+
+        it "sets the data collector server URL to nil" do
+          ChefConfig::Config[:chef_server_url] = "https://chef.example/organizations/myorg"
+          expect(ChefConfig::Config[:data_collector][:server_url]).to be_nil
+        end
+
+      end
+
+    end
+
+  end
+
 end

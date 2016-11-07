@@ -68,9 +68,10 @@ shared_context "a client run" do
   let(:api_client_exists?) { false }
   let(:enable_fork)        { false }
 
-  let(:http_cookbook_sync) { double("Chef::ServerAPI (cookbook sync)") }
-  let(:http_node_load)     { double("Chef::ServerAPI (node)") }
-  let(:http_node_save)     { double("Chef::ServerAPI (node save)") }
+  let(:http_data_collector)   { double("Chef::ServerAPI (data collector)") }
+  let(:http_cookbook_sync)    { double("Chef::ServerAPI (cookbook sync)") }
+  let(:http_node_load)        { double("Chef::ServerAPI (node)") }
+  let(:http_node_save)        { double("Chef::ServerAPI (node save)") }
   let(:reporting_rest_client) { double("Chef::ServerAPI (reporting client)") }
 
   let(:runner)       { instance_double("Chef::Runner") }
@@ -90,6 +91,13 @@ shared_context "a client run" do
       #   Client.register will register with the validation client name.
       expect_any_instance_of(Chef::ApiClient::Registration).to receive(:run)
     end
+  end
+
+  def stub_for_data_collector_init
+    expect(Chef::ServerAPI).to receive(:new).
+      with(Chef::Config[:data_collector][:server_url]).
+      exactly(:once).
+      and_return(http_data_collector)
   end
 
   def stub_for_node_load
@@ -154,6 +162,7 @@ shared_context "a client run" do
 
     stub_rest_clean
     stub_for_register
+    stub_for_data_collector_init
     stub_for_node_load
     stub_for_sync_cookbooks
     stub_for_converge

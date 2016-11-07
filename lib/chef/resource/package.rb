@@ -25,7 +25,7 @@ class Chef
       resource_name :package
 
       default_action :install
-      allowed_actions :install, :upgrade, :remove, :purge, :reconfig
+      allowed_actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock
 
       def initialize(name, *args)
         # We capture name here, before it gets coerced to name
