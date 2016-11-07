@@ -157,7 +157,8 @@ Whenever a change is checked in to `master`, the patch version of `chef` is bump
 
 1. Bumps the patch version in `lib/chef/version.rb` (e.g. 0.9.14 -> 0.9.15).
 2. Runs `rake bundle:install` to update the `Gemfile.lock` to include the new version.
-3. Pushes to `master` and submits a new build to Chef's Jenkins cluster.
+3. Runs `rake changelog:update` to update the `CHANGELOG.md`.
+4. Pushes to `master` and submits a new build to Chef's Jenkins cluster.
 
 ## Bumping the minor version of Chef
 
