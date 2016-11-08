@@ -2,6 +2,7 @@
 [![Code Climate](https://codeclimate.com/github/chef/chef.svg)](https://codeclimate.com/github/chef/chef)
 [![Build Status Master](https://travis-ci.org/chef/chef.svg?branch=master)](https://travis-ci.org/chef/chef)
 [![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/chef?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/chef/branch/master)
+[![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)
 
 Want to try Chef? Get started with [learnchef](https://learn.chef.io)
 
@@ -76,7 +77,7 @@ The general development process is:
    master.
 
 Once your repository is set up, you can start working on the code. We do utilize
-RSpec for test driven development, so you'll need to get a development 
+RSpec for test driven development, so you'll need to get a development
 environment running. Follow the above procedure ("Installing from Git") to get
 your local copy of the source running.
 
