@@ -246,11 +246,11 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test webapp-fedora-23
+      - bundle exec kitchen test webapp-fedora-latest
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
-      - FEDORA=23
+      - FEDORA=latest
       - KITCHEN_YAML=.kitchen.travis.yml
   - rvm: 2.3.1
     services: docker
