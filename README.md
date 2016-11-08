@@ -168,6 +168,21 @@ After each "official" stable release we need to bump the minor version. To do th
 
 Submit a PR with the changes made by the above.
 
+## Addressing a Regression
+
+Sometimes, regressions split through the cracks. Since new functionality is always being added and the minor version is bumped immediately after release, we can't simply roll forward. In this scenario, we'll need to perform a special regression release process. In the example that follows, the stable release with a regression is `1.10.60` while master is currently sitting at `1.11.30`. *Note:* To perform this process, you must be a Chef employee.
+
+1. If the regression has not already been addressed, open a Pull Request against master with the fix.
+2. Wait until that Pull Request has been merged and `1.11.31` has passed all the necessary tests and is available in the current channel.
+3. Inspect the Git history and find the `SHA` associated with the Merge Commit for the Pull Request above.
+4. Apply the fix for the regression via a cherry-pick:
+  1. Check out the stable release tag: `git checkout v1.10.60`
+  2. Cherry Pick the SHA with the fix: `git cherry-pick SHA`
+  3. Address any conflicts (if necessary)
+  4. Tag the sha with the appropriate version: `git tag -a v1.10.61 -m "Release v1.10.61"`
+  5. Push the new tag to origin: `git push origin --tags`
+5. Log in to Jenkins and trigger a `chef-trigger-release` job specifying the new tag as the `GIT_REF`.
+
 ## Component Versions
 
 Chef has two sorts of component: ruby components like `berkshelf` and `test-kitchen`, and binary components like `openssl` and even `ruby` itself.
