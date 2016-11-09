@@ -157,17 +157,31 @@ Whenever a change is checked in to `master`, the patch version of `chef` is bump
 
 1. Bumps the patch version in `lib/chef/version.rb` (e.g. 0.9.14 -> 0.9.15).
 2. Runs `rake bundle:install` to update the `Gemfile.lock` to include the new version.
-3. Pushes to `master` and submits a new build to Chef's Jenkins cluster.
+3. Runs `rake changelog:update` to update the `CHANGELOG.md`.
+4. Pushes to `master` and submits a new build to Chef's Jenkins cluster.
 
 ## Bumping the minor version of Chef
 
 After each "official" stable release we need to bump the minor version. To do this:
 
-1. Manually increment the minor version in the VERSION file that is in the root of this repo. and reset the patch version to 0. Assuming the current version is `12.10.57` you would edit `VERSION` to be `12.11.0`.
-2. Run `bundle exec rake version` which will copy the version to the respective `version.rb` files in chef and chef-config.
-3. Run `bundle exec rake bundle:install` to update the base Gemfile.lock
+1. Run `bundle exec rake version:bump_minor`
 
 Submit a PR with the changes made by the above.
+
+## Addressing a Regression
+
+Sometimes, regressions split through the cracks. Since new functionality is always being added and the minor version is bumped immediately after release, we can't simply roll forward. In this scenario, we'll need to perform a special regression release process. In the example that follows, the stable release with a regression is `1.10.60` while master is currently sitting at `1.11.30`. *Note:* To perform this process, you must be a Chef employee.
+
+1. If the regression has not already been addressed, open a Pull Request against master with the fix.
+2. Wait until that Pull Request has been merged and `1.11.31` has passed all the necessary tests and is available in the current channel.
+3. Inspect the Git history and find the `SHA` associated with the Merge Commit for the Pull Request above.
+4. Apply the fix for the regression via a cherry-pick:
+  1. Check out the stable release tag: `git checkout v1.10.60`
+  2. Cherry Pick the SHA with the fix: `git cherry-pick SHA`
+  3. Address any conflicts (if necessary)
+  4. Tag the sha with the appropriate version: `git tag -a v1.10.61 -m "Release v1.10.61"`
+  5. Push the new tag to origin: `git push origin --tags`
+5. Log in to Jenkins and trigger a `chef-trigger-release` job specifying the new tag as the `GIT_REF`.
 
 ## Component Versions
 
