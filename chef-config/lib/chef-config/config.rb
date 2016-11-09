@@ -56,11 +56,22 @@ module ChefConfig
       path = PathHelper.cleanpath(path)
       if ChefConfig.windows?
         # turns \etc\chef\client.rb and \var\chef\client.rb into C:/chef/client.rb
-        if env["SYSTEMDRIVE"] && path[0] == '\\' && path.split('\\')[2] == "chef"
-          path = PathHelper.join(env["SYSTEMDRIVE"], path.split('\\', 3)[2])
+        # Some installations will be on different drives so use the drive that
+        # the expanded path to __FILE__ is found.
+        drive = windows_installation_drive
+        if drive && path[0] == '\\' && path.split('\\')[2] == "chef"
+          path = PathHelper.join(drive, path.split('\\', 3)[2])
         end
       end
       path
+    end
+
+    def self.windows_installation_drive
+      if ChefConfig.windows?
+        drive = File.expand_path(__FILE__).split("/", 2)[0]
+        drive = ENV["SYSTEMDRIVE"] if drive.to_s == ""
+        drive
+      end
     end
 
     def self.add_formatter(name, file_path = nil)
