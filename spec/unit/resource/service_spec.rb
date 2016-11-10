@@ -124,6 +124,22 @@ describe Chef::Resource::Service do
     end.to raise_error(ArgumentError)
   end
 
+  it "should accept true for recursive" do
+    @resource.recursive true
+    expect(@resource.send("recursive")).to eql(true)
+  end
+
+  it "should accept false for recursive" do
+    @resource.recursive false
+    expect(@resource.send("recursive")).to eql(false)
+  end
+
+  it "should not accept a string for recursive" do
+    expect do
+      @resource.recursive "poop"
+    end.to raise_error(ArgumentError)
+  end
+
   %w{enabled running}.each do |attrib|
     it "should accept true for #{attrib}" do
       @resource.send(attrib, true)

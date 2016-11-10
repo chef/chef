@@ -56,7 +56,8 @@ class Chef
 
         def enable_service
           shell_out!(default_init_command, "clear", @new_resource.service_name) if @maintenance
-          shell_out!(default_init_command, "enable", "-s", @new_resource.service_name)
+          start_flags = @new_resource.recursive ? "-sr" : "-s"
+          shell_out!(default_init_command, "enable", start_flags , @new_resource.service_name)
         end
 
         def disable_service
