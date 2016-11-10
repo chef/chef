@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)
 
-## [12.17.1](https://github.com/chef/chef/tree/12.17.1) (2016-11-09)
-[Full Changelog](https://github.com/chef/chef/compare/chef-server-package...12.17.1)
+## [12.17.2](https://github.com/chef/chef/tree/12.17.2) (2016-11-10)
+[Full Changelog](https://github.com/chef/chef/compare/chef-server-package...12.17.2)
 
 **Implemented enhancements:**
 
@@ -60,7 +60,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Accumulator Patterns as Resources are still Somewhat Unsatisfying [\#5438](https://github.com/chef/chef/issues/5438)
 - Is chef server able to be deployed in a relative url? [\#5437](https://github.com/chef/chef/issues/5437)
 - Chef encountered an error attempting to create the client WITH \[\[Scalr\]\] [\#5435](https://github.com/chef/chef/issues/5435)
-- There is no -M option for useradd on Solaris [\#5403](https://github.com/chef/chef/issues/5403)
 
 **Merged pull requests:**
 
