@@ -10,6 +10,7 @@
 - Knife: Add the `--field-separator` flag to knife show commands [\#5489](https://github.com/chef/chef/pull/5489) ([tduffield](https://github.com/tduffield))
 - Core: Enable Signed Header Auth for Data Collector, and Configure the Data Collector Automatically [\#5487](https://github.com/chef/chef/pull/5487) ([danielsdeleo](https://github.com/danielsdeleo))
 - Core: set use\_inline\_resources in package superclass [\#5483](https://github.com/chef/chef/pull/5483) ([lamont-granquist](https://github.com/lamont-granquist))
+- Package: Add new "lock" action for apt, yum and zypper packages [\#5395](https://github.com/chef/chef/pull/5395) ([yeoldegrove](https://github.com/yeoldegrove))
 
 **Fixed bugs:**
 
