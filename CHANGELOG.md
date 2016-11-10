@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)
 
-## [12.17.2](https://github.com/chef/chef/tree/12.17.2) (2016-11-10)
-[Full Changelog](https://github.com/chef/chef/compare/chef-server-package...12.17.2)
+## [12.17.3](https://github.com/chef/chef/tree/12.17.3) (2016-11-10)
+[Full Changelog](https://github.com/chef/chef/compare/chef-server-package...12.17.3)
 
 **Implemented enhancements:**
 
@@ -22,6 +22,7 @@ This changelog reflects the current state of chef's master branch on github and 
 - Core: pass new\_resource to edit\_resource through instance\_exec [\#5441](https://github.com/chef/chef/pull/5441) ([lamont-granquist](https://github.com/lamont-granquist))
 - Core: Adding support for rfc 62 exit code 213 [\#5428](https://github.com/chef/chef/pull/5428) ([jeremymv2](https://github.com/jeremymv2))
 - kinfe ssh: use the command line prompt for sudo if set [\#5427](https://github.com/chef/chef/pull/5427) ([lamont-granquist](https://github.com/lamont-granquist))
+- Mac: ensure launchd's start\_calendar\_interval gets valid settings [\#5422](https://github.com/chef/chef/pull/5422) ([thommay](https://github.com/thommay))
 
 **Fixed bugs:**
 
