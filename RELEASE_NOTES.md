@@ -7,6 +7,8 @@ Please see [https://docs.chef.io/release_notes.html](https://docs.chef.io/releas
 
 ### `attribute_changed` event hook
 
+* Added `attribute_changed` event hook:
+
 In a cookbook library file, you can add this in order to print out all attribute changes in cookbooks:
 
 ```ruby
@@ -100,5 +102,44 @@ package "httpd" do
   action :unlock
 end
 ```
+
+### `powershell_package` resource
+
+* Added powershell_package resource and provider which supports installation of packages through Powershell Package Manager
+
+  ```ruby
+  powershell_package 'xCertificate' do
+    action :install
+    version "1.1.0.0"
+  end
+
+  powershell_package 'Install Multiple Packages' do
+    action :install
+    package_name ['xCertificate','xNetworking']
+    version ["2.0.0.0","2.12.0.0"]
+  end
+
+  powershell_package 'Install Multiple Packages' do
+    action :install
+    package_name ['xCertificate','xNetworking']
+    version [nil,"2.12.0.0"]
+  end
+
+  powershell_package 'Install Multiple Packages' do
+    action :install
+    package_name ['xCertificate','xNetworking']
+  end
+
+  powershell_package ['xCertificate','xNetworking'] do
+    action :remove
+    version ["2.0.0.0","2.12.0.0"]
+  end
+
+  powershell_package 'xCertificate' do
+    action :remove
+  end
+  ```
+
+For using powershell_package resource, Administrative access is required and source needs to be already added in Powershell Package Manager using `Register-PackageSource` command
 
 ## Highlighted bug fixes for this release:
