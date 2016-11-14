@@ -67,9 +67,19 @@
                   Impersonate="no"
                   Return="ignore" />
 
+    <CustomAction Id="CreateChefClientScheduledTask"
+                  Directory="TARGETDIR"
+                  ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;ChefClientSchTask&quot; /SC &quot;MINUTE&quot; /MO &quot;20&quot; /F /TR &quot;&quot;cmd /c &quot;[RubyExecutable] [ChefClientPath]\chef-client -L [ChefClientLog]\chef-client.log -c [CONFIGLOCATION]\client.rb&quot;&quot;&quot; /RU &quot;temp_user&quot; /RP &quot;temp_password@123&quot; /RL &quot;HIGHEST&quot; /ST &quot;(Time.now + 60 * 30).strftime('%H:%M')&quot;"
+                  Execute="deferred"
+                  Impersonate="no"
+                  Return="check" />
+
     <InstallExecuteSequence>
       <Custom Action="FastUnzip" After="InstallFiles">NOT Installed</Custom>
       <Custom Action="Cleanup" After="RemoveFiles">REMOVE~="ALL"</Custom>
+      <Custom Action="CreateChefClientScheduledTask" After="InstallFiles">
+        <![CDATA[&ChefSchTaskFeature=3]]>
+      </Custom>
     </InstallExecuteSequence>
 
     <UI>
@@ -151,8 +161,18 @@
       <ComponentRef Id="ChefPSModulePath" />
     </Feature>
 
-    <Feature Id="ChefServiceFeature" Title="!(loc.FeatureServiceName)" Level="1000" AllowAdvertise="no">
-      <ComponentRef Id="ChefClientService" />
+    <Feature Id="ChefServiceOptions">
+      <Feature Id="ChefSchTaskFeature" Title="!(loc.FeatureSchTaskName)" Level="1000" AllowAdvertise="no">
+        <!--CustomAction will get executed and scheduled task for chef-client will get created-->
+      </Feature>
+
+      <Feature Id="ChefServiceFeature" Title="!(loc.FeatureServiceName)" Level="1000" AllowAdvertise="no">
+        <ComponentRef Id="ChefClientService" />
+      </Feature>
+
+      <Feature Id="None" Title="None" Level="1000" AllowAdvertise="no">
+        <!--Do Nothing-->
+      </Feature>
     </Feature>
 
     <!--
