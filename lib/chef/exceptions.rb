@@ -262,7 +262,7 @@ class Chef
 
     class ChildConvergeError < RuntimeError; end
 
-    class DeprecatedFeatureError < RuntimeError;
+    class DeprecatedFeatureError < RuntimeError
       def initalize(message)
         super("#{message} (raising error due to treat_deprecation_warnings_as_errors being set)")
       end
