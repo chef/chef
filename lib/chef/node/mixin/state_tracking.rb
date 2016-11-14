@@ -34,14 +34,17 @@ class Chef
           @__precedence__ = precedence
         end
 
-        def [](key)
+        def [](*args)
           ret = super
+          key = args.first
           next_path = [ __path__, convert_key(key) ].flatten.compact
           copy_state_to(ret, next_path)
         end
 
-        def []=(key, value)
+        def []=(*args)
           ret = super
+          key = args.first
+          value = args.last
           next_path = [ __path__, convert_key(key) ].flatten.compact
           send_attribute_changed_event(next_path, value)
           copy_state_to(ret, next_path)
