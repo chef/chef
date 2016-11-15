@@ -23,7 +23,7 @@ class Chef
 
       def type_coercions
         @type_coercions ||= {
-          Fixnum => { :type => lambda { |x| x.to_s } },
+          Integer => { :type => lambda { |x| x.to_s } },
           Float => { :type => lambda { |x| x.to_s } },
           FalseClass => { :type => lambda { |x| "$false" } },
           TrueClass => { :type => lambda { |x| "$true" } },

@@ -24,7 +24,7 @@ class Chef
       # method-style access to attributes
 
       def valid_container?(obj, key)
-        return obj.is_a?(Hash) || (obj.is_a?(Array) && key.is_a?(Fixnum))
+        return obj.is_a?(Hash) || (obj.is_a?(Array) && key.is_a?(Integer))
       end
 
       private :valid_container?
