@@ -47,7 +47,18 @@ describe Chef::Node::VividMash do
     end
   end
 
+  context "#[]" do
+    it "works with array slices" do
+      expect(vivid["array"][1, 2]).to eql([1, 2])
+    end
+  end
+
   context "#[]=" do
+    it "works with array slices" do
+      vivid["array"][3, 2] = [ 3, 4 ]
+      expect(vivid["array"]).to eql([0, 1, 2, 3, 4])
+    end
+
     it "deep converts values through arrays" do
       expect(root).to receive(:reset_cache).with("foo")
       vivid["foo"] = [ { :bar => true } ]
