@@ -210,7 +210,7 @@ class Chef
         end
 
         def device_real
-          if @real_device == nil
+          if @real_device.nil?
             if @new_resource.device_type == :device
               @real_device = @new_resource.device
             else

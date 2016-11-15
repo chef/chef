@@ -862,12 +862,12 @@ INVALID
         return if !options[:choice].is_a?(Array) || options[:choice].empty?
 
         if options[:default].is_a?(String) && options[:default] != ""
-          raise ArgumentError, "Default must be one of your choice values!" if options[:choice].index(options[:default]) == nil
+          raise ArgumentError, "Default must be one of your choice values!" if options[:choice].index(options[:default]).nil?
         end
 
         if options[:default].is_a?(Array) && !options[:default].empty?
           options[:default].each do |val|
-            raise ArgumentError, "Default values must be a subset of your choice values!" if options[:choice].index(val) == nil
+            raise ArgumentError, "Default values must be a subset of your choice values!" if options[:choice].index(val).nil?
           end
         end
       end

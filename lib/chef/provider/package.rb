@@ -196,7 +196,7 @@ class Chef
       end
 
       action :reconfig do
-        if @current_resource.version == nil
+        if @current_resource.version.nil?
           Chef::Log.debug("#{@new_resource} is NOT installed - nothing to do")
           return
         end

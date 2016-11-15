@@ -181,7 +181,7 @@ class Chef
         end
 
         def set_service_status
-          return if @plist == nil || @service_label.to_s.empty?
+          return if @plist.nil? || @service_label.to_s.empty?
 
           cmd = "launchctl list #{@service_label}"
           res = shell_out_as_user(cmd)
