@@ -92,8 +92,8 @@ describe Chef::ResourceReporter do
 
   context "when chef fails" do
     before do
-      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" });
-      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" });
+      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" })
+      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" })
 
     end
 
@@ -259,8 +259,8 @@ describe Chef::ResourceReporter do
   describe "when generating a report for the server" do
 
     before do
-      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" });
-      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" });
+      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" })
+      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" })
 
       @resource_reporter.run_started(@run_status)
     end

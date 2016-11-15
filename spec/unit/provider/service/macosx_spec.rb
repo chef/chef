@@ -322,7 +322,7 @@ SVC_LIST
 
               it "stops and then starts service" do
                 expect(provider).to receive(:unload_service)
-                expect(provider).to receive(:load_service);
+                expect(provider).to receive(:load_service)
 
                 provider.restart_service
               end
