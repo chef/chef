@@ -825,12 +825,10 @@ module ChefConfig
     #
     default :no_lazy_load, true
 
-    # Default for the chef_gem compile_time attribute.  Nil is the same as true but will emit
-    # warnings on every use of chef_gem prompting the user to be explicit.  If the user sets this to
-    # true then the user will get backcompat behavior but with a single nag warning that cookbooks
-    # may break with this setting in the future.  The false setting is the recommended setting and
-    # will become the default.
-    default :chef_gem_compile_time, nil
+    # Default for the chef_gem compile_time attribute.
+    # If the user sets this to true then the user will get backcompat behavior
+    # Cookbooks may break with this set to true in the future.  
+    default :chef_gem_compile_time, false
 
     # A whitelisted array of attributes you want sent over the wire when node
     # data is saved.
