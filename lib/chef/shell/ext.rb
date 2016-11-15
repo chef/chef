@@ -211,8 +211,8 @@ module Shell
       def version
         puts "This is the chef-shell.\n" +
           " Chef Version: #{::Chef::VERSION}\n" +
-          " http://www.chef.io/\n" +
-          " http://docs.chef.io/"
+          " https://www.chef.io/\n" +
+          " https://docs.chef.io/"
         :ucanhaz_automation
       end
       alias :shell :version
