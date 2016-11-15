@@ -61,11 +61,11 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
     end
   end
 
-  def enable_service()
+  def enable_service
     shell_out!("/sbin/rc-update add #{@new_resource.service_name} default")
   end
 
-  def disable_service()
+  def disable_service
     shell_out!("/sbin/rc-update del #{@new_resource.service_name} default")
   end
 end
