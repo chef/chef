@@ -198,4 +198,9 @@ describe Chef::Node::ImmutableArray do
     end
   end
 
+  describe "#[]" do
+    it "works with array slices" do
+      expect(@immutable_array[1, 2]).to eql(%w{bar baz})
+    end
+  end
 end
