@@ -67,7 +67,7 @@ describe Chef::Exceptions do
     Chef::Exceptions::InvalidEnvironmentPath => ArgumentError,
     Chef::Exceptions::EnvironmentNotFound => RuntimeError,
     Chef::Exceptions::InvalidVersionConstraint => ArgumentError,
-    Chef::Exceptions::IllegalVersionConstraint => NotImplementedError,
+    Chef::Exceptions::IllegalVersionConstraint => RuntimeError,
     Chef::Exceptions::RegKeyValuesTypeMissing => ArgumentError,
     Chef::Exceptions::RegKeyValuesDataMissing => ArgumentError,
   }

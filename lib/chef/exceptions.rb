@@ -76,10 +76,10 @@ class Chef
     class Group < RuntimeError; end
     class Link < RuntimeError; end
     class Mount < RuntimeError; end
-    class Reboot < Exception; end
-    class RebootPending < Exception; end
+    class Reboot < Exception; end # rubocop:disable Lint/InheritException
+    class RebootPending < Exception; end # rubocop:disable Lint/InheritException
     class RebootFailed < Mixlib::ShellOut::ShellCommandFailed; end
-    class ClientUpgraded < Exception; end
+    class ClientUpgraded < Exception; end # rubocop:disable Lint/InheritException
     class PrivateKeyMissing < RuntimeError; end
     class CannotWritePrivateKey < RuntimeError; end
     class RoleNotFound < RuntimeError; end
@@ -159,7 +159,7 @@ class Chef
 
     # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
     # when older versions of Windows don't support newer Win32 API functions.
-    class Win32APIFunctionNotImplemented < NotImplementedError; end
+    class Win32APIFunctionNotImplemented < RuntimeError; end
     # Attempting to run windows code on a not-windows node
     class Win32NotWindows < RuntimeError; end
     class WindowsNotAdmin < RuntimeError; end
@@ -196,7 +196,7 @@ class Chef
     class InvalidVersionConstraint < ArgumentError; end
 
     # Version constraints are not allowed in chef-solo
-    class IllegalVersionConstraint < NotImplementedError; end
+    class IllegalVersionConstraint < ArgumentError; end
 
     class MetadataNotValid < StandardError; end
     class MetadataNotFound < StandardError
