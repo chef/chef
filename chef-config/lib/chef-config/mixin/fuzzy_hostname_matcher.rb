@@ -21,9 +21,11 @@ module ChefConfig
     module FuzzyHostnameMatcher
 
       def fuzzy_hostname_match_any?(hostname, matches)
-        return matches.to_s.split(/\s*,\s*/).compact.any? do |m|
-          fuzzy_hostname_match?(hostname, m)
-        end if (hostname != nil) && (matches != nil)
+        if (hostname != nil) && (matches != nil)
+          return matches.to_s.split(/\s*,\s*/).compact.any? do |m|
+            fuzzy_hostname_match?(hostname, m)
+          end
+        end
 
         false
       end

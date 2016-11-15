@@ -120,9 +120,10 @@ class Chef
     end
 
     def set_specific_recipes
-      Chef::Config[:specific_recipes] =
-        cli_arguments.map { |file| File.expand_path(file) } if
-        cli_arguments.respond_to?(:map)
+      if cli_arguments.respond_to?(:map)
+        Chef::Config[:specific_recipes] =
+          cli_arguments.map { |file| File.expand_path(file) }
+      end
     end
 
     # Initialize and configure the logger.

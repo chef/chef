@@ -218,9 +218,11 @@ RSpec.configure do |config|
   end
 
   # raise if anyone commits any test to CI with :focus set on it
-  config.before(:example, :focus) do
-    raise "This example was committed with `:focus` and should not have been"
-  end if ENV["CI"]
+  if ENV["CI"]
+    config.before(:example, :focus) do
+      raise "This example was committed with `:focus` and should not have been"
+    end
+  end
 
   config.before(:suite) do
     ARGV.clear
