@@ -138,7 +138,7 @@ class Chef
       end
 
       def ask_question(question, opts = {})
-        question = question + "[#{opts[:default]}] " if opts[:default]
+        question += "[#{opts[:default]}] " if opts[:default]
 
         if opts[:default] && config[:defaults]
           opts[:default]

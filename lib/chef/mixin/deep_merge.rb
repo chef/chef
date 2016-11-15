@@ -75,7 +75,7 @@ class Chef
           end
         when Array
           if dest.kind_of?(Array)
-            dest = dest | source
+            dest |= source
           else
             dest = source
           end
