@@ -343,7 +343,7 @@ class Chef
         message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
 
         cause = e.cause if e.respond_to?(:cause)
-        while cause != nil
+        until cause.nil?
           message << "\n\n>>>> Caused by #{cause.class}: #{cause}\n#{cause.backtrace.join("\n")}"
           cause = cause.respond_to?(:cause) ? cause.cause : nil
         end

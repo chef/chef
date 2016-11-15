@@ -56,7 +56,7 @@ class Chef
       def check_resource_semantics!
         # FIXME: this is not universally true and subclasses are needing to override this and no-ops it.  It should be turned into
         # another "subclass_directive" and the apt and yum providers should declare that they need this behavior.
-        if new_resource.package_name.is_a?(Array) && new_resource.source != nil
+        if new_resource.package_name.is_a?(Array) && !new_resource.source.nil?
           raise Chef::Exceptions::InvalidResourceSpecification, "You may not specify both multipackage and source"
         end
       end
