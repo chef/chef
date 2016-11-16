@@ -1053,7 +1053,10 @@ module ChefConfig
 
     default :rubygems_url, "https://rubygems.org"
 
-    # For Chef-12 this is still the default, in Chef-13 the default will be false
+    # This controls the behavior of resource cloning (and CHEF-3694 warnings).  For Chef < 12 the behavior
+    # has been that this is 'true', in Chef 13 this will change to false.  Setting this to 'true' in Chef
+    # 13 is not a viable or supported migration strategy since Chef 13 community cookbooks will be expected
+    # to break with this setting set to 'true'.
     default :resource_cloning, true
 
     # If installed via an omnibus installer, this gives the path to the

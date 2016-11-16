@@ -110,11 +110,6 @@ class Chef
     #
     attr_reader :audits
 
-    # Toggle to enable/disable resource cloning
-    #
-    # @return [Boolean] True if resource cloning is enabled for this run_context
-    attr_accessor :resource_cloning
-
     #
     # Notification handling
     #
@@ -197,7 +192,6 @@ class Chef
     #
     def initialize_child_state
       @audits = {}
-      @resource_cloning = Chef::Config[:resource_cloning]
       @resource_collection = Chef::ResourceCollection.new(self)
       @before_notification_collection = Hash.new { |h, k| h[k] = [] }
       @immediate_notification_collection = Hash.new { |h, k| h[k] = [] }
@@ -657,8 +651,6 @@ ERROR_MESSAGE
         delayed_notification_collection
         delayed_notification_collection=
         delayed_notifications
-        resource_cloning
-        resource_cloning=
         immediate_notification_collection
         immediate_notification_collection=
         immediate_notifications
