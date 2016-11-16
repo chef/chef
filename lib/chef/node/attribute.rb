@@ -481,7 +481,6 @@ class Chef
         if symbol == :to_ary
           merged_attributes.send(symbol, *args)
         elsif args.empty?
-          puts symbol
           Chef.log_deprecation %q{method access to node attributes (node.foo.bar) is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]["bar"])}
           if key?(symbol)
             self[symbol]
