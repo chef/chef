@@ -32,8 +32,8 @@ class Chef
     # @return [NodeMap] Returns self for possible chaining
     #
     def set(key, value, platform: nil, platform_version: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, canonical: nil, override: nil, &block)
-      Chef.log_deprecation("The on_platform option to node_map has been deprecated") if on_platform
-      Chef.log_deprecation("The on_platforms option to node_map has been deprecated") if on_platforms
+      Chef.deprecated(:internal_api, "The on_platform option to node_map has been deprecated") if on_platform
+      Chef.deprecated(:internal_api, "The on_platforms option to node_map has been deprecated") if on_platforms
       platform ||= on_platform || on_platforms
       filters = {}
       filters[:platform] = platform if platform

@@ -170,7 +170,7 @@ class Chef
 
     # Create a Chef::Role from JSON
     def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Role#from_hash")
+      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::Role#from_hash")
       from_hash(o)
     end
 

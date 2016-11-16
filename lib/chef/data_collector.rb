@@ -274,7 +274,7 @@ class Chef
       # see EventDispatch::Base#deprecation
       # Append a received deprecation to the list of deprecations
       def deprecation(message, location = caller(2..2)[0])
-        add_deprecation(message, location)
+        add_deprecation(message.message, message.url, location)
       end
 
       private
@@ -410,8 +410,8 @@ class Chef
         @error_descriptions = discription_hash
       end
 
-      def add_deprecation(message, location)
-        @deprecations << { message: message, location: location }
+      def add_deprecation(message, url, location)
+        @deprecations << { message: message, url: url, location: location }
       end
 
       def create_resource_report(new_resource, action, current_resource = nil)

@@ -335,14 +335,14 @@ describe Chef::Node do
 
       it "set is a deprecated alias for normal" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        expect(Chef).to receive(:log_deprecation).with(/set is deprecated/)
+        expect(Chef).to receive(:deprecated).with(:attributes, /set is deprecated/)
         node.set[:snoopy][:is_a_puppy] = true
         expect(node[:snoopy][:is_a_puppy]).to eq(true)
       end
 
       it "set_unless is a deprecated alias for normal_unless" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        expect(Chef).to receive(:log_deprecation).with(/set_unless is deprecated/)
+        expect(Chef).to receive(:deprecated).with(:attributes, /set_unless is deprecated/)
         node.set_unless[:snoopy][:is_a_puppy] = false
         expect(node[:snoopy][:is_a_puppy]).to eq(false)
       end

@@ -128,10 +128,10 @@ class Chef
     end
 
     def emit_cloned_resource_warning
-      message = "Cloning resource attributes for #{resource} from prior resource (CHEF-3694)"
+      message = "Cloning resource attributes for #{resource} from prior resource"
       message << "\nPrevious #{prior_resource}: #{prior_resource.source_line}" if prior_resource.source_line
       message << "\nCurrent  #{resource}: #{resource.source_line}" if resource.source_line
-      Chef.log_deprecation(message)
+      Chef.deprecated(:resource_cloning, message)
     end
 
     def emit_harmless_cloning_debug

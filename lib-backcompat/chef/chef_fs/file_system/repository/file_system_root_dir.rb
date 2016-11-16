@@ -24,7 +24,7 @@ class Chef
       module Repository
         class FileSystemRootDir < FileSystemEntry
           def initialize(file_path)
-            Chef.log_deprecation "Chef::ChefFS::FileSystem::Repository::FileSystemRootDir is deprecated."
+            Chef.deprecated :internal_api, "Chef::ChefFS::FileSystem::Repository::FileSystemRootDir is deprecated."
             super("", nil, file_path)
           end
         end

@@ -26,13 +26,13 @@ require "chef/server_api"
 # TODO
 # DEPRECATION NOTE
 # This class will be replaced by Chef::UserV1 in Chef 13. It is the code to support the User object
-# corrosponding to the Open Source Chef Server 11 and only still exists to support
+# corresponding to the Open Source Chef Server 11 and only still exists to support
 # users still on OSC 11.
 #
 # Chef::UserV1 now supports Chef Server 12 and will be moved to this namespace in Chef 13.
 #
 # New development should occur in Chef::UserV1.
-# This file and corrosponding osc_user knife files
+# This file and corresponding osc_user knife files
 # should be removed once client support for Open Source Chef Server 11 expires.
 class Chef
   class User
@@ -155,7 +155,7 @@ class Chef
     end
 
     def self.json_create(json)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::User#from_json or Chef::User#load.")
+      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::User#from_json or Chef::User#load.")
       Chef::User.from_json(json)
     end
 
