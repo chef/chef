@@ -45,6 +45,9 @@ To mention the team, use @chef/client-core
 * [Tyler Ball](https://github.com/tyler-ball)
 * [Ranjib Dey](https://github.com/ranjib)
 * [Matt Wrock](https://github.com/mwrock)
+* [Joshua Timberman](https://github.com/jtimberman)
+* [Steven Danna](https://github.com/stevendanna)
+
 
 ## Ohai
 
@@ -58,19 +61,6 @@ To mention the team, use @chef/ohai
 
 * [Bryan McLellan](https://github.com/btm)
 * [Tim Smith](https://github.com/tas50)
-
-## Dev Tools
-
-ChefDK, Chef Zero, Knife, Chef Apply and Chef Shell.
-To mention the team, use @chef/client-dev-tools
-
-### Maintainers
-
-* [Daniel DeLeo](https://github.com/danielsdeleo)
-* [John Keiser](https://github.com/jkeiser)
-* [Joshua Timberman](https://github.com/jtimberman)
-* [Lamont Granquist](https://github.com/lamont-granquist)
-* [Steven Danna](https://github.com/stevendanna)
 
 ## Test Tools
 
@@ -293,4 +283,3 @@ To mention the team, use @chef/client-archlinux
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Ryan Cragun](https://github.com/ryancragun)
-
