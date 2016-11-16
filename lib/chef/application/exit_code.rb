@@ -88,7 +88,7 @@ class Chef
 
         def normalize_legacy_exit_code(exit_code)
           case exit_code
-          when Fixnum
+          when Integer
             exit_code
           when Exception
             lookup_exit_code_by_exception(exit_code)
