@@ -69,7 +69,21 @@
 
     <CustomAction Id="CreateChefClientScheduledTask"
                   Directory="TARGETDIR"
-                  ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;ChefClientSchTask&quot; /SC &quot;MINUTE&quot; /MO &quot;20&quot; /F /TR &quot;&quot;cmd /c &quot;[RubyExecutable] [ChefClientPath]\chef-client -L [ChefClientLog]\chef-client.log -c [CONFIGLOCATION]\client.rb&quot;&quot;&quot; /RU &quot;temp_user&quot; /RP &quot;temp_password@123&quot; /RL &quot;HIGHEST&quot; /ST &quot;(Time.now + 60 * 30).strftime('%H:%M')&quot;"
+                  ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;ChefClientSchTask&quot; /SC &quot;MINUTE&quot; /MO &quot;20&quot; /F /TR &quot;cmd /c \&quot;[RubyExecutable] [ChefClientPath]\chef-client -L [ChefClientLog]\chef-client.log -c [CONFIGLOCATION]\client.rb\&quot;&quot; /RU &quot;NT Authority\System&quot; /RP /RL &quot;HIGHEST&quot; /ST &quot;<% (Time.now + 60 * 30).strftime('%H:%M') -%>&quot;"
+                  Execute="deferred"
+                  Impersonate="no"
+                  Return="check" />
+
+    <CustomAction Id="RemoveChefClientScheduledTask"
+                  Directory="TARGETDIR"
+                  ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /DELETE /TN &quot;ChefClientSchTask&quot; /F"
+                  Execute="deferred"
+                  Impersonate="no"
+                  Return="check" />
+
+    <CustomAction Id="RemoveChefClientService"
+                  Directory="TARGETDIR"
+                  ExeCommand="&quot;[SystemFolder]SC.EXE&quot; DELETE &quot;chef-client&quot;"
                   Execute="deferred"
                   Impersonate="no"
                   Return="check" />
@@ -78,7 +92,21 @@
       <Custom Action="FastUnzip" After="InstallFiles">NOT Installed</Custom>
       <Custom Action="Cleanup" After="RemoveFiles">REMOVE~="ALL"</Custom>
       <Custom Action="CreateChefClientScheduledTask" After="InstallFiles">
-        <![CDATA[&ChefSchTaskFeature=3]]>
+        <Condition>
+          <![CDATA[(NOT Installed) AND &ChefSchTaskFeature=3]]>
+        </Condition>
+      </Custom>
+
+      <Custom Action="RemoveChefClientScheduledTask" Before="RemoveFiles">
+        <Condition>
+          <![CDATA[Installed AND (&None=3 OR &ChefServiceFeature=3)]]>
+        </Condition>
+      </Custom>
+
+      <Custom Action="RemoveChefClientService" Before="RemoveFiles">
+        <Condition>
+          <![CDATA[Installed AND (&None=3 OR &ChefSchTaskFeature=3)]]>
+        </Condition>
       </Custom>
     </InstallExecuteSequence>
 
@@ -161,7 +189,7 @@
       <ComponentRef Id="ChefPSModulePath" />
     </Feature>
 
-    <Feature Id="ChefServiceOptions">
+    <Feature Id="ChefServiceOptions" Title="Chef Service Options" Level="1000" AllowAdvertise="no">
       <Feature Id="ChefSchTaskFeature" Title="!(loc.FeatureSchTaskName)" Level="1000" AllowAdvertise="no">
         <!--CustomAction will get executed and scheduled task for chef-client will get created-->
       </Feature>
