@@ -1,14 +1,13 @@
-FROM ubuntu:16.04
+FROM centos:5
 MAINTAINER Chef Software, Inc. <docker@chef.io>
 
 ARG CHANNEL=stable
-ARG VERSION=latest
-ENV DEBIAN_FRONTEND=noninteractive
+ARG VERSION=12.16.42
 ENV PATH=/opt/chef/bin:/opt/chef/embedded/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-RUN apt-get update && \
-    apt-get install -y wget ssh && \
-    wget --content-disposition "https://omnitruck.chef.io/${CHANNEL}/chef/download?p=ubuntu&pv=16.04&m=x86_64&v=${VERSION}" -O /tmp/chef-client.deb && \
-    dpkg -i /tmp/chef-client.deb && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN yum install -y wget && \
+    wget --content-disposition --no-check-certificate "https://packages.chef.io/files/${CHANNEL}/chef/${VERSION}/el/5/chef-${VERSION}-1.el5.x86_64.rpm" -O /tmp/chef-client.rpm && \
+    rpm -i /tmp/chef-client.rpm && \
+    rm -rf /tmp/chef-client.rpm
+
+VOLUME [ "/opt/chef" ]
