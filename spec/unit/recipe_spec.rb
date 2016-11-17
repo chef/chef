@@ -193,6 +193,38 @@ describe Chef::Recipe do
       end
     end
 
+    describe "when resource cloning is disabled" do
+      def not_expect_warning
+        expect(Chef::Log).not_to receive(:warn).with(/3694/)
+        expect(Chef::Log).not_to receive(:warn).with(/Previous/)
+        expect(Chef::Log).not_to receive(:warn).with(/Current/)
+      end
+
+      before do
+        Chef::Config[:resource_cloning] = false
+      end
+
+      it "should emit a 3694 warning when attributes change" do
+        recipe.zen_master "klopp" do
+          something "bvb"
+        end
+        not_expect_warning
+        recipe.zen_master "klopp" do
+          something "vbv"
+        end
+      end
+
+      it "should not copy attributes from a prior resource" do
+        recipe.zen_master "klopp" do
+          something "bvb"
+        end
+        not_expect_warning
+        recipe.zen_master "klopp"
+        expect(run_context.resource_collection.first.something).to eql("bvb")
+        expect(run_context.resource_collection[1].something).to be nil
+      end
+    end
+
     describe "when cloning resources" do
       def expect_warning
         expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)

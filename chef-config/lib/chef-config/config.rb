@@ -1053,6 +1053,12 @@ module ChefConfig
 
     default :rubygems_url, "https://rubygems.org"
 
+    # This controls the behavior of resource cloning (and CHEF-3694 warnings).  For Chef < 12 the behavior
+    # has been that this is 'true', in Chef 13 this will change to false.  Setting this to 'true' in Chef
+    # 13 is not a viable or supported migration strategy since Chef 13 community cookbooks will be expected
+    # to break with this setting set to 'true'.
+    default :resource_cloning, true
+
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
     # omnibus. This is used to locate the cacert.pem file on windows.
