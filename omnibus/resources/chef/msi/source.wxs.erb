@@ -92,21 +92,15 @@
       <Custom Action="FastUnzip" After="InstallFiles">NOT Installed</Custom>
       <Custom Action="Cleanup" After="RemoveFiles">REMOVE~="ALL"</Custom>
       <Custom Action="CreateChefClientScheduledTask" After="InstallFiles">
-        <Condition>
-          <![CDATA[(NOT Installed) AND &ChefSchTaskFeature=3]]>
-        </Condition>
+        <![CDATA[(NOT Installed) AND &ChefSchTaskFeature=3]]>
       </Custom>
 
       <Custom Action="RemoveChefClientScheduledTask" Before="RemoveFiles">
-        <Condition>
-          <![CDATA[Installed AND (&None=3 OR &ChefServiceFeature=3)]]>
-        </Condition>
+        <![CDATA[Installed AND (&None=3 OR &ChefServiceFeature=3)]]>
       </Custom>
 
       <Custom Action="RemoveChefClientService" Before="RemoveFiles">
-        <Condition>
-          <![CDATA[Installed AND (&None=3 OR &ChefSchTaskFeature=3)]]>
-        </Condition>
+        <![CDATA[Installed AND (&None=3 OR &ChefSchTaskFeature=3)]]>
       </Custom>
     </InstallExecuteSequence>
 
