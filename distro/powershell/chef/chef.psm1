@@ -231,7 +231,6 @@ function Run-ExecutableAndWait($AppPath, $ArgumentString) {
       [ref] $si, 
       [ref] $pi
   )
-
   if (-Not $success) {
     $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
     throw "Unable to create process [$ArgumentString].  Error code $reason."
@@ -262,7 +261,6 @@ function Run-ExecutableAndWait($AppPath, $ArgumentString) {
         [ref] $bytesAvailable, 
         [ref] $bytesLeftThisMsg
     )
-
     if (-Not $success) {
       $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
       throw "Output pipe unavailable for peeking.  Error code $reason."
@@ -315,6 +313,7 @@ function Run-ExecutableAndWait($AppPath, $ArgumentString) {
     $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
     throw "Unable to release output read handle.  Error code $reason."
   }
+  [System.Runtime.InteropServices.Marshal]::FreeHGlobal($ptr)
 }
 
 function Get-ScriptDirectory {
