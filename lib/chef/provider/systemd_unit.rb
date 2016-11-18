@@ -115,6 +115,8 @@ class Chef
         unless current_resource.active
           converge_by("starting unit: #{new_resource.name}") do
             systemctl_execute!(:start, new_resource.name)
+            sleep 0.5
+            systemctl_execute!("is-active", new_resource.name)
           end
         end
       end
@@ -130,6 +132,8 @@ class Chef
       def action_restart
         converge_by("restarting unit: #{new_resource.name}") do
           systemctl_execute!(:restart, new_resource.name)
+          sleep 0.5
+          systemctl_execute!("is-active", new_resource.name)
         end
       end
 
