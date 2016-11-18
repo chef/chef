@@ -243,8 +243,7 @@ The operation completed successfully.
 
   describe "#extract_msu_contents" do
     it "extracts the msu contents by using mixlib shellout" do
-      expect(Mixlib::ShellOut).to receive(:new).with("expand -f:* msu_file destination", { :timeout => new_resource.timeout })
-      expect(provider).to receive(:with_os_architecture)
+      expect(provider).to receive(:shell_out_with_timeout!).with("#{ENV['SYSTEMROOT']}\\system32\\expand.exe -f:* msu_file destination")
       provider.extract_msu_contents("msu_file", "destination")
     end
   end
