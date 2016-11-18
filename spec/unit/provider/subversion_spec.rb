@@ -32,6 +32,15 @@ describe Chef::Provider::Subversion do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @provider = Chef::Provider::Subversion.new(@resource, @run_context)
+    @original_env = ENV.to_hash
+    # Generated command lines would include any environmental proxies
+    ENV.delete("http_proxy")
+    ENV.delete("https_proxy")
+  end
+
+  after do
+    ENV.clear
+    ENV.update(@original_env)
   end
 
   it "converts resource attributes to options for run_command and popen4" do
