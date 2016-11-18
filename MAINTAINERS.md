@@ -38,16 +38,15 @@ To mention the team, use @chef/client-core
 * [Jay Mundrawala](https://github.com/jaym)
 * [John Keiser](https://github.com/jkeiser)
 * [Jon Cowie](https://github.com/jonlives)
+* [Joshua Timberman](https://github.com/jtimberman)
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Claire McQuin](https://github.com/mcquin)
+* [Matt Wrock](https://github.com/mwrock)
+* [Ranjib Dey](https://github.com/ranjib)
 * [Steven Murawski](https://github.com/smurawski)
+* [Steven Danna](https://github.com/stevendanna)
 * [Tim Smith](https://github.com/tas50)
 * [Tyler Ball](https://github.com/tyler-ball)
-* [Ranjib Dey](https://github.com/ranjib)
-* [Matt Wrock](https://github.com/mwrock)
-* [Joshua Timberman](https://github.com/jtimberman)
-* [Steven Danna](https://github.com/stevendanna)
-
 
 ## Ohai
 
@@ -91,9 +90,9 @@ To mention the team, use @chef/provisioning
 ### Maintainers
 
 * [John Keiser](https://github.com/jkeiser)
-* [Stuart Preston](https://github.com/stuartpreston)
 * [JJ Asghar](https://github.com/jjasghar)
 * [João Cravo](https://github.com/joaogbcravo)
+* [Stuart Preston](https://github.com/stuartpreston)
 * [Harley Alaniz](https://github.com/thehar)
 
 ## Platform Specific Components
@@ -283,3 +282,4 @@ To mention the team, use @chef/client-archlinux
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Ryan Cragun](https://github.com/ryancragun)
+
