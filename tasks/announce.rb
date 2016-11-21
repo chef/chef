@@ -20,10 +20,11 @@ require 'erb'
 
 class ReleaseAnnouncement
   include ERB::Util
-  attr_accessor :type, :version, :date, :release_notes
+  attr_accessor :type, :version, :maj_minor, :date, :release_notes
 
   def initialize(version, date, type)
     @version = version
+    @maj_minor = version.split(".")[0..1].join(".")
     @date = Date.parse(date) unless date.nil?
     @release_notes = release_notes_from_file
     @type = type
@@ -40,7 +41,7 @@ class ReleaseAnnouncement
   end
 
   def release_notes_from_file
-    File.read("RELEASE_NOTES.md").match(/^# Chef Client Release Notes 12.17:\n\n(.*)/m)[1]
+    File.read("RELEASE_NOTES.md").match(/^# Chef Client Release Notes #{@maj_minor}:\n\n(.*)/m)[1]
   end
 end
 
