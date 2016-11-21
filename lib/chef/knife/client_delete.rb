@@ -35,23 +35,23 @@ class Chef
       banner "knife client delete CLIENT (options)"
 
       def run
-        @client_name = @name_args[0]
-
-        if @client_name.nil?
+        if @name_args.length == 0
           show_usage
-          ui.fatal("You must specify a client name")
+          ui.fatal("You must specify at least one client name")
           exit 1
         end
 
-        delete_object(Chef::ApiClientV1, @client_name, "client") do
-          object = Chef::ApiClientV1.load(@client_name)
-          if object.validator
-            unless config[:delete_validators]
-              ui.fatal("You must specify --delete-validators to delete the validator client #{@client_name}")
-              exit 2
+        @name_args.each do |client_name|
+          delete_object(Chef::ApiClientV1, client_name, "client") do
+            object = Chef::ApiClientV1.load(client_name)
+            if object.validator
+              unless config[:delete_validators]
+                ui.fatal("You must specify --delete-validators to delete the validator client #{client_name}")
+                exit 2
+              end
             end
+            object.destroy
           end
-          object.destroy
         end
       end
 
