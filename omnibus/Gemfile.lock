@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: 95a308e01848e7843c84fa9be6214fa06e30f436
+  revision: 3a4298c7c637d2ece9f9faef24a5473d2e6d2058
   specs:
     license_scout (0.1.2)
       ffi-yajl (~> 2.2)
@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: cd69f8563fa8875c82a4e44652ffbfdac7ef201d
+  revision: 68449d88eab8923fc8b170d6e1f7b898bc000b43
   branch: shain/ruby_windows_monster
   specs:
     omnibus-software (4.0.0)
@@ -35,15 +35,18 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.4.0)
-    artifactory (2.5.0)
+    addressable (2.5.0)
+      public_suffix (~> 2.0, >= 2.0.2)
+    artifactory (2.5.1)
     awesome_print (1.7.0)
-    aws-sdk (2.6.18)
-      aws-sdk-resources (= 2.6.18)
-    aws-sdk-core (2.6.18)
+    aws-sdk (2.6.26)
+      aws-sdk-resources (= 2.6.26)
+    aws-sdk-core (2.6.26)
+      aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.18)
-      aws-sdk-core (= 2.6.18)
+    aws-sdk-resources (2.6.26)
+      aws-sdk-core (= 2.6.26)
+    aws-sigv4 (1.0.0)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
@@ -83,7 +86,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.15.19)
+    chef-config (12.16.42)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -127,7 +130,7 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (2.1.6)
+    mixlib-install (2.1.7)
       artifactory
       mixlib-shellout
       mixlib-versioning
@@ -148,8 +151,8 @@ GEM
       net-ssh (>= 2.6.5)
     nio4r (1.2.1)
     nori (2.6.0)
-    octokit (4.4.1)
-      sawyer (~> 0.7.0, >= 0.5.3)
+    octokit (4.6.1)
+      sawyer (~> 0.8.0, >= 0.5.3)
     ohai (8.21.0)
       chef-config (>= 12.5.0.alpha.1, < 13)
       ffi (~> 1.9)
@@ -180,6 +183,7 @@ GEM
     pry-stack_explorer (0.4.9.2)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
+    public_suffix (2.0.4)
     retryable (2.0.4)
     ridley (4.6.1)
       addressable
@@ -203,9 +207,9 @@ GEM
     rubyntlm (0.6.1)
     rubyzip (1.2.0)
     safe_yaml (1.0.4)
-    sawyer (0.7.0)
-      addressable (>= 2.3.5, < 2.5)
-      faraday (~> 0.8, < 0.10)
+    sawyer (0.8.1)
+      addressable (>= 2.3.5, < 2.6)
+      faraday (~> 0.8, < 1.0)
     semverse (1.2.1)
     slop (3.6.0)
     solve (2.0.3)
@@ -263,4 +267,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   1.12.5
+   1.13.6
