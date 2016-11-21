@@ -68,24 +68,22 @@ class Chef
         end
 
         def get_log_location
-          if (@chef_config[:config_log_location].nil? || @chef_config[:config_log_location].empty?)
+          if !(@chef_config[:config_log_location].class == IO ) && (@chef_config[:config_log_location].nil? || @chef_config[:config_log_location].to_s.empty?)
             "STDOUT"
           elsif @chef_config[:config_log_location].equal?(:win_evt)
-            raise "The value \:win_evt is not supported for config_log_location on Linux Platforms \n"
+            raise "The value :win_evt is not supported for config_log_location on Linux Platforms \n"
           elsif @chef_config[:config_log_location].equal?(:syslog)
             ":syslog"
-          elsif (@chef_config[:config_log_location].equal?(STDOUT))
+          elsif @chef_config[:config_log_location].equal?(STDOUT)
             "STDOUT"
-          elsif (@chef_config[:config_log_location].equal?(STDERR))
+          elsif @chef_config[:config_log_location].equal?(STDERR)
             "STDERR"
           elsif @chef_config[:config_log_location]
-             %Q{"#{@chef_config[:config_log_location]}"}
+            %Q{"#{@chef_config[:config_log_location]}"}
           else
             "STDOUT"
           end
         end
-
-
 
         def config_content
           client_rb = <<-CONFIG

@@ -70,10 +70,10 @@ describe Chef::Knife::Core::BootstrapContext do
 
   it "generates the config file data" do
     expected = <<-EXPECTED
-log_level        :info
-log_location     "/tmp/log"
 chef_server_url  "http://chef.example.com:4444"
 validation_client_name "chef-validator-testing"
+log_level   :info
+log_location   "/tmp/log"
 # Using default node name (fqdn)
 EXPECTED
     expect(bootstrap_context.config_content).to eq expected
@@ -253,4 +253,55 @@ EXPECTED
     end
   end
 
+  describe "#config_log_location" do
+    context "when config_log_location is nil" do
+      let(:chef_config) { { :config_log_location => nil } }
+      it "sets the default config_log_location  in the client.rb" do
+        expect(bootstrap_context.get_log_location).to eq "STDOUT"
+      end
+    end
+
+    context "when config_log_location is empty" do
+      let(:chef_config) { { :config_log_location => "" } }
+      it "sets the default config_log_location  in the client.rb" do
+        expect(bootstrap_context.get_log_location).to eq "STDOUT"
+      end
+    end
+
+    context "when config_log_location is :win_evt" do
+      let(:chef_config) { { :config_log_location => :win_evt } }
+      it "raise error when config_log_location is :win_evt " do
+        expect { bootstrap_context.get_log_location }.to raise_error("The value :win_evt is not supported for config_log_location on Linux Platforms \n")
+      end
+    end
+
+    context "when config_log_location is :syslog" do
+      let(:chef_config) { { :config_log_location => :syslog } }
+      it "sets the config_log_location value as :syslog in the client.rb" do
+        expect(bootstrap_context.get_log_location).to eq ":syslog"
+      end
+    end
+
+    context "When config_log_location is STDOUT" do
+      let(:chef_config) { { :config_log_location => STDOUT } }
+      it "Sets the config_log_location value as STDOUT in the client.rb" do
+        expect(bootstrap_context.get_log_location).to eq "STDOUT"
+      end
+    end
+
+    context "when config_log_location is STDERR" do
+      let(:chef_config) { { :config_log_location => STDERR } }
+      it "sets the config_log_location value as STDERR  in the client.rb" do
+        expect(bootstrap_context.get_log_location).to eq "STDERR"
+      end
+    end
+
+    context "when config_log_location is a path" do
+      let(:chef_config) { { :config_log_location => "/tmp/ChefLogFile" } }
+      it "sets the config_log_location path in the client.rb" do
+        expect(bootstrap_context.get_log_location).to eq "\"/tmp/ChefLogFile\""
+      end
+    end
+
+  end
 end
