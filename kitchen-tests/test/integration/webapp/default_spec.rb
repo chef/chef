@@ -91,7 +91,7 @@ describe package("autoconf") do
   it { should be_installed }
 end
 
-%w{lsof tcpdump strace zsh dmidecode ltrace bc curl wget telnet subversion git traceroute htop tmux s3cmd sysbench }.each do |pkg|
+%w{lsof tcpdump strace zsh dmidecode ltrace bc curl wget telnet subversion git traceroute htop tmux sysbench }.each do |pkg|
   describe package pkg do
     it { should be_installed }
   end
