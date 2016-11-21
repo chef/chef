@@ -28,6 +28,7 @@ require_relative "tasks/maintainers"
 require_relative "tasks/cbgb"
 require_relative "tasks/dependencies"
 require_relative "tasks/changelog"
+require_relative "tasks/announce"
 
 ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef", "chef") do |package|
   package.component_paths = ["chef-config"]
