@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'date'
-require 'erb'
+require "date"
+require "erb"
 
 class ReleaseAnnouncement
   include ERB::Util
