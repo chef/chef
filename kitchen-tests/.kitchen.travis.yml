@@ -115,6 +115,15 @@ platforms:
     intermediate_instructions:
       - RUN zypper refresh
 
+- name: amazonlinux
+  driver:
+    image: amazonlinux:latest
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN yum clean all
+      - RUN yum -y install which initscripts net-tools sudo wget
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
 suites:
   - name: webapp
     run_list:
