@@ -174,12 +174,13 @@ class Chef
       # resource, and we only care about tracking top-level resources.
       def resource_current_state_loaded(new_resource, action, current_resource)
         return if nested_resource?(new_resource)
-        update_current_resource_report(create_resource_report(new_resource, action, current_resource))
+        initialize_resource_report_if_needed(new_resource, action, current_resource)
       end
 
       # see EventDispatch::Base#resource_up_to_date
       # Mark our ResourceReport status accordingly
       def resource_up_to_date(new_resource, action)
+        initialize_resource_report_if_needed(new_resource, action)
         current_resource_report.up_to_date unless nested_resource?(new_resource)
       end
 
@@ -190,15 +191,15 @@ class Chef
       def resource_skipped(new_resource, action, conditional)
         return if nested_resource?(new_resource)
 
-        resource_report = create_resource_report(new_resource, action)
-        resource_report.skipped(conditional)
-        update_current_resource_report(resource_report)
+        initialize_resource_report_if_needed(new_resource, action)
+        current_resource_report.skipped(conditional)
       end
 
       # see EventDispatch::Base#resource_updated
       # Flag the current ResourceReport instance as updated (as long as it's
       # a top-level resource).
       def resource_updated(new_resource, action)
+        initialize_resource_report_if_needed(new_resource, action)
         current_resource_report.updated unless nested_resource?(new_resource)
       end
 
@@ -207,6 +208,7 @@ class Chef
       # long as it's a top-level resource, and update the run error text
       # with the proper Formatter.
       def resource_failed(new_resource, action, exception)
+        initialize_resource_report_if_needed(new_resource, action)
         current_resource_report.failed(exception) unless nested_resource?(new_resource)
         update_error_description(
           Formatters::ErrorMapper.resource_failed(
@@ -224,7 +226,7 @@ class Chef
         if current_resource_report && !nested_resource?(new_resource)
           current_resource_report.finish
           add_resource_report(current_resource_report)
-          update_current_resource_report(nil)
+          clear_current_resource_report
         end
       end
 
@@ -402,10 +404,6 @@ class Chef
         @run_status = run_status
       end
 
-      def update_current_resource_report(resource_report)
-        @current_resource_report = resource_report
-      end
-
       def update_error_description(discription_hash)
         @error_descriptions = discription_hash
       end
@@ -414,12 +412,21 @@ class Chef
         @deprecations << { message: message, url: url, location: location }
       end
 
+      def initialize_resource_report_if_needed(new_resource, action, current_resource = nil)
+        return unless current_resource_report.nil?
+        @current_resource_report = create_resource_report(new_resource, action, current_resource)
+      end
+
       def create_resource_report(new_resource, action, current_resource = nil)
         Chef::DataCollector::ResourceReport.new(
           new_resource,
           action,
           current_resource
         )
+      end
+
+      def clear_current_resource_report
+        @current_resource_report = nil
       end
 
       def detect_unprocessed_resources
