@@ -371,12 +371,10 @@ describe Chef::DataCollector::Reporter do
     end
 
     context "when resource is not a nested resource" do
-      it "creates the resource report and stores it as the current one" do
+      it "initializes the resource report" do
         allow(reporter).to receive(:nested_resource?).and_return(false)
-        expect(reporter).to receive(:create_resource_report)
+        expect(reporter).to receive(:initialize_resource_report_if_needed)
           .with(new_resource, action, current_resource)
-          .and_return(resource_report)
-        expect(reporter).to receive(:update_current_resource_report).with(resource_report)
         reporter.resource_current_state_loaded(new_resource, action, current_resource)
       end
     end
@@ -418,7 +416,6 @@ describe Chef::DataCollector::Reporter do
 
     before do
       allow(reporter).to receive(:nested_resource?)
-      allow(reporter).to receive(:create_resource_report).and_return(resource_report)
       allow(resource_report).to receive(:skipped)
     end
 
@@ -431,17 +428,10 @@ describe Chef::DataCollector::Reporter do
     end
 
     context "when the resource is not a nested resource" do
-      it "creates the resource report and stores it as the current one" do
+      it "initializes the resource report and marks it as skipped" do
         allow(reporter).to receive(:nested_resource?).and_return(false)
-        expect(reporter).to receive(:create_resource_report)
-          .with(new_resource, action)
-          .and_return(resource_report)
-        expect(reporter).to receive(:update_current_resource_report).with(resource_report)
-        reporter.resource_skipped(new_resource, action, conditional)
-      end
-
-      it "marks the resource report as skipped" do
-        allow(reporter).to receive(:nested_resource?).with(new_resource).and_return(false)
+        allow(reporter).to receive(:current_resource_report).and_return(resource_report)
+        expect(reporter).to receive(:initialize_resource_report_if_needed).with(new_resource, action)
         expect(resource_report).to receive(:skipped).with(conditional)
         reporter.resource_skipped(new_resource, action, conditional)
       end
@@ -548,7 +538,7 @@ describe Chef::DataCollector::Reporter do
         end
 
         it "nils out the current resource report" do
-          expect(reporter).to receive(:update_current_resource_report).with(nil)
+          expect(reporter).to receive(:clear_current_resource_report)
           reporter.resource_completed(new_resource)
         end
       end
