@@ -331,7 +331,7 @@ class Chef
       def send_to_data_collector(message)
         return unless data_collector_accessible?
 
-        Chef::Log.debug("data_collector_reporter: POSTing the following message to #{data_collector_server_url}: #{message}")
+        Chef::Log.debug("data_collector_reporter: POSTing the following message to #{data_collector_server_url}: #{Chef::JSONCompat.to_json(message)}")
         http.post(nil, message, headers)
       end
 
