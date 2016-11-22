@@ -30,15 +30,15 @@ class Chef
       banner "knife node delete NODE (options)"
 
       def run
-        @node_name = @name_args[0]
-
-        if @node_name.nil?
+        if @name_args.length == 0
           show_usage
-          ui.fatal("You must specify a node name")
+          ui.fatal("You must specify at least one node name")
           exit 1
         end
-
-        delete_object(Chef::Node, @node_name)
+        
+        @name_args.each do |node_name|
+          delete_object(Chef::Node, node_name)
+        end
       end
 
     end
