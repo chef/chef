@@ -35,7 +35,7 @@ describe Chef::Knife::ClientDelete do
     end
 
     context "receives multiple clients" do
-      let(:clients) { [ "adam", "ben", "charlie" ] }
+      let(:clients) { %w{ "adam", "ben", "charlie" } }
 
       before(:each) do
         @knife.name_args = clients

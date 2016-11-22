@@ -25,7 +25,7 @@ describe Chef::Knife::NodeDelete do
     @knife.config = {
       :print_after => nil,
     }
-    @knife.name_args = [ "adam", "ben" ]
+    @knife.name_args = %w{ adam ben }
     allow(@knife).to receive(:output).and_return(true)
     allow(@knife).to receive(:confirm).and_return(true)
 
