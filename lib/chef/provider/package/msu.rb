@@ -125,9 +125,8 @@ class Chef
         end
 
         def extract_msu_contents(msu_file, destination)
-          shellout = Mixlib::ShellOut.new("expand -f:* #{msu_file} #{destination}", { :timeout => @new_resource.timeout })
           with_os_architecture(nil) do
-            shellout.run_command
+            shell_out_with_timeout!("#{ENV['SYSTEMROOT']}\\system32\\expand.exe -f:* #{msu_file} #{destination}")
           end
         end
 
