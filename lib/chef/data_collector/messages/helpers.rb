@@ -142,14 +142,14 @@ class Chef
         # @return [Hash] DataCollector metadata for this node
         #
         def metadata
-          JSON.load(Chef::FileCache.load(metadata_filename))
+          Chef::JSONCompat.parse(Chef::FileCache.load(metadata_filename))
         rescue Chef::Exceptions::FileNotFound
           {}
         end
 
         def update_metadata(key, value)
           updated_metadata = metadata.tap { |x| x[key] = value }
-          Chef::FileCache.store(metadata_filename, updated_metadata.to_json, 0644)
+          Chef::FileCache.store(metadata_filename, Chef::JSONCompat.to_json(updated_metadata), 0644)
         end
 
         def metadata_filename
