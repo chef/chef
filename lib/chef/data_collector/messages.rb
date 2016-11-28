@@ -18,7 +18,6 @@
 # limitations under the License.
 #
 
-require "json"
 require "securerandom"
 require_relative "messages/helpers"
 
