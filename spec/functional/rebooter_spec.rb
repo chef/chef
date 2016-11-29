@@ -43,7 +43,7 @@ describe Chef::Platform::Rebooter do
 
   let(:expected) do
     {
-      :windows => 'shutdown /r /t 300 /c "rebooter spec test"',
+      :windows => "#{ENV['SYSTEMROOT']}/System32/shutdown.exe /r /t 300 /c \"rebooter spec test\"",
       :linux => 'shutdown -r +5 "rebooter spec test"',
     }
   end
@@ -80,7 +80,7 @@ describe Chef::Platform::Rebooter do
       describe "when using #reboot_if_needed!" do
         include_context "test a reboot method"
 
-        it "should produce the correct string on Windows" do
+        it "should produce the correct string on Windows", :windows_only do
           test_rebooter_method(:reboot_if_needed!, true, expected[:windows])
         end
 
@@ -92,7 +92,7 @@ describe Chef::Platform::Rebooter do
       describe "when using #reboot!" do
         include_context "test a reboot method"
 
-        it "should produce the correct string on Windows" do
+        it "should produce the correct string on Windows", :windows_only do
           test_rebooter_method(:reboot!, true, expected[:windows])
         end
 
