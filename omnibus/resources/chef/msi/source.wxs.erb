@@ -28,6 +28,8 @@
 
     <Media Id="1" Cabinet="ChefClient.cab" EmbedCab="yes" CompressionLevel="high" />
 
+    <Property Id="CHEF_SERVICE_OPTIONS_RADIO_BUTTON_GROUP" Value="None" />
+
     <!--
       Uncomment launch condition below to check for minimum OS
       601 = Windows 7/Server 2008R2.
@@ -69,7 +71,7 @@
 
     <CustomAction Id="CreateChefClientScheduledTask"
                   Directory="TARGETDIR"
-                  ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;ChefClientSchTask&quot; /SC &quot;MINUTE&quot; /MO &quot;20&quot; /F /TR &quot;cmd /c \&quot;[RubyExecutable] [ChefClientPath]\chef-client -L [ChefClientLog]\chef-client.log -c [CONFIGLOCATION]\client.rb\&quot;&quot; /RU &quot;NT Authority\System&quot; /RP /RL &quot;HIGHEST&quot; /ST &quot;<% (Time.now + 60 * 30).strftime('%H:%M') -%>&quot;"
+                  ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;ChefClientSchTask&quot; /SC &quot;MINUTE&quot; /MO &quot;30&quot; /F /TR &quot;cmd /c \&quot;[RubyExecutable] [ChefClientPath]\chef-client -L [ChefClientLog]\chef-client.log -c [CONFIGLOCATION]\client.rb\&quot;&quot; /RU &quot;NT Authority\System&quot; /RP /RL &quot;HIGHEST&quot; /ST &quot;<% (Time.now + 60 * 30).strftime('%H:%M') -%>&quot;"
                   Execute="deferred"
                   Impersonate="no"
                   Return="check" />
@@ -79,28 +81,29 @@
                   ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /DELETE /TN &quot;ChefClientSchTask&quot; /F"
                   Execute="deferred"
                   Impersonate="no"
-                  Return="check" />
+                  Return="ignore" />
 
     <CustomAction Id="RemoveChefClientService"
                   Directory="TARGETDIR"
                   ExeCommand="&quot;[SystemFolder]SC.EXE&quot; DELETE &quot;chef-client&quot;"
                   Execute="deferred"
                   Impersonate="no"
-                  Return="check" />
+                  Return="ignore" />
 
     <InstallExecuteSequence>
       <Custom Action="FastUnzip" After="InstallFiles">NOT Installed</Custom>
       <Custom Action="Cleanup" After="RemoveFiles">REMOVE~="ALL"</Custom>
+
       <Custom Action="CreateChefClientScheduledTask" After="InstallFiles">
-        <![CDATA[(NOT Installed) AND &ChefSchTaskFeature=3]]>
+        <![CDATA[&ChefSchTaskFeature=3]]>
       </Custom>
 
       <Custom Action="RemoveChefClientScheduledTask" Before="RemoveFiles">
-        <![CDATA[Installed AND (&None=3 OR &ChefServiceFeature=3)]]>
+        <![CDATA[(Installed AND (&NoneFeature=3 OR &ChefServiceFeature=3)) OR (REMOVE="ALL")]]>
       </Custom>
 
       <Custom Action="RemoveChefClientService" Before="RemoveFiles">
-        <![CDATA[Installed AND (&None=3 OR &ChefSchTaskFeature=3)]]>
+        <![CDATA[Installed AND (&NoneFeature=3 OR &ChefSchTaskFeature=3) OR (REMOVE="ALL")]]>
       </Custom>
     </InstallExecuteSequence>
 
@@ -167,6 +170,16 @@
             </Directory>
           </Directory>
         </Directory>
+        <Directory Id="ChefSchTaskFeatureTempDir">
+          <Component Id="ChefSchTask" Guid="{7f9f917a-952c-41d8-baa1-037269eecb50}">
+            <CreateFolder />
+          </Component>
+        </Directory>
+        <Directory Id="NoneFeatureTempDir">
+          <Component Id="None" Guid="{d8f3eba5-cecb-436c-a4ef-540dba3c5ccf}">
+            <CreateFolder />
+          </Component>
+        </Directory>
       </Directory>
     </Directory>
 
@@ -184,16 +197,22 @@
     </Feature>
 
     <Feature Id="ChefServiceOptions" Title="Chef Service Options" Level="1000" AllowAdvertise="no">
-      <Feature Id="ChefSchTaskFeature" Title="!(loc.FeatureSchTaskName)" Level="1000" AllowAdvertise="no">
-        <!--CustomAction will get executed and scheduled task for chef-client will get created-->
+      <Feature Id="ChefSchTaskFeature" Title="!(loc.FeatureSchTaskName)" Level="1000" AllowAdvertise="no" Display="hidden">
+        <!-- Here, CustomAction will get executed and scheduled task for chef-client will get created -->
+
+        <!-- This is an empty component to keep track of the feature -->
+        <ComponentRef Id="ChefSchTask" />
       </Feature>
 
-      <Feature Id="ChefServiceFeature" Title="!(loc.FeatureServiceName)" Level="1000" AllowAdvertise="no">
+      <Feature Id="ChefServiceFeature" Title="!(loc.FeatureServiceName)" Level="1000" AllowAdvertise="no" Display="hidden">
         <ComponentRef Id="ChefClientService" />
       </Feature>
 
-      <Feature Id="None" Title="None" Level="1000" AllowAdvertise="no">
-        <!--Do Nothing-->
+      <Feature Id="NoneFeature" Title="None" Level="1000" AllowAdvertise="no" Display="hidden">
+        <!-- Do Nothing -->
+
+        <!-- This is an empty component to keep track of the feature -->
+        <ComponentRef Id="None" />
       </Feature>
     </Feature>
 
@@ -208,27 +227,9 @@
     <!--
       UI Stuff
     -->
-    <Icon Id="oc.ico" SourceFile="Resources\assets\oc_16x16.ico"/>
-    <Property Id="ARPPRODUCTICON" Value="oc.ico" />
-    <Property Id="ARPHELPLINK" Value="http://www.getchef.com/support/" />
-    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
-
-    <UIRef Id="ChefClientUI_InstallDir"/>
-    <UI Id="ChefClientUI_InstallDir">
-      <UIRef Id="WixUI_FeatureTree"/>
-      <TextStyle Id="WixUI_Font_Normal_White" FaceName="Tahoma" Size="8" Red="255" Green="255" Blue="255" />
-      <TextStyle Id="WixUI_Font_Bigger_White" FaceName="Tahoma" Size="12" Red="255" Green="255" Blue="255" />
-      <TextStyle Id="WixUI_Font_Title_White" FaceName="Tahoma" Size="9" Bold="yes" Red="255" Green="255" Blue="255" />
+    <UI>
+      <UIRef Id="ChefClientUI_InstallDir" />
     </UI>
-
-    <WixVariable Id="WixUILicenseRtf" Value="Resources\assets\LICENSE.rtf" />
-    <WixVariable Id="WixUIDialogBmp" Value="Resources\assets\dialog_background.bmp" />
-    <WixVariable Id="WixUIBannerBmp" Value="Resources\assets\banner_background.bmp" />
-
-    <WixVariable Id="WixUIExclamationIco" Value="Resources\assets\oc_32x32.ico" />
-    <WixVariable Id="WixUIInfoIco" Value="Resources\assets\oc_32x32.ico" />
-    <WixVariable Id="WixUINewIco" Value="Resources\assets\oc_16x16.ico" />
-    <WixVariable Id="WixUIUpIco" Value="Resources\assets\oc_16x16.ico" />
 
   </Product>
 </Wix>

@@ -1,0 +1,95 @@
+<?xml version='1.0'?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+
+  <Fragment>
+    <Icon Id="oc.ico" SourceFile="assets\oc_16x16.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="oc.ico" />
+    <Property Id="ARPHELPLINK" Value="http://www.getchef.com/support/" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
+
+    <UI Id="ChefClientUI_InstallDir">
+      <!-- WixUI_FeatureTree module's code embedded and modified here as per the requirement -->
+      <TextStyle Id="WixUI_Font_Normal_White" FaceName="Tahoma" Size="8" Red="255" Green="255" Blue="255" />
+      <TextStyle Id="WixUI_Font_Bigger_White" FaceName="Tahoma" Size="12" Red="255" Green="255" Blue="255" />
+      <TextStyle Id="WixUI_Font_Title_White" FaceName="Tahoma" Size="9" Bold="yes" Red="255" Green="255" Blue="255" />
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
+
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <Property Id="WixUI_Mode" Value="FeatureTree" />
+
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="UserExit" />
+
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg">NOT Installed</Publish>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">Installed AND PATCH</Publish>
+
+      <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg">1</Publish>
+      <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="CustomizeDlg">LicenseAccepted = "1"</Publish>
+
+      <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="1">Installed</Publish>
+      <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="LicenseAgreementDlg" Order="2">NOT Installed</Publish>
+
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[((NOT &ChefServiceOptions=3) AND NOT ((?ChefSchTask=3) OR (?ChefClientService=3) OR (?None=3)))]]></Publish>
+
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="ChefServiceOptionSelectionDlg"><![CDATA[((&ChefServiceOptions=3) OR (?ChefSchTask=3 OR ?ChefClientService=3 OR ?None=3))]]></Publish>
+
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg" Order="1"><![CDATA[NOT &ChefServiceOptions=3]]> AND (NOT Installed OR WixUI_InstallMode = "Change")</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="ChefServiceOptionSelectionDlg" Order="1"><![CDATA[&ChefServiceOptions=3]]> AND (NOT Installed OR WixUI_InstallMode = "Change")</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="2">Installed AND NOT PATCH</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="3">Installed AND PATCH</Publish>
+
+      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+
+      <Publish Dialog="MaintenanceTypeDlg" Control="ChangeButton" Event="NewDialog" Value="CustomizeDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg">1</Publish>
+
+      
+      <Dialog Id ="ChefServiceOptionSelectionDlg" Width ="270" Height ="130" Title ="Chef Service Options" NoMinimize ="no">
+        <Control Id="optionsRadioGroup" Type="RadioButtonGroup" Property="CHEF_SERVICE_OPTIONS_RADIO_BUTTON_GROUP" Height="80" Width="140" X="20" Y="15">
+          <RadioButtonGroup Property="CHEF_SERVICE_OPTIONS_RADIO_BUTTON_GROUP">
+            <RadioButton Value="SchTask" Text="Chef Client Scheduled Task" Height="17" Width="140" X="0" Y="0" />
+            <RadioButton Value="Service" Text="Chef Client Service" Height="17" Width="140" X="0" Y="20" />
+            <RadioButton Value="None" Text="None" Height="17" Width="140" X="0" Y="40" />
+          </RadioButtonGroup>
+        </Control>
+
+        <Control Id="Back" Type="PushButton" X="20" Y="95" Width="56" Height="17" Default="no" Text="Back">
+          <Publish Event="NewDialog" Value="CustomizeDlg">1</Publish>
+        </Control>
+        <Control Id="Next" Type="PushButton" X="90" Y="95" Width="56" Height="17" Default="yes" Text="Next">
+          <Publish Event="AddLocal" Value="ChefSchTaskFeature">CHEF_SERVICE_OPTIONS_RADIO_BUTTON_GROUP = "SchTask"</Publish>
+          <Publish Event="AddLocal" Value="ChefServiceFeature">CHEF_SERVICE_OPTIONS_RADIO_BUTTON_GROUP = "Service"</Publish>
+          <Publish Event="AddLocal" Value="NoneFeature">CHEF_SERVICE_OPTIONS_RADIO_BUTTON_GROUP = "None"</Publish>
+          <Publish Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="160" Y="95" Width="56" Height="17" Default="no" Text="Cancel" Cancel="yes">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+      </Dialog>
+
+    </UI>
+
+    <UIRef Id="WixUI_Common" />
+
+    <WixVariable Id="WixUILicenseRtf" Value="assets\LICENSE.rtf" />
+    <WixVariable Id="WixUIDialogBmp" Value="assets\dialog_background.bmp" />
+    <WixVariable Id="WixUIBannerBmp" Value="assets\banner_background.bmp" />
+
+    <WixVariable Id="WixUIExclamationIco" Value="assets\oc_32x32.ico" />
+    <WixVariable Id="WixUIInfoIco" Value="assets\oc_32x32.ico" />
+    <WixVariable Id="WixUINewIco" Value="assets\oc_16x16.ico" />
+    <WixVariable Id="WixUIUpIco" Value="assets\oc_16x16.ico" />
+  </Fragment>
+</Wix>
