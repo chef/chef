@@ -35,7 +35,7 @@ class Chef
           ui.fatal("You must specify at least one node name")
           exit 1
         end
-        
+
         @name_args.each do |node_name|
           delete_object(Chef::Node, node_name)
         end
