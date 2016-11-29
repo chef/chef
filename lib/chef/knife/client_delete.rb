@@ -42,19 +42,22 @@ class Chef
         end
 
         @name_args.each do |client_name|
-          delete_object(Chef::ApiClientV1, client_name, "client") do
-            object = Chef::ApiClientV1.load(client_name)
-            if object.validator
-              unless config[:delete_validators]
-                ui.fatal("You must specify --delete-validators to delete the validator client #{client_name}")
-                exit 2
-              end
-            end
-            object.destroy
-          end
+          delete_client(client_name)
         end
       end
 
+      def delete_client(client_name)
+        delete_object(Chef::ApiClientV1, client_name, "client") do
+          object = Chef::ApiClientV1.load(client_name)
+          if object.validator
+            unless config[:delete_validators]
+              ui.fatal("You must specify --delete-validators to delete the validator client #{client_name}")
+              exit 2
+            end
+          end
+          object.destroy
+        end
+      end
     end
   end
 end
