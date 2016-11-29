@@ -45,7 +45,7 @@ class Chef
         end
 
         def dism_command(command)
-          shellout = Mixlib::ShellOut.new("dism.exe /Online #{command} /NoRestart", { :timeout => @new_resource.timeout })
+          shellout = Mixlib::ShellOut.new("dism.exe /Online /English #{command} /NoRestart", { :timeout => @new_resource.timeout })
           with_os_architecture(nil) do
             shellout.run_command
           end
