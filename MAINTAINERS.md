@@ -18,9 +18,7 @@ a maintainer, lieutenant, or the project lead.
 
 ## Chef Core
 
-Handles the core parts of the Chef DSL, base resource and provider
-infrastructure, the Chef applications and [omnibus-chef](https://github.com/chef/omnibus-chef). Includes anything not covered by
-another component.
+Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, chefstyle, and sundry others.
 
 To mention the team, use @chef/client-core
 
@@ -47,35 +45,6 @@ To mention the team, use @chef/client-core
 * [Steven Danna](https://github.com/stevendanna)
 * [Tim Smith](https://github.com/tas50)
 * [Tyler Ball](https://github.com/tyler-ball)
-
-## Ohai
-
-To mention the team, use @chef/ohai
-
-### Lieutenant
-
-* [Claire McQuin](https://github.com/mcquin)
-
-### Maintainers
-
-* [Bryan McLellan](https://github.com/btm)
-* [Tim Smith](https://github.com/tas50)
-
-## Test Tools
-
-ChefSpec
-To mention the team, use @chef/client-test-tools
-
-### Lieutenant
-
-* [Seth Vargo](https://github.com/sethvargo)
-
-### Maintainers
-
-* [Joshua Timberman](https://github.com/jtimberman)
-* [Lamont Granquist](https://github.com/lamont-granquist)
-* [Tim Smith](https://github.com/tas50)
-* [Ranjib Dey](https://github.com/ranjib)
 
 ## Chef Provisioning
 
