@@ -29,4 +29,13 @@ _This file holds "in progress" release notes for the current release under devel
   end
   ```
 
+- Alias `unmount` to `umount` for mount resource
+Example:
+
+  ```ruby
+  mount '/mount/tmp' do
+    action :unmount
+  end
+  ```
+
 ## Highlighted bug fixes for this release:

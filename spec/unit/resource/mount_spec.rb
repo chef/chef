@@ -41,9 +41,10 @@ describe Chef::Resource::Mount do
     expect(@resource.action).to eql([:mount])
   end
 
-  it "should accept mount, umount and remount as actions" do
+  it "should accept mount, umount, unmount and remount as actions" do
     expect { @resource.action :mount }.not_to raise_error
     expect { @resource.action :umount }.not_to raise_error
+    expect { @resource.action :unmount }.not_to raise_error
     expect { @resource.action :remount }.not_to raise_error
     expect { @resource.action :brooklyn }.to raise_error(ArgumentError)
   end
