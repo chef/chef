@@ -43,7 +43,7 @@ describe Chef::Platform::Rebooter do
 
   let(:expected) do
     {
-      :windows => 'C:/Windows/System32/shutdown.exe /r /t 300 /c "rebooter spec test"',
+      :windows => "#{ENV['SystemDrive']}/Windows/System32/shutdown.exe /r /t 300 /c \"rebooter spec test\"",
       :linux => 'shutdown -r +5 "rebooter spec test"',
     }
   end
