@@ -20,28 +20,24 @@ require "chef/resource/package"
 
 class Chef
   class Resource
-    class YumPackage < Chef::Resource::Package
-      resource_name :yum_package
-      provides :package, os: "linux", platform_family: %w{rhel fedora}
+    class DnfPackage < Chef::Resource::Package
+      extend Chef::Mixin::Which
+
+      resource_name :dnf_package
+
+      allowed_actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock, :flush_cache
+
+      provides :package, os: "linux", platform_family: %w{rhel fedora} do
+        which("dnf")
+      end
+
+      provides :dnf_package
 
       # Install a specific arch
       property :arch, [ String, Array ]
-      # the {} on the proc here is because rspec chokes if it's do...end
-      property :flush_cache,
-               Hash,
-               default: { before: false, after: false },
-               coerce: proc { |v|
-                 if v.is_a?(Array)
-                   v.each_with_object({}) { |arg, obj| obj[arg] = true }
-                 elsif v.any?
-                   v
-                 else
-                   { before: v, after: v }
-                 end
-               }
-      property :allow_downgrade, [ true, false ], default: false
-      property :yum_binary, String
 
+      # FIXME: dnf install should downgrade, so this should warn that users do not need to use it any more?
+      property :allow_downgrade, [ true, false ], default: false
     end
   end
 end

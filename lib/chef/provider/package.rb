@@ -626,6 +626,24 @@ class Chef
         end
         args
       end
+
+      # Helper to construct Hash of names-to-versions, requested on the new_resource.
+      # If new_resource.version is nil, then all values will be nil.
+      #
+      # @return [Hash] Mapping of requested names to versions
+      def desired_name_versions
+        desired_versions = as_array(new_resource.version) || as_array(new_resource.package_name).map { nil }
+        Hash[*as_array(new_resource.package_name).zip(desired_versions).flatten]
+      end
+
+      # Helper to construct Hash of names-to-arches, requested on the new_resource.
+      # If new_resource.arch is nil, then all values will be nil.
+      #
+      # @return [Hash] Mapping of requested names to versions
+      def desired_name_archs
+        desired_archs = as_array(new_resource.arch) || as_array(new_resource.package_name).map { nil }
+        Hash[*as_array(new_resource.package_name).zip(desired_archs).flatten]
+      end
     end
   end
 end
