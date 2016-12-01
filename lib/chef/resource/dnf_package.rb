@@ -54,8 +54,9 @@ class Chef
           end
         }
 
-      # FIXME: dnf install should downgrade, so this should warn that users do not need to use it any more?
-      property :allow_downgrade, [ true, false ], default: false
+      def allow_downgrade(arg = nil)
+        Chef.deprecated(:dnf_package_allow_downgrade, "the allow_downgrade property on the dnf_package provider is not used, DNF supports downgrades by default.")
+      end
     end
   end
 end

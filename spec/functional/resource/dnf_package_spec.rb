@@ -167,7 +167,23 @@ gpgcheck=0
         end
       end
 
-      context "with allow_downgrade" do
+      context "downgrades" do
+        it "just work with DNF" do
+          preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+          dnf_package.version("1.2")
+          dnf_package.run_action(:install)
+          expect(dnf_package.updated_by_last_action?).to be true
+          expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        end
+
+        it "throws a deprecation warning with allow_downgrade" do
+          preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+          dnf_package.version("1.2")
+          dnf_package.run_action(:install)
+          dnf_package.allow_downgrade true
+          expect(dnf_package.updated_by_last_action?).to be true
+          expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        end
       end
 
       context "with arch property" do
@@ -225,6 +241,24 @@ gpgcheck=0
     end
 
     describe ":upgrade" do
+      context "downgrades" do
+        it "just work with DNF" do
+          preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+          dnf_package.version("1.2")
+          dnf_package.run_action(:install)
+          expect(dnf_package.updated_by_last_action?).to be true
+          expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        end
+
+        it "throws a deprecation warning with allow_downgrade" do
+          preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+          dnf_package.version("1.2")
+          dnf_package.run_action(:install)
+          dnf_package.allow_downgrade true
+          expect(dnf_package.updated_by_last_action?).to be true
+          expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        end
+      end
     end
 
     describe ":remove" do
