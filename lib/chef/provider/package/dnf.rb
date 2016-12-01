@@ -118,6 +118,10 @@ class Chef
             restart # FIXME: make flushcache work + not leak memory
           end
 
+          def flushcache_installed
+            restart # FIXME: make flushcache work + not leak memory
+          end
+
           def restart
             reap
             start
@@ -149,6 +153,8 @@ class Chef
         end
 
         def load_current_resource
+          flushcache if new_resource.flush_cache[:before]
+
           @current_resource = Chef::Resource::DnfPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
 
@@ -172,7 +178,7 @@ class Chef
         def install_package(names, versions)
           resolved_names = names.map { |name| available_version(name).to_s }
           dnf(new_resource.options, "-y install", resolved_names)
-          flushcache
+          flushcache_after
         end
 
         # dnf upgrade does not work on uninstalled packaged, while install will upgrade
@@ -181,7 +187,7 @@ class Chef
         def remove_package(names, versions)
           resolved_names = names.map { |name| installed_version(name).to_s }
           dnf(new_resource.options, "-y remove", resolved_names)
-          flushcache
+          flushcache_after
         end
 
         alias_method :purge_package, :remove_package
@@ -191,6 +197,14 @@ class Chef
         end
 
         private
+
+        def flushcache_after
+          if new_resource.flush_cache[:after]
+            flushcache
+          else
+            flushcache_installed
+          end
+        end
 
         # @returns Array<Version>
         def available_version(package_name)
@@ -208,6 +222,10 @@ class Chef
 
         def flushcache
           python_helper.flushcache
+        end
+
+        def flushcache_installed
+          python_helper.flushcache_installed
         end
 
         def dnf(*args)
