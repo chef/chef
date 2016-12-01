@@ -682,4 +682,31 @@ describe Chef::DataCollector::Reporter do
       end
     end
   end
+
+  describe "#detect_unprocessed_resources" do
+    it "adds resource reports for any resources that have not yet been processed" do
+      resource_a  = Chef::Resource::Service.new("processed service")
+      resource_b  = Chef::Resource::Service.new("unprocessed service")
+
+      resource_a.action = [ :enable, :start ]
+      resource_b.action = :start
+
+      run_context = Chef::RunContext.new(Chef::Node.new, Chef::CookbookCollection.new, nil)
+      run_context.resource_collection.insert(resource_a)
+      run_context.resource_collection.insert(resource_b)
+
+      allow(reporter).to receive(:run_context).and_return(run_context)
+
+      # process the actions for resource_a, but not resource_b
+      reporter.resource_up_to_date(resource_a, :enable)
+      reporter.resource_completed(resource_a)
+      reporter.resource_up_to_date(resource_a, :start)
+      reporter.resource_completed(resource_a)
+      expect(reporter.all_resource_reports.size).to eq(2)
+
+      # detect unprocessed resourced, which should find that resource_b has not yet been processed
+      reporter.send(:detect_unprocessed_resources)
+      expect(reporter.all_resource_reports.size).to eq(3)
+    end
+  end
 end

@@ -430,26 +430,33 @@ class Chef
       end
 
       def detect_unprocessed_resources
-        # create a Set containing all resource+action combinations from
-        # the Resource Collection
-        collection_resources = Set.new
+        # create a Hash (for performance reasons, rather than an Array) containing all
+        # resource+action combinations from the Resource Collection
+        #
+        # We use the object ID instead of the resource itself in the Hash key because
+        # we currently allow users to create a property called "hash" which creates
+        # a #hash instance method on the resource. Ruby expects that to be a Fixnum,
+        # so bad things happen when adding an object to an Array or a Hash if it's not.
+        collection_resources = {}
         run_context.resource_collection.all_resources.each do |resource|
           Array(resource.action).each do |action|
-            collection_resources.add([resource, action])
+            collection_resources[[resource.__id__, action]] = resource
           end
         end
 
-        # Delete from the Set any resource+action combination we have
+        # Delete from the Hash any resource+action combination we have
         # already processed.
         all_resource_reports.each do |report|
-          collection_resources.delete([report.resource, report.action])
+          collection_resources.delete([report.resource.__id__, report.action])
         end
 
-        # The items remaining in the Set are unprocessed resource+actions,
+        # The items remaining in the Hash are unprocessed resource+actions,
         # so we'll create new resource reports for them which default to
         # a state of "unprocessed".
-        collection_resources.each do |resource, action|
-          add_resource_report(create_resource_report(resource, action))
+        collection_resources.each do |key, resource|
+          # The Hash key is an array of the Resource's object ID and the action.
+          # We need to pluck out the action.
+          add_resource_report(create_resource_report(resource, key[1]))
         end
       end
 
