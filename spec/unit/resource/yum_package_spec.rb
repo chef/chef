@@ -65,6 +65,26 @@ describe Chef::Resource::YumPackage, "flush_cache" do
     @resource.flush_cache(flush_hash)
     expect(@resource.flush_cache).to eq(flush_hash)
   end
+
+  it "should allow 'true' for flush_cache" do
+    @resource.flush_cache(true)
+    expect(@resource.flush_cache).to eq({ before: true, after: true })
+  end
+
+  it "should allow 'false' for flush_cache" do
+    @resource.flush_cache(false)
+    expect(@resource.flush_cache).to eq({ before: false, after: false })
+  end
+
+  it "should allow ':before' for flush_cache" do
+    @resource.flush_cache(:before)
+    expect(@resource.flush_cache).to eq({ before: true, after: false })
+  end
+
+  it "should allow ':after' for flush_cache" do
+    @resource.flush_cache(:after)
+    expect(@resource.flush_cache).to eq({ before: false, after: true })
+  end
 end
 
 describe Chef::Resource::YumPackage, "allow_downgrade" do

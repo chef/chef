@@ -34,7 +34,25 @@ class Chef
       provides :dnf_package
 
       # Install a specific arch
-      property :arch, [ String, Array ]
+      property :arch, [String, Array], coerce: proc { |x| [x].flatten }
+
+      # Flush the in-memory available/installed cache, this does not flush the dnf caches on disk
+      property :flush_cache,
+        Hash,
+        default: { before: false, after: false },
+        coerce: proc { |v|
+          if v.is_a?(Hash)
+            v
+          elsif v.is_a?(Array)
+            v.each_with_object({}) { |arg, obj| obj[arg] = true }
+          elsif v.is_a?(TrueClass) || v.is_a?(FalseClass)
+            { before: v, after: v }
+          elsif v == :before
+            { before: true, after: false }
+          elsif v == :after
+            { after: true, before: false }
+          end
+        }
 
       # FIXME: dnf install should downgrade, so this should warn that users do not need to use it any more?
       property :allow_downgrade, [ true, false ], default: false
