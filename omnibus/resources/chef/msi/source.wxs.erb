@@ -71,7 +71,7 @@
 
     <CustomAction Id="CreateChefClientScheduledTask"
                   Directory="TARGETDIR"
-                  ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;ChefClientSchTask&quot; /SC &quot;MINUTE&quot; /MO &quot;30&quot; /F /TR &quot;cmd /c \&quot;[RubyExecutable] [ChefClientPath]\chef-client -L [ChefClientLog]\chef-client.log -c [CONFIGLOCATION]\client.rb\&quot;&quot; /RU &quot;NT Authority\System&quot; /RP /RL &quot;HIGHEST&quot; /ST &quot;<% (Time.now + 60 * 30).strftime('%H:%M') -%>&quot;"
+                  ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;ChefClientSchTask&quot; /SC &quot;MINUTE&quot; /MO &quot;30&quot; /F /TR &quot;cmd /c \&quot;[EMBEDDEDBIN]ruby.exe [PROJECTLOCATIONBIN]chef-client -L [CONFIGLOCATION]chef-client.log -c [CONFIGLOCATION]client.rb\&quot;&quot; /RU &quot;NT Authority\System&quot; /RP /RL &quot;HIGHEST&quot; /ST &quot;<% (Time.now + 60 * 30).strftime('%H:%M') -%>&quot;"
                   Execute="deferred"
                   Impersonate="no"
                   Return="check" />
