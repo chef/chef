@@ -70,7 +70,7 @@ class Chef
 
           def reap
             unless wait_thr.nil?
-              Process.kill("KILL", wait_thr.pid)
+              Process.kill("KILL", wait_thr.pid) rescue nil
               stdin.close unless stdin.nil?
               stdout.close unless stdout.nil?
               stderr.close unless stderr.nil?
