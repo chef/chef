@@ -200,6 +200,24 @@ gpgcheck=0
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.i686")
       end
+
+      it "installs with 64-bit arch in the property" do
+        flush_cache
+        dnf_package.package_name("chef_rpm")
+        dnf_package.arch("x86_64")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+      end
+
+      it "installs with 32-bit arch in the property" do
+        flush_cache
+        dnf_package.package_name("chef_rpm")
+        dnf_package.arch("i686")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.i686")
+      end
     end
 
     context "with constraints" do
