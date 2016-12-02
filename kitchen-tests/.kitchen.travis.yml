@@ -2,7 +2,8 @@
 driver:
   name: dokken
   privileged: true
-  chef_version: latest
+  chef_image: chef/chef
+  chef_version: current
 
 transport:
   name: dokken
@@ -10,9 +11,6 @@ transport:
 provisioner:
   name: chef_github
   root_path: /opt/kitchen
-  require_chef_omnibus: latest
-  chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
-  chef_omnibus_install_options: "-c current"
   github_owner: "chef"
   github_repo: "chef"
   refname: <%= ENV['TRAVIS_COMMIT'] %>
