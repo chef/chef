@@ -25,18 +25,6 @@ exclude_test = !(%w{rhel fedora}.include?(ohai[:platform_family]) && File.exist?
 describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test do
   include Chef::Mixin::ShellOut
 
-  before(:all) do
-    File.open("/etc/yum.repos.d/chef-dnf-localtesting.repo", "w+") do |f|
-      f.write <<-EOF
-[chef-dnf-localtesting]
-name=Chef DNF spec testing repo
-baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
-enable=1
-gpgcheck=0
-      EOF
-    end
-  end
-
   def flush_cache
     # needed on at least fc23/fc24 sometimes to deal with the dnf cache getting out of sync with the rpm db
     FileUtils.rm_f "/var/cache/dnf/@System.solv"
@@ -51,6 +39,15 @@ gpgcheck=0
   end
 
   before(:each) do
+    File.open("/etc/yum.repos.d/chef-dnf-localtesting.repo", "w+") do |f|
+      f.write <<-EOF
+[chef-dnf-localtesting]
+name=Chef DNF spec testing repo
+baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
+enable=1
+gpgcheck=0
+      EOF
+    end
     shell_out!("rpm -qa | grep chef_rpm | xargs -r rpm -e")
   end
 
@@ -238,6 +235,18 @@ gpgcheck=0
         expect(dnf_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
       end
+
+      it "when there is no solution to the contraint" do
+        flush_cache
+        dnf_package.package_name("chef_rpm > 2.0")
+        expect { dnf_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
+      end
+
+      it "when there is no solution to the contraint but an rpm is preinstalled" do
+        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        dnf_package.package_name("chef_rpm > 2.0")
+        expect { dnf_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
+      end
     end
 
     context "with source arguments" do
@@ -259,11 +268,19 @@ gpgcheck=0
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
       end
 
-      it "downgrades with :install" do
+      it "does not downgrade the package with :install" do
         preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
         dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
         dnf_package.run_action(:install)
-        expect(dnf_package.updated_by_last_action?).to be true
+        expect(dnf_package.updated_by_last_action?).to be false
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+      end
+
+      it "does not upgrade the package with :install" do
+        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.10-1.fc24.x86_64.rpm")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
       end
 
@@ -272,6 +289,25 @@ gpgcheck=0
         dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+      end
+    end
+
+    context "with no available version" do
+      it "works when a package is installed" do
+        FileUtils.rm_f "/etc/yum.repos.d/chef-dnf-localtesting.repo"
+        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be false
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+      end
+
+      it "works with a local source" do
+        FileUtils.rm_f "/etc/yum.repos.d/chef-dnf-localtesting.repo"
+        flush_cache
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
       end
     end
@@ -318,12 +354,20 @@ gpgcheck=0
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
       end
 
-      it "downgrades with :upgrade" do
+      it "downgrades the package" do
         preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
         dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
         dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+      end
+
+      it "upgrades the package" do
+        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.10-1.fc24.x86_64.rpm")
+        dnf_package.run_action(:upgrade)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
       end
 
       it "is idempotent when the package is already installed" do

@@ -253,9 +253,6 @@ class Chef
           @installed_version ||= {}
           if new_resource.source
             @installed_version[package_name] ||= python_helper.whatinstalled(available_version(package_name).name, desired_name_versions[package_name], desired_name_archs[package_name])
-            if @installed_version[package_name] != available_version(package_name) # allow :install to force installs of direct package sources
-              @installed_version[package_name] = Version.new(nil, nil, nil)
-            end
           else
             @installed_version[package_name] ||= python_helper.whatinstalled(package_name, desired_name_versions[package_name], desired_name_archs[package_name])
           end
