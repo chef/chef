@@ -17,6 +17,7 @@
 require "chef/provider/package"
 require "chef/resource/dnf_package"
 require "chef/mixin/which"
+require "chef/mixin/get_source_from_package"
 require "timeout"
 
 class Chef
@@ -24,6 +25,7 @@ class Chef
     class Package
       class Dnf < Chef::Provider::Package
         extend Chef::Mixin::Which
+        include Chef::Mixin::GetSourceFromPackage
 
         class Version
           attr_accessor :name
@@ -141,6 +143,7 @@ class Chef
         end
 
         use_multipackage_api
+        use_package_name_for_source
 
         provides :package, platform_family: %w{rhel fedora} do
           which("dnf")
@@ -157,10 +160,17 @@ class Chef
 
           @current_resource = Chef::Resource::DnfPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
-
           current_resource.version(get_current_versions)
 
           current_resource
+        end
+
+        def define_resource_requirements
+          # FIXME:
+          #unless ::File.exist?(new_resource.source)
+          #  raise Chef::Exceptions::Package, "Package #{new_resource.name} not found: #{new_resource.source}"
+          #end
+          super
         end
 
         def candidate_version
@@ -176,8 +186,12 @@ class Chef
         end
 
         def install_package(names, versions)
-          resolved_names = names.map { |name| available_version(name).to_s }
-          dnf(new_resource.options, "-y install", resolved_names)
+          if new_resource.source
+            dnf(new_resource.options, "-y install", new_resource.source)
+          else
+            resolved_names = names.map { |name| available_version(name).to_s }
+            dnf(new_resource.options, "-y install", resolved_names)
+          end
           flushcache_after
         end
 
@@ -206,17 +220,36 @@ class Chef
           end
         end
 
+        def resolve_source_to_version_obj
+          shell_out_with_timeout!("rpm -qp --queryformat '%{NAME} %{EPOCH}:%{VERSION}-%{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
+            case line
+            when /^(\S+)\s+(\S+)\s+(\S+)$/
+              return Version.new($1, $2, $3)
+            end
+          end
+        end
+
         # @returns Array<Version>
         def available_version(package_name)
           @available_version ||= {}
-          @available_version[package_name] ||= python_helper.whatavailable(package_name, desired_name_versions[package_name], desired_name_archs[package_name])
+
+          if new_resource.source
+            @available_version[package_name] ||= resolve_source_to_version_obj
+          else
+            @available_version[package_name] ||= python_helper.whatavailable(package_name, desired_name_versions[package_name], desired_name_archs[package_name])
+          end
+
           @available_version[package_name]
         end
 
         # @returns Array<Version>
         def installed_version(package_name)
           @installed_version ||= {}
-          @installed_version[package_name] ||= python_helper.whatinstalled(package_name, desired_name_versions[package_name], desired_name_archs[package_name])
+          if new_resource.source
+            @installed_version[package_name] ||= python_helper.whatinstalled(resolve_source_to_version_obj.name, desired_name_versions[package_name], desired_name_archs[package_name])
+          else
+            @installed_version[package_name] ||= python_helper.whatinstalled(package_name, desired_name_versions[package_name], desired_name_archs[package_name])
+          end
           @installed_version[package_name]
         end
 
