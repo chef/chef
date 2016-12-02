@@ -242,6 +242,7 @@ gpgcheck=0
 
     context "with source arguments" do
       it "installs the package when using the source argument" do
+        flush_cache
         dnf_package.name "something"
         dnf_package.package_name "somethingelse"
         dnf_package.source("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
@@ -251,6 +252,16 @@ gpgcheck=0
       end
 
       it "installs the package when the name is a path to a file" do
+        flush_cache
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+      end
+
+      it "downgrades with :install" do
+        pending "busted due to idempotency check in the base provider"
+        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
         dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
@@ -276,6 +287,34 @@ gpgcheck=0
         dnf_package.version("1.2")
         dnf_package.run_action(:install)
         dnf_package.allow_downgrade true
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+      end
+    end
+
+    context "with source arguments" do
+      it "installs the package when using the source argument" do
+        flush_cache
+        dnf_package.name "something"
+        dnf_package.package_name "somethingelse"
+        dnf_package.source("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.run_action(:upgrade)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+      end
+
+      it "installs the package when the name is a path to a file" do
+        flush_cache
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.run_action(:upgrade)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+      end
+
+      it "downgrades with :upgrade" do
+        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
       end
