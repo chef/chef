@@ -49,6 +49,12 @@ class Chef
           def matches_name_and_arch?(other)
             other.version == version && other.arch == arch
           end
+
+          def ==(other)
+            name == other.name && version == other.version && arch == other.arch
+          end
+
+          alias_method :eql?, :==
         end
 
         attr_accessor :python_helper
@@ -221,10 +227,10 @@ class Chef
         end
 
         def resolve_source_to_version_obj
-          shell_out_with_timeout!("rpm -qp --queryformat '%{NAME} %{EPOCH}:%{VERSION}-%{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
+          shell_out_with_timeout!("rpm -qp --queryformat '%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
             case line
-            when /^(\S+)\s+(\S+)\s+(\S+)$/
-              return Version.new($1, $2, $3)
+            when /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/
+              return Version.new($1, "#{$2 == "(none)" ? "0" : $2}:#{$3}-#{$4}", $5)
             end
           end
         end

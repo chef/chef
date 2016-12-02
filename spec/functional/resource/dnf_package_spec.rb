@@ -266,6 +266,14 @@ gpgcheck=0
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
       end
+
+      it "is idempotent when the package is already installed" do
+        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be false
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+      end
     end
   end
 
@@ -315,6 +323,14 @@ gpgcheck=0
         dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
         dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+      end
+
+      it "is idempotent when the package is already installed" do
+        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.run_action(:upgrade)
+        expect(dnf_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
       end
     end
