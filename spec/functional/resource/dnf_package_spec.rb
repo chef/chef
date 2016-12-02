@@ -260,7 +260,6 @@ gpgcheck=0
       end
 
       it "downgrades with :install" do
-        pending "busted due to idempotency check in the base provider"
         preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
         dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
         dnf_package.run_action(:install)
