@@ -93,8 +93,8 @@ describe Chef::Resource::DnfPackage, "allow_downgrade" do
   end
 
   it "should allow you to specify whether allow_downgrade is true or false" do
+    Chef::Config[:treat_deprecation_warnings_as_errors] = false
     expect { @resource.allow_downgrade true }.not_to raise_error
     expect { @resource.allow_downgrade false }.not_to raise_error
-    expect { @resource.allow_downgrade "monkey" }.to raise_error(ArgumentError)
   end
 end
