@@ -38,7 +38,6 @@ class Chef
 
       property :cookbook, [String, nil, false], default: nil, desired_state: false, nillable: true, coerce: proc { |x| x ? x : nil }
       property :cache_rebuild, [TrueClass, FalseClass], default: true, desired_state: false
-      property :sensitive, [TrueClass, FalseClass], default: false, desired_state: false
 
       default_action :add
       allowed_actions :add, :remove

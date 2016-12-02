@@ -156,6 +156,26 @@ class Chef
       end
     end
 
+    class PropertyNameCollision < Base
+      def id
+        11
+      end
+
+      def target
+        "property_name_collision.html"
+      end
+    end
+
+    class LaunchdHashProperty < Base
+      def id
+        12
+      end
+
+      def target
+        "launchd_hash_property.html"
+      end
+    end
+
     class ChefPlatformMethods < Base
       def id
         13

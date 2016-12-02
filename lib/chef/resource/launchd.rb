@@ -33,7 +33,7 @@ class Chef
       property :backup, [Integer, FalseClass]
       property :cookbook, String
       property :group, [String, Integer]
-      property :hash, Hash
+      property :plist_hash, Hash
       property :mode, [String, Integer]
       property :owner, [String, Integer]
       property :path, String
@@ -139,6 +139,18 @@ class Chef
       property :wait_for_debugger, [ TrueClass, FalseClass ]
       property :watch_paths, Array
       property :working_directory, String
+
+      # hash is an instance method on Object and needs to return a Fixnum.
+      def hash(arg = nil)
+        Chef.deprecated(:launchd_hash_property, "Property `hash` on the `launchd` resource has changed to `plist_hash`." \
+          "Please use `plist_hash` instead. This will raise an exception in Chef 13.")
+
+        set_or_return(
+          :plist_hash,
+          arg,
+          :kind_of => Hash
+        )
+      end
     end
   end
 end
