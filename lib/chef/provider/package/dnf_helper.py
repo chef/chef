@@ -46,8 +46,10 @@ def query(command):
     if 'arch' in command:
         q = q.filterm(arch__glob=command['arch'])
 
-    # FIXME: if the filter already selected the other arch this will be busted?
-    q = q.filter(arch=[ 'noarch', hawkey.detect_arch() ])
+    # only apply the default arch query filter if it returns something
+    archq = q.filter(arch=[ 'noarch', hawkey.detect_arch() ])
+    if len(archq.run()) > 0:
+        q = archq
 
     pkgs = dnf.query.latest_limit_pkgs(q, 1)
 

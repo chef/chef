@@ -184,7 +184,22 @@ gpgcheck=0
       end
     end
 
-    context "with arch property" do
+    context "with arches" do
+      it "installs with 64-bit arch in the name" do
+        flush_cache
+        dnf_package.package_name("chef_rpm.x86_64")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+      end
+
+      it "installs with 32-bit arch in the name" do
+        flush_cache
+        dnf_package.package_name("chef_rpm.i686")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.i686")
+      end
     end
 
     context "with constraints" do
@@ -309,6 +324,17 @@ gpgcheck=0
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+      end
+    end
+
+    context "multipackage" do
+      it "installs two rpms" do
+        flush_cache
+        dnf_package.package_name([ "chef_rpm.x86_64", "chef_rpm.i686" ] )
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
       end
     end
   end
