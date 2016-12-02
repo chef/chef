@@ -1,3 +1,29 @@
+This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is **12.16.42**.
+
+## [v12.17.33](https://github.com/chef/chef/tree/v12.17.33) (2016-12-02)
+[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.33)
+
+**Implemented enhancements:**
+
+- Action :umount for mount resource is an obtuse anachronism [\#5595](https://github.com/chef/chef/issues/5595)
+- Yum: Purge yum cache before deleting repo config [\#5509](https://github.com/chef/chef/pull/5509) ([iancward](https://github.com/iancward))
+- Knife Bootstrap: Passing config\_log\_level and config\_log\_location from config.rb [\#5502](https://github.com/chef/chef/pull/5502) ([dheerajd-msys](https://github.com/dheerajd-msys))
+
+**Fixed bugs:**
+
+- Undefined method up\_to\_date thrown by Chef 12.16.42 in custom resource [\#5593](https://github.com/chef/chef/issues/5593)
+- Use the full path to expand.exe for msu\_package, raise exception if command fails [\#5564](https://github.com/chef/chef/pull/5564) ([NimishaS](https://github.com/NimishaS))
+- Core: fix Lint/UnifiedInteger cop [\#5547](https://github.com/chef/chef/pull/5547) ([lamont-granquist](https://github.com/lamont-granquist))
+- Prevent apt\_update failures on non-Linux platforms [\#5524](https://github.com/chef/chef/pull/5524) ([tas50](https://github.com/tas50))
+- Core: Ensure that the sensitive property is correctly accessed [\#5508](https://github.com/chef/chef/pull/5508) ([axos88](https://github.com/axos88))
+- Windows: search for config on same drive as executable location [\#5478](https://github.com/chef/chef/pull/5478) ([jkerry](https://github.com/jkerry))
+
+**Closed issues:**
+
+- cab\_package doesn't support running on non-English system locales [\#5592](https://github.com/chef/chef/issues/5592)
+- Change in Chef::Node::ImmutableArray syntax between 12.15.19 and 12.16.42 [\#5538](https://github.com/chef/chef/issues/5538)
+- Default config file drive on windows doesn't support non-system drive installations [\#5477](https://github.com/chef/chef/issues/5477)
+
 ## [v12.16.42](https://github.com/chef/chef/tree/v12.16.42) (2016-11-04)
 [Full Changelog](https://github.com/chef/chef/compare/v12.15.19...v12.16.42)
 
