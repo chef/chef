@@ -107,7 +107,7 @@ describe Chef::Provider::Mount::Mount do
       expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    %w{tmpfs fuse cgroup}.each do |fstype|
+    %w{tmpfs fuse cgroup vboxsf zfs}.each do |fstype|
       it "does not expect the device to exist for #{fstype}" do
         @new_resource.fstype(fstype)
         @new_resource.device("whatever")
