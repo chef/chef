@@ -1,10 +1,11 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is **12.16.42**.
 
-## [v12.17.34](https://github.com/chef/chef/tree/v12.17.34) (2016-12-02)
-[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.34)
+## [v12.17.35](https://github.com/chef/chef/tree/v12.17.35) (2016-12-03)
+[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.35)
 
 **Implemented enhancements:**
 
+- add support for zfs to mount provider [\#5597](https://github.com/chef/chef/issues/5597)
 - Action :umount for mount resource is an obtuse anachronism [\#5595](https://github.com/chef/chef/issues/5595)
 - Yum: Purge yum cache before deleting repo config [\#5509](https://github.com/chef/chef/pull/5509) ([iancward](https://github.com/iancward))
 - Knife Bootstrap: Passing config\_log\_level and config\_log\_location from config.rb [\#5502](https://github.com/chef/chef/pull/5502) ([dheerajd-msys](https://github.com/dheerajd-msys))
