@@ -33,7 +33,7 @@ describe Chef::Resource::Ohai do
     expect(@resource.resource_name).to eql(:ohai)
   end
 
-  it "should have a default action of create" do
+  it "should have a default action of reload" do
     expect(@resource.action).to eql([:reload])
   end
 
