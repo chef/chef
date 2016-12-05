@@ -161,6 +161,42 @@ gpgcheck=0
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
       end
+
+      it "matches the vr" do
+        flush_cache
+        dnf_package.package_name("chef_rpm")
+        dnf_package.version("1.10-1.fc24")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+      end
+
+      it "matches the evr" do
+        flush_cache
+        dnf_package.package_name("chef_rpm")
+        dnf_package.version("0:1.10-1.fc24")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+      end
+
+      it "matches with a vr glob" do
+        flush_cache
+        dnf_package.package_name("chef_rpm")
+        dnf_package.version("1.10-1*")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+      end
+
+      it "matches with an evr glob" do
+        flush_cache
+        dnf_package.package_name("chef_rpm")
+        dnf_package.version("0:1.10-1*")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+      end
     end
 
     context "downgrades" do
