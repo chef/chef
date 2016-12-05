@@ -197,7 +197,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} checking rpm status")
             shell_out_with_timeout!("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}", :timeout => Chef::Config[:yum_timeout]).stdout.each_line do |line|
               case line
-              when /([\w\d_.-]+)\s([\w\d_.-]+)/
+              when /^(\S+)\s(\S+)$/
                 @current_resource.package_name($1)
                 @new_resource.version($2)
               end
