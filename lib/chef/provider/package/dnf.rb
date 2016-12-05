@@ -90,12 +90,27 @@ class Chef
             start if stdin.nil?
           end
 
+          # i couldn't figure out how to decompose an evr on the python side, it seems reasonably
+          # painless to do it in ruby.
+          def add_version(hash, version)
+            epoch = nil
+            if version =~ /(\S+):(\S+)/
+              epoch, version = $1, $2
+            end
+            if version =~ /(\S+)-(\S+)/
+              version, release = $1, $2
+            end
+            hash["epoch"] = epoch unless epoch.nil?
+            hash["release"] = release unless release.nil?
+            hash["version"] = version
+          end
+
           # @returns Array<Version>
           def query(action, provides, version = nil, arch = nil)
             with_helper do
               hash = { "action" => action }
               hash["provides"] = provides
-              hash["version"] = version unless version.nil?
+              add_version(hash, version) unless version.nil?
               hash["arch" ] = arch unless arch.nil?
               json = FFI_Yajl::Encoder.encode(hash)
               puts json

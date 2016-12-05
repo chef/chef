@@ -40,8 +40,12 @@ def query(command):
     if command['action'] == "whatavailable":
         q = q.available()
 
+    if 'epoch' in command:
+        q = q.filterm(epoch=int(command['epoch']))
     if 'version' in command:
         q = q.filterm(version__glob=command['version'])
+    if 'release' in command:
+        q = q.filterm(release__glob=command['release'])
 
     if 'arch' in command:
         q = q.filterm(arch__glob=command['arch'])

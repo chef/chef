@@ -181,6 +181,7 @@ gpgcheck=0
       end
 
       it "matches with a vr glob" do
+        pending "doesn't work on command line either"
         flush_cache
         dnf_package.package_name("chef_rpm")
         dnf_package.version("1.10-1*")
@@ -190,6 +191,7 @@ gpgcheck=0
       end
 
       it "matches with an evr glob" do
+        pending "doesn't work on command line either"
         flush_cache
         dnf_package.package_name("chef_rpm")
         dnf_package.version("0:1.10-1*")
