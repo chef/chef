@@ -91,25 +91,9 @@ class Chef
           end
 
           # @returns Array<Version>
-          def whatinstalled(provides, version = nil, arch = nil)
+          def query(action, provides, version = nil, arch = nil)
             with_helper do
-              hash = { "action" => "whatinstalled" }
-              hash["provides"] = provides
-              hash["version"] = version unless version.nil?
-              hash["arch" ] = arch unless arch.nil?
-              json = FFI_Yajl::Encoder.encode(hash)
-              puts json
-              stdin.syswrite json + "\n"
-              output = stdout.sysread(4096)
-              puts output
-              output.split.each_slice(3).map { |x| Version.new(*x) }.first
-            end
-          end
-
-          # @returns Array<Version>
-          def whatavailable(provides, version = nil, arch = nil)
-            with_helper do
-              hash = { "action" => "whatavailable" }
+              hash = { "action" => action }
               hash["provides"] = provides
               hash["version"] = version unless version.nil?
               hash["arch" ] = arch unless arch.nil?
@@ -242,7 +226,7 @@ class Chef
           if new_resource.source
             @available_version[package_name] ||= resolve_source_to_version_obj
           else
-            @available_version[package_name] ||= python_helper.whatavailable(package_name, desired_name_versions[package_name], desired_name_archs[package_name])
+            @available_version[package_name] ||= python_helper.query(:whatavailable, package_name, desired_name_versions[package_name], desired_name_archs[package_name])
           end
 
           @available_version[package_name]
@@ -252,9 +236,9 @@ class Chef
         def installed_version(package_name)
           @installed_version ||= {}
           if new_resource.source
-            @installed_version[package_name] ||= python_helper.whatinstalled(available_version(package_name).name, desired_name_versions[package_name], desired_name_archs[package_name])
+            @installed_version[package_name] ||= python_helper.query(:whatinstalled, available_version(package_name).name, desired_name_versions[package_name], desired_name_archs[package_name])
           else
-            @installed_version[package_name] ||= python_helper.whatinstalled(package_name, desired_name_versions[package_name], desired_name_archs[package_name])
+            @installed_version[package_name] ||= python_helper.query(:whatinstalled, package_name, desired_name_versions[package_name], desired_name_archs[package_name])
           end
           @installed_version[package_name]
         end
