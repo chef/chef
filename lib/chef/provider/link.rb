@@ -121,6 +121,12 @@ class Chef
               file_class.symlink(canonicalize(@new_resource.to), @new_resource.target_file)
               Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.target_file} -> #{@new_resource.to}")
               Chef::Log.info("#{@new_resource} created")
+              # file_class.symlink will create the link with default access controls.
+              # This means that the access controls of the file could be different
+              # than those captured during the initial evaluation of current_resource.
+              # We need to re-evaluate the current_resource to ensure that the desired
+              # access controls are applied.
+              ScanAccessControl.new(@new_resource, @current_resource).set_all!
             end
           elsif @new_resource.link_type == :hard
             converge_by("create hard link at #{@new_resource.target_file} to #{@new_resource.to}") do
