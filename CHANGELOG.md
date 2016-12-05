@@ -1,20 +1,30 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is **12.16.42**.
 
-## [v12.17.37](https://github.com/chef/chef/tree/v12.17.37) (2016-12-05)
-[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.37)
+## [v12.17.38](https://github.com/chef/chef/tree/v12.17.38) (2016-12-05)
+[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.38)
 
 **Implemented enhancements:**
 
 - add support for zfs to mount provider [\#5597](https://github.com/chef/chef/issues/5597)
 - Action :umount for mount resource is an obtuse anachronism [\#5595](https://github.com/chef/chef/issues/5595)
+- Core: Update ohai resource to new style, stop overwriting name property [\#5607](https://github.com/chef/chef/pull/5607) ([adamleff](https://github.com/adamleff))
+- Linux: mount provider - skip device detection for zfs [\#5603](https://github.com/chef/chef/pull/5603) ([ttr](https://github.com/ttr))
+- Resources: Add unmount as an alias to umount in the mount resource [\#5599](https://github.com/chef/chef/pull/5599) ([shortdudey123](https://github.com/shortdudey123))
+- Core: Update Data Collector to use Chef::JSONCompat [\#5590](https://github.com/chef/chef/pull/5590) ([adamleff](https://github.com/adamleff))
+- Knife: Add ability to pass multiple nodes to knife node/client delete [\#5572](https://github.com/chef/chef/pull/5572) ([jeunito](https://github.com/jeunito))
+- Core: Data Collector debug log should output JSON [\#5570](https://github.com/chef/chef/pull/5570) ([adamleff](https://github.com/adamleff))
 - Yum: Purge yum cache before deleting repo config [\#5509](https://github.com/chef/chef/pull/5509) ([iancward](https://github.com/iancward))
 - Knife Bootstrap: Passing config\_log\_level and config\_log\_location from config.rb [\#5502](https://github.com/chef/chef/pull/5502) ([dheerajd-msys](https://github.com/dheerajd-msys))
 
 **Fixed bugs:**
 
 - Undefined method up\_to\_date thrown by Chef 12.16.42 in custom resource [\#5593](https://github.com/chef/chef/issues/5593)
-- Use the full path to expand.exe for msu\_package, raise exception if command fails [\#5564](https://github.com/chef/chef/pull/5564) ([NimishaS](https://github.com/NimishaS))
+- Knife: Correct example `chef\_server\_url` in `knife configure` [\#5602](https://github.com/chef/chef/pull/5602) ([jerryaldrichiii](https://github.com/jerryaldrichiii))
+- Windows: Support for running cab\_package on non-English system locales [\#5591](https://github.com/chef/chef/pull/5591) ([jugatsu](https://github.com/jugatsu))
+- Core: Ensure Data Collector resource report exists before updating [\#5571](https://github.com/chef/chef/pull/5571) ([adamleff](https://github.com/adamleff))
+- Windows: Use the full path to expand.exe for msu\_package [\#5564](https://github.com/chef/chef/pull/5564) ([NimishaS](https://github.com/NimishaS))
 - Core: fix Lint/UnifiedInteger cop [\#5547](https://github.com/chef/chef/pull/5547) ([lamont-granquist](https://github.com/lamont-granquist))
+- Core: fix ImmutableArray slices [\#5541](https://github.com/chef/chef/pull/5541) ([lamont-granquist](https://github.com/lamont-granquist))
 - Prevent apt\_update failures on non-Linux platforms [\#5524](https://github.com/chef/chef/pull/5524) ([tas50](https://github.com/tas50))
 - Core: Ensure that the sensitive property is correctly accessed [\#5508](https://github.com/chef/chef/pull/5508) ([axos88](https://github.com/axos88))
 - Windows: search for config on same drive as executable location [\#5478](https://github.com/chef/chef/pull/5478) ([jkerry](https://github.com/jkerry))
