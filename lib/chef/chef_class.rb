@@ -31,6 +31,7 @@ require "chef/platform/resource_priority_map"
 require "chef/platform/provider_handler_map"
 require "chef/platform/resource_handler_map"
 require "chef/event_dispatch/dsl"
+require "chef/deprecated"
 
 class Chef
   class << self
