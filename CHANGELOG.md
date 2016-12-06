@@ -1,13 +1,14 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.17.42](https://github.com/chef/chef/tree/v12.17.42) (2016-12-06)
-[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.42)
+## [v12.17.43](https://github.com/chef/chef/tree/v12.17.43) (2016-12-06)
+[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.43)
 
 **Implemented enhancements:**
 
 - Action :umount for mount resource is an obtuse anachronism [\#5595](https://github.com/chef/chef/issues/5595)
 - Core: Update ohai resource to new style, stop overwriting name property [\#5607](https://github.com/chef/chef/pull/5607) ([adamleff](https://github.com/adamleff))
 - Linux: mount provider - skip device detection for zfs [\#5603](https://github.com/chef/chef/pull/5603) ([ttr](https://github.com/ttr))
+- Core: Ensure chef-solo creates node files w/ correct permissions [\#5601](https://github.com/chef/chef/pull/5601) ([scottopherson](https://github.com/scottopherson))
 - Resources: Add unmount as an alias to umount in the mount resource [\#5599](https://github.com/chef/chef/pull/5599) ([shortdudey123](https://github.com/shortdudey123))
 - Core: Update Data Collector to use Chef::JSONCompat [\#5590](https://github.com/chef/chef/pull/5590) ([adamleff](https://github.com/adamleff))
 - Knife: Add ability to pass multiple nodes to knife node/client delete [\#5572](https://github.com/chef/chef/pull/5572) ([jeunito](https://github.com/jeunito))
@@ -35,7 +36,6 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Closed issues:**
 
-- reboot! does not work well with Tomcat [\#5594](https://github.com/chef/chef/issues/5594)
 - cab\_package doesn't support running on non-English system locales [\#5592](https://github.com/chef/chef/issues/5592)
 - Support restarting/stopping/ the service from state paused on windows [\#5586](https://github.com/chef/chef/issues/5586)
 
