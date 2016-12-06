@@ -4,6 +4,7 @@ require "chef/run_lock"
 require "chef/config"
 require "timeout"
 require "fileutils"
+require "chef/win32/security" if Chef::Platform.windows?
 
 describe "chef-solo" do
   include IntegrationSupport
@@ -16,6 +17,55 @@ describe "chef-solo" do
   let(:cookbook_ancient_100_metadata_rb) { cb_metadata("ancient", "1.0.0") }
 
   let(:chef_solo) { "ruby bin/chef-solo --legacy-mode --minimal-ohai" }
+
+  when_the_repository "creates nodes" do
+    let(:nodes_dir) { File.join(@repository_dir, "nodes") }
+    let(:node_file) { Dir[File.join(nodes_dir, "*.json")][0] }
+
+    before do
+      file "config/solo.rb", <<EOM
+chef_repo_path "#{@repository_dir}"
+EOM
+      result = shell_out("ruby bin/chef-solo -c \"#{path_to('config/solo.rb')}\" -l debug", :cwd => chef_dir)
+      result.error!
+    end
+
+    describe "on unix", :unix_only do
+      describe "the nodes directory" do
+        it "has the correct permissions" do
+          expect(File.stat(nodes_dir).mode.to_s(8)[2..5]).to eq("700")
+        end
+      end
+
+      describe "the node file" do
+        it "has the correct permissions" do
+          expect(File.stat(node_file).mode.to_s(8)[2..5]).to eq("0600")
+        end
+      end
+    end
+
+    describe "on windows", :windows_only do
+      let(:read_mask) { Chef::ReservedNames::Win32::API::Security::GENERIC_READ }
+      let(:write_mask) { Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE }
+      let(:execute_mask) { Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE }
+
+      describe "the nodes directory" do
+        it "has the correct permissions" do
+          expect(Chef::ReservedNames::Win32::File.file_access_check(nodes_dir, read_mask)).to be(true)
+          expect(Chef::ReservedNames::Win32::File.file_access_check(nodes_dir, write_mask)).to be(true)
+          expect(Chef::ReservedNames::Win32::File.file_access_check(nodes_dir, execute_mask)).to be(true)
+        end
+      end
+
+      describe "the node file" do
+        it "has the correct permissions" do
+          expect(Chef::ReservedNames::Win32::File.file_access_check(node_file, read_mask)).to be(true)
+          expect(Chef::ReservedNames::Win32::File.file_access_check(node_file, write_mask)).to be(true)
+          expect(Chef::ReservedNames::Win32::File.file_access_check(node_file, execute_mask)).to be(false)
+        end
+      end
+    end
+  end
 
   when_the_repository "has a cookbook with a basic recipe" do
     before do
