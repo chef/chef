@@ -295,7 +295,7 @@ describe Chef::Environment do
         Chef::Config[:solo_legacy_mode] = false
       end
 
-      it "should raise and exception" do
+      it "should raise an exception" do
         expect do
           Chef::Environment.validate_cookbook_version("= 1.2.3.4")
         end.to raise_error Chef::Exceptions::IllegalVersionConstraint,
