@@ -84,7 +84,7 @@ EOS
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            choco_command("install -y -version", version, cmd_args, name)
+            choco_command("install -y --version", version, cmd_args, name)
           end
 
           # but we can do all the ones without version pins at once
@@ -106,7 +106,7 @@ EOS
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            choco_command("upgrade -y -version", version, cmd_args, name)
+            choco_command("upgrade -y --version", version, cmd_args, name)
           end
 
           # but we can do all the ones without version pins at once
