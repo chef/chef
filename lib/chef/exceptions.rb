@@ -159,7 +159,7 @@ class Chef
 
     # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
     # when older versions of Windows don't support newer Win32 API functions.
-    class Win32APIFunctionNotImplemented < RuntimeError; end # rubocop:disable Lint/InheritException
+    class Win32APIFunctionNotImplemented < RuntimeError; end
     # Attempting to run windows code on a not-windows node
     class Win32NotWindows < RuntimeError; end
     class WindowsNotAdmin < RuntimeError; end
