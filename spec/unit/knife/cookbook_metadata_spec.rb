@@ -24,6 +24,7 @@ describe Chef::Knife::CookbookMetadata do
     @knife.name_args = ["foobar"]
     @cookbook_dir = Dir.mktmpdir
     @json_data = '{ "version": "1.0.0" }'
+    @invalid_json_data = '{ "version": "1.0.0", {ImInvalid}}'
     @stdout = StringIO.new
     @stderr = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
@@ -109,7 +110,7 @@ describe Chef::Knife::CookbookMetadata do
       @json_file_mock = double("json_file")
     end
 
-    it "should generate the metatdata json from metatdata.rb" do
+    it "should generate the metadata json from metadata.rb" do
       allow(Chef::Cookbook::Metadata).to receive(:new).and_return(@metadata_mock)
       expect(@metadata_mock).to receive(:name).with("foobar")
       expect(@metadata_mock).to receive(:from_file).with("#{@cookbook_dir}/foobar/metadata.rb")
@@ -173,6 +174,15 @@ describe Chef::Knife::CookbookMetadata do
         expect(@stderr.string).to match /in #{@cookbook_dir}\/foobar\/metadata\.json/im
         expect(@stderr.string).to match /#{description} blah/im
       end
+    end
+    it "should raise a syntax error on invalid JSON" do
+      expect(File).to receive(:exist?).with("#{@cookbook_dir}/foobar/metadata.json").
+        and_return(true)
+      expect(IO).to receive(:read).with("#{@cookbook_dir}/foobar/metadata.json").
+        and_return(@invalid_json_data)
+      expect do
+        @knife.validate_metadata_json(@cookbook_dir, "foobar")
+      end.to raise_error(Chef::Exceptions::JSON::ParseError)
     end
   end
 
