@@ -1,11 +1,10 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.17.39](https://github.com/chef/chef/tree/v12.17.39) (2016-12-06)
-[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.39)
+## [v12.17.40](https://github.com/chef/chef/tree/v12.17.40) (2016-12-06)
+[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.40)
 
 **Implemented enhancements:**
 
-- add support for zfs to mount provider [\#5597](https://github.com/chef/chef/issues/5597)
 - Action :umount for mount resource is an obtuse anachronism [\#5595](https://github.com/chef/chef/issues/5595)
 - Core: Update ohai resource to new style, stop overwriting name property [\#5607](https://github.com/chef/chef/pull/5607) ([adamleff](https://github.com/adamleff))
 - Linux: mount provider - skip device detection for zfs [\#5603](https://github.com/chef/chef/pull/5603) ([ttr](https://github.com/ttr))
@@ -18,7 +17,10 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Fixed bugs:**
 
-- Undefined method up\_to\_date thrown by Chef 12.16.42 in custom resource [\#5593](https://github.com/chef/chef/issues/5593)
+- Custom Resources: Undefined method up\_to\_date thrown by Chef 12.16.42 [\#5593](https://github.com/chef/chef/issues/5593)
+- Core: Ensure deprecation messages are always included [\#5618](https://github.com/chef/chef/pull/5618) ([thommay](https://github.com/thommay))
+- Core: Fix bug where Access Controls on existing symlink resources would be ignored on first chef-client run [\#5616](https://github.com/chef/chef/pull/5616) ([tduffield](https://github.com/tduffield))
+- The suggested fix for the manage\_home deprecation is incorrect [\#5615](https://github.com/chef/chef/pull/5615) ([tas50](https://github.com/tas50))
 - Knife: Correct example `chef\_server\_url` in `knife configure` [\#5602](https://github.com/chef/chef/pull/5602) ([jerryaldrichiii](https://github.com/jerryaldrichiii))
 - Windows: Support for running cab\_package on non-English system locales [\#5591](https://github.com/chef/chef/pull/5591) ([jugatsu](https://github.com/jugatsu))
 - Core: Ensure Data Collector resource report exists before updating [\#5571](https://github.com/chef/chef/pull/5571) ([adamleff](https://github.com/adamleff))
@@ -27,13 +29,11 @@ This changelog reflects the current state of chef's master branch on github and 
 - Core: fix ImmutableArray slices [\#5541](https://github.com/chef/chef/pull/5541) ([lamont-granquist](https://github.com/lamont-granquist))
 - Prevent apt\_update failures on non-Linux platforms [\#5524](https://github.com/chef/chef/pull/5524) ([tas50](https://github.com/tas50))
 - Core: Ensure that the sensitive property is correctly accessed [\#5508](https://github.com/chef/chef/pull/5508) ([axos88](https://github.com/axos88))
-- Windows: search for config on same drive as executable location [\#5478](https://github.com/chef/chef/pull/5478) ([jkerry](https://github.com/jkerry))
 
 **Closed issues:**
 
 - cab\_package doesn't support running on non-English system locales [\#5592](https://github.com/chef/chef/issues/5592)
-- Change in Chef::Node::ImmutableArray syntax between 12.15.19 and 12.16.42 [\#5538](https://github.com/chef/chef/issues/5538)
-- Default config file drive on windows doesn't support non-system drive installations [\#5477](https://github.com/chef/chef/issues/5477)
+- Support restarting/stopping/ the service from state paused on windows [\#5586](https://github.com/chef/chef/issues/5586)
 
 ## [v12.16.42](https://github.com/chef/chef/tree/v12.16.42) (2016-11-04)
 [Full Changelog](https://github.com/chef/chef/compare/v12.15.19...v12.16.42)
