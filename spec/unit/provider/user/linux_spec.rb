@@ -67,9 +67,15 @@ describe Chef::Provider::User::Linux do
       expect( @new_resource.supports[:non_unique] ).to be false
     end
 
+    it "throws a deprecation warning on setting supports[:non_unique]" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+      expect(Chef).to receive(:deprecated).with(:supports_property, "supports { non_unique: true } on the user resource is deprecated and will be removed in Chef 13, set non_unique true instead")
+      @new_resource.supports( { :non_unique => true } )
+    end
+
     it "throws a deprecation warning on setting supports[:manage_home]" do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect(Chef).to receive(:deprecated).with(:supports_property, "supports { manage_home: true } on the user resource is deprecated and will be removed in Chef 13, set manage_home: true instead")
+      expect(Chef).to receive(:deprecated).with(:supports_property, "supports { manage_home: true } on the user resource is deprecated and will be removed in Chef 13, set manage_home true instead")
       @new_resource.supports( { :manage_home => true } )
     end
 
