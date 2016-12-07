@@ -33,3 +33,12 @@ provisioner:
   channel: current
   product_version: <%= @version %>
 ```
+
+If you use [kitchen-dokken](https://github.com/someara/kitchen-dokken), you can use the following configuration:
+
+```yaml
+driver:
+  name: dokken
+  chef_image: chef/chef
+  chef_version: <%= @version %> # use "current" to always use the latest build from the current channel
+```
