@@ -8,5 +8,6 @@ export LANG=en_US.UTF-8
 
 bundle exec rake version:bump
 bundle exec rake changelog
+bundle exec rake update_dockerfile
 
 git checkout .bundle/config
