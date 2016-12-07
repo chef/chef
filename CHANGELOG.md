@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.17.43](https://github.com/chef/chef/tree/v12.17.43) (2016-12-06)
-[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.43)
+## [v12.17.44](https://github.com/chef/chef/tree/v12.17.44) (2016-12-07)
+[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.44)
 
 **Implemented enhancements:**
 
@@ -24,7 +24,7 @@ This changelog reflects the current state of chef's master branch on github and 
 - The suggested fix for the manage\_home deprecation is incorrect [\#5615](https://github.com/chef/chef/pull/5615) ([tas50](https://github.com/tas50))
 - change choco -version to choco --version [\#5613](https://github.com/chef/chef/pull/5613) ([spuder](https://github.com/spuder))
 - Knife: Correct example `chef\_server\_url` in `knife configure` [\#5602](https://github.com/chef/chef/pull/5602) ([jerryaldrichiii](https://github.com/jerryaldrichiii))
-- Ensures correct version of shutdown is called when using the reboot resource on Windows [\#5596](https://github.com/chef/chef/pull/5596) ([Xoph](https://github.com/Xoph))
+- Windows: Ensure correct version of shutdown is called when using the reboot resource [\#5596](https://github.com/chef/chef/pull/5596) ([Xoph](https://github.com/Xoph))
 - Windows: Support for running cab\_package on non-English system locales [\#5591](https://github.com/chef/chef/pull/5591) ([jugatsu](https://github.com/jugatsu))
 - Core: Ensure Data Collector resource report exists before updating [\#5571](https://github.com/chef/chef/pull/5571) ([adamleff](https://github.com/adamleff))
 - Windows: Use the full path to expand.exe for msu\_package [\#5564](https://github.com/chef/chef/pull/5564) ([NimishaS](https://github.com/NimishaS))
