@@ -48,7 +48,7 @@ describe "Resource.load_current_value" do
         x "loaded #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }.
           select { |name, p| p.is_set?(self) }.
           map { |name, p| "#{name}=#{p.get(self)}" }.
-          join(", ") })"
+          join(", ")})"
       end
     end
 
@@ -175,7 +175,7 @@ describe "Resource.load_current_value" do
           y "loaded_y #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }.
             select { |name, p| p.is_set?(self) }.
             map { |name, p| "#{name}=#{p.get(self)}" }.
-            join(", ") })"
+            join(", ")})"
         end
       end
 
@@ -193,7 +193,7 @@ describe "Resource.load_current_value" do
           y "loaded_y #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }.
             select { |name, p| p.is_set?(self) }.
             map { |name, p| "#{name}=#{p.get(self)}" }.
-            join(", ") })"
+            join(", ")})"
         end
       end
 

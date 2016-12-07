@@ -11,7 +11,7 @@ module BuildChef
   def create_bundle_config(gemfile, without: without_groups, retries: nil, jobs: nil, frozen: nil)
     bundle_config = File.expand_path("../.bundle/config", gemfile)
 
-    block "Put build config into #{bundle_config}: #{ { without: without, retries: retries, jobs: jobs, frozen: frozen } }" do
+    block "Put build config into #{bundle_config}: #{{ without: without, retries: retries, jobs: jobs, frozen: frozen }}" do
       # bundle config build.nokogiri #{nokogiri_build_config} messes up the line,
       # so we write it directly ourselves.
       new_bundle_config = "---\n"

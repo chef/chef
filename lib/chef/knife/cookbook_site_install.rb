@@ -83,7 +83,7 @@ class Chef
         # Check to ensure we have a valid source of cookbooks before continuing
         #
         @install_path = File.expand_path(Array(config[:cookbook_path]).first)
-        ui.info "Installing #@cookbook_name to #{@install_path}"
+        ui.info "Installing #{@cookbook_name} to #{@install_path}"
 
         @repo = CookbookSCMRepo.new(@install_path, ui, config)
         #cookbook_path = File.join(vendor_path, name_args[0])

@@ -119,7 +119,7 @@ describe Chef::Provider::User::Useradd, metadata do
         break if status.exitstatus != 8
 
         sleep 1
-        max_retries = max_retries - 1
+        max_retries -= 1
       rescue UserNotFound
         break
       end

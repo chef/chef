@@ -229,7 +229,7 @@ class Chef
               end
             end
 
-            if old_value == :none || (old_value == nil && !old_entry.exists?)
+            if old_value == :none || (old_value.nil? && !old_entry.exists?)
               return [ [ :added, old_entry, new_entry, old_value, new_value ] ]
             elsif new_value == :none
               return [ [ :deleted, old_entry, new_entry, old_value, new_value ] ]

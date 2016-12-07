@@ -134,7 +134,7 @@ class Chef::Provider::Route < Chef::Provider
       Chef::Log.debug("#{@new_resource} route already active - nothing to do")
     else
       command = generate_command(:add)
-      converge_by ("run #{ command } to add route") do
+      converge_by ("run #{command} to add route") do
         run_command( :command => command )
         Chef::Log.info("#{@new_resource} added")
       end
@@ -147,7 +147,7 @@ class Chef::Provider::Route < Chef::Provider
   def action_delete
     if is_running
       command = generate_command(:delete)
-      converge_by ("run #{ command } to delete route ") do
+      converge_by ("run #{command} to delete route ") do
         run_command( :command => command )
         Chef::Log.info("#{@new_resource} removed")
       end
@@ -186,7 +186,7 @@ class Chef::Provider::Route < Chef::Provider
       end
       conf.each do |k, v|
         network_file_name = "/etc/sysconfig/network-scripts/route-#{k}"
-        converge_by ("write route route.#{k}\n#{conf[k]} to #{ network_file_name }") do
+        converge_by ("write route route.#{k}\n#{conf[k]} to #{network_file_name}") do
           network_file = ::File.new(network_file_name, "w")
           network_file.puts(conf[k])
           Chef::Log.debug("#{@new_resource} writing route.#{k}\n#{conf[k]}")

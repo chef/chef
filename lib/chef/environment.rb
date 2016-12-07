@@ -171,7 +171,7 @@ class Chef
       unless params[:cookbook_version].nil?
         params[:cookbook_version].each do |index, cookbook_constraint_spec|
           unless cookbook_constraint_spec.nil? || cookbook_constraint_spec.size == 0
-            valid = valid && update_cookbook_constraint_from_param(index, cookbook_constraint_spec)
+            valid &&= update_cookbook_constraint_from_param(index, cookbook_constraint_spec)
           end
         end
       end

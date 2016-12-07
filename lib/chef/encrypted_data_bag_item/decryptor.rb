@@ -93,7 +93,7 @@ class Chef::EncryptedDataBagItem
           plaintext << openssl_decryptor.final
         rescue OpenSSL::Cipher::CipherError => e
           # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
-          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{ (@key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : '' }"
+          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{(@key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : ''}"
         end
       end
 
@@ -144,7 +144,7 @@ class Chef::EncryptedDataBagItem
           plaintext << openssl_decryptor.final
         rescue OpenSSL::Cipher::CipherError => e
           # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
-          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{ ( @key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : '' }"
+          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{( @key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : ''}"
         end
       end
 

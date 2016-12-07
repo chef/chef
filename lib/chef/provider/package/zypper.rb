@@ -144,7 +144,7 @@ class Chef
           end
         end
 
-        def gpg_checks()
+        def gpg_checks
           case Chef::Config[:zypper_check_gpg]
           when true
             ""

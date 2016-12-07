@@ -551,7 +551,7 @@ class Chef
       def set_security_descriptor_dacl(security_descriptor, acl, defaulted = false, present = nil)
         security_descriptor = security_descriptor.pointer if security_descriptor.respond_to?(:pointer)
         acl = acl.pointer if acl.respond_to?(:pointer)
-        present = !security_descriptor.null? if present == nil
+        present = !security_descriptor.null? if present.nil?
 
         unless SetSecurityDescriptorDacl(security_descriptor, present, acl, defaulted)
           Chef::ReservedNames::Win32::Error.raise!
@@ -579,7 +579,7 @@ class Chef
       def self.set_security_descriptor_sacl(security_descriptor, acl, defaulted = false, present = nil)
         security_descriptor = security_descriptor.pointer if security_descriptor.respond_to?(:pointer)
         acl = acl.pointer if acl.respond_to?(:pointer)
-        present = !security_descriptor.null? if present == nil
+        present = !security_descriptor.null? if present.nil?
 
         unless SetSecurityDescriptorSacl(security_descriptor, present, acl, defaulted)
           Chef::ReservedNames::Win32::Error.raise!

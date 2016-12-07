@@ -45,12 +45,12 @@ class Chef
           current_resource
         end
 
-        def enable_service()
+        def enable_service
           shell_out!("/sbin/insserv -r -f #{new_resource.service_name}")
           shell_out!("/sbin/insserv -d -f #{new_resource.service_name}")
         end
 
-        def disable_service()
+        def disable_service
           shell_out!("/sbin/insserv -r -f #{new_resource.service_name}")
         end
       end

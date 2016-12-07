@@ -35,7 +35,7 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
         # If a block is passed, handle freeing the memory at the end
-        if block != nil
+        if !block.nil?
           begin
             yield result
           ensure

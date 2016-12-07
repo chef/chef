@@ -462,8 +462,10 @@ class Chef
       end
 
       def validate_data_collector_server_url!
-        raise Chef::Exceptions::ConfigurationError,
-          "Chef::Config[:data_collector][:server_url] is empty. Please supply a valid URL." if data_collector_server_url.empty?
+        if data_collector_server_url.empty?
+          raise Chef::Exceptions::ConfigurationError,
+            "Chef::Config[:data_collector][:server_url] is empty. Please supply a valid URL."
+        end
 
         begin
           uri = URI(data_collector_server_url)
@@ -471,8 +473,10 @@ class Chef
           raise Chef::Exceptions::ConfigurationError, "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is not a valid URI."
         end
 
-        raise Chef::Exceptions::ConfigurationError,
-          "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is a URI with no host. Please supply a valid URL." if uri.host.nil?
+        if uri.host.nil?
+          raise Chef::Exceptions::ConfigurationError,
+            "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is a URI with no host. Please supply a valid URL."
+        end
       end
     end
   end

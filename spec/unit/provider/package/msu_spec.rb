@@ -148,7 +148,7 @@ The operation completed successfully.
       expect(source_resource.name).to be == "windows_test_pkg"
       expect(source_resource.source).to be == [new_resource.source]
       expect(source_resource.cookbook_name).to be == "Msu_package"
-      expect(source_resource.checksum).to be == nil
+      expect(source_resource.checksum).to be.nil?
     end
   end
 
