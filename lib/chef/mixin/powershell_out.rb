@@ -64,7 +64,7 @@ class Chef
         arch = options.delete(:architecture)
 
         with_os_architecture(nil, architecture: arch) do
-          shell_out(
+          shell_out!(
             build_powershell_command(script),
             options
           )
