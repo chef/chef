@@ -37,6 +37,10 @@ describe "knife data bag from file", :workstation do
         file "data_bags/foo/bzr.json", { "id" => "bzr", "foo" => "bar " }
         file "data_bags/foo/cat.json", { "id" => "cat", "foo" => "bar " }
         file "data_bags/foo/dog.json", { "id" => "dog", "foo" => "bar " }
+        file "data_bags/foo/raisin.yml", <<-EOM
+id: raisin
+foo: bar
+EOM
         file "data_bags/foo/encrypted.json", <<EOM
 {
   "id": "encrypted",
@@ -93,9 +97,12 @@ EOM
       end
 
       it "uploads many files" do
-        knife("data bag from file foo #{db_dir}/foo/bar.json #{db_dir}/foo/bzr.json").should_succeed stderr: <<EOM
+        knife(
+          "data bag from file foo #{db_dir}/foo/bar.json #{db_dir}/foo/raisin.yaml"
+        ).should_succeed stderr: <<EOM
 Updated data_bag_item[foo::bar]
 Updated data_bag_item[foo::bzr]
+Updated data_bag_item[foo::raisin]
 EOM
       end
 
@@ -106,6 +113,7 @@ bar
 bzr
 cat
 dog
+raisin
 encrypted
 EOM
       end

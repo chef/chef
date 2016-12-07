@@ -17,6 +17,7 @@
 #
 
 require "ffi_yajl"
+require "yaml"
 require "chef/util/path_helper"
 require "chef/data_bag_item"
 
@@ -72,7 +73,7 @@ class Chef
         # @api public
         def find_all_objects(path)
           path = File.join(Chef::Util::PathHelper.escape_glob_dir(File.expand_path(path)), "*")
-          path << ".{json,rb}"
+          path << ".{json,yml,yaml,rb}"
           objects = Dir.glob(path)
           objects.map { |o| File.basename(o) }
         end
@@ -95,12 +96,21 @@ class Chef
             else
               @klass.from_hash(r)
             end
+          when /\.ya?ml$/
+            r = YAML.load_file(filename)
+
+            # Chef::DataBagItem doesn't work well with the json_create method
+            if @klass == Chef::DataBagItem
+              r
+            else
+              @klass.from_hash(r)
+            end
           when /\.rb$/
             r = klass.new
             r.from_file(filename)
             r
           else
-            ui.fatal("File must end in .js, .json, or .rb")
+            ui.fatal("File must end in .js, .json, .yml, .yaml, or .rb")
             exit 30
           end
         end
