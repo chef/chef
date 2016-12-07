@@ -413,8 +413,7 @@ describe "LWRP" do
       resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       resource.monkey("bob")
       resource.provider(get_lwrp_provider(:lwrp_monkey_name_printer))
-
-      provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
+      provider = resource.provider_for_action(:twiddle_thumbs)
       provider.action_twiddle_thumbs
     end
 
@@ -520,7 +519,7 @@ describe "LWRP" do
       resource.monkey("bob")
       resource.provider(get_lwrp_provider(:lwrp_monkey_name_printer))
 
-      provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
+      provider = resource.provider_for_action(:twiddle_thumbs)
       provider.action_twiddle_thumbs
 
       expect(provider.monkey_name).to eq("my monkey's name is 'bob'")
@@ -531,7 +530,7 @@ describe "LWRP" do
       resource.monkey("bob")
       resource.provider(get_lwrp_provider(:lwrp_embedded_resource_accesses_providers_scope))
 
-      provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
+      provider = resource.provider_for_action(:twiddle_thumbs)
       #provider = @runner.build_provider(resource)
       provider.action_twiddle_thumbs
 

@@ -31,6 +31,7 @@ describe Chef::Platform do
     end
 
     before(:each) do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       Chef::Platform.platforms = {
         :darwin => {
           ">= 10.11" => {

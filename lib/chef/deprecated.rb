@@ -156,6 +156,16 @@ class Chef
       end
     end
 
+    class ChefPlatformMethods < Base
+      def id
+        13
+      end
+
+      def target
+        "chef_platform_methods.html"
+      end
+    end
+
     class ResourceCloning < Base
       def id
         3694

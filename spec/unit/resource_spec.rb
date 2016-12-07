@@ -838,6 +838,8 @@ describe Chef::Resource do
     it "should run only_if/not_if conditionals when notified to run another action (CHEF-972)" do
       snitch_var1 = snitch_var2 = 0
       runner = Chef::Runner.new(run_context)
+
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       Chef::Platform.set(
         :resource => :cat,
         :provider => Chef::Provider::SnakeOil
