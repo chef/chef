@@ -76,6 +76,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   let(:env_value2) { "value2" }
   let(:dsc_test_run_context) do
     node = Chef::Node.new
+    node.automatic["os"] = "windows"
     node.automatic["platform"] = "windows"
     node.automatic["platform_version"] = "6.1"
     node.automatic["kernel"][:machine] = :x86_64 # Only 64-bit architecture is supported
