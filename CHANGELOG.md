@@ -1,10 +1,11 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.17.47](https://github.com/chef/chef/tree/v12.17.47) (2016-12-07)
-[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.47)
+## [v12.17.48](https://github.com/chef/chef/tree/v12.17.48) (2016-12-08)
+[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.48)
 
 **Implemented enhancements:**
 
+- Yaml support for chef config objects [\#5620](https://github.com/chef/chef/issues/5620)
 - Action :umount for mount resource is an obtuse anachronism [\#5595](https://github.com/chef/chef/issues/5595)
 - Core: Update ohai resource to new style, stop overwriting name property [\#5607](https://github.com/chef/chef/pull/5607) ([adamleff](https://github.com/adamleff))
 - Linux: mount provider - skip device detection for zfs [\#5603](https://github.com/chef/chef/pull/5603) ([ttr](https://github.com/ttr))
