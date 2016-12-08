@@ -20,13 +20,13 @@ If you just want to use Chef, check out these resources:
 
 * [learnchef](https://learn.chef.io): Getting started guide
 * [docs.chef.io](https://docs.chef.io): Comprehensive User Docs
-* [Installer Downloads](https://downloads.chef.io/chef-client/): Install Chef as a complete package
+* [Installer Downloads](https://downloads.chef.io/chef/): Install Chef as a complete package
 
 ## Installing From Git
 
 **NOTE:** Unless you have a specific reason to install from source (to
 try a new feature, contribute a patch, or run chef on an OS for which no
-package is available), you should head to the [downloads page](https://downloads.chef.io/chef-client/)
+package is available), you should head to the [downloads page](https://downloads.chef.io/chef/)
 to get a prebuilt package.
 
 ### Prerequisites
