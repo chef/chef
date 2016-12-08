@@ -90,8 +90,10 @@ class Chef
       @prioritized_handlers ||= begin
         supported_handlers = self.supported_handlers
         if supported_handlers.empty?
-          # if none of the providers specifically support the resource, we still need to pick one of the providers that are
-          # enabled on the node to handle the why-run use case. FIXME we should only do this in why-run mode then.
+          # We always require a provider to be able to call define_resource_requirements on.  In the why-run case we need
+          # a provider to say "assuming /etc/init.d/whatever would have been installed" and in the non-why-run case we
+          # need to make a best guess at "cannot find /etc/init.d/whatever".  We are essentially defining a "default" provider
+          # for the platform, which is the best we can do, but which might give misleading errors, but we cannot read minds.
           Chef::Log.debug "No providers responded true to `supports?` for action #{action} on resource #{resource}, falling back to enabled handlers so we can return something anyway."
           supported_handlers = enabled_handlers
         end
