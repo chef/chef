@@ -113,7 +113,7 @@ class Chef
       remaining
     end
 
-    protected
+    private
 
     #
     # Succeeds if:
@@ -172,7 +172,8 @@ class Chef
       !!canonical == !!matcher[:canonical]
     end
 
-    def compare_matchers(key, new_matcher, matcher)
+    # @api private
+    def dispatch_compare_matchers(key, new_matcher, matcher)
       cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:block] }
       return cmp if cmp != 0
       cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform_version] }
@@ -187,6 +188,21 @@ class Chef
       return cmp if cmp != 0
       # If all things are identical, return 0
       0
+    end
+
+    #
+    # "provides" lines with identical filters sort by class name (ascending).
+    #
+    def compare_matchers(key, new_matcher, matcher)
+      cmp = dispatch_compare_matchers(key, new_matcher, matcher)
+      if cmp == 0
+        # Sort by class name (ascending) as well, if all other properties
+        # are exactly equal
+        if new_matcher[:value].is_a?(Class) && !new_matcher[:override]
+          cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:value].name }
+        end
+      end
+      cmp
     end
 
     def compare_matcher_properties(new_matcher, matcher)
