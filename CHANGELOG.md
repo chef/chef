@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.17.49](https://github.com/chef/chef/tree/v12.17.49) (2016-12-09)
-[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.49)
+## [v12.17.50](https://github.com/chef/chef/tree/v12.17.50) (2016-12-09)
+[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.50)
 
 **Implemented enhancements:**
 
@@ -14,6 +14,7 @@ This changelog reflects the current state of chef's master branch on github and 
 - Core: Update Data Collector to use Chef::JSONCompat [\#5590](https://github.com/chef/chef/pull/5590) ([adamleff](https://github.com/adamleff))
 - Knife: Add ability to pass multiple nodes to knife node/client delete [\#5572](https://github.com/chef/chef/pull/5572) ([jeunito](https://github.com/jeunito))
 - Core: Data Collector debug log should output JSON [\#5570](https://github.com/chef/chef/pull/5570) ([adamleff](https://github.com/adamleff))
+- PowerShell module output pass through [\#5549](https://github.com/chef/chef/pull/5549) ([coolmacool](https://github.com/coolmacool))
 - Added support in WIX to install chef-client as a scheduled task. [\#5540](https://github.com/chef/chef/pull/5540) ([Aliasgar16](https://github.com/Aliasgar16))
 - Yum: Purge yum cache before deleting repo config [\#5509](https://github.com/chef/chef/pull/5509) ([iancward](https://github.com/iancward))
 - Knife Bootstrap: Passing config\_log\_level and config\_log\_location from config.rb [\#5502](https://github.com/chef/chef/pull/5502) ([dheerajd-msys](https://github.com/dheerajd-msys))
