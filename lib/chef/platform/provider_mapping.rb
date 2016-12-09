@@ -35,6 +35,7 @@ class Chef
       include Chef::Mixin::ParamsValidate
 
       def find(name, version)
+        Chef.deprecated(:chef_platform_methods, "#{self.class.name}.find is deprecated")
         provider_map = platforms[:default].clone
 
         name_sym = name
@@ -90,6 +91,7 @@ class Chef
       end
 
       def provider_for_resource(resource, action = :nothing)
+        Chef.deprecated(:chef_platform_methods, "#{self.class.name}.provider_for_resource is deprecated")
         node = resource.run_context && resource.run_context.node
         raise ArgumentError, "Cannot find the provider for a resource with no run context set" unless node
         provider = find_provider_for_node(node, resource).new(resource, resource.run_context)
@@ -102,11 +104,13 @@ class Chef
       end
 
       def find_provider_for_node(node, resource_type)
+        Chef.deprecated(:chef_platform_methods, "#{self.class.name}.find_provider_for_node is deprecated")
         platform, version = find_platform_and_version(node)
         find_provider(platform, version, resource_type)
       end
 
       def set(args)
+        Chef.deprecated(:chef_platform_methods, "#{self.class.name}.set is deprecated")
         validate(
           args,
           {
@@ -172,6 +176,7 @@ class Chef
       end
 
       def find_provider(platform, version, resource_type)
+        Chef.deprecated(:chef_platform_methods, "#{self.class.name}.find_provider is deprecated")
         provider_klass = explicit_provider(platform, version, resource_type) ||
           platform_provider(platform, version, resource_type) ||
           resource_matching_provider(platform, version, resource_type)

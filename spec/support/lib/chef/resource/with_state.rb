@@ -22,6 +22,8 @@ require "chef/json_compat"
 class Chef
   class Resource
     class WithState < Chef::Resource
+      provides :with_state
+
       attr_accessor :state
     end
   end

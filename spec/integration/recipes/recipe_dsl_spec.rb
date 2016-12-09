@@ -1425,6 +1425,7 @@ describe "Recipe DSL methods" do
               end
 
               it "my_resource fails to find a provider (and calls provides)" do
+                Chef::Config[:treat_deprecation_warnings_as_errors] = false
                 my_resource = self.my_resource
                 expect_converge do
                   instance_eval("#{my_resource} 'foo'")
@@ -1435,6 +1436,7 @@ describe "Recipe DSL methods" do
 
             context "that does not provide :my_resource" do
               it "my_resource fails to find a provider (and calls provides)" do
+                Chef::Config[:treat_deprecation_warnings_as_errors] = false
                 my_resource = self.my_resource
                 expect_converge do
                   instance_eval("#{my_resource} 'foo'")
@@ -1510,6 +1512,7 @@ describe "Recipe DSL methods" do
     end
 
     it "looks up the provider in Chef::Provider converting the resource name from snake case to camel case" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       resource = nil
       recipe = converge do
         resource = lw_resource_with_hw_provider_test_case("blah") {}
