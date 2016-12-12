@@ -56,12 +56,13 @@ class Chef
 
         def enable_service
           shell_out!(default_init_command, "clear", @new_resource.service_name) if @maintenance
-          start_flags = @new_resource.recursive ? "-sr" : "-s"
-          shell_out!(default_init_command, "enable", start_flags , @new_resource.service_name)
+          enable_flags = [ "-s", @new_resource.options ].compact.join(' ')
+          shell_out!(default_init_command, "enable", enable_flags , @new_resource.service_name)
         end
 
         def disable_service
-          shell_out!(default_init_command, "disable", "-s", @new_resource.service_name)
+          disable_flags = [ "-s", @new_resource.options ].compact.join(' ')
+          shell_out!(default_init_command, "disable", disable_flags,  @new_resource.service_name)
         end
 
         alias_method :stop_service, :disable_service

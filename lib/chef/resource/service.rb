@@ -213,11 +213,11 @@ class Chef
         end
       end
 
-      def recursive(arg = nil)
+      def options(arg = nil)
         set_or_return(
           :user,
           arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :kind_of => [ Array, String ]
         )
       end
 
