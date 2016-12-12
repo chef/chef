@@ -198,6 +198,23 @@ describe Chef::Provider::Service::Solaris do
       end
     end
 
+    describe "when enabling the service recursively" do
+      before(:each) do
+        @new_resource.recursive(true)
+        @provider.current_resource = @current_resource
+      end
+
+      it "should call svcadm enable -sr chef" do
+        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { :returns => [0, 1] }).and_return(@enabled_svc_status)
+        expect(@provider).not_to receive(:shell_out!).with("/usr/sbin/svcadm", "clear", @current_resource.service_name)
+        expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm", "enable", "-sr", @current_resource.service_name).and_return(@success)
+        @provider.load_current_resource
+
+        expect(@provider.enable_service).to be_truthy
+        expect(@current_resource.enabled).to be_truthy
+      end
+    end
+
     describe "when disabling the service" do
       before(:each) do
         @provider.current_resource = @current_resource

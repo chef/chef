@@ -49,6 +49,7 @@ class Chef
         @run_levels = nil
         @user = nil
         @supports = { :restart => nil, :reload => nil, :status => nil }
+        @recursive = nil
       end
 
       def service_name(arg = nil)
@@ -210,6 +211,14 @@ class Chef
         else
           @supports
         end
+      end
+
+      def recursive(arg = nil)
+        set_or_return(
+          :user,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
       end
 
     end
