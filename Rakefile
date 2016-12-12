@@ -68,6 +68,15 @@ task :register_eventlog do
   end
 end
 
+desc "Keep the Dockerfile up-to-date"
+task :update_dockerfile do
+  require "mixlib/install"
+  latest_stable_version = Mixlib::Install.available_versions("chef", "stable").last
+  text = File.read("Dockerfile")
+  new_text = text.gsub(/^ARG VERSION=[\d\.]+$/, "ARG VERSION=#{latest_stable_version}")
+  File.open("Dockerfile", "w+") { |f| f.write(new_text) }
+end
+
 begin
   require "chefstyle"
   require "rubocop/rake_task"
