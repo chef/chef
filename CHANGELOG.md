@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.17.52](https://github.com/chef/chef/tree/v12.17.52) (2016-12-09)
-[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.52)
+## [v12.17.53](https://github.com/chef/chef/tree/v12.17.53) (2016-12-12)
+[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.53)
 
 **Implemented enhancements:**
 
@@ -17,7 +17,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - PowerShell module output pass through [\#5549](https://github.com/chef/chef/pull/5549) ([coolmacool](https://github.com/coolmacool))
 - Added support in WIX to install chef-client as a scheduled task. [\#5540](https://github.com/chef/chef/pull/5540) ([Aliasgar16](https://github.com/Aliasgar16))
 - Yum: Purge yum cache before deleting repo config [\#5509](https://github.com/chef/chef/pull/5509) ([iancward](https://github.com/iancward))
-- Knife Bootstrap: Passing config\_log\_level and config\_log\_location from config.rb [\#5502](https://github.com/chef/chef/pull/5502) ([dheerajd-msys](https://github.com/dheerajd-msys))
 
 **Fixed bugs:**
 
