@@ -1,12 +1,13 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.17.53](https://github.com/chef/chef/tree/v12.17.53) (2016-12-12)
-[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.53)
+## [v12.17.54](https://github.com/chef/chef/tree/v12.17.54) (2016-12-12)
+[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.54)
 
 **Implemented enhancements:**
 
 - Yaml support for chef config objects [\#5620](https://github.com/chef/chef/issues/5620)
 - Action :umount for mount resource is an obtuse anachronism [\#5595](https://github.com/chef/chef/issues/5595)
+- Properly deprecate old Chef::Platform methods [\#5631](https://github.com/chef/chef/pull/5631) ([lamont-granquist](https://github.com/lamont-granquist))
 - Core: Update ohai resource to new style, stop overwriting name property [\#5607](https://github.com/chef/chef/pull/5607) ([adamleff](https://github.com/adamleff))
 - Linux: mount provider - skip device detection for zfs [\#5603](https://github.com/chef/chef/pull/5603) ([ttr](https://github.com/ttr))
 - Core: Ensure chef-solo creates node files w/ correct permissions [\#5601](https://github.com/chef/chef/pull/5601) ([scottopherson](https://github.com/scottopherson))
@@ -21,10 +22,13 @@ This changelog reflects the current state of chef's master branch on github and 
 **Fixed bugs:**
 
 - Custom Resources: Undefined method up\_to\_date thrown by Chef 12.16.42 [\#5593](https://github.com/chef/chef/issues/5593)
+- Knife: cookbook site share doesn't work with some json metadata [\#5622](https://github.com/chef/chef/pull/5622) ([lamont-granquist](https://github.com/lamont-granquist))
 - Core: Ensure deprecation messages are always included [\#5618](https://github.com/chef/chef/pull/5618) ([thommay](https://github.com/thommay))
 - Core: Fix bug where Access Controls on existing symlink resources would be ignored on first chef-client run [\#5616](https://github.com/chef/chef/pull/5616) ([tduffield](https://github.com/tduffield))
 - The suggested fix for the manage\_home deprecation is incorrect [\#5615](https://github.com/chef/chef/pull/5615) ([tas50](https://github.com/tas50))
+- fix yum regexp similarly to rpm regexp in \#3985 [\#5614](https://github.com/chef/chef/pull/5614) ([lamont-granquist](https://github.com/lamont-granquist))
 - change choco -version to choco --version [\#5613](https://github.com/chef/chef/pull/5613) ([spuder](https://github.com/spuder))
+- Use object ID when detected unprocessed Resources [\#5604](https://github.com/chef/chef/pull/5604) ([adamleff](https://github.com/adamleff))
 - Knife: Correct example `chef\_server\_url` in `knife configure` [\#5602](https://github.com/chef/chef/pull/5602) ([jerryaldrichiii](https://github.com/jerryaldrichiii))
 - Windows: Ensure correct version of shutdown is called when using the reboot resource [\#5596](https://github.com/chef/chef/pull/5596) ([Xoph](https://github.com/Xoph))
 - Windows: Support for running cab\_package on non-English system locales [\#5591](https://github.com/chef/chef/pull/5591) ([jugatsu](https://github.com/jugatsu))
