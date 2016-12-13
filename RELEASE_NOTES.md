@@ -38,4 +38,10 @@ Example:
   end
   ```
 
+- You can now pass multiple nodes/clients to knife node delete or knife client delete operations.
+
+  ```bash
+  knife client delete client1,client2,client3
+  ```
+
 ## Highlighted bug fixes for this release:
