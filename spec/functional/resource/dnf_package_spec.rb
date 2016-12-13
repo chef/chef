@@ -383,7 +383,7 @@ gpgcheck=0
       end
     end
 
-    context "multipackage" do
+    context "multipackage with arches" do
       it "installs two rpms" do
         flush_cache
         dnf_package.package_name([ "chef_rpm.x86_64", "chef_rpm.i686" ] )
@@ -391,6 +391,75 @@ gpgcheck=0
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
+      end
+
+      it "does nothing if both are installed" do
+        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm", "chef_rpm-1.10-1.fc24.i686.rpm")
+        flush_cache
+        dnf_package.package_name([ "chef_rpm.x86_64", "chef_rpm.i686" ] )
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be false
+      end
+
+      it "installs the second rpm if the first is installed" do
+        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        dnf_package.package_name([ "chef_rpm.x86_64", "chef_rpm.i686" ] )
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
+      end
+
+      it "installs the first rpm if the second is installed" do
+        preinstall("chef_rpm-1.10-1.fc24.i686.rpm")
+        dnf_package.package_name([ "chef_rpm.x86_64", "chef_rpm.i686" ] )
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
+      end
+
+      # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
+      it "installs two rpms with multi-arch" do
+        skip "isn't going to work without major refactor"
+        flush_cache
+        dnf_package.package_name(%w{chef_rpm chef_rpm} )
+        dnf_package.arch(%w{x86_64 i686})
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
+      end
+
+      # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
+      it "installs the second rpm if the first is installed (muti-arch)" do
+        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        dnf_package.package_name(%w{chef_rpm chef_rpm} )
+        dnf_package.arch(%w{x86_64 i686})
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
+      end
+
+      # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
+      it "installs the first rpm if the second is installed (muti-arch)" do
+        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        dnf_package.package_name(%w{chef_rpm chef_rpm} )
+        dnf_package.arch(%w{x86_64 i686})
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
+      end
+
+      # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
+      it "does nothing if both are installed (muti-arch)" do
+        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm", "chef_rpm-1.10-1.fc24.i686.rpm")
+        dnf_package.package_name(%w{chef_rpm chef_rpm} )
+        dnf_package.arch(%w{x86_64 i686})
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be false
       end
     end
   end
@@ -465,6 +534,7 @@ gpgcheck=0
       it "works when a package is installed" do
         FileUtils.rm_f "/etc/yum.repos.d/chef-dnf-localtesting.repo"
         preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
         dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
@@ -558,6 +628,16 @@ gpgcheck=0
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.i686")
+      end
+    end
+
+    context "with 32-bit arch" do
+      let(:package_name) { "chef_rpm.i686" }
+      it "removes only the 32-bit arch if both are installed" do
+        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm", "chef_rpm-1.10-1.fc24.i686.rpm")
+        dnf_package.run_action(:remove)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
       end
     end
 
