@@ -1,12 +1,12 @@
 DEPENDENCIES
   awesome_customers_rhel
     git: https://github.com/learn-chef/awesome_customers_rhel.git
-    revision: 1ac86593829610c0eab7a45d9c63c09a9cea1754
+    revision: b576fcf2988e2cdf156e7ba6ff59a94d556e16f1
   awesome_customers_rhel_wrapper
     path: cookbooks/awesome_customers_rhel_wrapper
   awesome_customers_ubuntu
     git: https://github.com/learn-chef/awesome_customers_ubuntu.git
-    revision: 71927c094d570e6fd0f8bfbcc02ebe3556af2a16
+    revision: fea174c5855266f28218f76f00f6eff69e850244
   awesome_customers_ubuntu_wrapper
     path: cookbooks/awesome_customers_ubuntu_wrapper
   base
@@ -56,7 +56,7 @@ GRAPH
     compat_resource (>= 12.14)
     mingw (>= 1.1)
     seven_zip (>= 0.0.0)
-  chef-client (7.0.1)
+  chef-client (7.0.3)
     cron (>= 1.7.0)
     logrotate (>= 1.9.0)
     windows (>= 1.42.0)
@@ -96,8 +96,8 @@ GRAPH
   nscd (4.1.0)
     compat_resource (>= 0.0.0)
   ntp (3.2.0)
-  ohai (4.2.2)
-    compat_resource (>= 12.14)
+  ohai (4.2.3)
+    compat_resource (>= 12.14.7)
   openssh (2.1.0)
     iptables (>= 1.0)
   openssl (6.0.0)
