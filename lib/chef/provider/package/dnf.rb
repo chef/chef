@@ -27,6 +27,8 @@ class Chef
         extend Chef::Mixin::Which
         include Chef::Mixin::GetSourceFromPackage
 
+        allow_nils
+
         class Version
           attr_accessor :name
           attr_accessor :version
@@ -179,14 +181,14 @@ class Chef
         end
 
         def candidate_version
-          package_name_array.map do |pkg|
-            available_version(pkg).version_with_arch
+          package_name_array.each_with_index.map do |pkg, i|
+            available_version(i).version_with_arch
           end
         end
 
         def get_current_versions
-          package_name_array.map do |pkg|
-            installed_version(pkg).version_with_arch
+          package_name_array.each_with_index.map do |pkg, i|
+            installed_version(i).version_with_arch
           end
         end
 
@@ -194,7 +196,7 @@ class Chef
           if new_resource.source
             dnf(new_resource.options, "-y install", new_resource.source)
           else
-            resolved_names = names.map { |name| available_version(name).to_s }
+            resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
             dnf(new_resource.options, "-y install", resolved_names)
           end
           flushcache_after
@@ -204,7 +206,7 @@ class Chef
         alias_method :upgrade_package, :install_package
 
         def remove_package(names, versions)
-          resolved_names = names.map { |name| installed_version(name).to_s }
+          resolved_names = names.each_with_index.map { |name, i| installed_version(i).to_s unless name.nil? }
           dnf(new_resource.options, "-y remove", resolved_names)
           flushcache_after
         end
@@ -235,27 +237,27 @@ class Chef
         end
 
         # @returns Array<Version>
-        def available_version(package_name)
-          @available_version ||= {}
+        def available_version(index)
+          @available_version ||= []
 
           if new_resource.source
-            @available_version[package_name] ||= resolve_source_to_version_obj
+            @available_version[index] ||= resolve_source_to_version_obj
           else
-            @available_version[package_name] ||= python_helper.query(:whatavailable, package_name, desired_name_versions[package_name], desired_name_archs[package_name])
+            @available_version[index] ||= python_helper.query(:whatavailable, package_name_array[index], safe_version_array[index], safe_arch_array[index])
           end
 
-          @available_version[package_name]
+          @available_version[index]
         end
 
         # @returns Array<Version>
-        def installed_version(package_name)
-          @installed_version ||= {}
+        def installed_version(index)
+          @installed_version ||= []
           if new_resource.source
-            @installed_version[package_name] ||= python_helper.query(:whatinstalled, available_version(package_name).name, desired_name_versions[package_name], desired_name_archs[package_name])
+            @installed_version[index] ||= python_helper.query(:whatinstalled, available_version(index).name, safe_version_array[index], safe_arch_array[index])
           else
-            @installed_version[package_name] ||= python_helper.query(:whatinstalled, package_name, desired_name_versions[package_name], desired_name_archs[package_name])
+            @installed_version[index] ||= python_helper.query(:whatinstalled, package_name_array[index], safe_version_array[index], safe_arch_array[index])
           end
-          @installed_version[package_name]
+          @installed_version[index]
         end
 
         def flushcache
@@ -268,6 +270,26 @@ class Chef
 
         def dnf(*args)
           shell_out_with_timeout!(a_to_s("dnf", *args))
+        end
+
+        def safe_version_array
+          if new_resource.version.is_a?(Array)
+            new_resource.version
+          elsif new_resource.version.nil?
+            package_name_array.map { nil }
+          else
+            [ new_resource.version ]
+          end
+        end
+
+        def safe_arch_array
+          if new_resource.arch.is_a?(Array)
+            new_resource.arch
+          elsif new_resource.arch.nil?
+            package_name_array.map { nil }
+          else
+            [ new_resource.arch ]
+          end
         end
 
       end

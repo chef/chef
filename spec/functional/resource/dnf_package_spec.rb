@@ -421,7 +421,6 @@ gpgcheck=0
 
       # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
       it "installs two rpms with multi-arch" do
-        skip "isn't going to work without major refactor"
         flush_cache
         dnf_package.package_name(%w{chef_rpm chef_rpm} )
         dnf_package.arch(%w{x86_64 i686})
