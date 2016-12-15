@@ -87,9 +87,12 @@ class Chef
           def query(action, provides, version = nil, arch = nil)
             with_helper do
               json = build_query(action, provides, version, arch)
+              Chef::Log.debug "sending '#{json}' to python helper"
               stdin.syswrite json + "\n"
-              output = stdout.sysread(4096)
+              output = stdout.sysread(4096).chomp
+              Chef::Log.debug "got '#{output}' from python helper"
               version = parse_response(output)
+              Chef::Log.debug "parsed #{version} from python helper"
               version
             end
           end
