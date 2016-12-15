@@ -63,10 +63,12 @@ class Chef
         end
 
         def define_resource_requirements
-          # FIXME:
-          #unless ::File.exist?(new_resource.source)
-          #  raise Chef::Exceptions::Package, "Package #{new_resource.name} not found: #{new_resource.source}"
-          #end
+          requirements.assert(:install, :upgrade, :remove, :purge) do |a|
+            a.assertion { !new_resource.source || ::File.exist?(new_resource.source) }
+            a.failure_message Chef::Exceptions::Package, "Package #{new_resource.package_name} not found: #{new_resource.source}"
+            a.whyrun "assuming #{new_resource.source} would have previously been created"
+          end
+
           super
         end
 
@@ -119,6 +121,8 @@ class Chef
 
         def resolve_source_to_version_obj
           shell_out_with_timeout!("rpm -qp --queryformat '%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
+            # this is another case of committing the sin of doing some lightweight mangling of RPM versions in ruby -- but the output of the rpm command
+            # does not match what the dnf library accepts.
             case line
             when /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/
               return Version.new($1, "#{$2 == "(none)" ? "0" : $2}:#{$3}-#{$4}", $5)

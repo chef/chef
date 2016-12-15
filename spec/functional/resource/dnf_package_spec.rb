@@ -320,6 +320,20 @@ gpgcheck=0
     end
 
     context "with source arguments" do
+      it "raises an exception when the package does not exist" do
+        flush_cache
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/this-file-better-not-exist.rpm")
+        expect { dnf_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
+      end
+
+      it "does not raise a hard exception in why-run mode when the package does not exist" do
+        Chef::Config[:why_run] = true
+        flush_cache
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/this-file-better-not-exist.rpm")
+        dnf_package.run_action(:install)
+        expect { dnf_package.run_action(:install) }.not_to raise_error
+      end
+
       it "installs the package when using the source argument" do
         flush_cache
         dnf_package.name "something"
