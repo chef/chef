@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+require "chef/provider/package/dnf/version"
 require "timeout"
 
 class Chef

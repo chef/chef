@@ -20,6 +20,7 @@ require "chef/resource/dnf_package"
 require "chef/mixin/which"
 require "chef/mixin/get_source_from_package"
 require "chef/provider/package/dnf/python_helper"
+require "chef/provider/package/dnf/version"
 
 class Chef
   class Provider
@@ -27,37 +28,6 @@ class Chef
       class Dnf < Chef::Provider::Package
         extend Chef::Mixin::Which
         include Chef::Mixin::GetSourceFromPackage
-
-        # helper class to assist in passing around name/version/arch triples
-        class Version
-          attr_accessor :name
-          attr_accessor :version
-          attr_accessor :arch
-
-          def initialize(name, version, arch)
-            @name    = name
-            @version = version
-            @arch    = arch
-          end
-
-          def to_s
-            "#{name}-#{version}.#{arch}"
-          end
-
-          def version_with_arch
-            "#{version}.#{arch}" unless version.nil?
-          end
-
-          def matches_name_and_arch?(other)
-            other.version == version && other.arch == arch
-          end
-
-          def ==(other)
-            name == other.name && version == other.version && arch == other.arch
-          end
-
-          alias_method :eql?, :==
-        end
 
         allow_nils
         use_multipackage_api
