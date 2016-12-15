@@ -39,6 +39,15 @@ class Chef
 
         provides :dnf_package, os: "linux"
 
+        #
+        # Most of the magic in this class happens in the python helper script.  The ruby side of this
+        # provider knows only enough to translate Chef-style new_resource name+package+version into
+        # a request to the python side.  The python side is then responsible for knowing everything
+        # about RPMs and what is installed and what is available.  The ruby side of this class should
+        # remain a lightweight translation layer to translate Chef requests into RPC requests to
+        # python.  This class knows nothing about how to compare RPM versions, and does not maintain
+        # any cached state of installed/available versions and should be kept that way.
+        #
         def python_helper
           @python_helper ||= PythonHelper.instance
         end
