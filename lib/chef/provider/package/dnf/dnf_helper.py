@@ -8,8 +8,6 @@ import signal
 import os
 import json
 
-from pprint import pprint
-
 base = None
 
 def get_sack():
@@ -63,6 +61,9 @@ def query(command):
         pkg = pkgs.pop(0)
         sys.stdout.write('{} {}:{}-{} {}\n'.format(pkg.name, pkg.epoch, pkg.version, pkg.release, pkg.arch))
 
+# the design of this helper is that it should try to be 'brittle' and fail hard and exit in order
+# to keep process tables clean.  additional error handling should probably be added to the retry loop
+# on the ruby side.
 def exit_handler(signal, frame):
     sys.exit(0)
 
@@ -72,6 +73,7 @@ signal.signal(signal.SIGPIPE, exit_handler)
 signal.signal(signal.SIGCHLD, exit_handler)
 
 while 1:
+    # kill self if we get orphaned (tragic)
     ppid = os.getppid()
     if ppid == 1:
         sys.exit(0)

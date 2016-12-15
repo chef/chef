@@ -1,3 +1,4 @@
+#
 # Copyright:: Copyright 2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -18,7 +19,7 @@ require "chef/provider/package"
 require "chef/resource/dnf_package"
 require "chef/mixin/which"
 require "chef/mixin/get_source_from_package"
-require "timeout"
+require "chef/provider/package/dnf/python_helper"
 
 class Chef
   class Provider
@@ -27,17 +28,16 @@ class Chef
         extend Chef::Mixin::Which
         include Chef::Mixin::GetSourceFromPackage
 
-        allow_nils
-
+        # helper class to assist in passing around name/version/arch triples
         class Version
           attr_accessor :name
           attr_accessor :version
           attr_accessor :arch
 
           def initialize(name, version, arch)
-            @name = name
-            @version = ( version == "nil" ) ? nil : version
-            @arch = ( arch == "nil" ) ? nil : arch
+            @name    = name
+            @version = version
+            @arch    = arch
           end
 
           def to_s
@@ -59,96 +59,7 @@ class Chef
           alias_method :eql?, :==
         end
 
-        attr_accessor :python_helper
-
-        class PythonHelper
-          include Singleton
-          extend Chef::Mixin::Which
-
-          attr_accessor :stdin
-          attr_accessor :stdout
-          attr_accessor :stderr
-          attr_accessor :wait_thr
-
-          DNF_HELPER = ::File.expand_path(::File.join(::File.dirname(__FILE__), "dnf_helper.py")).freeze
-          DNF_COMMAND = "#{which("python3")} #{DNF_HELPER}"
-
-          def start
-            ENV["PYTHONUNBUFFERED"] = "1"
-            @stdin, @stdout, @stderr, @wait_thr = Open3.popen3(DNF_COMMAND)
-          end
-
-          def reap
-            unless wait_thr.nil?
-              Process.kill("KILL", wait_thr.pid) rescue nil
-              stdin.close unless stdin.nil?
-              stdout.close unless stdout.nil?
-              stderr.close unless stderr.nil?
-              wait_thr.value
-            end
-          end
-
-          def check
-            start if stdin.nil?
-          end
-
-          # i couldn't figure out how to decompose an evr on the python side, it seems reasonably
-          # painless to do it in ruby.
-          def add_version(hash, version)
-            epoch = nil
-            if version =~ /(\S+):(\S+)/
-              epoch, version = $1, $2
-            end
-            if version =~ /(\S+)-(\S+)/
-              version, release = $1, $2
-            end
-            hash["epoch"] = epoch unless epoch.nil?
-            hash["release"] = release unless release.nil?
-            hash["version"] = version
-          end
-
-          # @returns Array<Version>
-          def query(action, provides, version = nil, arch = nil)
-            with_helper do
-              hash = { "action" => action }
-              hash["provides"] = provides
-              add_version(hash, version) unless version.nil?
-              hash["arch" ] = arch unless arch.nil?
-              json = FFI_Yajl::Encoder.encode(hash)
-              puts json
-              stdin.syswrite json + "\n"
-              output = stdout.sysread(4096)
-              puts output
-              output.split.each_slice(3).map { |x| Version.new(*x) }.first
-            end
-          end
-
-          def flushcache
-            restart # FIXME: make flushcache work + not leak memory
-          end
-
-          def flushcache_installed
-            restart # FIXME: make flushcache work + not leak memory
-          end
-
-          def restart
-            reap
-            start
-          end
-
-          def with_helper
-            max_retries ||= 5
-            Timeout.timeout(60) do
-              check
-              yield
-            end
-          rescue EOFError, Errno::EPIPE, Timeout::Error, Errno::ESRCH => e
-            raise e unless ( max_retries -= 1 ) > 0
-            restart
-            retry
-          end
-        end
-
+        allow_nils
         use_multipackage_api
         use_package_name_for_source
 
