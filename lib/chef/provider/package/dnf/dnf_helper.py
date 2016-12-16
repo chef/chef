@@ -58,7 +58,8 @@ def query(command):
     if not pkgs:
         sys.stdout.write('{} nil nil\n'.format(command['provides'].split().pop(0)))
     else:
-        pkg = pkgs.pop(0)
+        pkgs.sort
+        pkg = pkgs.pop()
         sys.stdout.write('{} {}:{}-{} {}\n'.format(pkg.name, pkg.epoch, pkg.version, pkg.release, pkg.arch))
 
 # the design of this helper is that it should try to be 'brittle' and fail hard and exit in order
