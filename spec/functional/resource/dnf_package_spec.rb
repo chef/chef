@@ -61,6 +61,7 @@ gpgcheck=0
   describe ":install" do
     context "vanilla use case" do
       let(:package_name) { "chef_rpm" }
+
       it "installs if the package is not installed" do
         flush_cache
         dnf_package.run_action(:install)
@@ -70,6 +71,16 @@ gpgcheck=0
 
       it "does not install if the package is installed" do
         preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be false
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+      end
+
+      it "does not install twice" do
+        flush_cache
+        dnf_package.run_action(:install)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
@@ -568,7 +579,6 @@ gpgcheck=0
       let(:package_name) { "chef_rpm" }
       it "does nothing if the package is not installed" do
         flush_cache
-        expect(dnf_package.updated_by_last_action?).to be false
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
@@ -578,6 +588,16 @@ gpgcheck=0
         preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
+      end
+
+      it "does not remove the package twice" do
+        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        dnf_package.run_action(:remove)
+        expect(dnf_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
+        dnf_package.run_action(:remove)
+        expect(dnf_package.updated_by_last_action?).to be false
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
       end
 
