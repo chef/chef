@@ -58,6 +58,7 @@ def query(command):
     if not pkgs:
         sys.stdout.write('{} nil nil\n'.format(command['provides'].split().pop(0)))
     else:
+        # make sure we picked the package with the highest version
         pkgs.sort
         pkg = pkgs.pop()
         sys.stdout.write('{} {}:{}-{} {}\n'.format(pkg.name, pkg.epoch, pkg.version, pkg.release, pkg.arch))
