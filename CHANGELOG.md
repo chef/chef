@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.18.2](https://github.com/chef/chef/tree/v12.18.2) (2016-12-14)
-[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.2)
+## [v12.18.3](https://github.com/chef/chef/tree/v12.18.3) (2016-12-16)
+[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.3)
 
 **Implemented enhancements:**
 
@@ -12,6 +12,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Fixed bugs:**
 
+- Fix Data Collector organization parsing regex [\#5630](https://github.com/chef/chef/pull/5630) ([adamleff](https://github.com/adamleff))
 - Core: Use object ID when detected unprocessed Resources [\#5604](https://github.com/chef/chef/pull/5604) ([adamleff](https://github.com/adamleff))
 
 ## [v12.17.44](https://github.com/chef/chef/tree/v12.17.44) (2016-12-07)
