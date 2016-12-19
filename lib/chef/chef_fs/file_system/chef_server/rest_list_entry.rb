@@ -69,7 +69,14 @@ class Chef
           def exists?
             if @exists.nil?
               begin
-                @exists = parent.children.any? { |child| child.api_child_name == api_child_name }
+                rest.get(api_path)
+                @exists = true
+              rescue Net::HTTPServerException => e
+                if e.response.code == "404"
+                  @exists = false
+                else
+                  raise
+                end
               rescue Chef::ChefFS::FileSystem::NotFoundError
                 @exists = false
               end
