@@ -97,14 +97,6 @@ class Chef
             end
           end
 
-          def flushcache
-            restart # FIXME: make flushcache work + not leak memory
-          end
-
-          def flushcache_installed
-            restart # FIXME: make flushcache work + not leak memory
-          end
-
           def restart
             reap
             start

@@ -91,7 +91,7 @@ class Chef
             resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
             dnf(new_resource.options, "-y install", resolved_names)
           end
-          flushcache_after
+          flushcache
         end
 
         # dnf upgrade does not work on uninstalled packaged, while install will upgrade
@@ -100,24 +100,16 @@ class Chef
         def remove_package(names, versions)
           resolved_names = names.each_with_index.map { |name, i| installed_version(i).to_s unless name.nil? }
           dnf(new_resource.options, "-y remove", resolved_names)
-          flushcache_after
+          flushcache
         end
 
         alias_method :purge_package, :remove_package
 
         action :flush_cache do
-          python_helper.flushcache
+          flushcache
         end
 
         private
-
-        def flushcache_after
-          if new_resource.flush_cache[:after]
-            flushcache
-          else
-            flushcache_installed
-          end
-        end
 
         def resolve_source_to_version_obj
           shell_out_with_timeout!("rpm -qp --queryformat '%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
@@ -154,12 +146,11 @@ class Chef
           @installed_version[index]
         end
 
+        # cache flushing is accomplished by simply restarting the python helper.  this produces a roughly
+        # 15% hit to the runtime of installing/removing/upgrading packages.  correctly using multipackage
+        # array installs (and the multipackage cookbook) can produce 600% improvements in runtime.
         def flushcache
-          python_helper.flushcache
-        end
-
-        def flushcache_installed
-          python_helper.flushcache_installed
+          python_helper.restart
         end
 
         def dnf(*args)
