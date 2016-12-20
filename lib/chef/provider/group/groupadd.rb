@@ -47,7 +47,7 @@ class Chef
           command = "groupadd"
           command << set_options
           command << groupadd_options
-          run_command(:command => command)
+          shell_out_compact!("groupadd", set_options, groupadd_options)
           modify_group_members
         end
 
@@ -55,13 +55,13 @@ class Chef
         def manage_group
           command = "groupmod"
           command << set_options
-          run_command(:command => command)
+          shell_out_compact!("groupmod", set_options)
           modify_group_members
         end
 
         # Remove the group
         def remove_group
-          run_command(:command => "groupdel #{@new_resource.group_name}")
+          shell_out!("groupdel", new_resource.group_name)
         end
 
         def modify_group_members
