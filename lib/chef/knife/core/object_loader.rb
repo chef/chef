@@ -95,6 +95,14 @@ class Chef
             else
               @klass.from_hash(r)
             end
+          when /\.(yaml|yml)$/
+            r = YAML.load(IO.read(filename))
+            # Chef::DataBagItem doesn't work well with the json_create method
+            if @klass == Chef::DataBagItem
+              r
+            else
+              @klass.from_hash(r)
+            end
           when /\.rb$/
             r = klass.new
             r.from_file(filename)
