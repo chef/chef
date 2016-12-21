@@ -116,38 +116,38 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
   describe "when shelling out to dscl" do
     it "should run dscl with the supplied cmd /Path args" do
       shell_return = shellcmdresult.new("stdout", "err", 0)
-      expect(provider).to receive(:shell_out).with("dscl . -cmd /Path args").and_return(shell_return)
-      expect(provider.run_dscl("cmd /Path args")).to eq("stdout")
+      expect(provider).to receive(:shell_out).with("dscl", ".", "-cmd", "/Path", "args").and_return(shell_return)
+      expect(provider.run_dscl("cmd", "/Path", "args")).to eq("stdout")
     end
 
     it "returns an empty string from delete commands" do
       shell_return = shellcmdresult.new("out", "err", 23)
-      expect(provider).to receive(:shell_out).with("dscl . -delete /Path args").and_return(shell_return)
-      expect(provider.run_dscl("delete /Path args")).to eq("")
+      expect(provider).to receive(:shell_out).with("dscl", ".", "-delete", "/Path", "args").and_return(shell_return)
+      expect(provider.run_dscl("delete", "/Path", "args")).to eq("")
     end
 
     it "should raise an exception for any other command" do
       shell_return = shellcmdresult.new("out", "err", 23)
-      expect(provider).to receive(:shell_out).with("dscl . -cmd /Path arguments").and_return(shell_return)
-      expect { provider.run_dscl("cmd /Path arguments") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
+      expect(provider).to receive(:shell_out).with("dscl", ".", "-cmd", "/Path", "arguments").and_return(shell_return)
+      expect { provider.run_dscl("cmd", "/Path", "arguments") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
 
     it "raises an exception when dscl reports 'no such key'" do
       shell_return = shellcmdresult.new("No such key: ", "err", 23)
-      expect(provider).to receive(:shell_out).with("dscl . -cmd /Path args").and_return(shell_return)
-      expect { provider.run_dscl("cmd /Path args") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
+      expect(provider).to receive(:shell_out).with("dscl", ".", "-cmd", "/Path", "args").and_return(shell_return)
+      expect { provider.run_dscl("cmd", "/Path", "args") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
 
     it "raises an exception when dscl reports 'eDSRecordNotFound'" do
       shell_return = shellcmdresult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", "err", -14136)
-      expect(provider).to receive(:shell_out).with("dscl . -cmd /Path args").and_return(shell_return)
-      expect { provider.run_dscl("cmd /Path args") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
+      expect(provider).to receive(:shell_out).with("dscl", ".", "-cmd", "/Path", "args").and_return(shell_return)
+      expect { provider.run_dscl("cmd", "/Path", "args") }.to raise_error(Chef::Exceptions::DsclCommandFailed)
     end
   end
 
   describe "get_free_uid" do
     before do
-      expect(provider).to receive(:run_dscl).with("list /Users uid").and_return("\nwheel      200\nstaff      201\nbrahms      500\nchopin      501\n")
+      expect(provider).to receive(:run_dscl).with("list", "/Users", "uid").and_return("\nwheel      200\nstaff      201\nbrahms      500\nchopin      501\n")
     end
 
     describe "when resource is configured as system" do
@@ -177,7 +177,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
     describe "when called with a user id" do
       before do
-        expect(provider).to receive(:run_dscl).with("list /Users uid").and_return("\naj      500\n")
+        expect(provider).to receive(:run_dscl).with("list", "/Users", "uid").and_return("\naj      500\n")
       end
 
       it "should return true for a used uid number" do
@@ -198,8 +198,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     end
 
     it "finds a valid, unused uid when none is specified" do
-      expect(provider).to receive(:run_dscl).with("list /Users uid").and_return("")
-      expect(provider).to receive(:run_dscl).with("create /Users/toor UniqueID 501")
+      expect(provider).to receive(:run_dscl).with("list", "/Users", "uid").and_return("")
+      expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "UniqueID", 501)
       expect(provider).to receive(:get_free_uid).and_return(501)
       provider.dscl_set_uid
       expect(new_resource.uid).to eq(501)
@@ -207,8 +207,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
     it "sets the uid specified in the resource" do
       new_resource.uid(1000)
-      expect(provider).to receive(:run_dscl).with("create /Users/toor UniqueID 1000").and_return(true)
-      expect(provider).to receive(:run_dscl).with("list /Users uid").and_return("")
+      expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "UniqueID", 1000).and_return(true)
+      expect(provider).to receive(:run_dscl).with("list", "/Users", "uid").and_return("")
       provider.dscl_set_uid
     end
   end
@@ -219,9 +219,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     end
 
     before do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      new_resource.supports({ :manage_home => true })
+      new_resource.manage_home true
       new_resource.home("/Users/toor")
 
       provider.current_resource = current_resource
@@ -229,7 +227,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
 
     it "deletes the home directory when resource#home is nil" do
       new_resource.instance_variable_set(:@home, nil)
-      expect(provider).to receive(:run_dscl).with("delete /Users/toor NFSHomeDirectory").and_return(true)
+      expect(provider).to receive(:run_dscl).with("delete", "/Users/toor", "NFSHomeDirectory").and_return(true)
       provider.dscl_set_home
     end
 
@@ -239,40 +237,40 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     end
 
     it "moves the users home to the new location if it exists and the target location is different" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      new_resource.supports(:manage_home => true)
+      new_resource.manage_home true
 
       current_home = CHEF_SPEC_DATA + "/old_home_dir"
       current_home_files = [current_home + "/my-dot-emacs", current_home + "/my-dot-vim"]
       current_resource.home(current_home)
       new_resource.gid(23)
-      allow(::File).to receive(:exists?).with("/old/home/toor").and_return(true)
-      allow(::File).to receive(:exists?).with("/Users/toor").and_return(true)
+      allow(::File).to receive(:exist?).with("/old/home/toor").and_return(true)
+      allow(::File).to receive(:exist?).with("/Users/toor").and_return(true)
+      allow(::File).to receive(:exist?).with(current_home).and_return(true)
 
       expect(FileUtils).to receive(:mkdir_p).with("/Users/toor").and_return(true)
       expect(FileUtils).to receive(:rmdir).with(current_home)
       expect(::Dir).to receive(:glob).with("#{CHEF_SPEC_DATA}/old_home_dir/*", ::File::FNM_DOTMATCH).and_return(current_home_files)
-      expect(FileUtils).to receive(:mv).with(current_home_files, "/Users/toor", :force => true)
+      expect(FileUtils).to receive(:mv).with(current_home_files, "/Users/toor", force: true)
       expect(FileUtils).to receive(:chown_R).with("toor", "23", "/Users/toor")
 
-      expect(provider).to receive(:run_dscl).with("create /Users/toor NFSHomeDirectory '/Users/toor'")
+      expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "NFSHomeDirectory", "/Users/toor")
       provider.dscl_set_home
     end
 
     it "should raise an exception when the systems user template dir (skel) cannot be found" do
-      allow(::File).to receive(:exists?).and_return(false, false, false)
+      allow(::File).to receive(:exist?).and_return(false, false, false)
       expect { provider.dscl_set_home }.to raise_error(Chef::Exceptions::User)
     end
 
     it "should run ditto to copy any missing files from skel to the new home dir" do
-      expect(::File).to receive(:exists?).with("/System/Library/User\ Template/English.lproj").and_return(true)
+      expect(::File).to receive(:exist?).with("/System/Library/User\ Template/English.lproj").and_return(true)
       expect(FileUtils).to receive(:chown_R).with("toor", "", "/Users/toor")
-      expect(provider).to receive(:shell_out!).with("ditto '/System/Library/User Template/English.lproj' '/Users/toor'")
+      expect(provider).to receive(:shell_out!).with("ditto", "/System/Library/User Template/English.lproj", "/Users/toor")
       provider.ditto_home
     end
 
     it "creates the user's NFSHomeDirectory and home directory" do
-      expect(provider).to receive(:run_dscl).with("create /Users/toor NFSHomeDirectory '/Users/toor'").and_return(true)
+      expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "NFSHomeDirectory", "/Users/toor").and_return(true)
       expect(provider).to receive(:ditto_home)
       provider.dscl_set_home
     end
@@ -283,8 +281,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     let(:plutil_exists) { true }
 
     before do
-      allow(::File).to receive(:exists?).with("/usr/bin/dscl").and_return(dscl_exists)
-      allow(::File).to receive(:exists?).with("/usr/bin/plutil").and_return(plutil_exists)
+      allow(::File).to receive(:exist?).with("/usr/bin/dscl").and_return(dscl_exists)
+      allow(::File).to receive(:exist?).with("/usr/bin/plutil").and_return(plutil_exists)
     end
 
     def run_requirements
@@ -382,8 +380,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     let(:user_plist_file) { nil }
 
     before do
-      expect(provider).to receive(:shell_out).with("dscacheutil '-flushcache'")
-      expect(provider).to receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
+      expect(provider).to receive(:shell_out).with("dscacheutil", "-flushcache")
+      expect(provider).to receive(:shell_out).with("plutil", "-convert", "xml1", "-o", "-", "/var/db/dslocal/nodes/Default/users/toor.plist") do
         if user_plist_file.nil?
           shellcmdresult.new("Can not find the file", "Sorry!!", 1)
         else
@@ -391,7 +389,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
         end
       end
 
-      if !user_plist_file.nil?
+      unless user_plist_file.nil?
         expect(provider).to receive(:convert_binary_plist_to_xml).and_return(File.read(File.join(CHEF_SPEC_DATA, "mac_users/#{user_plist_file}.shadow.xml")))
       end
     end
@@ -726,7 +724,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       expect(provider).to receive(:prepare_password_shadow_info).and_return({})
       mock_shellout = double("Mock::Shellout")
       allow(mock_shellout).to receive(:run_command)
-      expect(Mixlib::ShellOut).to receive(:new).and_return(mock_shellout)
+      expect(provider).to receive(:shell_out).and_return(mock_shellout)
       expect(provider).to receive(:read_user_info)
       expect(provider).to receive(:dscl_set)
       expect(provider).to receive(:sleep).with(3)
@@ -754,29 +752,29 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       end
 
       it "creates the user and sets the comment field" do
-        expect(provider).to receive(:run_dscl).with("create /Users/toor").and_return(true)
+        expect(provider).to receive(:run_dscl).with("create", "/Users/toor").and_return(true)
         provider.dscl_create_user
       end
 
       it "sets the comment field" do
-        expect(provider).to receive(:run_dscl).with("create /Users/toor RealName '#mockssuck'").and_return(true)
+        expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "RealName", "#mockssuck").and_return(true)
         provider.dscl_create_comment
       end
 
       it "sets the comment field to username" do
         new_resource.comment nil
-        expect(provider).to receive(:run_dscl).with("create /Users/toor RealName '#mockssuck'").and_return(true)
+        expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "RealName", "#mockssuck").and_return(true)
         provider.dscl_create_comment
         expect(new_resource.comment).to eq("#mockssuck")
       end
 
       it "should run run_dscl with create /Users/user PrimaryGroupID to set the users primary group" do
-        expect(provider).to receive(:run_dscl).with("create /Users/toor PrimaryGroupID '1001'").and_return(true)
+        expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "PrimaryGroupID", 1001).and_return(true)
         provider.dscl_set_gid
       end
 
       it "should run run_dscl with create /Users/user UserShell to set the users login shell" do
-        expect(provider).to receive(:run_dscl).with("create /Users/toor UserShell '/usr/bin/false'").and_return(true)
+        expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "UserShell", "/usr/bin/false").and_return(true)
         provider.dscl_set_shell
       end
     end
@@ -788,21 +786,21 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       end
 
       it "should map the group name to a numeric ID when the group exists" do
-        expect(provider).to receive(:run_dscl).with("read /Groups/newgroup PrimaryGroupID").ordered.and_return("PrimaryGroupID: 1001\n")
-        expect(provider).to receive(:run_dscl).with("create /Users/toor PrimaryGroupID '1001'").ordered.and_return(true)
+        expect(provider).to receive(:run_dscl).with("read", "/Groups/newgroup", "PrimaryGroupID").ordered.and_return("PrimaryGroupID: 1001\n")
+        expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "PrimaryGroupID", "1001").ordered.and_return(true)
         provider.dscl_set_gid
       end
 
       it "should raise an exception when the group does not exist" do
         shell_return = shellcmdresult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", "err", -14136)
-        expect(provider).to receive(:shell_out).with("dscl . -read /Groups/newgroup PrimaryGroupID").and_return(shell_return)
+        expect(provider).to receive(:shell_out).with("dscl", ".", "-read", "/Groups/newgroup", "PrimaryGroupID").and_return(shell_return)
         expect { provider.dscl_set_gid }.to raise_error(Chef::Exceptions::GroupIDNotFound)
       end
     end
 
     it "should set group ID to 20 if it's not specified" do
       new_resource.gid nil
-      expect(provider).to receive(:run_dscl).with("create /Users/toor PrimaryGroupID '20'").ordered.and_return(true)
+      expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "PrimaryGroupID", 20).ordered.and_return(true)
       provider.dscl_set_gid
       expect(new_resource.gid).to eq(20)
     end
@@ -850,8 +848,8 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
   describe "when the user exists" do
     before do
-      expect(provider).to receive(:shell_out).with("dscacheutil '-flushcache'")
-      expect(provider).to receive(:shell_out).with("plutil -convert xml1 -o - /var/db/dslocal/nodes/Default/users/toor.plist") do
+      expect(provider).to receive(:shell_out).with("dscacheutil", "-flushcache")
+      expect(provider).to receive(:shell_out).with("plutil", "-convert", "xml1", "-o", "-", "/var/db/dslocal/nodes/Default/users/toor.plist") do
         shellcmdresult.new(File.read(File.join(CHEF_SPEC_DATA, "mac_users/10.9.plist.xml")), "", 0)
       end
       provider.load_current_resource
@@ -859,14 +857,13 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
     describe "when Chef is removing the user" do
       it "removes the user from the groups and deletes home directory when the resource is configured to manage home" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        new_resource.supports({ :manage_home => true })
-        expect(provider).to receive(:run_dscl).with("list /Groups").and_return("my_group\nyour_group\nreal_group\n")
-        expect(provider).to receive(:run_dscl).with("read /Groups/my_group").and_raise(Chef::Exceptions::DsclCommandFailed) # Empty group
-        expect(provider).to receive(:run_dscl).with("read /Groups/your_group").and_return("GroupMembership: not_you")
-        expect(provider).to receive(:run_dscl).with("read /Groups/real_group").and_return("GroupMembership: toor")
-        expect(provider).to receive(:run_dscl).with("delete /Groups/real_group GroupMembership 'toor'")
-        expect(provider).to receive(:run_dscl).with("delete /Users/toor")
+        new_resource.manage_home true
+        expect(provider).to receive(:run_dscl).with("list", "/Groups").and_return("my_group\nyour_group\nreal_group\n")
+        expect(provider).to receive(:run_dscl).with("read", "/Groups/my_group").and_raise(Chef::Exceptions::DsclCommandFailed) # Empty group
+        expect(provider).to receive(:run_dscl).with("read", "/Groups/your_group").and_return("GroupMembership: not_you")
+        expect(provider).to receive(:run_dscl).with("read", "/Groups/real_group").and_return("GroupMembership: toor")
+        expect(provider).to receive(:run_dscl).with("delete", "/Groups/real_group", "GroupMembership", "toor")
+        expect(provider).to receive(:run_dscl).with("delete", "/Users/toor")
         expect(FileUtils).to receive(:rm_rf).with("/Users/vagrant")
         provider.remove_user
       end
@@ -889,7 +886,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
       end
 
       it "can unlock the user" do
-        expect(provider).to receive(:run_dscl).with("create /Users/toor AuthenticationAuthority ';ShadowHash;HASHLIST:<SALTED-SHA512-PBKDF2>'")
+        expect(provider).to receive(:run_dscl).with("create", "/Users/toor", "AuthenticationAuthority", ";ShadowHash;HASHLIST:<SALTED-SHA512-PBKDF2>")
         provider.unlock_user
       end
     end
@@ -897,7 +894,7 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30")
 
   describe "when locking the user" do
     it "should run run_dscl with append /Users/user AuthenticationAuthority ;DisabledUser; to lock the user account" do
-      expect(provider).to receive(:run_dscl).with("append /Users/toor AuthenticationAuthority ';DisabledUser;'")
+      expect(provider).to receive(:run_dscl).with("append", "/Users/toor", "AuthenticationAuthority", ";DisabledUser;")
       provider.lock_user
     end
   end

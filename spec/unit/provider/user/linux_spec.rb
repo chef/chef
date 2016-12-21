@@ -55,7 +55,7 @@ describe Chef::Provider::User::Linux do
 
     # supports is a method on the superclass so can't totally be removed, but we should aggressively NOP it to decisively break it
     it "disables the supports API", chef: ">= 13" do
-      @new_resource.supports( { manage_home: true } )
+      @new_resource.supports( manage_home: true )
       expect( @new_resource.supports.key?(:manage_home) ).to be false
     end
 
@@ -70,13 +70,13 @@ describe Chef::Provider::User::Linux do
     it "throws a deprecation warning on setting supports[:non_unique]" do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
       expect(Chef).to receive(:deprecated).with(:supports_property, "supports { non_unique: true } on the user resource is deprecated and will be removed in Chef 13, set non_unique true instead")
-      @new_resource.supports( { :non_unique => true } )
+      @new_resource.supports( non_unique: true )
     end
 
     it "throws a deprecation warning on setting supports[:manage_home]" do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
       expect(Chef).to receive(:deprecated).with(:supports_property, "supports { manage_home: true } on the user resource is deprecated and will be removed in Chef 13, set manage_home true instead")
-      @new_resource.supports( { :manage_home => true } )
+      @new_resource.supports( manage_home: true )
     end
 
     it "defaults manage_home to false" do
@@ -85,13 +85,13 @@ describe Chef::Provider::User::Linux do
 
     it "supports[:manage_home] (incorectly) acts like manage_home" do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      @new_resource.supports({ manage_home: true })
+      @new_resource.supports(manage_home: true)
       expect( provider.useradd_options ).to eql(["-m"])
     end
 
     it "supports[:manage_home] does not change behavior of manage_home: false", chef: ">= 13" do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      @new_resource.supports({ manage_home: true })
+      @new_resource.supports(manage_home: true)
       expect( provider.useradd_options ).to eql(["-M"])
     end
 
