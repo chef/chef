@@ -139,16 +139,13 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.5.1)
     ast (2.3.0)
-    aws-sdk (2.6.35)
-      aws-sdk-resources (= 2.6.35)
-    aws-sdk-core (2.6.35)
+    aws-sdk (2.6.40)
+      aws-sdk-resources (= 2.6.40)
+    aws-sdk-core (2.6.40)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.35)
-      aws-sdk-core (= 2.6.35)
-    aws-sdk-v1 (1.66.0)
-      json (~> 1.4)
-      nokogiri (>= 1.4.4)
+    aws-sdk-resources (2.6.40)
+      aws-sdk-core (= 2.6.40)
     aws-sigv4 (1.0.0)
     backports (3.6.8)
     binding_of_caller (0.7.2)
@@ -166,12 +163,6 @@ GEM
       net-ssh (>= 2.9, < 4.0)
       net-ssh-gateway (~> 1.2.0)
       winrm-fs (~> 1.0)
-    chef-provisioning-aws (2.1.0)
-      aws-sdk (>= 2.1.26, < 3.0)
-      aws-sdk-v1 (>= 1.59.0)
-      chef-provisioning (>= 1.0, < 3.0)
-      retryable (~> 2.0, >= 2.0.1)
-      ubuntu_ami (~> 0.4, >= 0.4.1)
     chef-sugar (3.4.0)
     chef-zero (5.1.1)
       ffi-yajl (~> 2.2)
@@ -268,7 +259,7 @@ GEM
     iniparse (1.4.2)
     ipaddress (0.8.3)
     jmespath (1.3.1)
-    json (1.8.3)
+    json (2.0.2)
     kitchen-docker (2.6.0)
       test-kitchen (>= 1.0.0)
     kitchen-ec2 (1.2.0)
@@ -507,7 +498,6 @@ GEM
       ethon (>= 0.8.0)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
-    ubuntu_ami (0.4.1)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.2)
@@ -537,7 +527,7 @@ GEM
       ffi-win32-extensions
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
-    winrm (2.1.0)
+    winrm (2.1.1)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)
@@ -571,7 +561,6 @@ DEPENDENCIES
   chef!
   chef-config!
   chef-provisioning
-  chef-provisioning-aws
   chef-sugar
   cheffish
   chefspec
