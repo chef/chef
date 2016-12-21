@@ -1548,6 +1548,13 @@ class Chef
     #
     # Returns the class with the given resource_name.
     #
+    # NOTE: Chef::Resource.resource_matching_short_name(:package) returns
+    # Chef::Resource::Package, while on rhel the API call
+    # Chef::Resource.resource_for_node(:package, node) will return
+    # Chef::Resource::YumPackage -- which is probably what you really
+    # want.  This API should most likely be removed or changed to call
+    # resource_for_node.
+    #
     # ==== Parameters
     # short_name<Symbol>:: short_name of the resource (ie :directory)
     #
