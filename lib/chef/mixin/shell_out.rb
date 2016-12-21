@@ -21,6 +21,60 @@ class Chef
   module Mixin
     module ShellOut
 
+      # PREFERRED APIS:
+      #
+      # shell_out_compact and shell_out_compact! flatten their array arguments and remove nils and pass
+      # the resultant array to shell_out.  this actually eliminates spaces-in-args bugs because this:
+      #
+      # shell_out!("command #{arg}")
+      #
+      # becomes two arguments if arg has spaces and requires quotations:
+      #
+      # shell_out!("command '#{arg}'")
+      #
+      # using shell_out_compact! this becomes:
+      #
+      # shell_out_compact!("command", arg)
+      #
+      # and spaces in the arg just works and it does not become two arguments (and the shell quoting around
+      # the argument must actually be removed).
+      #
+      # there's also an implicit join between all the array elements, and nested arrays are flattened which
+      # means that odd where-do-i-put-the-spaces options handling just works, and instead of this:
+      #
+      #    opts = ""                     # needs to be empty string for when foo and bar are both missing
+      #    opts << " -foo" if needs_foo? # needs the leading space on both of these
+      #    opts << " -bar" if needs_bar?
+      #    shell_out!("cmd#{opts}")      # have to think way too hard about why there's no space here
+      #
+      # becomes:
+      #
+      #    opts = []
+      #    opts << "-foo" if needs_foo?
+      #    opts << "-bar" if needs_bar?
+      #    shell_out_compact!("cmd", opts)
+      #
+      # and opts can be an empty array or nil and it'll work out fine.
+      #
+      # generally its best to use shell_out_compact! in code and setup expectations on shell_out! in tests
+      #
+
+      def shell_out_compact(*args, **options)
+        if options.empty?
+          shell_out(*clean_array(*args))
+        else
+          shell_out(*clean_array(*args), **options)
+        end
+      end
+
+      def shell_out_compact!(*args, **options)
+        if options.empty?
+          shell_out!(*clean_array(*args))
+        else
+          shell_out!(*clean_array(*args), **options)
+        end
+      end
+
       # shell_out! runs a command on the system and will raise an error if the command fails, which is what you want
       # for debugging, shell_out and shell_out! both will display command output to the tty when the log level is debug
       # Generally speaking, 'extend Chef::Mixin::ShellOut' in your recipes and include 'Chef::Mixin::ShellOut' in your LWRPs
@@ -85,11 +139,11 @@ class Chef
       # @param args [String] variable number of string arguments
       # @return [String] nicely concatenated string or empty string
       def a_to_s(*args)
-        # FIXME: this should be cleaned up and deprecated
-        clean_array(*args).join(" ")
+        # FIXME: this should be deprecated in favor of shell_out_compact/shell_out_compact!
+        args.flatten.reject { |i| i.nil? || i == "" }.map(&:to_s).join(" ")
       end
 
-      # Helper for sublcasses to reject nil and empty strings out of an array.  It allows
+      # Helper for sublcasses to reject nil out of an array.  It allows
       # using the array form of shell_out (which avoids the need to surround arguments with
       # quote marks to deal with shells).
       #
@@ -106,15 +160,7 @@ class Chef
       # @param args [String] variable number of string arguments
       # @return [Array] array of strings with nil and null string rejection
       def clean_array(*args)
-        args.flatten.reject { |i| i.nil? || i == "" }.map(&:to_s)
-      end
-
-      def shell_out_compact(*args)
-        shell_out(*clean_array(*args))
-      end
-
-      def shell_out_compact!(*args)
-        shell_out!(*clean_array(*args))
+        args.flatten.compact.map(&:to_s)
       end
 
       private

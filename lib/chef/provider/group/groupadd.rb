@@ -35,7 +35,7 @@ class Chef
           super
           required_binaries.each do |required_binary|
             requirements.assert(:all_actions) do |a|
-              a.assertion { ::File.exists?(required_binary) }
+              a.assertion { ::File.exist?(required_binary) }
               a.failure_message Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{new_resource}"
               # No whyrun alternative: this component should be available in the base install of any given system that uses it
             end
@@ -64,7 +64,7 @@ class Chef
             if new_resource.members && !new_resource.members.empty?
               members_to_be_added = [ ]
               new_resource.members.each do |member|
-                members_to_be_added << member if !current_resource.members.include?(member)
+                members_to_be_added << member unless current_resource.members.include?(member)
               end
               members_to_be_added.each do |member|
                 Chef::Log.debug("#{new_resource} appending member #{member} to group #{new_resource.group_name}")
@@ -108,14 +108,12 @@ class Chef
         # <string>:: A string containing the option and then the quoted value
         def set_options
           opts = []
-          { :gid => "-g" }.sort { |a, b| a[0] <=> b[0] }.each do |field, option|
-            if current_resource.send(field) != new_resource.send(field)
-              if new_resource.send(field)
-                opts << option
-                opts << new_resource.send(field)
-                Chef::Log.debug("#{new_resource} set #{field} to #{new_resource.send(field)}")
-              end
-            end
+          { gid: "-g" }.sort { |a, b| a[0] <=> b[0] }.each do |field, option|
+            next unless current_resource.send(field) != new_resource.send(field)
+            next unless new_resource.send(field)
+            opts << option
+            opts << new_resource.send(field)
+            Chef::Log.debug("#{new_resource} set #{field} to #{new_resource.send(field)}")
           end
           opts << new_resource.group_name
           opts
