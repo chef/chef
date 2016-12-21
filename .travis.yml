@@ -81,6 +81,9 @@ matrix:
     # The chefspec tests + bundler cache + "gem update --system" interact badly :/
     # (Cucumber doesn't start.)
     before_install:
+      # Travis recently upgraded to bundler 1.13 which is breaking our builds.
+      # We will uninstall it while we work out 1,13 compatibility issues
+      - gem uninstall -i /home/travis/.rvm/gems/ruby-2.3.1@global bundle
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
       - bundle config --local without server:docgen:maintenance:omnibus_package:development:ruby_prof:pry
     script: tasks/bin/run_external_test $TEST_GEM rake
