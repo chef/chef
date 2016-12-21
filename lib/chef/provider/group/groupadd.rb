@@ -112,7 +112,7 @@ class Chef
             if current_resource.send(field) != new_resource.send(field)
               if new_resource.send(field)
                 opts << option
-                opts << "'#{new_resource.send(field)}'"
+                opts << new_resource.send(field)
                 Chef::Log.debug("#{new_resource} set #{field} to #{new_resource.send(field)}")
               end
             end

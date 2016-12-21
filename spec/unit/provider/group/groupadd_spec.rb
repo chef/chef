@@ -58,7 +58,7 @@ describe Chef::Provider::Group::Groupadd do
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
         allow(new_resource).to receive(attribute).and_return("wowaweea")
-        expect(provider.set_options).to eql([ option, "'#{new_resource.send(attribute)}'", new_resource.group_name])
+        expect(provider.set_options).to eql([ option, new_resource.send(attribute), new_resource.group_name])
       end
     end
 
@@ -67,7 +67,7 @@ describe Chef::Provider::Group::Groupadd do
       field_list.sort { |a, b| a[0] <=> b[0] }.each do |attribute, option|
         allow(new_resource).to receive(attribute).and_return("hola")
         match_array << option
-        match_array << "'hola'"
+        match_array << "hola"
       end
       match_array << "aj"
       expect(provider.set_options).to eql(match_array)
