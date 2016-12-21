@@ -85,6 +85,7 @@ class Chef
       # @param args [String] variable number of string arguments
       # @return [String] nicely concatenated string or empty string
       def a_to_s(*args)
+        # FIXME: this should be cleaned up and deprecated
         clean_array(*args).join(" ")
       end
 
@@ -106,6 +107,14 @@ class Chef
       # @return [Array] array of strings with nil and null string rejection
       def clean_array(*args)
         args.flatten.reject { |i| i.nil? || i == "" }.map(&:to_s)
+      end
+
+      def shell_out_compact(*args)
+        shell_out(*clean_array(*args))
+      end
+
+      def shell_out_compact!(*args)
+        shell_out!(*clean_array(*args))
       end
 
       private

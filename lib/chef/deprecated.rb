@@ -166,6 +166,16 @@ class Chef
       end
     end
 
+    class RunCommand < Base
+      def id
+        14
+      end
+
+      def target
+        "run_command.html"
+      end
+    end
+
     class ResourceCloning < Base
       def id
         3694
