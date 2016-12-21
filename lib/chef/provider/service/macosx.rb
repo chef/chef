@@ -197,7 +197,7 @@ class Chef
               case line.downcase
               when /\s+\"pid\"\s+=\s+(\d+).*/
                 pid = $1
-                @current_resource.running(!pid.to_i == 0)
+                @current_resource.running(pid.to_i != 0)
                 Chef::Log.debug("Current PID for #{@service_label} is #{pid}")
               end
             end
