@@ -198,9 +198,30 @@ class Chef
     def resource_completed(new_resource)
       if @pending_update && !nested_resource?(new_resource)
         @pending_update.finish
+
+        # Verify if the resource has sensitive data
+        if @pending_update.new_resource.sensitive
+          sensitive_resource = transform_sensitive_resource(@pending_update.new_resource)
+          @pending_update.new_resource = sensitive_resource
+        end
         @updated_resources << @pending_update
         @pending_update = nil
       end
+    end
+
+    def transform_sensitive_resource(resource)
+      mock_display = '*sensitive*'
+
+      # Every resource has a name
+      resource.name(mock_display)
+      # For Execute Resources
+      resource.command(mock_display) if defined? resource.command
+      # For File Resources
+      resource.content(mock_display) if defined? resource.content
+      # For Template Resources
+      resource.variables({'data' => mock_display}) if defined? resource.variables
+
+      resource
     end
 
     def run_completed(node)
