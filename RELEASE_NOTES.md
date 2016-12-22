@@ -14,7 +14,7 @@ _This file holds "in progress" release notes for the current release under devel
   compromise any sensitive data.
 
   _Note: Old data that was already sent to Reporting marked as sensitive will continue to be
-  displayed. Apologize._
+  displayed. Apologies._
 
 ## New deprecations introduced in this release:
 
