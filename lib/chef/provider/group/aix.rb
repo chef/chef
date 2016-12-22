@@ -37,7 +37,10 @@ class Chef
         end
 
         def manage_group
-          shell_out_compact!("chgroup", set_options, options, new_resource.group_name)
+          options = set_options
+          if options.size > 0
+            shell_out_compact!("chgroup", options, new_resource.group_name)
+          end
           modify_group_members
         end
 
