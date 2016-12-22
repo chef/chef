@@ -48,7 +48,7 @@ class Chef
           current_resource.group_name(new_resource.group_name)
           group_info = nil
           begin
-            group_info = safe_dscl("read /Groups/#{new_resource.group_name}")
+            group_info = safe_dscl("read", "/Groups/#{new_resource.group_name}")
           rescue Chef::Exceptions::Group
             @group_exists = false
             Chef::Log.debug("#{new_resource} group does not exist")
@@ -74,7 +74,7 @@ class Chef
         # get a free GID greater than 200
         def get_free_gid(search_limit = 1000)
           gid = nil; next_gid_guess = 200
-          groups_gids = safe_dscl("list /Groups gid")
+          groups_gids = safe_dscl("list", "/Groups", "gid")
           while next_gid_guess < search_limit + 200
             if groups_gids =~ Regexp.new("#{Regexp.escape(next_gid_guess.to_s)}\n")
               next_gid_guess += 1
@@ -88,22 +88,22 @@ class Chef
 
         def gid_used?(gid)
           return false unless gid
-          groups_gids = safe_dscl("list /Groups gid")
+          groups_gids = safe_dscl("list", "/Groups", "gid")
           !!( groups_gids =~ Regexp.new("#{Regexp.escape(gid.to_s)}\n") )
         end
 
         def set_gid
           new_resource.gid(get_free_gid) if [nil, ""].include? new_resource.gid
           raise(Chef::Exceptions::Group, "gid is already in use") if gid_used?(new_resource.gid)
-          safe_dscl("create /Groups/#{new_resource.group_name} PrimaryGroupID #{new_resource.gid}")
+          safe_dscl("create", "/Groups/#{new_resource.group_name}", "PrimaryGroupID", new_resource.gid)
         end
 
         def set_members
           # First reset the memberships if the append is not set
           unless new_resource.append
             Chef::Log.debug("#{new_resource} removing group members #{current_resource.members.join(' ')}") unless current_resource.members.empty?
-            safe_dscl("create /Groups/#{new_resource.group_name} GroupMembers ''") # clear guid list
-            safe_dscl("create /Groups/#{new_resource.group_name} GroupMembership ''") # clear user list
+            safe_dscl("create", "/Groups/#{new_resource.group_name}", "GroupMembers", "") # clear guid list
+            safe_dscl("create", "/Groups/#{new_resource.group_name}", "GroupMembership", "") # clear user list
             current_resource.members([ ])
           end
 
@@ -115,7 +115,7 @@ class Chef
             end
             unless members_to_be_added.empty?
               Chef::Log.debug("#{new_resource} setting group members #{members_to_be_added.join(', ')}")
-              safe_dscl("append /Groups/#{new_resource.group_name} GroupMembership #{members_to_be_added.join(' ')}")
+              safe_dscl("append", "/Groups/#{new_resource.group_name}", "GroupMembership", *members_to_be_added)
             end
           end
 
@@ -127,7 +127,7 @@ class Chef
             end
             unless members_to_be_removed.empty?
               Chef::Log.debug("#{new_resource} removing group members #{members_to_be_removed.join(', ')}")
-              safe_dscl("delete /Groups/#{new_resource.group_name} GroupMembership #{members_to_be_removed.join(' ')}")
+              safe_dscl("delete", "/Groups/#{new_resource.group_name}", "GroupMembership", *members_to_be_removed)
             end
           end
         end
@@ -160,12 +160,12 @@ class Chef
         end
 
         def dscl_create_group
-          safe_dscl("create /Groups/#{new_resource.group_name}")
-          safe_dscl("create /Groups/#{new_resource.group_name} Password '*'")
+          safe_dscl("create", "/Groups/#{new_resource.group_name}")
+          safe_dscl("create", "/Groups/#{new_resource.group_name}", "Password", "*")
         end
 
         def remove_group
-          safe_dscl("delete /Groups/#{new_resource.group_name}")
+          safe_dscl("delete", "/Groups/#{new_resource.group_name}")
         end
       end
     end

@@ -51,8 +51,8 @@ describe Chef::Provider::Group::Dscl do
     end
 
     it "should run dscl with the supplied cmd /Path args" do
-      expect(@provider).to receive(:dscl).with("cmd /Path args")
-      @provider.safe_dscl("cmd /Path args")
+      expect(@provider).to receive(:dscl).with(*"cmd /Path args".split(" "))
+      @provider.safe_dscl(*"cmd /Path args".split(" "))
     end
 
     describe "with the dscl command returning a non zero exit status for a delete" do
@@ -62,13 +62,13 @@ describe Chef::Provider::Group::Dscl do
       end
 
       it "should return an empty string of standard output for a delete" do
-        safe_dscl_retval = @provider.safe_dscl("delete /Path args")
+        safe_dscl_retval = @provider.safe_dscl(*"delete /Path args".split(" "))
         expect(safe_dscl_retval).to be_a_kind_of(String)
         expect(safe_dscl_retval).to eq("")
       end
 
       it "should raise an exception for any other command" do
-        expect { @provider.safe_dscl("cmd /Path arguments") }.to raise_error(Chef::Exceptions::Group)
+        expect { @provider.safe_dscl(*"cmd /Path arguments".split(" ")) }.to raise_error(Chef::Exceptions::Group)
       end
     end
 
@@ -78,13 +78,13 @@ describe Chef::Provider::Group::Dscl do
       end
 
       it "should raise an exception" do
-        expect { @provider.safe_dscl("cmd /Path arguments") }.to raise_error(Chef::Exceptions::Group)
+        expect { @provider.safe_dscl(*"cmd /Path arguments".split(" ")) }.to raise_error(Chef::Exceptions::Group)
       end
     end
 
     describe "with the dscl command returning a zero exit status" do
       it "should return the third array element, the string of standard output" do
-        safe_dscl_retval = @provider.safe_dscl("cmd /Path args")
+        safe_dscl_retval = @provider.safe_dscl(*"cmd /Path args".split(" "))
         expect(safe_dscl_retval).to be_a_kind_of(String)
         expect(safe_dscl_retval).to eq("stdout")
       end
@@ -99,7 +99,7 @@ describe Chef::Provider::Group::Dscl do
     end
 
     it "should run safe_dscl with list /Groups gid" do
-      expect(@provider).to receive(:safe_dscl).with("list /Groups gid")
+      expect(@provider).to receive(:safe_dscl).with(*"list /Groups gid".split(" "))
       @provider.get_free_gid
     end
 
@@ -121,7 +121,7 @@ describe Chef::Provider::Group::Dscl do
     end
 
     it "should run safe_dscl with list /Groups gid" do
-      expect(@provider).to receive(:safe_dscl).with("list /Groups gid")
+      expect(@provider).to receive(:safe_dscl).with(*"list /Groups gid".split(" "))
       @provider.gid_used?(500)
     end
 
@@ -171,8 +171,8 @@ describe Chef::Provider::Group::Dscl do
     describe "with a valid gid number which is not already in use" do
       it "should run safe_dscl with create /Groups/group PrimaryGroupID gid" do
         allow(@provider).to receive(:get_free_gid).and_return(50)
-        expect(@provider).to receive(:safe_dscl).with("list /Groups gid")
-        expect(@provider).to receive(:safe_dscl).with("create /Groups/aj PrimaryGroupID 50").and_return(true)
+        expect(@provider).to receive(:safe_dscl).with(*"list /Groups gid".split(" "))
+        expect(@provider).to receive(:safe_dscl).with("create", "/Groups/aj", "PrimaryGroupID", 50).and_return(true)
         @provider.set_gid
       end
     end
@@ -193,8 +193,8 @@ describe Chef::Provider::Group::Dscl do
       end
 
       it "should run safe_dscl with create /Groups/group GroupMembership to clear the Group's UID list" do
-        expect(@provider).to receive(:safe_dscl).with("create /Groups/aj GroupMembers ''").and_return(true)
-        expect(@provider).to receive(:safe_dscl).with("create /Groups/aj GroupMembership ''").and_return(true)
+        expect(@provider).to receive(:safe_dscl).with("create", "/Groups/aj", "GroupMembers", "").and_return(true)
+        expect(@provider).to receive(:safe_dscl).with("create", "/Groups/aj", "GroupMembership", "").and_return(true)
         @provider.set_members
       end
     end
@@ -211,9 +211,9 @@ describe Chef::Provider::Group::Dscl do
       end
 
       it "should run safe_dscl with append /Groups/group GroupMembership and group members all, your, base" do
-        expect(@provider).to receive(:safe_dscl).with("create /Groups/aj GroupMembers ''").and_return(true)
-        expect(@provider).to receive(:safe_dscl).with("append /Groups/aj GroupMembership all your base").and_return(true)
-        expect(@provider).to receive(:safe_dscl).with("create /Groups/aj GroupMembership ''").and_return(true)
+        expect(@provider).to receive(:safe_dscl).with("create", "/Groups/aj", "GroupMembers", "").and_return(true)
+        expect(@provider).to receive(:safe_dscl).with(*"append /Groups/aj GroupMembership all your base".split(" ")).and_return(true)
+        expect(@provider).to receive(:safe_dscl).with("create", "/Groups/aj", "GroupMembership", "").and_return(true)
         @provider.set_members
       end
     end
@@ -254,8 +254,8 @@ describe Chef::Provider::Group::Dscl do
     it "creates the group, password field, gid, and sets group membership" do
       expect(@provider).to receive(:set_gid).and_return(true)
       expect(@provider).to receive(:set_members).and_return(true)
-      expect(@provider).to receive(:safe_dscl).with("create /Groups/aj Password '*'")
-      expect(@provider).to receive(:safe_dscl).with("create /Groups/aj")
+      expect(@provider).to receive(:safe_dscl).with(*"create /Groups/aj Password *".split(" "))
+      expect(@provider).to receive(:safe_dscl).with(*"create /Groups/aj".split(" "))
       @provider.create_group
     end
   end
@@ -265,8 +265,8 @@ describe Chef::Provider::Group::Dscl do
       @current_resource.group_name("oldval")
       @new_resource.group_name("newname")
       expect(@provider).to receive(:set_members).and_return(true)
-      expect(@provider).to receive(:safe_dscl).with("create /Groups/newname")
-      expect(@provider).to receive(:safe_dscl).with("create /Groups/newname Password '*'")
+      expect(@provider).to receive(:safe_dscl).with(*"create /Groups/newname".split(" "))
+      expect(@provider).to receive(:safe_dscl).with(*"create /Groups/newname Password *".split(" "))
       @provider.manage_group
     end
 
@@ -287,7 +287,7 @@ describe Chef::Provider::Group::Dscl do
 
   describe "remove_group" do
     it "should run safe_dscl with delete /Groups/group and with the new resources group name" do
-      expect(@provider).to receive(:safe_dscl).with("delete /Groups/aj").and_return(true)
+      expect(@provider).to receive(:safe_dscl).with(*"delete /Groups/aj".split(" ")).and_return(true)
       @provider.remove_group
     end
   end
@@ -315,7 +315,7 @@ RecordName: com.apple.aj
 RecordType: dsRecTypeStandard:Groups
 GroupMembership: waka bar
 EOF
-    allow(@provider).to receive(:safe_dscl).with("read /Groups/aj").and_return(@output)
+    allow(@provider).to receive(:safe_dscl).with(*"read /Groups/aj".split(" ")).and_return(@output)
     @current_resource = @provider.load_current_resource
 
   end
