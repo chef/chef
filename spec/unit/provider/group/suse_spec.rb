@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ describe Chef::Provider::Group::Suse do
 
   describe "when determining the current group state" do
     before(:each) do
-      allow(File).to receive(:exists?).and_return(true)
+      allow(File).to receive(:exist?).and_return(true)
       provider.action = :create
       provider.define_resource_requirements
     end
@@ -56,7 +56,7 @@ describe Chef::Provider::Group::Suse do
     # for Chef::Provider::Group - no need to repeat it here.  We'll
     # include only what's specific to this provider.
     it "should raise an error if the required binary /usr/sbin/groupmod doesn't exist" do
-      expect(File).to receive(:exists?).with("/usr/sbin/groupmod").and_return(false)
+      expect(File).to receive(:exist?).with("/usr/sbin/groupmod").and_return(false)
       expect { provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Group)
     end
 
@@ -76,14 +76,14 @@ describe Chef::Provider::Group::Suse do
 
   describe "#add_member" do
     it "should call out to groupmod to add user" do
-      expect(provider).to receive(:shell_out!).with("groupmod -A new_user new_group")
+      expect(provider).to receive(:shell_out!).with("groupmod", "-A", "new_user", "new_group")
       provider.add_member("new_user")
     end
   end
 
   describe "#remove_member" do
     it "should call out to groupmod to remove user" do
-      expect(provider).to receive(:shell_out!).with("groupmod -R new_user new_group")
+      expect(provider).to receive(:shell_out!).with("groupmod", "-R", "new_user", "new_group")
       provider.remove_member("new_user")
     end
   end

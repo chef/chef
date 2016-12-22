@@ -46,7 +46,7 @@ describe Chef::Provider::Group::Groupadd do
 
   describe "#set_options" do
     field_list = {
-      :gid => "-g",
+      gid: "-g",
     }
 
     field_list.each do |attribute, option|
@@ -168,25 +168,25 @@ describe Chef::Provider::Group::Groupadd do
     end
 
     before do
-      allow(File).to receive(:exists?).and_return(false)
+      allow(File).to receive(:exist?).and_return(false)
       provider.define_resource_requirements
     end
 
     it "should raise an error if the required binary /usr/sbin/groupadd doesn't exist" do
-      expect(File).to receive(:exists?).with("/usr/sbin/groupadd").and_return(false)
+      expect(File).to receive(:exist?).with("/usr/sbin/groupadd").and_return(false)
       expect { provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Group)
     end
 
     it "should raise an error if the required binary /usr/sbin/groupmod doesn't exist" do
-      expect(File).to receive(:exists?).with("/usr/sbin/groupadd").and_return(true)
-      expect(File).to receive(:exists?).with("/usr/sbin/groupmod").and_return(false)
+      expect(File).to receive(:exist?).with("/usr/sbin/groupadd").and_return(true)
+      expect(File).to receive(:exist?).with("/usr/sbin/groupmod").and_return(false)
       expect { provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Group)
     end
 
     it "should raise an error if the required binary /usr/sbin/groupdel doesn't exist" do
-      expect(File).to receive(:exists?).with("/usr/sbin/groupadd").and_return(true)
-      expect(File).to receive(:exists?).with("/usr/sbin/groupmod").and_return(true)
-      expect(File).to receive(:exists?).with("/usr/sbin/groupdel").and_return(false)
+      expect(File).to receive(:exist?).with("/usr/sbin/groupadd").and_return(true)
+      expect(File).to receive(:exist?).with("/usr/sbin/groupmod").and_return(true)
+      expect(File).to receive(:exist?).with("/usr/sbin/groupdel").and_return(false)
       expect { provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Group)
     end
 

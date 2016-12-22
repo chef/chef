@@ -28,12 +28,12 @@ describe Chef::Provider::Group::Dscl do
     @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
 
-    @status = double(:stdout => "\n", :stderr => "", :exitstatus => 0)
+    @status = double(stdout: "\n", stderr: "", exitstatus: 0)
     allow(@provider).to receive(:shell_out).and_return(@status)
   end
 
   it "should run shell_out with the supplied array of arguments appended to the dscl command" do
-    expect(@provider).to receive(:shell_out).with("dscl . -cmd /Path arg1 arg2")
+    expect(@provider).to receive(:shell_out).with("dscl", ".", "-cmd", "/Path", "arg1", "arg2")
     @provider.dscl("cmd", "/Path", "arg1", "arg2")
   end
 
@@ -57,7 +57,7 @@ describe Chef::Provider::Group::Dscl do
 
     describe "with the dscl command returning a non zero exit status for a delete" do
       before do
-        @status = double("Process::Status", :exitstatus => 1)
+        @status = double("Process::Status", exitstatus: 1)
         allow(@provider).to receive(:dscl).and_return(["cmd", @status, "stdout", "stderr"])
       end
 
@@ -232,20 +232,20 @@ describe Chef::Provider::Group::Dscl do
   end
 
   describe "when loading the current system state" do
-    before (:each) do
+    before(:each) do
       @provider.action = :create
       @provider.load_current_resource
       @provider.define_resource_requirements
     end
 
     it "raises an error if the required binary /usr/bin/dscl doesn't exist" do
-      expect(File).to receive(:exists?).with("/usr/bin/dscl").and_return(false)
+      expect(File).to receive(:exist?).with("/usr/bin/dscl").and_return(false)
 
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Group)
     end
 
     it "doesn't raise an error if /usr/bin/dscl exists" do
-      allow(File).to receive(:exists?).and_return(true)
+      allow(File).to receive(:exist?).and_return(true)
       expect { @provider.process_resource_requirements }.not_to raise_error
     end
   end
@@ -321,11 +321,11 @@ EOF
   end
 
   it "should parse gid properly" do
-    allow(File).to receive(:exists?).and_return(true)
+    allow(File).to receive(:exist?).and_return(true)
     expect(@current_resource.gid).to eq("999")
   end
   it "should parse members properly" do
-    allow(File).to receive(:exists?).and_return(true)
+    allow(File).to receive(:exist?).and_return(true)
     expect(@current_resource.members).to eq(%w{waka bar})
   end
 end
