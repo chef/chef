@@ -267,8 +267,8 @@ describe Chef::ResourceReporter do
 
     context "when the new_resource is sensitive" do
       before do
-        @execute_resource = Chef::Resource::Execute.new("my sensitive execute block")
-        @execute_resource.name('sensitive-resource')
+        @execute_resource = Chef::Resource::Execute.new("sensitive-resource")
+        @execute_resource.name("sensitive-resource")
         @execute_resource.command('echo "password: SECRET"')
         @execute_resource.sensitive(true)
         @resource_reporter.resource_action_start(@execute_resource, :run)
@@ -280,12 +280,12 @@ describe Chef::ResourceReporter do
         @first_update_report = @report["resources"].first
       end
 
-      it "resource_name in prepared_run_data should be transformed" do
-        expect(@first_update_report["name"]).to eq('*sensitive*')
+      it "resource_name in prepared_run_data should be the same" do
+        expect(@first_update_report["name"]).to eq("sensitive-resource")
       end
 
-      it "resource_command in prepared_run_data should be transformed" do
-        expect(@first_update_report["after"]).to eq({:command=>"*sensitive*"})
+      it "resource_command in prepared_run_data should be blank" do
+        expect(@first_update_report["after"]).to eq({ :command => "sensitive-resource" })
       end
     end
 

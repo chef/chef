@@ -200,28 +200,18 @@ class Chef
         @pending_update.finish
 
         # Verify if the resource has sensitive data
+        # and create a new blank resource with only
+        # the name so we can report it back without
+        # sensitive data
         if @pending_update.new_resource.sensitive
-          sensitive_resource = transform_sensitive_resource(@pending_update.new_resource)
-          @pending_update.new_resource = sensitive_resource
+          klass = @pending_update.new_resource.class
+          resource_name = @pending_update.new_resource.name
+          @pending_update.new_resource = klass.new(resource_name)
         end
+
         @updated_resources << @pending_update
         @pending_update = nil
       end
-    end
-
-    def transform_sensitive_resource(resource)
-      mock_display = '*sensitive*'
-
-      # Every resource has a name
-      resource.name(mock_display)
-      # For Execute Resources
-      resource.command(mock_display) if defined? resource.command
-      # For File Resources
-      resource.content(mock_display) if defined? resource.content
-      # For Template Resources
-      resource.variables({'data' => mock_display}) if defined? resource.variables
-
-      resource
     end
 
     def run_completed(node)
