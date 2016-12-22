@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.18.11](https://github.com/chef/chef/tree/v12.18.11) (2016-12-22)
-[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.11)
+## [v12.18.12](https://github.com/chef/chef/tree/v12.18.12) (2016-12-22)
+[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.12)
 
 **Implemented enhancements:**
 
@@ -9,7 +9,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - remove Chef::Platform::HandlerMap [\#5636](https://github.com/chef/chef/pull/5636) ([lamont-granquist](https://github.com/lamont-granquist))
 - Core: Properly deprecate old Chef::Platform methods [\#5631](https://github.com/chef/chef/pull/5631) ([lamont-granquist](https://github.com/lamont-granquist))
 - Windows: PowerShell module output pass through [\#5549](https://github.com/chef/chef/pull/5549) ([coolmacool](https://github.com/coolmacool))
-- Windows: Added support in WIX to install chef-client as a scheduled task. [\#5540](https://github.com/chef/chef/pull/5540) ([Aliasgar16](https://github.com/Aliasgar16))
 
 **Fixed bugs:**
 
