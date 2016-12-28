@@ -34,6 +34,7 @@ class Chef
       property :package_name, [String, Array], coerce: proc { |x| [x].flatten }
 
       property :version, [String, Array], coerce: proc { |x| [x].flatten }
+      property :returns, [Integer, Array], default: [ 0 ], desired_state: false
     end
   end
 end
