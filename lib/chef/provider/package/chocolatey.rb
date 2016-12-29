@@ -84,13 +84,13 @@ EOS
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            shell_out_with_timeout!(args_to_string(choco_exe, ["install -y --version", version, cmd_args, name]), {:returns => new_resource.returns})
+            shell_out_with_timeout!(args_to_string(choco_exe, "install -y --version", version, cmd_args, name), {:returns => new_resource.returns})
           end
 
           # but we can do all the ones without version pins at once
           unless name_nil_versions.empty?
             cmd_names = name_nil_versions.keys
-            shell_out_with_timeout!(args_to_string(choco_exe, ["install -y", cmd_args, *cmd_names]), {:returns => new_resource.returns})
+            shell_out_with_timeout!(args_to_string(choco_exe, "install -y", *cmd_args, *cmd_names), {:returns => new_resource.returns})
           end
         end
 
@@ -106,13 +106,13 @@ EOS
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            shell_out_with_timeout!(args_to_string(choco_exe, ["upgrade -y --version", version, cmd_args, name]), {:returns => new_resource.returns})
+            shell_out_with_timeout!(args_to_string(choco_exe, "upgrade -y --version", version, cmd_args, name), {:returns => new_resource.returns})
           end
 
           # but we can do all the ones without version pins at once
           unless name_nil_versions.empty?
             cmd_names = name_nil_versions.keys
-            shell_out_with_timeout!(args_to_string(choco_exe, ["upgrade -y", cmd_args, *cmd_names]), {:returns => new_resource.returns})
+            shell_out_with_timeout!(args_to_string(choco_exe, "upgrade -y", cmd_args, *cmd_names), {:returns => new_resource.returns})
           end
         end
 
@@ -121,7 +121,7 @@ EOS
         # @param names [Array<String>] array of package names to install
         # @param versions [Array<String>] array of versions to install
         def remove_package(names, versions)
-          shell_out_with_timeout!(args_to_string(choco_exe, ["uninstall -y", cmd_args(include_source: false), *names]), {:returns => new_resource.returns})
+          shell_out_with_timeout!(args_to_string(choco_exe, "uninstall -y", cmd_args(include_source: false), *names), {:returns => new_resource.returns})
         end
 
         # Support :uninstall as an action in order for users to easily convert
