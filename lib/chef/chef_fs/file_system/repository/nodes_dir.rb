@@ -38,7 +38,7 @@ class Chef
             if Chef::Platform.windows?
               read_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_READ
               write_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE
-              owner = Chef::ReservedNames::Win32::Security::SID.current_user
+              owner = Chef::ReservedNames::Win32::Security::SID.default_security_object_owner
               dacl = Chef::ReservedNames::Win32::Security::ACL.create([
                 Chef::ReservedNames::Win32::Security::ACE.access_allowed(owner, read_mask),
                 Chef::ReservedNames::Win32::Security::ACE.access_allowed(owner, write_mask),

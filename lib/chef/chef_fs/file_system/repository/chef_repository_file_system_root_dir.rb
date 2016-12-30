@@ -113,7 +113,7 @@ class Chef
                   Dir.mkdir(path, 0700)
                   if Chef::Platform.windows?
                     all_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_ALL
-                    owner = Chef::ReservedNames::Win32::Security::SID.current_user
+                    owner = Chef::ReservedNames::Win32::Security::SID.default_security_object_owner
                     dacl = Chef::ReservedNames::Win32::Security::ACL.create([
                       Chef::ReservedNames::Win32::Security::ACE.access_allowed(owner, all_mask),
                     ])
