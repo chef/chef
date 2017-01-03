@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 2d06ce7ef5976e2a410906f60152142bf90a17fb
+  revision: d6d1d3791a1b71cf22af7438d1d7a8f1b44ccac7
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -24,7 +24,7 @@ GIT
 
 GIT
   remote: https://github.com/rubysec/bundler-audit.git
-  revision: 044d056961dbc4b70d236a354a9cc86af54e0ae2
+  revision: 80ae638e72df4c218da0e7a485ea2ee73aa257f2
   specs:
     bundler-audit (0.5.0)
       bundler (~> 1.2)
@@ -129,7 +129,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (5.0.0.1)
+    activesupport (5.0.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (~> 0.7)
       minitest (~> 5.1)
@@ -139,13 +139,13 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.5.1)
     ast (2.3.0)
-    aws-sdk (2.6.40)
-      aws-sdk-resources (= 2.6.40)
-    aws-sdk-core (2.6.40)
+    aws-sdk (2.6.43)
+      aws-sdk-resources (= 2.6.43)
+    aws-sdk-core (2.6.43)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.40)
-      aws-sdk-core (= 2.6.40)
+    aws-sdk-resources (2.6.43)
+      aws-sdk-core (= 2.6.43)
     aws-sigv4 (1.0.0)
     backports (3.6.8)
     binding_of_caller (0.7.2)
@@ -184,7 +184,7 @@ GEM
       simplecov
       url
     coderay (1.1.1)
-    concurrent-ruby (1.0.2)
+    concurrent-ruby (1.0.4)
     cucumber (2.4.0)
       builder (>= 2.1.2)
       cucumber-core (~> 1.5.0)
@@ -205,7 +205,7 @@ GEM
     ethon (0.10.1)
       ffi (>= 1.3.0)
     excon (0.54.0)
-    faraday (0.10.0)
+    faraday (0.10.1)
       multipart-post (>= 1.2, < 3)
     faraday-http-cache (2.0.0)
       faraday (~> 0.8)
@@ -273,7 +273,7 @@ GEM
       test-kitchen (>= 1.0.0)
     kitchen-vagrant (0.21.1)
       test-kitchen (~> 1.4)
-    knife-windows (1.7.1)
+    knife-windows (1.8.0)
       winrm (~> 2.1)
       winrm-elevated (~> 1.0)
     launchy (2.4.3)
@@ -325,9 +325,9 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     net-telnet (0.1.1)
     netrc (0.11.0)
-    nokogiri (1.6.8.1)
+    nokogiri (1.7.0)
       mini_portile2 (~> 2.1.0)
-    nokogiri (1.6.8.1-x86-mingw32)
+    nokogiri (1.7.0-x86-mingw32)
       mini_portile2 (~> 2.1.0)
     nori (2.6.0)
     octokit (4.6.2)
@@ -399,7 +399,7 @@ GEM
       json
       websocket (~> 1.0)
     rack (2.0.1)
-    rainbow (2.1.0)
+    rainbow (2.2.1)
     rake (11.3.0)
     rb-readline (0.5.3)
     rest-client (2.0.0)
@@ -462,7 +462,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.66.2)
+    specinfra (2.66.3)
       net-scp
       net-ssh (>= 2.7, < 4.0)
       net-telnet
@@ -591,4 +591,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.12.5
+   1.13.6
