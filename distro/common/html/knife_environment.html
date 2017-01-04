@@ -200,11 +200,11 @@ windows            1.0.0    4.1.2
 </div>
 <div class="section" id="from-file">
 <h2>from file<a class="headerlink" href="#from-file" title="Permalink to this headline">¶</a></h2>
-<p>The <tt class="docutils literal"><span class="pre">from</span> <span class="pre">file</span></tt> argument is used to add or update an environment using a JSON or Ruby DSL description. It must be run with the <tt class="docutils literal"><span class="pre">create</span></tt> or <tt class="docutils literal"><span class="pre">edit</span></tt> arguments.</p>
+<p>The <tt class="docutils literal"><span class="pre">from</span> <span class="pre">file</span></tt> argument is used to add or update an environment using a JSON or Ruby DSL description.</p>
 <div class="section" id="id7">
 <h3>Syntax<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>This argument has the following syntax:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment <span class="o">[</span>create | edit<span class="o">]</span> from file FILE <span class="o">(</span>options<span class="o">)</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment from file FILE <span class="o">(</span>options<span class="o">)</span>
 </pre></div>
 </div>
 </div>
@@ -221,11 +221,7 @@ windows            1.0.0    4.1.2
 <p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Create an environment from a JSON file</strong></p>
 <p>To add an environment using data contained in a JSON file:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment create devops from file <span class="s2">&quot;path to JSON file&quot;</span>
-</pre></div>
-</div>
-<p>or:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment edit devops from file <span class="s2">&quot;path to JSON file&quot;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife environment from file <span class="s2">&quot;path to JSON file&quot;</span>
 </pre></div>
 </div>
 </div>
