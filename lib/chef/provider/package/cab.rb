@@ -19,29 +19,57 @@
 require "chef/provider/package"
 require "chef/resource/cab_package"
 require "chef/mixin/shell_out"
+require "chef/mixin/uris"
+require "chef/mixin/checksum"
 
 class Chef
   class Provider
     class Package
       class Cab < Chef::Provider::Package
+        use_inline_resources
         include Chef::Mixin::ShellOut
+        include Chef::Mixin::Uris
+        include Chef::Mixin::Checksum
 
         provides :cab_package, os: "windows"
 
         def load_current_resource
           @current_resource = Chef::Resource::CabPackage.new(new_resource.name)
+          # download file if source is a url
+          @cab_file = uri_scheme?(new_resource.source) ? download_source_file : @new_resource.source
           current_resource.source(new_resource.source)
-          new_resource.version(package_version)
+          current_resource.version(package_version)
           current_resource.version(installed_version)
           current_resource
         end
 
+        def download_source_file
+          source_resource.run_action(:create)
+          Chef::Log.debug("#{new_resource} fetched source file to #{source_resource.path}")
+          source_resource.path
+        end
+
+        def source_resource
+          @source_resource ||= declare_resource(:remote_file, new_resource.name) do
+            path default_download_cache_path
+            source new_resource.source
+            backup false
+          end
+        end
+
+        def default_download_cache_path
+          uri = ::URI.parse(new_resource.source)
+          filename = ::File.basename(::URI.unescape(uri.path))
+          file_cache_dir = Chef::FileCache.create_cache_path("package/")
+          Chef::Util::PathHelper.cleanpath("#{file_cache_dir}/#{filename}")
+        end
+
         def install_package(name, version)
-          dism_command("/Add-Package /PackagePath:\"#{@new_resource.source}\"")
+          dism_command("/Add-Package /PackagePath:\"#{@cab_file}\"")
         end
 
         def remove_package(name, version)
-          dism_command("/Remove-Package /PackagePath:\"#{@new_resource.source}\"")
+          dism_command("/Remove-Package /PackagePath:\"#{@cab_file}\"")
         end
 
         def dism_command(command)
@@ -52,7 +80,7 @@ class Chef
         end
 
         def installed_version
-          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{@new_resource.source}\"").stdout
+          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{@cab_file}\"").stdout
           package_info = parse_dism_get_package_info(stdout)
           # e.g. Package_for_KB2975719~31bf3856ad364e35~amd64~~6.3.1.8
           package = split_package_identity(package_info["package_information"]["package_identity"])
@@ -63,7 +91,7 @@ class Chef
             nil
           elsif found_packages.length == 1
             stdout = dism_command("/Get-PackageInfo /PackageName:\"#{found_packages.first["package_identity"]}\"").stdout
-            find_version(stdout)
+            find_version(stdout).to_s
           else
             # Presuming this won't happen, otherwise we need to handle it
             raise Chef::Exceptions::Package, "Found multiple packages installed matching name #{package['name']}, found: #{found_packages.length} matches"
@@ -71,9 +99,9 @@ class Chef
         end
 
         def package_version
-          Chef::Log.debug("#{@new_resource} getting product version for package at #{@new_resource.source}")
-          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{@new_resource.source}\"").stdout
-          find_version(stdout)
+          Chef::Log.debug("#{@new_resource} getting product version for package at #{@cab_file}")
+          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{@cab_file}\"").stdout
+          find_version(stdout).to_s
         end
 
         def find_version(stdout)
