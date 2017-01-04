@@ -26,6 +26,7 @@ class Chef
       provides :package, os: "linux", platform_family: [ "debian" ]
 
       property :default_release, String, desired_state: false
+      property :overwrite_config_files, String, default: false
 
     end
   end
