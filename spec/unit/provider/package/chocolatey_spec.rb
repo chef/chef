@@ -46,7 +46,7 @@ ConEmu|15.10.25.0
     allow(provider).to receive(:choco_install_path).and_return(choco_install_path)
     allow(provider).to receive(:choco_exe).and_return(choco_exe)
     local_list_obj = double(:stdout => local_list_stdout)
-    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -l -r", { :timeout => timeout }).and_return(local_list_obj)
+    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -l -r", { :returns => [0], :timeout => timeout }).and_return(local_list_obj)
   end
 
   def allow_remote_list(package_names, args = nil)
@@ -59,7 +59,7 @@ Git|2.6.2
 munin-node|1.6.1.20130823
     EOF
     remote_list_obj = double(stdout: remote_list_stdout)
-    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -r #{package_names.join ' '}#{args}", { timeout: timeout }).and_return(remote_list_obj)
+    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -r #{package_names.join ' '}#{args}", { :returns => [0], timeout: timeout }).and_return(remote_list_obj)
   end
 
   describe "#initialize" do
