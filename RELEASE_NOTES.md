@@ -18,14 +18,14 @@ _This file holds "in progress" release notes for the current release under devel
 
 ## New deprecations introduced in this release:
 
-### Chef Platform Helper Methods
+### Chef::Platform Helper Methods
 
 - **Deprecation ID**: 13
-- **Remediation Docs**: <https://docs.chef.io/chef_platform_methods.html>
+- **Remediation Docs**: <https://docs.chef.io/deprecations_chef_platform_methods.html>
 - **Expected Removal**: Chef 13 (April 2017)
 
 ### run_command Helper Method
 
 - **Deprecation ID**: 14
-- **Remediation Docs**: <https://docs.chef.io/run_command.html>
+- **Remediation Docs**: <https://docs.chef.io/deprecations_run_command.html>
 - **Expected Removal**: Chef 13 (April 2017)
