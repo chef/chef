@@ -29,6 +29,7 @@ class Chef
         super
         @new_resource = new_resource
         @module_name = new_resource.module_name
+        @module_version = new_resource.module_version
         @reboot_resource = nil
       end
 
@@ -48,6 +49,10 @@ class Chef
         true
       end
 
+      def module_name_missing?
+        !(!@module_name && @module_version) ? true : false
+      end
+
       def define_resource_requirements
         requirements.assert(:run) do |a|
           a.assertion { supports_dsc_invoke_resource? }
@@ -63,6 +68,14 @@ class Chef
                  " PowerShell versions before 5.0.10586.0."]
           a.failure_message Chef::Exceptions::ProviderNotFound, err.join(" ")
           a.whyrun err + ["Assuming a previous resource sets the RefreshMode."]
+          a.block_action!
+        end
+        requirements.assert(:run) do |a|
+          a.assertion { module_name_missing? }
+          err = ["module_name must be supplied along with module_version."]
+          a.failure_message Chef::Exceptions::DSCModuleNameMissing,
+            err
+          a.whyrun err + ["Assuming a module_name is specified."]
           a.block_action!
         end
       end
@@ -148,10 +161,16 @@ class Chef
         end
       end
 
+      def module_info_object
+        @module_version.nil? ?
+          module_name :
+          "@{ModuleName='#{module_name}';ModuleVersion='#{@module_version}'}"
+      end
+
       def invoke_resource(method, output_format = :object)
         properties = translate_type(@new_resource.properties)
         switches = "-Method #{method} -Name #{@new_resource.resource}"\
-                   " -Property #{properties} -Module #{module_name} -Verbose"
+                   " -Property #{properties} -Module #{module_info_object} -Verbose"
         cmdlet = Chef::Util::Powershell::Cmdlet.new(
           node,
           "Invoke-DscResource #{switches}",
