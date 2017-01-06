@@ -35,10 +35,26 @@ class Chef
       SPECIAL_PATTERN = /\A(@(#{SPECIAL_TIME_VALUES.join('|')}))\s(.*)/
       ENV_PATTERN = /\A(\S+)=(\S*)/
 
+      def can_modify_cron?
+        unless Process.euid == 0
+          begin
+            nuid = Etc.getpwnam(@new_resource.user).uid
+          rescue ArgumentError
+            raise Chef::Exceptions::Cron,
+              "Error in #{@new_resource.name}, #{@new_resource.user} does not exists on this system."
+          end
+          unless nuid == Process.euid
+            raise Chef::Exceptions::Cron,
+              "Error in #{@new_resource.name}, Chef can't modify another user crontab when not running as root."
+          end
+        end
+      end
+
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
         @cron_exists = false
         @cron_empty = false
+        @specify_user = ""
       end
       attr_accessor :cron_exists, :cron_empty
 
@@ -51,6 +67,10 @@ class Chef
         @current_resource = Chef::Resource::Cron.new(@new_resource.name)
         @current_resource.user(@new_resource.user)
         @cron_exists = false
+        
+        # Raise an execption if Chef can't read or update the crontab.
+        can_modify_cron?
+
         if crontab = read_crontab
           cron_found = false
           crontab.each_line do |line|
@@ -207,7 +227,8 @@ class Chef
 
       def read_crontab
         crontab = nil
-        status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
+        @specify_user="-u #{@new_resource.user}" if Process.euid === 0
+        status = popen4("crontab -l #{@specify_user}") do |pid, stdin, stdout, stderr|
           crontab = stdout.read
         end
         if status.exitstatus > 1
@@ -218,7 +239,8 @@ class Chef
 
       def write_crontab(crontab)
         write_exception = false
-        status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
+        @specify_user="-u #{@new_resource.user}" if Process.euid === 0
+        status = popen4("crontab #{@specify_user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
           begin
             stdin.write crontab
           rescue Errno::EPIPE => e
