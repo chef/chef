@@ -156,14 +156,13 @@ CRONTAB
   describe "when examining the current system state" do
     context "when run as non root" do
       before do
-	mock_struct = OpenStruct.new(:uid => 0)
+        mock_struct = OpenStruct.new(:uid => 0)
         allow(Process).to receive(:euid).and_return(42)
-	allow(Etc).to receive(:getpwnam).with("root").and_return(mock_struct)
+        allow(Etc).to receive(:getpwnam).with("root").and_return(mock_struct)
       end
+
       it "should raise exception" do
-        expect do
-          @provider.load_current_resource
-        end.to raise_error(Chef::Exceptions::Cron)
+        expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Cron)
       end
     end
     context "with no crontab for the user" do

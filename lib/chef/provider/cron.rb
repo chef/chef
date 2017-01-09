@@ -67,7 +67,6 @@ class Chef
         @current_resource = Chef::Resource::Cron.new(@new_resource.name)
         @current_resource.user(@new_resource.user)
         @cron_exists = false
-        
         # Raise an execption if Chef can't read or update the crontab.
         can_modify_cron?
 
@@ -227,7 +226,7 @@ class Chef
 
       def read_crontab
         crontab = nil
-        @specify_user="-u #{@new_resource.user}" if Process.euid === 0
+        @specify_user = "-u #{@new_resource.user}" if Process.euid === 0
         status = popen4("crontab -l #{@specify_user}") do |pid, stdin, stdout, stderr|
           crontab = stdout.read
         end
@@ -239,7 +238,7 @@ class Chef
 
       def write_crontab(crontab)
         write_exception = false
-        @specify_user="-u #{@new_resource.user}" if Process.euid === 0
+        @specify_user = "-u #{@new_resource.user}" if Process.euid === 0
         status = popen4("crontab #{@specify_user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
           begin
             stdin.write crontab
