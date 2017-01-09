@@ -4,6 +4,7 @@ _This file holds "in progress" release notes for the current release under devel
 
 ## Highlighted enhancements for this release:
 
+- You can now specify the acceptable return codes from the chocolatey_package resource using the returns property.
 - You can now enable chef-client to run as a scheduled task directly from the client MSI on Windows hosts.
 
 ## Highlighted bug fixes for this release:
