@@ -525,5 +525,8 @@ This error is most often caused by network issues (proxies, etc) outside of chef
         super "Found multiple matching resources. #{matches_info.join("\n")}"
       end
     end
+
+    # exception specific to invalid usage of 'dsc_resource' resource
+    class DSCModuleNameMissing < RuntimeError; end
   end
 end
