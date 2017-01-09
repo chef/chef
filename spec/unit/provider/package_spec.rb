@@ -517,6 +517,10 @@ describe "Subclass with use_multipackage_api" do
   end
 
   context "#a_to_s utility for subclasses" do
+    before(:each) do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+    end
+
     it "converts varargs of strings to a single string" do
       expect(provider.send(:a_to_s, "a", nil, "b", "", "c", " ", "d e", "f-g")).to eq("a b c   d e f-g")
     end
@@ -906,6 +910,10 @@ describe "Chef::Provider::Package - Multi" do
   end
 
   describe "shell_out helpers" do
+    before(:each) do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+    end
+
     [ :shell_out_with_timeout, :shell_out_with_timeout! ].each do |method|
       stubbed_method = method == :shell_out_with_timeout! ? :shell_out! : :shell_out
       [ %w{command arg1 arg2}, "command arg1 arg2" ].each do |command|

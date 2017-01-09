@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,6 +40,7 @@ describe Chef::Provider::Package::Yum do
     )
     allow(Chef::Provider::Package::Yum::YumCache).to receive(:instance).and_return(@yum_cache)
     allow(@yum_cache).to receive(:yum_binary=).with("yum")
+    allow(::File).to receive(:exist?).with("/usr/bin/yum-deprecated").and_return(false)
     @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
     @pid = double("PID")
   end
@@ -80,7 +81,7 @@ describe Chef::Provider::Package::Yum do
         @new_resource = Chef::Resource::YumPackage.new("testing.source")
         @new_resource.source "chef-server-core-12.0.5-1.rpm"
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-        allow(File).to receive(:exists?).with(@new_resource.source).and_return(true)
+        allow(File).to receive(:exist?).with(@new_resource.source).and_return(true)
         allow(@yum_cache).to receive(:installed_version).and_return(nil)
         shellout_double = double(:stdout => "chef-server-core 12.0.5-1 i386")
         allow(@provider).to receive(:shell_out!).and_return(shellout_double)
@@ -535,7 +536,7 @@ describe Chef::Provider::Package::Yum do
 
     it "should run yum localinstall if given a path to an rpm as the package" do
       @new_resource = Chef::Resource::YumPackage.new("/tmp/emacs-21.4-20.el5.i386.rpm")
-      allow(::File).to receive(:exists?).and_return(true)
+      allow(::File).to receive(:exist?).with("/tmp/emacs-21.4-20.el5.i386.rpm").and_return(true)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       expect(@new_resource.source).to eq("/tmp/emacs-21.4-20.el5.i386.rpm")
       expect(@provider).to receive(:yum_command).with(

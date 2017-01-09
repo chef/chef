@@ -284,31 +284,30 @@ EOF
 
     describe Chef::Provider::Package::Portage, "install_package" do
       it "should install a normally versioned package using portage" do
-        expect(@provider).to receive(:shell_out!).with("emerge -g --color n --nospinner --quiet =dev-util/git-1.0.0")
+        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "=dev-util/git-1.0.0")
         @provider.install_package("dev-util/git", "1.0.0")
       end
 
       it "should install a tilde versioned package using portage" do
-        expect(@provider).to receive(:shell_out!).with("emerge -g --color n --nospinner --quiet ~dev-util/git-1.0.0")
+        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "~dev-util/git-1.0.0")
         @provider.install_package("dev-util/git", "~1.0.0")
       end
 
       it "should add options to the emerge command when specified" do
-        expect(@provider).to receive(:shell_out!).with("emerge -g --color n --nospinner --quiet --oneshot =dev-util/git-1.0.0")
-        allow(@new_resource).to receive(:options).and_return("--oneshot")
-
+        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "--oneshot", "=dev-util/git-1.0.0")
+        @new_resource.options "--oneshot"
         @provider.install_package("dev-util/git", "1.0.0")
       end
     end
 
     describe Chef::Provider::Package::Portage, "remove_package" do
       it "should un-emerge the package with no version specified" do
-        expect(@provider).to receive(:shell_out!).with("emerge --unmerge --color n --nospinner --quiet dev-util/git")
+        expect(@provider).to receive(:shell_out!).with("emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", "dev-util/git")
         @provider.remove_package("dev-util/git", nil)
       end
 
       it "should un-emerge the package with a version specified" do
-        expect(@provider).to receive(:shell_out!).with("emerge --unmerge --color n --nospinner --quiet =dev-util/git-1.0.0")
+        expect(@provider).to receive(:shell_out!).with("emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", "=dev-util/git-1.0.0")
         @provider.remove_package("dev-util/git", "1.0.0")
       end
     end

@@ -104,8 +104,8 @@ class Chef
                     return :nsis
                   end
 
-                  if io.tell() < filesize
-                    io.seek(io.tell() - overlap)
+                  if io.tell < filesize
+                    io.seek(io.tell - overlap)
                   end
                 end
 
@@ -195,7 +195,7 @@ class Chef
         end
 
         def downloadable_file_missing?
-          !new_resource.source.nil? && uri_scheme?(new_resource.source) && !::File.exists?(source_location)
+          !new_resource.source.nil? && uri_scheme?(new_resource.source) && !::File.exist?(source_location)
         end
 
         def resource_for_provider

@@ -65,7 +65,7 @@ describe Chef::Resource::FreebsdPackage do
     describe "if pkgng enabled" do
       it "should be Freebsd::Pkgng" do
         pkg_enabled = OpenStruct.new(:stdout => "yes\n")
-        allow(@resource).to receive(:shell_out!).with("make -V WITH_PKGNG", :env => nil).and_return(pkg_enabled)
+        allow(@resource).to receive(:shell_out!).with("make", "-V", "WITH_PKGNG", :env => nil).and_return(pkg_enabled)
         @resource.after_created
         expect(@resource.provider).to eq(Chef::Provider::Package::Freebsd::Pkgng)
       end
@@ -74,7 +74,7 @@ describe Chef::Resource::FreebsdPackage do
     describe "if freebsd_version is less than 1000017 and pkgng not enabled" do
       it "should be Freebsd::Pkg" do
         pkg_enabled = OpenStruct.new(:stdout => "\n")
-        allow(@resource).to receive(:shell_out!).with("make -V WITH_PKGNG", :env => nil).and_return(pkg_enabled)
+        allow(@resource).to receive(:shell_out!).with("make", "-V", "WITH_PKGNG", :env => nil).and_return(pkg_enabled)
 
         [1000016, 1000000, 901503, 902506, 802511].each do |freebsd_version|
           @node.automatic_attrs[:os_version] = freebsd_version

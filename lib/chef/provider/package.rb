@@ -52,6 +52,17 @@ class Chef
         @candidate_version = nil
       end
 
+      def options
+        if new_resource.options.is_a?(String)
+          # XXX: needs to handle double quotes, single quotes, nested quotes, etc and probably act
+          # more like a space-separated "C"SV file -- although users can fix this just by passing in
+          # a correctly pre-split Array.
+          new_resource.options.split(" ")
+        else
+          new_resource.options
+        end
+      end
+
       def whyrun_supported?
         true
       end
@@ -64,16 +75,15 @@ class Chef
         end
       end
 
-      def load_current_resource
-      end
+      def load_current_resource; end
 
       def define_resource_requirements
         # XXX: upgrade with a specific version doesn't make a whole lot of sense, but why don't we throw this anyway if it happens?
         # if not, shouldn't we raise to tell the user to use install instead of upgrade if they want to pin a version?
         requirements.assert(:install) do |a|
           a.assertion { candidates_exist_for_all_forced_changes? }
-          a.failure_message(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{forced_packages_missing_candidates.join(", ")}")
-          a.whyrun("Assuming a repository that offers #{forced_packages_missing_candidates.join(", ")} would have been configured")
+          a.failure_message(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{forced_packages_missing_candidates.join(', ')}")
+          a.whyrun("Assuming a repository that offers #{forced_packages_missing_candidates.join(', ')} would have been configured")
         end
 
         # XXX: Does it make sense to pass in a source with :upgrade? Probably
@@ -81,19 +91,19 @@ class Chef
         # so we'll just leave things as-is for now.
         requirements.assert(:upgrade, :install) do |a|
           a.assertion { candidates_exist_for_all_uninstalled? || new_resource.source }
-          a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
-          a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
+          a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(', ')}")
+          a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(', ')} would have been configured")
         end
       end
 
       action :install do
         unless target_version_array.any?
-          Chef::Log.debug("#{@new_resource} is already installed - nothing to do")
+          Chef::Log.debug("#{new_resource} is already installed - nothing to do")
           return
         end
 
         # @todo: move the preseed code out of the base class (and complete the fix for Array of preseeds? ugh...)
-        if @new_resource.response_file
+        if new_resource.response_file
           if preseed_file = get_preseed_file(package_names_for_targets, versions_for_targets)
             converge_by("preseed package #{package_names_for_targets}") do
               preseed_package(preseed_file)
@@ -105,7 +115,7 @@ class Chef
           multipackage_api_adapter(package_names_for_targets, versions_for_targets) do |name, version|
             install_package(name, version)
           end
-          Chef::Log.info("#{@new_resource} installed #{package_names_for_targets} at #{versions_for_targets}")
+          Chef::Log.info("#{new_resource} installed #{package_names_for_targets} at #{versions_for_targets}")
         end
       end
 
@@ -122,8 +132,8 @@ class Chef
       private :install_description
 
       action :upgrade do
-        if !target_version_array.any?
-          Chef::Log.debug("#{@new_resource} no versions to upgrade - nothing to do")
+        unless target_version_array.any?
+          Chef::Log.debug("#{new_resource} no versions to upgrade - nothing to do")
           return
         end
 
@@ -132,7 +142,7 @@ class Chef
             upgrade_package(name, version)
           end
           log_allow_downgrade = allow_downgrade ? "(allow_downgrade)" : ""
-          Chef::Log.info("#{@new_resource} upgraded#{log_allow_downgrade} #{package_names_for_targets} to #{versions_for_targets}")
+          Chef::Log.info("#{new_resource} upgraded#{log_allow_downgrade} #{package_names_for_targets} to #{versions_for_targets}")
         end
       end
 
@@ -153,15 +163,15 @@ class Chef
 
       action :remove do
         if removing_package?
-          description = @new_resource.version ? "version #{@new_resource.version} of " : ""
-          converge_by("remove #{description}package #{@current_resource.package_name}") do
-            multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
+          description = new_resource.version ? "version #{new_resource.version} of " : ""
+          converge_by("remove #{description}package #{current_resource.package_name}") do
+            multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
               remove_package(name, version)
             end
-            Chef::Log.info("#{@new_resource} removed")
+            Chef::Log.info("#{new_resource} removed")
           end
         else
-          Chef::Log.debug("#{@new_resource} package does not exist - nothing to do")
+          Chef::Log.debug("#{new_resource} package does not exist - nothing to do")
         end
       end
 
@@ -188,48 +198,48 @@ class Chef
 
       action :purge do
         if removing_package?
-          description = @new_resource.version ? "version #{@new_resource.version} of" : ""
-          converge_by("purge #{description} package #{@current_resource.package_name}") do
-            multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
+          description = new_resource.version ? "version #{new_resource.version} of" : ""
+          converge_by("purge #{description} package #{current_resource.package_name}") do
+            multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
               purge_package(name, version)
             end
-            Chef::Log.info("#{@new_resource} purged")
+            Chef::Log.info("#{new_resource} purged")
           end
         end
       end
 
       action :reconfig do
-        if @current_resource.version.nil?
-          Chef::Log.debug("#{@new_resource} is NOT installed - nothing to do")
+        if current_resource.version.nil?
+          Chef::Log.debug("#{new_resource} is NOT installed - nothing to do")
           return
         end
 
-        unless @new_resource.response_file
-          Chef::Log.debug("#{@new_resource} no response_file provided - nothing to do")
+        unless new_resource.response_file
+          Chef::Log.debug("#{new_resource} no response_file provided - nothing to do")
           return
         end
 
-        if preseed_file = get_preseed_file(@new_resource.package_name, @current_resource.version)
-          converge_by("reconfigure package #{@new_resource.package_name}") do
+        if preseed_file = get_preseed_file(new_resource.package_name, current_resource.version)
+          converge_by("reconfigure package #{new_resource.package_name}") do
             preseed_package(preseed_file)
-            multipackage_api_adapter(@new_resource.package_name, @current_resource.version) do |name, version|
+            multipackage_api_adapter(new_resource.package_name, current_resource.version) do |name, version|
               reconfig_package(name, version)
 
             end
-            Chef::Log.info("#{@new_resource} reconfigured")
+            Chef::Log.info("#{new_resource} reconfigured")
           end
         else
-          Chef::Log.debug("#{@new_resource} preseeding has not changed - nothing to do")
+          Chef::Log.debug("#{new_resource} preseeding has not changed - nothing to do")
         end
       end
 
       def action_lock
-        if package_locked(@new_resource.name, @new_resource.version) == false
-          description = @new_resource.version ? "version #{@new_resource.version} of " : ""
-          converge_by("lock #{description}package #{@current_resource.package_name}") do
-            multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
+        if package_locked(new_resource.name, new_resource.version) == false
+          description = new_resource.version ? "version #{new_resource.version} of " : ""
+          converge_by("lock #{description}package #{current_resource.package_name}") do
+            multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
               lock_package(name, version)
-              Chef::Log.info("#{@new_resource} locked")
+              Chef::Log.info("#{new_resource} locked")
             end
           end
         else
@@ -238,12 +248,12 @@ class Chef
       end
 
       def action_unlock
-        if package_locked(@new_resource.name, @new_resource.version) == true
-          description = @new_resource.version ? "version #{@new_resource.version} of " : ""
-          converge_by("unlock #{description}package #{@current_resource.package_name}") do
-            multipackage_api_adapter(@current_resource.package_name, @new_resource.version) do |name, version|
+        if package_locked(new_resource.name, new_resource.version) == true
+          description = new_resource.version ? "version #{new_resource.version} of " : ""
+          converge_by("unlock #{description}package #{current_resource.package_name}") do
+            multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
               unlock_package(name, version)
-              Chef::Log.info("#{@new_resource} unlocked")
+              Chef::Log.info("#{new_resource} unlocked")
             end
           end
         else
@@ -299,6 +309,8 @@ class Chef
 
       # used by subclasses.  deprecated.  use #a_to_s instead.
       def expand_options(options)
+        # its deprecated but still work to do to deprecate it fully
+        #Chef.deprecated(:package_misc, "expand_options is deprecated, use shell_out_compact or shell_out_compact_timeout instead")
         options ? " #{options}" : ""
       end
 
@@ -343,7 +355,7 @@ class Chef
       def get_preseed_file(name, version)
         resource = preseed_resource(name, version)
         resource.run_action(:create)
-        Chef::Log.debug("#{@new_resource} fetched preseed file to #{resource.path}")
+        Chef::Log.debug("#{new_resource} fetched preseed file to #{resource.path}")
 
         if resource.updated_by_last_action?
           resource.path
@@ -355,26 +367,26 @@ class Chef
       # @todo: extract apt/dpkg specific preseeding to a helper class
       def preseed_resource(name, version)
         # A directory in our cache to store this cookbook's preseed files in
-        file_cache_dir = Chef::FileCache.create_cache_path("preseed/#{@new_resource.cookbook_name}")
+        file_cache_dir = Chef::FileCache.create_cache_path("preseed/#{new_resource.cookbook_name}")
         # The full path where the preseed file will be stored
         cache_seed_to = "#{file_cache_dir}/#{name}-#{version}.seed"
 
-        Chef::Log.debug("#{@new_resource} fetching preseed file to #{cache_seed_to}")
+        Chef::Log.debug("#{new_resource} fetching preseed file to #{cache_seed_to}")
 
-        if template_available?(@new_resource.response_file)
-          Chef::Log.debug("#{@new_resource} fetching preseed file via Template")
+        if template_available?(new_resource.response_file)
+          Chef::Log.debug("#{new_resource} fetching preseed file via Template")
           remote_file = Chef::Resource::Template.new(cache_seed_to, run_context)
-          remote_file.variables(@new_resource.response_file_variables)
-        elsif cookbook_file_available?(@new_resource.response_file)
-          Chef::Log.debug("#{@new_resource} fetching preseed file via cookbook_file")
+          remote_file.variables(new_resource.response_file_variables)
+        elsif cookbook_file_available?(new_resource.response_file)
+          Chef::Log.debug("#{new_resource} fetching preseed file via cookbook_file")
           remote_file = Chef::Resource::CookbookFile.new(cache_seed_to, run_context)
         else
-          message = "No template or cookbook file found for response file #{@new_resource.response_file}"
+          message = "No template or cookbook file found for response file #{new_resource.response_file}"
           raise Chef::Exceptions::FileNotFound, message
         end
 
-        remote_file.cookbook_name = @new_resource.cookbook_name
-        remote_file.source(@new_resource.response_file)
+        remote_file.cookbook_name = new_resource.cookbook_name
+        remote_file.source(new_resource.response_file)
         remote_file.backup(false)
         remote_file
       end
@@ -612,8 +624,8 @@ class Chef
       end
 
       def allow_downgrade
-        if @new_resource.respond_to?("allow_downgrade")
-          @new_resource.allow_downgrade
+        if new_resource.respond_to?("allow_downgrade")
+          new_resource.allow_downgrade
         else
           false
         end
@@ -628,14 +640,16 @@ class Chef
       end
 
       def add_timeout_option(command_args)
+        # this is deprecated but its not quite done yet
+        #Chef.deprecated(:package_misc, "shell_out_with_timeout and add_timeout_option are deprecated methods, use shell_out_compact_timeout instead")
         args = command_args.dup
         if args.last.is_a?(Hash)
           options = args.pop.dup
           options[:timeout] = new_resource.timeout if new_resource.timeout
-          options[:timeout] = 900 unless options.has_key?(:timeout)
+          options[:timeout] = 900 unless options.key?(:timeout)
           args << options
         else
-          args << { :timeout => new_resource.timeout ? new_resource.timeout : 900 }
+          args << { timeout: new_resource.timeout ? new_resource.timeout : 900 }
         end
         args
       end

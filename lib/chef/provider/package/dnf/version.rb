@@ -48,7 +48,7 @@ class Chef
             name == other.name && version == other.version && arch == other.arch
           end
 
-          alias_method :eql?, :==
+          alias eql? ==
         end
       end
     end

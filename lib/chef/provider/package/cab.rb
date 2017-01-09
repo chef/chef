@@ -75,7 +75,7 @@ class Chef
         end
 
         def dism_command(command)
-          shellout = Mixlib::ShellOut.new("dism.exe /Online /English #{command} /NoRestart", { :timeout => @new_resource.timeout })
+          shellout = Mixlib::ShellOut.new("dism.exe /Online /English #{command} /NoRestart", timeout: new_resource.timeout)
           with_os_architecture(nil) do
             shellout.run_command
           end
@@ -87,12 +87,12 @@ class Chef
           # e.g. Package_for_KB2975719~31bf3856ad364e35~amd64~~6.3.1.8
           package = split_package_identity(package_info["package_information"]["package_identity"])
           # Search for just the package name to catch a different version being installed
-          Chef::Log.debug("#{@new_resource} searching for installed package #{package['name']}")
+          Chef::Log.debug("#{new_resource} searching for installed package #{package['name']}")
           found_packages = installed_packages.select { |p| p["package_identity"] =~ /^#{package['name']}~/ }
-          if found_packages.length == 0
+          if found_packages.empty?
             nil
           elsif found_packages.length == 1
-            stdout = dism_command("/Get-PackageInfo /PackageName:\"#{found_packages.first["package_identity"]}\"").stdout
+            stdout = dism_command("/Get-PackageInfo /PackageName:\"#{found_packages.first['package_identity']}\"").stdout
             find_version(stdout)
           else
             # Presuming this won't happen, otherwise we need to handle it
@@ -101,7 +101,7 @@ class Chef
         end
 
         def package_version
-          Chef::Log.debug("#{@new_resource} getting product version for package at #{cab_file_source}")
+          Chef::Log.debug("#{new_resource} getting product version for package at #{cab_file_source}")
           stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{cab_file_source}\"").stdout
           find_version(stdout)
         end
@@ -115,22 +115,21 @@ class Chef
         # returns a hash of package state information given the output of dism /get-packages
         # expected keys: package_identity
         def parse_dism_get_packages(text)
-          packages = Array.new
+          packages = []
           text.each_line do |line|
             key, value = line.split(":") if line.start_with?("Package Identity")
-            unless key.nil? || value.nil?
-              package = Hash.new
-              package[key.downcase.strip.tr(" ", "_")] = value.strip.chomp
-              packages << package
-            end
+            next if key.nil? || value.nil?
+            package = {}
+            package[key.downcase.strip.tr(" ", "_")] = value.strip.chomp
+            packages << package
           end
           packages
         end
 
         # returns a hash of package information given the output of dism /get-packageinfo
         def parse_dism_get_package_info(text)
-          package_data = Hash.new
-          errors = Array.new
+          package_data = {}
+          errors = []
           in_section = false
           section_headers = [ "Package information", "Custom Properties", "Features" ]
           text.each_line do |line|
@@ -142,7 +141,7 @@ class Chef
               v = $2 # has to be first or the gsub below replaces this variable
               k = $1.downcase.strip.tr(" ", "_")
               if in_section
-                package_data[in_section] = Hash.new unless package_data[in_section]
+                package_data[in_section] = {} unless package_data[in_section]
                 package_data[in_section][k] = v
               else
                 package_data[k] = v
@@ -162,7 +161,7 @@ class Chef
         end
 
         def split_package_identity(identity)
-          data = Hash.new
+          data = {}
           data["name"], data["publisher"], data["arch"], data["resource_id"], data["version"] = identity.split("~")
           data
         end
