@@ -25,7 +25,7 @@ class Chef
       provides :yum_repository
 
       # http://linux.die.net/man/5/yum.conf
-      property :baseurl, String, regex: /.*/
+      property :baseurl, [String, Array], regex: /.*/
       property :cost, String, regex: /^\d+$/
       property :clean_headers, [TrueClass, FalseClass], default: false # deprecated
       property :clean_metadata, [TrueClass, FalseClass], default: true
