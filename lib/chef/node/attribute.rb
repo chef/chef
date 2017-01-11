@@ -1,4 +1,4 @@
-#la--
+#--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
 # Copyright:: Copyright 2008-2016, Chef Software, Inc.
