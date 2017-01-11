@@ -40,7 +40,7 @@ matrix:
     script: sudo -E $(which bundle) exec rake spec;
     # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
-  - rvm: ruby-head
+  - rvm: 2.4.0
     sudo: true
     script: sudo -E $(which bundle) exec rake spec;
     # also remove integration / external tests
@@ -325,7 +325,7 @@ matrix:
       - sudo cat /var/log/squid3/access.log
 
   allow_failures:
-    - rvm: ruby-head
+    - rvm: 2.4.0
 
 notifications:
   on_change: true
