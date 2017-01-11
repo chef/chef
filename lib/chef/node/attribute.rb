@@ -416,23 +416,22 @@ class Chef
 
       def normal_unless(*args)
         return Decorator::Unchain.new(self, :normal_unless) unless args.length > 0
-        write(:normal, *args) if read(*args[0...-1]).nil?
+        write(:normal, *args) if normal.read(*args[0...-1]).nil?
       end
 
       def default_unless(*args)
         return Decorator::Unchain.new(self, :default_unless) unless args.length > 0
-        write(:default, *args) if read(*args[0...-1]).nil?
+        write(:default, *args) if default.read(*args[0...-1]).nil?
       end
 
       def override_unless(*args)
         return Decorator::Unchain.new(self, :override_unless) unless args.length > 0
-        write(:override, *args) if read(*args[0...-1]).nil?
+        write(:override, *args) if override.read(*args[0...-1]).nil?
       end
 
       def set_unless(*args)
         Chef.deprecated(:attributes, "node.set_unless is deprecated and will be removed in Chef 14, please use node.default_unless/node.override_unless (or node.normal_unless if you really need persistence)")
-        return Decorator::Unchain.new(self, :default_unless) unless args.length > 0
-        write(:normal, *args) if read(*args[0...-1]).nil?
+        normal_unless(*args)
       end
 
       def has_key?(key)
