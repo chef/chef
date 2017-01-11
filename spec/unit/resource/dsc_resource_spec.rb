@@ -18,6 +18,7 @@
 require "spec_helper"
 describe Chef::Resource::DscResource do
   let(:dsc_test_resource_name) { "DSCTest" }
+  let(:dsc_test_resource_module_version) { "2.7.2" }
   let(:dsc_test_property_name) { :DSCTestProperty }
   let(:dsc_test_property_value) { "DSCTestValue" }
   let(:dsc_test_reboot_action) { :reboot_now }
@@ -51,6 +52,11 @@ describe Chef::Resource::DscResource do
     it "allows the module_name attribute to be set" do
       dsc_test_resource.module_name(dsc_test_resource_name)
       expect(dsc_test_resource.module_name).to eq(dsc_test_resource_name)
+    end
+
+    it "allows the module_version attribute to be set" do
+      dsc_test_resource.module_version(dsc_test_resource_module_version)
+      expect(dsc_test_resource.module_version).to eq(dsc_test_resource_module_version)
     end
 
     it "allows the reboot_action attribute to be set" do

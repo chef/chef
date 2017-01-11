@@ -165,4 +165,92 @@ describe Chef::Provider::DscResource do
       end
     end
   end
+
+  describe "module_usage_valid?" do
+    let (:node) do
+      node = Chef::Node.new
+      node.automatic[:languages][:powershell][:version] = "5.0.10586.0"
+      node
+    end
+
+    context "module_name and module_version both are not provided" do
+      before do
+        provider.instance_variable_set(:@module_name, nil)
+        provider.instance_variable_set(:@module_version, nil)
+      end
+
+      it "returns true" do
+        response = provider.send(:module_usage_valid?)
+        expect(response).to be == true
+      end
+    end
+
+    context "module_name and module_version both are provided" do
+      before do
+        provider.instance_variable_set(:@module_name, 'my_module')
+        provider.instance_variable_set(:@module_version, '1.3')
+      end
+
+      it "returns true" do
+        response = provider.send(:module_usage_valid?)
+        expect(response).to be == true
+      end
+    end
+
+    context "module_name is given but module_version is not given" do
+      before do
+        provider.instance_variable_set(:@module_name, 'my_module')
+        provider.instance_variable_set(:@module_version, nil)
+      end
+
+      it "returns true" do
+        response = provider.send(:module_usage_valid?)
+        expect(response).to be == true
+      end
+    end
+
+    context "module_name is not given but module_version is given" do
+      before do
+        provider.instance_variable_set(:@module_name, nil)
+        provider.instance_variable_set(:@module_version, '1.4.0.1')
+      end
+
+      it "returns false" do
+        response = provider.send(:module_usage_valid?)
+        expect(response).to be == false
+      end
+    end
+  end
+
+  describe "module_info_object" do
+    let (:node) do
+      node = Chef::Node.new
+      node.automatic[:languages][:powershell][:version] = "5.0.10586.0"
+      node
+    end
+
+    context "module_version is not given" do
+      before do
+        provider.instance_variable_set(:@module_version, nil)
+        allow(provider).to receive(:module_name).and_return('my_module')
+      end
+
+      it "returns only name of the module" do
+        response = provider.send(:module_info_object)
+        expect(response).to be == 'my_module'
+      end
+    end
+
+    context "module_version is given" do
+      before do
+        provider.instance_variable_set(:@module_version, '1.3.1')
+        allow(provider).to receive(:module_name).and_return('my_module')
+      end
+
+      it "returns the module info object" do
+        response = provider.send(:module_info_object)
+        expect(response).to be == "@{ModuleName='my_module';ModuleVersion='1.3.1'}"
+      end
+    end
+  end
 end

@@ -49,10 +49,6 @@ class Chef
         true
       end
 
-      def module_name_missing?
-        !(!@module_name && @module_version) ? true : false
-      end
-
       def define_resource_requirements
         requirements.assert(:run) do |a|
           a.assertion { supports_dsc_invoke_resource? }
@@ -71,7 +67,7 @@ class Chef
           a.block_action!
         end
         requirements.assert(:run) do |a|
-          a.assertion { module_name_missing? }
+          a.assertion { module_usage_valid? }
           err = ["module_name must be supplied along with module_version."]
           a.failure_message Chef::Exceptions::DSCModuleNameMissing,
             err
@@ -103,6 +99,10 @@ class Chef
 
       def supports_refresh_mode_enabled?
         Chef::Platform.supports_refresh_mode_enabled?(node)
+      end
+
+      def module_usage_valid?
+        !(!@module_name && @module_version) ? true : false
       end
 
       def generate_description
