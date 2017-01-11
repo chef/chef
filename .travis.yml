@@ -40,7 +40,7 @@ matrix:
     script: sudo -E $(which bundle) exec rake spec;
     # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
-  - rvm: ruby-head
+  - rvm: 2.4.0
     sudo: true
     script: sudo -E $(which bundle) exec rake spec;
     # also remove integration / external tests
@@ -230,24 +230,24 @@ matrix:
     env:
       - CENTOS=7
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.3
-    services: docker
-    sudo: required
-    gemfile: kitchen-tests/Gemfile
-    before_install:
-      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
-    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
-    before_script:
-      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-      - cd kitchen-tests
-    script:
-      - bundle exec kitchen test webapp-fedora-latest
-    after_failure:
-      - cat .kitchen/logs/kitchen.log
-    env:
-      - FEDORA=latest
-      - KITCHEN_YAML=.kitchen.travis.yml
+# - rvm: 2.3.3
+#    services: docker
+#    sudo: required
+#    gemfile: kitchen-tests/Gemfile
+#    before_install:
+#      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+#      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+#    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+#    before_script:
+#      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+#      - cd kitchen-tests
+#    script:
+#      - bundle exec kitchen test webapp-fedora-latest
+#    after_failure:
+#      - cat .kitchen/logs/kitchen.log
+#    env:
+#      - FEDORA=latest
+#      - KITCHEN_YAML=.kitchen.travis.yml
   - rvm: 2.3.3
     services: docker
     sudo: required
@@ -325,7 +325,7 @@ matrix:
       - sudo cat /var/log/squid3/access.log
 
   allow_failures:
-    - rvm: ruby-head
+    - rvm: 2.4.0
 
 notifications:
   on_change: true
