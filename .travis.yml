@@ -326,6 +326,11 @@ matrix:
 
   allow_failures:
     - rvm: 2.4.0
+    - rvm: 2.3.3
+      gemfile: kitchen-tests/Gemfile
+      env:
+        - FEDORA=latest
+        - KITCHEN_YAML=.kitchen.travis.yml
 
 notifications:
   on_change: true
