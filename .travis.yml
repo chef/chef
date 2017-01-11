@@ -324,9 +324,6 @@ matrix:
       - sudo cat /var/log/squid3/cache.log
       - sudo cat /var/log/squid3/access.log
 
-  allow_failures:
-    - rvm: 2.4.0
-
 notifications:
   on_change: true
   on_failure: true
