@@ -337,14 +337,35 @@ describe Chef::Node do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
         expect(Chef).to receive(:deprecated).with(:attributes, /set is deprecated/)
         node.set[:snoopy][:is_a_puppy] = true
-        expect(node[:snoopy][:is_a_puppy]).to eq(true)
+        expect(node.normal[:snoopy][:is_a_puppy]).to eq(true)
       end
 
       it "set_unless is a deprecated alias for normal_unless" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
         expect(Chef).to receive(:deprecated).with(:attributes, /set_unless is deprecated/)
         node.set_unless[:snoopy][:is_a_puppy] = false
-        expect(node[:snoopy][:is_a_puppy]).to eq(false)
+        expect(node.normal[:snoopy][:is_a_puppy]).to eq(false)
+      end
+
+      it "normal_unless sets a value even if default or override attrs are set" do
+        node.default[:decontamination] = true
+        node.override[:decontamination] = false
+        node.normal_unless[:decontamination] = "foo"
+        expect(node.normal[:decontamination]).to eql("foo")
+      end
+
+      it "default_unless sets a value even if normal or override attrs are set" do
+        node.normal[:decontamination] = true
+        node.override[:decontamination] = false
+        node.default_unless[:decontamination] = "foo"
+        expect(node.default[:decontamination]).to eql("foo")
+      end
+
+      it "override_unless sets a value even if default or normal attrs are set" do
+        node.default[:decontamination] = true
+        node.normal[:decontamination] = false
+        node.override_unless[:decontamination] = "foo"
+        expect(node.override[:decontamination]).to eql("foo")
       end
     end
 
