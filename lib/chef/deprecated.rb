@@ -196,6 +196,16 @@ class Chef
       end
     end
 
+    class DnfPackageAllowDowngrade < Base
+      def id
+        10
+      end
+
+      def target
+        "dnf_package_allow_downgrade.html"
+      end
+    end
+
     class Generic < Base
       def url
         "https://docs.chef.io/chef_deprecations_client.html"

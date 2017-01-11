@@ -1,6 +1,5 @@
 #
-# Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,12 +18,12 @@
 require "spec_helper"
 require "support/shared/unit/resource/static_provider_resolution"
 
-describe Chef::Resource::YumPackage, "initialize" do
+describe Chef::Resource::DnfPackage, "initialize" do
 
   static_provider_resolution(
-    resource: Chef::Resource::YumPackage,
-    provider: Chef::Provider::Package::Yum,
-    name: :yum_package,
+    resource: Chef::Resource::DnfPackage,
+    provider: Chef::Provider::Package::Dnf,
+    name: :dnf_package,
     action: :install,
     os: "linux",
     platform_family: "rhel"
@@ -32,20 +31,20 @@ describe Chef::Resource::YumPackage, "initialize" do
 
 end
 
-describe Chef::Resource::YumPackage, "arch" do
+describe Chef::Resource::DnfPackage, "arch" do
   before(:each) do
-    @resource = Chef::Resource::YumPackage.new("foo")
+    @resource = Chef::Resource::DnfPackage.new("foo")
   end
 
   it "should set the arch variable to whatever is passed in" do
     @resource.arch("i386")
-    expect(@resource.arch).to eql("i386")
+    expect(@resource.arch).to eql(["i386"])
   end
 end
 
-describe Chef::Resource::YumPackage, "flush_cache" do
+describe Chef::Resource::DnfPackage, "flush_cache" do
   before(:each) do
-    @resource = Chef::Resource::YumPackage.new("foo")
+    @resource = Chef::Resource::DnfPackage.new("foo")
   end
 
   it "should default the flush timing to false" do
@@ -87,23 +86,14 @@ describe Chef::Resource::YumPackage, "flush_cache" do
   end
 end
 
-describe Chef::Resource::YumPackage, "allow_downgrade" do
+describe Chef::Resource::DnfPackage, "allow_downgrade" do
   before(:each) do
-    @resource = Chef::Resource::YumPackage.new("foo")
+    @resource = Chef::Resource::DnfPackage.new("foo")
   end
 
   it "should allow you to specify whether allow_downgrade is true or false" do
+    Chef::Config[:treat_deprecation_warnings_as_errors] = false
     expect { @resource.allow_downgrade true }.not_to raise_error
     expect { @resource.allow_downgrade false }.not_to raise_error
-    expect { @resource.allow_downgrade "monkey" }.to raise_error(ArgumentError)
-  end
-end
-
-describe Chef::Resource::YumPackage, "yum_binary" do
-  let(:resource) { Chef::Resource::YumPackage.new("foo") }
-
-  it "should allow you to specify the yum_binary" do
-    resource.yum_binary "/usr/bin/yum-something"
-    expect(resource.yum_binary).to eql("/usr/bin/yum-something")
   end
 end

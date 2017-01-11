@@ -1,6 +1,5 @@
 #
-# Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,13 +19,23 @@ require "chef/resource/package"
 
 class Chef
   class Resource
-    class YumPackage < Chef::Resource::Package
-      resource_name :yum_package
-      provides :package, os: "linux", platform_family: %w{rhel fedora}
+    class DnfPackage < Chef::Resource::Package
+      extend Chef::Mixin::Which
+
+      resource_name :dnf_package
+
+      allowed_actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock, :flush_cache
+
+      provides :package, os: "linux", platform_family: %w{rhel fedora} do
+        which("dnf")
+      end
+
+      provides :dnf_package
 
       # Install a specific arch
-      property :arch, [ String, Array ]
+      property :arch, [String, Array], coerce: proc { |x| [x].flatten }
 
+      # Flush the in-memory available/installed cache, this does not flush the dnf caches on disk
       property :flush_cache,
         Hash,
         default: { before: false, after: false },
@@ -44,9 +53,12 @@ class Chef
           end
         }
 
-      property :allow_downgrade, [ true, false ], default: false
-
-      property :yum_binary, String
+      def allow_downgrade(arg = nil)
+        if !arg.nil?
+          Chef.deprecated(:dnf_package_allow_downgrade, "the allow_downgrade property on the dnf_package provider is not used, DNF supports downgrades by default.")
+        end
+        false
+      end
     end
   end
 end
