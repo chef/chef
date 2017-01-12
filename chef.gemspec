@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", ">= 8.6.0.alpha.1", "< 9"
 
   s.add_dependency "ffi-yajl", "~> 2.2"
-  s.add_dependency "net-ssh", "~> 4.0"
+  s.add_dependency "net-ssh", ">= 2.9", "< 5.0"
   s.add_dependency "rbnacl-libsodium", "~> 1.0.0"
   s.add_dependency "rbnacl", "~> 4.0.0"
   s.add_dependency "bcrypt_pbkdf", "~> 1.0.0"
