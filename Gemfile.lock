@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: b69e9df027c99ed37aae1e3fd8468a5c6496ced1
+  revision: 2d06ce7ef5976e2a410906f60152142bf90a17fb
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
