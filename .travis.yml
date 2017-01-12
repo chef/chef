@@ -260,7 +260,7 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test webapp-amazonlinux
+      - travis_wait bundle exec kitchen test webapp-amazonlinux
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
