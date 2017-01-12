@@ -162,9 +162,7 @@ class Chef
       end
 
       def module_info_object
-        @module_version.nil? ?
-          module_name :
-          "@{ModuleName='#{module_name}';ModuleVersion='#{@module_version}'}"
+        @module_version.nil? ? module_name : "@{ModuleName='#{module_name}';ModuleVersion='#{@module_version}'}"
       end
 
       def invoke_resource(method, output_format = :object)
