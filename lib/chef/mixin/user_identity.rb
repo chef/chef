@@ -54,17 +54,21 @@ class Chef
         end
 
         if ! specified_user.nil? && specified_domain.nil?
+          # Splitting username of format: Domain\Username
           domain_and_user = user.split('\\')
-
-          if domain_and_user.length == 1
-            domain_and_user = user.split("@")
-          end
 
           if domain_and_user.length == 2
             domain = domain_and_user[0]
             user = domain_and_user[1]
-          elsif domain_and_user.length != 1
-            raise ArgumentError, "The specified user name `#{user}` is not a syntactically valid user name"
+          elsif domain_and_user.length == 1
+            # Splitting username of format: Username@Domain
+            domain_and_user = user.split("@")
+            if domain_and_user.length == 2
+              domain = domain_and_user[1]
+              user = domain_and_user[0]
+            elsif domain_and_user.length != 1
+              raise ArgumentError, "The specified user name `#{user}` is not a syntactically valid user name"
+            end
           end
         end
 
