@@ -42,7 +42,6 @@ class Chef
         # Fetches the file on a network share, returning a Tempfile-like File handle
         # windows only
         def fetch
-          validate_identity(new_resource.remote_user, new_resource.remote_user_password, new_resource.remote_user_domain)
           begin
             tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
             Chef::Log.debug("#{new_resource} staging #{@source} to #{tempfile.path}")

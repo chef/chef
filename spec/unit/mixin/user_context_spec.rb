@@ -94,7 +94,7 @@ describe "a class that mixes in user_context" do
       end
 
       context "when the block raises an exception" do
-        class UserContextTestException < Exception
+        class UserContextTestException < RuntimeError
         end
         let(:block_parameter) { Proc.new { raise UserContextTextException } }
 
@@ -110,15 +110,5 @@ describe "a class that mixes in user_context" do
     end
 
     it_behaves_like "a method that requires a block"
-  end
-
-  context "when not running on Windows" do
-    before do
-      allow(::Chef::Platform).to receive(:windows?).and_return(false)
-    end
-
-    it "raises a ::Chef::Exceptions::UnsupportedPlatform exception" do
-      expect { instance_with_user_context.with_context(nil, nil, nil) {} }.to raise_error(::Chef::Exceptions::UnsupportedPlatform)
-    end
   end
 end
