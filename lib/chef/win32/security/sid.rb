@@ -59,6 +59,11 @@ class Chef
           Chef::ReservedNames::Win32::Security.lookup_account_sid(self)
         end
 
+        def account_simple_name
+          domain, name, use = account
+          name
+        end
+
         def account_name
           domain, name, use = account
           (!domain.nil? && domain.length > 0) ? "#{domain}\\#{name}" : name
