@@ -71,7 +71,6 @@ class Chef
           err = ["module_name must be supplied along with module_version."]
           a.failure_message Chef::Exceptions::DSCModuleNameMissing,
             err
-          a.whyrun err + ["Assuming a module_name is specified."]
           a.block_action!
         end
       end
@@ -102,7 +101,7 @@ class Chef
       end
 
       def module_usage_valid?
-        !(!@module_name && @module_version) ? true : false
+        !(!@module_name && @module_version)
       end
 
       def generate_description

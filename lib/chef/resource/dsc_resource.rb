@@ -68,12 +68,12 @@ class Chef
         end
       end
 
-      def module_version(value = nil)
-        if value
-          @module_version = value
-        else
-          @module_version
-        end
+      def module_version(arg = nil)
+        set_or_return(
+          :module_version,
+          arg,
+          :kind_of => [ String ]
+        )
       end
 
       def property(property_name, value = nil)

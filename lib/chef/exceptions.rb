@@ -527,6 +527,6 @@ This error is most often caused by network issues (proxies, etc) outside of chef
     end
 
     # exception specific to invalid usage of 'dsc_resource' resource
-    class DSCModuleNameMissing < RuntimeError; end
+    class DSCModuleNameMissing < ArgumentError; end
   end
 end
