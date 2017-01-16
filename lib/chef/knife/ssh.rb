@@ -232,7 +232,7 @@ class Chef
       # @param user [String] Optional username for this session.
       # @return [Hash<Symbol, Object>]
       def session_options(host, port, user = nil)
-        ssh_config = Net::SSH.configuration_for(host)
+        ssh_config = Net::SSH.configuration_for(host, true)
         {}.tap do |opts|
           # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
           opts[:user] = user || config[:ssh_user] || ssh_config[:user]
