@@ -525,5 +525,11 @@ This error is most often caused by network issues (proxies, etc) outside of chef
         super "Found multiple matching resources. #{matches_info.join("\n")}"
       end
     end
+
+    class FileIntegrityCompromise < RuntimeError
+      def initialize(file, orig_chksum, current_chksum)
+        super "For the file: #{File.basename(file)} original checksum: (#{orig_chksum}) does not match existing content checksum: (#{current_chksum})"
+      end
+    end
   end
 end
