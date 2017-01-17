@@ -1,0 +1,11 @@
+# The Chef run interval in seconds
+interval = 10 
+
+# The splay
+splay = 10
+
+# The default log level
+log_level = "info"
+
+# The default run list
+run_list = ""
