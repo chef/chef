@@ -44,6 +44,7 @@ To mention the team, use @chef/client-core
 * [Steven Murawski](https://github.com/smurawski)
 * [Steven Danna](https://github.com/stevendanna)
 * [Tim Smith](https://github.com/tas50)
+* [Tom Duffield](https://github.com/tduffield)
 * [Tyler Ball](https://github.com/tyler-ball)
 
 ## Chef Provisioning
