@@ -35,12 +35,14 @@ class Chef
 
         def load_current_resource
           @current_resource = Chef::Resource::CabPackage.new(new_resource.name)
-          # download file if source is a url
-          @cab_file = uri_scheme?(new_resource.source) ? download_source_file : @new_resource.source
-          current_resource.source(new_resource.source)
-          current_resource.version(package_version)
+          current_resource.source(cab_file_source)
+          new_resource.version(package_version)
           current_resource.version(installed_version)
           current_resource
+        end
+
+        def cab_file_source
+          @cab_file_source ||= uri_scheme?(new_resource.source) ? download_source_file : @new_resource.source
         end
 
         def download_source_file
@@ -65,11 +67,11 @@ class Chef
         end
 
         def install_package(name, version)
-          dism_command("/Add-Package /PackagePath:\"#{@cab_file}\"")
+          dism_command("/Add-Package /PackagePath:\"#{cab_file_source}\"")
         end
 
         def remove_package(name, version)
-          dism_command("/Remove-Package /PackagePath:\"#{@cab_file}\"")
+          dism_command("/Remove-Package /PackagePath:\"#{cab_file_source}\"")
         end
 
         def dism_command(command)
@@ -80,7 +82,7 @@ class Chef
         end
 
         def installed_version
-          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{@cab_file}\"").stdout
+          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{cab_file_source}\"").stdout
           package_info = parse_dism_get_package_info(stdout)
           # e.g. Package_for_KB2975719~31bf3856ad364e35~amd64~~6.3.1.8
           package = split_package_identity(package_info["package_information"]["package_identity"])
@@ -91,7 +93,7 @@ class Chef
             nil
           elsif found_packages.length == 1
             stdout = dism_command("/Get-PackageInfo /PackageName:\"#{found_packages.first["package_identity"]}\"").stdout
-            find_version(stdout).to_s
+            find_version(stdout)
           else
             # Presuming this won't happen, otherwise we need to handle it
             raise Chef::Exceptions::Package, "Found multiple packages installed matching name #{package['name']}, found: #{found_packages.length} matches"
@@ -99,9 +101,9 @@ class Chef
         end
 
         def package_version
-          Chef::Log.debug("#{@new_resource} getting product version for package at #{@cab_file}")
-          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{@cab_file}\"").stdout
-          find_version(stdout).to_s
+          Chef::Log.debug("#{@new_resource} getting product version for package at #{cab_file_source}")
+          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{cab_file_source}\"").stdout
+          find_version(stdout)
         end
 
         def find_version(stdout)
