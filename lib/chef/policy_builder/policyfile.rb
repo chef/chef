@@ -173,6 +173,7 @@ class Chef
         CookbookCacheCleaner.instance.skip_removal = true if named_run_list_requested?
 
         node.run_list(run_list)
+        node.automatic_attrs[:policy_revision] = revision_id
         node.automatic_attrs[:roles] = []
         node.automatic_attrs[:recipes] = run_list_expansion_ish.recipes
         run_list_expansion_ish
