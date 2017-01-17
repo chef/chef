@@ -30,8 +30,6 @@ class Chef
           raise ArgumentError, "You must supply a block to `with_user_context`"
         end
 
-        validate_identity(specified_user, password, specified_domain)
-
         identity = qualify_user(specified_user, specified_domain)
 
         user = identity[:user]
