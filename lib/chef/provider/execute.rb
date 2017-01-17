@@ -43,6 +43,10 @@ class Chef
 
       def define_resource_requirements
         # @todo: this should change to raise in some appropriate major version bump.
+        requirements.assert(:all_actions) do |a|
+          a.assertion { validate_identity(new_resource.user, new_resource.password, new_resource.domain) }
+        end
+
         if creates && creates_relative? && !cwd
           Chef::Log.warn "Providing a relative path for the creates attribute without the cwd is deprecated and will be changed to fail in the future (CHEF-3819)"
         end
@@ -55,7 +59,11 @@ class Chef
       end
 
       def action_run
-        validate_identity(new_resource.user, new_resource.password, new_resource.domain)
+        # parse username if it's in the following format: domain/username or username@domain
+        identity = qualify_user(new_resource.user, new_resource.domain)
+        new_resource.user identity[:user]
+        new_resource.domain identity[:domain]
+
         if creates && sentinel_file.exist?
           Chef::Log.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
           return false
