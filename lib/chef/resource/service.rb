@@ -215,7 +215,7 @@ class Chef
 
       def options(arg = nil)
         set_or_return(
-          :user,
+          :options,
           arg,
           :kind_of => [ Array, String ]
         )
