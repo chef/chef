@@ -190,7 +190,7 @@ describe Chef::Knife::Ssh do
     before :each do
       @knife.instance_variable_set(:@longest, 0)
       ssh_config = { :timeout => 50, :user => "locutus", :port => 23 }
-      allow(Net::SSH).to receive(:configuration_for).with("the.b.org").and_return(ssh_config)
+      allow(Net::SSH).to receive(:configuration_for).with("the.b.org", true).and_return(ssh_config)
     end
 
     it "uses the port from an ssh config file" do
