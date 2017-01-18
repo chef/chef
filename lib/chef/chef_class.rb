@@ -30,6 +30,7 @@ require "chef/platform/provider_priority_map"
 require "chef/platform/resource_priority_map"
 require "chef/platform/provider_handler_map"
 require "chef/platform/resource_handler_map"
+require "chef/deprecated"
 require "chef/event_dispatch/dsl"
 require "chef/deprecated"
 
