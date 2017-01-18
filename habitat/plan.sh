@@ -4,11 +4,26 @@ pkg_maintainer="The Chef Maintainers <humans@chef.io>"
 pkg_description="The Chef Client"
 pkg_version=$(cat ../VERSION)
 pkg_source=nosuchfile.tar.gz
+pkg_filename=${pkg_dirname}.tar.gz
 pkg_license=('Apache-2.0')
 pkg_bin_dirs=(bin)
-pkg_build_deps=(core/make core/gcc core/coreutils core/rsync core/git)
+pkg_build_deps=(core/make core/gcc core/coreutils core/git)
 pkg_deps=(core/glibc core/ruby core/libxml2 core/libxslt core/libiconv core/xz core/zlib core/bundler core/openssl core/cacerts core/libffi)
 pkg_svc_user=root
+
+do_download() {
+  build_line "Fake download! Creating archive of latest repository commit."
+  # source is in this repo, so we're going to create an archive from the
+  # appropriate path within the repo and place the generated tarball in the
+  # location expected by do_unpack
+  cd $PLAN_CONTEXT/../
+  git archive --prefix=${pkg_name}-${pkg_version}/ --output=$HAB_CACHE_SRC_PATH/${pkg_filename} HEAD
+}
+
+do_verify() {
+  build_line "Skipping checksum verification on the archive we just created."
+  return 0
+}
 
 do_prepare() {
   export OPENSSL_LIB_DIR=$(pkg_path_for openssl)/lib
@@ -18,7 +33,6 @@ do_prepare() {
   build_line "Setting link for /usr/bin/env to 'coreutils'"
   [[ ! -f /usr/bin/env ]] && ln -s $(pkg_path_for coreutils)/bin/env /usr/bin/env
 
-  rsync -vaP --delete --exclude habitat --exclude results --exclude .git --exclude Gemfile.lock $PLAN_CONTEXT/../ $HAB_CACHE_SRC_PATH/$pkg_dirname
   return 0
 }
 
@@ -30,7 +44,7 @@ do_build() {
   local _libxslt_dir=$(pkg_path_for libxslt)
   local _zlib_dir=$(pkg_path_for zlib)
 
-  export GEM_HOME=${pkg_path}
+  export GEM_HOME=${pkg_prefix}
   export GEM_PATH=${_bundler_dir}:${GEM_HOME}
 
   export NOKOGIRI_CONFIG="--use-system-libraries --with-zlib-dir=${_zlib_dir} --with-xslt-dir=${_libxslt_dir} --with-xml2-include=${_libxml2_dir}/include/libxml2 --with-xml2-lib=${_libxml2_dir}/lib"
@@ -53,8 +67,8 @@ do_build() {
   cp chef-config/pkg/chef-config-$pkg_version.gem gems-suck/gems
   bundle exec gem generate_index -d gems-suck
 
-  sed -e "s#gem \"chef\".*#gem \"chef\", source: \"file://$HAB_CACHE_SRC_PATH/$pkg_dirname/gems-suck\"#" -i Gemfile 
-  sed -e "s#gem \"chef-config\".*#gem \"chef-config\", source: \"file://$HAB_CACHE_SRC_PATH/$pkg_dirname/gems-suck\"#" -i Gemfile 
+  sed -e "s#gem \"chef\".*#gem \"chef\", source: \"file://$HAB_CACHE_SRC_PATH/$pkg_dirname/gems-suck\"#" -i Gemfile
+  sed -e "s#gem \"chef-config\".*#gem \"chef-config\", source: \"file://$HAB_CACHE_SRC_PATH/$pkg_dirname/gems-suck\"#" -i Gemfile
   #bundle config --local local.chef $HAB_CACHE_SRC_PATH/$pkg_dirname/gems-suck
   #bundle config --local local.chef-config $HAB_CACHE_SRC_PATH/$pkg_dirname/gems-suck
 
@@ -81,18 +95,6 @@ do_install() {
 }
 
 # Stubs
-do_verify() {
-  return 0
-}
-
-do_download() {
-  return 0
-} 
-
-do_unpack() {
-  return 0
-}
-
 do_strip() {
   return 0
 }
