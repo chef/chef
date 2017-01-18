@@ -150,7 +150,11 @@ class Chef
 
       def modify_env
         if @new_resource.delim
-          @new_resource.value((new_values + current_values).uniq.join(@new_resource.delim))
+          if @new_resource.append
+            @new_resource.value((current_values.delete_if { |value| new_values.include?(value) } + new_values).uniq.join(@new_resource.delim))
+          else
+            @new_resource.value((new_values + current_values).uniq.join(@new_resource.delim))
+          end
         end
         create_env
       end

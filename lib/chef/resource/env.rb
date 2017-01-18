@@ -35,6 +35,7 @@ class Chef
         @key_name = name
         @value = nil
         @delim = nil
+        @append = false
       end
 
       def key_name(arg = nil)
@@ -58,6 +59,14 @@ class Chef
           :delim,
           arg,
           :kind_of => [ String ]
+        )
+      end
+
+      def append(arg = nil)
+        set_or_return(
+            :append,
+            arg,
+            :kind_of => [ TrueClass, FalseClass ]
         )
       end
     end
