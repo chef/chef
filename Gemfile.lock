@@ -578,7 +578,6 @@ DEPENDENCIES
   chefspec
   chefstyle!
   cucumber (>= 2.4.0)
-  ffi
   foodcritic
   github_changelog_generator!
   halite
