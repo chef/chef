@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::Package::Cab do
+describe Chef::Provider::Package::Cab, :windows_only do
   let(:timeout) {}
 
   let(:new_resource) { Chef::Resource::CabPackage.new("windows_test_pkg") }
