@@ -30,7 +30,7 @@ describe "Chef::Win32::Security", :windows_only do
         expect(Chef::ReservedNames::Win32::Security).to receive(:GetNamedSecurityInfoW).and_return(
           Chef::ReservedNames::Win32::API::Error::ERROR_SUCCESS
         )
-        expect { Chef::ReservedNames::Win32::Security.get_named_security_info '/temp_path' }.to_not raise_error
+        expect { Chef::ReservedNames::Win32::Security.get_named_security_info "/temp_path" }.to_not raise_error
       end
     end
 
@@ -39,7 +39,7 @@ describe "Chef::Win32::Security", :windows_only do
         expect(Chef::ReservedNames::Win32::Security).to receive(:GetNamedSecurityInfoW).and_return(
           Chef::ReservedNames::Win32::API::Error::ERROR_INVALID_ACCESS
         )
-        expect { Chef::ReservedNames::Win32::Security.get_named_security_info '/temp_path' }.to raise_error Chef::Exceptions::Win32APIError
+        expect { Chef::ReservedNames::Win32::Security.get_named_security_info "/temp_path" }.to raise_error Chef::Exceptions::Win32APIError
       end
     end
   end
@@ -50,7 +50,7 @@ describe "Chef::Win32::Security", :windows_only do
         expect(Chef::ReservedNames::Win32::Security).to receive(:SetNamedSecurityInfoW).and_return(
           Chef::ReservedNames::Win32::API::Error::ERROR_SUCCESS
         )
-        expect { Chef::ReservedNames::Win32::Security.set_named_security_info '/temp_path', :SE_FILE_OBJECT, {} }.to_not raise_error
+        expect { Chef::ReservedNames::Win32::Security.set_named_security_info "/temp_path", :SE_FILE_OBJECT, {} }.to_not raise_error
       end
     end
 
@@ -59,7 +59,7 @@ describe "Chef::Win32::Security", :windows_only do
         expect(Chef::ReservedNames::Win32::Security).to receive(:SetNamedSecurityInfoW).and_return(
           Chef::ReservedNames::Win32::API::Error::ERROR_USER_NOT_FOUND
         )
-        expect { Chef::ReservedNames::Win32::Security.set_named_security_info '/temp_path', :SE_FILE_OBJECT, {} }.to raise_error Chef::Exceptions::Chef::Exceptions::UserIDNotFound
+        expect { Chef::ReservedNames::Win32::Security.set_named_security_info "/temp_path", :SE_FILE_OBJECT, {} }.to raise_error Chef::Exceptions::Chef::Exceptions::UserIDNotFound
       end
     end
   end
