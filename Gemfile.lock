@@ -68,7 +68,6 @@ PATH
       ohai (>= 8.6.0.alpha.1, < 9)
       plist (~> 3.2)
       proxifier (~> 1.0)
-      rbnacl (~> 4.0.0)
       rspec-core (~> 3.5)
       rspec-expectations (~> 3.5)
       rspec-mocks (~> 3.5)
@@ -99,7 +98,6 @@ PATH
       ohai (>= 8.6.0.alpha.1, < 9)
       plist (~> 3.2)
       proxifier (~> 1.0)
-      rbnacl (~> 4.0.0)
       rspec-core (~> 3.5)
       rspec-expectations (~> 3.5)
       rspec-mocks (~> 3.5)
@@ -292,7 +290,7 @@ GEM
     mime-types-data (3.2016.0521)
     mini_portile2 (2.1.0)
     minitest (5.10.1)
-    mixlib-archive (0.2.0)
+    mixlib-archive (0.3.0)
       mixlib-log
     mixlib-authentication (1.4.1)
       mixlib-log
@@ -404,8 +402,6 @@ GEM
     rainbow (2.2.1)
     rake (11.3.0)
     rb-readline (0.5.3)
-    rbnacl (4.0.1)
-      ffi
     rest-client (2.0.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -466,7 +462,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.66.4)
+    specinfra (2.66.5)
       net-scp
       net-ssh (>= 2.7, < 5.0)
       net-telnet

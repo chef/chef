@@ -111,7 +111,7 @@ GEM
       multi_json (~> 1.10)
     method_source (0.8.2)
     minitar (0.5.4)
-    mixlib-archive (0.2.0)
+    mixlib-archive (0.3.0)
       mixlib-log
     mixlib-authentication (1.4.1)
       mixlib-log

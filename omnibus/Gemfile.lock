@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: b8163fac517b46b4cb043cbee5ef21caa99b80e4
+  revision: 4bf6f5cf21bc0ff8de327dfc0a245b625134d6b0
   specs:
     license_scout (0.1.2)
       ffi-yajl (~> 2.2)
@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: edf1b47fd065fa1185610185d2f0271e83ca3e99
-  branch: rhass/COOL-657_ecc-algorithm-support
+  revision: f4b1c0f2682907967d10c64850f9c607070697dd
+  branch: shain/ruby_windows_monster
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -124,7 +124,7 @@ GEM
       multi_json (~> 1.10)
     method_source (0.8.2)
     minitar (0.5.4)
-    mixlib-archive (0.2.0)
+    mixlib-archive (0.3.0)
       mixlib-log
     mixlib-authentication (1.4.1)
       mixlib-log
