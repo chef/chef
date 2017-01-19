@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.18.39](https://github.com/chef/chef/tree/v12.18.39) (2017-01-18)
-[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.39)
+## [v12.18.40](https://github.com/chef/chef/tree/v12.18.40) (2017-01-19)
+[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.40)
 
 **Implemented enhancements:**
 
@@ -16,6 +16,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Fixed bugs:**
 
+- Add gems for ECC algorithm support to omnibus. [\#5736](https://github.com/chef/chef/pull/5736) ([rhass](https://github.com/rhass))
 - Core: fix node attribute "unless" API methods [\#5717](https://github.com/chef/chef/pull/5717) ([lamont-granquist](https://github.com/lamont-granquist))
 - Fix error thrown by solo when run on Windows as SYSTEM [\#5693](https://github.com/chef/chef/pull/5693) ([scottopherson](https://github.com/scottopherson))
 - Report a blank resource if sensitive is enabled [\#5668](https://github.com/chef/chef/pull/5668) ([afiune](https://github.com/afiune))
