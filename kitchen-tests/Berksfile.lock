@@ -100,7 +100,7 @@ GRAPH
     compat_resource (>= 12.14.7)
   openssh (2.1.1)
     iptables (>= 1.0)
-  openssl (6.1.0)
+  openssl (6.1.1)
   php (1.5.0)
     build-essential (>= 0.0.0)
     iis (>= 0.0.0)

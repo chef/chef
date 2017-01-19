@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: f4b1c0f2682907967d10c64850f9c607070697dd
-  branch: shain/ruby_windows_monster
+  revision: e17ce57df791747037142a91089eb880c08b6fb5
+  branch: rhass/COOL-657_ecc-algorithm-support+ruby_windows_monster
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus.git
-  revision: 7fc5529b89327c7b1df457f3ac1f60cd2a9d8f64
+  revision: dce5283a85a44484a66a8a84991beba92e46fd12
   branch: rhass/COOL-502_with_gcc_investigate
   specs:
     omnibus (5.5.0)

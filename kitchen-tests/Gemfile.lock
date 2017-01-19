@@ -12,7 +12,7 @@ GEM
     aws-sdk-resources (2.6.48)
       aws-sdk-core (= 2.6.48)
     aws-sigv4 (1.0.0)
-    berkshelf (5.3.0)
+    berkshelf (5.4.0)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (>= 2.0.2, < 4.0)
       buff-config (~> 2.0)
@@ -145,7 +145,7 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     public_suffix (2.0.5)
-    rainbow (2.2.1)
+    rainbow (2.1.0)
     retryable (2.0.4)
     ridley (5.1.0)
       addressable
@@ -248,6 +248,7 @@ DEPENDENCIES
   kitchen-ec2
   kitchen-inspec
   kitchen-vagrant
+  rainbow (>= 2.1.0, < 2.2)
   ridley
   test-kitchen
   vagrant-wrapper
