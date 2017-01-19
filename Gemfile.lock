@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 2d06ce7ef5976e2a410906f60152142bf90a17fb
+  revision: ca50cdb2ea75f7920e6c7a601b7b3ef8980be913
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -145,20 +145,20 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.5.1)
     ast (2.3.0)
-    aws-sdk (2.6.44)
-      aws-sdk-resources (= 2.6.44)
-    aws-sdk-core (2.6.44)
+    aws-sdk (2.6.47)
+      aws-sdk-resources (= 2.6.47)
+    aws-sdk-core (2.6.47)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.44)
-      aws-sdk-core (= 2.6.44)
+    aws-sdk-resources (2.6.47)
+      aws-sdk-core (= 2.6.47)
     aws-sigv4 (1.0.0)
     backports (3.6.8)
     bcrypt_pbkdf (1.0.0)
     bcrypt_pbkdf (1.0.0-x86-mingw32)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
-    builder (3.2.2)
+    builder (3.2.3)
     byebug (9.0.6)
     chef-api (0.7.0)
       logify (~> 0.1)
@@ -213,16 +213,16 @@ GEM
     ethon (0.10.1)
       ffi (>= 1.3.0)
     excon (0.54.0)
-    faraday (0.10.1)
+    faraday (0.11.0)
       multipart-post (>= 1.2, < 3)
     faraday-http-cache (2.0.0)
       faraday (~> 0.8)
-    faraday_middleware (0.10.1)
+    faraday_middleware (0.11.0)
       faraday (>= 0.7.4, < 1.0)
     fauxhai (3.10.0)
       net-ssh
-    ffi (1.9.14)
-    ffi (1.9.14-x86-mingw32)
+    ffi (1.9.17)
+    ffi (1.9.17-x86-mingw32)
     ffi-win32-extensions (1.0.3)
       ffi
     ffi-yajl (2.3.0)
@@ -279,7 +279,7 @@ GEM
     kitchen-sync (2.1.1)
       net-sftp
       test-kitchen (>= 1.0.0)
-    kitchen-vagrant (0.21.1)
+    kitchen-vagrant (1.0.0)
       test-kitchen (~> 1.4)
     knife-windows (1.8.0)
       winrm (~> 2.1)
@@ -325,7 +325,7 @@ GEM
       net-ssh (>= 2.6.5)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
-    net-ssh (3.2.0)
+    net-ssh (4.0.1)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
     net-ssh-multi (1.2.1)
@@ -462,7 +462,7 @@ GEM
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
       faraday (~> 0.8, < 1.0)
-    serverspec (2.37.2)
+    serverspec (2.38.0)
       multi_json
       rspec (~> 3.0)
       rspec-its
@@ -474,9 +474,9 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.66.3)
+    specinfra (2.66.4)
       net-scp
-      net-ssh (>= 2.7, < 4.0)
+      net-ssh (>= 2.7, < 5.0)
       net-telnet
       sfl
     stove (4.1.1)
@@ -484,12 +484,12 @@ GEM
       logify (~> 0.2)
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    test-kitchen (1.14.2)
+    test-kitchen (1.15.0)
       mixlib-install (>= 1.2, < 3.0)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
-      net-ssh (>= 2.9, < 4.0)
-      net-ssh-gateway (~> 1.2.0)
+      net-ssh (>= 2.9, < 5.0)
+      net-ssh-gateway (~> 1.2)
       safe_yaml (~> 1.0)
       thor (~> 0.18)
     thor (0.19.4)
@@ -514,7 +514,7 @@ GEM
       unf_ext
     unf_ext (0.0.7.2)
     unf_ext (0.0.7.2-x86-mingw32)
-    unicode-display_width (1.1.2)
+    unicode-display_width (1.1.3)
     url (0.3.2)
     uuidtools (2.1.5)
     vagrant-wrapper (2.0.3)
@@ -539,7 +539,7 @@ GEM
       ffi-win32-extensions
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
-    winrm (2.1.1)
+    winrm (2.1.2)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)
@@ -558,7 +558,7 @@ GEM
       winrm (~> 2.0)
     wmi-lite (1.0.0)
     yajl-ruby (1.3.0)
-    yard (0.9.7)
+    yard (0.9.8)
     yard-classmethods (1.0.0)
       yard
 
