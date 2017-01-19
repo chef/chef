@@ -47,7 +47,6 @@ dependency "chef-gem-binding_of_caller"
 dependency "chef-gem-rbnacl-libsodium" unless ios_xr?
 dependency "chef-gem-bcrypt_pbkdf-ruby" unless solaris?
 
-
 # Now everyone else, in alphabetical order because we don't care THAT much
 Dir.entries(File.dirname(__FILE__)).sort.each do |gem_software|
   if gem_software =~ /^(chef-gem-.+)\.rb$/
