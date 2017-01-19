@@ -1,0 +1,45 @@
+PATH
+  remote: .
+  specs:
+    chef-config (12.12.18)
+      fuzzyurl (~> 0.8.0)
+      mixlib-config (~> 2.0)
+      mixlib-shellout (~> 2.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    diff-lcs (1.2.5)
+    ffi (1.9.10-x86-mingw32)
+    fuzzyurl (0.8.0)
+    mixlib-config (2.2.1)
+    mixlib-shellout (2.2.6-universal-mingw32)
+      win32-process (~> 0.8.2)
+      wmi-lite (~> 1.0)
+    rake (10.5.0)
+    rspec-core (3.5.0)
+      rspec-support (~> 3.5.0)
+    rspec-expectations (3.5.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.5.0)
+    rspec-mocks (3.5.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.5.0)
+    rspec-support (3.5.0)
+    win32-process (0.8.3)
+      ffi (>= 1.0.0)
+    wmi-lite (1.0.0)
+
+PLATFORMS
+  ruby
+  x86-mingw32
+
+DEPENDENCIES
+  chef-config!
+  rake (~> 10.0)
+  rspec-core (~> 3.2)
+  rspec-expectations (~> 3.2)
+  rspec-mocks (~> 3.2)
+
+BUNDLED WITH
+   1.12.5
