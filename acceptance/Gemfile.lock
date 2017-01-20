@@ -12,13 +12,13 @@ GEM
     addressable (2.5.0)
       public_suffix (~> 2.0, >= 2.0.2)
     artifactory (2.5.1)
-    aws-sdk (2.6.48)
-      aws-sdk-resources (= 2.6.48)
-    aws-sdk-core (2.6.48)
+    aws-sdk (2.6.49)
+      aws-sdk-resources (= 2.6.49)
+    aws-sdk-core (2.6.49)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.48)
-      aws-sdk-core (= 2.6.48)
+    aws-sdk-resources (2.6.49)
+      aws-sdk-core (= 2.6.49)
     aws-sigv4 (1.0.0)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -135,7 +135,7 @@ GEM
     net-ssh (4.0.1)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-    nio4r (2.0.0)
+    nio4r (1.2.1)
     nori (2.6.0)
     octokit (4.6.2)
       sawyer (~> 0.8.0, >= 0.5.3)
@@ -249,6 +249,7 @@ DEPENDENCIES
   kitchen-inspec
   kitchen-vagrant
   mixlib-install (= 1.2.3)
+  nio4r (>= 1.1.0, < 2.0.0)
   test-kitchen
   windows_chef_zero
   winrm-elevated
