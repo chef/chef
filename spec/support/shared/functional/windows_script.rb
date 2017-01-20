@@ -160,11 +160,6 @@ shared_context Chef::Resource::WindowsScript do
         end
       end
 
-      context "when a different non-admin user attempts read to access the script" do
-        let(:file_access_command) { read_access_denied_command }
-        it_behaves_like "a script whose file system location cannot be accessed by other non-admin users"
-      end
-
       context "when a different non-admin user attempts write (modify) to access the script" do
         let(:file_access_command) { modify_access_denied_command }
         it_behaves_like "a script whose file system location cannot be accessed by other non-admin users"

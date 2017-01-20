@@ -413,6 +413,7 @@ shared_examples_for Chef::Provider::File do
   end
 
   context "define_resource_requirements" do
+
     context "when the enclosing directory does not exist" do
       before { setup_missing_enclosing_directory }
 
