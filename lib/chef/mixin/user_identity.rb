@@ -54,7 +54,7 @@ class Chef
         end
 
         # if domain is provided in both username and domain
-        if specified_user && ((specified_user.include? '\\') || (specified_user.include? '@')) && specified_domain
+        if specified_user && ((specified_user.include? '\\') || (specified_user.include? "@")) && specified_domain
           raise ArgumentError, "The domain is provided twice. Username: `#{specified_user}`, Domain: `#{specified_domain}`. Please specify domain only once."
         end
 

@@ -49,20 +49,8 @@ describe "a class that mixes in user_context" do
       expect { instance_with_user_context.with_context(nil, nil, nil) {} }.not_to raise_error
     end
 
-    it "raises an exception if the user is supplied but not the domain and password" do
-      expect { instance_with_user_context.with_context("kamilah", nil, nil) {} }.to raise_error(ArgumentError)
-    end
-
     it "raises an exception if the domain is supplied but not the user and password" do
       expect { instance_with_user_context.with_context(nil, "xanadu", nil) {} }.to raise_error(ArgumentError)
-    end
-
-    it "raises an exception if the password is supplied but not the user and domain" do
-      expect { instance_with_user_context.with_context(nil, nil, "chef4life") {} }.to raise_error(ArgumentError)
-    end
-
-    it "raises an exception if the user and domain is supplied but the password is not" do
-      expect { instance_with_user_context.with_context("kamilah", "xanadu", nil) {} }.to raise_error(ArgumentError)
     end
 
     context "when given valid user credentials" do
