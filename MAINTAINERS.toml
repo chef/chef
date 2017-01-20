@@ -50,6 +50,7 @@ Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, ch
         "smurawski",
         "stevendanna",
         "tas50",
+        "tduffield",
         "tyler-ball"
       ]
 
@@ -378,3 +379,7 @@ The specific components of Chef related to a given platform - including (but not
   [people.thehar]
     Name = "Harley Alaniz"
     GitHub = "thehar"
+
+  [people.tduffield]
+    Name = "Tom Duffield"
+    GitHub = "tduffield"
