@@ -14,3 +14,8 @@ gem "berkshelf", "4.3.5"
 
 # until 2.0.0 is fixed for unstable packages
 gem "mixlib-install", "1.2.3"
+
+# nio4r 2.x was throwing a "could not install" error because of a Ruby version
+# conflict (that didn't actually exist). Since the only gem that really needs
+# it is celluloid, let's just pin it until it becomes a bigger problem.
+gem "nio4r", ">= 1.1.0", "< 2.0.0"
