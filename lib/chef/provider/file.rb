@@ -154,7 +154,7 @@ class Chef
         do_contents_changes
         do_acl_changes
         do_selinux
-        load_resource_attributes_from_file(@new_resource)
+        load_resource_attributes_from_file(@new_resource) unless Chef::Config[:why_run]
       end
 
       def action_create_if_missing

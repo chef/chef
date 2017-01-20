@@ -138,7 +138,7 @@ class Chef
         end
         do_acl_changes
         do_selinux(true)
-        load_resource_attributes_from_file(@new_resource)
+        load_resource_attributes_from_file(@new_resource) unless Chef::Config[:why_run]
       end
 
       def action_delete

@@ -148,6 +148,16 @@ describe Chef::Provider::Directory do
         directory.run_action(:create)
         expect(new_resource).not_to be_updated
       end
+
+      context "in why run mode" do
+        before { Chef::Config[:why_run] = true }
+        after { Chef::Config[:why_run] = false }
+
+        it "does not modify new_resource" do
+          expect(directory).not_to receive(:load_resource_attributes_from_file).with(new_resource)
+          directory.run_action(:create)
+        end
+      end
     end
 
     describe "when the directory does not exist" do
