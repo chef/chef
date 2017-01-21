@@ -1,10 +1,11 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.18.43](https://github.com/chef/chef/tree/v12.18.43) (2017-01-20)
-[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.43)
+## [v12.18.44](https://github.com/chef/chef/tree/v12.18.44) (2017-01-21)
+[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.44)
 
 **Implemented enhancements:**
 
+- Raise NamedSecurityInfo related exception using HR result. [\#5727](https://github.com/chef/chef/pull/5727) ([Aliasgar16](https://github.com/Aliasgar16))
 - yum\_repository: Allow baseurl to be an array & allow fastestmirror\_enabled false [\#5708](https://github.com/chef/chef/pull/5708) ([tas50](https://github.com/tas50))
 - Adding returns property to chocolatey\_package resource [\#5688](https://github.com/chef/chef/pull/5688) ([Vasu1105](https://github.com/Vasu1105))
 - Code cleanup in the user provider [\#5674](https://github.com/chef/chef/pull/5674) ([lamont-granquist](https://github.com/lamont-granquist))
