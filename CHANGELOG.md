@@ -1,13 +1,13 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.18.46](https://github.com/chef/chef/tree/v12.18.46) (2017-01-23)
-[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.46)
+## [v12.18.47](https://github.com/chef/chef/tree/v12.18.47) (2017-01-23)
+[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.47)
 
 **Implemented enhancements:**
 
 - Raise NamedSecurityInfo related exception using HR result. [\#5727](https://github.com/chef/chef/pull/5727) ([Aliasgar16](https://github.com/Aliasgar16))
 - yum\_repository: Allow baseurl to be an array & allow fastestmirror\_enabled false [\#5708](https://github.com/chef/chef/pull/5708) ([tas50](https://github.com/tas50))
-- Added module\_version attribute for dsc\_resource. [\#5701](https://github.com/chef/chef/pull/5701) ([Aliasgar16](https://github.com/Aliasgar16))
+- Added module\_version attribute for dsc\_resource for SxS support [\#5701](https://github.com/chef/chef/pull/5701) ([Aliasgar16](https://github.com/Aliasgar16))
 - Adding returns property to chocolatey\_package resource [\#5688](https://github.com/chef/chef/pull/5688) ([Vasu1105](https://github.com/Vasu1105))
 - Code cleanup in the user provider [\#5674](https://github.com/chef/chef/pull/5674) ([lamont-granquist](https://github.com/lamont-granquist))
 - Code cleanup in the group provider [\#5673](https://github.com/chef/chef/pull/5673) ([lamont-granquist](https://github.com/lamont-granquist))
