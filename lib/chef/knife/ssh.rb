@@ -166,10 +166,10 @@ class Chef
       def configure_session
         list = config[:manual] ? @name_args[0].split(" ") : search_nodes
         if list.length == 0
-          if @action_nodes.length == 0
+          if @search_count == 0
             ui.fatal("No nodes returned from search")
           else
-            ui.fatal("#{@action_nodes.length} #{@action_nodes.length > 1 ? "nodes" : "node"} found, " +
+            ui.fatal("#{@search_count} #{@search_count > 1 ? "nodes" : "node"} found, " +
                      "but does not have the required attribute to establish the connection. " +
                      "Try setting another attribute to open the connection using --attribute.")
           end
@@ -184,41 +184,56 @@ class Chef
         # 2) configuration file
         # 3) cloud attribute
         # 4) fqdn
-        if config[:attribute]
-          Chef::Log.debug("Using node attribute '#{config[:attribute]}' as the ssh target")
-          attribute = config[:attribute]
+        if node["config"]
+          Chef::Log.debug("Using node attribute '#{config[:attribute]}' as the ssh target: #{node["config"]}")
+          node["config"]
         elsif Chef::Config[:knife][:ssh_attribute]
-          Chef::Log.debug("Using node attribute #{Chef::Config[:knife][:ssh_attribute]}")
-          attribute = Chef::Config[:knife][:ssh_attribute]
-        elsif node[:cloud] &&
-            node[:cloud][:public_hostname] &&
-            !node[:cloud][:public_hostname].empty?
-          Chef::Log.debug("Using node attribute 'cloud[:public_hostname]' automatically as the ssh target")
-          attribute = "cloud.public_hostname"
+          Chef::Log.debug("Using node attribute #{Chef::Config[:knife][:ssh_attribute]}: #{node["knife_config"]}")
+          node["knife_config"]
+        elsif node["cloud"] &&
+            node["cloud"]["public_hostname"] &&
+            !node["cloud"]["public_hostname"].empty?
+          Chef::Log.debug("Using node attribute 'cloud[:public_hostname]' automatically as the ssh target: #{node["cloud"]["public_hostname"]}")
+          node["cloud"]["public_hostname"]
         else
           # falling back to default of fqdn
-          Chef::Log.debug("Using node attribute 'fqdn' as the ssh target")
-          attribute = "fqdn"
+          Chef::Log.debug("Using node attribute 'fqdn' as the ssh target: #{node["fqdn"]}")
+          node["fqdn"]
         end
-        attribute
       end
 
       def search_nodes
         list = Array.new
         query = Chef::Search::Query.new
-        @action_nodes = query.search(:node, @name_args[0])[0]
-        @action_nodes.each do |item|
+        required_attributes = { fqdn: ["fqdn"], cloud: ["cloud"] }
+
+        separator = ui.presenter.attribute_field_separator
+
+        # if we've set an attribute to use on the command line
+        if config[:attribute]
+          required_attributes[:config] = config[:attribute].split(separator)
+        end
+
+        # if we've configured an attribute in our config
+        if Chef::Config[:knife][:ssh_attribute]
+          required_attributes[:knife_config] = Chef::Config[:knife][:ssh_attribute].split(separator)
+        end
+
+        @search_count = 0
+        query.search(:node, @name_args[0], filter_result: required_attributes) do |item|
+          @search_count += 1
           # we should skip the loop to next iteration if the item
           # returned by the search is nil
           next if item.nil?
           # next if we couldn't find the specified attribute in the
           # returned node object
-          host = extract_nested_value(item, get_ssh_attribute(item))
+          host = get_ssh_attribute(item)
           next if host.nil?
           ssh_port = item[:cloud].nil? ? nil : item[:cloud][:public_ssh_port]
           srv = [host, ssh_port]
           list.push(srv)
         end
+
         list
       end
 
@@ -309,9 +324,9 @@ class Chef
         subsession ||= session
         command = fixup_sudo(command)
         command.force_encoding("binary") if command.respond_to?(:force_encoding)
-        subsession.open_channel do |ch|
-          ch.request_pty
-          ch.exec command do |ch, success|
+        subsession.open_channel do |chan|
+          chan.request_pty
+          chan.exec command do |ch, success|
             raise ArgumentError, "Cannot execute #{command}" unless success
             ch.on_data do |ichannel, data|
               print_data(ichannel[:host], data)
@@ -530,10 +545,6 @@ class Chef
       def configure_ssh_identity_file
         # config[:identity_file] is DEPRECATED in favor of :ssh_identity_file
         config[:ssh_identity_file] = get_stripped_unfrozen_value(config[:ssh_identity_file] || config[:identity_file] || Chef::Config[:knife][:ssh_identity_file])
-      end
-
-      def extract_nested_value(data_structure, path_spec)
-        ui.presenter.extract_nested_value(data_structure, path_spec)
       end
 
       def run
