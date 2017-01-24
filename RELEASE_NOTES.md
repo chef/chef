@@ -6,16 +6,13 @@ _This file holds "in progress" release notes for the current release under devel
 
 - You can now specify the acceptable return codes from the chocolatey_package resource using the returns property.
 - You can now enable chef-client to run as a scheduled task directly from the client MSI on Windows hosts.
+- The package provider now supports DNF packages for Fedora and upcoming RHEL releases
 
 ## Highlighted bug fixes for this release:
 
-- Fixed exposure of sensitive data of resources marked as sensitive inside Reporting. Before you
-  were able to see the sensitive data on the Run History tab in the Chef Manage Console. Now we
-  are sending a new blank resource if the resource is marked as sensitive, this way we will not
-  compromise any sensitive data.
+- Fixed exposure of sensitive data of resources marked as sensitive inside Reporting. Before you were able to see the sensitive data on the Run History tab in the Chef Manage Console. Now we are sending a new blank resource if the resource is marked as sensitive, this way we will not compromise any sensitive data.
 
-  _Note: Old data that was already sent to Reporting marked as sensitive will continue to be
-  displayed. Apologies._
+  _Note: Old data that was already sent to Reporting marked as sensitive will continue to be displayed. Apologies._
 
 ## New deprecations introduced in this release:
 
