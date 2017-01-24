@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::Package::Cab do
+describe Chef::Provider::Package::Cab, :windows_only do
   let(:timeout) {}
 
   let(:new_resource) { Chef::Resource::CabPackage.new("windows_test_pkg") }
@@ -54,6 +54,7 @@ The operation completed successfully
     allow(provider).to receive(:dism_command).with("/Get-Packages").and_return(installed_package_list_obj)
     package_version_obj = double(stdout: package_version_stdout)
     allow(provider).to receive(:dism_command).with("/Get-PackageInfo /PackagePath:\"#{new_resource.source}\"").and_return(package_version_obj)
+    allow_any_instance_of(Chef::Provider::Package::Cab).to receive(:dism_command).with("/Get-PackageInfo /PackagePath:\"#{new_resource.source}\"").and_return(package_version_obj)
   end
 
   def allow_package_info(package_path = nil, package_name = nil)
@@ -123,6 +124,49 @@ The operation completed successfully.
     it "sets the new resource package version" do
       provider.load_current_resource
       expect(provider.new_resource.version).to eql("6.1.3.0")
+    end
+  end
+
+  describe "#source_resource" do
+    before do
+      cab_file = "C:\\Temp\\Test6.1-KB2664825-v3-x64.cab"
+      new_resource.cookbook_name = "cab_package"
+    end
+
+    it "sets the desired parameters of downloades cab file" do
+      allow(provider).to receive(:default_download_cache_path).and_return("C:\\chef\\cache\\package")
+      source_resource = provider.source_resource
+      expect(source_resource.path).to be == "C:\\chef\\cache\\package"
+      expect(source_resource.name).to be == "windows_test_pkg"
+      expect(source_resource.source).to be == [new_resource.source]
+      expect(source_resource.cookbook_name).to be == "cab_package"
+    end
+  end
+
+  describe "#default_download_cache_path" do
+    before do
+      new_resource.source = "https://www.something.com/Test6.1-KB2664825-v3-x64.cab"
+    end
+
+    it "returns a clean cache path where the cab file is downloaded" do
+      allow(Chef::FileCache).to receive(:create_cache_path).and_return("C:\\chef\\abc\\package")
+      path = provider.default_download_cache_path
+      expect(path).to be == "C:\\chef\\abc\\package\\Test6.1-KB2664825-v3-x64.cab"
+    end
+  end
+
+  describe "#cab_file_source" do
+    it "returns local cab file source path if same is set" do
+      new_resource.source = "c:\\temp\\test6.1-KB2664825-v3-x64.cab"
+      allow(provider).to receive(:cab_file_source).and_return("c:\\temp\\test6.1-kb2664825-v3-x64.cab")
+      provider.load_current_resource
+      expect(provider.cab_file_source).to be == "c:\\temp\\test6.1-kb2664825-v3-x64.cab"
+    end
+
+    it "calls download_source_file method if source is a URL" do
+      new_resource.source = "https://www.something.com/Test6.1-KB2664825-v3-x64.cab"
+      expect(provider).to receive(:download_source_file).and_return("c:\\temp\\test6.1-kb2664825-v3-x64.cab")
+      provider.load_current_resource
     end
   end
 
