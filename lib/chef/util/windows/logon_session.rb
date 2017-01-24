@@ -49,7 +49,7 @@ class Chef
 
           status = Chef::ReservedNames::Win32::API::Security.LogonUserW(username, domain, password, Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NETWORK, Chef::ReservedNames::Win32::API::Security::LOGON32_PROVIDER_DEFAULT, token)
 
-          if status == 0
+          if status == false
             last_error = FFI::LastError.error
             raise Chef::Exceptions::Win32APIError, "Logon for user `#{original_username}` failed with Win32 status #{last_error}."
           end

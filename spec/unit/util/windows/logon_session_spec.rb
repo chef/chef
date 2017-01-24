@@ -37,7 +37,7 @@ describe ::Chef::Util::Windows::LogonSession do
 
   shared_examples_for "it received an incorrect username and password combination" do
     before do
-      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(0)
+      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(false)
     end
 
     it "raises a Chef::Exceptions::Win32APIError exception when the open method is called" do
@@ -49,14 +49,14 @@ describe ::Chef::Util::Windows::LogonSession do
 
   shared_examples_for "it received valid credentials" do
     it "does not raise an exception when the open method is called" do
-      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(1)
+      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(true)
       expect { session.open }.not_to raise_error
     end
   end
 
   shared_examples_for "the session is not open" do
     it "does not raise an exception when #open is called" do
-      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(1)
+      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(true)
       expect { session.open }.not_to raise_error
     end
 

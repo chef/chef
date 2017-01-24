@@ -165,9 +165,9 @@ describe Chef::Resource::RemoteFile do
         before do
           resource.path(local_destination_path)
           resource.source(smb_remote_path)
-          resource.remote_user_domain(remote_domain)
+          resource.remote_domain(remote_domain)
           resource.remote_user(remote_user)
-          resource.remote_user_password(remote_password)
+          resource.remote_password(remote_password)
         end
 
         shared_examples_for "a remote_file resource accessing a remote file to which the specified user has access" do

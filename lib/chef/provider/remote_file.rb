@@ -46,7 +46,7 @@ class Chef
       def define_resource_requirements
         # @todo: this should change to raise in some appropriate major version bump.
         requirements.assert(:all_actions) do |a|
-          a.assertion { validate_identity(new_resource.remote_user, new_resource.remote_user_password, new_resource.remote_user_domain) }
+          a.assertion { validate_identity(new_resource.remote_user, new_resource.remote_password, new_resource.remote_domain) }
         end
         super
       end

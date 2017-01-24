@@ -139,24 +139,24 @@ class Chef
         )
       end
 
-      def remote_user_domain(args = nil)
+      def remote_domain(args = nil)
         set_or_return(
-          :remote_user_domain,
+          :remote_domain,
           args,
           :kind_of => String
         )
       end
 
-      def remote_user_password(args = nil)
+      def remote_password(args = nil)
         set_or_return(
-          :remote_user_password,
+          :remote_password,
           args,
           :kind_of => String
         )
       end
 
       def sensitive(args = nil)
-        if ! remote_user_password.nil?
+        if ! remote_password.nil?
           true
         else
           super
