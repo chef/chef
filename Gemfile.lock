@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: e32b083df4820d8d78ad92094aa2b209e08d3f31
+  revision: 6309e94fe200090acbde23e5ab70bdcbf8f31410
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -139,13 +139,13 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.5.1)
     ast (2.3.0)
-    aws-sdk (2.6.48)
-      aws-sdk-resources (= 2.6.48)
-    aws-sdk-core (2.6.48)
+    aws-sdk (2.7.0)
+      aws-sdk-resources (= 2.7.0)
+    aws-sdk-core (2.7.0)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.48)
-      aws-sdk-core (= 2.6.48)
+    aws-sdk-resources (2.7.0)
+      aws-sdk-core (= 2.7.0)
     aws-sigv4 (1.0.0)
     backports (3.6.8)
     binding_of_caller (0.7.2)
@@ -164,7 +164,7 @@ GEM
       net-ssh-gateway (~> 1.2)
       winrm-fs (~> 1.0)
     chef-sugar (3.4.0)
-    chef-zero (5.1.1)
+    chef-zero (5.2.0)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
       mixlib-log (~> 1.3)
@@ -209,7 +209,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday-http-cache (2.0.0)
       faraday (~> 0.8)
-    faraday_middleware (0.11.0)
+    faraday_middleware (0.11.0.1)
       faraday (>= 0.7.4, < 1.0)
     fauxhai (3.10.0)
       net-ssh
@@ -268,7 +268,7 @@ GEM
       multi_json
       retryable (~> 2.0)
       test-kitchen (~> 1.4, >= 1.4.1)
-    kitchen-sync (2.1.1)
+    kitchen-sync (2.1.2)
       net-sftp
       test-kitchen (>= 1.0.0)
     kitchen-vagrant (1.0.0)
@@ -296,7 +296,7 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (2.1.9)
+    mixlib-install (2.1.10)
       artifactory
       mixlib-shellout
       mixlib-versioning

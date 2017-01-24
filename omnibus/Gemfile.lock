@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: 4bf6f5cf21bc0ff8de327dfc0a245b625134d6b0
+  revision: 383ad28edeea0f587aee57b969c77a21b7909e77
   specs:
     license_scout (0.1.2)
       ffi-yajl (~> 2.2)
@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: f4b1c0f2682907967d10c64850f9c607070697dd
+  revision: 086710002ec0054b3d240d14ca04d11163f528aa
   branch: shain/ruby_windows_monster
   specs:
     omnibus-software (4.0.0)
@@ -39,13 +39,13 @@ GEM
       public_suffix (~> 2.0, >= 2.0.2)
     artifactory (2.5.1)
     awesome_print (1.7.0)
-    aws-sdk (2.6.48)
-      aws-sdk-resources (= 2.6.48)
-    aws-sdk-core (2.6.48)
+    aws-sdk (2.7.0)
+      aws-sdk-resources (= 2.7.0)
+    aws-sdk-core (2.7.0)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.6.48)
-      aws-sdk-core (= 2.6.48)
+    aws-sdk-resources (2.7.0)
+      aws-sdk-core (= 2.7.0)
     aws-sigv4 (1.0.0)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -86,7 +86,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.17.44)
+    chef-config (12.18.31)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -130,7 +130,7 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (2.1.9)
+    mixlib-install (2.1.10)
       artifactory
       mixlib-shellout
       mixlib-versioning
