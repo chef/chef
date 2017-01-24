@@ -56,7 +56,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.17.44)
+    chef-config (12.18.31)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)

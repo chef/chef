@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 96c04f9941f96c8be993b7103a0deb221f054120
+  revision: 6309e94fe200090acbde23e5ab70bdcbf8f31410
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -296,7 +296,7 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (2.1.9)
+    mixlib-install (2.1.10)
       artifactory
       mixlib-shellout
       mixlib-versioning

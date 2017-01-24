@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: f4b1c0f2682907967d10c64850f9c607070697dd
+  revision: 086710002ec0054b3d240d14ca04d11163f528aa
   branch: shain/ruby_windows_monster
   specs:
     omnibus-software (4.0.0)
@@ -86,7 +86,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.17.44)
+    chef-config (12.18.31)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -130,7 +130,7 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (2.1.9)
+    mixlib-install (2.1.10)
       artifactory
       mixlib-shellout
       mixlib-versioning
