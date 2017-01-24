@@ -31,6 +31,7 @@ describe Chef::Provider::Cron do
       @new_resource.command "/bin/true"
       @new_resource.time :reboot
       @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
+
     end
 
     context "with a matching entry in the user's crontab" do
@@ -151,20 +152,52 @@ CRONTAB
     @new_resource.minute "30"
     @new_resource.command "/bin/true"
     @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
+    allow(Process).to receive(:euid).and_return(0)
+    mock_struct = OpenStruct.new(:uid => 0)
+    allow(Etc).to receive(:getpwnam).with("root").and_return(mock_struct)
   end
 
   describe "when examining the current system state" do
-    context "when run as non root" do
+    context "when run as non root for root crontab" do
       before do
         mock_struct = OpenStruct.new(:uid => 0)
-        allow(Process).to receive(:euid).and_return(42)
         allow(Etc).to receive(:getpwnam).with("root").and_return(mock_struct)
+        allow(Process).to receive(:euid).and_return(42)
       end
 
       it "should raise exception" do
-        expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Cron)
+        expect { @provider.run_action(:create) }.to raise_error(Chef::Exceptions::Cron)
       end
     end
+
+    context "when run as non root for another user crontab" do
+      before do
+        @new_resource.user "foo"
+        mock_struct = OpenStruct.new(:uid => 56)
+        allow(Etc).to receive(:getpwnam).with("foo").and_return(mock_struct)
+        allow(Process).to receive(:euid).and_return(42)
+      end
+
+      it "should raise exception" do
+        expect { @provider.run_action(:create) }.to raise_error(Chef::Exceptions::Cron)
+      end
+    end
+
+    context "when run as non root for same user crontab" do
+      before do
+        @new_resource.user "bar"
+        mock_struct = OpenStruct.new(:uid => 42)
+        allow(Etc).to receive(:getpwnam).with("bar").and_return(mock_struct)
+        allow(Process).to receive(:euid).and_return(42)
+        allow(@provider).to receive(:read_crontab).and_return(nil)
+        allow(@provider).to receive(:write_crontab)
+      end
+
+      it "should not raise exception" do
+        expect { @provider.run_action(:create) }.to_not raise_error
+      end
+    end
+
     context "with no crontab for the user" do
       before :each do
         allow(@provider).to receive(:read_crontab).and_return(nil)
