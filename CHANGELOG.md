@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.18.47](https://github.com/chef/chef/tree/v12.18.47) (2017-01-23)
-[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.47)
+## [v12.18.48](https://github.com/chef/chef/tree/v12.18.48) (2017-01-24)
+[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.48)
 
 **Implemented enhancements:**
 
@@ -19,7 +19,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - \[cheffs\] Don't iterate parent object on exist? call [\#5648](https://github.com/chef/chef/pull/5648) ([stevendanna](https://github.com/stevendanna))
 - Core: Remove Chef::Platform::HandlerMap [\#5636](https://github.com/chef/chef/pull/5636) ([lamont-granquist](https://github.com/lamont-granquist))
 - Core: Properly deprecate old Chef::Platform methods [\#5631](https://github.com/chef/chef/pull/5631) ([lamont-granquist](https://github.com/lamont-granquist))
-- Deprecate creating properties whose names are already methods [\#5606](https://github.com/chef/chef/pull/5606) ([adamleff](https://github.com/adamleff))
 
 **Fixed bugs:**
 
