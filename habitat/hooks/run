@@ -1,5 +1,5 @@
 #!/bin/sh
-export GEM_HOME="$(hab pkg path chef/chef-client)/ruby/2.3.0"
+export GEM_HOME="{{pkg.path}}/ruby/2.3.0"
 export GEM_PATH="$(hab pkg path core/ruby)/lib/ruby/gems/2.3.0:$(hab pkg path core/bundler):$GEM_HOME"
 export APPBUNDLER_ALLOW_RVM=true
 
