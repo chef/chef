@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.18.52](https://github.com/chef/chef/tree/v12.18.52) (2017-01-24)
-[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.18.52)
+## [v12.18.53](https://github.com/chef/chef/tree/v12.18.53) (2017-01-25)
+[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.18.53)
 
 **Implemented enhancements:**
 
@@ -12,6 +12,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Fixed bugs:**
 
+- favor metadata.json over metadata.rb [\#5750](https://github.com/chef/chef/pull/5750) ([lamont-granquist](https://github.com/lamont-granquist))
 - Ensure ssh search paginates correctly [\#5744](https://github.com/chef/chef/pull/5744) ([thommay](https://github.com/thommay))
 - Do not modify File's new\_resource during why-run [\#5742](https://github.com/chef/chef/pull/5742) ([scottopherson](https://github.com/scottopherson))
 - Add gems for ECC algorithm support to omnibus. [\#5736](https://github.com/chef/chef/pull/5736) ([rhass](https://github.com/rhass))
