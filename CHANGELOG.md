@@ -3,23 +3,19 @@ This changelog reflects the current state of chef's master branch on github and 
 ## [v12.19.1](https://github.com/chef/chef/tree/v12.19.1) (2017-01-25)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.1)
 
-**Merged pull requests:**
+**Implemented enhancements:**
 
-- Bump minor version to 12.19 [\#5755](https://github.com/chef/chef/pull/5755) ([scottopherson](https://github.com/scottopherson))
-- Ruby 2.3 doesn't have casecmp?. Use casecmp instead [\#5751](https://github.com/chef/chef/pull/5751) ([tduffield](https://github.com/tduffield))
-- favor metadata.json over metadata.rb [\#5750](https://github.com/chef/chef/pull/5750) ([lamont-granquist](https://github.com/lamont-granquist))
-- Use new `fips\_mode` variable to define whether to build with FIPS [\#5746](https://github.com/chef/chef/pull/5746) ([tduffield](https://github.com/tduffield))
-- Ensure ssh search paginates correctly [\#5744](https://github.com/chef/chef/pull/5744) ([thommay](https://github.com/thommay))
-- Pin nio4r gem to avoid install error [\#5743](https://github.com/chef/chef/pull/5743) ([tduffield](https://github.com/tduffield))
-- Do not modify File's new\_resource during why-run [\#5742](https://github.com/chef/chef/pull/5742) ([scottopherson](https://github.com/scottopherson))
-- Add gems for ECC algorithm support to omnibus. [\#5736](https://github.com/chef/chef/pull/5736) ([rhass](https://github.com/rhass))
-- make it a trifle clearer that server issues don't belong here [\#5734](https://github.com/chef/chef/pull/5734) ([thommay](https://github.com/thommay))
-- Add myself as core maintainer [\#5728](https://github.com/chef/chef/pull/5728) ([tduffield](https://github.com/tduffield))
 - Raise NamedSecurityInfo related exception using HR result. [\#5727](https://github.com/chef/chef/pull/5727) ([Aliasgar16](https://github.com/Aliasgar16))
-- pass true as 2nd args for Net::SSH.configuration\_for by default. [\#5726](https://github.com/chef/chef/pull/5726) ([sawanoboly](https://github.com/sawanoboly))
 - Added module\_version attribute for dsc\_resource for SxS support [\#5701](https://github.com/chef/chef/pull/5701) ([Aliasgar16](https://github.com/Aliasgar16))
 - Bump net-ssh to v4, add dependencies for ed25519 support [\#5687](https://github.com/chef/chef/pull/5687) ([onlyhavecans](https://github.com/onlyhavecans))
 - Initial habitat plan for chef-client [\#5677](https://github.com/chef/chef/pull/5677) ([adamhjk](https://github.com/adamhjk))
+
+**Fixed bugs:**
+
+- favor metadata.json over metadata.rb [\#5750](https://github.com/chef/chef/pull/5750) ([lamont-granquist](https://github.com/lamont-granquist))
+- Ensure ssh search paginates correctly [\#5744](https://github.com/chef/chef/pull/5744) ([thommay](https://github.com/thommay))
+- Do not modify File's new\_resource during why-run [\#5742](https://github.com/chef/chef/pull/5742) ([scottopherson](https://github.com/scottopherson))
+- Add gems for ECC algorithm support to omnibus. [\#5736](https://github.com/chef/chef/pull/5736) ([rhass](https://github.com/rhass))
 
 ## [v12.18.31](https://github.com/chef/chef/tree/v12.18.31) (2017-01-11)
 [Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.31)
