@@ -1,3 +1,29 @@
+## [v12.18.31](https://github.com/chef/chef/tree/v12.18.31) (2017-01-11)
+[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.31)
+
+**Implemented enhancements:**
+
+- yum\_repository: Allow baseurl to be an array & allow fastestmirror\_enabled false [\#5708](https://github.com/chef/chef/pull/5708) ([tas50](https://github.com/tas50))
+- Adding returns property to chocolatey\_package resource [\#5688](https://github.com/chef/chef/pull/5688) ([Vasu1105](https://github.com/Vasu1105))
+- Code cleanup in the user provider [\#5674](https://github.com/chef/chef/pull/5674) ([lamont-granquist](https://github.com/lamont-granquist))
+- Code cleanup in the group provider [\#5673](https://github.com/chef/chef/pull/5673) ([lamont-granquist](https://github.com/lamont-granquist))
+- Core: Formally deprecate run\_command [\#5666](https://github.com/chef/chef/pull/5666) ([lamont-granquist](https://github.com/lamont-granquist))
+- Set MSI Scheduled Task name to match chef-client cookbook managed name [\#5657](https://github.com/chef/chef/pull/5657) ([mwrock](https://github.com/mwrock))
+- remove Chef::Platform::HandlerMap [\#5636](https://github.com/chef/chef/pull/5636) ([lamont-granquist](https://github.com/lamont-granquist))
+- Core: Properly deprecate old Chef::Platform methods [\#5631](https://github.com/chef/chef/pull/5631) ([lamont-granquist](https://github.com/lamont-granquist))
+
+**Fixed bugs:**
+
+- Fix error thrown by solo when run on Windows as SYSTEM [\#5693](https://github.com/chef/chef/pull/5693) ([scottopherson](https://github.com/scottopherson))
+- Report a blank resource if sensitive is enabled [\#5668](https://github.com/chef/chef/pull/5668) ([afiune](https://github.com/afiune))
+- Ensure node.docker? returns boolean [\#5645](https://github.com/chef/chef/pull/5645) ([andrewjamesbrown](https://github.com/andrewjamesbrown))
+- Fix Data Collector organization parsing regex [\#5630](https://github.com/chef/chef/pull/5630) ([adamleff](https://github.com/adamleff))
+- Core: Use object ID when detected unprocessed Resources [\#5604](https://github.com/chef/chef/pull/5604) ([adamleff](https://github.com/adamleff))
+
+**Merged pull requests:**
+
+- Core: fix node attribute "unless" API methods [\#5717](https://github.com/chef/chef/pull/5717) ([lamont-granquist](https://github.com/lamont-granquist))
+
 ## [v12.17.44](https://github.com/chef/chef/tree/v12.17.44) (2016-12-07)
 [Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.44)
 

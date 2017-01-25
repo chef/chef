@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 6309e94fe200090acbde23e5ab70bdcbf8f31410
+  revision: 96c04f9941f96c8be993b7103a0deb221f054120
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -47,10 +47,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.18.53)
+    chef (12.19.0)
       addressable
       bundler (>= 1.10)
-      chef-config (= 12.18.53)
+      chef-config (= 12.19.0)
       chef-zero (>= 4.8)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -76,10 +76,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (12.18.53-universal-mingw32)
+    chef (12.19.0-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 12.18.53)
+      chef-config (= 12.19.0)
       chef-zero (>= 4.8)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -120,7 +120,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.18.53)
+    chef-config (12.19.0)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
