@@ -432,6 +432,9 @@ This error is most often caused by network issues (proxies, etc) outside of chef
       end
     end
 
+    # Raised by Chef::HTTP
+    class BadURI < RuntimeError; end
+
     class BadProxyURI < RuntimeError; end
 
     # Raised by Chef::JSONCompat

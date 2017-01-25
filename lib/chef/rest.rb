@@ -85,7 +85,7 @@ class Chef
       # responses.
       @middlewares << ValidateContentLength.new(options)
     end
-
+    
     def signing_key_filename
       authenticator.signing_key_filename
     end
