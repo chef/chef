@@ -42,7 +42,7 @@ class Chef
         end
 
         def cab_file_source
-          @cab_file_source ||= uri_scheme?(new_resource.source) ? download_source_file : @new_resource.source
+          @cab_file_source ||= uri_scheme?(new_resource.source) ? download_source_file : new_resource.source
         end
 
         def download_source_file

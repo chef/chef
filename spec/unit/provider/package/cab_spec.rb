@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::Package::Cab, :windows_only do
+describe Chef::Provider::Package::Cab do
   let(:timeout) {}
 
   let(:new_resource) { Chef::Resource::CabPackage.new("windows_test_pkg") }
@@ -49,12 +49,11 @@ The operation completed successfully
   end
 
   before do
-    new_resource.source = "C:\\Temp\\Test6.1-KB2664825-v3-x64.cab"
+    new_resource.source = File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
     installed_package_list_obj = double(stdout: installed_package_list_stdout)
     allow(provider).to receive(:dism_command).with("/Get-Packages").and_return(installed_package_list_obj)
     package_version_obj = double(stdout: package_version_stdout)
     allow(provider).to receive(:dism_command).with("/Get-PackageInfo /PackagePath:\"#{new_resource.source}\"").and_return(package_version_obj)
-    allow_any_instance_of(Chef::Provider::Package::Cab).to receive(:dism_command).with("/Get-PackageInfo /PackagePath:\"#{new_resource.source}\"").and_return(package_version_obj)
   end
 
   def allow_package_info(package_path = nil, package_name = nil)
@@ -129,7 +128,7 @@ The operation completed successfully.
 
   describe "#source_resource" do
     before do
-      cab_file = "C:\\Temp\\Test6.1-KB2664825-v3-x64.cab"
+      new_resource.source = "https://www.something.com/Test6.1-KB2664825-v3-x64.cab"
       new_resource.cookbook_name = "cab_package"
     end
 
@@ -149,23 +148,35 @@ The operation completed successfully.
     end
 
     it "returns a clean cache path where the cab file is downloaded" do
-      allow(Chef::FileCache).to receive(:create_cache_path).and_return("C:\\chef\\abc\\package")
+      allow(Chef::FileCache).to receive(:create_cache_path).and_return(ENV["TEMP"])
       path = provider.default_download_cache_path
-      expect(path).to be == "C:\\chef\\abc\\package\\Test6.1-KB2664825-v3-x64.cab"
+      if windows?
+        expect(path).to be == File.join("#{ENV['TEMP']}", "\\", "Test6.1-KB2664825-v3-x64.cab")
+      else
+        expect(path).to be == File.join("#{ENV['TEMP']}", "Test6.1-KB2664825-v3-x64.cab")
+      end
     end
   end
 
   describe "#cab_file_source" do
     it "returns local cab file source path if same is set" do
-      new_resource.source = "c:\\temp\\test6.1-KB2664825-v3-x64.cab"
-      allow(provider).to receive(:cab_file_source).and_return("c:\\temp\\test6.1-kb2664825-v3-x64.cab")
+      new_resource.source = File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
+      allow(provider).to receive(:cab_file_source).and_return(new_resource.source)
       provider.load_current_resource
-      expect(provider.cab_file_source).to be == "c:\\temp\\test6.1-kb2664825-v3-x64.cab"
+      if windows?
+        expect(provider.cab_file_source).to be == File.join("#{ENV['TEMP'].downcase}", "\\", "test6.1-kb2664825-v3-x64.cab")
+      else
+        expect(provider.cab_file_source).to be == File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
+      end
     end
 
     it "calls download_source_file method if source is a URL" do
-      new_resource.source = "https://www.something.com/Test6.1-KB2664825-v3-x64.cab"
-      expect(provider).to receive(:download_source_file).and_return("c:\\temp\\test6.1-kb2664825-v3-x64.cab")
+      new_resource.source = "https://www.something.com/test6.1-kb2664825-v3-x64.cab"
+      if windows?
+        expect(provider).to receive(:download_source_file).and_return(File.join("#{ENV['TEMP'].downcase}", "\\", "test6.1-kb2664825-v3-x64.cab"))
+      else
+        expect(provider).to receive(:download_source_file).and_return(File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab"))
+      end
       provider.load_current_resource
     end
   end
@@ -236,12 +247,9 @@ The operation completed successfully.
   context "Invalid package source" do
     def package_version_stdout
       package_version_stdout = <<-EOF
-
 Deployment Image Servicing and Management tool
 Version: 6.1.7600.16385
-
 Image Version: 6.1.7600.16385
-
 An error occurred trying to open - c:\\temp\\test6.1-KB2664825-v3-x64.cab Error: 0x80070003
 Error: 3
 The system cannot find the path specified.
@@ -250,7 +258,7 @@ The DISM log file can be found at C:\\Windows\\Logs\\DISM\\dism.log.
     end
 
     before do
-      new_resource.source = "C:\\Temp\\Test6.1-KB2664825-v3-x64.cab"
+      new_resource.source = "#{ENV['TEMP']}/test6.1-kb2664825-v3-x64.cab"
       installed_package_list_obj = double(stdout: installed_package_list_stdout)
       allow(provider).to receive(:dism_command).with("/Get-Packages").and_return(installed_package_list_obj)
     end
