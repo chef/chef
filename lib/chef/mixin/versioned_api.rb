@@ -19,30 +19,50 @@ class Chef
   module Mixin
     module VersionedAPI
 
-      def self.included(base)
-        # When this file is mixed in, make sure we also add the class methods
-        base.send :extend, ClassMethods
-      end
-
-      module ClassMethods
-        def versioned_interfaces
-          @versioned_interfaces ||= []
-        end
-
-        def add_api_version(klass)
-          versioned_interfaces << klass
+      def minimum_api_version(version = nil)
+        if version
+          @minimum_api_version = version
+        else
+          @minimum_api_version
         end
       end
 
-      def select_api_version
-        self.class.versioned_interfaces.select do |klass|
-          version = klass.send(:supported_api_version)
+    end
+
+    module VersionedAPIFactory
+
+      def versioned_interfaces
+        @versioned_interfaces ||= []
+      end
+
+      def add_versioned_api_class(klass)
+        versioned_interfaces << klass
+      end
+
+      def versioned_api_class
+        versioned_interfaces.select do |klass|
+          version = klass.send(:minimum_api_version)
           # min and max versions will be nil if we've not made a request to the server yet,
           # in which case we'll just start with the highest version and see what happens
           ServerAPIVersions.instance.min_server_version.nil? || (version >= ServerAPIVersions.instance.min_server_version && version <= ServerAPIVersions.instance.max_server_version)
         end
-          .sort { |a, b| a.send(:supported_api_version) <=> b.send(:supported_api_version) }
+          .sort { |a, b| a.send(:minimum_api_version) <=> b.send(:minimum_api_version) }
           .last
+      end
+
+      def def_versioned_delegator(method)
+        line_no = __LINE__; str = %{
+          def self.#{method}(*args, &block)
+            versioned_api_class.__send__(:#{method}, *args, &block)
+          end
+        }
+        module_eval(str, __FILE__, line_no)
+      end
+
+      def new(*args)
+        object = versioned_api_class.allocate
+        object.send(:initialize, *args)
+        object
       end
     end
   end

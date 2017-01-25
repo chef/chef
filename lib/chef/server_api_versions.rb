@@ -32,5 +32,9 @@ class Chef
     def max_server_version
       !@versions.nil? ? @versions["max_version"] : nil
     end
+
+    def reset!
+      @versions = nil
+    end
   end
 end
