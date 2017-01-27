@@ -53,18 +53,27 @@ class Chef
           raise ArgumentError, "The domain `#{specified_domain}` was specified, but no user name was given"
         end
 
-        if ! specified_user.nil? && specified_domain.nil?
-          domain_and_user = user.split('\\')
+        # if domain is provided in both username and domain
+        if specified_user && ((specified_user.include? '\\') || (specified_user.include? "@")) && specified_domain
+          raise ArgumentError, "The domain is provided twice. Username: `#{specified_user}`, Domain: `#{specified_domain}`. Please specify domain only once."
+        end
 
-          if domain_and_user.length == 1
-            domain_and_user = user.split("@")
-          end
+        if ! specified_user.nil? && specified_domain.nil?
+          # Splitting username of format: Domain\Username
+          domain_and_user = user.split('\\')
 
           if domain_and_user.length == 2
             domain = domain_and_user[0]
             user = domain_and_user[1]
-          elsif domain_and_user.length != 1
-            raise ArgumentError, "The specified user name `#{user}` is not a syntactically valid user name"
+          elsif domain_and_user.length == 1
+            # Splitting username of format: Username@Domain
+            domain_and_user = user.split("@")
+            if domain_and_user.length == 2
+              domain = domain_and_user[1]
+              user = domain_and_user[0]
+            elsif domain_and_user.length != 1
+              raise ArgumentError, "The specified user name `#{user}` is not a syntactically valid user name"
+            end
           end
         end
 

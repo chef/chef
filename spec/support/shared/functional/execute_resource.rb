@@ -76,12 +76,12 @@ shared_examples_for "an execute resource that supports alternate user identity" 
     let(:windows_current_user_qualified) { "#{ENV['USERDOMAIN'] || ENV['COMPUTERNAME']}\\#{windows_current_user}" }
     let(:resource_identity_command) { "powershell.exe -noprofile -command \"import-module microsoft.powershell.utility;([Security.Principal.WindowsPrincipal]([Security.Principal.WindowsIdentity]::GetCurrent())).identity.name | out-file -encoding ASCII '#{script_output_path}'\"" }
 
-    let(:execute_resource) {
+    let(:execute_resource) do
       resource.user(windows_alternate_user)
       resource.password(windows_alternate_user_password)
       resource.send(resource_command_property, resource_identity_command)
       resource
-    }
+    end
 
     it "executes the process as an alternate user" do
       expect(windows_current_user.length).to be > 0

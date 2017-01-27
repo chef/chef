@@ -94,6 +94,21 @@ shared_examples_for "a consumer of the ::Chef::Mixin::UserIdentity mixin" do
           it_behaves_like "it received valid credentials"
         end
       end
+
+      context "when the domain is provided in both username and domain" do
+        let(:domain) { "some_domain" }
+        let(:password) { "we.funk!" }
+
+        context "when username is in the form domain\\user" do
+          let(:username) { "mothership\\starchild" }
+          it_behaves_like "it received invalid credentials"
+        end
+
+        context "when username is in the form user@domain" do
+          let(:username) { "starchild@mothership" }
+          it_behaves_like "it received invalid credentials"
+        end
+      end
     end
 
     context "when the username is not specified" do
