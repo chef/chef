@@ -161,12 +161,11 @@ The operation completed successfully.
   describe "#cab_file_source" do
     it "returns local cab file source path if same is set" do
       new_resource.source = File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
-      allow(provider).to receive(:cab_file_source).and_return(new_resource.source)
-      provider.load_current_resource
+      path = provider.cab_file_source
       if windows?
-        expect(provider.cab_file_source).to be == File.join("#{ENV['TEMP'].downcase}", "\\", "test6.1-kb2664825-v3-x64.cab")
+        expect(path).to be == File.join("#{ENV['TEMP'].downcase}", "\\", "test6.1-kb2664825-v3-x64.cab")
       else
-        expect(provider.cab_file_source).to be == File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
+        expect(path).to be == File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
       end
     end
 
