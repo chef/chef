@@ -30,7 +30,7 @@ class Chef
         # won't work.
         #
         # Working around that requires placing a copy of the temp file
-        # in a temp directory, under it's real name and running the
+        # in a temp directory, under its real name and running the
         # verification tool against that file.
         #
 
