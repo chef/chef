@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.19.2](https://github.com/chef/chef/tree/v12.19.2) (2017-01-25)
-[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.2)
+## [v12.19.3](https://github.com/chef/chef/tree/v12.19.3) (2017-01-30)
+[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.3)
 
 **Merged pull requests:**
 
@@ -15,6 +15,7 @@ This changelog reflects the current state of chef's master branch on github and 
 - Do not modify File's new\_resource during why-run [\#5742](https://github.com/chef/chef/pull/5742) ([scottopherson](https://github.com/scottopherson))
 - Add gems for ECC algorithm support to omnibus. [\#5736](https://github.com/chef/chef/pull/5736) ([rhass](https://github.com/rhass))
 - make it a trifle clearer that server issues don't belong here [\#5734](https://github.com/chef/chef/pull/5734) ([thommay](https://github.com/thommay))
+- dh/url support cab [\#5732](https://github.com/chef/chef/pull/5732) ([dheerajd-msys](https://github.com/dheerajd-msys))
 - Add myself as core maintainer [\#5728](https://github.com/chef/chef/pull/5728) ([tduffield](https://github.com/tduffield))
 - Raise NamedSecurityInfo related exception using HR result. [\#5727](https://github.com/chef/chef/pull/5727) ([Aliasgar16](https://github.com/Aliasgar16))
 - pass true as 2nd args for Net::SSH.configuration\_for by default. [\#5726](https://github.com/chef/chef/pull/5726) ([sawanoboly](https://github.com/sawanoboly))
