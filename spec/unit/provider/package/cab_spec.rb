@@ -159,24 +159,27 @@ The operation completed successfully.
   end
 
   describe "#cab_file_source" do
-    it "returns local cab file source path if same is set" do
-      new_resource.source = File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
-      path = provider.cab_file_source
-      if windows?
-        expect(path).to be == File.join("#{ENV['TEMP'].downcase}", "\\", "test6.1-kb2664825-v3-x64.cab")
-      else
-        expect(path).to be == File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
+    context "when local file path is set" do
+      it "returns local cab file source path" do
+        new_resource.source = File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
+        path = provider.cab_file_source
+        if windows?
+          expect(path).to be == File.join("#{ENV['TEMP'].downcase}", "\\", "test6.1-kb2664825-v3-x64.cab")
+        else
+          expect(path).to be == File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
+        end
       end
     end
-
-    it "calls download_source_file method if source is a URL" do
-      new_resource.source = "https://www.something.com/test6.1-kb2664825-v3-x64.cab"
-      if windows?
-        expect(provider).to receive(:download_source_file).and_return(File.join("#{ENV['TEMP'].downcase}", "\\", "test6.1-kb2664825-v3-x64.cab"))
-      else
-        expect(provider).to receive(:download_source_file).and_return(File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab"))
+    context "when url is set" do
+      it "calls download_source_file method" do
+        new_resource.source = "https://www.something.com/test6.1-kb2664825-v3-x64.cab"
+        if windows?
+          expect(provider).to receive(:download_source_file).and_return(File.join("#{ENV['TEMP'].downcase}", "\\", "test6.1-kb2664825-v3-x64.cab"))
+        else
+          expect(provider).to receive(:download_source_file).and_return(File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab"))
+        end
+        provider.cab_file_source
       end
-      provider.load_current_resource
     end
   end
 
