@@ -67,14 +67,14 @@ class Chef
       end
 
       def set_owner_and_group
-        if ! Chef::Platform.windows?
+        if Chef::Platform.windows?
+          # And on Windows also this is a no-op if there is no user specified.
+          grant_alternate_user_read_access
+        else
           # FileUtils itself implements a no-op if +user+ or +group+ are nil
           # You can prove this by running FileUtils.chown(nil,nil,'/tmp/file')
           # as an unprivileged user.
           FileUtils.chown(new_resource.user, new_resource.group, script_file.path)
-        else
-          # And on Windows also this is a no-op if there is no user specified.
-          grant_alternate_user_read_access
         end
       end
 
