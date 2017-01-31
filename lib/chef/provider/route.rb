@@ -219,7 +219,7 @@ class Chef
         case action
         when :add
           content << (options[:target]).to_s
-          content << "/#{options[:netmask]}" if options[:netmask]
+          content << "/#{MASK[options[:netmask].to_s]}" if options[:netmask]
           content << " via #{options[:gateway]}" if options[:gateway]
           content << "\n"
         end
