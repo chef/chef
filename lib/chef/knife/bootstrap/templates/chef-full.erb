@@ -223,7 +223,7 @@ cat > /etc/chef/client.rb <<EOP
 EOP
 
 cat > /etc/chef/first-boot.json <<EOP
-<%= Chef::JSONCompat.to_json(first_boot) %>
+<%= Chef::JSONCompat.to_json(first_boot_attributes) %>
 EOP
 
 <% unless client_d.empty? -%>
