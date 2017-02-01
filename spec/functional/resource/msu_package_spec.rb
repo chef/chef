@@ -23,7 +23,6 @@ describe Chef::Resource::MsuPackage, :win2012r2_only do
 
   let(:package_name) { "Package_for_KB2959977" }
   let(:package_source) { "https://download.microsoft.com/download/3/B/3/3B320C07-B7B1-41E5-81F4-79EBC02DF7D3/Windows8.1-KB2959977-x64.msu" }
-
   let(:new_resource) { Chef::Resource::CabPackage.new("windows_test_pkg") }
   let(:cab_provider) do
     node = Chef::Node.new
