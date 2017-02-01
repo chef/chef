@@ -230,13 +230,19 @@ describe Chef::Provider::Route do
       @run_context.resource_collection << Chef::Resource::Route.new("192.168.1.0/24 via 192.168.0.1")
       @run_context.resource_collection << Chef::Resource::Route.new("192.168.2.0/24 via 192.168.0.1")
       @run_context.resource_collection << Chef::Resource::Route.new("192.168.3.0/24 via 192.168.0.1")
+      @run_context.resource_collection << Chef::Resource::Route.new("Complex Route").tap do |r|
+        r.target "192.168.4.0"
+        r.gateway "192.168.0.1"
+        r.netmask "255.255.255.0"
+      end
 
       @provider.action = :add
       @provider.generate_config
-      expect(route_file.string.split("\n").size).to eq(3)
+      expect(route_file.string.split("\n").size).to eq(4)
       expect(route_file.string).to match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
       expect(route_file.string).to match(/^192\.168\.2\.0\/24 via 192\.168\.0\.1$/)
       expect(route_file.string).to match(/^192\.168\.3\.0\/24 via 192\.168\.0\.1$/)
+      expect(route_file.string).to match(/^192\.168\.4\.0\/24 via 192\.168\.0\.1$/)
     end
   end
 end
