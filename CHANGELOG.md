@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.19.4](https://github.com/chef/chef/tree/v12.19.4) (2017-02-01)
-[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.4)
+## [v12.19.5](https://github.com/chef/chef/tree/v12.19.5) (2017-02-01)
+[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.5)
 
 **Merged pull requests:**
 
@@ -20,6 +20,7 @@ This changelog reflects the current state of chef's master branch on github and 
 - Add myself as core maintainer [\#5728](https://github.com/chef/chef/pull/5728) ([tduffield](https://github.com/tduffield))
 - Raise NamedSecurityInfo related exception using HR result. [\#5727](https://github.com/chef/chef/pull/5727) ([Aliasgar16](https://github.com/Aliasgar16))
 - pass true as 2nd args for Net::SSH.configuration\_for by default. [\#5726](https://github.com/chef/chef/pull/5726) ([sawanoboly](https://github.com/sawanoboly))
+- Core: Ensure paths are correctly escaped when syntax checking [\#5704](https://github.com/chef/chef/pull/5704) ([ceneo](https://github.com/ceneo))
 - Added module\_version attribute for dsc\_resource for SxS support [\#5701](https://github.com/chef/chef/pull/5701) ([Aliasgar16](https://github.com/Aliasgar16))
 - Bump net-ssh to v4, add dependencies for ed25519 support [\#5687](https://github.com/chef/chef/pull/5687) ([onlyhavecans](https://github.com/onlyhavecans))
 - Initial habitat plan for chef-client [\#5677](https://github.com/chef/chef/pull/5677) ([adamhjk](https://github.com/adamhjk))
