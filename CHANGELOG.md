@@ -1,10 +1,11 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.19.3](https://github.com/chef/chef/tree/v12.19.3) (2017-01-30)
-[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.3)
+## [v12.19.4](https://github.com/chef/chef/tree/v12.19.4) (2017-02-01)
+[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.4)
 
 **Merged pull requests:**
 
+- Use CIDR notation rather than netmask in route-eth0 file [\#5772](https://github.com/chef/chef/pull/5772) ([tduffield](https://github.com/tduffield))
 - Direct feature requests to feedback.chef.io [\#5759](https://github.com/chef/chef/pull/5759) ([tduffield](https://github.com/tduffield))
 - Bump minor version to 12.19 [\#5755](https://github.com/chef/chef/pull/5755) ([scottopherson](https://github.com/scottopherson))
 - Ruby 2.3 doesn't have casecmp?. Use casecmp instead [\#5751](https://github.com/chef/chef/pull/5751) ([tduffield](https://github.com/tduffield))
