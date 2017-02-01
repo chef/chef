@@ -74,7 +74,7 @@ class Chef
             else
               normal_command
             end
-          shell_out_with_timeout(command)
+          shell_out_with_timeout!(command)
         end
 
         def upgrade_package(name, version)
