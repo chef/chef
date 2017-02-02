@@ -141,6 +141,14 @@ class Chef
 
       property :password, String, sensitive: true
 
+      def sensitive(args = nil)
+        if password
+          true
+        else
+          super
+        end
+      end
+
       def self.set_guard_inherited_attributes(*inherited_attributes)
         @class_inherited_attributes = inherited_attributes
       end
