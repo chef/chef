@@ -1,10 +1,11 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.19.5](https://github.com/chef/chef/tree/v12.19.5) (2017-02-01)
-[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.5)
+## [v12.19.6](https://github.com/chef/chef/tree/v12.19.6) (2017-02-03)
+[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.6)
 
 **Merged pull requests:**
 
+- Raise error if ips\_package install returns non-zero [\#5773](https://github.com/chef/chef/pull/5773) ([tduffield](https://github.com/tduffield))
 - Use CIDR notation rather than netmask in route-eth0 file [\#5772](https://github.com/chef/chef/pull/5772) ([tduffield](https://github.com/tduffield))
 - Direct feature requests to feedback.chef.io [\#5759](https://github.com/chef/chef/pull/5759) ([tduffield](https://github.com/tduffield))
 - Bump minor version to 12.19 [\#5755](https://github.com/chef/chef/pull/5755) ([scottopherson](https://github.com/scottopherson))
