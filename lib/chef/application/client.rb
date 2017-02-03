@@ -289,7 +289,7 @@ class Chef::Application::Client < Chef::Application
     :boolean        => true
 
   option :fips,
-    :long         => "--fips",
+    :long         => "--[no-]fips",
     :description  => "Enable fips mode",
     :boolean      => true
 
