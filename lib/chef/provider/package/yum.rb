@@ -51,17 +51,6 @@ class Chef
         # Extra attributes
         #
 
-        def arch_for_name(n)
-          if @new_resource.respond_to?("arch")
-            @new_resource.arch
-          elsif @arch
-            idx = package_name_array.index(n)
-            as_array(@arch)[idx]
-          else
-            nil
-          end
-        end
-
         def arch
           if @new_resource.respond_to?("arch")
             @new_resource.arch
@@ -93,6 +82,7 @@ class Chef
 
         def yum_command(command)
           command = "#{yum_binary} #{command}"
+
           Chef::Log.debug("#{@new_resource}: yum command: \"#{command}\"")
           status = shell_out_with_timeout(command, { :timeout => Chef::Config[:yum_timeout] })
 
@@ -173,6 +163,7 @@ class Chef
               dep = parse_dependency(n, new_version_array[index])
               if dep
                 if @new_resource.package_name.is_a?(Array)
+                  # Remove the dependency from @NR.package_name and add the computed package name to @NR.package_name
                   @new_resource.package_name(package_name_array - [n] + [dep.first])
                   @new_resource.version(new_version_array - [new_version_array[index]] + [dep.last]) if dep.last
                 else
@@ -188,7 +179,6 @@ class Chef
 
           installed_version = []
           @candidate_version = []
-          @arch = []
           if @new_resource.source
             unless ::File.exists?(@new_resource.source)
               raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
@@ -215,10 +205,8 @@ class Chef
                 # if we parsed an arch from the name, update the name
                 # to be just the package name.
                 if parch
-                  if @new_resource.package_name.is_a?(Array)
-                    @new_resource.package_name[idx] = name
-                  else
-                    @new_resource.package_name(name)
+                  unless @new_resource.package_name.is_a?(Array)
+                    @package_name = name
                     # only set the arch if it's a single package
                     set_arch(parch)
                   end
@@ -227,21 +215,20 @@ class Chef
 
               if @new_resource.version
                 new_resource =
-                  "#{@new_resource.package_name}-#{@new_resource.version}#{yum_arch(parch)}"
+                  "#{@package_name}-#{@new_resource.version}#{yum_arch(parch)}"
               else
-                new_resource = "#{@new_resource.package_name}#{yum_arch(parch)}"
+                new_resource = "#{@package_name}#{yum_arch(parch)}"
               end
               Chef::Log.debug("#{@new_resource} checking yum info for #{new_resource}")
               installed_version << @yum.installed_version(name, parch)
               @candidate_version << @yum.candidate_version(name, parch)
-              @arch << parch
             end
+
           end
 
           if installed_version.size == 1
             @current_resource.version(installed_version[0])
             @candidate_version = @candidate_version[0]
-            @arch = @arch[0]
           else
             @current_resource.version(installed_version)
           end
@@ -255,8 +242,21 @@ class Chef
         def install_remote_package(name, version)
           # Work around yum not exiting with an error if a package doesn't exist
           # for CHEF-2062
+          bare_arch = []
+          bare_name = []
+          if name.kind_of?(Array)
+            name.each do |pkg|
+              bn, parch = parse_arch(pkg)
+              bare_arch << parch
+              bare_name << bn
+            end
+          else
+            bare_name, bare_arch = parse_arch(name)
+          end
+
           all_avail = as_array(name).zip(as_array(version)).any? do |n, v|
-            @yum.version_available?(n, v, arch_for_name(n))
+            bn, parch = parse_arch(n)
+            @yum.version_available?(bn, v, parch)
           end
           method = log_method = nil
           methods = []
@@ -273,7 +273,7 @@ class Chef
               idx = package_name_array.index(n)
               unless @yum.allow_multi_install.include?(n)
                 if RPMVersion.parse(current_version_array[idx]) > RPMVersion.parse(v)
-                  # We allow downgrading only in the evenit of single-package
+                  # We allow downgrading only in the event of single-package
                   # rules where the user explicitly allowed it
                   if allow_downgrade
                     method = "downgrade"
@@ -298,12 +298,12 @@ class Chef
 
             repos = []
             pkg_string_bits = []
-            as_array(name).zip(as_array(version)).each do |n, v|
+            as_array(name).zip(as_array(version)).each_with_index do |(n, v), icn|
+              a, bn = name.kind_of?(Array) ? [arch || bare_arch[icn], bare_name[icn]] : [arch || bare_arch, bare_name]
               idx = package_name_array.index(n)
-              a = arch_for_name(n)
               s = ""
               unless v == current_version_array[idx]
-                s = "#{n}-#{v}#{yum_arch(a)}"
+                s = "#{bn}-#{v}#{yum_arch(a)}"
                 repo = @yum.package_repository(n, v, a)
                 repos << "#{s} from #{repo} repository"
                 pkg_string_bits << s
@@ -359,13 +359,13 @@ class Chef
         def remove_package(name, version)
           if version
             remove_str = as_array(name).zip(as_array(version)).map do |n, v|
-              a = arch_for_name(n)
-              "#{[n, v].join('-')}#{yum_arch(a)}"
+              bn, a = pkg_arch(n)
+              "#{[bn, v].join('-')}#{yum_arch(a)}"
             end.join(" ")
           else
             remove_str = as_array(name).map do |n|
-              a = arch_for_name(n)
-              "#{n}#{yum_arch(a)}"
+              bn, a = pkg_arch(n)
+              "#{bn}#{yum_arch(a)}"
             end.join(" ")
           end
           yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} remove #{remove_str}")
@@ -411,6 +411,11 @@ class Chef
             end
           end
           return package_name, nil
+        end
+
+        def pkg_arch(n)
+          pkg, parch = parse_arch(n)
+          [pkg, arch || parch]
         end
 
         # If we don't have the package we could have been passed a 'whatprovides' feature

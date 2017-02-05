@@ -153,14 +153,14 @@ describe Chef::Provider::Package::Yum do
         allow(@yum_cache).to receive(:yum_binary=).with("yum")
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         @provider.load_current_resource
-        expect(@provider.new_resource.package_name).to eq("testing")
+        expect(@provider.new_resource.package_name).to eq("testing.noarch")
         expect(@provider.new_resource.arch).to eq("noarch")
         expect(@provider.arch).to eq("noarch")
 
         @new_resource = Chef::Resource::YumPackage.new("testing.more.noarch")
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         @provider.load_current_resource
-        expect(@provider.new_resource.package_name).to eq("testing.more")
+        expect(@provider.new_resource.package_name).to eq("testing.more.noarch")
         expect(@provider.new_resource.arch).to eq("noarch")
         expect(@provider.arch).to eq("noarch")
       end
@@ -2279,8 +2279,35 @@ describe "Chef::Provider::Package::Yum - Multi" do
       expect(@provider).to receive(:yum_command).with(
         "-d0 -e0 -y install cups-1.2.4-11.19.el5.x86_64 vim-1.0"
       )
-      @provider.install_package(%w{cups vim}, ["1.2.4-11.19.el5", "1.0"])
+      @provider.install_package(%w{cups.x86_64 vim}, ["1.2.4-11.19.el5", "1.0"])
     end
 
+    it "should run yum install with the package name, version, and arch when names have arch" do
+      @new_resource = Chef::Resource::Package.new(["cups.x86_64", "cups.i386"])
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
+
+      # Inside of load_current_resource() we'll call parse_arch for cups,
+      # and we need to craft the right response. The default mock setup above
+      # will just return valid versions all the time which won't work for this
+      # test.
+      allow(@yum_cache).to receive(:installed_version).with("cups", "x86_64").and_return("XXXX")
+      allow(@yum_cache).to receive(:candidate_version).with("cups", "x86_64").and_return("1.2.4-11.18.el5")
+      allow(@yum_cache).to receive(:installed_version).with("cups.x86_64").and_return(nil)
+      allow(@yum_cache).to receive(:candidate_version).with("cups.x86_64").and_return(nil)
+      allow(@yum_cache).to receive(:installed_version).with("cups", "i386").and_return("XXXX")
+      allow(@yum_cache).to receive(:candidate_version).with("cups", "i386").and_return("1.2.4-11.18.el5")
+      allow(@yum_cache).to receive(:installed_version).with("cups.i386").and_return(nil)
+      allow(@yum_cache).to receive(:candidate_version).with("cups.i386").and_return(nil)
+
+      # Normal mock's for the idempotency check
+      allow(@yum_cache).to receive(:installed_version).with("cups", nil).and_return("1.2.4-11.18.el5")
+
+      @provider.load_current_resource
+      expect(@provider).to receive(:yum_command).with(
+        "-d0 -e0 -y install cups-1.2.4-11.19.el5.x86_64 cups-1.2.4-11.19.el5.i386"
+      )
+      @provider.install_package(%w{cups.x86_64 cups.i386}, ["1.2.4-11.19.el5", "1.2.4-11.19.el5"])
+    end
   end
 end
