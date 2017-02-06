@@ -72,6 +72,13 @@ describe Chef::DataCollector::Messages::Helpers do
         expect(TestMessage.chef_server_organization).to eq("unknown_organization")
       end
     end
+
+    context "when the organization in the URL contains hyphens" do
+      it "returns the full org name" do
+        Chef::Config[:chef_server_url] = "http://mycompany.com/organizations/myorg-test"
+        expect(TestMessage.chef_server_organization).to eq("myorg-test")
+      end
+    end
   end
 
   describe "#collector_source" do

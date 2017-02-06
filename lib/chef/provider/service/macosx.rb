@@ -181,7 +181,7 @@ class Chef
         end
 
         def set_service_status
-          return if @plist == nil || @service_label.to_s.empty?
+          return if @plist.nil? || @service_label.to_s.empty?
 
           cmd = "launchctl list #{@service_label}"
           res = shell_out_as_user(cmd)
@@ -197,7 +197,7 @@ class Chef
               case line.downcase
               when /\s+\"pid\"\s+=\s+(\d+).*/
                 pid = $1
-                @current_resource.running(!pid.to_i.zero?)
+                @current_resource.running(pid.to_i != 0)
                 Chef::Log.debug("Current PID for #{@service_label} is #{pid}")
               end
             end

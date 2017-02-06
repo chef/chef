@@ -6,7 +6,7 @@ platforms = platforms.split(" ").map { |p| Gem::Platform.new(p) }
 Gem::Platform.instance_eval { @local = platforms.last }
 old_platforms = Gem.platforms
 Gem.platforms = platforms
-puts "bundle-platform set Gem.platforms to #{Gem.platforms.map { |p| p.to_s }} (was #{old_platforms.map { |p| p.to_s } })"
+puts "bundle-platform set Gem.platforms to #{Gem.platforms.map { |p| p.to_s }} (was #{old_platforms.map { |p| p.to_s }})"
 
 desired_version = ARGV.shift.delete("_")
 

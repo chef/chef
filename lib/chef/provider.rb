@@ -424,7 +424,7 @@ class Chef
     module DeprecatedLWRPClass
       def const_missing(class_name)
         if Chef::Provider.deprecated_constants[class_name.to_sym]
-          Chef.log_deprecation("Using an LWRP provider by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::ProviderResolver.new(node, resource, action) instead.")
+          Chef.deprecated(:custom_resource, "Using an LWRP provider by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::ProviderResolver.new(node, resource, action) instead.")
           Chef::Provider.deprecated_constants[class_name.to_sym]
         else
           raise NameError, "uninitialized constant Chef::Provider::#{class_name}"

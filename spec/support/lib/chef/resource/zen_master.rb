@@ -22,6 +22,7 @@ require "chef/json_compat"
 class Chef
   class Resource
     class ZenMaster < Chef::Resource
+      provides :zen_master
       allowed_actions :win, :score
 
       attr_reader :peace

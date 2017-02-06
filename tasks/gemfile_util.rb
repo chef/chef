@@ -255,8 +255,8 @@ module GemfileUtil
       result = {}
       gems.each do |name, g|
         dep_groups = g[:declared_groups] - [ :only_a_runtime_dependency_of_other_gems ]
-        dep_groups = dep_groups & groups if groups
-        dep_groups = dep_groups - without_groups if without_groups
+        dep_groups &= groups if groups
+        dep_groups -= without_groups if without_groups
         if dep_groups.any?
           result[name] ||= g
           g[:dependencies].each do |dep|

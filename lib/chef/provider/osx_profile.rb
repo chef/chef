@@ -44,8 +44,10 @@ class Chef
         )
 
         @new_profile_hash = get_profile_hash(@new_resource.profile)
-        @new_profile_hash["PayloadUUID"] =
-          config_uuid(@new_profile_hash) if @new_profile_hash
+        if @new_profile_hash
+          @new_profile_hash["PayloadUUID"] =
+            config_uuid(@new_profile_hash)
+        end
 
         if @new_profile_hash
           @new_profile_identifier = @new_profile_hash["PayloadIdentifier"]

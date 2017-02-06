@@ -65,7 +65,7 @@ class Chef
           # this can't be recovered from in why-run mode, because nothing that
           # we do in the course of a run is likely to create a valid target_revision
           # if we can't resolve it up front.
-          a.assertion { target_revision != nil }
+          a.assertion { !target_revision.nil? }
           a.failure_message Chef::Exceptions::UnresolvableGitReference,
             "Unable to parse SHA reference for '#{@new_resource.revision}' in repository '#{@new_resource.repository}'. " +
             "Verify your (case-sensitive) repository URL and revision.\n" +

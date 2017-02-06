@@ -19,6 +19,8 @@
 class Chef
   class Resource
     class OpenldapIncluder < Chef::Resource::LWRPBase
+      provides :openldap_includer
+
       allowed_actions :run
       default_action :run
     end

@@ -12,7 +12,7 @@ when "debian", "ubuntu"
   ssh_package = "openssh-client"
   ssh_service = "ssh"
   ntp_service = "ntp"
-when "centos", "redhat", "fedora"
+when "centos", "redhat", "fedora", "amazon"
   ssh_package = "openssh-clients"
   ssh_service = "sshd"
   ntp_service = "ntpd"
@@ -91,7 +91,7 @@ describe package("autoconf") do
   it { should be_installed }
 end
 
-%w{lsof tcpdump strace zsh dmidecode ltrace bc curl wget telnet subversion git traceroute htop tmux s3cmd sysbench }.each do |pkg|
+%w{lsof tcpdump strace zsh dmidecode ltrace bc curl wget telnet subversion git traceroute htop tmux }.each do |pkg|
   describe package pkg do
     it { should be_installed }
   end

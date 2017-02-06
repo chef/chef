@@ -30,6 +30,7 @@ Please include the stacktrace.out output or link to a gist of it, if there is on
 This issue tracker is for the code contained within this repo -- `chef-client`, base `knife` functionality (not
 plugins), `chef-apply`, `chef-solo`, `chef-client -z`, etc.
 
-* [Server issues](https://github.com/chef/chef-server/issues/new)
+* Requests for new or alternative functionality should be made to [feedback.chef.io](https://feedback.chef.io/forums/301644-chef-product-feedback/category/110832-chef-client)
+* [Chef Server issues](https://github.com/chef/chef-server/issues/new)
 * [ChefDK issues](https://github.com/chef/chef-dk/issues/new)
 * Cookbook Issues (see the https://github.com/chef-cookbooks repos or search [Supermarket](https://supermarket.chef.io) or GitHub/Google)

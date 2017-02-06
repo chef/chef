@@ -239,7 +239,7 @@ class Chef
         security_descriptor = FFI::MemoryPointer.new :pointer
         hr = GetNamedSecurityInfoW(path.to_wstring, type, info, nil, nil, nil, nil, security_descriptor)
         if hr != ERROR_SUCCESS
-          Chef::ReservedNames::Win32::Error.raise!("get_named_security_info(#{path}, #{type}, #{info})")
+          Chef::ReservedNames::Win32::Error.raise!("get_named_security_info(#{path}, #{type}, #{info})", hr)
         end
 
         result_pointer = security_descriptor.read_pointer
@@ -538,7 +538,7 @@ class Chef
 
         hr = SetNamedSecurityInfoW(path.to_wstring, type, security_information, owner, group, dacl, sacl)
         if hr != ERROR_SUCCESS
-          Chef::ReservedNames::Win32::Error.raise!
+          Chef::ReservedNames::Win32::Error.raise! nil, hr
         end
       end
 
@@ -551,7 +551,7 @@ class Chef
       def set_security_descriptor_dacl(security_descriptor, acl, defaulted = false, present = nil)
         security_descriptor = security_descriptor.pointer if security_descriptor.respond_to?(:pointer)
         acl = acl.pointer if acl.respond_to?(:pointer)
-        present = !security_descriptor.null? if present == nil
+        present = !security_descriptor.null? if present.nil?
 
         unless SetSecurityDescriptorDacl(security_descriptor, present, acl, defaulted)
           Chef::ReservedNames::Win32::Error.raise!
@@ -579,7 +579,7 @@ class Chef
       def self.set_security_descriptor_sacl(security_descriptor, acl, defaulted = false, present = nil)
         security_descriptor = security_descriptor.pointer if security_descriptor.respond_to?(:pointer)
         acl = acl.pointer if acl.respond_to?(:pointer)
-        present = !security_descriptor.null? if present == nil
+        present = !security_descriptor.null? if present.nil?
 
         unless SetSecurityDescriptorSacl(security_descriptor, present, acl, defaulted)
           Chef::ReservedNames::Win32::Error.raise!

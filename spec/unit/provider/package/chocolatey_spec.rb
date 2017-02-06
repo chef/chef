@@ -46,7 +46,7 @@ ConEmu|15.10.25.0
     allow(provider).to receive(:choco_install_path).and_return(choco_install_path)
     allow(provider).to receive(:choco_exe).and_return(choco_exe)
     local_list_obj = double(:stdout => local_list_stdout)
-    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -l -r", { :timeout => timeout }).and_return(local_list_obj)
+    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -l -r", { :returns => [0], :timeout => timeout }).and_return(local_list_obj)
   end
 
   def allow_remote_list(package_names, args = nil)
@@ -59,7 +59,7 @@ Git|2.6.2
 munin-node|1.6.1.20130823
     EOF
     remote_list_obj = double(stdout: remote_list_stdout)
-    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -r #{package_names.join ' '}#{args}", { timeout: timeout }).and_return(remote_list_obj)
+    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -r #{package_names.join ' '}#{args}", { :returns => [0], timeout: timeout }).and_return(remote_list_obj)
   end
 
   describe "#initialize" do
@@ -180,7 +180,7 @@ munin-node|1.6.1.20130823
     it "should install a single package" do
       allow_remote_list(["git"])
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y git", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y git", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -191,7 +191,7 @@ munin-node|1.6.1.20130823
         allow_remote_list(["git"])
         new_resource.timeout(timeout)
         provider.load_current_resource
-        expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y git", { :timeout => timeout }).and_return(double)
+        expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y git", { :returns => [0], :timeout => timeout }).and_return(double)
         provider.run_action(:install)
         expect(new_resource).to be_updated_by_last_action
       end
@@ -220,7 +220,7 @@ munin-node|1.6.1.20130823
       new_resource.package_name("ConEmu")
       new_resource.version("15.10.25.1")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -version 15.10.25.1 conemu", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y --version 15.10.25.1 conemu", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -233,7 +233,7 @@ munin-node|1.6.1.20130823
       new_resource.package_name(%w{chocolatey ConEmu})
       new_resource.version([nil, "15.10.25.1"])
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -version 15.10.25.1 conemu", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y --version 15.10.25.1 conemu", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -243,7 +243,7 @@ munin-node|1.6.1.20130823
       new_resource.package_name("conemu")
       new_resource.version("15.10.25.1")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -version 15.10.25.1 conemu", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y --version 15.10.25.1 conemu", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -253,8 +253,8 @@ munin-node|1.6.1.20130823
       new_resource.package_name(%w{ConEmu git})
       new_resource.version(["15.10.25.1", nil])
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -version 15.10.25.1 conemu", { :timeout => timeout }).and_return(double)
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y git", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y --version 15.10.25.1 conemu", { :returns => [0], :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y git", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -263,7 +263,7 @@ munin-node|1.6.1.20130823
       allow_remote_list(["git", "munin-node"])
       new_resource.package_name(["git", "munin-node"])
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y git munin-node", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y git munin-node", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -273,7 +273,7 @@ munin-node|1.6.1.20130823
         allow_remote_list(["git"], " -source localpackages")
         new_resource.source("localpackages")
         provider.load_current_resource
-        expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -source localpackages git", { :timeout => timeout }).and_return(double)
+        expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -source localpackages git", { :returns => [0], :timeout => timeout }).and_return(double)
         provider.run_action(:install)
         expect(new_resource).to be_updated_by_last_action
       end
@@ -283,7 +283,7 @@ munin-node|1.6.1.20130823
       allow_remote_list(["git"])
       new_resource.options("-force")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -force git", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} install -y -force git", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -317,7 +317,7 @@ munin-node|1.6.1.20130823
     it "should install a package that is not installed" do
       allow_remote_list(["git"])
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y git", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y git", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -326,7 +326,7 @@ munin-node|1.6.1.20130823
       allow_remote_list(["ConEmu"])
       new_resource.package_name("ConEmu")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y conemu", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y conemu", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -335,7 +335,7 @@ munin-node|1.6.1.20130823
       allow_remote_list(["conemu"])
       new_resource.package_name("conemu")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y conemu", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y conemu", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -344,7 +344,7 @@ munin-node|1.6.1.20130823
       allow_remote_list(["chocolatey"])
       new_resource.package_name("chocolatey")
       provider.load_current_resource
-      expect(provider).not_to receive(:shell_out!).with("#{choco_exe} upgrade -y chocolatey", { :timeout => timeout })
+      expect(provider).not_to receive(:shell_out!).with("#{choco_exe} upgrade -y chocolatey", { :returns => [0], :timeout => timeout })
       provider.run_action(:upgrade)
       expect(new_resource).not_to be_updated_by_last_action
     end
@@ -353,7 +353,7 @@ munin-node|1.6.1.20130823
       allow_remote_list(["git"])
       new_resource.version("2.6.2")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y -version 2.6.2 git", { :timeout => timeout })
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y --version 2.6.2 git", { :returns => [0], :timeout => timeout })
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -361,7 +361,7 @@ munin-node|1.6.1.20130823
     it "upgrading multiple packages uses a single command" do
       allow_remote_list(%w{conemu git})
       new_resource.package_name(%w{conemu git})
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y conemu git", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} upgrade -y conemu git", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -413,7 +413,7 @@ munin-node|1.6.1.20130823
       allow_remote_list(["ConEmu"])
       new_resource.package_name("ConEmu")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} uninstall -y ConEmu", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} uninstall -y ConEmu", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -422,7 +422,7 @@ munin-node|1.6.1.20130823
       allow_remote_list(["conemu"])
       new_resource.package_name("conemu")
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} uninstall -y conemu", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} uninstall -y conemu", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -432,7 +432,7 @@ munin-node|1.6.1.20130823
       allow_remote_list(%w{git conemu})
       new_resource.package_name(%w{git conemu})
       provider.load_current_resource
-      expect(provider).to receive(:shell_out!).with("#{choco_exe} uninstall -y conemu", { :timeout => timeout }).and_return(double)
+      expect(provider).to receive(:shell_out!).with("#{choco_exe} uninstall -y conemu", { :returns => [0], :timeout => timeout }).and_return(double)
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end

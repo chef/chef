@@ -39,7 +39,7 @@ class Chef
         if @new_resource.gid.is_a? String
           @new_resource.gid(Etc.getgrnam(@new_resource.gid).gid)
         end
-      rescue ArgumentError => e
+      rescue ArgumentError
         @group_name_resolved = false
       end
 
@@ -53,7 +53,7 @@ class Chef
 
         begin
           user_info = Etc.getpwnam(@new_resource.username)
-        rescue ArgumentError => e
+        rescue ArgumentError
           @user_exists = false
           Chef::Log.debug("#{@new_resource} user does not exist")
           user_info = nil
@@ -97,7 +97,7 @@ class Chef
         requirements.assert(:all_actions) do |a|
           a.assertion { @shadow_lib_ok }
           a.failure_message Chef::Exceptions::MissingLibrary, "You must have ruby-shadow installed for password support!"
-          a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." +
+          a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." \
             "Note that user update converge may report false-positive on the basis of mismatched password. "
         end
         requirements.assert(:modify, :lock, :unlock) do |a|
@@ -137,34 +137,31 @@ class Chef
       end
 
       def action_remove
-        if @user_exists
-          converge_by("remove user #{@new_resource.username}") do
-            remove_user
-            Chef::Log.info("#{@new_resource} removed")
-          end
+        return unless @user_exists
+        converge_by("remove user #{@new_resource.username}") do
+          remove_user
+          Chef::Log.info("#{@new_resource} removed")
         end
       end
 
       def action_manage
-        if @user_exists && compare_user
-          converge_by("manage user #{@new_resource.username}") do
-            manage_user
-            Chef::Log.info("#{@new_resource} managed")
-          end
+        return unless @user_exists && compare_user
+        converge_by("manage user #{@new_resource.username}") do
+          manage_user
+          Chef::Log.info("#{@new_resource} managed")
         end
       end
 
       def action_modify
-        if compare_user
-          converge_by("modify user #{@new_resource.username}") do
-            manage_user
-            Chef::Log.info("#{@new_resource} modified")
-          end
+        return unless compare_user
+        converge_by("modify user #{@new_resource.username}") do
+          manage_user
+          Chef::Log.info("#{@new_resource} modified")
         end
       end
 
       def action_lock
-        if check_lock() == false
+        if check_lock == false
           converge_by("lock the user #{@new_resource.username}") do
             lock_user
             Chef::Log.info("#{@new_resource} locked")
@@ -175,7 +172,7 @@ class Chef
       end
 
       def action_unlock
-        if check_lock() == true
+        if check_lock == true
           converge_by("unlock user #{@new_resource.username}") do
             unlock_user
             Chef::Log.info("#{@new_resource} unlocked")

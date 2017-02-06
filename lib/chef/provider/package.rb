@@ -37,6 +37,9 @@ class Chef
       subclass_directive :use_multipackage_api
       # subclasses declare this if they want sources (filenames) pulled from their package names
       subclass_directive :use_package_name_for_source
+      # keeps package_names_for_targets and versions_for_targets indexed the same as package_name at
+      # the cost of having the subclass needing to deal with nils
+      subclass_directive :allow_nils
 
       #
       # Hook that subclasses use to populate the candidate_version(s)
@@ -56,7 +59,7 @@ class Chef
       def check_resource_semantics!
         # FIXME: this is not universally true and subclasses are needing to override this and no-ops it.  It should be turned into
         # another "subclass_directive" and the apt and yum providers should declare that they need this behavior.
-        if new_resource.package_name.is_a?(Array) && new_resource.source != nil
+        if new_resource.package_name.is_a?(Array) && !new_resource.source.nil?
           raise Chef::Exceptions::InvalidResourceSpecification, "You may not specify both multipackage and source"
         end
       end
@@ -196,7 +199,7 @@ class Chef
       end
 
       action :reconfig do
-        if @current_resource.version == nil
+        if @current_resource.version.nil?
           Chef::Log.debug("#{@new_resource} is NOT installed - nothing to do")
           return
         end
@@ -390,9 +393,12 @@ class Chef
       def package_names_for_targets
         package_names_for_targets = []
         target_version_array.each_with_index do |target_version, i|
-          next if target_version.nil?
-          package_name = package_name_array[i]
-          package_names_for_targets.push(package_name)
+          if !target_version.nil?
+            package_name = package_name_array[i]
+            package_names_for_targets.push(package_name)
+          else
+            package_names_for_targets.push(nil) if allow_nils?
+          end
         end
         multipackage? ? package_names_for_targets : package_names_for_targets[0]
       end
@@ -407,8 +413,11 @@ class Chef
       def versions_for_targets
         versions_for_targets = []
         target_version_array.each_with_index do |target_version, i|
-          next if target_version.nil?
-          versions_for_targets.push(target_version)
+          if !target_version.nil?
+            versions_for_targets.push(target_version)
+          else
+            versions_for_targets.push(nil) if allow_nils?
+          end
         end
         multipackage? ? versions_for_targets : versions_for_targets[0]
       end

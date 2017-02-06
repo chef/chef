@@ -41,7 +41,7 @@ class Chef
       end
 
       def delay_mins(arg = nil)
-        set_or_return(:delay_mins, arg, :kind_of => Fixnum)
+        set_or_return(:delay_mins, arg, :kind_of => Integer)
       end
     end
   end

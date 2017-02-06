@@ -33,7 +33,7 @@ class Chef
       property :backup, [Integer, FalseClass]
       property :cookbook, String
       property :group, [String, Integer]
-      property :hash, Hash
+      property :plist_hash, Hash
       property :mode, [String, Integer]
       property :owner, [String, Integer]
       property :path, String
@@ -72,8 +72,8 @@ class Chef
             raise Chef::Exceptions::ValidationFailed, error_msg
           end
 
-          unless entry.values.all? { |val| val.is_a?(Fixnum) }
-            failed_values = entry.values.reject { |val| val.is_a?(Fixnum) }.join(", ")
+          unless entry.values.all? { |val| val.is_a?(Integer) }
+            failed_values = entry.values.reject { |val| val.is_a?(Integer) }.join(", ")
             error_msg = "Invalid value(s) (#{failed_values}) for start_calendar_interval item.  Values must be integers!"
             raise Chef::Exceptions::ValidationFailed, error_msg
           end
@@ -139,6 +139,18 @@ class Chef
       property :wait_for_debugger, [ TrueClass, FalseClass ]
       property :watch_paths, Array
       property :working_directory, String
+
+      # hash is an instance method on Object and needs to return a Fixnum.
+      def hash(arg = nil)
+        Chef.deprecated(:launchd_hash_property, "Property `hash` on the `launchd` resource has changed to `plist_hash`." \
+          "Please use `plist_hash` instead. This will raise an exception in Chef 13.")
+
+        set_or_return(
+          :plist_hash,
+          arg,
+          :kind_of => Hash
+        )
+      end
     end
   end
 end

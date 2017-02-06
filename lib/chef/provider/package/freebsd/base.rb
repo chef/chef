@@ -58,7 +58,7 @@ class Chef
           def makefile_variable_value(variable, dir = nil)
             options = dir ? { :cwd => dir } : {}
             make_v = shell_out_with_timeout!("make -V #{variable}", options.merge!(:env => nil, :returns => [0, 1]))
-            make_v.exitstatus.zero? ? make_v.stdout.strip.split($\).first : nil # $\ is the line separator, i.e. newline.
+            make_v.exitstatus == 0 ? make_v.stdout.strip.split($\).first : nil # $\ is the line separator, i.e. newline.
           end
         end
 

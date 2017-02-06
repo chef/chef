@@ -262,7 +262,7 @@ class Chef
           if source_location.nil?
             inferred_registry_type == :msi
           else
-            ::File.extname(source_location).casecmp(".msi").zero?
+            ::File.extname(source_location).casecmp(".msi") == 0
           end
         end
       end

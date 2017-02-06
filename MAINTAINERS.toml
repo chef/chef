@@ -28,9 +28,7 @@ a maintainer, lieutenant, or the project lead.
       title = "Chef Core"
       team = "client-core"
       text = """
-Handles the core parts of the Chef DSL, base resource and provider
-infrastructure, the Chef applications and [omnibus-chef](https://github.com/chef/omnibus-chef). Includes anything not covered by
-another component.
+Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, chefstyle, and sundry others.
 """
 
       lieutenant = "thommay"
@@ -44,59 +42,16 @@ another component.
         "jaym",
         "jkeiser",
         "jonlives",
+        "jtimberman",
         "lamont-granquist",
         "mcquin",
-        "smurawski",
-        "tas50",
-        "tyler-ball",
+        "mwrock",
         "ranjib",
-        "mwrock"
-      ]
-
-      [Org.Components.Ohai]
-        title = "Ohai"
-        team = "ohai"
-
-        lieutenant = "mcquin"
-
-        maintainers = [
-          "btm",
-          "tas50"
-        ]
-
-    [Org.Components.DevTools]
-      title = "Dev Tools"
-      team = "client-dev-tools"
-      text = "ChefDK, Chef Zero, Knife, Chef Apply and Chef Shell."
-
-      paths = [
-        "lib/chef/knife.rb",
-        "lib/chef/knife/",
-        "spec/functional/knife/",
-        "spec/integration/knife/",
-        "spec/unit/knife/"
-      ]
-
-      maintainers = [
-        "danielsdeleo",
-        "jkeiser",
-        "jtimberman",
-        "lamont-granquist",
-        "stevendanna"
-      ]
-
-    [Org.Components.TestTools]
-      title = "Test Tools"
-      team = "client-test-tools"
-      text = "ChefSpec"
-
-      lieutenant = "sethvargo"
-
-      maintainers = [
-        "jtimberman",
-        "lamont-granquist",
+        "smurawski",
+        "stevendanna",
         "tas50",
-        "ranjib"
+        "tduffield",
+        "tyler-ball"
       ]
 
     [Org.Components.Provisioning]
@@ -110,9 +65,9 @@ Chef Provisioning and Drivers.  Supported Drivers are listed in the [README](htt
 
       maintainers = [
         "jkeiser",
-        "stuartpreston",
         "jjasghar",
         "joaogbcravo",
+        "stuartpreston",
         "thehar"
       ]
 
@@ -424,3 +379,7 @@ The specific components of Chef related to a given platform - including (but not
   [people.thehar]
     Name = "Harley Alaniz"
     GitHub = "thehar"
+
+  [people.tduffield]
+    Name = "Tom Duffield"
+    GitHub = "tduffield"

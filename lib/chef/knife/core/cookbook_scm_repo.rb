@@ -122,7 +122,7 @@ class Chef
         git("branch --no-color").stdout.lines.any? { |l| l =~ /\s#{Regexp.escape(branch_name)}(?:\s|$)/ }
       end
 
-      def get_current_branch()
+      def get_current_branch
         ref = git("symbolic-ref HEAD").stdout
         ref.chomp.split("/")[2]
       end

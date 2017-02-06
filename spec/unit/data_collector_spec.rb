@@ -371,12 +371,10 @@ describe Chef::DataCollector::Reporter do
     end
 
     context "when resource is not a nested resource" do
-      it "creates the resource report and stores it as the current one" do
+      it "initializes the resource report" do
         allow(reporter).to receive(:nested_resource?).and_return(false)
-        expect(reporter).to receive(:create_resource_report)
+        expect(reporter).to receive(:initialize_resource_report_if_needed)
           .with(new_resource, action, current_resource)
-          .and_return(resource_report)
-        expect(reporter).to receive(:update_current_resource_report).with(resource_report)
         reporter.resource_current_state_loaded(new_resource, action, current_resource)
       end
     end
@@ -418,7 +416,6 @@ describe Chef::DataCollector::Reporter do
 
     before do
       allow(reporter).to receive(:nested_resource?)
-      allow(reporter).to receive(:create_resource_report).and_return(resource_report)
       allow(resource_report).to receive(:skipped)
     end
 
@@ -431,17 +428,10 @@ describe Chef::DataCollector::Reporter do
     end
 
     context "when the resource is not a nested resource" do
-      it "creates the resource report and stores it as the current one" do
+      it "initializes the resource report and marks it as skipped" do
         allow(reporter).to receive(:nested_resource?).and_return(false)
-        expect(reporter).to receive(:create_resource_report)
-          .with(new_resource, action)
-          .and_return(resource_report)
-        expect(reporter).to receive(:update_current_resource_report).with(resource_report)
-        reporter.resource_skipped(new_resource, action, conditional)
-      end
-
-      it "marks the resource report as skipped" do
-        allow(reporter).to receive(:nested_resource?).with(new_resource).and_return(false)
+        allow(reporter).to receive(:current_resource_report).and_return(resource_report)
+        expect(reporter).to receive(:initialize_resource_report_if_needed).with(new_resource, action)
         expect(resource_report).to receive(:skipped).with(conditional)
         reporter.resource_skipped(new_resource, action, conditional)
       end
@@ -548,7 +538,7 @@ describe Chef::DataCollector::Reporter do
         end
 
         it "nils out the current resource report" do
-          expect(reporter).to receive(:update_current_resource_report).with(nil)
+          expect(reporter).to receive(:clear_current_resource_report)
           reporter.resource_completed(new_resource)
         end
       end
@@ -689,6 +679,62 @@ describe Chef::DataCollector::Reporter do
             expect { reporter.send(:validate_data_collector_server_url!) }.not_to raise_error
           end
         end
+      end
+    end
+  end
+
+  describe "#detect_unprocessed_resources" do
+    context "when resources do not override core methods" do
+      it "adds resource reports for any resources that have not yet been processed" do
+        resource_a  = Chef::Resource::Service.new("processed service")
+        resource_b  = Chef::Resource::Service.new("unprocessed service")
+
+        resource_a.action = [ :enable, :start ]
+        resource_b.action = :start
+
+        run_context = Chef::RunContext.new(Chef::Node.new, Chef::CookbookCollection.new, nil)
+        run_context.resource_collection.insert(resource_a)
+        run_context.resource_collection.insert(resource_b)
+
+        allow(reporter).to receive(:run_context).and_return(run_context)
+
+        # process the actions for resource_a, but not resource_b
+        reporter.resource_up_to_date(resource_a, :enable)
+        reporter.resource_completed(resource_a)
+        reporter.resource_up_to_date(resource_a, :start)
+        reporter.resource_completed(resource_a)
+        expect(reporter.all_resource_reports.size).to eq(2)
+
+        # detect unprocessed resources, which should find that resource_b has not yet been processed
+        reporter.send(:detect_unprocessed_resources)
+        expect(reporter.all_resource_reports.size).to eq(3)
+      end
+    end
+
+    context "when a resource overrides a core method, such as #hash" do
+      it "does not raise an exception" do
+        resource_a  = Chef::Resource::Service.new("processed service")
+        resource_b  = Chef::Resource::Service.new("unprocessed service")
+
+        resource_a.action = :start
+        resource_b.action = :start
+
+        run_context = Chef::RunContext.new(Chef::Node.new, Chef::CookbookCollection.new, nil)
+        run_context.resource_collection.insert(resource_a)
+        run_context.resource_collection.insert(resource_b)
+
+        allow(reporter).to receive(:run_context).and_return(run_context)
+
+        # override the #hash method on resource_a to return a String instead of
+        # a Fixnum. Without the fix in chef/chef#5604, this would raise an
+        # exception when getting added to the Set/Hash.
+        resource_a.define_singleton_method(:hash) { "a string" }
+
+        # process the actions for resource_a, but not resource_b
+        reporter.resource_up_to_date(resource_a, :start)
+        reporter.resource_completed(resource_a)
+
+        expect { reporter.send(:detect_unprocessed_resources) }.not_to raise_error
       end
     end
   end

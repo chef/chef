@@ -48,7 +48,7 @@ class Chef
         display_section("Platform:", RUBY_PLATFORM, out)
       end
 
-      def for_json()
+      def for_json
         {
           "title" => @title,
           "sections" => @sections,

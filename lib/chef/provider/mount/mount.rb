@@ -193,7 +193,7 @@ class Chef
         def device_should_exist?
           ( @new_resource.device != "none" ) &&
             ( not network_device? ) &&
-            ( not %w{ cgroup tmpfs fuse vboxsf }.include? @new_resource.fstype )
+            ( not %w{ cgroup tmpfs fuse vboxsf zfs }.include? @new_resource.fstype )
         end
 
         private
@@ -210,7 +210,7 @@ class Chef
         end
 
         def device_real
-          if @real_device == nil
+          if @real_device.nil?
             if @new_resource.device_type == :device
               @real_device = @new_resource.device
             else

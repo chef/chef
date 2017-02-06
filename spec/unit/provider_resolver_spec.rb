@@ -135,6 +135,7 @@ describe Chef::ProviderResolver do
             end
           else
             it "'#{name}' fails to resolve (since #{name.inspect} is unsupported on #{platform} #{platform_version})", *tags do
+              Chef::Config[:treat_deprecation_warnings_as_errors] = false
               expect(resolved_provider).to be_nil
             end
           end

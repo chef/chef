@@ -32,7 +32,6 @@ end
 # These are used for external tests
 group(:integration) do
   gem "chef-provisioning"
-  gem "chef-provisioning-aws"
   gem "chef-sugar"
   gem "chefspec"
   gem "halite"
@@ -78,7 +77,8 @@ group(:development, :test) do
 end
 
 group(:changelog) do
-  gem "github_changelog_generator"
+  gem "github_changelog_generator", git: "https://github.com/tduffield/github-changelog-generator", branch: "adjust-tag-section-mapping"
+  gem "mixlib-install"
 end
 
 group(:travis) do

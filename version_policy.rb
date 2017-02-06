@@ -21,6 +21,7 @@ OMNIBUS_OVERRIDES = {
   ## according to comment in omnibus-sw, latest versions don't work on solaris
   # https://github.com/chef/omnibus-software/blob/aefb7e79d29ca746c3f843673ef5e317fa3cba54/config/software/libtool.rb#L23
   :bundler => "1.12.5", # until we figure out how to work with 1.13.0
+  :rainbow => "2.1.0", # Currently pinned until rubygems is updated
   "libffi" => "3.2.1",
   "libiconv" => "1.14",
   "liblzma" => "5.2.2",

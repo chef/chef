@@ -107,6 +107,7 @@ class Chef
       end
 
       def output_of_command(command, args)
+        Chef.deprecated(:run_command, "Chef::Mixin::Command.run_command is deprecated, please use shell_out")
         Chef::Log.debug("Executing #{command}")
         stderr_string, stdout_string, status = "", "", nil
 

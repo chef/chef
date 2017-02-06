@@ -64,4 +64,16 @@ describe Chef::Resource::ChocolateyPackage do
     resource.version(["1.2.3", "4.5.6"])
     expect(resource.version).to eql(["1.2.3", "4.5.6"])
   end
+
+  it "the default returns should be 0" do
+    expect(resource.returns).to eql([0])
+  end
+
+  # Integer, Array
+  [ 0, [0, 48, 49] ].each do |val|
+    it "supports setting an alternate return value as a #{val.class}" do
+      resource.returns(val)
+      expect(resource.returns).to eql(val)
+    end
+  end
 end

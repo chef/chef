@@ -109,7 +109,7 @@ class Chef
           (run_levels.nil? || run_levels.empty?) ? "" : "--level #{run_levels.join('')} "
         end
 
-        def enable_service()
+        def enable_service
           unless run_levels.nil? || run_levels.empty?
             disable_levels = current_run_levels - run_levels
             shell_out! "/sbin/chkconfig --level #{disable_levels.join('')} #{new_resource.service_name} off" unless disable_levels.empty?
@@ -117,7 +117,7 @@ class Chef
           shell_out! "/sbin/chkconfig #{levels}#{new_resource.service_name} on"
         end
 
-        def disable_service()
+        def disable_service
           shell_out! "/sbin/chkconfig #{levels}#{new_resource.service_name} off"
         end
       end

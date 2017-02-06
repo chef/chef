@@ -59,7 +59,6 @@ describe Chef::Mixin::ShellOut do
       it "should emit a deprecation warning" do
         assume_deprecation_log_level && capture_log_output
         subject
-        expect(output.string).to match /DEPRECATION:/
         expect(output.string).to match Regexp.escape(old_option.to_s)
         expect(output.string).to match Regexp.escape(new_option.to_s)
       end

@@ -122,14 +122,20 @@ INSTALLED
 
   context "when installing a package" do
     it "should run pkg install with the package name and version" do
-      expect(@provider).to receive(:shell_out).with("pkg install -q crypto/gnupg@2.0.17", timeout: 900)
+      expect(@provider).to receive(:shell_out!).with("pkg install -q crypto/gnupg@2.0.17", timeout: 900).and_return(local_output)
       @provider.install_package("crypto/gnupg", "2.0.17")
     end
 
     it "should run pkg install with the package name and version and options if specified" do
-      expect(@provider).to receive(:shell_out).with("pkg --no-refresh install -q crypto/gnupg@2.0.17", timeout: 900)
+      expect(@provider).to receive(:shell_out!).with("pkg --no-refresh install -q crypto/gnupg@2.0.17", timeout: 900).and_return(local_output)
       allow(@new_resource).to receive(:options).and_return("--no-refresh")
       @provider.install_package("crypto/gnupg", "2.0.17")
+    end
+
+    it "raises an error if package fails to install" do
+      expect(@provider).to receive(:shell_out!).with("pkg --no-refresh install -q crypto/gnupg@2.0.17", timeout: 900).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      allow(@new_resource).to receive(:options).and_return("--no-refresh")
+      expect { @provider.install_package("crypto/gnupg", "2.0.17") }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
 
     it "should not include the human-readable version in the candidate_version" do
@@ -199,7 +205,7 @@ REMOTE
       end
 
       it "should run pkg install with the --accept flag" do
-        expect(@provider).to receive(:shell_out).with("pkg install -q --accept crypto/gnupg@2.0.17", timeout: 900)
+        expect(@provider).to receive(:shell_out).with("pkg install -q --accept crypto/gnupg@2.0.17", timeout: 900).and_return(local_output)
         @provider.install_package("crypto/gnupg", "2.0.17")
       end
     end
@@ -207,7 +213,7 @@ REMOTE
 
   context "when upgrading a package" do
     it "should run pkg install with the package name and version" do
-      expect(@provider).to receive(:shell_out).with("pkg install -q crypto/gnupg@2.0.17", timeout: 900)
+      expect(@provider).to receive(:shell_out).with("pkg install -q crypto/gnupg@2.0.17", timeout: 900).and_return(local_output)
       @provider.upgrade_package("crypto/gnupg", "2.0.17")
     end
   end

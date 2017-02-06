@@ -326,7 +326,7 @@ class Chef
                     else
                       relative << path[1]
                     end
-                    relative = relative + file[:path].split("/")
+                    relative += file[:path].split("/")
                     file["url"] = ChefZero::RestBase.build_uri(request.base_uri, relative)
                   end
                 end

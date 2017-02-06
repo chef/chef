@@ -925,9 +925,7 @@ class Chef
     # @deprecated Multiple actions are supported by resources.  Please call {}#updated_by_last_action} instead.
     #
     def updated=(true_or_false)
-      Chef::Log.warn("Chef::Resource#updated=(true|false) is deprecated. Please call #updated_by_last_action(true|false) instead.")
-      Chef::Log.warn("Called from:")
-      caller[0..3].each { |line| Chef::Log.warn(line) }
+      Chef.deprecated(:custom_resource, "Chef::Resource#updated=(true|false) is deprecated. Please call #updated_by_last_action(true|false) instead.")
       updated_by_last_action(true_or_false)
       @updated = true_or_false
     end
@@ -982,7 +980,7 @@ class Chef
     # @deprecated Use resource_name instead.
     #
     def self.dsl_name
-      Chef.log_deprecation "Resource.dsl_name is deprecated and will be removed in Chef 13.  Use resource_name instead."
+      Chef.deprecated(:custom_resource, "Resource.dsl_name is deprecated and will be removed in Chef 13.  Use resource_name instead.")
       if name
         name = self.name.split("::")[-1]
         convert_to_snake_case(name)
@@ -1060,7 +1058,7 @@ class Chef
     #
     def self.provider_base(arg = nil)
       if arg
-        Chef.log_deprecation("Resource.provider_base is deprecated and will be removed in Chef 13. Use provides on the provider, or provider on the resource, instead.")
+        Chef.deprecated(:custom_resource, "Resource.provider_base is deprecated and will be removed in Chef 13. Use provides on the provider, or provider on the resource, instead.")
       end
       @provider_base ||= arg || Chef::Provider
     end
@@ -1549,6 +1547,13 @@ class Chef
 
     #
     # Returns the class with the given resource_name.
+    #
+    # NOTE: Chef::Resource.resource_matching_short_name(:package) returns
+    # Chef::Resource::Package, while on rhel the API call
+    # Chef::Resource.resource_for_node(:package, node) will return
+    # Chef::Resource::YumPackage -- which is probably what you really
+    # want.  This API should most likely be removed or changed to call
+    # resource_for_node.
     #
     # ==== Parameters
     # short_name<Symbol>:: short_name of the resource (ie :directory)

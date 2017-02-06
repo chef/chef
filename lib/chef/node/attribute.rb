@@ -416,23 +416,22 @@ class Chef
 
       def normal_unless(*args)
         return Decorator::Unchain.new(self, :normal_unless) unless args.length > 0
-        write(:normal, *args) if read(*args[0...-1]).nil?
+        write(:normal, *args) if normal.read(*args[0...-1]).nil?
       end
 
       def default_unless(*args)
         return Decorator::Unchain.new(self, :default_unless) unless args.length > 0
-        write(:default, *args) if read(*args[0...-1]).nil?
+        write(:default, *args) if default.read(*args[0...-1]).nil?
       end
 
       def override_unless(*args)
         return Decorator::Unchain.new(self, :override_unless) unless args.length > 0
-        write(:override, *args) if read(*args[0...-1]).nil?
+        write(:override, *args) if override.read(*args[0...-1]).nil?
       end
 
       def set_unless(*args)
-        Chef.log_deprecation("node.set_unless is deprecated and will be removed in Chef 14, please use node.default_unless/node.override_unless (or node.normal_unless if you really need persistence)")
-        return Decorator::Unchain.new(self, :default_unless) unless args.length > 0
-        write(:normal, *args) if read(*args[0...-1]).nil?
+        Chef.deprecated(:attributes, "node.set_unless is deprecated and will be removed in Chef 14, please use node.default_unless/node.override_unless (or node.normal_unless if you really need persistence)")
+        normal_unless(*args)
       end
 
       def has_key?(key)
@@ -481,15 +480,14 @@ class Chef
         if symbol == :to_ary
           merged_attributes.send(symbol, *args)
         elsif args.empty?
-          puts symbol
-          Chef.log_deprecation %q{method access to node attributes (node.foo.bar) is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]["bar"])}
+          Chef.deprecated(:attributes, %q{method access to node attributes (node.foo.bar) is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]["bar"])})
           if key?(symbol)
             self[symbol]
           else
             raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
           end
         elsif symbol.to_s =~ /=$/
-          Chef.log_deprecation %q{method setting of node attributes (node.foo="bar") is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]="bar")}
+          Chef.deprecated(:attributes, %q{method setting of node attributes (node.foo="bar") is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]="bar")})
           key_to_set = symbol.to_s[/^(.+)=$/, 1]
           self[key_to_set] = (args.length == 1 ? args[0] : args)
         else

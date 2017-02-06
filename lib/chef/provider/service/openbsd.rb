@@ -72,7 +72,7 @@ class Chef
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { init_command && builtin_service_enable_variable_name != nil }
+            a.assertion { init_command && !builtin_service_enable_variable_name.nil? }
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end

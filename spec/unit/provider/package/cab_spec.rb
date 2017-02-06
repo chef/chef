@@ -49,7 +49,7 @@ The operation completed successfully
   end
 
   before do
-    new_resource.source = "C:\\Temp\\Test6.1-KB2664825-v3-x64.cab"
+    new_resource.source = File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
     installed_package_list_obj = double(stdout: installed_package_list_stdout)
     allow(provider).to receive(:dism_command).with("/Get-Packages").and_return(installed_package_list_obj)
     package_version_obj = double(stdout: package_version_stdout)
@@ -126,6 +126,63 @@ The operation completed successfully.
     end
   end
 
+  describe "#source_resource" do
+    before do
+      new_resource.source = "https://www.something.com/Test6.1-KB2664825-v3-x64.cab"
+      new_resource.cookbook_name = "cab_package"
+    end
+
+    it "sets the desired parameters of downloades cab file" do
+      allow(provider).to receive(:default_download_cache_path).and_return("C:\\chef\\cache\\package")
+      source_resource = provider.source_resource
+      expect(source_resource.path).to be == "C:\\chef\\cache\\package"
+      expect(source_resource.name).to be == "windows_test_pkg"
+      expect(source_resource.source).to be == [new_resource.source]
+      expect(source_resource.cookbook_name).to be == "cab_package"
+    end
+  end
+
+  describe "#default_download_cache_path" do
+    before do
+      new_resource.source = "https://www.something.com/Test6.1-KB2664825-v3-x64.cab"
+    end
+
+    it "returns a clean cache path where the cab file is downloaded" do
+      allow(Chef::FileCache).to receive(:create_cache_path).and_return(ENV["TEMP"])
+      path = provider.default_download_cache_path
+      if windows?
+        expect(path).to be == File.join("#{ENV['TEMP']}", "\\", "Test6.1-KB2664825-v3-x64.cab")
+      else
+        expect(path).to be == File.join("#{ENV['TEMP']}", "Test6.1-KB2664825-v3-x64.cab")
+      end
+    end
+  end
+
+  describe "#cab_file_source" do
+    context "when local file path is set" do
+      it "returns local cab file source path" do
+        new_resource.source = File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
+        path = provider.cab_file_source
+        if windows?
+          expect(path).to be == File.join("#{ENV['TEMP'].downcase}", "\\", "test6.1-kb2664825-v3-x64.cab")
+        else
+          expect(path).to be == File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab")
+        end
+      end
+    end
+    context "when url is set" do
+      it "calls download_source_file method" do
+        new_resource.source = "https://www.something.com/test6.1-kb2664825-v3-x64.cab"
+        if windows?
+          expect(provider).to receive(:download_source_file).and_return(File.join("#{ENV['TEMP'].downcase}", "\\", "test6.1-kb2664825-v3-x64.cab"))
+        else
+          expect(provider).to receive(:download_source_file).and_return(File.join("#{ENV['TEMP']}", "test6.1-kb2664825-v3-x64.cab"))
+        end
+        provider.cab_file_source
+      end
+    end
+  end
+
   describe "#initialize" do
     it "returns the correct class" do
       expect(provider).to be_kind_of(Chef::Provider::Package::Cab)
@@ -192,12 +249,9 @@ The operation completed successfully.
   context "Invalid package source" do
     def package_version_stdout
       package_version_stdout = <<-EOF
-
 Deployment Image Servicing and Management tool
 Version: 6.1.7600.16385
-
 Image Version: 6.1.7600.16385
-
 An error occurred trying to open - c:\\temp\\test6.1-KB2664825-v3-x64.cab Error: 0x80070003
 Error: 3
 The system cannot find the path specified.
@@ -206,7 +260,7 @@ The DISM log file can be found at C:\\Windows\\Logs\\DISM\\dism.log.
     end
 
     before do
-      new_resource.source = "C:\\Temp\\Test6.1-KB2664825-v3-x64.cab"
+      new_resource.source = "#{ENV['TEMP']}/test6.1-kb2664825-v3-x64.cab"
       installed_package_list_obj = double(stdout: installed_package_list_stdout)
       allow(provider).to receive(:dism_command).with("/Get-Packages").and_return(installed_package_list_obj)
     end

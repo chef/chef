@@ -38,7 +38,7 @@ class Chef
             a.failure_message Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
           end
           requirements.assert(:all_actions) do |a|
-            a.assertion { !@new_resource.source || @package_source_found }
+            a.assertion { !@new_resource.source || package_source_found? }
             a.failure_message Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
             a.whyrun "would assume #{@new_resource.source} would be have previously been made available"
           end
@@ -48,24 +48,21 @@ class Chef
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
 
-          if @new_resource.source
-            @package_source_found = ::File.exists?(@new_resource.source)
-            if @package_source_found
-              Chef::Log.debug("#{@new_resource} checking pkg status")
-              ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
-              ret.stdout.each_line do |line|
-                case line
-                when /:#{@new_resource.package_name}:/
-                  fields = line.split(":")
-                  @new_resource.version(fields[2])
-                when /^#{@new_resource.package_name}:/
-                  Chef::Log.warn("You are installing a bff package by product name. For idempotent installs, please install individual filesets")
-                  fields = line.split(":")
-                  @new_resource.version(fields[2])
-                end
+          if package_source_found?
+            Chef::Log.debug("#{@new_resource} checking pkg status")
+            ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
+            ret.stdout.each_line do |line|
+              case line
+              when /:#{@new_resource.package_name}:/
+                fields = line.split(":")
+                @new_resource.version(fields[2])
+              when /^#{@new_resource.package_name}:/
+                Chef::Log.warn("You are installing a bff package by product name. For idempotent installs, please install individual filesets")
+                fields = line.split(":")
+                @new_resource.version(fields[2])
               end
-              raise Chef::Exceptions::Package, "package source #{@new_resource.source} does not provide package #{@new_resource.package_name}" unless @new_resource.version
             end
+            raise Chef::Exceptions::Package, "package source #{@new_resource.source} does not provide package #{@new_resource.package_name}" unless @new_resource.version
           end
 
           Chef::Log.debug("#{@new_resource} checking install state")
@@ -88,18 +85,20 @@ class Chef
 
         def candidate_version
           return @candidate_version if @candidate_version
-          ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
-          ret.stdout.each_line do |line|
-            case line
-            when /\w:#{Regexp.escape(@new_resource.package_name)}:(.*)/
-              fields = line.split(":")
-              @candidate_version = fields[2]
-              @new_resource.version(fields[2])
-              Chef::Log.debug("#{@new_resource} setting install candidate version to #{@candidate_version}")
+          if package_source_found?
+            ret = shell_out_with_timeout("installp -L -d #{@new_resource.source}")
+            ret.stdout.each_line do |line|
+              case line
+              when /\w:#{Regexp.escape(@new_resource.package_name)}:(.*)/
+                fields = line.split(":")
+                @candidate_version = fields[2]
+                @new_resource.version(fields[2])
+                Chef::Log.debug("#{@new_resource} setting install candidate version to #{@candidate_version}")
+              end
             end
-          end
-          unless ret.exitstatus == 0
-            raise Chef::Exceptions::Package, "installp -L -d #{@new_resource.source} - #{ret.format_for_exception}!"
+            unless ret.exitstatus == 0
+              raise Chef::Exceptions::Package, "installp -L -d #{@new_resource.source} - #{ret.format_for_exception}!"
+            end
           end
           @candidate_version
         end
@@ -132,6 +131,10 @@ class Chef
             shell_out_with_timeout!( "installp -u #{expand_options(@new_resource.options)} #{name}" )
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           end
+        end
+
+        def package_source_found?
+          @package_source_found ||= @new_resource.source && ::File.exists?(@new_resource.source)
         end
 
       end

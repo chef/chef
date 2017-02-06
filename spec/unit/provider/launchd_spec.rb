@@ -185,8 +185,8 @@ XML
       end
 
       describe "hash is passed" do
-        it "should produce the test_plist from the hash" do
-          new_resource.hash test_hash
+        it "should produce the test_plist content from the plist_hash property" do
+          new_resource.plist_hash test_hash
           expect(provider.content?).to be_truthy
           expect(provider.content).to eql(test_plist)
         end

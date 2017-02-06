@@ -174,12 +174,13 @@ class Chef
       # resource, and we only care about tracking top-level resources.
       def resource_current_state_loaded(new_resource, action, current_resource)
         return if nested_resource?(new_resource)
-        update_current_resource_report(create_resource_report(new_resource, action, current_resource))
+        initialize_resource_report_if_needed(new_resource, action, current_resource)
       end
 
       # see EventDispatch::Base#resource_up_to_date
       # Mark our ResourceReport status accordingly
       def resource_up_to_date(new_resource, action)
+        initialize_resource_report_if_needed(new_resource, action)
         current_resource_report.up_to_date unless nested_resource?(new_resource)
       end
 
@@ -190,15 +191,15 @@ class Chef
       def resource_skipped(new_resource, action, conditional)
         return if nested_resource?(new_resource)
 
-        resource_report = create_resource_report(new_resource, action)
-        resource_report.skipped(conditional)
-        update_current_resource_report(resource_report)
+        initialize_resource_report_if_needed(new_resource, action)
+        current_resource_report.skipped(conditional)
       end
 
       # see EventDispatch::Base#resource_updated
       # Flag the current ResourceReport instance as updated (as long as it's
       # a top-level resource).
       def resource_updated(new_resource, action)
+        initialize_resource_report_if_needed(new_resource, action)
         current_resource_report.updated unless nested_resource?(new_resource)
       end
 
@@ -207,6 +208,7 @@ class Chef
       # long as it's a top-level resource, and update the run error text
       # with the proper Formatter.
       def resource_failed(new_resource, action, exception)
+        initialize_resource_report_if_needed(new_resource, action)
         current_resource_report.failed(exception) unless nested_resource?(new_resource)
         update_error_description(
           Formatters::ErrorMapper.resource_failed(
@@ -224,7 +226,7 @@ class Chef
         if current_resource_report && !nested_resource?(new_resource)
           current_resource_report.finish
           add_resource_report(current_resource_report)
-          update_current_resource_report(nil)
+          clear_current_resource_report
         end
       end
 
@@ -274,7 +276,7 @@ class Chef
       # see EventDispatch::Base#deprecation
       # Append a received deprecation to the list of deprecations
       def deprecation(message, location = caller(2..2)[0])
-        add_deprecation(message, location)
+        add_deprecation(message.message, message.url, location)
       end
 
       private
@@ -331,7 +333,7 @@ class Chef
       def send_to_data_collector(message)
         return unless data_collector_accessible?
 
-        Chef::Log.debug("data_collector_reporter: POSTing the following message to #{data_collector_server_url}: #{message}")
+        Chef::Log.debug("data_collector_reporter: POSTing the following message to #{data_collector_server_url}: #{Chef::JSONCompat.to_json(message)}")
         http.post(nil, message, headers)
       end
 
@@ -402,16 +404,17 @@ class Chef
         @run_status = run_status
       end
 
-      def update_current_resource_report(resource_report)
-        @current_resource_report = resource_report
-      end
-
       def update_error_description(discription_hash)
         @error_descriptions = discription_hash
       end
 
-      def add_deprecation(message, location)
-        @deprecations << { message: message, location: location }
+      def add_deprecation(message, url, location)
+        @deprecations << { message: message, url: url, location: location }
+      end
+
+      def initialize_resource_report_if_needed(new_resource, action, current_resource = nil)
+        return unless current_resource_report.nil?
+        @current_resource_report = create_resource_report(new_resource, action, current_resource)
       end
 
       def create_resource_report(new_resource, action, current_resource = nil)
@@ -422,27 +425,38 @@ class Chef
         )
       end
 
+      def clear_current_resource_report
+        @current_resource_report = nil
+      end
+
       def detect_unprocessed_resources
-        # create a Set containing all resource+action combinations from
-        # the Resource Collection
-        collection_resources = Set.new
+        # create a Hash (for performance reasons, rather than an Array) containing all
+        # resource+action combinations from the Resource Collection
+        #
+        # We use the object ID instead of the resource itself in the Hash key because
+        # we currently allow users to create a property called "hash" which creates
+        # a #hash instance method on the resource. Ruby expects that to be a Fixnum,
+        # so bad things happen when adding an object to an Array or a Hash if it's not.
+        collection_resources = {}
         run_context.resource_collection.all_resources.each do |resource|
           Array(resource.action).each do |action|
-            collection_resources.add([resource, action])
+            collection_resources[[resource.__id__, action]] = resource
           end
         end
 
-        # Delete from the Set any resource+action combination we have
+        # Delete from the Hash any resource+action combination we have
         # already processed.
         all_resource_reports.each do |report|
-          collection_resources.delete([report.resource, report.action])
+          collection_resources.delete([report.resource.__id__, report.action])
         end
 
-        # The items remaining in the Set are unprocessed resource+actions,
+        # The items remaining in the Hash are unprocessed resource+actions,
         # so we'll create new resource reports for them which default to
         # a state of "unprocessed".
-        collection_resources.each do |resource, action|
-          add_resource_report(create_resource_report(resource, action))
+        collection_resources.each do |key, resource|
+          # The Hash key is an array of the Resource's object ID and the action.
+          # We need to pluck out the action.
+          add_resource_report(create_resource_report(resource, key[1]))
         end
       end
 
@@ -455,8 +469,10 @@ class Chef
       end
 
       def validate_data_collector_server_url!
-        raise Chef::Exceptions::ConfigurationError,
-          "Chef::Config[:data_collector][:server_url] is empty. Please supply a valid URL." if data_collector_server_url.empty?
+        if data_collector_server_url.empty?
+          raise Chef::Exceptions::ConfigurationError,
+            "Chef::Config[:data_collector][:server_url] is empty. Please supply a valid URL."
+        end
 
         begin
           uri = URI(data_collector_server_url)
@@ -464,8 +480,10 @@ class Chef
           raise Chef::Exceptions::ConfigurationError, "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is not a valid URI."
         end
 
-        raise Chef::Exceptions::ConfigurationError,
-          "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is a URI with no host. Please supply a valid URL." if uri.host.nil?
+        if uri.host.nil?
+          raise Chef::Exceptions::ConfigurationError,
+            "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is a URI with no host. Please supply a valid URL."
+        end
       end
     end
   end

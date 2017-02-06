@@ -84,7 +84,7 @@ EOS
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            choco_command("install -y -version", version, cmd_args, name)
+            choco_command("install -y --version", version, cmd_args, name)
           end
 
           # but we can do all the ones without version pins at once
@@ -106,7 +106,7 @@ EOS
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            choco_command("upgrade -y -version", version, cmd_args, name)
+            choco_command("upgrade -y --version", version, cmd_args, name)
           end
 
           # but we can do all the ones without version pins at once
@@ -169,7 +169,7 @@ EOS
         # @param args [String] variable number of string arguments
         # @return [Mixlib::ShellOut] object returned from shell_out!
         def choco_command(*args)
-          shell_out_with_timeout!(args_to_string(choco_exe, *args))
+          shell_out_with_timeout!(args_to_string(choco_exe, *args), { :returns => new_resource.returns })
         end
 
         # Use the available_packages Hash helper to create an array suitable for
@@ -236,6 +236,7 @@ EOS
                 available[name] = desired_name_versions[name] || raw[name]
               end
             end
+          @available_packages
         end
 
         # Installed packages in chocolatey as a Hash of names mapped to versions
@@ -244,6 +245,7 @@ EOS
         # @return [Hash] name-to-version mapping of installed packages
         def installed_packages
           @installed_packages ||= Hash[*parse_list_output("list -l -r").flatten]
+          @installed_packages
         end
 
         # Helper to convert choco.exe list output to a Hash
