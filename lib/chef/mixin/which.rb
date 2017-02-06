@@ -19,7 +19,7 @@ class Chef
   module Mixin
     module Which
       def which(*cmds, extra_path: nil, &block)
-        where(*cmds, extra_path: extra_path, &block).first
+        where(*cmds, extra_path: extra_path, &block).first || false
       end
 
       def where(*cmds, extra_path: nil, &block)

@@ -148,21 +148,10 @@ describe Chef::Util::Selinux do
     end
 
     describe "when restorecon doesn't exist on the system" do
-      before do
-        allow(File).to receive(:executable?) do |file_path|
-          expect(file_path.end_with?("restorecon")).to be_truthy
-          false
-        end
-      end
-
       it "should log a warning message" do
-        log = [ ]
-        allow(Chef::Log).to receive(:warn) do |message|
-          log << message
-        end
-
+        allow(File).to receive(:executable?).with(/restorecon$/).and_return(false)
+        expect(Chef::Log).to receive(:warn).with(/Can not find 'restorecon' on the system. Skipping selinux security context restore./).at_least(:once)
         @test_instance.restore_security_context(path)
-        expect(log).not_to be_empty
         expect(File).not_to receive(:executable?)
         @test_instance.restore_security_context(path)
       end
