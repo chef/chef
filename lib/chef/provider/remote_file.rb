@@ -19,11 +19,14 @@
 
 require "chef/provider/file"
 require "chef/deprecation/provider/remote_file"
+require "chef/mixin/user_identity"
 require "chef/deprecation/warnings"
 
 class Chef
   class Provider
     class RemoteFile < Chef::Provider::File
+
+      include Chef::Mixin::UserIdentity
       provides :remote_file
 
       extend Chef::Deprecation::Warnings
@@ -37,6 +40,14 @@ class Chef
 
       def load_current_resource
         @current_resource = Chef::Resource::RemoteFile.new(@new_resource.name)
+        super
+      end
+
+      def define_resource_requirements
+        # @todo: this should change to raise in some appropriate major version bump.
+        requirements.assert(:all_actions) do |a|
+          a.assertion { validate_identity(new_resource.remote_user, new_resource.remote_user_password, new_resource.remote_user_domain) }
+        end
         super
       end
 
