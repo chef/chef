@@ -124,19 +124,24 @@ describe Chef::Resource::Service do
     end.to raise_error(ArgumentError)
   end
 
-  it "should accept true for recursive" do
-    @resource.recursive true
-    expect(@resource.send("recursive")).to eql(true)
+  it "should accept an array for options" do
+    @resource.options ["-r", "-s"]
+    expect(@resource.options).to eql(["-r", "-s"])
   end
 
-  it "should accept false for recursive" do
-    @resource.recursive false
-    expect(@resource.send("recursive")).to eql(false)
+  it "should accept a string for options" do
+    @resource.options "-r"
+    expect(@resource.options).to eql(["-r"])
   end
 
-  it "should not accept a string for recursive" do
+  it "should accept a string with multiple flags for options" do
+    @resource.options "-r -s"
+    expect(@resource.options).to eql(["-r", "-s"])
+  end
+
+  it "should not accept a boolean for options" do
     expect do
-      @resource.recursive "poop"
+      @resource.options true
     end.to raise_error(ArgumentError)
   end
 
@@ -191,5 +196,4 @@ describe Chef::Resource::Service do
       expect(@resource.identity).to eq("superfriend")
     end
   end
-
 end

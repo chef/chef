@@ -36,6 +36,7 @@ class Chef
         @enabled = nil
         @running = nil
         @masked = nil
+        @options = nil
         @parameters = nil
         @pattern = service_name
         @start_command = nil
@@ -49,7 +50,6 @@ class Chef
         @run_levels = nil
         @user = nil
         @supports = { :restart => nil, :reload => nil, :status => nil }
-        @recursive = nil
       end
 
       def service_name(arg = nil)
@@ -153,6 +153,14 @@ class Chef
         )
       end
 
+      def options(arg = nil)
+        set_or_return(
+          :options,
+          arg.respond_to?(:split) ? arg.split(/\s+/) : arg,
+          :kind_of => [ Array, String ]
+        )
+      end
+
       # Priority arguments can have two forms:
       #
       # - a simple number, in which the default start runlevels get
@@ -211,14 +219,6 @@ class Chef
         else
           @supports
         end
-      end
-
-      def options(arg = nil)
-        set_or_return(
-          :options,
-          arg,
-          :kind_of => [ Array, String ]
-        )
       end
 
     end
