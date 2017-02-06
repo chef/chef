@@ -54,16 +54,11 @@ class Chef
             shell_out_with_timeout!("pkg_delete #{package_name}-#{version || @current_resource.version}", :env => nil).status
           end
 
-          # The name of the package (without the version number) as understood by pkg_add and pkg_info.
           def package_name
             if supports_ports?
-              if makefile_variable_value("PKGNAME", port_path) =~ /^(.+)-[^-]+$/
-                $1
-              else
-                raise Chef::Exceptions::Package, "Unexpected form for PKGNAME variable in #{port_path}/Makefile"
-              end
+              get_package_name_from_ports
             else
-              @new_resource.package_name
+              super
             end
           end
 

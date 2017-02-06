@@ -60,6 +60,15 @@ class Chef
             make_v = shell_out_with_timeout!("make -V #{variable}", options.merge!(:env => nil, :returns => [0, 1]))
             make_v.exitstatus == 0 ? make_v.stdout.strip.split($\).first : nil # $\ is the line separator, i.e. newline.
           end
+
+          # The name of the package (without the version number) as understood by pkg, pkg_add and pkg_info.
+          def get_package_name_from_ports
+            if makefile_variable_value("PKGNAME", port_dir) =~ /^(.+)-[^-]+$/
+              $1
+            else
+              raise Chef::Exceptions::Package, "Unexpected form for PKGNAME variable in #{port_dir}/Makefile"
+            end
+          end
         end
 
         class Base < Chef::Provider::Package
@@ -71,7 +80,7 @@ class Chef
           end
 
           def load_current_resource
-            @current_resource.package_name(@new_resource.package_name)
+            @current_resource.package_name(package_name)
 
             @current_resource.version(current_installed_version)
             Chef::Log.debug("#{@new_resource} current version is #{@current_resource.version}") if @current_resource.version
@@ -80,6 +89,10 @@ class Chef
             Chef::Log.debug("#{@new_resource} candidate version is #{@candidate_version}") if @candidate_version
 
             @current_resource
+          end
+
+          def package_name
+            @new_resource.package_name
           end
         end
 
