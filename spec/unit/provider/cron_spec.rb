@@ -154,9 +154,29 @@ CRONTAB
   end
 
   describe "when examining the current system state" do
-    context "with no crontab for the user" do
+    context "with no crontab for the root user" do
       before :each do
+        allow(@provider).to receive(:root?).and_return(true)
         allow(@provider).to receive(:read_crontab).and_return(nil)
+      end
+
+      it "should set cron_empty" do
+        @provider.load_current_resource
+        expect(@provider.cron_empty).to eq(true)
+        expect(@provider.cron_exists).to eq(false)
+      end
+
+      it "should report an empty crontab" do
+        expect(Chef::Log).to receive(:debug).with("Cron empty for '#{@new_resource.user}'")
+        @provider.load_current_resource
+      end
+    end
+
+    context "with no crontab for a non-root user" do
+      before :each do
+        allow(@provider).to receive(:root?).and_return(true)
+        allow(@provider).to receive(:read_crontab).and_return(nil)
+        allow(@new_resource).to receive(:user).and_return('bartholomeow')
       end
 
       it "should set cron_empty" do
@@ -880,8 +900,7 @@ MAILTO=foo@example.com
 
   describe "read_crontab" do
     before :each do
-      @status = double("Status", :exitstatus => 0)
-      @stdout = StringIO.new(<<-CRONTAB)
+      @stdout = <<-CRONTAB
 0 2 * * * /some/other/command
 
 # Chef Name: something else
@@ -889,12 +908,55 @@ MAILTO=foo@example.com
 
 # Another comment
       CRONTAB
-      allow(@provider).to receive(:popen4).and_yield(1234, StringIO.new, @stdout, StringIO.new).and_return(@status)
+      allow(Chef::Log).to receive(:debug)
+      @status = double("Process::Status", :exitstatus => 0)
+      @shell_out = double("Mixlib::ShellOut", :status => @status, :stdout => @stdout)
+      allow(@shell_out).to receive(:format_for_exception).and_return("formatted command output")
+      allow(@provider).to receive(:shell_out).and_return(@shell_out)
     end
 
-    it "should call crontab -l with the user" do
-      expect(@provider).to receive(:popen4).with("crontab -l -u #{@new_resource.user}").and_return(@status)
-      @provider.send(:read_crontab)
+    describe "when the user is root" do
+      before :each do
+        allow(@new_resource).to receive(:user).and_return("root")
+        allow(@provider).to receive(:root?).and_return(true)
+        allow(@provider).to receive(:determine_user).and_return("root")
+      end
+
+      it "should set user name to current user" do
+        @provider.load_current_resource
+        expect(@provider).to have_received(:determine_user)
+        expect(@new_resource).to have_received(:user).with("root")
+      end
+
+      it "should call crontab -l as root" do
+        @provider.send(:read_crontab)
+        expect(@provider).to have_received(:shell_out).with("crontab -u root -l", nil)
+      end
+
+      it "should call crontab -l as root with the user" do
+        allow(@new_resource).to receive(:user).and_return("porkchop")
+        @provider.send(:read_crontab)
+        expect(@provider).to have_received(:shell_out).with("crontab -u #{@new_resource.user} -l", nil)
+      end
+    end
+
+    describe "when the user is a non-root user" do
+      before :each do
+        allow(@new_resource).to receive(:user)
+        allow(@provider).to receive(:root?).and_return(false)
+        allow(@provider).to receive(:determine_user).and_return("porkchop")
+      end
+
+      it "should set user name to current user" do
+        @provider.load_current_resource
+        expect(@provider).to have_received(:determine_user)
+        expect(@new_resource).to have_received(:user).with("porkchop")
+      end
+
+      it "should call crontab -l as current user" do
+        @provider.send(:read_crontab)
+        expect(@provider).to have_received(:shell_out).with("crontab -l", nil)
+      end
     end
 
     it "should return the contents of the crontab" do
@@ -909,61 +971,112 @@ MAILTO=foo@example.com
       CRONTAB
     end
 
-    it "should return nil if the user has no crontab" do
-      status = double("Status", :exitstatus => 1)
-      allow(@provider).to receive(:popen4).and_return(status)
-      expect(@provider.send(:read_crontab)).to eq(nil)
+    describe "when the user has no crontab" do
+      before :each do
+        allow(@status).to receive(:exitstatus).and_return(1)
+      end
+
+      it "should return nil if the user has no crontab" do
+        expect(@provider.send(:read_crontab)).to eq(nil)
+      end
+
+      it "logs the crontab output to debug" do
+        @provider.send(:read_crontab)
+        expect(Chef::Log).to have_received(:debug).with("formatted command output")
+      end
     end
 
-    it "should raise an exception if another error occurs" do
-      status = double("Status", :exitstatus => 2)
-      allow(@provider).to receive(:popen4).and_return(status)
-      expect do
-        @provider.send(:read_crontab)
-      end.to raise_error(Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: 2")
+    describe "when any other error occurs" do
+      before :each do
+        allow(@status).to receive(:exitstatus).and_return(2)
+      end
+
+      it "should raise an exception if another error occurs" do
+        expect do
+          @provider.send(:read_crontab)
+        end.to raise_error(Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: 2")
+      end
+
+      it "logs the crontab output to debug" do
+        @provider.send(:read_crontab) rescue nil
+        expect(Chef::Log).to have_received(:debug).with("formatted command output")
+      end
     end
   end
 
   describe "write_crontab" do
     before :each do
-      @status = double("Status", :exitstatus => 0)
-      @stdin = StringIO.new
-      allow(@provider).to receive(:popen4).and_yield(1234, @stdin, StringIO.new, StringIO.new).and_return(@status)
+      allow(Chef::Log).to receive(:warn)
+      allow(Chef::Log).to receive(:debug)
+      @status = double("Process::Status", :exitstatus => 0)
+      @shell_out = double("Mixlib::ShellOut", :status => @status, :stdout => "")
+      allow(@shell_out).to receive(:format_for_exception).and_return("formatted command output")
+      allow(@provider).to receive(:shell_out).and_return(@shell_out)
     end
 
-    it "should call crontab for the user" do
-      expect(@provider).to receive(:popen4).with("crontab -u #{@new_resource.user} -", :waitlast => true).and_return(@status)
-      @provider.send(:write_crontab, "Foo")
-    end
-
-    it "should write the given string to the crontab command" do
-      @provider.send(:write_crontab, "Foo\n# wibble\n wah!!")
-      expect(@stdin.string).to eq("Foo\n# wibble\n wah!!")
-    end
-
-    it "should raise an exception if the command returns non-zero" do
-      allow(@status).to receive(:exitstatus).and_return(1)
-      expect do
-        @provider.send(:write_crontab, "Foo")
-      end.to raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
-    end
-
-    it "should raise an exception if the command die's and parent tries to write" do
-      class WriteErrPipe
-        def write(str)
-          raise Errno::EPIPE, "Test"
-        end
+    describe "when the user is root" do
+      before :each do
+        allow(@new_resource).to receive(:user).and_return("root")
+        allow(@provider).to receive(:root?).and_return(true)
+        allow(@provider).to receive(:determine_user).and_return("root")
       end
-      allow(@status).to receive(:exitstatus).and_return(1)
-      allow(@provider).to receive(:popen4).and_yield(1234, WriteErrPipe.new, StringIO.new, StringIO.new).and_return(@status)
 
-      expect(Chef::Log).to receive(:debug).with("Broken pipe - Test")
+      it "should set user name to current user" do
+        @provider.load_current_resource
+        expect(@provider).to have_received(:determine_user)
+        expect(@new_resource).to have_received(:user).with("root")
+        expect(Chef::Log).not_to have_received(:warn)
+      end
 
-      expect do
+      it "should call crontab as root" do
         @provider.send(:write_crontab, "Foo")
-      end.to raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
+        expect(@provider).to have_received(:shell_out).with("crontab -u root -", { :input => "Foo" })
+      end
+
+      it "should call crontab for as root with the user" do
+        allow(@new_resource).to receive(:user).and_return("puffypaws")
+        @provider.send(:write_crontab, "Foo")
+        expect(@provider).to have_received(:shell_out).with("crontab -u #{@new_resource.user} -", { :input => "Foo" })
+      end
     end
 
+    describe "when the user is a non-root user" do
+      before :each do
+        allow(@new_resource).to receive(:user)
+        allow(@provider).to receive(:root?).and_return(false)
+        allow(@provider).to receive(:determine_user).and_return("whiskers")
+      end
+
+      it "should set user name to current user" do
+        @provider.load_current_resource
+        expect(@provider).to have_received(:determine_user)
+        expect(@new_resource).to have_received(:user).with("whiskers")
+        expect(Chef::Log).to have_received(:warn).with("Not running as root! Will only be able to access cron jobs for user: #{@new_resource.user}")
+      end
+
+      it "should call crontab as current user" do
+        @provider.send(:write_crontab, "Foo\n# wibble\n wah!!")
+        expect(@provider).to have_received(:shell_out).with("crontab -", { :input => "Foo\n# wibble\n wah!!" })
+      end
+    end
+
+    describe "when writing the crontab fails" do
+      before :each do
+        allow(@status).to receive(:exitstatus).and_return(1)
+      end
+
+      it "should raise an exception if the command returns non-zero" do
+        allow(@status).to receive(:exitstatus).and_return(1)
+        expect do
+          @provider.send(:write_crontab, "Foo")
+        end.to raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
+      end
+
+      it "logs the crontab output to debug" do
+        @provider.send(:read_crontab) rescue nil
+        expect(Chef::Log).to have_received(:debug).with("formatted command output")
+      end
+    end
   end
 
   describe "weekday_in_crontab" do
