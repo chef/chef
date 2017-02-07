@@ -559,6 +559,15 @@ describe Chef::Provider::Package::Yum do
       @provider.install_package("cups", "1.2.4-11.19.el5")
     end
 
+    it "should run yum install with package name+arch" do
+      @provider.load_current_resource
+      allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
+      expect(@provider).to receive(:yum_command).with(
+        "-d0 -e0 -y install cups-1.2.4-11.19.el5.i386"
+      )
+      @provider.install_package("cups.i386", "1.2.4-11.19.el5")
+    end
+
     it "installs the package with the options given in the resource" do
       @provider.load_current_resource
       allow(@provider).to receive(:candidate_version).and_return("11")
@@ -773,6 +782,15 @@ describe Chef::Provider::Package::Yum do
         "-d0 -e0 -y remove emacs-1.0.x86_64"
       )
       @provider.remove_package("emacs", "1.0")
+    end
+
+    describe "when package name has arch in it" do
+      it "should run yum remove with the package name and arc" do
+        expect(@provider).to receive(:yum_command).with(
+          "-d0 -e0 -y remove emacs-1.0.x86_64"
+        )
+        @provider.remove_package("emacs.x86_64", "1.0")
+      end
     end
   end
 
