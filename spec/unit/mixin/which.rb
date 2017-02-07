@@ -25,36 +25,36 @@ describe Chef::Mixin::Which do
 
   let(:test) { TestClass.new }
 
-  def self.test_which(description, *args, finds: nil, others: [], directory: false, &block)
-    it description do
-      # stub the ENV['PATH']
-      expect(test).to receive(:env_path).and_return(["/dir1", "/dir2" ].join(File::PATH_SEPARATOR))
+  describe "#which" do
+    def self.test_which(description, *args, finds: nil, others: [], directory: false, &block)
+      it description do
+        # stub the ENV['PATH']
+        expect(test).to receive(:env_path).and_return(["/dir1", "/dir2" ].join(File::PATH_SEPARATOR))
 
-      # most files should not be found
-      allow(File).to receive(:executable?).and_return(false)
-      allow(File).to receive(:directory?).and_return(false)
+        # most files should not be found
+        allow(File).to receive(:executable?).and_return(false)
+        allow(File).to receive(:directory?).and_return(false)
 
-      # stub the expectation
-      expect(File).to receive(:executable?).with(finds).and_return(true) if finds
+        # stub the expectation
+        expect(File).to receive(:executable?).with(finds).and_return(true) if finds
 
-      # if the file we find is a directory
-      expect(File).to receive(:directory?).with(finds).and_return(true) if finds && directory
+        # if the file we find is a directory
+        expect(File).to receive(:directory?).with(finds).and_return(true) if finds && directory
 
-      # allow for stubbing other paths to exist that we should not find
-      others.each do |other|
-        allow(File).to receive(:executable?).with(other).and_return(true)
-      end
+        # allow for stubbing other paths to exist that we should not find
+        others.each do |other|
+          allow(File).to receive(:executable?).with(other).and_return(true)
+        end
 
-      # setup the actual expectation on the return value
-      if finds && !directory
-        expect(test.which(*args, &block)).to eql(finds)
-      else
-        expect(test.which(*args, &block)).to eql(false)
+        # setup the actual expectation on the return value
+        if finds && !directory
+          expect(test.which(*args, &block)).to eql(finds)
+        else
+          expect(test.which(*args, &block)).to eql(false)
+        end
       end
     end
-  end
 
-  describe "#which" do
     context "simple usage" do
       test_which("returns false when it does not find anything", "foo1")
 
@@ -98,31 +98,31 @@ describe Chef::Mixin::Which do
     end
   end
 
-  def self.test_where(description, *args, finds: [], others: [], &block)
-    it description do
-      # stub the ENV['PATH']
-      expect(test).to receive(:env_path).and_return(["/dir1", "/dir2" ].join(File::PATH_SEPARATOR))
+  describe "#where" do
+    def self.test_where(description, *args, finds: [], others: [], &block)
+      it description do
+        # stub the ENV['PATH']
+        expect(test).to receive(:env_path).and_return(["/dir1", "/dir2" ].join(File::PATH_SEPARATOR))
 
-      # most files should not be found
-      allow(File).to receive(:executable?).and_return(false)
-      allow(File).to receive(:directory?).and_return(false)
+        # most files should not be found
+        allow(File).to receive(:executable?).and_return(false)
+        allow(File).to receive(:directory?).and_return(false)
 
-      # allow for stubbing other paths to exist that we should not return
-      others.each do |other|
-        allow(File).to receive(:executable?).with(other).and_return(true)
+        # allow for stubbing other paths to exist that we should not return
+        others.each do |other|
+          allow(File).to receive(:executable?).with(other).and_return(true)
+        end
+
+        # stub the expectation
+        finds.each do |path|
+          expect(File).to receive(:executable?).with(path).and_return(true)
+        end
+
+        # setup the actual expectation on the return value
+        expect(test.where(*args, &block)).to eql(finds)
       end
-
-      # stub the expectation
-      finds.each do |path|
-        expect(File).to receive(:executable?).with(path).and_return(true)
-      end
-
-      # setup the actual expectation on the return value
-      expect(test.where(*args, &block)).to eql(finds)
     end
-  end
 
-  context "where" do
     context "simple usage" do
       test_where("returns empty array when it doesn't find anything", "foo1")
 
