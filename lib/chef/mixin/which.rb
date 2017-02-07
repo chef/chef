@@ -25,8 +25,8 @@ class Chef
       def where(*cmds, extra_path: nil, &block)
         # NOTE: unnecessarily duplicates function of path_sanity
         extra_path ||= [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
+        paths = env_path.split(File::PATH_SEPARATOR) + extra_path
         cmds.map do |cmd|
-          paths = ENV["PATH"].split(File::PATH_SEPARATOR) + extra_path
           paths.map do |path|
             filename = Chef.path_to(File.join(path, cmd))
             filename if valid_executable?(filename, &block)
@@ -35,6 +35,11 @@ class Chef
       end
 
       private
+
+      # for test stubbing
+      def env_path
+        ENV["PATH"]
+      end
 
       def valid_executable?(filename, &block)
         return false unless File.executable?(filename) && !File.directory?(filename)
