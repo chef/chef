@@ -1,5 +1,4 @@
 #
-# Author:: Seth Chisamore (<schisamo@chef.io>)
 # Copyright:: Copyright 2011-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -26,7 +25,7 @@ describe Chef::Mixin::Which do
 
   let(:test) { TestClass.new }
 
-  def self.test_which(description, *args, finds: nil, others: nil, directory: false, &block)
+  def self.test_which(description, *args, finds: nil, others: [], directory: false, &block)
     it description do
       # stub the ENV['PATH']
       expect(test).to receive(:env_path).and_return(["/dir1", "/dir2" ].join(File::PATH_SEPARATOR))
@@ -42,10 +41,8 @@ describe Chef::Mixin::Which do
       expect(File).to receive(:directory?).with(finds).and_return(true) if finds && directory
 
       # allow for stubbing other paths to exist that we should not find
-      if others
-        others.each do |other|
-          allow(File).to receive(:executable?).with(other).and_return(true)
-        end
+      others.each do |other|
+        allow(File).to receive(:executable?).with(other).and_return(true)
       end
 
       # setup the actual expectation on the return value
@@ -101,7 +98,7 @@ describe Chef::Mixin::Which do
     end
   end
 
-  def self.test_where(description, *args, finds: [], &block)
+  def self.test_where(description, *args, finds: [], others: [], &block)
     it description do
       # stub the ENV['PATH']
       expect(test).to receive(:env_path).and_return(["/dir1", "/dir2" ].join(File::PATH_SEPARATOR))
@@ -109,6 +106,11 @@ describe Chef::Mixin::Which do
       # most files should not be found
       allow(File).to receive(:executable?).and_return(false)
       allow(File).to receive(:directory?).and_return(false)
+
+      # allow for stubbing other paths to exist that we should not return
+      others.each do |other|
+        allow(File).to receive(:executable?).with(other).and_return(true)
+      end
 
       # stub the expectation
       finds.each do |path|
@@ -143,6 +145,16 @@ describe Chef::Mixin::Which do
       test_where("finds them both in the same directory", "foo1", "foo2", finds: [ "/dir1/foo1", "/dir1/foo2" ])
 
       test_where("finds foo2 first if they're reversed", "foo2", "foo1", finds: [ "/dir1/foo2", "/dir1/foo1" ])
+    end
+
+    context "with a block do" do
+      test_where("finds foo1 and foo2 if they exist and the block is true", "foo1", "foo2", finds: [ "/dir1/foo2", "/dir2/foo2" ]) do
+        true
+      end
+
+      test_where("does not finds foo1 and foo2 if they exist and the block is false", "foo1", "foo2", others: [ "/dir1/foo2", "/dir2/foo2" ]) do
+        false
+      end
     end
   end
 end
