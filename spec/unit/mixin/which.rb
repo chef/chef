@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -101,6 +101,48 @@ describe Chef::Mixin::Which do
     end
   end
 
+  def self.test_where(description, *args, finds: [], &block)
+    it description do
+      # stub the ENV['PATH']
+      expect(test).to receive(:env_path).and_return(["/dir1", "/dir2" ].join(File::PATH_SEPARATOR))
+
+      # most files should not be found
+      allow(File).to receive(:executable?).and_return(false)
+      allow(File).to receive(:directory?).and_return(false)
+
+      # stub the expectation
+      finds.each do |path|
+        expect(File).to receive(:executable?).with(path).and_return(true)
+      end
+
+      # setup the actual expectation on the return value
+      expect(test.where(*args, &block)).to eql(finds)
+    end
+  end
+
   context "where" do
+    context "simple usage" do
+      test_where("returns empty array when it doesn't find anything", "foo1")
+
+      ["/dir1", "/dir2", "/bin", "/usr/bin", "/sbin", "/usr/sbin" ].each do |dir|
+        test_where("finds `foo1` in #{dir} when it is stubbed", "foo1", finds: [ "#{dir}/foo1" ])
+      end
+
+      test_where("finds `foo1` in all directories", "foo1", finds: [ "/dir1/foo1", "/dir2/foo1" ])
+    end
+
+    context "with an array of args" do
+      test_where("finds the first arg", "foo1", "foo2", finds: [ "/dir2/foo1" ])
+
+      test_where("finds the second arg", "foo1", "foo2", finds: [ "/dir2/foo2" ])
+
+      test_where("finds foo1 before foo2", "foo1", "foo2", finds: [ "/dir2/foo1", "/dir1/foo2" ])
+
+      test_where("finds foo1 before foo2 if the dirs are reversed", "foo1", "foo2", finds: [ "/dir1/foo1", "/dir2/foo2" ])
+
+      test_where("finds them both in the same directory", "foo1", "foo2", finds: [ "/dir1/foo1", "/dir1/foo2" ])
+
+      test_where("finds foo2 first if they're reversed", "foo2", "foo1", finds: [ "/dir1/foo2", "/dir1/foo1" ])
+    end
   end
 end
