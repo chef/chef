@@ -251,6 +251,10 @@ class Chef
         end
       end
 
+      def package_locked(name, version)
+        raise Chef::Exceptions::UnsupportedAction, "#{self} has no way to detect if package is locked"
+      end
+
       # @todo use composition rather than inheritance
 
       def multipackage_api_adapter(name, version)
