@@ -53,7 +53,7 @@ def query(command):
     if len(archq.run()) > 0:
         q = archq
 
-    pkgs = dnf.query.latest_limit_pkgs(q, 1)
+    pkgs = q.latest(1).run()
 
     if not pkgs:
         sys.stdout.write('{} nil nil\n'.format(command['provides'].split().pop(0)))
