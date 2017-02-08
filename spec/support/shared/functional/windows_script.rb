@@ -160,12 +160,12 @@ shared_context Chef::Resource::WindowsScript do
         end
       end
 
-      context "when a different non-admin user attempts write (modify) to access the script" do
+      context "when a different non-admin user attempts write (modify) to access the script", :requires_admin do
         let(:file_access_command) { modify_access_denied_command }
         it_behaves_like "a script whose file system location cannot be accessed by other non-admin users"
       end
 
-      context "when a different non-admin user attempts write (delete) to access the script" do
+      context "when a different non-admin user attempts write (delete) to access the script", :requires_admin do
         let(:file_access_command) { delete_access_denied_command }
         it_behaves_like "a script whose file system location cannot be accessed by other non-admin users"
       end
@@ -178,11 +178,11 @@ shared_context Chef::Resource::WindowsScript do
         resource.run_action(:run)
       end
 
-      context "the script is executed with the identity of the current user" do
+      context "the script is executed with the identity of the current user", :requires_admin do
         it_behaves_like "a script that cannot be accessed by other users if they are not administrators"
       end
 
-      context "the script is executed with an alternate non-admin identity" do
+      context "the script is executed with an alternate non-admin identity", :requires_admin do
         include_context "alternate user identity"
 
         before do
@@ -226,7 +226,7 @@ shared_context Chef::Resource::WindowsScript do
         expect(resource.should_skip?(:run)).to be_falsey
       end
 
-      context "when this resource is used as a guard and it is specified with an alternate user identity" do
+      context "when this resource is used as a guard and it is specified with an alternate user identity", :requires_admin do
         let(:guard_interpreter_resource) { resource.resource_name }
         it_behaves_like "a resource with a guard specifying an alternate user identity"
       end
@@ -247,7 +247,7 @@ shared_context Chef::Resource::WindowsScript do
       it_behaves_like "a script resource with architecture attribute"
     end
 
-    describe "when running with an alternate user identity" do
+    describe "when running with an alternate user identity", :requires_admin do
       let(:resource_command_property) { :code }
       it_behaves_like "an execute resource that supports alternate user identity"
     end

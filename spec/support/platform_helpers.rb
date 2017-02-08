@@ -199,6 +199,11 @@ def root?
   Process.euid == 0
 end
 
+def admin?
+  return false unless windows?
+  Chef::ReservedNames::Win32::Security.has_admin_privileges?
+end
+
 def openssl_gte_101?
   OpenSSL::OPENSSL_VERSION_NUMBER >= 10001000
 end
