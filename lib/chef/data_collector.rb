@@ -2,7 +2,7 @@
 # Author:: Adam Leff (<adamleff@chef.io>)
 # Author:: Ryan Cragun (<ryan@chef.io>)
 #
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -333,7 +333,6 @@ class Chef
       def send_to_data_collector(message)
         return unless data_collector_accessible?
 
-        Chef::Log.debug("data_collector_reporter: POSTing the following message to #{data_collector_server_url}: #{Chef::JSONCompat.to_json(message)}")
         http.post(nil, message, headers)
       end
 
