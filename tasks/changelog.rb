@@ -20,9 +20,10 @@ begin
       config.between_tags = ["v#{latest_stable_version}", "v#{Chef::VERSION}"]
       config.max_issues = 0
       config.add_issues_wo_labels = false
+      config.issues = false
       config.enhancement_labels = "enhancement,Enhancement,New Feature,Feature".split(",")
       config.bug_labels = "bug,Bug,Improvement,Upstream Bug".split(",")
-      config.exclude_labels = "duplicate,question,invalid,wontfix,no_changelog,Exclude From Changelog,Question,Discussion".split(",")
+      config.exclude_labels = "duplicate,question,invalid,wontfix,no_changelog,Exclude From Changelog,Question,Discussion,Meta: Exclude From Changelog".split(",")
       config.header = "This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)."
     end
   end
