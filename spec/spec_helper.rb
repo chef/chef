@@ -152,6 +152,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :windows_powershell_no_dsc_only => true unless ! windows_powershell_dsc?
   config.filter_run_excluding :windows_domain_joined_only => true unless windows_domain_joined?
   config.filter_run_excluding :windows_not_domain_joined_only => true if windows_domain_joined?
+  config.filter_run_excluding :windows_service_requires_assign_token => true if !STDOUT.isatty && !windows_user_right?("SeAssignPrimaryTokenPrivilege")
   config.filter_run_excluding :solaris_only => true unless solaris?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?

@@ -92,6 +92,12 @@ def windows_nano_server?
   Chef::Platform.windows_nano_server?
 end
 
+def windows_user_right?(right)
+  return false unless windows?
+  require 'chef/win32/security'
+  Chef::ReservedNames::Win32::Security.get_account_right(ENV["USERNAME"]).include?(right)
+end
+
 def mac_osx_106?
   if File.exists? "/usr/bin/sw_vers"
     result = ShellHelpers.shell_out("/usr/bin/sw_vers")
