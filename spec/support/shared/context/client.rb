@@ -95,7 +95,7 @@ shared_context "a client run" do
 
   def stub_for_data_collector_init
     expect(Chef::ServerAPI).to receive(:new).
-      with(Chef::Config[:data_collector][:server_url]).
+      with(Chef::Config[:data_collector][:server_url], validate_utf8: false).
       exactly(:once).
       and_return(http_data_collector)
   end
