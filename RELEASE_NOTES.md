@@ -13,6 +13,17 @@ _This file holds "in progress" release notes for the current release under devel
 
 The `execute` resource and simliar resources such as `script`, `batch`, and `powershell_script`now support the specification of credentials on Windows so that the resulting process is created with the security identity that corresponds to those credentials.
 
+**Note**: For this feature the user that Chef runs as needs the 'SE_ASSIGNPRIMARYTOKEN_NAME' or 'SeAssignPrimaryTokenPrivilege' user right, when running as a service. By default the user has only LocalSystem and NetworkService rights.
+
+This is how the right can be added for a user in the recipe:
+```ruby
+# Add 'SeAssignPrimaryTokenPrivilege' for the user
+Chef::ReservedNames::Win32::Security.add_account_right('<user>', 'SeAssignPrimaryTokenPrivilege')
+
+# Check if the user has 'SeAssignPrimaryTokenPrivilege' rights
+Chef::ReservedNames::Win32::Security.get_account_right('<user>').include?('SeAssignPrimaryTokenPrivilege')
+```
+
 #### Properties
 
 The following properties are new or updated for the `execute`, `script`, `batch`, and `powershell_script` resources and any resources derived from them:
