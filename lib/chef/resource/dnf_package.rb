@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software, Inc.
+# Copyright:: Copyright 2016-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +16,21 @@
 #
 
 require "chef/resource/package"
+require "chef/mixin/which"
+require "chef/mixin/shell_out"
 
 class Chef
   class Resource
     class DnfPackage < Chef::Resource::Package
       extend Chef::Mixin::Which
+      extend Chef::Mixin::ShellOut
 
       resource_name :dnf_package
 
       allowed_actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock, :flush_cache
 
-      provides :package, os: "linux", platform_family: %w{rhel fedora} do
-        which("dnf")
+      provides :package, platform_family: %w{rhel fedora} do
+        which("dnf") && shell_out("rpm -q dnf").stdout =~ /^dnf-[1-9]/
       end
 
       provides :dnf_package
