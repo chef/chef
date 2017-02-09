@@ -11,11 +11,11 @@ _This file holds "in progress" release notes for the current release under devel
 
 ### Windows alternate user identity execute support
 
-The `execute` resource and simliar resources such as `script`, `batch`, and `powershell_script`now support the specification of credentials on Windows so that the resulting process is created with the security identity that corresponds to those credentials.
+The `execute` resource and simliar resources such as `script`, `batch`, and `powershell_script` now support the specification of credentials on Windows so that the resulting process is created with the security identity that corresponds to those credentials.
 
-**Note**: For this feature the user that Chef runs as needs the 'SE_ASSIGNPRIMARYTOKEN_NAME' or 'SeAssignPrimaryTokenPrivilege' user right, when running as a service. By default the user has only LocalSystem and NetworkService rights.
+**Note**: When Chef is running as a service, this feature requires that the user that Chef runs as has 'SeAssignPrimaryTokenPrivilege' (aka 'SE_ASSIGNPRIMARYTOKEN_NAME') user right. By default only LocalSystem and NetworkService have this right when running as a service. This is necessary even if the user is an Administrator.
 
-This is how the right can be added for a user in the recipe:
+This right bacn be added and checked in a recipe using this example:
 ```ruby
 # Add 'SeAssignPrimaryTokenPrivilege' for the user
 Chef::ReservedNames::Win32::Security.add_account_right('<user>', 'SeAssignPrimaryTokenPrivilege')
