@@ -6,11 +6,11 @@
 
 Want to try Chef? Get started with [learnchef](https://learn.chef.io)
 
-* Documentation: [https://docs.chef.io](https://docs.chef.io)
-* Source: [https://github.com/chef/chef/tree/master](https://github.com/chef/chef/tree/master)
-* Tickets/Issues: [https://github.com/chef/chef/issues](https://github.com/chef/chef/issues)
-* Slack: [Chef Community Slack](https://community-slack.chef.io/)
-* Mailing list: [https://discourse.chef.io](https://discourse.chef.io)
+- Documentation: <https://docs.chef.io>
+- Source: <https://github.com/chef/chef/tree/master>
+- Tickets/Issues: <https://github.com/chef/chef/issues>
+- Slack: [Chef Community Slack](https://community-slack.chef.io/)
+- Mailing list: <https://discourse.chef.io>
 
 Chef is a configuration management tool designed to bring automation to your
 entire infrastructure.
@@ -18,10 +18,10 @@ entire infrastructure.
 This README focuses on developers who want to modify Chef source code.
 If you just want to use Chef, check out these resources:
 
-* [learnchef](https://learn.chef.io): Getting started guide
-* [docs.chef.io](https://docs.chef.io): Comprehensive User Docs
-* [Installer Downloads](https://downloads.chef.io/chef/): Install Chef as a complete package
-* [chef/chef](https://hub.docker.com/r/chef/chef): Docker image for use with [kitchen-dokken](https://github.com/someara/kitchen-dokken)
+- [learnchef](https://learn.chef.io): Getting started guide
+- [docs.chef.io](https://docs.chef.io): Comprehensive User Docs
+- [Installer Downloads](https://downloads.chef.io/chef/): Install Chef as a complete package
+- [chef/chef](https://hub.docker.com/r/chef/chef): Docker image for use with [kitchen-dokken](https://github.com/someara/kitchen-dokken)
 
 ## Installing From Git
 
@@ -74,8 +74,7 @@ The general development process is:
 1. Fork this repo and clone it to your workstation.
 2. Create a feature branch for your change.
 3. Write code and tests.
-4. Push your feature branch to github and open a pull request against
-   master.
+4. Push your feature branch to github and open a pull request against master.
 
 Once your repository is set up, you can start working on the code. We do utilize
 RSpec for test driven development, so you'll need to get a development
@@ -92,7 +91,7 @@ Note that this repository is primarily for reporting chef-client issues.
 For reporting issues against other Chef projects, please look up the appropriate repository
 to report issues against in the Chef docs in the
 [community contributions section](https://docs.chef.io/community_contributions.html#issues-and-bug-reports).
-If you can't detemine the appropriate place to report an issue, then please open it
+If you can't determine the appropriate place to report an issue, then please open it
 against the repository you think best fits and it will be directed to the appropriate project.
 
 ## Testing
@@ -244,7 +243,7 @@ bundle install
 bundle exec omnibus build chef
 ```
 
-This causes the [chef project definition](omnibus/config/projects/chef.rb) to load, which runs the [chef-complete](omnibus/config/software/chef-complete.rb) software definition, the primary software definition driving the whole build process. The reason we embed it all in a software definiton instead of the project is to take advantage of omnibus caching: omnibus will invalidate the entire project (and recompile ruby, openssl, and everything else) if you change anything at all in the project file. Not so with a software definition.
+This causes the [chef project definition](omnibus/config/projects/chef.rb) to load, which runs the [chef-complete](omnibus/config/software/chef-complete.rb) software definition, the primary software definition driving the whole build process. The reason we embed it all in a software definition instead of the project is to take advantage of omnibus caching: omnibus will invalidate the entire project (and recompile ruby, openssl, and everything else) if you change anything at all in the project file. Not so with a software definition.
 
 ### Installing the Gems
 
