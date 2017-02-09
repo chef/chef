@@ -94,7 +94,7 @@ end
 
 def windows_user_right?(right)
   return false unless windows?
-  require 'chef/win32/security'
+  require "chef/win32/security"
   Chef::ReservedNames::Win32::Security.get_account_right(ENV["USERNAME"]).include?(right)
 end
 
