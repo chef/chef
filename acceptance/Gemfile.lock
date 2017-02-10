@@ -119,11 +119,10 @@ GEM
     mixlib-authentication (1.4.1)
       mixlib-log
     mixlib-config (2.2.4)
-    mixlib-install (2.1.12)
+    mixlib-install (1.2.3)
       artifactory
       mixlib-shellout
       mixlib-versioning
-      thor
     mixlib-log (1.7.1)
     mixlib-shellout (2.2.7)
     mixlib-versioning (1.1.0)
@@ -249,7 +248,7 @@ DEPENDENCIES
   kitchen-ec2
   kitchen-inspec
   kitchen-vagrant
-  mixlib-install
+  mixlib-install (= 1.2.3)
   rake
   test-kitchen
   windows_chef_zero

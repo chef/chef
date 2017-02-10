@@ -12,9 +12,9 @@ source "https://rubygems.org"
 gem "chef", path: "."
 
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
-# Ensure that we can always install rake, regardless of gem groups
 gem "rake"
 gem "bundler"
+gem "cheffish" # required for rspec tests
 
 group(:omnibus_package) do
   gem "appbundler"

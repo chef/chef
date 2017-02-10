@@ -29,6 +29,12 @@ namespace :dependencies do
     system("#{File.join(Dir.pwd, "ci", "dependency_update.sh")}")
   end
 
+  desc "Force update (when adding new gems to Gemfiles)"
+  task :force_update do |t, rake_args|
+    FileUtils.rm_f(File.join(Dir.pwd, ".bundle", "config"))
+    system("#{File.join(Dir.pwd, "ci", "dependency_update.sh")}")
+  end
+
   # Update all dependencies to the latest constraint-matching version
   desc "Update all dependencies. dependencies:update to update as little as possible (CI-only)."
   task :update_ci => %w{

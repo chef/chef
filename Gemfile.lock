@@ -561,6 +561,7 @@ DEPENDENCIES
   chef-config!
   chef-provisioning
   chef-sugar
+  cheffish
   chefspec
   chefstyle!
   cucumber (>= 2.4.0)
