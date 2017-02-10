@@ -667,15 +667,22 @@ class Chef
 
     def to_text
       return "suppressed sensitive resource output" if sensitive
-      ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
       text = "# Declared in #{@source_line}\n\n"
       text << "#{resource_name}(\"#{name}\") do\n"
-      ivars.each do |ivar|
-        if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
-          value_string = value.respond_to?(:to_text) ? value.to_text : value.inspect
-          text << "  #{ivar.to_s.sub(/^@/, '')} #{value_string}\n"
+
+      props = []
+      self.class.state_properties.each do |p|
+        props << "@#{p.name}".to_sym
+        text << "  #{p.name} #{p.sensitive? ? "\"*sensitive value suppressed*\"\n": "#{p.get(self).inspect}\n"}"
+      end
+
+      ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS - props
+      ivars.map { |i| i.to_s.sub(/^@/, "") }.each do |ivar|
+        if (value = instance_variable_get("@#{ivar}".to_sym)) && !(value.respond_to?(:empty?) && value.empty?)
+          text << "  #{ivar.to_s.sub(/^@/, '')} #{value.respond_to?(:to_text) ? value.to_text : value.inspect}\n"
         end
       end
+
       [@not_if, @only_if].flatten.each do |conditional|
         text << "  #{conditional.to_text}\n"
       end
