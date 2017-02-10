@@ -12,10 +12,9 @@ source "https://rubygems.org"
 gem "chef", path: "."
 
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
-# Ensure that we can always install rake, regardless of gem groups
-gem "rake", group: [ :default, :omnibus_package, :development ]
+gem "rake"
 gem "bundler"
-gem "cheffish"
+gem "cheffish" # required for rspec tests
 
 group(:omnibus_package) do
   gem "appbundler"
@@ -29,6 +28,7 @@ group(:omnibus_package, :pry) do
   gem "pry-remote"
   gem "pry-stack_explorer"
 end
+
 # These are used for external tests
 group(:integration) do
   gem "chef-provisioning"
@@ -63,6 +63,7 @@ group(:linux, :bsd, :mac_os_x, :solaris, :windows) do
   # may need to disable this in insolation on fussy builds like AIX, RHEL4, etc
   gem "ruby-prof"
 end
+
 # Everything except AIX and Windows
 group(:linux, :bsd, :mac_os_x, :solaris) do
   gem "ruby-shadow", platforms: :ruby
@@ -77,7 +78,7 @@ group(:development, :test) do
 end
 
 group(:changelog) do
-  gem "github_changelog_generator", git: "https://github.com/tduffield/github-changelog-generator", branch: "adjust-tag-section-mapping"
+  gem "github_changelog_generator", git: "https://github.com/chef/github-changelog-generator"
   gem "mixlib-install"
 end
 

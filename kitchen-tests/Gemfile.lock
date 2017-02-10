@@ -4,13 +4,13 @@ GEM
     addressable (2.5.0)
       public_suffix (~> 2.0, >= 2.0.2)
     artifactory (2.6.0)
-    aws-sdk (2.7.3)
-      aws-sdk-resources (= 2.7.3)
-    aws-sdk-core (2.7.3)
+    aws-sdk (2.7.5)
+      aws-sdk-resources (= 2.7.5)
+    aws-sdk-core (2.7.5)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.7.3)
-      aws-sdk-core (= 2.7.3)
+    aws-sdk-resources (2.7.5)
+      aws-sdk-core (= 2.7.5)
     aws-sigv4 (1.0.0)
     berkshelf (5.6.2)
       addressable (~> 2.3, >= 2.3.4)
@@ -58,7 +58,7 @@ GEM
       excon (>= 0.38.0)
       json
     erubis (2.7.0)
-    excon (0.54.0)
+    excon (0.55.0)
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.17)
@@ -72,7 +72,7 @@ GEM
     hitimes (1.2.4)
     hitimes (1.2.4-x86-mingw32)
     httpclient (2.8.3)
-    inspec (1.12.0)
+    inspec (1.14.1)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
       json (>= 1.8, < 3.0)
@@ -111,7 +111,7 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     method_source (0.8.2)
-    minitar (0.5.4)
+    minitar (0.6.1)
     mixlib-archive (0.4.1)
       mixlib-log
     mixlib-authentication (1.4.1)
@@ -128,7 +128,7 @@ GEM
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
     mixlib-versioning (1.1.0)
-    molinillo (0.5.5)
+    molinillo (0.5.6)
     multi_json (1.12.1)
     multipart-post (2.0.0)
     net-scp (1.2.1)
@@ -146,7 +146,8 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     public_suffix (2.0.5)
-    rainbow (2.1.0)
+    rainbow (2.2.1)
+    rake (12.0.0)
     retryable (2.0.4)
     ridley (5.1.0)
       addressable
@@ -186,7 +187,7 @@ GEM
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
     rubyntlm (0.6.1)
-    rubyzip (1.2.0)
+    rubyzip (1.2.1)
     safe_yaml (1.0.4)
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
@@ -249,7 +250,7 @@ DEPENDENCIES
   kitchen-ec2
   kitchen-inspec
   kitchen-vagrant
-  rainbow (>= 2.1.0, < 2.2)
+  rake
   ridley
   test-kitchen
   vagrant-wrapper
