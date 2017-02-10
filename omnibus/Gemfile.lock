@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: ae7f2412751dcb411d2bb60abe2086d8ae7ae86f
+  revision: f90293a9753652fb64994a14de4108e503c06632
   specs:
     license_scout (0.1.2)
       ffi-yajl (~> 2.2)
@@ -39,13 +39,13 @@ GEM
       public_suffix (~> 2.0, >= 2.0.2)
     artifactory (2.6.0)
     awesome_print (1.7.0)
-    aws-sdk (2.7.3)
-      aws-sdk-resources (= 2.7.3)
-    aws-sdk-core (2.7.3)
+    aws-sdk (2.7.5)
+      aws-sdk-resources (= 2.7.5)
+    aws-sdk-core (2.7.5)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.7.3)
-      aws-sdk-core (= 2.7.3)
+    aws-sdk-resources (2.7.5)
+      aws-sdk-core (= 2.7.5)
     aws-sigv4 (1.0.0)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -123,7 +123,7 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     method_source (0.8.2)
-    minitar (0.5.4)
+    minitar (0.6.1)
     mixlib-archive (0.4.1)
       mixlib-log
     mixlib-authentication (1.4.1)
@@ -205,7 +205,7 @@ GEM
       varia_model (~> 0.4.0)
     ruby-progressbar (1.8.1)
     rubyntlm (0.6.1)
-    rubyzip (1.2.0)
+    rubyzip (1.2.1)
     safe_yaml (1.0.4)
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
