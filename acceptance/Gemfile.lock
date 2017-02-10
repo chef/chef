@@ -146,6 +146,7 @@ GEM
       slop (~> 3.4)
     public_suffix (2.0.5)
     rainbow (2.2.1)
+    rake (12.0.0)
     retryable (2.0.4)
     ridley (5.1.0)
       addressable
@@ -249,6 +250,7 @@ DEPENDENCIES
   kitchen-inspec
   kitchen-vagrant
   mixlib-install
+  rake
   test-kitchen
   windows_chef_zero
   winrm-elevated
