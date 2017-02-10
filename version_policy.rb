@@ -84,6 +84,8 @@ ACCEPTABLE_OUTDATED_GEMS = [
   "addressable",   # gh (via travis) wants this ~> 2.4.0
   "rake",       # poise limits this to < 12
   "github_changelog_generator", # we manage this independent of the rubygem
+  "cheffish",   # 5.0.0 breaks chef-provisioning
+  "net-ssh-gateway", # chef-provisiong and test-kitchen have ~> 1.2 constraint
 ]
 
 #
