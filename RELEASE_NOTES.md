@@ -1,21 +1,21 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
-# Chef Client Release Notes 12.18:
+# Chef Client Release Notes 12.19:
 
 ## Highlighted enhancements for this release:
 
-- You can now specify the acceptable return codes from the chocolatey_package resource using the returns property.
-- You can now enable chef-client to run as a scheduled task directly from the client MSI on Windows hosts.
-- The package provider now supports DNF packages for Fedora and upcoming RHEL releases
+- Systemd unit files are now verified before being installed.
 - Added support for windows alternate user identity in execute resources.
+- Added ed25519 key support for for ssh connections.
 
 ### Windows alternate user identity execute support
 
-The `execute` resource and simliar resources such as `script`, `batch`, and `powershell_script` now support the specification of credentials on Windows so that the resulting process is created with the security identity that corresponds to those credentials.
+The `execute` resource and similar resources such as `script`, `batch`, and `powershell_script` now support the specification of credentials on Windows so that the resulting process is created with the security identity that corresponds to those credentials.
 
 **Note**: When Chef is running as a service, this feature requires that the user that Chef runs as has 'SeAssignPrimaryTokenPrivilege' (aka 'SE_ASSIGNPRIMARYTOKEN_NAME') user right. By default only LocalSystem and NetworkService have this right when running as a service. This is necessary even if the user is an Administrator.
 
 This right bacn be added and checked in a recipe using this example:
+
 ```ruby
 # Add 'SeAssignPrimaryTokenPrivilege' for the user
 Chef::ReservedNames::Win32::Security.add_account_right('<user>', 'SeAssignPrimaryTokenPrivilege')
@@ -28,31 +28,17 @@ Chef::ReservedNames::Win32::Security.get_account_right('<user>').include?('SeAss
 
 The following properties are new or updated for the `execute`, `script`, `batch`, and `powershell_script` resources and any resources derived from them:
 
-  *   `user`</br>
-      **Ruby types:** String</br>
-      The user name of the user identity with which to launch the new process.
-      Default value: `nil`. The user name may optionally be specifed
-      with a domain, i.e. `domain\user` or `user@my.dns.domain.com` via Universal Principal Name (UPN)
-      format. It can also be specified without a domain simply as `user` if the domain is
-      instead specified using the `domain` attribute. On Windows only, if this property is specified, the `password`
-      property **must** be specified.
+- `user`<br>
+  **Ruby types:** String<br>
+  The user name of the user identity with which to launch the new process. Default value: `nil`. The user name may optionally be specified with a domain, i.e. `domain\user` or `user@my.dns.domain.com` via Universal Principal Name (UPN) format. It can also be specified without a domain simply as `user` if the domain is instead specified using the `domain` attribute. On Windows only, if this property is specified, the `password` property **must** be specified.
 
-  *   `password`</br>
-      **Ruby types** String</br>
-      *Windows only:* The password of the user specified by the `user` property.
-      Default value: `nil`. This property is mandatory if `user` is specified on Windows and may only
-      be specified if `user` is specified. The `sensitive` property for this resource will
-      automatically be set to `true` if `password` is specified.
+- `password`<br>
+  **Ruby types** String<br>
+  _Windows only:_ The password of the user specified by the `user` property. Default value: `nil`. This property is mandatory if `user` is specified on Windows and may only be specified if `user` is specified. The `sensitive` property for this resource will automatically be set to `true` if `password` is specified.
 
-  *   `domain`</br>
-      **Ruby types** String</br>
-      *Windows only:* The domain of the user user specified by the `user` property.
-      Default value: `nil`. If not specified, the user name and password specified
-      by the `user` and `password` properties will be used to resolve
-      that user against the domain in which the system running Chef client
-      is joined, or if that system is not joined to a domain it will resolve the user
-      as a local account on that system. An alternative way to specify the domain is to leave
-      this property unspecified and specify the domain as part of the `user` property.
+- `domain`<br>
+  **Ruby types** String<br>
+  _Windows only:_ The domain of the user user specified by the `user` property. Default value: `nil`. If not specified, the user name and password specified by the `user` and `password` properties will be used to resolve that user against the domain in which the system running Chef client is joined, or if that system is not joined to a domain it will resolve the user as a local account on that system. An alternative way to specify the domain is to leave this property unspecified and specify the domain as part of the `user` property.
 
 #### Usage
 
@@ -94,20 +80,67 @@ end
 
 ## Highlighted bug fixes for this release:
 
-- Fixed exposure of sensitive data of resources marked as sensitive inside Reporting. Before you were able to see the sensitive data on the Run History tab in the Chef Manage Console. Now we are sending a new blank resource if the resource is marked as sensitive, this way we will not compromise any sensitive data.
+- Ensure that the Windows Administrator group can access the chef-solo nodes directory
+- When loading a cookbook in Chef Solo, use `metadata.json` in preference to `metadata.rb`
 
-  _Note: Old data that was already sent to Reporting marked as sensitive will continue to be displayed. Apologies._
+# Ohai Release Notes 8.23:
+
+## Cumulus Linux Platform
+
+Cumulus Linux will now be detected as platform `cumulus` instead of `debian` and the `platform_version` will be properly set to the Cumulus Linux release.
+
+## Virtualization Detection
+
+Windows / Linux / BSD guests running on the Veertu hypervisors will now be detected
+
+Windows guests running on Xen and Hyper-V hypervisors will now be detected
+
+## New Sysconf Plugin
+
+A new plugin parses the output of the sysconf command to provide information on the underlying system.
+
+## AWS Account ID
+
+The EC2 plugin now fetches the AWS Account ID in addition to previous instance metadata
+
+## GCC Detection
+
+GCC detection has been improved to collect additional information, and to not prompt for the installation of Xcode on macOS systems
 
 ## New deprecations introduced in this release:
 
-### Chef::Platform Helper Methods
+### Ohai::Config removed
 
-- **Deprecation ID**: 13
-- **Remediation Docs**: <https://docs.chef.io/deprecations_chef_platform_methods.html>
-- **Expected Removal**: Chef 13 (April 2017)
+- **Deprecation ID**: OHAI-1
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_legacy_config.html>
+- **Expected Removal**: Ohai 13 (April 2017)
 
-### run_command Helper Method
+### sigar gem based plugins removed
 
-- **Deprecation ID**: 14
-- **Remediation Docs**: <https://docs.chef.io/deprecations_run_command.html>
-- **Expected Removal**: Chef 13 (April 2017)
+- **Deprecation ID**: OHAI-2
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_sigar_plugins.html>
+- **Expected Removal**: Ohai 13 (April 2017)
+
+### run_command and popen4 helper methods removed
+
+- **Deprecation ID**: OHAI-3
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_run_command_helpers.html>
+- **Expected Removal**: Ohai 13 (April 2017)
+
+### libvirt plugin attributes moved
+
+- **Deprecation ID**: OHAI-4
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_libvirt_plugin.html>
+- **Expected Removal**: Ohai 13 (April 2017)
+
+### Windows CPU plugin attribute changes
+
+- **Deprecation ID**: OHAI-5
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_windows_cpu.html>
+- **Expected Removal**: Ohai 13 (April 2017)
+
+### DigitalOcean plugin attribute changes
+
+- **Deprecation ID**: OHAI-6
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_digitalocean.html>
+- **Expected Removal**: Ohai 13 (April 2017)
