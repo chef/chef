@@ -182,6 +182,20 @@ module ChefConfig
           IO.write(version_file_path, new_version)
         end
 
+        task :bump_minor do
+          current_version = version
+          new_version = current_version.sub(/^(\d+)\.(\d+)\.(\d+)/) { "#{$1}.#{$2.to_i + 1}.0" }
+          puts "Updating version in #{version_rb_path} from #{current_version.chomp} to #{new_version.chomp}"
+          IO.write(version_file_path, new_version)
+        end
+
+        task :bump_major do
+          current_version = version
+          new_version = current_version.sub(/^(\d+)\.(\d+\.\d+)/) { "#{$1.to_i + 1}.0.0" }
+          puts "Updating version in #{version_rb_path} from #{current_version.chomp} to #{new_version.chomp}"
+          IO.write(version_file_path, new_version)
+        end
+
         def update_version_rb # rubocop:disable Lint/NestedMethodDefinition
           puts "Updating #{version_rb_path} to include version #{version} ..."
           contents = <<-VERSION_RB
