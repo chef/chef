@@ -89,10 +89,12 @@ class Chef
           def add_version(hash, version)
             epoch = nil
             if version =~ /(\S+):(\S+)/
-              epoch, version = $1, $2
+              epoch = $1
+              version = $2
             end
             if version =~ /(\S+)-(\S+)/
-              version, release = $1, $2
+              version = $1
+              release = $2
             end
             hash["epoch"] = epoch unless epoch.nil?
             hash["release"] = release unless release.nil?

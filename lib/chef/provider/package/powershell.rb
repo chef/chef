@@ -36,13 +36,13 @@ class Chef
 
         def define_resource_requirements
           super
-          if powershell_out("$PSVersionTable.PSVersion.Major").stdout.strip().to_i < 5
+          if powershell_out("$PSVersionTable.PSVersion.Major").stdout.strip.to_i < 5
             raise "Minimum installed Powershell Version required is 5"
           end
           requirements.assert(:install) do |a|
             a.assertion { candidates_exist_for_all_uninstalled? }
-            a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(", ")}")
-            a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(", ")} would have been configured")
+            a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{packages_missing_candidates.join(', ')}")
+            a.whyrun("Assuming a repository that offers #{packages_missing_candidates.join(', ')} would have been configured")
           end
         end
 
@@ -53,7 +53,7 @@ class Chef
         # Installs the package specified with the version passed else latest version will be installed
         def install_package(names, versions)
           names.each_with_index do |name, index|
-            powershell_out("Install-Package '#{name}' -Force -ForceBootstrap -RequiredVersion #{versions[index]}", { :timeout => @new_resource.timeout })
+            powershell_out("Install-Package '#{name}' -Force -ForceBootstrap -RequiredVersion #{versions[index]}", timeout: new_resource.timeout)
           end
         end
 
@@ -61,12 +61,12 @@ class Chef
         def remove_package(names, versions)
           names.each_with_index do |name, index|
             if versions && !versions[index].nil?
-              powershell_out( "Uninstall-Package '#{name}' -Force -ForceBootstrap -RequiredVersion #{versions[index]}", { :timeout => @new_resource.timeout })
+              powershell_out( "Uninstall-Package '#{name}' -Force -ForceBootstrap -RequiredVersion #{versions[index]}", timeout: new_resource.timeout)
             else
               version = "0"
               until version.empty?
-                version = powershell_out( "(Uninstall-Package '#{name}' -Force -ForceBootstrap | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => @new_resource.timeout }).stdout.strip()
-                if !version.empty?
+                version = powershell_out( "(Uninstall-Package '#{name}' -Force -ForceBootstrap | select version | Format-Table -HideTableHeaders | Out-String).Trim()", timeout: new_resource.timeout).stdout.strip
+                unless version.empty?
                   Chef::Log.info("Removed package '#{name}' with version #{version}")
                 end
               end
@@ -78,11 +78,11 @@ class Chef
         def build_candidate_versions
           versions = []
           new_resource.package_name.each_with_index do |name, index|
-            if new_resource.version && !new_resource.version[index].nil?
-              version = powershell_out("(Find-Package '#{name}' -RequiredVersion #{new_resource.version[index]} -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => @new_resource.timeout }).stdout.strip()
-            else
-              version = powershell_out("(Find-Package '#{name}' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => @new_resource.timeout }).stdout.strip()
-            end
+            version = if new_resource.version && !new_resource.version[index].nil?
+                        powershell_out("(Find-Package '#{name}' -RequiredVersion #{new_resource.version[index]} -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", timeout: new_resource.timeout).stdout.strip
+                      else
+                        powershell_out("(Find-Package '#{name}' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", timeout: new_resource.timeout).stdout.strip
+                      end
             if version.empty?
               version = nil
             end
@@ -95,11 +95,11 @@ class Chef
         def build_current_versions
           version_list = []
           new_resource.package_name.each_with_index do |name, index|
-            if new_resource.version && !new_resource.version[index].nil?
-              version = powershell_out("(Get-Package -Name '#{name}' -RequiredVersion #{new_resource.version[index]} -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => @new_resource.timeout }).stdout.strip()
-            else
-              version = powershell_out("(Get-Package -Name '#{name}' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => @new_resource.timeout }).stdout.strip()
-            end
+            version = if new_resource.version && !new_resource.version[index].nil?
+                        powershell_out("(Get-Package -Name '#{name}' -RequiredVersion #{new_resource.version[index]} -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", timeout: new_resource.timeout).stdout.strip
+                      else
+                        powershell_out("(Get-Package -Name '#{name}' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", timeout: new_resource.timeout).stdout.strip
+                      end
             if version.empty?
               version = nil
             end

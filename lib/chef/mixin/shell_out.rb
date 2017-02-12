@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 # limitations under the License.
 
 require "mixlib/shellout"
+require "chef/deprecated"
 
 class Chef
   module Mixin
@@ -73,6 +74,24 @@ class Chef
         else
           shell_out!(*clean_array(*args), **options)
         end
+      end
+
+      # helper sugar for resources that support passing timeouts to shell_out
+
+      def shell_out_compact_timeout(*args, **options)
+        raise "object is not a resource that supports timeouts" unless respond_to?(:new_resource) && new_resource.respond_to?(:timeout)
+        options_dup = options.dup
+        options_dup[:timeout] = new_resource.timeout if new_resource.timeout
+        options_dup[:timeout] = 900 unless options_dup.key?(:timeout)
+        shell_out_compact(*args, **options_dup)
+      end
+
+      def shell_out_compact_timeout!(*args, **options)
+        raise "object is not a resource that supports timeouts" unless respond_to?(:new_resource) && new_resource.respond_to?(:timeout)
+        options_dup = options.dup
+        options_dup[:timeout] = new_resource.timeout if new_resource.timeout
+        options_dup[:timeout] = 900 unless options_dup.key?(:timeout)
+        shell_out_compact!(*args, **options_dup)
       end
 
       # shell_out! runs a command on the system and will raise an error if the command fails, which is what you want
@@ -139,7 +158,8 @@ class Chef
       # @param args [String] variable number of string arguments
       # @return [String] nicely concatenated string or empty string
       def a_to_s(*args)
-        # FIXME: this should be deprecated in favor of shell_out_compact/shell_out_compact!
+        # can't quite deprecate this yet
+        #Chef.deprecated(:package_misc, "a_to_s is deprecated use shell_out_compact or shell_out_compact_timeout instead")
         args.flatten.reject { |i| i.nil? || i == "" }.map(&:to_s).join(" ")
       end
 

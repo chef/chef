@@ -35,7 +35,7 @@ class Chef
           candidate_version = current_version = nil
           is_installed = false
           Chef::Log.debug("#{new_resource} checking zypper")
-          status = shell_out_with_timeout!("zypper --non-interactive info #{package_name}")
+          status = shell_out_compact_timeout!("zypper", "--non-interactive", "info", package_name)
           status.stdout.each_line do |line|
             case line
             when /^Version *: (.+) *$/
@@ -77,14 +77,14 @@ class Chef
 
         def package_locked(name, version)
           islocked = false
-          locked = shell_out_with_timeout!("zypper locks")
+          locked = shell_out_compact_timeout!("zypper", "locks")
           locked.stdout.each_line do |line|
             line_package = line.split("|").shift(2).last.strip
             if line_package == name
               islocked = true
             end
           end
-          return islocked
+          islocked
         end
 
         def load_current_resource
@@ -103,7 +103,7 @@ class Chef
         end
 
         def install_package(name, version)
-          zypper_package("install --auto-agree-with-licenses", name, version)
+          zypper_package("install", "--auto-agree-with-licenses", name, version)
         end
 
         def upgrade_package(name, version)
@@ -116,7 +116,7 @@ class Chef
         end
 
         def purge_package(name, version)
-          zypper_package("remove --clean-deps", name, version)
+          zypper_package("remove", "--clean-deps", name, version)
         end
 
         def lock_package(name, version)
@@ -135,24 +135,24 @@ class Chef
           end
         end
 
-        def zypper_package(command, names, versions)
+        def zypper_package(command, *options, names, versions)
           zipped_names = zip(names, versions)
           if zypper_version < 1.0
-            shell_out_with_timeout!(a_to_s("zypper", gpg_checks, command, "-y", names))
+            shell_out_compact_timeout!("zypper", gpg_checks, command, *options, "-y", names)
           else
-            shell_out_with_timeout!(a_to_s("zypper --non-interactive", gpg_checks, command, zipped_names))
+            shell_out_compact_timeout!("zypper", "--non-interactive", gpg_checks, command, *options, zipped_names)
           end
         end
 
         def gpg_checks
           case Chef::Config[:zypper_check_gpg]
           when true
-            ""
+            nil
           when false
             "--no-gpg-checks"
           when nil
-            Chef::Log.warn("Chef::Config[:zypper_check_gpg] was not set. " +
-              "All packages will be installed without gpg signature checks. " +
+            Chef::Log.warn("Chef::Config[:zypper_check_gpg] was not set. " \
+              "All packages will be installed without gpg signature checks. " \
               "This is a security hazard.")
             "--no-gpg-checks"
           end

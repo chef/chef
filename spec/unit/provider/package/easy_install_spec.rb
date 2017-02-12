@@ -62,51 +62,51 @@ describe Chef::Provider::Package::EasyInstall do
   describe "actions_on_package" do
     it "should run easy_install with the package name and version" do
       expect(Chef).to receive(:deprecated).with(:easy_install, /easy_install package provider is deprecated/)
-      expect(@provider).to receive(:run_command).with({
-        :command => "easy_install \"boto==1.8d\"",
-      })
+      expect(@provider).to receive(:shell_out!).with(
+        "easy_install", "boto==1.8d", { timeout: 900 }
+      )
       @provider.install_package("boto", "1.8d")
     end
 
     it "should run easy_install with the package name and version and specified options" do
       expect(Chef).to receive(:deprecated).with(:easy_install, /easy_install package provider is deprecated/)
-      expect(@provider).to receive(:run_command).with({
-        :command => "easy_install --always-unzip \"boto==1.8d\"",
-      })
+      expect(@provider).to receive(:shell_out!).with(
+        "easy_install", "--always-unzip", "boto==1.8d", { timeout: 900 }
+      )
       allow(@new_resource).to receive(:options).and_return("--always-unzip")
       @provider.install_package("boto", "1.8d")
     end
 
     it "should run easy_install with the package name and version" do
       expect(Chef).to receive(:deprecated).with(:easy_install, /easy_install package provider is deprecated/)
-      expect(@provider).to receive(:run_command).with({
-        :command => "easy_install \"boto==1.8d\"",
-      })
+      expect(@provider).to receive(:shell_out!).with(
+        "easy_install", "boto==1.8d", { timeout: 900 }
+      )
       @provider.upgrade_package("boto", "1.8d")
     end
 
     it "should run easy_install -m with the package name and version" do
       expect(Chef).to receive(:deprecated).with(:easy_install, /easy_install package provider is deprecated/)
-      expect(@provider).to receive(:run_command).with({
-        :command => "easy_install -m boto",
-      })
+      expect(@provider).to receive(:shell_out!).with(
+        "easy_install", "-m", "boto", { timeout: 900 }
+      )
       @provider.remove_package("boto", "1.8d")
     end
 
     it "should run easy_install -m with the package name and version and specified options" do
       expect(Chef).to receive(:deprecated).with(:easy_install, /easy_install package provider is deprecated/)
-      expect(@provider).to receive(:run_command).with({
-        :command => "easy_install -x -m boto",
-      })
+      expect(@provider).to receive(:shell_out!).with(
+        "easy_install", "-x", "-m", "boto", { timeout: 900 }
+      )
       allow(@new_resource).to receive(:options).and_return("-x")
       @provider.remove_package("boto", "1.8d")
     end
 
     it "should run easy_install -m with the package name and version" do
       expect(Chef).to receive(:deprecated).with(:easy_install, /easy_install package provider is deprecated/)
-      expect(@provider).to receive(:run_command).with({
-        :command => "easy_install -m boto",
-      })
+      expect(@provider).to receive(:shell_out!).with(
+        "easy_install", "-m", "boto", { timeout: 900 }
+      )
       @provider.purge_package("boto", "1.8d")
     end
 

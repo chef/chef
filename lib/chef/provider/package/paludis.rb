@@ -28,38 +28,37 @@ class Chef
         provides :paludis_package, os: "linux"
 
         def load_current_resource
-          @current_resource = Chef::Resource::Package.new(@new_resource.package_name)
-          @current_resource.package_name(@new_resource.package_name)
+          @current_resource = Chef::Resource::Package.new(new_resource.package_name)
+          current_resource.package_name(new_resource.package_name)
 
-          Chef::Log.debug("Checking package status for #{@new_resource.package_name}")
+          Chef::Log.debug("Checking package status for #{new_resource.package_name}")
           installed = false
           re = Regexp.new("(.*)[[:blank:]](.*)[[:blank:]](.*)$")
 
-          shell_out!("cave -L warning print-ids -M none -m \"#{@new_resource.package_name}\" -f \"%c/%p %v %r\n\"").stdout.each_line do |line|
+          shell_out_compact!("cave", "-L", "warning", "print-ids", "-M", "none", "-m", new_resource.package_name, "-f", "%c/%p %v %r\n").stdout.each_line do |line|
             res = re.match(line)
-            unless res.nil?
-              case res[3]
-              when "accounts", "installed-accounts"
-                next
-              when "installed"
-                installed = true
-                @current_resource.version(res[2])
-              else
-                @candidate_version = res[2]
-              end
+            next if res.nil?
+            case res[3]
+            when "accounts", "installed-accounts"
+              next
+            when "installed"
+              installed = true
+              current_resource.version(res[2])
+            else
+              @candidate_version = res[2]
             end
           end
 
-          @current_resource
+          current_resource
         end
 
         def install_package(name, version)
-          if version
-            pkg = "=#{name}-#{version}"
-          else
-            pkg = "#{@new_resource.package_name}"
-          end
-          shell_out!("cave -L warning resolve -x#{expand_options(@new_resource.options)} \"#{pkg}\"", :timeout => @new_resource.timeout)
+          pkg = if version
+                  "=#{name}-#{version}"
+                else
+                  new_resource.package_name.to_s
+                end
+          shell_out_compact_timeout!("cave", "-L", "warning", "resolve", "-x", options, pkg)
         end
 
         def upgrade_package(name, version)
@@ -67,13 +66,13 @@ class Chef
         end
 
         def remove_package(name, version)
-          if version
-            pkg = "=#{@new_resource.package_name}-#{version}"
-          else
-            pkg = "#{@new_resource.package_name}"
-          end
+          pkg = if version
+                  "=#{new_resource.package_name}-#{version}"
+                else
+                  new_resource.package_name.to_s
+                end
 
-          shell_out!("cave -L warning uninstall -x#{expand_options(@new_resource.options)} \"#{pkg}\"")
+          shell_out_compact!("cave", "-L", "warning", "uninstall", "-x", options, pkg)
         end
 
         def purge_package(name, version)

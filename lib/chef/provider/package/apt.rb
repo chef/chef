@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,21 +72,21 @@ class Chef
 
         def package_locked(name, version)
           islocked = false
-          locked = shell_out_with_timeout!("apt-mark showhold")
+          locked = shell_out_compact_timeout!("apt-mark", "showhold")
           locked.stdout.each_line do |line|
             line_package = line.strip
             if line_package == name
               islocked = true
             end
           end
-          return islocked
+          islocked
         end
 
         def install_package(name, version)
           package_name = name.zip(version).map do |n, v|
             package_data[n][:virtual] ? n : "#{n}=#{v}"
           end
-          run_noninteractive("apt-get -q -y", default_release_options, new_resource.options, "install", package_name)
+          run_noninteractive("apt-get", "-q", "-y", default_release_options, options, "install", package_name)
         end
 
         def upgrade_package(name, version)
@@ -97,14 +97,14 @@ class Chef
           package_name = name.map do |n|
             package_data[n][:virtual] ? resolve_virtual_package_name(n) : n
           end
-          run_noninteractive("apt-get -q -y", new_resource.options, "remove", package_name)
+          run_noninteractive("apt-get", "-q", "-y", options, "remove", package_name)
         end
 
         def purge_package(name, version)
           package_name = name.map do |n|
             package_data[n][:virtual] ? resolve_virtual_package_name(n) : n
           end
-          run_noninteractive("apt-get -q -y", new_resource.options, "purge", package_name)
+          run_noninteractive("apt-get", "-q", "-y", options, "purge", package_name)
         end
 
         def preseed_package(preseed_file)
@@ -118,11 +118,11 @@ class Chef
         end
 
         def lock_package(name, version)
-          run_noninteractive("apt-mark", new_resource.options, "hold", name)
+          run_noninteractive("apt-mark", options, "hold", name)
         end
 
         def unlock_package(name, version)
-          run_noninteractive("apt-mark", new_resource.options, "unhold", name)
+          run_noninteractive("apt-mark", options, "unhold", name)
         end
 
         private
@@ -131,12 +131,14 @@ class Chef
         # interactive prompts. Command is run with default localization rather
         # than forcing locale to "C", so command output may not be stable.
         def run_noninteractive(*args)
-          shell_out_with_timeout!(a_to_s(*args), :env => { "DEBIAN_FRONTEND" => "noninteractive" })
+          shell_out_compact_timeout!(*args, env: { "DEBIAN_FRONTEND" => "noninteractive" })
         end
 
         def default_release_options
           # Use apt::Default-Release option only if provider supports it
-          "-o APT::Default-Release=#{new_resource.default_release}" if new_resource.respond_to?(:default_release) && new_resource.default_release
+          if new_resource.respond_to?(:default_release) && new_resource.default_release
+            [ "-o", "APT::Default-Release=#{new_resource.default_release}" ]
+          end
         end
 
         def resolve_package_versions(pkg)
@@ -156,7 +158,7 @@ class Chef
         end
 
         def resolve_virtual_package_name(pkg)
-          showpkg = run_noninteractive("apt-cache showpkg", pkg).stdout
+          showpkg = run_noninteractive("apt-cache", "showpkg", pkg).stdout
           partitions = showpkg.rpartition(/Reverse Provides: ?#{$/}/)
           return nil if partitions[0] == "" && partitions[1] == "" # not found in output
           set = partitions[2].lines.each_with_object(Set.new) do |line, acc|
@@ -166,7 +168,7 @@ class Chef
           if set.size > 1
             raise Chef::Exceptions::Package, "#{new_resource.package_name} is a virtual package provided by multiple packages, you must explicitly select one"
           end
-          return set.to_a.first
+          set.to_a.first
         end
 
         def package_data_for(pkg)
@@ -186,7 +188,7 @@ class Chef
             end
           end
 
-          return {
+          {
             current_version:    current_version,
             candidate_version:  candidate_version,
             virtual:            virtual,

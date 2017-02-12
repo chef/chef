@@ -88,24 +88,24 @@ class Chef
 
         def install_package(names, versions)
           if new_resource.source
-            dnf(new_resource.options, "-y install", new_resource.source)
+            dnf(options, "-y install", new_resource.source)
           else
             resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
-            dnf(new_resource.options, "-y install", resolved_names)
+            dnf(options, "-y install", resolved_names)
           end
           flushcache
         end
 
         # dnf upgrade does not work on uninstalled packaged, while install will upgrade
-        alias_method :upgrade_package, :install_package
+        alias upgrade_package install_package
 
         def remove_package(names, versions)
           resolved_names = names.each_with_index.map { |name, i| installed_version(i).to_s unless name.nil? }
-          dnf(new_resource.options, "-y remove", resolved_names)
+          dnf(options, "-y remove", resolved_names)
           flushcache
         end
 
-        alias_method :purge_package, :remove_package
+        alias purge_package remove_package
 
         action :flush_cache do
           flushcache
@@ -119,7 +119,7 @@ class Chef
             # does not match what the dnf library accepts.
             case line
             when /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/
-              return Version.new($1, "#{$2 == "(none)" ? "0" : $2}:#{$3}-#{$4}", $5)
+              return Version.new($1, "#{$2 == '(none)' ? '0' : $2}:#{$3}-#{$4}", $5)
             end
           end
         end
@@ -128,11 +128,11 @@ class Chef
         def available_version(index)
           @available_version ||= []
 
-          if new_resource.source
-            @available_version[index] ||= resolve_source_to_version_obj
-          else
-            @available_version[index] ||= python_helper.query(:whatavailable, package_name_array[index], safe_version_array[index], safe_arch_array[index])
-          end
+          @available_version[index] ||= if new_resource.source
+                                          resolve_source_to_version_obj
+                                        else
+                                          python_helper.query(:whatavailable, package_name_array[index], safe_version_array[index], safe_arch_array[index])
+                                        end
 
           @available_version[index]
         end
@@ -140,11 +140,11 @@ class Chef
         # @returns Array<Version>
         def installed_version(index)
           @installed_version ||= []
-          if new_resource.source
-            @installed_version[index] ||= python_helper.query(:whatinstalled, available_version(index).name, safe_version_array[index], safe_arch_array[index])
-          else
-            @installed_version[index] ||= python_helper.query(:whatinstalled, package_name_array[index], safe_version_array[index], safe_arch_array[index])
-          end
+          @installed_version[index] ||= if new_resource.source
+                                          python_helper.query(:whatinstalled, available_version(index).name, safe_version_array[index], safe_arch_array[index])
+                                        else
+                                          python_helper.query(:whatinstalled, package_name_array[index], safe_version_array[index], safe_arch_array[index])
+                                        end
           @installed_version[index]
         end
 

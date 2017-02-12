@@ -196,6 +196,16 @@ class Chef
       end
     end
 
+    class PackageMisc < Base
+      def id
+        15
+      end
+
+      def target
+        "package_misc.html"
+      end
+    end
+
     class ResourceCloning < Base
       def id
         3694
