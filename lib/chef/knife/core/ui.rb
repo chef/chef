@@ -65,22 +65,18 @@ class Chef
       # Prints a message to stdout. Aliased as +info+ for compatibility with
       # the logger API.
       def msg(message)
-        begin
-          stdout.puts message
-        rescue Errno::EPIPE => e
-          raise e if @config[:verbosity] >= 2
-          exit 0
-        end
+        stdout.puts message
+      rescue Errno::EPIPE => e
+        raise e if @config[:verbosity] >= 2
+        exit 0
       end
 
       # Prints a msg to stderr. Used for info, warn, error, and fatal.
       def log(message)
-        begin
-          stderr.puts message
-        rescue Errno::EPIPE => e
-          raise e if @config[:verbosity] >= 2
-          exit 0
-        end
+        stderr.puts message
+      rescue Errno::EPIPE => e
+        raise e if @config[:verbosity] >= 2
+        exit 0
       end
 
       alias :info :log
@@ -155,12 +151,10 @@ class Chef
       end
 
       def pretty_print(data)
-        begin
-          stdout.puts data
-        rescue Errno::EPIPE => e
-          raise e if @config[:verbosity] >= 2
-          exit 0
-        end
+        stdout.puts data
+      rescue Errno::EPIPE => e
+        raise e if @config[:verbosity] >= 2
+        exit 0
       end
 
       # Hash -> Hash
@@ -215,9 +209,9 @@ class Chef
         output_parsed_again = Chef::JSONCompat.parse(Chef::JSONCompat.to_json(output))
         if object_parsed_again != output_parsed_again
           output.save
-          self.msg("Saved #{output}")
+          msg("Saved #{output}")
         else
-          self.msg("Object unchanged, not saving")
+          msg("Object unchanged, not saving")
         end
         output(format_for_display(object)) if config[:print_after]
       end
@@ -247,19 +241,19 @@ class Chef
         when "Y", "y"
           true
         when "N", "n"
-          self.msg("You said no, so I'm done here.")
+          msg("You said no, so I'm done here.")
           false
         when ""
           unless default_choice.nil?
             default_choice
           else
-            self.msg("I have no idea what to do with '#{answer}'")
-            self.msg("Just say Y or N, please.")
+            msg("I have no idea what to do with '#{answer}'")
+            msg("Just say Y or N, please.")
             confirm_without_exit(question, append_instructions, default_choice)
           end
         else
-          self.msg("I have no idea what to do with '#{answer}'")
-          self.msg("Just say Y or N, please.")
+          msg("I have no idea what to do with '#{answer}'")
+          msg("Just say Y or N, please.")
           confirm_without_exit(question, append_instructions, default_choice)
         end
       end

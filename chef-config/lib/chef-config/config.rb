@@ -45,7 +45,7 @@ module ChefConfig
     #
     # +filename+ is used for context in stacktraces, but doesn't need to be the name of an actual file.
     def self.from_string(string, filename)
-      self.instance_eval(string, filename, 1)
+      instance_eval(string, filename, 1)
     end
 
     def self.inspect
@@ -142,16 +142,16 @@ module ChefConfig
     # that upload or download files (such as knife upload, knife role from file,
     # etc.) work.
     default :chef_repo_path do
-      if self.configuration[:cookbook_path]
-        if self.configuration[:cookbook_path].kind_of?(String)
-          File.expand_path("..", self.configuration[:cookbook_path])
+      if configuration[:cookbook_path]
+        if configuration[:cookbook_path].kind_of?(String)
+          File.expand_path("..", configuration[:cookbook_path])
         else
-          self.configuration[:cookbook_path].map do |path|
+          configuration[:cookbook_path].map do |path|
             File.expand_path("..", path)
           end
         end
       elsif configuration[:cookbook_artifact_path]
-        File.expand_path("..", self.configuration[:cookbook_artifact_path])
+        File.expand_path("..", configuration[:cookbook_artifact_path])
       else
         cache_path
       end
@@ -205,7 +205,7 @@ module ChefConfig
     # Defaults to <chef_repo_path>/cookbooks.  If chef_repo_path
     # is not specified, this is set to [/var/chef/cookbooks, /var/chef/site-cookbooks]).
     default(:cookbook_path) do
-      if self.configuration[:chef_repo_path]
+      if configuration[:chef_repo_path]
         derive_path_from_chef_repo_path("cookbooks")
       else
         Array(derive_path_from_chef_repo_path("cookbooks")).flatten +
@@ -412,10 +412,10 @@ module ChefConfig
     default(:chef_server_root) do
       # if the chef_server_url is a path to an organization, aka
       # 'some_url.../organizations/*' then remove the '/organization/*' by default
-      if self.configuration[:chef_server_url] =~ /\/organizations\/\S*$/
-        self.configuration[:chef_server_url].split("/")[0..-3].join("/")
-      elsif self.configuration[:chef_server_url] # default to whatever chef_server_url is
-        self.configuration[:chef_server_url]
+      if configuration[:chef_server_url] =~ /\/organizations\/\S*$/
+        configuration[:chef_server_url].split("/")[0..-3].join("/")
+      elsif configuration[:chef_server_url] # default to whatever chef_server_url is
+        configuration[:chef_server_url]
       else
         "https://localhost:443"
       end
@@ -566,7 +566,7 @@ module ChefConfig
     # Initialize openssl
     def self.init_openssl
       if fips
-        self.enable_fips_mode
+        enable_fips_mode
       end
     end
 

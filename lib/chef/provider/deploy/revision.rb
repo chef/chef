@@ -91,11 +91,9 @@ class Chef
         end
 
         def load_cache
-          begin
-            Chef::JSONCompat.parse(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
-          rescue Chef::Exceptions::FileNotFound
-            sorted_releases_from_filesystem
-          end
+          Chef::JSONCompat.parse(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
+        rescue Chef::Exceptions::FileNotFound
+          sorted_releases_from_filesystem
         end
 
         def save_cache(cache)

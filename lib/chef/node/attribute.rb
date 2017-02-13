@@ -454,19 +454,19 @@ class Chef
       end
 
       def write(level, *args, &block)
-        self.send(level).write(*args, &block)
+        send(level).write(*args, &block)
       end
 
       def write!(level, *args, &block)
-        self.send(level).write!(*args, &block)
+        send(level).write!(*args, &block)
       end
 
       def unlink(level, *path)
-        self.send(level).unlink(*path)
+        send(level).unlink(*path)
       end
 
       def unlink!(level, *path)
-        self.send(level).unlink!(*path)
+        send(level).unlink!(*path)
       end
 
       alias :attribute? :has_key?

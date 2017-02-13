@@ -119,7 +119,7 @@ class Chef
               end
             end
             info.strip! # Because this was formatted for humans
-            return [op_action, op_type, info]
+            [op_action, op_type, info]
           end
           private_class_method :parse_line
 

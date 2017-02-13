@@ -131,9 +131,9 @@ class Chef
 
       def git_repo?(directory)
         if File.directory?(File.join(directory, ".git"))
-          return true
+          true
         elsif File.dirname(directory) == directory
-          return false
+          false
         else
           git_repo?(File.dirname(directory))
         end

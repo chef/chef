@@ -21,8 +21,8 @@ class Chef
       # Serialize this object as a hash
       def to_hash
         instance_vars = Hash.new
-        self.instance_variables.each do |iv|
-          instance_vars[iv] = self.instance_variable_get(iv)
+        instance_variables.each do |iv|
+          instance_vars[iv] = instance_variable_get(iv)
         end
         {
             "json_class" => self.class.name,
@@ -40,7 +40,7 @@ class Chef
 
       module ClassMethods
         def json_create(o)
-          collection = self.new()
+          collection = new()
           o["instance_vars"].each do |k, v|
             collection.instance_variable_set(k.to_sym, v)
           end

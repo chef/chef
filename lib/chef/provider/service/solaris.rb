@@ -73,7 +73,7 @@ class Chef
         def restart_service
           ## svcadm restart doesn't supports sync(-s) option
           disable_service
-          return enable_service
+          enable_service
         end
 
         def service_status

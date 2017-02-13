@@ -17,22 +17,20 @@ class Chef
         end
 
         def children
-          begin
-            result = []
-            seen = {}
+          result = []
+          seen = {}
             # If multiple things have the same name, the first one wins.
-            multiplexed_dirs.each do |dir|
-              dir.children.each do |child|
-                if seen[child.name]
-                  Chef::Log.warn("Child with name '#{child.name}' found in multiple directories: #{seen[child.name].path_for_printing} and #{child.path_for_printing}") unless seen[child.name].path_for_printing == child.path_for_printing
-                else
-                  result << child
-                  seen[child.name] = child
-                end
+          multiplexed_dirs.each do |dir|
+            dir.children.each do |child|
+              if seen[child.name]
+                Chef::Log.warn("Child with name '#{child.name}' found in multiple directories: #{seen[child.name].path_for_printing} and #{child.path_for_printing}") unless seen[child.name].path_for_printing == child.path_for_printing
+              else
+                result << child
+                seen[child.name] = child
               end
             end
-            result
           end
+          result
         end
 
         def make_child_entry(name)

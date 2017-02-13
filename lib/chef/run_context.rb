@@ -253,7 +253,7 @@ class Chef
     # @return [Array[Notification]]
     #
     def before_notifications(resource)
-      return before_notification_collection[resource.declared_key]
+      before_notification_collection[resource.declared_key]
     end
 
     #
@@ -262,7 +262,7 @@ class Chef
     # @return [Array[Notification]]
     #
     def immediate_notifications(resource)
-      return immediate_notification_collection[resource.declared_key]
+      immediate_notification_collection[resource.declared_key]
     end
 
     #
@@ -272,7 +272,7 @@ class Chef
     # @return [Array[Notification]]
     #
     def delayed_notifications(resource)
-      return delayed_notification_collection[resource.declared_key]
+      delayed_notification_collection[resource.declared_key]
     end
 
     #

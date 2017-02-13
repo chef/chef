@@ -24,7 +24,7 @@ class Chef
       # method-style access to attributes
 
       def valid_container?(obj, key)
-        return obj.is_a?(Hash) || (obj.is_a?(Array) && key.is_a?(Integer))
+        obj.is_a?(Hash) || (obj.is_a?(Array) && key.is_a?(Integer))
       end
 
       private :valid_container?
@@ -85,16 +85,14 @@ class Chef
             end
           end
         end
-        return true
+        true
       end
 
       # this is a safe non-autovivifying reader that returns nil if the attribute does not exist
       def read(*path)
-        begin
-          read!(*path)
-        rescue Chef::Exceptions::NoSuchAttribute
-          nil
-        end
+        read!(*path)
+      rescue Chef::Exceptions::NoSuchAttribute
+        nil
       end
 
       # non-autovivifying reader that throws an exception if the attribute does not exist

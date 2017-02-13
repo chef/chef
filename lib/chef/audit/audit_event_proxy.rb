@@ -78,14 +78,14 @@ class Chef
         # We know all of our examples each live in a top-level `control_group` block - get this name now
         outermost_group_desc = describe_groups.shift
 
-        return outermost_group_desc, {
+        [outermost_group_desc, {
             :name => example.description,
             :desc => example.full_description,
             :resource_type => resource_type,
             :resource_name => resource_name,
             :context => describe_groups,
             :line_number => example.metadata[:line_number],
-        }
+        }]
       end
 
     end

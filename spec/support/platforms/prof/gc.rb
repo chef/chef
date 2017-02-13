@@ -35,12 +35,10 @@ module RSpec
         end
 
         def working_set_size
-          begin
-            ::GC.start
-            ::GC::Profiler.result.scan(LINE_PATTERN)[-1][2].to_i if ::GC::Profiler.enabled?
-          ensure
-            ::GC::Profiler.clear
-          end
+          ::GC.start
+          ::GC::Profiler.result.scan(LINE_PATTERN)[-1][2].to_i if ::GC::Profiler.enabled?
+        ensure
+          ::GC::Profiler.clear
         end
 
         def handle_count

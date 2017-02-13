@@ -73,17 +73,16 @@ class Chef
             # Since we're ignoring the rules and doing a network request here,
             # we need to make sure we don't rethrow the exception.  (child(name)
             # is not supposed to fail.)
-            begin
-              children.find { |child| child.name == name }
-            rescue Chef::ChefFS::FileSystem::NotFoundError
-              nil
-            end
+
+            children.find { |child| child.name == name }
+          rescue Chef::ChefFS::FileSystem::NotFoundError
+            nil
           end
 
           def can_have_child?(name, is_dir)
             # A cookbook's root may not have directories unless they are segment directories
             return name != "root_files" && COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) if is_dir
-            return true
+            true
           end
 
           def children

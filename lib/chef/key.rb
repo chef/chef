@@ -155,7 +155,7 @@ class Chef
       result = chef_rest.post("#{api_base}/#{@actor}/keys", payload)
       # append the private key to the current key if the server returned one,
       # since the POST endpoint just returns uri and private_key if needed.
-      new_key = self.to_hash
+      new_key = to_hash
       new_key["private_key"] = result["private_key"] if result["private_key"]
       Chef::Key.from_hash(new_key)
     end
@@ -178,9 +178,9 @@ class Chef
       new_key = chef_rest.put("#{api_base}/#{@actor}/keys/#{put_name}", to_hash)
       # if the server returned a public_key, remove the create_key field, as we now have a key
       if new_key["public_key"]
-        self.delete_create_key
+        delete_create_key
       end
-      Chef::Key.from_hash(self.to_hash.merge(new_key))
+      Chef::Key.from_hash(to_hash.merge(new_key))
     end
 
     def save
@@ -229,12 +229,12 @@ class Chef
 
       def list_by_user(actor, inflate = false)
         keys = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("users/#{actor}/keys")
-        self.list(keys, actor, :load_by_user, inflate)
+        list(keys, actor, :load_by_user, inflate)
       end
 
       def list_by_client(actor, inflate = false)
         keys = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("clients/#{actor}/keys")
-        self.list(keys, actor, :load_by_client, inflate)
+        list(keys, actor, :load_by_client, inflate)
       end
 
       def load_by_user(actor, key_name)

@@ -170,7 +170,7 @@ class Chef
         rescue Chef::Exceptions::Win32RegHiveMissing => e
           return false
         end
-        return true
+        true
       end
 
       def has_subkeys?(key_path)
@@ -179,7 +179,7 @@ class Chef
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each_key { |key| return true }
         end
-        return false
+        false
       end
 
       def get_subkeys(key_path)
@@ -189,7 +189,7 @@ class Chef
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each_key { |current_key| subkeys << current_key }
         end
-        return subkeys
+        subkeys
       end
 
       # 32-bit chef clients running on 64-bit machines will default to reading the 64-bit registry
@@ -204,7 +204,7 @@ class Chef
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           return true if reg.any? { |val| safely_downcase(val) == safely_downcase(value[:name]) }
         end
-        return false
+        false
       end
 
       def data_exists?(key_path, value)
@@ -219,7 +219,7 @@ class Chef
             end
           end
         end
-        return false
+        false
       end
 
       def value_exists!(key_path, value)
@@ -249,7 +249,7 @@ class Chef
             end
           end
         end
-        return false
+        false
       end
 
       def type_matches!(key_path, value)
@@ -279,7 +279,7 @@ class Chef
         if val.is_a? String
           return val.downcase
         end
-        return val
+        val
       end
 
       def node
@@ -316,7 +316,7 @@ class Chef
 
         raise Chef::Exceptions::Win32RegHiveMissing, "Registry Hive #{hive_name} does not exist" unless hive
 
-        return hive, key
+        [hive, key]
       end
 
       def _type_name_map
@@ -345,7 +345,7 @@ class Chef
           5 => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
           11 => ::Win32::Registry::REG_QWORD,
         }[val_type]
-        return value
+        value
       end
 
       def create_missing(key_path)

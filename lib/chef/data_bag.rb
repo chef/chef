@@ -137,7 +137,7 @@ class Chef
             end
           end
         end
-        return data_bag
+        data_bag
       else
         Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("data/#{name}")
       end

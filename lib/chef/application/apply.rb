@@ -200,16 +200,14 @@ class Chef::Application::Apply < Chef::Application
   end
 
   def run_application
-    begin
-      parse_options
-      run_chef_recipe
-      Chef::Application.exit! "Exiting", 0
-    rescue SystemExit
-      raise
-    rescue Exception => e
-      Chef::Application.debug_stacktrace(e)
-      Chef::Application.fatal!("#{e.class}: #{e.message}", e)
-    end
+    parse_options
+    run_chef_recipe
+    Chef::Application.exit! "Exiting", 0
+  rescue SystemExit
+    raise
+  rescue Exception => e
+    Chef::Application.debug_stacktrace(e)
+    Chef::Application.fatal!("#{e.class}: #{e.message}", e)
   end
 
     # Get this party started

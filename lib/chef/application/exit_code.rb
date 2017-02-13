@@ -198,12 +198,10 @@ class Chef
         end
 
         def notify_on_deprecation(message)
-          begin
-            Chef.deprecated(:exit_code, message)
-          rescue Chef::Exceptions::DeprecatedFeatureError
+          Chef.deprecated(:exit_code, message)
+        rescue Chef::Exceptions::DeprecatedFeatureError
             # Have to rescue this, otherwise this unhandled error preempts
             # the current exit code assignment.
-          end
         end
 
         def deprecation_warning
@@ -222,7 +220,7 @@ class Chef
 
         def default_exit_code
           if normalization_disabled? || normalization_not_configured?
-            return DEPRECATED_RFC_062_EXIT_CODES[:DEPRECATED_FAILURE]
+            DEPRECATED_RFC_062_EXIT_CODES[:DEPRECATED_FAILURE]
           else
             VALID_RFC_062_EXIT_CODES[:GENERIC_FAILURE]
           end

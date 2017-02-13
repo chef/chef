@@ -419,7 +419,7 @@ class Chef
               ui.output "Created #{parent_path}" if ui
             end
           end
-          return parent
+          parent
         end
 
         def parallel_do(enum, options = {}, &block)

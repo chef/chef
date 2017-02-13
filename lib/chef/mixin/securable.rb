@@ -110,7 +110,7 @@ class Chef
           # equivalent to something like:
           # def rights(permissions=nil, principals=nil, args_hash=nil)
           define_method(name) do |permissions = nil, principals = nil, args_hash = nil|
-            rights = self.instance_variable_get("@#{name}".to_sym)
+            rights = instance_variable_get("@#{name}".to_sym)
             unless permissions.nil?
               input = {
                 :permissions => permissions,

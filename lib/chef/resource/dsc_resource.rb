@@ -29,7 +29,7 @@ class Chef
       # to dump the actual ivars
       class ToTextHash < Hash
         def to_text
-          descriptions = self.map do |(property, obj)|
+          descriptions = map do |(property, obj)|
             obj_text = if obj.respond_to?(:to_text)
                          obj.to_text
                        else

@@ -100,7 +100,7 @@ class Chef
             new_target_acl << children_ace
           end
         end
-        return actual_acl == new_target_acl
+        actual_acl == new_target_acl
       end
 
       def existing_descriptor

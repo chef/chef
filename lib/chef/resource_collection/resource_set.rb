@@ -146,7 +146,7 @@ class Chef
             results << lookup(create_key(resource_type, instance_name))
           end
         end
-        return results
+        results
       end
 
       def find_resource_by_string(arg)
@@ -166,7 +166,7 @@ class Chef
           else
             raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
         end
-        return results
+        results
       end
     end
   end

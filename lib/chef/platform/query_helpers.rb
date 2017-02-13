@@ -55,7 +55,7 @@ class Chef
           # If accessing the registry key failed, then we're probably not on
           # nano. Fail through.
         end
-        return nano == 1
+        nano == 1
       end
 
       def supports_msi?

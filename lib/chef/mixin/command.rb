@@ -103,7 +103,7 @@ class Chef
         command_output << "STDERR: #{stderr}"
         handle_command_failures(status, command_output, args)
 
-        return status, stdout, stderr
+        [status, stdout, stderr]
       end
 
       def output_of_command(command, args)
@@ -141,7 +141,7 @@ class Chef
           Chef::Log.debug("Ran #{command} returned #{status.exitstatus}")
         end
 
-        return status, stdout_string, stderr_string
+        [status, stdout_string, stderr_string]
       end
 
       def handle_command_failures(status, command_output, opts = {})

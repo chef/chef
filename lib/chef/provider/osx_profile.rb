@@ -128,9 +128,9 @@ class Chef
             raise Chef::Exceptions::FileNotFound, error_string
           end
           cookbook_profile = cache_cookbook_profile(new_profile)
-          return read_plist(cookbook_profile)
+          read_plist(cookbook_profile)
         else
-          return nil
+          nil
         end
       end
 
@@ -170,9 +170,9 @@ class Chef
 
       def get_profile_hash(new_profile)
         if new_profile.is_a?(Hash)
-          return new_profile
+          new_profile
         elsif new_profile.is_a?(String)
-          return load_profile_hash(new_profile)
+          load_profile_hash(new_profile)
         end
       end
 
