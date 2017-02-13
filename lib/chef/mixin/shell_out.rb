@@ -148,7 +148,7 @@ class Chef
           my_options[new_option] = value
         end
 
-        return my_command_args
+        my_command_args
       end
 
       # Helper for sublcasses to convert an array of string args into a string.  It

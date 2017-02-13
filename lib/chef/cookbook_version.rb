@@ -549,7 +549,7 @@ class Chef
     end
 
     def chef_server_rest
-      @chef_server_rest ||= self.chef_server_rest
+      @chef_server_rest ||= chef_server_rest
     end
 
     def self.chef_server_rest
@@ -600,11 +600,11 @@ class Chef
     end
 
     def <=>(other)
-      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != other.name
+      raise Chef::Exceptions::CookbookVersionNameMismatch if name != other.name
       # FIXME: can we change the interface to the Metadata class such
       # that metadata.version returns a Chef::Version instance instead
       # of a string?
-      Chef::Version.new(self.version) <=> Chef::Version.new(other.version)
+      Chef::Version.new(version) <=> Chef::Version.new(other.version)
     end
 
     private

@@ -44,7 +44,7 @@ module WEBrick
         end
       end
       raise last_error if sockets.empty?
-      return sockets
+      sockets
     end
     module_function :create_listeners
   end

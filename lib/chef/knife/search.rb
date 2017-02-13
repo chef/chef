@@ -183,7 +183,7 @@ class Chef
           return_id, attr_path = f.split("=")
           final_filter[return_id.to_sym] = attr_path.split(".")
         end
-        return final_filter
+        final_filter
       end
 
       def create_result_filter_from_attributes(filter_array)
@@ -193,7 +193,7 @@ class Chef
         end
         # adding magic filter so we can actually pull the name as before
         final_filter["__display_name"] = [ "name" ]
-        return final_filter
+        final_filter
       end
 
     end

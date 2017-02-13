@@ -98,7 +98,7 @@ class Chef
           files.concat gem_files
           files.uniq! if check_load_path
 
-          return files
+          files
         end
 
         def latest_gem_specs

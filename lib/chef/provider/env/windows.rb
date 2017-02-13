@@ -54,7 +54,7 @@ class Chef
 
         def env_value(key_name)
           obj = env_obj(key_name)
-          return obj ? obj.variablevalue : ENV[key_name]
+          obj ? obj.variablevalue : ENV[key_name]
         end
 
         def env_obj(key_name)

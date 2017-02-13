@@ -117,7 +117,7 @@ class Chef
           end
         end
         diff_str << old_hunk.diff(:unified) << "\n"
-        return diff_str
+        diff_str
       end
 
       private

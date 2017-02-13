@@ -462,7 +462,7 @@ class Chef
         cookbook.fully_qualified_recipe_names.map do |recipe_name|
           unqualified_name =
             if recipe_name =~ /::default$/
-              self.name.to_s
+              name.to_s
             else
               recipe_name
             end
@@ -567,29 +567,29 @@ class Chef
 
       def to_hash
         {
-          NAME                   => self.name,
-          DESCRIPTION            => self.description,
-          LONG_DESCRIPTION       => self.long_description,
-          MAINTAINER             => self.maintainer,
-          MAINTAINER_EMAIL       => self.maintainer_email,
-          LICENSE                => self.license,
-          PLATFORMS              => self.platforms,
-          DEPENDENCIES           => self.dependencies,
-          RECOMMENDATIONS        => self.recommendations,
-          SUGGESTIONS            => self.suggestions,
-          CONFLICTING            => self.conflicting,
-          PROVIDING              => self.providing,
-          REPLACING              => self.replacing,
-          ATTRIBUTES             => self.attributes,
-          GROUPINGS              => self.groupings,
-          RECIPES                => self.recipes,
-          VERSION                => self.version,
-          SOURCE_URL             => self.source_url,
-          ISSUES_URL             => self.issues_url,
-          PRIVACY                => self.privacy,
-          CHEF_VERSIONS          => gem_requirements_to_array(*self.chef_versions),
-          OHAI_VERSIONS          => gem_requirements_to_array(*self.ohai_versions),
-          GEMS                   => self.gems,
+          NAME                   => name,
+          DESCRIPTION            => description,
+          LONG_DESCRIPTION       => long_description,
+          MAINTAINER             => maintainer,
+          MAINTAINER_EMAIL       => maintainer_email,
+          LICENSE                => license,
+          PLATFORMS              => platforms,
+          DEPENDENCIES           => dependencies,
+          RECOMMENDATIONS        => recommendations,
+          SUGGESTIONS            => suggestions,
+          CONFLICTING            => conflicting,
+          PROVIDING              => providing,
+          REPLACING              => replacing,
+          ATTRIBUTES             => attributes,
+          GROUPINGS              => groupings,
+          RECIPES                => recipes,
+          VERSION                => version,
+          SOURCE_URL             => source_url,
+          ISSUES_URL             => issues_url,
+          PRIVACY                => privacy,
+          CHEF_VERSIONS          => gem_requirements_to_array(*chef_versions),
+          OHAI_VERSIONS          => gem_requirements_to_array(*ohai_versions),
+          GEMS                   => gems,
         }
       end
 
@@ -598,7 +598,7 @@ class Chef
       end
 
       def self.from_hash(o)
-        cm = self.new()
+        cm = new()
         cm.from_hash(o)
         cm
       end
@@ -632,7 +632,7 @@ class Chef
 
       def self.from_json(string)
         o = Chef::JSONCompat.from_json(string)
-        self.from_hash(o)
+        from_hash(o)
       end
 
       def self.validate_json(json_str)

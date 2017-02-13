@@ -65,10 +65,8 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   end
 
   def delete_user(target_user)
-    begin
-      shell_out!("net user #{target_user} /delete")
-    rescue Mixlib::ShellOut::ShellCommandFailed
-    end
+    shell_out!("net user #{target_user} /delete")
+  rescue Mixlib::ShellOut::ShellCommandFailed
   end
 
   let(:dsc_env_variable) { "chefenvtest" }

@@ -40,7 +40,7 @@ class Chef
 
         if compile_time || compile_time.nil?
           Array(action).each do |action|
-            self.run_action(action)
+            run_action(action)
           end
           Gem.clear_paths
         end

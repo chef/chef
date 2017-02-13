@@ -28,11 +28,9 @@ describe "Chef::Resource::User with Chef::Provider::User::Dscl provider", metada
   include Chef::Mixin::ShellOut
 
   def clean_user
-    begin
-      shell_out!("/usr/bin/dscl . -delete '/Users/#{username}'")
-    rescue Mixlib::ShellOut::ShellCommandFailed
+    shell_out!("/usr/bin/dscl . -delete '/Users/#{username}'")
+  rescue Mixlib::ShellOut::ShellCommandFailed
       # Raised when the user is already cleaned
-    end
   end
 
   def user_should_exist

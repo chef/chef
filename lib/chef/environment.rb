@@ -247,7 +247,7 @@ class Chef
       if Chef::Config[:solo_legacy_mode]
         load_from_file(name)
       else
-        self.from_hash(chef_server_rest.get("environments/#{name}"))
+        from_hash(chef_server_rest.get("environments/#{name}"))
       end
     end
 
@@ -309,17 +309,15 @@ class Chef
     end
 
     def self.validate_cookbook_version(version)
-      begin
-        if Chef::Config[:solo_legacy_mode]
-          raise Chef::Exceptions::IllegalVersionConstraint,
-                "Environment cookbook version constraints not allowed in chef-solo"
-        else
-          Chef::VersionConstraint.new version
-          true
-        end
-      rescue ArgumentError
-        false
+      if Chef::Config[:solo_legacy_mode]
+        raise Chef::Exceptions::IllegalVersionConstraint,
+              "Environment cookbook version constraints not allowed in chef-solo"
+      else
+        Chef::VersionConstraint.new version
+        true
       end
+    rescue ArgumentError
+      false
     end
 
   end

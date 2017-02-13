@@ -312,11 +312,9 @@ class Chef
 
       # like real_file? that follows (sane) symlinks
       def symlink_to_real_file?(path)
-        begin
-          real_file?(::File.realpath(path))
-        rescue Errno::ELOOP, Errno::ENOENT
-          false
-        end
+        real_file?(::File.realpath(path))
+      rescue Errno::ELOOP, Errno::ENOENT
+        false
       end
 
       # Similar to File.exist?, but also returns true in the case that the

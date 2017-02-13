@@ -59,12 +59,10 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   end
 
   def get_info
-    begin
-      ui2 = Chef::ReservedNames::Win32::Net.net_use_get_info_l2(nil, use_name)
-      from_use_info_struct(ui2)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    ui2 = Chef::ReservedNames::Win32::Net.net_use_get_info_l2(nil, use_name)
+    from_use_info_struct(ui2)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def device
@@ -72,11 +70,9 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   end
 
   def delete
-    begin
-      Chef::ReservedNames::Win32::Net.net_use_del(nil, use_name, :use_noforce)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    Chef::ReservedNames::Win32::Net.net_use_del(nil, use_name, :use_noforce)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def use_name

@@ -38,7 +38,7 @@ class Chef
       SOURCE = "Chef"
 
       def self.available?
-        return Chef::Platform.windows?
+        Chef::Platform.windows?
       end
 
       def initialize

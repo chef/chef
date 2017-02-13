@@ -47,7 +47,7 @@ class Chef
           elsif @new_resource.mount_point != "none" && !::File.exists?(@new_resource.mount_point)
             raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
           end
-          return true
+          true
         end
 
         def enabled?
@@ -129,7 +129,7 @@ class Chef
         end
 
         def remount_command
-          return "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.mount_point}"
+          "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.mount_point}"
         end
 
         def remount_fs

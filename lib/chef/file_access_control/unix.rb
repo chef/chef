@@ -80,19 +80,19 @@ class Chef
         if target_uid.nil?
           # the user has not specified a permission on the new resource, so we never manage it with FAC
           Chef::Log.debug("Found target_uid == nil, so no owner was specified on resource, not managing owner")
-          return false
+          false
         elsif current_uid.nil?
           # the user has specified a permission, and we are creating a file, so always enforce permissions
           Chef::Log.debug("Found current_uid == nil, so we are creating a new file, updating owner")
-          return true
+          true
         elsif target_uid != current_uid
           # the user has specified a permission, and it does not match the file, so fix the permission
           Chef::Log.debug("Found target_uid != current_uid, updating owner")
-          return true
+          true
         else
           Chef::Log.debug("Found target_uid == current_uid, not updating owner")
           # the user has specified a permission, but it matches the file, so behave idempotently
-          return false
+          false
         end
       end
 
@@ -139,19 +139,19 @@ class Chef
         if target_gid.nil?
           # the user has not specified a permission on the new resource, so we never manage it with FAC
           Chef::Log.debug("Found target_gid == nil, so no group was specified on resource, not managing group")
-          return false
+          false
         elsif current_gid.nil?
           # the user has specified a permission, and we are creating a file, so always enforce permissions
           Chef::Log.debug("Found current_gid == nil, so we are creating a new file, updating group")
-          return true
+          true
         elsif target_gid != current_gid
           # the user has specified a permission, and it does not match the file, so fix the permission
           Chef::Log.debug("Found target_gid != current_gid, updating group")
-          return true
+          true
         else
           Chef::Log.debug("Found target_gid == current_gid, not updating group")
           # the user has specified a permission, but it matches the file, so behave idempotently
-          return false
+          false
         end
       end
 
@@ -188,21 +188,21 @@ class Chef
         if target_mode.nil?
           # the user has not specified a permission on the new resource, so we never manage it with FAC
           Chef::Log.debug("Found target_mode == nil, so no mode was specified on resource, not managing mode")
-          return false
+          false
         elsif current_mode.nil?
           # the user has specified a permission, and we are creating a file, so always enforce permissions
           Chef::Log.debug("Found current_mode == nil, so we are creating a new file, updating mode")
-          return true
+          true
         elsif target_mode != current_mode
           # the user has specified a permission, and it does not match the file, so fix the permission
           Chef::Log.debug("Found target_mode != current_mode, updating mode")
-          return true
+          true
         elsif suid_bit_set? && (should_update_group? || should_update_owner?)
-          return true
+          true
         else
           Chef::Log.debug("Found target_mode == current_mode, not updating mode")
           # the user has specified a permission, but it matches the file, so behave idempotently
-          return false
+          false
         end
       end
 
@@ -283,7 +283,7 @@ class Chef
       end
 
       def suid_bit_set?
-        return target_mode & 04000 > 0
+        target_mode & 04000 > 0
       end
     end
   end

@@ -168,7 +168,7 @@ class Chef
       PAUSED = "paused"
 
       def service_exists?
-        return ::Win32::Service.exists?(@service_name)
+        ::Win32::Service.exists?(@service_name)
       end
 
       def take_action(action = nil, desired_state = nil)

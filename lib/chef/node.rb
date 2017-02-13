@@ -333,8 +333,8 @@ class Chef
 
       platform, version = Chef::Platform.find_platform_and_version(self)
       Chef::Log.debug("Platform is #{platform} version #{version}")
-      self.automatic[:platform] = platform
-      self.automatic[:platform_version] = version
+      automatic[:platform] = platform
+      automatic[:platform_version] = version
     end
 
     # Consumes the combined run_list and other attributes in +attrs+
@@ -343,7 +343,7 @@ class Chef
       normal_attrs_to_merge = consume_chef_environment(normal_attrs_to_merge)
       Chef::Log.debug("Applying attributes from json file")
       self.normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs, normal_attrs_to_merge)
-      self.tags # make sure they're defined
+      tags # make sure they're defined
     end
 
     # Lazy initializer for tags attribute
@@ -394,8 +394,8 @@ class Chef
     # Clear defaults and overrides, so that any deleted attributes
     # between runs are still gone.
     def reset_defaults_and_overrides
-      self.default.clear
-      self.override.clear
+      default.clear
+      override.clear
     end
 
     # Expands the node's run list and sets the default and override
@@ -414,7 +414,7 @@ class Chef
       expansion = run_list.expand(chef_environment, data_source)
       raise Chef::Exceptions::MissingRole, expansion if expansion.errors?
 
-      self.tags # make sure they're defined
+      tags # make sure they're defined
 
       automatic_attrs[:recipes] = expansion.recipes.with_duplicate_names
       automatic_attrs[:expanded_run_list] = expansion.recipes.with_fully_qualified_names_and_version_constraints
@@ -632,14 +632,14 @@ class Chef
 
     def ==(other)
       if other.kind_of?(self.class)
-        self.name == other.name
+        name == other.name
       else
         false
       end
     end
 
     def <=>(other)
-      self.name <=> other.name
+      name <=> other.name
     end
 
     private

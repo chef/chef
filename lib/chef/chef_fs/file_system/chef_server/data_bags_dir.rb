@@ -30,16 +30,14 @@ class Chef
           end
 
           def children
-            begin
-              @children ||= root.get_json(api_path).keys.sort.map { |entry| make_child_entry(entry, true) }
-            rescue Timeout::Error => e
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout getting children: #{e}")
-            rescue Net::HTTPServerException => e
-              if e.response.code == "404"
-                raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
-              else
-                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "HTTP error getting children: #{e}")
-              end
+            @children ||= root.get_json(api_path).keys.sort.map { |entry| make_child_entry(entry, true) }
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout getting children: #{e}")
+          rescue Net::HTTPServerException => e
+            if e.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
+            else
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "HTTP error getting children: #{e}")
             end
           end
 

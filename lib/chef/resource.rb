@@ -579,7 +579,7 @@ class Chef
     def load_from(resource)
       resource.instance_variables.each do |iv|
         unless iv == :@source_line || iv == :@action || iv == :@not_if || iv == :@only_if
-          self.instance_variable_set(iv, resource.instance_variable_get(iv))
+          instance_variable_set(iv, resource.instance_variable_get(iv))
         end
       end
     end
@@ -739,7 +739,7 @@ class Chef
     end
 
     def self.json_create(o)
-      resource = self.new(o["instance_vars"]["@name"])
+      resource = new(o["instance_vars"]["@name"])
       o["instance_vars"].each do |k, v|
         resource.instance_variable_set("@#{k}".to_sym, v)
       end
@@ -1049,7 +1049,7 @@ class Chef
     # A::B::BlahDBlah -> blah_d_blah
     #
     def self.use_automatic_resource_name
-      automatic_name = convert_to_snake_case(self.name.split("::")[-1])
+      automatic_name = convert_to_snake_case(name.split("::")[-1])
       resource_name automatic_name
     end
 
@@ -1499,7 +1499,7 @@ class Chef
       if args.size == 1
         args.first
       else
-        return *args
+        args
       end
     end
 
@@ -1580,14 +1580,12 @@ class Chef
 
     # @api private
     def lookup_provider_constant(name, action = :nothing)
-      begin
-        self.class.provider_base.const_get(convert_to_class_name(name.to_s))
-      rescue NameError => e
-        if e.to_s =~ /#{Regexp.escape(self.class.provider_base.to_s)}/
-          raise ArgumentError, "No provider found to match '#{name}'"
-        else
-          raise e
-        end
+      self.class.provider_base.const_get(convert_to_class_name(name.to_s))
+    rescue NameError => e
+      if e.to_s =~ /#{Regexp.escape(self.class.provider_base.to_s)}/
+        raise ArgumentError, "No provider found to match '#{name}'"
+      else
+        raise e
       end
     end
 
