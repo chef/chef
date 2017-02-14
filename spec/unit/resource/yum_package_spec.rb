@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,47 @@ describe Chef::Resource::YumPackage, "initialize" do
     platform_family: "rhel"
   )
 
+end
+
+describe Chef::Resource::YumPackage do
+  before(:each) do
+    @resource = Chef::Resource::YumPackage.new("foo")
+  end
+
+  # this set of tests is somewhat terrible.  the yum provider promiscuously writes over
+  # the new_resource.package_named/version/arch properties.  until that is fixed properly
+  # we need to coerce and dup those properties into normal arrays.  this does not affect
+  # strings because those are not mutated in place and they are not (currently) frozen
+  # in immutable attributes (even though they really, really should be).
+  context "when passed immutable node attribute arrays" do
+    let(:node) { Chef::Node.new }
+
+    before do
+      node.default["foo"] = %w{one two three}
+    end
+
+    it "allows mutation of the package_name array" do
+      @resource.package_name node["foo"]
+      expect(@resource.package_name).not_to be_a_kind_of(Chef::Node::ImmutableArray)
+      expect { @resource.package_name[0] = "four" }.not_to raise_error
+      expect(@resource.package_name).to eql(%w{four two three})
+    end
+
+    it "allows mutation of the version array" do
+      @resource.version node["foo"]
+      expect(@resource.version).not_to be_a_kind_of(Chef::Node::ImmutableArray)
+      expect { @resource.version[0] = "four" }.not_to raise_error
+      expect(@resource.version).to eql(%w{four two three})
+    end
+
+    it "allows mutation of the arch array" do
+      @resource.arch node["foo"]
+      expect(@resource.arch).not_to be_a_kind_of(Chef::Node::ImmutableArray)
+      expect { @resource.arch[0] = "four" }.not_to raise_error
+      expect(@resource.arch).to eql(%w{four two three})
+    end
+
+  end
 end
 
 describe Chef::Resource::YumPackage, "arch" do
