@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,8 +24,17 @@ class Chef
       resource_name :yum_package
       provides :package, os: "linux", platform_family: %w{rhel fedora}
 
-      # Install a specific arch
-      property :arch, [ String, Array ]
+      # XXX: the coercions here are due to the provider promiscuously updating the properties on the
+      # new_resource which causes immutable modification exceptions when passed an immutable node array.
+      #
+      # <lecture>
+      # THIS is why updating the new_resource in a provider is so terrible, and is equivalent to methods scribbling over
+      # its own arguments as unintended side-effects (and why functional languages that don't allow modifcations
+      # of variables eliminate entire classes of bugs).
+      # </lecture>
+      property :package_name, [ String, Array ], identity: true, coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
+      property :version, [ String, Array ], coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
+      property :arch, [ String, Array ], coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
 
       property :flush_cache,
         Hash,
