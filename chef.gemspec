@@ -11,9 +11,9 @@ Gem::Specification.new do |s|
   s.license = "Apache-2.0"
   s.author = "Adam Jacob"
   s.email = "adam@chef.io"
-  s.homepage = "http://www.chef.io"
+  s.homepage = "https://www.chef.io"
 
-  s.required_ruby_version = ">= 2.2.0"
+  s.required_ruby_version = ">= 2.2.2"
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
 
