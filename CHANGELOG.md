@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.19.26](https://github.com/chef/chef/tree/v12.19.26) (2017-02-12)
-[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.26)
+## [v12.19.27](https://github.com/chef/chef/tree/v12.19.27) (2017-02-14)
+[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.27)
 
 **Closed issues:**
 
@@ -11,7 +11,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 - Suppress sensitive properties from resource log and reporting output [\#5803](https://github.com/chef/chef/pull/5803) ([tduffield](https://github.com/tduffield))
 - Sanitize UTF-8 data sent to Data Collector [\#5793](https://github.com/chef/chef/pull/5793) ([lamont-granquist](https://github.com/lamont-granquist))
-- Add mutlipackage\_api support to yum\_package provider [\#5791](https://github.com/chef/chef/pull/5791) ([tduffield](https://github.com/tduffield))
+- Add multipackage\_api support to yum\_package provider [\#5791](https://github.com/chef/chef/pull/5791) ([tduffield](https://github.com/tduffield))
 - rhel7 / dnf 2.0 fixes / improved errors [\#5782](https://github.com/chef/chef/pull/5782) ([lamont-granquist](https://github.com/lamont-granquist))
 - Grant Administrators group permissions to nodes directory under chef-solo [\#5781](https://github.com/chef/chef/pull/5781) ([tduffield](https://github.com/tduffield))
 - Fix --no-fips on chef-client [\#5778](https://github.com/chef/chef/pull/5778) ([btm](https://github.com/btm))
