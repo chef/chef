@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.19.29](https://github.com/chef/chef/tree/v12.19.29) (2017-02-14)
-[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.29)
+## [v12.19.30](https://github.com/chef/chef/tree/v12.19.30) (2017-02-14)
+[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.30)
 
 **Closed issues:**
 
@@ -9,6 +9,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- coerce immutable arrays to normal arrays in the yum\_package resource [\#5816](https://github.com/chef/chef/pull/5816) ([lamont-granquist](https://github.com/lamont-granquist))
 - Suppress sensitive properties from resource log and reporting output [\#5803](https://github.com/chef/chef/pull/5803) ([tduffield](https://github.com/tduffield))
 - Sanitize UTF-8 data sent to Data Collector [\#5793](https://github.com/chef/chef/pull/5793) ([lamont-granquist](https://github.com/lamont-granquist))
 - Add multipackage\_api support to yum\_package provider [\#5791](https://github.com/chef/chef/pull/5791) ([tduffield](https://github.com/tduffield))
