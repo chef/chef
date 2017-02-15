@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 53b28425d56005a92b0e3bb153f95b505168354a
+  revision: 277ec8d3df77dde70b8a3a3423c9fe55318a0384
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -16,7 +16,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 7e47afd6141d3c44a11322916e3fc85c89aa9b59
+  revision: b2bf89dd11270e169fd2315495c98095d4a19090
   branch: master
   specs:
     chefstyle (0.5.0)
@@ -138,13 +138,13 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.6.0)
     ast (2.3.0)
-    aws-sdk (2.7.7)
-      aws-sdk-resources (= 2.7.7)
-    aws-sdk-core (2.7.7)
+    aws-sdk (2.7.8)
+      aws-sdk-resources (= 2.7.8)
+    aws-sdk-core (2.7.8)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.7.7)
-      aws-sdk-core (= 2.7.7)
+    aws-sdk-resources (2.7.8)
+      aws-sdk-core (= 2.7.8)
     aws-sigv4 (1.0.0)
     backports (3.6.8)
     binding_of_caller (0.7.2)
@@ -154,13 +154,14 @@ GEM
     chef-api (0.7.0)
       logify (~> 0.1)
       mime-types
-    chef-provisioning (2.1.0)
+    chef-provisioning (2.1.1)
       cheffish (~> 4.0)
       inifile (>= 2.0.2)
       mixlib-install (>= 1.0, < 3.0)
       net-scp (~> 1.0)
       net-ssh (>= 2.9, < 5.0)
       net-ssh-gateway (~> 1.2)
+      winrm (~> 2.0)
       winrm-fs (~> 1.0)
     chef-sugar (3.4.0)
     chef-zero (5.3.0)
@@ -270,7 +271,7 @@ GEM
     kitchen-sync (2.1.2)
       net-sftp
       test-kitchen (>= 1.0.0)
-    kitchen-vagrant (1.0.1)
+    kitchen-vagrant (1.0.2)
       test-kitchen (~> 1.4)
     knife-windows (1.9.0)
       winrm (~> 2.1)
@@ -461,7 +462,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.66.9)
+    specinfra (2.67.0)
       net-scp
       net-ssh (>= 2.7, < 5.0)
       net-telnet
@@ -590,4 +591,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.12.5
+   1.13.7
