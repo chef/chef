@@ -13,7 +13,6 @@ default["ubuntu"]["components"] = "main restricted universe multiverse"
 #
 
 # turn off old protocols client-side
-default["openssh"]["client"]["rsa_authentication"] = "no"
 default["openssh"]["client"]["host_based_authentication"] = "no"
 # allow typical ssh v2 rsa/dsa/ecdsa key auth client-side
 default["openssh"]["client"]["pubkey_authentication"] = "yes"
@@ -34,8 +33,6 @@ default["openssh"]["server"]["use_dns"] = "no"
 default["openssh"]["server"]["syslog_facility"] = "AUTH"
 # only allow access via ssh pubkeys, all other mechanisms including passwords are turned off for all users
 default["openssh"]["server"]["pubkey_authentication"] = "yes"
-default["openssh"]["server"]["rhosts_rsa_authentication"] = "no"
-default["openssh"]["server"]["rsa_authentication"] = "no"
 default["openssh"]["server"]["password_authentication"] = "no"
 default["openssh"]["server"]["host_based_authentication"] = "no"
 default["openssh"]["server"]["gssapi_authentication"] = "no"

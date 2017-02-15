@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,83 @@
 # limitations under the License.
 
 require "mixlib/shellout"
+require "chef/deprecated"
 
 class Chef
   module Mixin
     module ShellOut
+
+      # PREFERRED APIS:
+      #
+      # shell_out_compact and shell_out_compact! flatten their array arguments and remove nils and pass
+      # the resultant array to shell_out.  this actually eliminates spaces-in-args bugs because this:
+      #
+      # shell_out!("command #{arg}")
+      #
+      # becomes two arguments if arg has spaces and requires quotations:
+      #
+      # shell_out!("command '#{arg}'")
+      #
+      # using shell_out_compact! this becomes:
+      #
+      # shell_out_compact!("command", arg)
+      #
+      # and spaces in the arg just works and it does not become two arguments (and the shell quoting around
+      # the argument must actually be removed).
+      #
+      # there's also an implicit join between all the array elements, and nested arrays are flattened which
+      # means that odd where-do-i-put-the-spaces options handling just works, and instead of this:
+      #
+      #    opts = ""                     # needs to be empty string for when foo and bar are both missing
+      #    opts << " -foo" if needs_foo? # needs the leading space on both of these
+      #    opts << " -bar" if needs_bar?
+      #    shell_out!("cmd#{opts}")      # have to think way too hard about why there's no space here
+      #
+      # becomes:
+      #
+      #    opts = []
+      #    opts << "-foo" if needs_foo?
+      #    opts << "-bar" if needs_bar?
+      #    shell_out_compact!("cmd", opts)
+      #
+      # and opts can be an empty array or nil and it'll work out fine.
+      #
+      # generally its best to use shell_out_compact! in code and setup expectations on shell_out! in tests
+      #
+
+      def shell_out_compact(*args, **options)
+        if options.empty?
+          shell_out(*clean_array(*args))
+        else
+          shell_out(*clean_array(*args), **options)
+        end
+      end
+
+      def shell_out_compact!(*args, **options)
+        if options.empty?
+          shell_out!(*clean_array(*args))
+        else
+          shell_out!(*clean_array(*args), **options)
+        end
+      end
+
+      # helper sugar for resources that support passing timeouts to shell_out
+
+      def shell_out_compact_timeout(*args, **options)
+        raise "object is not a resource that supports timeouts" unless respond_to?(:new_resource) && new_resource.respond_to?(:timeout)
+        options_dup = options.dup
+        options_dup[:timeout] = new_resource.timeout if new_resource.timeout
+        options_dup[:timeout] = 900 unless options_dup.key?(:timeout)
+        shell_out_compact(*args, **options_dup)
+      end
+
+      def shell_out_compact_timeout!(*args, **options)
+        raise "object is not a resource that supports timeouts" unless respond_to?(:new_resource) && new_resource.respond_to?(:timeout)
+        options_dup = options.dup
+        options_dup[:timeout] = new_resource.timeout if new_resource.timeout
+        options_dup[:timeout] = 900 unless options_dup.key?(:timeout)
+        shell_out_compact!(*args, **options_dup)
+      end
 
       # shell_out! runs a command on the system and will raise an error if the command fails, which is what you want
       # for debugging, shell_out and shell_out! both will display command output to the tty when the log level is debug
@@ -75,7 +148,7 @@ class Chef
           my_options[new_option] = value
         end
 
-        return my_command_args
+        my_command_args
       end
 
       # Helper for sublcasses to convert an array of string args into a string.  It
@@ -85,10 +158,12 @@ class Chef
       # @param args [String] variable number of string arguments
       # @return [String] nicely concatenated string or empty string
       def a_to_s(*args)
-        clean_array(*args).join(" ")
+        # can't quite deprecate this yet
+        #Chef.deprecated(:package_misc, "a_to_s is deprecated use shell_out_compact or shell_out_compact_timeout instead")
+        args.flatten.reject { |i| i.nil? || i == "" }.map(&:to_s).join(" ")
       end
 
-      # Helper for sublcasses to reject nil and empty strings out of an array.  It allows
+      # Helper for sublcasses to reject nil out of an array.  It allows
       # using the array form of shell_out (which avoids the need to surround arguments with
       # quote marks to deal with shells).
       #
@@ -105,7 +180,7 @@ class Chef
       # @param args [String] variable number of string arguments
       # @return [Array] array of strings with nil and null string rejection
       def clean_array(*args)
-        args.flatten.reject { |i| i.nil? || i == "" }.map(&:to_s)
+        args.flatten.compact.map(&:to_s)
       end
 
       private
@@ -118,7 +193,7 @@ class Chef
       end
 
       def deprecate_option(old_option, new_option)
-        Chef.log_deprecation "DEPRECATION: Chef::Mixin::ShellOut option :#{old_option} is deprecated. Use :#{new_option}"
+        Chef.deprecated :internal_api, "Chef::Mixin::ShellOut option :#{old_option} is deprecated. Use :#{new_option}"
       end
 
       def io_for_live_stream

@@ -115,7 +115,7 @@ class Chef
         res = Chef::Resource::File.new(@path, run_context)
         res.name(@path) if @path
         res.backup(backup) if backup
-        res.content(content) if content
+        res.content(content) if content?
         res.group(group) if group
         res.mode(mode) if mode
         res.owner(owner) if owner
@@ -150,7 +150,7 @@ class Chef
       end
 
       def content
-        plist_hash = new_resource.hash || gen_hash
+        plist_hash = new_resource.plist_hash || gen_hash
         Plist::Emit.dump(plist_hash) unless plist_hash.nil?
       end
 

@@ -65,12 +65,12 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?("/usr/bin/dscl") }
+            a.assertion { ::File.exist?("/usr/bin/dscl") }
             a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/dscl' on the system for #{new_resource}!")
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?("/usr/bin/plutil") }
+            a.assertion { ::File.exist?("/usr/bin/plutil") }
             a.failure_message(Chef::Exceptions::User, "Cannot find binary '/usr/bin/plutil' on the system for #{new_resource}!")
           end
 
@@ -199,7 +199,7 @@ user password using shadow hash.")
         # Create a user using dscl
         #
         def dscl_create_user
-          run_dscl("create /Users/#{new_resource.username}")
+          run_dscl("create", "/Users/#{new_resource.username}")
         end
 
         #
@@ -208,7 +208,7 @@ user password using shadow hash.")
         #
         def dscl_create_comment
           comment = new_resource.comment || new_resource.username
-          run_dscl("create /Users/#{new_resource.username} RealName '#{comment}'")
+          run_dscl("create", "/Users/#{new_resource.username}", "RealName", comment)
         end
 
         #
@@ -224,7 +224,7 @@ user password using shadow hash.")
             raise(Chef::Exceptions::RequestedUIDUnavailable, "uid #{new_resource.uid} is already in use")
           end
 
-          run_dscl("create /Users/#{new_resource.username} UniqueID #{new_resource.uid}")
+          run_dscl("create", "/Users/#{new_resource.username}", "UniqueID", new_resource.uid)
         end
 
         #
@@ -235,7 +235,7 @@ user password using shadow hash.")
           uid = nil
           base_uid = new_resource.system ? 200 : 500
           next_uid_guess = base_uid
-          users_uids = run_dscl("list /Users uid")
+          users_uids = run_dscl("list", "/Users", "uid")
           while next_uid_guess < search_limit + base_uid
             if users_uids =~ Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n")
               next_uid_guess += 1
@@ -244,7 +244,7 @@ user password using shadow hash.")
               break
             end
           end
-          return uid || raise("uid not found. Exhausted. Searched #{search_limit} times")
+          uid || raise("uid not found. Exhausted. Searched #{search_limit} times")
         end
 
         #
@@ -252,18 +252,18 @@ user password using shadow hash.")
         #
         def uid_used?(uid)
           return false unless uid
-          users_uids = run_dscl("list /Users uid").split("\n")
-          uid_map = users_uids.inject({}) do |tmap, tuid|
+          users_uids = run_dscl("list", "/Users", "uid").split("\n")
+          uid_map = users_uids.each_with_object({}) do |tuid, tmap|
             x = tuid.split
             tmap[x[1]] = x[0]
             tmap
           end
           if uid_map[uid.to_s]
-            unless uid_map[uid.to_s] == new_resource.username.to_s
+            unless uid_map[uid.to_s] == new_resource.username
               return true
             end
           end
-          return false
+          false
         end
 
         #
@@ -277,14 +277,14 @@ user password using shadow hash.")
             new_resource.gid(STAFF_GROUP_ID)
           elsif !new_resource.gid.to_s.match(/^\d+$/)
             begin
-              possible_gid = run_dscl("read /Groups/#{new_resource.gid} PrimaryGroupID").split(" ").last
-            rescue Chef::Exceptions::DsclCommandFailed => e
-              raise Chef::Exceptions::GroupIDNotFound.new("Group not found for #{new_resource.gid} when creating user #{new_resource.username}")
+              possible_gid = run_dscl("read", "/Groups/#{new_resource.gid}", "PrimaryGroupID").split(" ").last
+            rescue Chef::Exceptions::DsclCommandFailed
+              raise Chef::Exceptions::GroupIDNotFound, "Group not found for #{new_resource.gid} when creating user #{new_resource.username}"
             end
             # XXX: mutates the new resource
             new_resource.gid(possible_gid) if possible_gid && possible_gid.match(/^\d+$/)
           end
-          run_dscl("create /Users/#{new_resource.username} PrimaryGroupID '#{new_resource.gid}'")
+          run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", new_resource.gid)
         end
 
         #
@@ -293,7 +293,7 @@ user password using shadow hash.")
         #
         def dscl_set_home
           if new_resource.home.nil? || new_resource.home.empty?
-            run_dscl("delete /Users/#{new_resource.username} NFSHomeDirectory")
+            run_dscl("delete", "/Users/#{new_resource.username}", "NFSHomeDirectory")
             return
           end
 
@@ -308,7 +308,7 @@ user password using shadow hash.")
               move_home
             end
           end
-          run_dscl("create /Users/#{new_resource.username} NFSHomeDirectory '#{new_resource.home}'")
+          run_dscl("create", "/Users/#{new_resource.username}", "NFSHomeDirectory", new_resource.home)
         end
 
         def validate_home_dir_specification!
@@ -318,17 +318,17 @@ user password using shadow hash.")
         end
 
         def current_home_exists?
-          ::File.exist?("#{current_resource.home}")
+          ::File.exist?(current_resource.home)
         end
 
         def new_home_exists?
-          ::File.exist?("#{new_resource.home}")
+          ::File.exist?(new_resource.home)
         end
 
         def ditto_home
           skel = "/System/Library/User Template/English.lproj"
-          raise(Chef::Exceptions::User, "can't find skel at: #{skel}") unless ::File.exists?(skel)
-          shell_out! "ditto '#{skel}' '#{new_resource.home}'"
+          raise(Chef::Exceptions::User, "can't find skel at: #{skel}") unless ::File.exist?(skel)
+          shell_out_compact!("ditto", skel, new_resource.home)
           ::FileUtils.chown_R(new_resource.username, new_resource.gid.to_s, new_resource.home)
         end
 
@@ -338,7 +338,7 @@ user password using shadow hash.")
           src = current_resource.home
           FileUtils.mkdir_p(new_resource.home)
           files = ::Dir.glob("#{Chef::Util::PathHelper.escape_glob_dir(src)}/*", ::File::FNM_DOTMATCH) - ["#{src}/.", "#{src}/.."]
-          ::FileUtils.mv(files, new_resource.home, :force => true)
+          ::FileUtils.mv(files, new_resource.home, force: true)
           ::FileUtils.rmdir(src)
           ::FileUtils.chown_R(new_resource.username, new_resource.gid.to_s, new_resource.home)
         end
@@ -347,10 +347,10 @@ user password using shadow hash.")
         # Sets the shell for the user using dscl.
         #
         def dscl_set_shell
-          if new_resource.shell || ::File.exists?("#{new_resource.shell}")
-            run_dscl("create /Users/#{new_resource.username} UserShell '#{new_resource.shell}'")
+          if new_resource.shell
+            run_dscl("create", "/Users/#{new_resource.username}", "UserShell", new_resource.shell)
           else
-            run_dscl("create /Users/#{new_resource.username} UserShell '/usr/bin/false'")
+            run_dscl("create", "/Users/#{new_resource.username}", "UserShell", "/usr/bin/false")
           end
         end
 
@@ -367,9 +367,8 @@ user password using shadow hash.")
 
           # Shadow info is saved as binary plist. Convert the info to binary plist.
           shadow_info_binary = StringIO.new
-          command = Mixlib::ShellOut.new("plutil -convert binary1 -o - -",
-                                         :input => shadow_info.to_plist, :live_stream => shadow_info_binary)
-          command.run_command
+          shell_out_compact("plutil", "-convert", "binary1", "-o", "-", "-",
+                            input: shadow_info.to_plist, live_stream: shadow_info_binary)
 
           if user_info.nil?
             # User is  just created. read_user_info() will read the fresh information
@@ -401,7 +400,7 @@ user password using shadow hash.")
                            # Create a random 4 byte salt
                            salt = OpenSSL::Random.random_bytes(4)
                            encoded_password = OpenSSL::Digest::SHA512.hexdigest(salt + new_resource.password)
-                           hash_value = salt.unpack("H*").first + encoded_password
+                           salt.unpack("H*").first + encoded_password
                          end
 
             shadow_info["SALTED-SHA512"] = StringIO.new
@@ -449,21 +448,21 @@ user password using shadow hash.")
           end
 
           # Remove the user from its groups
-          run_dscl("list /Groups").each_line do |group|
+          run_dscl("list", "/Groups").each_line do |group|
             if member_of_group?(group.chomp)
-              run_dscl("delete /Groups/#{group.chomp} GroupMembership '#{new_resource.username}'")
+              run_dscl("delete", "/Groups/#{group.chomp}", "GroupMembership", new_resource.username)
             end
           end
 
           # Remove user account
-          run_dscl("delete /Users/#{new_resource.username}")
+          run_dscl("delete", "/Users/#{new_resource.username}")
         end
 
         #
         # Locks the user.
         #
         def lock_user
-          run_dscl("append /Users/#{new_resource.username} AuthenticationAuthority ';DisabledUser;'")
+          run_dscl("append", "/Users/#{new_resource.username}", "AuthenticationAuthority", ";DisabledUser;")
         end
 
         #
@@ -471,7 +470,7 @@ user password using shadow hash.")
         #
         def unlock_user
           auth_string = authentication_authority.gsub(/AuthenticationAuthority: /, "").gsub(/;DisabledUser;/, "").strip
-          run_dscl("create /Users/#{new_resource.username} AuthenticationAuthority '#{auth_string}'")
+          run_dscl("create", "/Users/#{new_resource.username}", "AuthenticationAuthority", auth_string)
         end
 
         #
@@ -489,7 +488,7 @@ user password using shadow hash.")
         # This is the interface base User provider requires to provide idempotency.
         #
         def check_lock
-          return @locked = locked?
+          @locked = locked?
         end
 
         #
@@ -501,11 +500,11 @@ user password using shadow hash.")
         # given attribute.
         #
         def diverged?(parameter)
-          parameter_updated?(parameter) && (not new_resource.send(parameter).nil?)
+          parameter_updated?(parameter) && !new_resource.send(parameter).nil?
         end
 
         def parameter_updated?(parameter)
-          not (new_resource.send(parameter) == current_resource.send(parameter))
+          !(new_resource.send(parameter) == current_resource.send(parameter))
         end
 
         #
@@ -551,7 +550,7 @@ user password using shadow hash.")
         def member_of_group?(group_name)
           membership_info = ""
           begin
-            membership_info = run_dscl("read /Groups/#{group_name}")
+            membership_info = run_dscl("read", "/Groups/#{group_name}")
           rescue Chef::Exceptions::DsclCommandFailed
             # Raised if the group doesn't contain any members
           end
@@ -568,14 +567,14 @@ user password using shadow hash.")
 
         # A simple map of Chef's terms to DSCL's terms.
         DSCL_PROPERTY_MAP = {
-          :uid => "uid",
-          :gid => "gid",
-          :home => "home",
-          :shell => "shell",
-          :comment => "realname",
-          :password => "passwd",
-          :auth_authority => "authentication_authority",
-          :shadow_hash => "ShadowHashData",
+          uid: "uid",
+          gid: "gid",
+          home: "home",
+          shell: "shell",
+          comment: "realname",
+          password: "passwd",
+          auth_authority: "authentication_authority",
+          shadow_hash: "ShadowHashData",
         }.freeze
 
         # Directory where the user plist files are stored for versions 10.7 and above
@@ -590,11 +589,11 @@ user password using shadow hash.")
 
           # We flush the cache here in order to make sure that we read fresh information
           # for the user.
-          shell_out("dscacheutil '-flushcache'")
+          shell_out_compact("dscacheutil", "-flushcache") # FIXME: this is MacOS version dependent
 
           begin
             user_plist_file = "#{USER_PLIST_DIRECTORY}/#{new_resource.username}.plist"
-            user_plist_info = run_plutil("convert xml1 -o - #{user_plist_file}")
+            user_plist_info = run_plutil("convert", "xml1", "-o", "-", user_plist_file)
             user_info = Plist.parse_xml(user_plist_info)
           rescue Chef::Exceptions::PlistUtilCommandFailed
           end
@@ -609,7 +608,7 @@ user password using shadow hash.")
         def save_user_info(user_info)
           user_plist_file = "#{USER_PLIST_DIRECTORY}/#{new_resource.username}.plist"
           Plist::Emit.save_plist(user_info, user_plist_file)
-          run_plutil("convert binary1 #{user_plist_file}")
+          run_plutil("convert", "binary1", user_plist_file)
         end
 
         #
@@ -658,7 +657,9 @@ user password using shadow hash.")
         end
 
         def run_dscl(*args)
-          result = shell_out("dscl . -#{args.join(' ')}")
+          argdup = args.dup
+          cmd = argdup.shift
+          result = shell_out_compact("dscl", ".", "-#{cmd}", argdup)
           return "" if ( args.first =~ /^delete/ ) && ( result.exitstatus != 0 )
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") unless result.exitstatus == 0
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if result.stdout =~ /No such key: /
@@ -666,17 +667,19 @@ user password using shadow hash.")
         end
 
         def run_plutil(*args)
-          result = shell_out("plutil -#{args.join(' ')}")
+          argdup = args.dup
+          cmd = argdup.shift
+          result = shell_out_compact("plutil", "-#{cmd}", argdup)
           raise(Chef::Exceptions::PlistUtilCommandFailed, "plutil error: #{result.inspect}") unless result.exitstatus == 0
           if result.stdout.encoding == Encoding::ASCII_8BIT
-            result.stdout.encode("utf-8", "binary", :undef => :replace, :invalid => :replace, :replace => "?")
+            result.stdout.encode("utf-8", "binary", undef: :replace, invalid: :replace, replace: "?")
           else
             result.stdout
           end
         end
 
         def convert_binary_plist_to_xml(binary_plist_string)
-          Mixlib::ShellOut.new("plutil -convert xml1 -o - -", :input => binary_plist_string).run_command.stdout
+          shell_out_compact("plutil", "-convert", "xml1", "-o", "-", "-", input: binary_plist_string).stdout
         end
 
         def convert_to_binary(string)

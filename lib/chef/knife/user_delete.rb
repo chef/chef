@@ -60,7 +60,7 @@ EOF
         end
 
         output(format_for_display(object)) if config[:print_after]
-        self.msg("Deleted #{user_name}")
+        msg("Deleted #{user_name}")
       end
 
       def run

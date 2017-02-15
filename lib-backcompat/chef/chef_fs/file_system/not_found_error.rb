@@ -17,4 +17,4 @@
 #
 
 require "chef/chef_fs/file_system/exceptions"
-Chef.log_deprecation "Individual ChefFS error files are deprecated. Please require 'chef/chef_fs/file_system/exceptions' rather than 'chef/chef_fs/file_system/#{File.basename(__FILE__, ".rb")}'."
+Chef.deprecated :internal_api, "Individual ChefFS error files are deprecated. Please require 'chef/chef_fs/file_system/exceptions' rather than 'chef/chef_fs/file_system/#{File.basename(__FILE__, ".rb")}'."

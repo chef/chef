@@ -66,7 +66,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
     end
   end
 
-  def enable_service()
+  def enable_service
     new_daemons = []
     entries = daemons
 
@@ -92,7 +92,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
     end
   end
 
-  def disable_service()
+  def disable_service
     new_daemons = []
     entries = daemons
 

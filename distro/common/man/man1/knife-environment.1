@@ -339,7 +339,7 @@ $ knife environment edit devops
 .UNINDENT
 .SH FROM FILE
 .sp
-The \fBfrom file\fP argument is used to add or update an environment using a JSON or Ruby DSL description. It must be run with the \fBcreate\fP or \fBedit\fP arguments.
+The \fBfrom file\fP argument is used to add or update an environment using a JSON or Ruby DSL description.
 .sp
 \fBSyntax\fP
 .sp
@@ -349,7 +349,7 @@ This argument has the following syntax:
 .sp
 .nf
 .ft C
-$ knife environment [create | edit] from file FILE (options)
+$ knife environment from file FILE (options)
 .ft P
 .fi
 .UNINDENT
@@ -366,25 +366,13 @@ Use to upload all environments found at the specified path.
 .sp
 \fBExamples\fP
 .sp
-To add an environment using data contained in a JSON file:
+To add or update an environment using data contained in a JSON file:
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-$ knife environment create devops from file "path to JSON file"
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.sp
-or:
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-$ knife environment edit devops from file "path to JSON file"
+$ knife environment from file "path to JSON file"
 .ft P
 .fi
 .UNINDENT

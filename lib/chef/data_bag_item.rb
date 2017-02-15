@@ -107,9 +107,9 @@ class Chef
     end
 
     def to_hash
-      result = self.raw_data.dup
+      result = raw_data.dup
       result["chef_type"] = "data_bag_item"
-      result["data_bag"] = self.data_bag.to_s
+      result["data_bag"] = data_bag.to_s
       result
     end
 
@@ -141,7 +141,7 @@ class Chef
 
     # Create a Chef::DataBagItem from JSON
     def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::DataBagItem#from_hash")
+      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::DataBagItem#from_hash")
       from_hash(o)
     end
 
@@ -207,7 +207,7 @@ class Chef
     end
 
     def pretty_print(pretty_printer)
-      pretty_printer.pp({ "data_bag_item('#{data_bag}', '#{id}')" => self.to_hash })
+      pretty_printer.pp({ "data_bag_item('#{data_bag}', '#{id}')" => to_hash })
     end
 
     def id

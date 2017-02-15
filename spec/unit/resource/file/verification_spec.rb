@@ -88,7 +88,7 @@ describe Chef::Resource::File::Verification do
       end
 
       it "warns about deprecation when \%{file} is used" do
-        expect(Chef::Log).to receive(:deprecation).with(/%{file} is deprecated/, /verification_spec\.rb/)
+        expect(Chef).to receive(:deprecated).with(:verify_file, /%{file} is deprecated/)
         test_command = platform_specific_verify_command("file")
         Chef::Resource::File::Verification.new(parent_resource, test_command, {})
           .verify(temp_path)

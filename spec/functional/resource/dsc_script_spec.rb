@@ -65,10 +65,8 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   end
 
   def delete_user(target_user)
-    begin
-      shell_out!("net user #{target_user} /delete")
-    rescue Mixlib::ShellOut::ShellCommandFailed
-    end
+    shell_out!("net user #{target_user} /delete")
+  rescue Mixlib::ShellOut::ShellCommandFailed
   end
 
   let(:dsc_env_variable) { "chefenvtest" }
@@ -76,6 +74,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only do
   let(:env_value2) { "value2" }
   let(:dsc_test_run_context) do
     node = Chef::Node.new
+    node.automatic["os"] = "windows"
     node.automatic["platform"] = "windows"
     node.automatic["platform_version"] = "6.1"
     node.automatic["kernel"][:machine] = :x86_64 # Only 64-bit architecture is supported

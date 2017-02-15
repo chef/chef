@@ -89,7 +89,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       args = "--system"
     end
 
-    return options, args
+    [options, args]
   end
 
   def start_service

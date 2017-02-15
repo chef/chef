@@ -80,6 +80,11 @@ describe Chef::Resource::Package do
     it "returns the file path as its identity" do
       expect(@resource.identity).to eq("tomcat")
     end
+
+    it "takes options as an array" do
+      @resource.options [ "-a", "-l" ]
+      expect(@resource.options).to eq(["-a", "-l" ])
+    end
   end
 
   # String, Integer

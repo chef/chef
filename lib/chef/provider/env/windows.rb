@@ -36,7 +36,7 @@ class Chef
           obj.variablevalue = @new_resource.value
           obj.put_
           value = @new_resource.value
-          value = expand_path(value) if @new_resource.key_name.casecmp("PATH").zero?
+          value = expand_path(value) if @new_resource.key_name.casecmp("PATH") == 0
           ENV[@new_resource.key_name] = value
           broadcast_env_change
         end
@@ -54,7 +54,7 @@ class Chef
 
         def env_value(key_name)
           obj = env_obj(key_name)
-          return obj ? obj.variablevalue : ENV[key_name]
+          obj ? obj.variablevalue : ENV[key_name]
         end
 
         def env_obj(key_name)

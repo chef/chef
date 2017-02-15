@@ -276,7 +276,7 @@ ADVICE
         rescue OpenSSL::X509::StoreError => e
           return e.message
         end
-        return nil
+        nil
       end
     end
   end

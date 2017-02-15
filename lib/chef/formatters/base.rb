@@ -213,7 +213,17 @@ class Chef
       end
 
       def deprecation(message, location = caller(2..2)[0])
-        Chef::Log.deprecation("#{message} at #{location}")
+        out = if is_structured_deprecation?(message)
+                message.inspect
+              else
+                "#{message} at #{location}"
+              end
+
+        Chef::Log.deprecation(out)
+      end
+
+      def is_structured_deprecation?(deprecation)
+        deprecation.kind_of?(Chef::Deprecated::Base)
       end
 
       def is_formatter?

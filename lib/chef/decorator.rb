@@ -52,7 +52,7 @@ class Chef
     # adding the define_singleton_method call and @__defined_methods__ tracking
     def method_missing(m, *args, &block)
       r = true
-      target = self.__getobj__ { r = false }
+      target = __getobj__ { r = false }
 
       if r && target.respond_to?(m)
         # these next 4 lines are the patched code

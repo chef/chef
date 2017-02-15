@@ -28,6 +28,7 @@ require_relative "tasks/maintainers"
 require_relative "tasks/cbgb"
 require_relative "tasks/dependencies"
 require_relative "tasks/changelog"
+require_relative "tasks/announce"
 
 ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef", "chef") do |package|
   package.component_paths = ["chef-config"]
@@ -36,6 +37,22 @@ end
 # Add conservative dependency update to version:bump (which was created by PackageTask)
 task "version:bump" => %w{version:bump_patch version:update}
 task "version:bump" => %w{version:bump_patch version:update}
+
+task "version:bump_minor" do
+  Rake::Task["changelog:archive"].invoke
+  maj, min, _build = Chef::VERSION.split(".")
+  File.open("VERSION", "w+") { |f| f.write("#{maj}.#{min.to_i + 1}.0") }
+  Rake::Task["version"].invoke
+  Rake::Task["bundle:install"].invoke
+end
+
+task "version:bump_major" do
+  Rake::Task["changelog:archive"].invoke
+  maj, _min, _build = Chef::VERSION.split(".")
+  File.open("VERSION", "w+") { |f| f.write("#{maj.to_i + 1}.0.0") }
+  Rake::Task["version"].invoke
+  Rake::Task["bundle:install"].invoke
+end
 
 task :pedant, :chef_zero_spec
 
@@ -49,6 +66,15 @@ task :register_eventlog do
   Dir.chdir "ext/win32-eventlog/" do
     system "rake register"
   end
+end
+
+desc "Keep the Dockerfile up-to-date"
+task :update_dockerfile do
+  require "mixlib/install"
+  latest_stable_version = Mixlib::Install.available_versions("chef", "stable").last
+  text = File.read("Dockerfile")
+  new_text = text.gsub(/^ARG VERSION=[\d\.]+$/, "ARG VERSION=#{latest_stable_version}")
+  File.open("Dockerfile", "w+") { |f| f.write(new_text) }
 end
 
 begin

@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::Decorator::Lazy do
   let(:decorator) do
     @a = 0
-    Chef::Decorator::Lazy.new { @a = @a + 1 }
+    Chef::Decorator::Lazy.new { @a += 1 }
   end
 
   it "decorates an object" do

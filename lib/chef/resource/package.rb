@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,7 @@ class Chef
       property :package_name, [ String, Array ], identity: true
 
       property :version, [ String, Array ]
-      property :options, String
+      property :options, [ String, Array ]
       property :response_file, String, desired_state: false
       property :response_file_variables, Hash, default: lazy { {} }, desired_state: false
       property :source, String, desired_state: false

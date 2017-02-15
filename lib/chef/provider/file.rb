@@ -154,7 +154,7 @@ class Chef
         do_contents_changes
         do_acl_changes
         do_selinux
-        load_resource_attributes_from_file(@new_resource)
+        load_resource_attributes_from_file(@new_resource) unless Chef::Config[:why_run]
       end
 
       def action_create_if_missing
@@ -312,11 +312,9 @@ class Chef
 
       # like real_file? that follows (sane) symlinks
       def symlink_to_real_file?(path)
-        begin
-          real_file?(::File.realpath(path))
-        rescue Errno::ELOOP, Errno::ENOENT
-          false
-        end
+        real_file?(::File.realpath(path))
+      rescue Errno::ELOOP, Errno::ENOENT
+        false
       end
 
       # Similar to File.exist?, but also returns true in the case that the

@@ -47,11 +47,9 @@ class Chef
 
       # API to use to avoid create_addtions
       def parse(source, opts = {})
-        begin
-          FFI_Yajl::Parser.parse(source, opts)
-        rescue FFI_Yajl::ParseError => e
-          raise Chef::Exceptions::JSON::ParseError, e.message
-        end
+        FFI_Yajl::Parser.parse(source, opts)
+      rescue FFI_Yajl::ParseError => e
+        raise Chef::Exceptions::JSON::ParseError, e.message
       end
 
       # Just call the JSON gem's parse method with a modified :max_nesting field
@@ -102,11 +100,9 @@ class Chef
       end
 
       def to_json(obj, opts = nil)
-        begin
-          FFI_Yajl::Encoder.encode(obj, opts)
-        rescue FFI_Yajl::EncodeError => e
-          raise Chef::Exceptions::JSON::EncodeError, e.message
-        end
+        FFI_Yajl::Encoder.encode(obj, opts)
+      rescue FFI_Yajl::EncodeError => e
+        raise Chef::Exceptions::JSON::EncodeError, e.message
       end
 
       def to_json_pretty(obj, opts = nil)

@@ -73,15 +73,15 @@ class Chef
     end
 
     def create
-      payload = { :name => self.name, :full_name => self.full_name }
+      payload = { :name => name, :full_name => full_name }
       new_org = chef_rest.post("organizations", payload)
-      Chef::Org.from_hash(self.to_hash.merge(new_org))
+      Chef::Org.from_hash(to_hash.merge(new_org))
     end
 
     def update
-      payload = { :name => self.name, :full_name => self.full_name }
+      payload = { :name => name, :full_name => full_name }
       new_org = chef_rest.put("organizations/#{name}", payload)
-      Chef::Org.from_hash(self.to_hash.merge(new_org))
+      Chef::Org.from_hash(to_hash.merge(new_org))
     end
 
     def destroy
@@ -89,14 +89,12 @@ class Chef
     end
 
     def save
-      begin
-        create
-      rescue Net::HTTPServerException => e
-        if e.response.code == "409"
-          update
-        else
-          raise e
-        end
+      create
+    rescue Net::HTTPServerException => e
+      if e.response.code == "409"
+        update
+      else
+        raise e
       end
     end
 
@@ -125,7 +123,7 @@ class Chef
     end
 
     def self.json_create(json)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Org#from_json or Chef::Org#load.")
+      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::Org#from_json or Chef::Org#load.")
       Chef::Org.from_json(json)
     end
 

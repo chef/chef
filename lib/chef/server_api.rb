@@ -24,6 +24,7 @@ require "chef/http/json_input"
 require "chef/http/json_output"
 require "chef/http/remote_request_id"
 require "chef/http/validate_content_length"
+require "chef/http/api_versions"
 
 class Chef
   class ServerAPI < Chef::HTTP
@@ -42,6 +43,7 @@ class Chef
     use Chef::HTTP::Decompressor
     use Chef::HTTP::Authenticator
     use Chef::HTTP::RemoteRequestID
+    use Chef::HTTP::APIVersions
 
     # ValidateContentLength should come after Decompressor
     # because the order of middlewares is reversed when handling

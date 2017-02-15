@@ -103,10 +103,11 @@ class Chef
         command_output << "STDERR: #{stderr}"
         handle_command_failures(status, command_output, args)
 
-        return status, stdout, stderr
+        [status, stdout, stderr]
       end
 
       def output_of_command(command, args)
+        Chef.deprecated(:run_command, "Chef::Mixin::Command.run_command is deprecated, please use shell_out")
         Chef::Log.debug("Executing #{command}")
         stderr_string, stdout_string, status = "", "", nil
 
@@ -140,7 +141,7 @@ class Chef
           Chef::Log.debug("Ran #{command} returned #{status.exitstatus}")
         end
 
-        return status, stdout_string, stderr_string
+        [status, stdout_string, stderr_string]
       end
 
       def handle_command_failures(status, command_output, opts = {})

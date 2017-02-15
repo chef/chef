@@ -74,7 +74,7 @@ class Chef
       def add_exit_status_wrapper
         self.code = wrapper_script
         Chef::Log.debug("powershell_script provider called with script code:\n\n#{@new_resource.code}\n")
-        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
+        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{code}\n")
       end
 
       def validate_script_syntax!
@@ -148,6 +148,14 @@ EOH
       def wrapper_script
         <<-EOH
 # Chef Client wrapper for powershell_script resources
+
+# In rare cases, such as when PowerShell is executed
+# as an alternate user, the new-variable cmdlet is not
+# available, so import it just in case
+if ( get-module -ListAvailable Microsoft.PowerShell.Utility )
+{
+    Import-Module Microsoft.PowerShell.Utility
+}
 
 # LASTEXITCODE can be uninitialized -- make it explictly 0
 # to avoid incorrect detection of failure (non-zero) codes

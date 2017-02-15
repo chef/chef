@@ -22,7 +22,7 @@ class Chef
   class Resource
     class AptUpdate < Chef::Resource
       resource_name :apt_update
-      provides :apt_update, os: "linux"
+      provides :apt_update
 
       property :frequency, Integer, default: 86_400
 

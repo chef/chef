@@ -28,7 +28,7 @@ class Chef
         class CookbooksDir < Repository::Directory
 
           def chefignore
-            @chefignore ||= Chef::Cookbook::Chefignore.new(self.file_path)
+            @chefignore ||= Chef::Cookbook::Chefignore.new(file_path)
           rescue Errno::EISDIR, Errno::EACCES
             # Work around a bug in Chefignore when chefignore is a directory
           end

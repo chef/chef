@@ -190,7 +190,7 @@ class Chef
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:client) do |n|
-          n = self.from_hash(n) if n.instance_of?(Hash)
+          n = from_hash(n) if n.instance_of?(Hash)
           response[n.name] = n
         end
         response
@@ -212,15 +212,13 @@ class Chef
 
     # Save this client via the REST API, returns a hash including the private key
     def save
-      begin
-        update
-      rescue Net::HTTPServerException => e
-        # If that fails, go ahead and try and update it
-        if e.response.code == "404"
-          create
-        else
-          raise e
-        end
+      update
+    rescue Net::HTTPServerException => e
+      # If that fails, go ahead and try and update it
+      if e.response.code == "404"
+        create
+      else
+        raise e
       end
     end
 
@@ -313,7 +311,7 @@ class Chef
 
         new_client = chef_rest_v0.post("clients", payload)
       end
-      Chef::ApiClientV1.from_hash(self.to_hash.merge(new_client))
+      Chef::ApiClientV1.from_hash(to_hash.merge(new_client))
     end
 
     # As a string

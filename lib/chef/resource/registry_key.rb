@@ -96,7 +96,7 @@ class Chef
             end
           end
           @unscrubbed_values = @values
-        elsif self.instance_variable_defined?(:@values)
+        elsif instance_variable_defined?(:@values)
           scrub_values(@values)
         end
       end

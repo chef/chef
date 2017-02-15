@@ -181,7 +181,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the ssh_attribute" do
         @knife.run
-        expect(@knife.get_ssh_attribute(Chef::Node.new)).to eq("ec2.public_hostname")
+        expect(@knife.get_ssh_attribute({ "knife_config" => "ec2.public_hostname" })).to eq("ec2.public_hostname")
       end
     end
 
@@ -193,11 +193,11 @@ describe Chef::Knife::Ssh do
 
       it "uses the default" do
         @knife.run
-        expect(@knife.get_ssh_attribute(Chef::Node.new)).to eq("fqdn")
+        expect(@knife.get_ssh_attribute({ "fqdn" => "fqdn" })).to eq("fqdn")
       end
     end
 
-    context "when -a ec2.public_ipv4 is provided" do
+    context "when -a ec2.public_public_hostname is provided" do
       before do
         setup_knife(["-a ec2.public_hostname", "*:*", "uptime"])
         Chef::Config[:knife][:ssh_attribute] = nil
@@ -276,8 +276,8 @@ describe Chef::Knife::Ssh do
     Chef::Config[:client_key] = nil
     Chef::Config[:chef_server_url] = "http://localhost:9000"
 
-    @api.get("/search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0", 200) do
-      %({"total":1, "start":0, "rows":[{"name":"i-xxxxxxxx", "json_class":"Chef::Node", "automatic":{"fqdn":"the.fqdn", "ec2":{"public_hostname":"the_public_hostname"}},"recipes":[]}]})
+    @api.post("/search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0", 200) do
+      %({"total":1, "start":0, "rows":[{"data": {"fqdn":"the.fqdn", "config": "the_public_hostname", "knife_config": "the_public_hostname" }}]})
     end
   end
 

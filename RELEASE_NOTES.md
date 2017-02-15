@@ -1,89 +1,146 @@
-*This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team.
-Please see [https://docs.chef.io/release_notes.html](https://docs.chef.io/release_notes.html) for the official Chef release notes.*
+_This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
-# Chef Client Release Notes 12.16:
+# Chef Client Release Notes 12.19:
 
 ## Highlighted enhancements for this release:
 
-### `attribute_changed` event hook
+- Systemd unit files are now verified before being installed.
+- Added support for windows alternate user identity in execute resources.
+- Added ed25519 key support for for ssh connections.
 
-In a cookbook library file, you can add this in order to print out all attribute changes in cookbooks:
+### Windows alternate user identity execute support
 
-```ruby
-Chef.event_handler do
-  on :attribute_changed do |precedence, key, value|
-    puts "setting attribute #{precedence}#{key.map {|n| "[\"#{n}\"]" }.join} = #{value}"
-  end
-end
-```
+The `execute` resource and similar resources such as `script`, `batch`, and `powershell_script` now support the specification of credentials on Windows so that the resulting process is created with the security identity that corresponds to those credentials.
 
-If you want to setup a policy that override attributes should never be used:
+**Note**: When Chef is running as a service, this feature requires that the user that Chef runs as has 'SeAssignPrimaryTokenPrivilege' (aka 'SE_ASSIGNPRIMARYTOKEN_NAME') user right. By default only LocalSystem and NetworkService have this right when running as a service. This is necessary even if the user is an Administrator.
+
+This right bacn be added and checked in a recipe using this example:
 
 ```ruby
-Chef.event_handler do
-  on :attribute_changed do |precedence, key, value|
-    raise "override policy violation" if precedence == :override
-  end
+# Add 'SeAssignPrimaryTokenPrivilege' for the user
+Chef::ReservedNames::Win32::Security.add_account_right('<user>', 'SeAssignPrimaryTokenPrivilege')
+
+# Check if the user has 'SeAssignPrimaryTokenPrivilege' rights
+Chef::ReservedNames::Win32::Security.get_account_right('<user>').include?('SeAssignPrimaryTokenPrivilege')
+```
+
+#### Properties
+
+The following properties are new or updated for the `execute`, `script`, `batch`, and `powershell_script` resources and any resources derived from them:
+
+- `user`<br>
+  **Ruby types:** String<br>
+  The user name of the user identity with which to launch the new process. Default value: `nil`. The user name may optionally be specified with a domain, i.e. `domain\user` or `user@my.dns.domain.com` via Universal Principal Name (UPN) format. It can also be specified without a domain simply as `user` if the domain is instead specified using the `domain` attribute. On Windows only, if this property is specified, the `password` property **must** be specified.
+
+- `password`<br>
+  **Ruby types** String<br>
+  _Windows only:_ The password of the user specified by the `user` property. Default value: `nil`. This property is mandatory if `user` is specified on Windows and may only be specified if `user` is specified. The `sensitive` property for this resource will automatically be set to `true` if `password` is specified.
+
+- `domain`<br>
+  **Ruby types** String<br>
+  _Windows only:_ The domain of the user user specified by the `user` property. Default value: `nil`. If not specified, the user name and password specified by the `user` and `password` properties will be used to resolve that user against the domain in which the system running Chef client is joined, or if that system is not joined to a domain it will resolve the user as a local account on that system. An alternative way to specify the domain is to leave this property unspecified and specify the domain as part of the `user` property.
+
+#### Usage
+
+The following examples explain how alternate user identity properties can be used in the execute resources:
+
+```ruby
+powershell_script 'create powershell-test file' do
+  code <<-EOH
+  $stream = [System.IO.StreamWriter] "#{Chef::Config[:file_cache_path]}/powershell-test.txt"
+  $stream.WriteLine("In #{Chef::Config[:file_cache_path]}...word.")
+  $stream.close()
+  EOH
+  user 'username'
+  password 'password'
 end
-```
 
-There will likely be some missed attribute changes and some bugs that need fixing (hint: PRs accepted), there could be
-added command line options to print out all attribute changes or filter them (hint: PRs accepted), or to add source
-file and line numbers to the event (hint: PRs accepted).
+execute 'mkdir test_dir' do
+  cwd Chef::Config[:file_cache_path]
+  domain "domain-name"
+  user "user"
+  password "password"
+end
 
-### Automatic connection to Chef Automate's Data Collector with supported Chef Server
+script 'create test_dir' do
+  interpreter "bash"
+  code  "mkdir test_dir"
+  cwd Chef::Config[:file_cache_path]
+  user "domain-name\\username"
+  password "password"
+end
 
-Chef Client will automatically attempt to connect to the Chef Server
-authenticated data collector proxy. If you have a supported version of
-Chef Server and have enabled this feature on the Chef Server, Chef
-Client run data will automatically be forwarded to Automate without
-additional Chef Client configuration. If you do not have Automate or the
-feature is disabled on the Chef Server, Chef Client will detect this and
-disable data collection.
-
-Note that Chef Server 12.11.0+ (not yet released as of the time this was
-written) is required for this feature.
-
-### RFC018 Partially Implemented: Specify `--field-separator` for attribute filtering
-
-If you have periods (`.`) in your Chef Node attribute keys, you can now pass
-the `--field-separator` (or `-S`) flag along with your `--attribute` (or `-a`)
-flag to specify a custom nesting character other than `.`.
-
-In a situation where the *webapp* node has the following node data:
-```json
-{
-  "foo.bar": "baz",
-  "alpha": {
-    "beta": "omega"
-  }
-}
-```
-
-Running `knife node show` with the default field separator (`.`) won't show
-us the data we're expecting for some attributes:
-
-```shell
-$ knife node show webapp -a foo.bar
-webapp:
-  foo.bar:
-
-$ knife node show webapp -a alpha.beta
-webapp:
-  alpha.beta: omega
-```
-
-However, by specifying a field separator other than `.` we're now able to show
-the data.
-
-```shell
-$ knife node show webapp -S: -a foo.bar
-webapp:
-  foo.bar: baz
-
-$ knife node show webapp -S: -a alpha:beta
-webapp:
-  alpha:beta: omega
+batch 'create test_dir' do
+  code "mkdir test_dir"
+  cwd Chef::Config[:file_cache_path]
+  user "username@domain-name"
+  password "password"
+end
 ```
 
 ## Highlighted bug fixes for this release:
+
+- Ensure that the Windows Administrator group can access the chef-solo nodes directory
+- When loading a cookbook in Chef Solo, use `metadata.json` in preference to `metadata.rb`
+
+# Ohai Release Notes 8.23:
+
+## Cumulus Linux Platform
+
+Cumulus Linux will now be detected as platform `cumulus` instead of `debian` and the `platform_version` will be properly set to the Cumulus Linux release.
+
+## Virtualization Detection
+
+Windows / Linux / BSD guests running on the Veertu hypervisors will now be detected
+
+Windows guests running on Xen and Hyper-V hypervisors will now be detected
+
+## New Sysconf Plugin
+
+A new plugin parses the output of the sysconf command to provide information on the underlying system.
+
+## AWS Account ID
+
+The EC2 plugin now fetches the AWS Account ID in addition to previous instance metadata
+
+## GCC Detection
+
+GCC detection has been improved to collect additional information, and to not prompt for the installation of Xcode on macOS systems
+
+## New deprecations introduced in this release:
+
+### Ohai::Config removed
+
+- **Deprecation ID**: OHAI-1
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_legacy_config.html>
+- **Expected Removal**: Ohai 13 (April 2017)
+
+### sigar gem based plugins removed
+
+- **Deprecation ID**: OHAI-2
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_sigar_plugins.html>
+- **Expected Removal**: Ohai 13 (April 2017)
+
+### run_command and popen4 helper methods removed
+
+- **Deprecation ID**: OHAI-3
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_run_command_helpers.html>
+- **Expected Removal**: Ohai 13 (April 2017)
+
+### libvirt plugin attributes moved
+
+- **Deprecation ID**: OHAI-4
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_libvirt_plugin.html>
+- **Expected Removal**: Ohai 13 (April 2017)
+
+### Windows CPU plugin attribute changes
+
+- **Deprecation ID**: OHAI-5
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_windows_cpu.html>
+- **Expected Removal**: Ohai 13 (April 2017)
+
+### DigitalOcean plugin attribute changes
+
+- **Deprecation ID**: OHAI-6
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_digitalocean.html>
+- **Expected Removal**: Ohai 13 (April 2017)

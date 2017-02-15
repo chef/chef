@@ -48,7 +48,7 @@ class Chef
           0.upto(length - 1) do |i|
             return false if self[i] != other[i]
           end
-          return true
+          true
         end
 
         def pointer
@@ -88,7 +88,7 @@ class Chef
         end
 
         def to_s
-          "[#{self.collect { |ace| ace.to_s }.join(", ")}]"
+          "[#{collect { |ace| ace.to_s }.join(", ")}]"
         end
 
         def self.align_dword(size)

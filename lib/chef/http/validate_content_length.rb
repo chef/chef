@@ -50,7 +50,7 @@ class Chef
 
       def handle_response(http_response, rest_request, return_value)
         validate(http_response, http_response.body.bytesize) if http_response && http_response.body
-        return [http_response, rest_request, return_value]
+        [http_response, rest_request, return_value]
       end
 
       def handle_stream_complete(http_response, rest_request, return_value)
@@ -63,7 +63,7 @@ class Chef
         # Make sure the counter is reset since this object might get used
         # again. See CHEF-5100
         @content_length_counter = nil
-        return [http_response, rest_request, return_value]
+        [http_response, rest_request, return_value]
       end
 
       def stream_response_handler(response)

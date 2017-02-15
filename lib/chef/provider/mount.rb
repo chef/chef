@@ -108,6 +108,8 @@ class Chef
         end
       end
 
+      alias :action_unmount :action_umount
+
       #
       # Abstract Methods to be implemented by subclasses
       #

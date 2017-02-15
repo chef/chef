@@ -67,12 +67,36 @@ class Chef
           @trusted_certs ||= trusted_certs_content
         end
 
+        def get_log_location
+          if !(@chef_config[:config_log_location].class == IO ) && (@chef_config[:config_log_location].nil? || @chef_config[:config_log_location].to_s.empty?)
+            "STDOUT"
+          elsif @chef_config[:config_log_location].equal?(:win_evt)
+            raise "The value :win_evt is not supported for config_log_location on Linux Platforms \n"
+          elsif @chef_config[:config_log_location].equal?(:syslog)
+            ":syslog"
+          elsif @chef_config[:config_log_location].equal?(STDOUT)
+            "STDOUT"
+          elsif @chef_config[:config_log_location].equal?(STDERR)
+            "STDERR"
+          elsif @chef_config[:config_log_location]
+            %Q{"#{@chef_config[:config_log_location]}"}
+          else
+            "STDOUT"
+          end
+        end
+
         def config_content
           client_rb = <<-CONFIG
-log_location     STDOUT
 chef_server_url  "#{@chef_config[:chef_server_url]}"
 validation_client_name "#{@chef_config[:validation_client_name]}"
           CONFIG
+
+          if !(@chef_config[:config_log_level].nil? || @chef_config[:config_log_level].empty?)
+            client_rb << %Q{log_level   :#{@chef_config[:config_log_level]}\n}
+          end
+
+          client_rb << "log_location   #{get_log_location}\n"
+
           if @config[:chef_node_name]
             client_rb << %Q{node_name "#{@config[:chef_node_name]}"\n}
           else

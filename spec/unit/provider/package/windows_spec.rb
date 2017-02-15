@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -312,6 +312,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       let(:resource_source) { "https://foo.bar/calculator.exe" }
 
       it "downloads the http resource" do
+        allow(File).to receive(:exist?).with('c:\cache\calculator.exe').and_return(false)
         expect(provider).to receive(:download_source_file)
         provider.run_action(:install)
       end

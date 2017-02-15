@@ -44,6 +44,10 @@ dependency "chef-gem-ruby-prof"
 dependency "chef-gem-byebug"
 dependency "chef-gem-debug_inspector"
 dependency "chef-gem-binding_of_caller"
+unless ios_xr? || solaris?
+  dependency "chef-gem-rbnacl-libsodium"
+  dependency "chef-gem-bcrypt_pbkdf-ruby"
+end
 
 # Now everyone else, in alphabetical order because we don't care THAT much
 Dir.entries(File.dirname(__FILE__)).sort.each do |gem_software|

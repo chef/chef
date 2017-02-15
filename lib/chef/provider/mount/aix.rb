@@ -116,9 +116,9 @@ class Chef
 
         def remount_command
           if !(@new_resource.options.nil? || @new_resource.options.empty?)
-            return "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.device} #{@new_resource.mount_point}"
+            "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.device} #{@new_resource.mount_point}"
           else
-            return "mount -o remount #{@new_resource.device} #{@new_resource.mount_point}"
+            "mount -o remount #{@new_resource.device} #{@new_resource.mount_point}"
           end
         end
 

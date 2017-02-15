@@ -76,10 +76,10 @@ class Chef
     class Group < RuntimeError; end
     class Link < RuntimeError; end
     class Mount < RuntimeError; end
-    class Reboot < Exception; end
-    class RebootPending < Exception; end
+    class Reboot < Exception; end # rubocop:disable Lint/InheritException
+    class RebootPending < Exception; end # rubocop:disable Lint/InheritException
     class RebootFailed < Mixlib::ShellOut::ShellCommandFailed; end
-    class ClientUpgraded < Exception; end
+    class ClientUpgraded < Exception; end # rubocop:disable Lint/InheritException
     class PrivateKeyMissing < RuntimeError; end
     class CannotWritePrivateKey < RuntimeError; end
     class RoleNotFound < RuntimeError; end
@@ -159,7 +159,7 @@ class Chef
 
     # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
     # when older versions of Windows don't support newer Win32 API functions.
-    class Win32APIFunctionNotImplemented < NotImplementedError; end
+    class Win32APIFunctionNotImplemented < NotImplementedError; end # rubocop:disable Lint/InheritException
     # Attempting to run windows code on a not-windows node
     class Win32NotWindows < RuntimeError; end
     class WindowsNotAdmin < RuntimeError; end
@@ -196,7 +196,7 @@ class Chef
     class InvalidVersionConstraint < ArgumentError; end
 
     # Version constraints are not allowed in chef-solo
-    class IllegalVersionConstraint < NotImplementedError; end
+    class IllegalVersionConstraint < NotImplementedError; end # rubocop:disable Lint/InheritException
 
     class MetadataNotValid < StandardError; end
     class MetadataNotFound < StandardError
@@ -262,7 +262,7 @@ class Chef
 
     class ChildConvergeError < RuntimeError; end
 
-    class DeprecatedFeatureError < RuntimeError;
+    class DeprecatedFeatureError < RuntimeError
       def initalize(message)
         super("#{message} (raising error due to treat_deprecation_warnings_as_errors being set)")
       end
@@ -315,7 +315,7 @@ class Chef
 
       def raise!
         unless empty?
-          raise self.for_raise
+          raise for_raise
         end
       end
 
@@ -525,5 +525,8 @@ This error is most often caused by network issues (proxies, etc) outside of chef
         super "Found multiple matching resources. #{matches_info.join("\n")}"
       end
     end
+
+    # exception specific to invalid usage of 'dsc_resource' resource
+    class DSCModuleNameMissing < ArgumentError; end
   end
 end

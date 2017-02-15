@@ -31,12 +31,10 @@ class Chef
       end
 
       def as_uri(source)
-        begin
-          URI.parse(source)
-        rescue URI::InvalidURIError
-          Chef::Log.warn("#{source} was an invalid URI. Trying to escape invalid characters")
-          URI.parse(Addressable::URI.encode(source))
-        end
+        URI.parse(source)
+      rescue URI::InvalidURIError
+        Chef::Log.warn("#{source} was an invalid URI. Trying to escape invalid characters")
+        URI.parse(Addressable::URI.encode(source))
       end
 
     end

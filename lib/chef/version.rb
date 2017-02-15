@@ -21,7 +21,7 @@
 
 class Chef
   CHEF_ROOT = File.expand_path("../..", __FILE__)
-  VERSION = "12.16.49"
+  VERSION = "12.19.30"
 end
 
 #

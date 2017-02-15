@@ -281,7 +281,7 @@ FOOTER
     end
 
     def self.setup!
-      self.new.parse_opts
+      new.parse_opts
     end
 
     def parse_opts

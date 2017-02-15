@@ -155,13 +155,11 @@ class Chef
       end
 
       def self.verify_links_supported!
-        begin
-          CreateSymbolicLinkW(nil)
-        rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
-          raise e
-        rescue Exception
+        CreateSymbolicLinkW(nil)
+      rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
+        raise e
+      rescue Exception
           # things are ok.
-        end
       end
 
       def self.file_access_check(path, desired_access)

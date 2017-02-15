@@ -843,7 +843,7 @@ EOM
 
       context "when data_bag_path and chef_repo_path are set, and nothing else" do
         before :each do
-          %w{client cookbook  environment node role user}.each do |object_name|
+          %w{client cookbook environment node role user}.each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.data_bag_path = File.join(Chef::Config.chef_repo_path, "data_bags")
@@ -903,7 +903,7 @@ EOM
         include_context "default config options"
 
         before :each do
-          %w{client cookbook  environment node role user}.each do |object_name|
+          %w{client cookbook environment node role user}.each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.delete(:chef_repo_path)

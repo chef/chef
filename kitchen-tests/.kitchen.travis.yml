@@ -2,7 +2,8 @@
 driver:
   name: dokken
   privileged: true
-  chef_version: latest
+  chef_image: chef/chef
+  chef_version: current
 
 transport:
   name: dokken
@@ -10,9 +11,6 @@ transport:
 provisioner:
   name: chef_github
   root_path: /opt/kitchen
-  require_chef_omnibus: latest
-  chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
-  chef_omnibus_install_options: "-c current"
   github_owner: "chef"
   github_repo: "chef"
   refname: <%= ENV['TRAVIS_COMMIT'] %>
@@ -75,12 +73,13 @@ platforms:
       - RUN yum -y install which initscripts net-tools sudo wget
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: fedora-23
+- name: fedora-latest
   driver:
-    image: fedora:23
+    image: fedora:latest
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
       - RUN dnf -y install yum which initscripts rpm-build zlib-devel net-tools sudo wget
+      - RUN yum makecache
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: ubuntu-12.04
@@ -113,6 +112,15 @@ platforms:
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN zypper refresh
+
+- name: amazonlinux
+  driver:
+    image: amazonlinux:latest
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN yum clean all
+      - RUN yum -y install which initscripts net-tools sudo wget
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 suites:
   - name: webapp

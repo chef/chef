@@ -87,7 +87,7 @@ class Chef
       end
 
       def success?
-        !self.exception
+        !exception
       end
     end # End class ResouceReport
 
@@ -198,6 +198,17 @@ class Chef
     def resource_completed(new_resource)
       if @pending_update && !nested_resource?(new_resource)
         @pending_update.finish
+
+        # Verify if the resource has sensitive data
+        # and create a new blank resource with only
+        # the name so we can report it back without
+        # sensitive data
+        if @pending_update.new_resource.sensitive
+          klass = @pending_update.new_resource.class
+          resource_name = @pending_update.new_resource.name
+          @pending_update.new_resource = klass.new(resource_name)
+        end
+
         @updated_resources << @pending_update
         @pending_update = nil
       end

@@ -133,7 +133,7 @@ EOH
 
       def ask_user_for_config
         server_name = guess_servername
-        @chef_server = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => "https://#{server_name}:443")
+        @chef_server = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => "https://#{server_name}/organizations/myorg")
         if config[:initial]
           @new_client_name        = config[:node_name] || ask_question("Please enter a name for the new user: ", :default => Etc.getlogin)
           @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin name: ", :default => "admin")

@@ -88,7 +88,7 @@ class Chef
 
         def normalize_legacy_exit_code(exit_code)
           case exit_code
-          when Fixnum
+          when Integer
             exit_code
           when Exception
             lookup_exit_code_by_exception(exit_code)
@@ -198,16 +198,14 @@ class Chef
         end
 
         def notify_on_deprecation(message)
-          begin
-            Chef.log_deprecation(message)
-          rescue Chef::Exceptions::DeprecatedFeatureError
+          Chef.deprecated(:exit_code, message)
+        rescue Chef::Exceptions::DeprecatedFeatureError
             # Have to rescue this, otherwise this unhandled error preempts
             # the current exit code assignment.
-          end
         end
 
         def deprecation_warning
-          "Chef RFC 062 (https://github.com/chef/chef-rfc/master/rfc062-exit-status.md) defines the" \
+          "Chef RFC 062 (https://github.com/chef/chef-rfc/blob/master/rfc062-exit-status.md) defines the" \
           " exit codes that should be used with Chef.  Chef::Application::ExitCode defines valid exit codes"  \
           " In a future release, non-standard exit codes will be redefined as" \
           " GENERIC_FAILURE unless `exit_status` is set to `:disabled` in your client.rb."
@@ -222,7 +220,7 @@ class Chef
 
         def default_exit_code
           if normalization_disabled? || normalization_not_configured?
-            return DEPRECATED_RFC_062_EXIT_CODES[:DEPRECATED_FAILURE]
+            DEPRECATED_RFC_062_EXIT_CODES[:DEPRECATED_FAILURE]
           else
             VALID_RFC_062_EXIT_CODES[:GENERIC_FAILURE]
           end

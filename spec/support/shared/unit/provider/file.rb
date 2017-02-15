@@ -683,6 +683,16 @@ shared_examples_for Chef::Provider::File do
       end
     end
 
+    context "in why run mode" do
+      before { Chef::Config[:why_run] = true }
+      after { Chef::Config[:why_run] = false }
+
+      it "does not modify new_resource" do
+        setup_missing_file
+        expect(provider).not_to receive(:load_resource_attributes_from_file).with(provider.new_resource)
+        provider.run_action(:create)
+      end
+    end
   end
 
   context "action delete" do

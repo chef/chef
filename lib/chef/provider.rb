@@ -205,7 +205,7 @@ class Chef
         specified_properties = properties.select { |property| new_resource.property_is_set?(property) }
         modified = specified_properties.select { |p| new_resource.send(p) != current_resource.send(p) }
         if modified.empty?
-          properties_str = if sensitive
+          properties_str = if new_resource.sensitive
                              specified_properties.join(", ")
                            else
                              specified_properties.map { |p| "#{p}=#{new_resource.send(p).inspect}" }.join(", ")
@@ -217,7 +217,7 @@ class Chef
         # Print the pretty green text and run the block
         property_size = modified.map { |p| p.size }.max
         modified.map! do |p|
-          properties_str = if sensitive
+          properties_str = if new_resource.sensitive
                              "(suppressed sensitive property)"
                            else
                              "#{new_resource.send(p).inspect} (was #{current_resource.send(p).inspect})"
@@ -232,7 +232,7 @@ class Chef
         property_size = properties.map { |p| p.size }.max
         created = properties.map do |property|
           default = " (default value)" unless new_resource.property_is_set?(property)
-          properties_str = if sensitive
+          properties_str = if new_resource.sensitive
                              "(suppressed sensitive property)"
                            else
                              new_resource.send(property).inspect
@@ -424,7 +424,7 @@ class Chef
     module DeprecatedLWRPClass
       def const_missing(class_name)
         if Chef::Provider.deprecated_constants[class_name.to_sym]
-          Chef.log_deprecation("Using an LWRP provider by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::ProviderResolver.new(node, resource, action) instead.")
+          Chef.deprecated(:custom_resource, "Using an LWRP provider by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::ProviderResolver.new(node, resource, action) instead.")
           Chef::Provider.deprecated_constants[class_name.to_sym]
         else
           raise NameError, "uninitialized constant Chef::Provider::#{class_name}"

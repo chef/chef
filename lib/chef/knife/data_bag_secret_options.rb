@@ -114,7 +114,7 @@ class Chef
           # Certain situations (show and bootstrap) don't need a --encrypt flag to use the config file secret
           return true
         end
-        return false
+        false
       end
 
       def has_cl_secret?

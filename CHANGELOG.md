@@ -1,4 +1,102 @@
-# Change Log
+This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
+
+## [v12.19.30](https://github.com/chef/chef/tree/v12.19.30) (2017-02-14)
+[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.30)
+
+**Closed issues:**
+
+- Package resource fails chefspec on RHEL starting with Chef 12.18. [\#5769](https://github.com/chef/chef/issues/5769)
+
+**Merged pull requests:**
+
+- coerce immutable arrays to normal arrays in the yum\_package resource [\#5816](https://github.com/chef/chef/pull/5816) ([lamont-granquist](https://github.com/lamont-granquist))
+- Suppress sensitive properties from resource log and reporting output [\#5803](https://github.com/chef/chef/pull/5803) ([tduffield](https://github.com/tduffield))
+- Sanitize UTF-8 data sent to Data Collector [\#5793](https://github.com/chef/chef/pull/5793) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add multipackage\_api support to yum\_package provider [\#5791](https://github.com/chef/chef/pull/5791) ([tduffield](https://github.com/tduffield))
+- rhel7 / dnf 2.0 fixes / improved errors [\#5782](https://github.com/chef/chef/pull/5782) ([lamont-granquist](https://github.com/lamont-granquist))
+- Grant Administrators group permissions to nodes directory under chef-solo [\#5781](https://github.com/chef/chef/pull/5781) ([tduffield](https://github.com/tduffield))
+- Fix --no-fips on chef-client [\#5778](https://github.com/chef/chef/pull/5778) ([btm](https://github.com/btm))
+- Raise error if ips\_package install returns non-zero [\#5773](https://github.com/chef/chef/pull/5773) ([tduffield](https://github.com/tduffield))
+- Use CIDR notation rather than netmask in route-eth0 file [\#5772](https://github.com/chef/chef/pull/5772) ([tduffield](https://github.com/tduffield))
+- Verify systemd\_unit file with custom verifier [\#5765](https://github.com/chef/chef/pull/5765) ([mal](https://github.com/mal))
+- Windows alternate user support for execute resources [\#5764](https://github.com/chef/chef/pull/5764) ([NimishaS](https://github.com/NimishaS))
+- favor metadata.json over metadata.rb [\#5750](https://github.com/chef/chef/pull/5750) ([lamont-granquist](https://github.com/lamont-granquist))
+- Ensure ssh search paginates correctly [\#5744](https://github.com/chef/chef/pull/5744) ([thommay](https://github.com/thommay))
+- Do not modify File's new\_resource during why-run [\#5742](https://github.com/chef/chef/pull/5742) ([scottopherson](https://github.com/scottopherson))
+- Add gems for ECC algorithm support to omnibus. [\#5736](https://github.com/chef/chef/pull/5736) ([rhass](https://github.com/rhass))
+- dh/url support cab [\#5732](https://github.com/chef/chef/pull/5732) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- use git archive to speed up putting source in place [\#5730](https://github.com/chef/chef/pull/5730) ([robbkidd](https://github.com/robbkidd))
+- use pkg.path variable to reference path to self [\#5729](https://github.com/chef/chef/pull/5729) ([robbkidd](https://github.com/robbkidd))
+- Raise NamedSecurityInfo related exception using HR result. [\#5727](https://github.com/chef/chef/pull/5727) ([Aliasgar16](https://github.com/Aliasgar16))
+- Core: Ensure paths are correctly escaped when syntax checking [\#5704](https://github.com/chef/chef/pull/5704) ([ceneo](https://github.com/ceneo))
+- Added module\_version attribute for dsc\_resource for SxS support [\#5701](https://github.com/chef/chef/pull/5701) ([Aliasgar16](https://github.com/Aliasgar16))
+- Bump net-ssh to v4, add dependencies for ed25519 support [\#5687](https://github.com/chef/chef/pull/5687) ([onlyhavecans](https://github.com/onlyhavecans))
+- Initial habitat plan for chef-client [\#5677](https://github.com/chef/chef/pull/5677) ([adamhjk](https://github.com/adamhjk))
+
+## [v12.18.31](https://github.com/chef/chef/tree/v12.18.31) (2017-01-11)
+[Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.31)
+
+**Implemented enhancements:**
+
+- yum\_repository: Allow baseurl to be an array & allow fastestmirror\_enabled false [\#5708](https://github.com/chef/chef/pull/5708) ([tas50](https://github.com/tas50))
+- Adding returns property to chocolatey\_package resource [\#5688](https://github.com/chef/chef/pull/5688) ([Vasu1105](https://github.com/Vasu1105))
+- Code cleanup in the user provider [\#5674](https://github.com/chef/chef/pull/5674) ([lamont-granquist](https://github.com/lamont-granquist))
+- Code cleanup in the group provider [\#5673](https://github.com/chef/chef/pull/5673) ([lamont-granquist](https://github.com/lamont-granquist))
+- Core: Formally deprecate run\_command [\#5666](https://github.com/chef/chef/pull/5666) ([lamont-granquist](https://github.com/lamont-granquist))
+- Set MSI Scheduled Task name to match chef-client cookbook managed name [\#5657](https://github.com/chef/chef/pull/5657) ([mwrock](https://github.com/mwrock))
+- remove Chef::Platform::HandlerMap [\#5636](https://github.com/chef/chef/pull/5636) ([lamont-granquist](https://github.com/lamont-granquist))
+- Core: Properly deprecate old Chef::Platform methods [\#5631](https://github.com/chef/chef/pull/5631) ([lamont-granquist](https://github.com/lamont-granquist))
+
+**Fixed bugs:**
+
+- Fix error thrown by solo when run on Windows as SYSTEM [\#5693](https://github.com/chef/chef/pull/5693) ([scottopherson](https://github.com/scottopherson))
+- Report a blank resource if sensitive is enabled [\#5668](https://github.com/chef/chef/pull/5668) ([afiune](https://github.com/afiune))
+- Ensure node.docker? returns boolean [\#5645](https://github.com/chef/chef/pull/5645) ([andrewjamesbrown](https://github.com/andrewjamesbrown))
+- Fix Data Collector organization parsing regex [\#5630](https://github.com/chef/chef/pull/5630) ([adamleff](https://github.com/adamleff))
+- Core: Use object ID when detected unprocessed Resources [\#5604](https://github.com/chef/chef/pull/5604) ([adamleff](https://github.com/adamleff))
+
+**Merged pull requests:**
+
+- Core: fix node attribute "unless" API methods [\#5717](https://github.com/chef/chef/pull/5717) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v12.17.44](https://github.com/chef/chef/tree/v12.17.44) (2016-12-07)
+[Full Changelog](https://github.com/chef/chef/compare/v12.16.42...v12.17.44)
+
+**Implemented enhancements:**
+
+- Action :umount for mount resource is an obtuse anachronism [\#5595](https://github.com/chef/chef/issues/5595)
+- Core: Update ohai resource to new style, stop overwriting name property [\#5607](https://github.com/chef/chef/pull/5607) ([adamleff](https://github.com/adamleff))
+- Linux: mount provider - skip device detection for zfs [\#5603](https://github.com/chef/chef/pull/5603) ([ttr](https://github.com/ttr))
+- Core: Ensure chef-solo creates node files w/ correct permissions [\#5601](https://github.com/chef/chef/pull/5601) ([scottopherson](https://github.com/scottopherson))
+- Resources: Add unmount as an alias to umount in the mount resource [\#5599](https://github.com/chef/chef/pull/5599) ([shortdudey123](https://github.com/shortdudey123))
+- Core: Update Data Collector to use Chef::JSONCompat [\#5590](https://github.com/chef/chef/pull/5590) ([adamleff](https://github.com/adamleff))
+- Knife: Add ability to pass multiple nodes to knife node/client delete [\#5572](https://github.com/chef/chef/pull/5572) ([jeunito](https://github.com/jeunito))
+- Core: Data Collector debug log should output JSON [\#5570](https://github.com/chef/chef/pull/5570) ([adamleff](https://github.com/adamleff))
+- Yum: Purge yum cache before deleting repo config [\#5509](https://github.com/chef/chef/pull/5509) ([iancward](https://github.com/iancward))
+- Knife Bootstrap: Passing config\_log\_level and config\_log\_location from config.rb [\#5502](https://github.com/chef/chef/pull/5502) ([dheerajd-msys](https://github.com/dheerajd-msys))
+
+**Fixed bugs:**
+
+- Custom Resources: Undefined method up\_to\_date thrown by Chef 12.16.42 [\#5593](https://github.com/chef/chef/issues/5593)
+- Core: Ensure deprecation messages are always included [\#5618](https://github.com/chef/chef/pull/5618) ([thommay](https://github.com/thommay))
+- Core: Fix bug where Access Controls on existing symlink resources would be ignored on first chef-client run [\#5616](https://github.com/chef/chef/pull/5616) ([tduffield](https://github.com/tduffield))
+- The suggested fix for the manage\_home deprecation is incorrect [\#5615](https://github.com/chef/chef/pull/5615) ([tas50](https://github.com/tas50))
+- change choco -version to choco --version [\#5613](https://github.com/chef/chef/pull/5613) ([spuder](https://github.com/spuder))
+- Knife: Correct example `chef\_server\_url` in `knife configure` [\#5602](https://github.com/chef/chef/pull/5602) ([jerryaldrichiii](https://github.com/jerryaldrichiii))
+- Windows: Ensure correct version of shutdown is called when using the reboot resource [\#5596](https://github.com/chef/chef/pull/5596) ([Xoph](https://github.com/Xoph))
+- Windows: Support for running cab\_package on non-English system locales [\#5591](https://github.com/chef/chef/pull/5591) ([jugatsu](https://github.com/jugatsu))
+- Core: Ensure Data Collector resource report exists before updating [\#5571](https://github.com/chef/chef/pull/5571) ([adamleff](https://github.com/adamleff))
+- Windows: Use the full path to expand.exe for msu\_package [\#5564](https://github.com/chef/chef/pull/5564) ([NimishaS](https://github.com/NimishaS))
+- Unset http\[s\]\_proxy in the subversion spec [\#5562](https://github.com/chef/chef/pull/5562) ([stefanor](https://github.com/stefanor))
+- Core: fix Lint/UnifiedInteger cop [\#5547](https://github.com/chef/chef/pull/5547) ([lamont-granquist](https://github.com/lamont-granquist))
+- Core: fix ImmutableArray slices [\#5541](https://github.com/chef/chef/pull/5541) ([lamont-granquist](https://github.com/lamont-granquist))
+- Prevent apt\_update failures on non-Linux platforms [\#5524](https://github.com/chef/chef/pull/5524) ([tas50](https://github.com/tas50))
+- Core: Ensure that the sensitive property is correctly accessed [\#5508](https://github.com/chef/chef/pull/5508) ([axos88](https://github.com/axos88))
+
+**Closed issues:**
+
+- cab\_package doesn't support running on non-English system locales [\#5592](https://github.com/chef/chef/issues/5592)
+- Support restarting/stopping/ the service from state paused on windows [\#5586](https://github.com/chef/chef/issues/5586)
 
 ## [v12.16.42](https://github.com/chef/chef/tree/v12.16.42) (2016-11-04)
 [Full Changelog](https://github.com/chef/chef/compare/v12.15.19...v12.16.42)
@@ -12,6 +110,7 @@
 - Knife: Add the `--field-separator` flag to knife show commands [\#5489](https://github.com/chef/chef/pull/5489) ([tduffield](https://github.com/tduffield))
 - Core: Enable Signed Header Auth for Data Collector, and Configure the Data Collector Automatically [\#5487](https://github.com/chef/chef/pull/5487) ([danielsdeleo](https://github.com/danielsdeleo))
 - Core: set use\_inline\_resources in package superclass [\#5483](https://github.com/chef/chef/pull/5483) ([lamont-granquist](https://github.com/lamont-granquist))
+- Package: Add new "lock" action for apt, yum and zypper packages [\#5395](https://github.com/chef/chef/pull/5395) ([yeoldegrove](https://github.com/yeoldegrove))
 
 **Fixed bugs:**
 
@@ -1265,6 +1364,5 @@ of partial templates.
 * Raise error if a guard_interpreter is specified and a block is passed to a guard (conditional)
 * Allow specifying a guard_interpreter after a conditional on a resource (Fixes #1943)
 * Windows package type should be a symbol (Fixes #1997)
-
 
 \* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*

@@ -229,7 +229,7 @@ class Chef
               end
             end
 
-            if old_value == :none || (old_value == nil && !old_entry.exists?)
+            if old_value == :none || (old_value.nil? && !old_entry.exists?)
               return [ [ :added, old_entry, new_entry, old_value, new_value ] ]
             elsif new_value == :none
               return [ [ :deleted, old_entry, new_entry, old_value, new_value ] ]
@@ -266,26 +266,25 @@ class Chef
         def diff_text(old_path, new_path, old_value, new_value)
           # Copy to tempfiles before diffing
           # TODO don't copy things that are already in files!  Or find an in-memory diff algorithm
+
+          new_tempfile = Tempfile.new("new")
+          new_tempfile.write(new_value)
+          new_tempfile.close
+
           begin
-            new_tempfile = Tempfile.new("new")
-            new_tempfile.write(new_value)
-            new_tempfile.close
+            old_tempfile = Tempfile.new("old")
+            old_tempfile.write(old_value)
+            old_tempfile.close
 
-            begin
-              old_tempfile = Tempfile.new("old")
-              old_tempfile.write(old_value)
-              old_tempfile.close
-
-              result = Chef::Util::Diff.new.udiff(old_tempfile.path, new_tempfile.path)
-              result = result.gsub(/^--- #{old_tempfile.path}/, "--- #{old_path}")
-              result = result.gsub(/^\+\+\+ #{new_tempfile.path}/, "+++ #{new_path}")
-              result
-            ensure
-              old_tempfile.close!
-            end
+            result = Chef::Util::Diff.new.udiff(old_tempfile.path, new_tempfile.path)
+            result = result.gsub(/^--- #{old_tempfile.path}/, "--- #{old_path}")
+            result = result.gsub(/^\+\+\+ #{new_tempfile.path}/, "+++ #{new_path}")
+            result
           ensure
-            new_tempfile.close!
+            old_tempfile.close!
           end
+        ensure
+          new_tempfile.close!
         end
       end
     end

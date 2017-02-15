@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 #
 
 require "chef/resource/package"
-require "chef/provider/package/yum"
 
 class Chef
   class Resource
@@ -25,24 +24,38 @@ class Chef
       resource_name :yum_package
       provides :package, os: "linux", platform_family: %w{rhel fedora}
 
-      # Install a specific arch
-      property :arch, [ String, Array ]
-      # the {} on the proc here is because rspec chokes if it's do...end
-      property :flush_cache,
-               Hash,
-               default: { before: false, after: false },
-               coerce: proc { |v|
-                 if v.is_a?(Array)
-                   v.each_with_object({}) { |arg, obj| obj[arg] = true }
-                 elsif v.any?
-                   v
-                 else
-                   { before: v, after: v }
-                 end
-               }
-      property :allow_downgrade, [ true, false ], default: false
-      property :yum_binary, String
+      # XXX: the coercions here are due to the provider promiscuously updating the properties on the
+      # new_resource which causes immutable modification exceptions when passed an immutable node array.
+      #
+      # <lecture>
+      # THIS is why updating the new_resource in a provider is so terrible, and is equivalent to methods scribbling over
+      # its own arguments as unintended side-effects (and why functional languages that don't allow modifcations
+      # of variables eliminate entire classes of bugs).
+      # </lecture>
+      property :package_name, [ String, Array ], identity: true, coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
+      property :version, [ String, Array ], coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
+      property :arch, [ String, Array ], coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
 
+      property :flush_cache,
+        Hash,
+        default: { before: false, after: false },
+        coerce: proc { |v|
+          if v.is_a?(Hash)
+            v
+          elsif v.is_a?(Array)
+            v.each_with_object({}) { |arg, obj| obj[arg] = true }
+          elsif v.is_a?(TrueClass) || v.is_a?(FalseClass)
+            { before: v, after: v }
+          elsif v == :before
+            { before: true, after: false }
+          elsif v == :after
+            { after: true, before: false }
+          end
+        }
+
+      property :allow_downgrade, [ true, false ], default: false
+
+      property :yum_binary, String
     end
   end
 end

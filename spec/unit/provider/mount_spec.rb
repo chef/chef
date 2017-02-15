@@ -70,6 +70,13 @@ describe Chef::Provider::Mount do
       expect(new_resource).to be_updated_by_last_action
     end
 
+    it "should unmount the filesystem if it is mounted" do
+      allow(current_resource).to receive(:mounted).and_return(true)
+      expect(provider).to receive(:umount_fs).and_return(true)
+      provider.run_action(:unmount)
+      expect(new_resource).to be_updated_by_last_action
+    end
+
     it "should not umount the filesystem if it is not mounted" do
       allow(current_resource).to receive(:mounted).and_return(false)
       expect(provider).not_to receive(:umount_fs)

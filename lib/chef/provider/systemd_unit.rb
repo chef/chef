@@ -20,6 +20,7 @@ require "chef/provider"
 require "chef/mixin/which"
 require "chef/mixin/shell_out"
 require "chef/resource/file"
+require "chef/resource/file/verification/systemd_unit"
 require "iniparse"
 
 class Chef
@@ -193,6 +194,7 @@ class Chef
           f.group "root"
           f.mode "0644"
           f.content new_resource.to_ini
+          f.verify :systemd_unit
         end.run_action(action)
       end
 

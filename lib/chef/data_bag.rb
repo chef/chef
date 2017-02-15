@@ -80,7 +80,7 @@ class Chef
 
     # Create a Chef::Role from JSON
     def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::DataBag#from_hash")
+      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::DataBag#from_hash")
       from_hash(o)
     end
 
@@ -137,7 +137,7 @@ class Chef
             end
           end
         end
-        return data_bag
+        data_bag
       else
         Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("data/#{name}")
       end

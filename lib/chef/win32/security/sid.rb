@@ -50,7 +50,7 @@ class Chef
         end
 
         def ==(other)
-          other != nil && Chef::ReservedNames::Win32::Security.equal_sid(self, other)
+          !other.nil? && Chef::ReservedNames::Win32::Security.equal_sid(self, other)
         end
 
         attr_reader :pointer
@@ -61,7 +61,7 @@ class Chef
 
         def account_name
           domain, name, use = account
-          (domain != nil && domain.length > 0) ? "#{domain}\\#{name}" : name
+          (!domain.nil? && domain.length > 0) ? "#{domain}\\#{name}" : name
         end
 
         def size

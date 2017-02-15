@@ -83,7 +83,7 @@ class Chef
         # Check to ensure we have a valid source of cookbooks before continuing
         #
         @install_path = File.expand_path(Array(config[:cookbook_path]).first)
-        ui.info "Installing #@cookbook_name to #{@install_path}"
+        ui.info "Installing #{@cookbook_name} to #{@install_path}"
 
         @repo = CookbookSCMRepo.new(@install_path, ui, config)
         #cookbook_path = File.join(vendor_path, name_args[0])
@@ -161,9 +161,9 @@ class Chef
       def convert_path(upstream_file)
         # converts a Windows path (C:\foo) to a mingw path (/c/foo)
         if ENV["MSYSTEM"] == "MINGW32"
-          return upstream_file.sub(/^([[:alpha:]]):/, '/\1')
+          upstream_file.sub(/^([[:alpha:]]):/, '/\1')
         else
-          return Shellwords.escape upstream_file
+          Shellwords.escape upstream_file
         end
       end
 

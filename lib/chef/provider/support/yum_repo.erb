@@ -4,8 +4,13 @@
 [<%= @config.repositoryid %>]
 name=<%= @config.description %>
 <% if @config.baseurl %>
-baseurl=<%= @config.baseurl %>
-<% end %>
+baseurl=<%= case @config.baseurl
+     when Array
+       @config.baseurl.join("\n")
+     else
+       @config.baseurl
+     end %>
+<% end -%>
 <% if @config.cost %>
 cost=<%= @config.cost %>
 <% end %>
@@ -24,7 +29,9 @@ exclude=<%= @config.exclude %>
 failovermethod=<%= @config.failovermethod %>
 <% end %>
 <% if @config.fastestmirror_enabled %>
-fastestmirror_enabled=<%= @config.fastestmirror_enabled %>
+fastestmirror_enabled=1
+<% else %>
+fastestmirror_enabled=0
 <% end %>
 <% if @config.gpgcheck %>
 gpgcheck=1

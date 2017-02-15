@@ -76,7 +76,7 @@ class Chef
         def chef_server_organization
           return "unknown_organization" unless Chef::Config[:chef_server_url]
 
-          Chef::Config[:chef_server_url].match(%r{/+organizations/+(\w+)}).nil? ? "unknown_organization" : $1
+          Chef::Config[:chef_server_url].match(%r{/+organizations/+([a-z0-9][a-z0-9_-]{0,254})}).nil? ? "unknown_organization" : $1
         end
 
         #
@@ -142,14 +142,14 @@ class Chef
         # @return [Hash] DataCollector metadata for this node
         #
         def metadata
-          JSON.load(Chef::FileCache.load(metadata_filename))
+          Chef::JSONCompat.parse(Chef::FileCache.load(metadata_filename))
         rescue Chef::Exceptions::FileNotFound
           {}
         end
 
         def update_metadata(key, value)
           updated_metadata = metadata.tap { |x| x[key] = value }
-          Chef::FileCache.store(metadata_filename, updated_metadata.to_json, 0644)
+          Chef::FileCache.store(metadata_filename, Chef::JSONCompat.to_json(updated_metadata), 0644)
         end
 
         def metadata_filename

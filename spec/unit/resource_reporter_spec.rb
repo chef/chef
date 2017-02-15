@@ -92,8 +92,8 @@ describe Chef::ResourceReporter do
 
   context "when chef fails" do
     before do
-      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" });
-      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" });
+      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" })
+      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" })
 
     end
 
@@ -259,10 +259,34 @@ describe Chef::ResourceReporter do
   describe "when generating a report for the server" do
 
     before do
-      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" });
-      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" });
+      allow(@rest_client).to receive(:raw_request).and_return({ "result" => "ok" })
+      allow(@rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" })
 
       @resource_reporter.run_started(@run_status)
+    end
+
+    context "when the new_resource is sensitive" do
+      before do
+        @execute_resource = Chef::Resource::Execute.new("sensitive-resource")
+        @execute_resource.name("sensitive-resource")
+        @execute_resource.command('echo "password: SECRET"')
+        @execute_resource.sensitive(true)
+        @resource_reporter.resource_action_start(@execute_resource, :run)
+        @resource_reporter.resource_current_state_loaded(@execute_resource, :run, @current_resource)
+        @resource_reporter.resource_updated(@execute_resource, :run)
+        @resource_reporter.resource_completed(@execute_resource)
+        @run_status.stop_clock
+        @report = @resource_reporter.prepare_run_data
+        @first_update_report = @report["resources"].first
+      end
+
+      it "resource_name in prepared_run_data should be the same" do
+        expect(@first_update_report["name"]).to eq("sensitive-resource")
+      end
+
+      it "resource_command in prepared_run_data should be blank" do
+        expect(@first_update_report["after"]).to eq({ :command => "sensitive-resource", :user => nil })
+      end
     end
 
     context "when the new_resource does not have a string for name and identity" do

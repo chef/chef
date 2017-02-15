@@ -101,6 +101,7 @@ describe Chef::Runner do
   context "when we fall through to old Chef::Platform resolution" do
     let(:provider_resolver) { Chef::ProviderResolver.new(node, first_resource, nil) }
     before do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       # set up old Chef::Platform resolution instead of provider_resolver
       Chef::Platform.set(
         :resource => :cat,

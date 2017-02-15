@@ -203,16 +203,41 @@ RSpec.describe ChefConfig::Config do
       before :each do
         allow(ChefConfig).to receive(:windows?).and_return(is_windows)
       end
-
-      describe "class method: platform_specific_path" do
+      describe "class method: windows_installation_drive" do
+        before do
+          allow(File).to receive(:expand_path).and_return("D:/Path/To/Executable")
+        end
         if is_windows
-          it "should return a windows path on windows systems" do
-            path = "/etc/chef/cookbooks"
-            allow(ChefConfig::Config).to receive(:env).and_return({ "SYSTEMDRIVE" => "C:" })
-            # match on a regex that looks for the base path with an optional
-            # system drive at the beginning (c:)
-            # system drive is not hardcoded b/c it can change and b/c it is not present on linux systems
-            expect(ChefConfig::Config.platform_specific_path(path)).to eq("C:\\chef\\cookbooks")
+          it "should return D: on a windows system" do
+            expect(ChefConfig::Config.windows_installation_drive).to eq("D:")
+          end
+        else
+          it "should return nil on a non-windows system" do
+            expect(ChefConfig::Config.windows_installation_drive).to eq(nil)
+          end
+        end
+      end
+      describe "class method: platform_specific_path" do
+        before do
+          allow(ChefConfig::Config).to receive(:env).and_return({ "SYSTEMDRIVE" => "C:" })
+        end
+        if is_windows
+          path = "/etc/chef/cookbooks"
+          context "a windows system with chef installed on C: drive" do
+            before do
+              allow(ChefConfig::Config).to receive(:windows_installation_drive).and_return("C:")
+            end
+            it "should return a windows path rooted in C:" do
+              expect(ChefConfig::Config.platform_specific_path(path)).to eq("C:\\chef\\cookbooks")
+            end
+          end
+          context "a windows system with chef installed on D: drive" do
+            before do
+              allow(ChefConfig::Config).to receive(:windows_installation_drive).and_return("D:")
+            end
+            it "should return a windows path rooted in D:" do
+              expect(ChefConfig::Config.platform_specific_path(path)).to eq("D:\\chef\\cookbooks")
+            end
           end
         else
           it "should return given path on non-windows systems" do
@@ -345,6 +370,11 @@ RSpec.describe ChefConfig::Config do
         end
 
         describe "ChefConfig::Config[:cache_path]" do
+          before do
+            if is_windows
+              allow(File).to receive(:expand_path).and_return("#{ChefConfig::Config.env["SYSTEMDRIVE"]}/Path/To/Executable")
+            end
+          end
           context "when /var/chef exists and is accessible" do
             it "defaults to /var/chef" do
               allow(ChefConfig::Config).to receive(:path_accessible?).with(to_platform("/var/chef")).and_return(true)

@@ -109,6 +109,12 @@ public enum StandardHandle : int
   Error = -12
 }
 
+public enum HandleFlags : int
+{
+  HANDLE_FLAG_INHERIT = 0x00000001,
+  HANDLE_FLAG_PROTECT_FROM_CLOSE = 0x00000002
+}
+
 public static class Kernel32
 {
   [DllImport("kernel32.dll", SetLastError=true)]
@@ -128,11 +134,12 @@ public static class Kernel32
   [DllImport("kernel32.dll", SetLastError=true)]
   public static extern IntPtr GetStdHandle(
     StandardHandle nStdHandle);
-
-  [DllImport("kernel32", SetLastError=true)]
-  public static extern int WaitForSingleObject(
-    IntPtr hHandle,
-    int dwMilliseconds);
+    
+  [DllImport("kernel32.dll")]
+  public static extern bool SetHandleInformation(
+    IntPtr hObject, 
+    int dwMask, 
+    uint dwFlags);
 
   [DllImport("kernel32", SetLastError=true)]
   [return: MarshalAs(UnmanagedType.Bool)]
@@ -144,6 +151,32 @@ public static class Kernel32
   public static extern bool GetExitCodeProcess(
     IntPtr hProcess,
     out int lpExitCode);
+    
+  [DllImport("kernel32.dll", SetLastError = true)]
+  public static extern bool CreatePipe(
+    out IntPtr phReadPipe, 
+    out IntPtr phWritePipe, 
+    IntPtr lpPipeAttributes, 
+    uint nSize);
+        
+  [DllImport("kernel32.dll", SetLastError = true)]
+  public static extern bool ReadFile(
+    IntPtr hFile, 
+    [Out] byte[] lpBuffer, 
+    uint nNumberOfBytesToRead, 
+    ref int lpNumberOfBytesRead, 
+    IntPtr lpOverlapped);
+
+  [DllImport("kernel32.dll", SetLastError = true)]
+  public static extern bool PeekNamedPipe(
+    IntPtr handle,
+    byte[] buffer, 
+    uint nBufferSize, 
+    ref uint bytesRead,
+    ref uint bytesAvail, 
+    ref uint BytesLeftThisMessage);
+
+  public const int STILL_ACTIVE = 259;
 }
 }
 "@
@@ -156,13 +189,6 @@ function Run-ExecutableAndWait($AppPath, $ArgumentString) {
   $si = New-Object Chef.STARTUPINFO
   $pi = New-Object Chef.PROCESS_INFORMATION
 
-  $si.cb = [System.Runtime.InteropServices.Marshal]::SizeOf($si)
-  $si.wShowWindow = [Chef.ShowWindow]::SW_SHOW
-  $si.dwFlags = [Chef.STARTF]::STARTF_USESTDHANDLES
-  $si.hStdError = [Chef.Kernel32]::GetStdHandle([Chef.StandardHandle]::Error)
-  $si.hStdOutput = [Chef.Kernel32]::GetStdHandle([Chef.StandardHandle]::Output)
-  $si.hStdInput = [Chef.Kernel32]::GetStdHandle([Chef.StandardHandle]::Input)
-
   $pSec = New-Object Chef.SECURITY_ATTRIBUTES
   $pSec.Length = [System.Runtime.InteropServices.Marshal]::SizeOf($pSec)
   $pSec.bInheritHandle = $true
@@ -170,25 +196,103 @@ function Run-ExecutableAndWait($AppPath, $ArgumentString) {
   $tSec.Length = [System.Runtime.InteropServices.Marshal]::SizeOf($tSec)
   $tSec.bInheritHandle = $true
 
-  $success = [Chef.Kernel32]::CreateProcess($AppPath, $ArgumentString, [ref] $pSec, [ref] $tSec, $true, [Chef.CreationFlags]::NONE, [IntPtr]::Zero, $pwd, [ref] $si, [ref] $pi)
+  # Create pipe for process stdout
+  $ptr = [System.Runtime.InteropServices.Marshal]::AllocHGlobal([System.Runtime.InteropServices.Marshal]::SizeOf($si))
+  [System.Runtime.InteropServices.Marshal]::StructureToPtr($pSec, $ptr, $true)
+  $hReadOut = [IntPtr]::Zero
+  $hWriteOut = [IntPtr]::Zero
+  $success = [Chef.Kernel32]::CreatePipe([ref] $hReadOut, [ref] $hWriteOut, $ptr, 0)
+  if (-Not $success) {
+    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+    throw "Unable to create output pipe.  Error code $reason."
+  }
+  $success = [Chef.Kernel32]::SetHandleInformation($hReadOut, [Chef.HandleFlags]::HANDLE_FLAG_INHERIT, 0)
+  if (-Not $success) {
+    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+    throw "Unable to set output pipe handle information.  Error code $reason."
+  }
+
+  $si.cb = [System.Runtime.InteropServices.Marshal]::SizeOf($si)
+  $si.wShowWindow = [Chef.ShowWindow]::SW_SHOW
+  $si.dwFlags = [Chef.STARTF]::STARTF_USESTDHANDLES
+  $si.hStdOutput = $hWriteOut
+  $si.hStdError = $hWriteOut
+  $si.hStdInput = [Chef.Kernel32]::GetStdHandle([Chef.StandardHandle]::Input)
+  
+  $success = [Chef.Kernel32]::CreateProcess(
+      $AppPath, 
+      $ArgumentString, 
+      [ref] $pSec, 
+      [ref] $tSec, 
+      $true, 
+      [Chef.CreationFlags]::NONE, 
+      [IntPtr]::Zero, 
+      $pwd, 
+      [ref] $si, 
+      [ref] $pi
+  )
   if (-Not $success) {
     $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
     throw "Unable to create process [$ArgumentString].  Error code $reason."
   }
-  $waitReason = [Chef.Kernel32]::WaitForSingleObject($pi.hProcess, -1)
-  if ($waitReason -ne 0) {
-    if ($waitReason -eq -1) {
+
+  $sb = New-Object System.Text.StringBuilder
+  $buffer = New-Object byte[] 1024
+
+  # Initialize reference variables
+  $bytesRead = 0
+  $bytesAvailable = 0
+  $bytesLeftThisMsg = 0
+  $global:LASTEXITCODE = [Chef.Kernel32]::STILL_ACTIVE
+
+  $isActive = $true
+  while ($isActive) {
+    $success = [Chef.Kernel32]::GetExitCodeProcess($pi.hProcess, [ref] $global:LASTEXITCODE)
+    if (-Not $success) {
       $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-      throw "Could not wait for process to terminate.  Error code $reason."
-    } else {
-      throw "WaitForSingleObject failed with return code $waitReason - it's impossible!"
+      throw "Process exit code unavailable.  Error code $reason."
+    }
+
+    $success = [Chef.Kernel32]::PeekNamedPipe(
+        $hReadOut, 
+        $null, 
+        $buffer.Length, 
+        [ref] $bytesRead, 
+        [ref] $bytesAvailable, 
+        [ref] $bytesLeftThisMsg
+    )
+    if (-Not $success) {
+      $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+      throw "Output pipe unavailable for peeking.  Error code $reason."
+    }
+
+    if ($bytesRead -gt 0) {
+      while ([Chef.Kernel32]::ReadFile($hReadOut, $buffer, $buffer.Length, [ref] $bytesRead, 0)) {
+        $output = [Text.Encoding]::UTF8.GetString($buffer, 0, $bytesRead)
+        if ($output) {
+          [void]$sb.Append($output)
+        }
+        if ($bytesRead -lt $buffer.Length) {
+          # Partial buffer indicating the end of stream, break out of ReadFile loop
+          # ReadFile will block until:
+          #    The number of bytes requested is read.
+          #    A write operation completes on the write end of the pipe.
+          #    An asynchronous handle is being used and the read is occurring asynchronously.
+          #    An error occurs.
+          break
+        }
+      }
+    }
+    
+    if ($global:LASTEXITCODE -ne [Chef.Kernel32]::STILL_ACTIVE) {
+      $isActive = $false
     }
   }
-  $success = [Chef.Kernel32]::GetExitCodeProcess($pi.hProcess, [ref] $global:LASTEXITCODE)
-  if (-Not $success) {
-    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-    throw "Process exit code unavailable.  Error code $reason."
-  }
+
+  # Return output obtained from child process stdout/stderr
+  $sb.ToString()
+
+  # Cleanup handles
   $success = [Chef.Kernel32]::CloseHandle($pi.hProcess)
   if (-Not $success) {
     $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
@@ -199,6 +303,17 @@ function Run-ExecutableAndWait($AppPath, $ArgumentString) {
     $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
     throw "Unable to release thread handle.  Error code $reason."
   }
+  $success = [Chef.Kernel32]::CloseHandle($hWriteOut)
+  if (-Not $success) {
+    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+    throw "Unable to release output write handle.  Error code $reason."
+  }
+  $success = [Chef.Kernel32]::CloseHandle($hReadOut)
+  if (-Not $success) {
+    $reason = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+    throw "Unable to release output read handle.  Error code $reason."
+  }
+  [System.Runtime.InteropServices.Marshal]::FreeHGlobal($ptr)
 }
 
 function Get-ScriptDirectory {

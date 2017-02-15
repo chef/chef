@@ -29,7 +29,7 @@ class Chef
       # to dump the actual ivars
       class ToTextHash < Hash
         def to_text
-          descriptions = self.map do |(property, obj)|
+          descriptions = map do |(property, obj)|
             obj_text = if obj.respond_to?(:to_text)
                          obj.to_text
                        else
@@ -66,6 +66,14 @@ class Chef
         else
           @module_name
         end
+      end
+
+      def module_version(arg = nil)
+        set_or_return(
+          :module_version,
+          arg,
+          :kind_of => [ String ]
+        )
       end
 
       def property(property_name, value = nil)

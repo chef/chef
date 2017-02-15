@@ -46,6 +46,7 @@ describe "chef-client" do
   # we're running `chef-client` from the source tree and not the external one.
   # cf. CHEF-4914
   let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
+  let(:chef_solo) { "ruby '#{chef_dir}/chef-solo' --minimal-ohai" }
 
   let(:critical_env_vars) { %w{_ORIGINAL_GEM_PATH GEM_PATH GEM_HOME GEM_ROOT BUNDLE_BIN_PATH BUNDLE_GEMFILE RUBYLIB RUBYOPT RUBY_ENGINE RUBY_ROOT RUBY_VERSION PATH}.map { |o| "#{o}=#{ENV[o]}" } .join(" ") }
 
@@ -497,6 +498,38 @@ EOM
     it "should fail when passed --recipe-url and not passed -z" do
       result = shell_out("#{chef_client} --recipe-url=http://localhost:9000/recipes.tgz", :cwd => tmp_dir)
       expect(result.exitstatus).not_to eq(0)
+    end
+  end
+
+  when_the_repository "has a cookbook with broken metadata.rb, but has metadata.json" do
+    before do
+      file "cookbooks/x/recipes/default.rb", ""
+      file "cookbooks/x/metadata.rb", <<EOM
+name 'x'
+version '0.0.1'
+raise "TEH SADNESS"
+EOM
+      file "cookbooks/x/metadata.json", <<EOM
+{
+  "name": "x",
+  "version": "0.0.1"
+}
+EOM
+
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+    end
+
+    it "the chef client run should succeed" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+    end
+
+    it "a chef-solo run should succeed" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
     end
   end
 end

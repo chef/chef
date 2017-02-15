@@ -18,7 +18,6 @@
 # limitations under the License.
 #
 
-require "json"
 require "securerandom"
 require_relative "messages/helpers"
 
@@ -83,12 +82,14 @@ class Chef
           "deprecations"           => reporter_data[:deprecations],
         }
 
-        message["error"] = {
-          "class"       => run_status.exception.class,
-          "message"     => run_status.exception.message,
-          "backtrace"   => run_status.exception.backtrace,
-          "description" => reporter_data[:error_descriptions],
-        } if run_status.exception
+        if run_status.exception
+          message["error"] = {
+            "class"       => run_status.exception.class,
+            "message"     => run_status.exception.message,
+            "backtrace"   => run_status.exception.backtrace,
+            "description" => reporter_data[:error_descriptions],
+          }
+        end
 
         message
       end

@@ -206,7 +206,7 @@ describe Chef::Cookbook::Metadata do
       :issues_url => "http://example.com/issues",
       :privacy => true,
     }
-    params.sort { |a, b| a.to_s <=> b.to_s }.each do |field, field_value|
+    params.sort_by(&:to_s).each do |field, field_value|
       describe field do
         it "should be set-able via #{field}" do
           expect(metadata.send(field, field_value)).to eql(field_value)
@@ -240,7 +240,7 @@ describe Chef::Cookbook::Metadata do
       :provides    => [ :providing, "foo::bar", "<= 0.2" ],
       :replaces    => [ :replacing, "foo::bar", "= 0.2.1" ],
     }
-    dep_types.sort { |a, b| a.to_s <=> b.to_s }.each do |dep, dep_args|
+    dep_types.sort_by(&:to_s).each do |dep, dep_args|
       check_with = dep_args.shift
       describe dep do
         it "should be set-able via #{dep}" do
@@ -261,7 +261,7 @@ describe Chef::Cookbook::Metadata do
       :provides    => [ :providing, "foo::bar", "<=0.2", "<= 0.2" ],
       :replaces    => [ :replacing, "foo::bar", "=0.2.1", "= 0.2.1" ],
     }
-    dep_types.sort { |a, b| a.to_s <=> b.to_s }.each do |dep, dep_args|
+    dep_types.sort_by(&:to_s).each do |dep, dep_args|
       check_with = dep_args.shift
       normalized_version = dep_args.pop
       describe dep do

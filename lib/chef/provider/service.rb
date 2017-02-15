@@ -218,7 +218,7 @@ class Chef
       def default_init_command
         if @new_resource.init_command
           @new_resource.init_command
-        elsif self.instance_variable_defined?(:@init_command)
+        elsif instance_variable_defined?(:@init_command)
           @init_command
         end
       end
