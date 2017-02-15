@@ -37,7 +37,7 @@ class Chef
       end
 
       def flags
-        @new_resource.flags.nil? ? "/c" : new_resource.flags + " /c"
+        new_resource.flags.nil? ? "/c" : new_resource.flags + " /c"
       end
 
     end

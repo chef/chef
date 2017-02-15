@@ -36,9 +36,9 @@ class Chef
 
       provides :remote_directory
 
-      def_delegators :@new_resource, :purge, :path, :source, :cookbook, :cookbook_name
-      def_delegators :@new_resource, :files_rights, :files_mode, :files_group, :files_owner, :files_backup
-      def_delegators :@new_resource, :rights, :mode, :group, :owner
+      def_delegators :new_resource, :purge, :path, :source, :cookbook, :cookbook_name
+      def_delegators :new_resource, :files_rights, :files_mode, :files_group, :files_owner, :files_backup
+      def_delegators :new_resource, :rights, :mode, :group, :owner
 
       # The overwrite property on the resource.  Delegates to new_resource but can be mutated.
       #
