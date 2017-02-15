@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v12.19.30](https://github.com/chef/chef/tree/v12.19.30) (2017-02-14)
-[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.30)
+## [v12.19.31](https://github.com/chef/chef/tree/v12.19.31) (2017-02-15)
+[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.31)
 
 **Closed issues:**
 
@@ -31,7 +31,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Core: Ensure paths are correctly escaped when syntax checking [\#5704](https://github.com/chef/chef/pull/5704) ([ceneo](https://github.com/ceneo))
 - Added module\_version attribute for dsc\_resource for SxS support [\#5701](https://github.com/chef/chef/pull/5701) ([Aliasgar16](https://github.com/Aliasgar16))
 - Bump net-ssh to v4, add dependencies for ed25519 support [\#5687](https://github.com/chef/chef/pull/5687) ([onlyhavecans](https://github.com/onlyhavecans))
-- Initial habitat plan for chef-client [\#5677](https://github.com/chef/chef/pull/5677) ([adamhjk](https://github.com/adamhjk))
 
 ## [v12.18.31](https://github.com/chef/chef/tree/v12.18.31) (2017-01-11)
 [Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.31)
