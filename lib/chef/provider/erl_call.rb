@@ -40,20 +40,20 @@ class Chef
       end
 
       def action_run
-        case @new_resource.name_type
+        case new_resource.name_type
         when "sname"
-          node = "-sname #{@new_resource.node_name}"
+          node = "-sname #{new_resource.node_name}"
         when "name"
-          node = "-name #{@new_resource.node_name}"
+          node = "-name #{new_resource.node_name}"
         end
 
-        if @new_resource.cookie
-          cookie = "-c #{@new_resource.cookie}"
+        if new_resource.cookie
+          cookie = "-c #{new_resource.cookie}"
         else
           cookie = ""
         end
 
-        if @new_resource.distributed
+        if new_resource.distributed
           distributed = "-s"
         else
           distributed = ""
@@ -65,15 +65,15 @@ class Chef
           begin
             pid, stdin, stdout, stderr = popen4(command, :waitlast => true)
 
-            Chef::Log.debug("#{@new_resource} running")
-            Chef::Log.debug("#{@new_resource} command: #{command}")
-            Chef::Log.debug("#{@new_resource} code: #{@new_resource.code}")
+            Chef::Log.debug("#{new_resource} running")
+            Chef::Log.debug("#{new_resource} command: #{command}")
+            Chef::Log.debug("#{new_resource} code: #{new_resource.code}")
 
-            @new_resource.code.each_line { |line| stdin.puts(line.chomp) }
+            new_resource.code.each_line { |line| stdin.puts(line.chomp) }
 
             stdin.close
 
-            Chef::Log.debug("#{@new_resource} output: ")
+            Chef::Log.debug("#{new_resource} output: ")
 
             stdout_output = ""
             stdout.each_line { |line| stdout_output << line }
@@ -93,9 +93,9 @@ class Chef
               raise Chef::Exceptions::ErlCall, stdout_output
             end
 
-            @new_resource.updated_by_last_action(true)
+            new_resource.updated_by_last_action(true)
 
-            Chef::Log.debug("#{@new_resource} #{stdout_output}")
+            Chef::Log.debug("#{new_resource} #{stdout_output}")
             Chef::Log.info("#{@new_resouce} ran successfully")
           ensure
             Process.wait(pid) if pid

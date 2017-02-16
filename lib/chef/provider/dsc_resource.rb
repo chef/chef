@@ -165,8 +165,8 @@ class Chef
       end
 
       def invoke_resource(method, output_format = :object)
-        properties = translate_type(@new_resource.properties)
-        switches = "-Method #{method} -Name #{@new_resource.resource}"\
+        properties = translate_type(new_resource.properties)
+        switches = "-Method #{method} -Name #{new_resource.resource}"\
                    " -Property #{properties} -Module #{module_info_object} -Verbose"
         cmdlet = Chef::Util::Powershell::Cmdlet.new(
           node,
@@ -188,15 +188,15 @@ class Chef
 
       def create_reboot_resource
         @reboot_resource = Chef::Resource::Reboot.new(
-          "Reboot for #{@new_resource.name}",
+          "Reboot for #{new_resource.name}",
           run_context
         ).tap do |r|
-          r.reason("Reboot for #{@new_resource.resource}.")
+          r.reason("Reboot for #{new_resource.resource}.")
         end
       end
 
       def reboot_if_required
-        reboot_action = @new_resource.reboot_action
+        reboot_action = new_resource.reboot_action
         unless @reboot_resource.nil?
           case reboot_action
           when :nothing

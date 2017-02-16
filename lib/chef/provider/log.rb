@@ -44,8 +44,8 @@ class Chef
         # === Return
         # true:: Always return true
         def action_write
-          Chef::Log.send(@new_resource.level, @new_resource.message)
-          @new_resource.updated_by_last_action(true) if Chef::Config[:count_log_resource_updates]
+          Chef::Log.send(new_resource.level, new_resource.message)
+          new_resource.updated_by_last_action(true) if Chef::Config[:count_log_resource_updates]
         end
 
       end

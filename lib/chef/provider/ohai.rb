@@ -37,7 +37,7 @@ class Chef
         converge_by("re-run ohai and merge results into node attributes") do
           ohai = ::Ohai::System.new
 
-          # If @new_resource.plugin is nil, ohai will reload all the plugins
+          # If new_resource.plugin is nil, ohai will reload all the plugins
           # Otherwise it will only reload the specified plugin
           # Note that any changes to plugins, or new plugins placed on
           # the path are picked up by ohai.

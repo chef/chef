@@ -30,7 +30,7 @@ class Chef
       extend Forwardable
       provides :launchd, os: "darwin"
 
-      def_delegators :@new_resource, *[
+      def_delegators :new_resource, *[
         :backup,
         :cookbook,
         :group,
