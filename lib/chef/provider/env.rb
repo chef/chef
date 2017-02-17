@@ -34,17 +34,17 @@ class Chef
       end
 
       def load_current_resource
-        @current_resource = Chef::Resource::Env.new(@new_resource.name)
-        @current_resource.key_name(@new_resource.key_name)
+        @current_resource = Chef::Resource::Env.new(new_resource.name)
+        current_resource.key_name(new_resource.key_name)
 
-        if env_key_exists(@new_resource.key_name)
-          @current_resource.value(env_value(@new_resource.key_name))
+        if env_key_exists(new_resource.key_name)
+          current_resource.value(env_value(new_resource.key_name))
         else
           @key_exists = false
-          Chef::Log.debug("#{@new_resource} key does not exist")
+          Chef::Log.debug("#{new_resource} key does not exist")
         end
 
-        @current_resource
+        current_resource
       end
 
       def env_value(key_name)
@@ -61,7 +61,7 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If a change is not required
       def requires_modify_or_create?
-        if @new_resource.delim
+        if new_resource.delim
           #e.g. check for existing value within PATH
           new_values.inject(0) do |index, val|
             next_index = current_values.find_index val
@@ -70,7 +70,7 @@ class Chef
           end
           false
         else
-          @new_resource.value != @current_resource.value
+          new_resource.value != current_resource.value
         end
       end
 
@@ -80,13 +80,13 @@ class Chef
         if @key_exists
           if requires_modify_or_create?
             modify_env
-            Chef::Log.info("#{@new_resource} altered")
-            @new_resource.updated_by_last_action(true)
+            Chef::Log.info("#{new_resource} altered")
+            new_resource.updated_by_last_action(true)
           end
         else
           create_env
-          Chef::Log.info("#{@new_resource} created")
-          @new_resource.updated_by_last_action(true)
+          Chef::Log.info("#{new_resource} created")
+          new_resource.updated_by_last_action(true)
         end
       end
 
@@ -97,24 +97,24 @@ class Chef
       # <false>:: Caller should delete the key, either no :delim was specific or value was empty
       #           after we removed the element.
       def delete_element
-        return false unless @new_resource.delim #no delim: delete the key
+        return false unless new_resource.delim #no delim: delete the key
         needs_delete = new_values.any? { |v| current_values.include?(v) }
         if !needs_delete
-          Chef::Log.debug("#{@new_resource} element '#{@new_resource.value}' does not exist")
+          Chef::Log.debug("#{new_resource} element '#{new_resource.value}' does not exist")
           return true #do not delete the key
         else
           new_value =
             current_values.select do |item|
               not new_values.include?(item)
-            end.join(@new_resource.delim)
+            end.join(new_resource.delim)
 
           if new_value.empty?
             return false #nothing left here, delete the key
           else
-            old_value = @new_resource.value(new_value)
+            old_value = new_resource.value(new_value)
             create_env
-            Chef::Log.debug("#{@new_resource} deleted #{old_value} element")
-            @new_resource.updated_by_last_action(true)
+            Chef::Log.debug("#{new_resource} deleted #{old_value} element")
+            new_resource.updated_by_last_action(true)
             return true #we removed the element and updated; do not delete the key
           end
         end
@@ -123,8 +123,8 @@ class Chef
       def action_delete
         if @key_exists && !delete_element
           delete_env
-          Chef::Log.info("#{@new_resource} deleted")
-          @new_resource.updated_by_last_action(true)
+          Chef::Log.info("#{new_resource} deleted")
+          new_resource.updated_by_last_action(true)
         end
       end
 
@@ -132,16 +132,16 @@ class Chef
         if @key_exists
           if requires_modify_or_create?
             modify_env
-            Chef::Log.info("#{@new_resource} modified")
-            @new_resource.updated_by_last_action(true)
+            Chef::Log.info("#{new_resource} modified")
+            new_resource.updated_by_last_action(true)
           end
         else
-          raise Chef::Exceptions::Env, "Cannot modify #{@new_resource} - key does not exist!"
+          raise Chef::Exceptions::Env, "Cannot modify #{new_resource} - key does not exist!"
         end
       end
 
       def create_env
-        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :#{@new_resource.action}"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :#{new_resource.action}"
       end
 
       def delete_env
@@ -149,20 +149,20 @@ class Chef
       end
 
       def modify_env
-        if @new_resource.delim
-          @new_resource.value((new_values + current_values).uniq.join(@new_resource.delim))
+        if new_resource.delim
+          new_resource.value((new_values + current_values).uniq.join(new_resource.delim))
         end
         create_env
       end
 
       # Returns the current values to split by delimiter
       def current_values
-        @current_values ||= @current_resource.value.split(@new_resource.delim)
+        @current_values ||= current_resource.value.split(new_resource.delim)
       end
 
       # Returns the new values to split by delimiter
       def new_values
-        @new_values ||= @new_resource.value.split(@new_resource.delim)
+        @new_values ||= new_resource.value.split(new_resource.delim)
       end
     end
   end

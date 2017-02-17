@@ -37,7 +37,7 @@ class Chef
       end
 
       def load_current_resource
-        @current_resource = Chef::Resource::Template.new(@new_resource.name)
+        @current_resource = Chef::Resource::Template.new(new_resource.name)
         super
       end
 
@@ -55,8 +55,8 @@ class Chef
       private
 
       def managing_content?
-        return true if @new_resource.checksum
-        return true if !@new_resource.source.nil? && @action != :create_if_missing
+        return true if new_resource.checksum
+        return true if !new_resource.source.nil? && @action != :create_if_missing
         false
       end
 

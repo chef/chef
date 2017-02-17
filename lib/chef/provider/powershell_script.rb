@@ -60,8 +60,8 @@ class Chef
       def flags
         interpreter_flags = [*default_interpreter_flags].join(" ")
 
-        if ! (@new_resource.flags.nil?)
-          interpreter_flags = [@new_resource.flags, interpreter_flags].join(" ")
+        if ! (new_resource.flags.nil?)
+          interpreter_flags = [new_resource.flags, interpreter_flags].join(" ")
         end
 
         interpreter_flags
@@ -73,7 +73,7 @@ class Chef
       # special handling to cover common use cases.
       def add_exit_status_wrapper
         self.code = wrapper_script
-        Chef::Log.debug("powershell_script provider called with script code:\n\n#{@new_resource.code}\n")
+        Chef::Log.debug("powershell_script provider called with script code:\n\n#{new_resource.code}\n")
         Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{code}\n")
       end
 
@@ -87,7 +87,7 @@ class Chef
           # actually running the script.
           user_code_wrapped_in_powershell_script_block = <<-EOH
 {
-  #{@new_resource.code}
+  #{new_resource.code}
 }
 EOH
           user_script_file.puts user_code_wrapped_in_powershell_script_block
@@ -167,7 +167,7 @@ $global:LASTEXITCODE = 0
 trap [Exception] {write-error ($_.Exception.Message);exit 1}
 
 # Variable state that should not be accessible to the user code
-new-variable -name interpolatedexitcode -visibility private -value $#{@new_resource.convert_boolean_return}
+new-variable -name interpolatedexitcode -visibility private -value $#{new_resource.convert_boolean_return}
 new-variable -name chefscriptresult -visibility private
 
 # Initialize a variable we use to capture $? inside a block
@@ -176,7 +176,7 @@ $global:lastcmdlet = $null
 # Execute the user's code in a script block --
 $chefscriptresult =
 {
- #{@new_resource.code}
+ #{new_resource.code}
 
  # This assignment doesn't affect the block's return value
  $global:lastcmdlet = $?
