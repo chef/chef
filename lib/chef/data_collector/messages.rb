@@ -18,7 +18,6 @@
 # limitations under the License.
 #
 
-require "json"
 require "securerandom"
 require_relative "messages/helpers"
 
@@ -66,7 +65,7 @@ class Chef
           "entity_uuid"            => node_uuid,
           "expanded_run_list"      => reporter_data[:expanded_run_list],
           "id"                     => run_status.run_id,
-          "message_version"        => "1.0.0",
+          "message_version"        => "1.1.0",
           "message_type"           => "run_converge",
           "node"                   => run_status.node,
           "node_name"              => run_status.node.name,
@@ -80,14 +79,17 @@ class Chef
           "status"                 => reporter_data[:status],
           "total_resource_count"   => reporter_data[:resources].count,
           "updated_resource_count" => reporter_data[:resources].select { |r| r.report_data["status"] == "updated" }.count,
+          "deprecations"           => reporter_data[:deprecations],
         }
 
-        message["error"] = {
-          "class"       => run_status.exception.class,
-          "message"     => run_status.exception.message,
-          "backtrace"   => run_status.exception.backtrace,
-          "description" => reporter_data[:error_descriptions],
-        } if run_status.exception
+        if run_status.exception
+          message["error"] = {
+            "class"       => run_status.exception.class,
+            "message"     => run_status.exception.message,
+            "backtrace"   => run_status.exception.backtrace,
+            "description" => reporter_data[:error_descriptions],
+          }
+        end
 
         message
       end

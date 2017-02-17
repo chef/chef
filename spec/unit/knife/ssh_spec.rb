@@ -21,54 +21,53 @@ require "net/ssh"
 require "net/ssh/multi"
 
 describe Chef::Knife::Ssh do
-  before(:each) do
-    Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
-  end
+  let(:query_result) { double("chef search results") }
 
   before do
+    Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
     @knife = Chef::Knife::Ssh.new
     @knife.merge_configs
-    @node_foo = Chef::Node.new
-    @node_foo.automatic_attrs[:fqdn] = "foo.example.org"
-    @node_foo.automatic_attrs[:ipaddress] = "10.0.0.1"
+    @node_foo = {}
+    @node_foo["fqdn"] = "foo.example.org"
+    @node_foo["ipaddress"] = "10.0.0.1"
+    @node_foo["cloud"] = {}
 
-    @node_bar = Chef::Node.new
-    @node_bar.automatic_attrs[:fqdn] = "bar.example.org"
-    @node_bar.automatic_attrs[:ipaddress] = "10.0.0.2"
+    @node_bar = {}
+    @node_bar["fqdn"] = "bar.example.org"
+    @node_bar["ipaddress"] = "10.0.0.2"
+    @node_bar["cloud"] = {}
+
   end
 
   describe "#configure_session" do
     context "manual is set to false (default)" do
       before do
         @knife.config[:manual] = false
-        @query = Chef::Search::Query.new
-      end
-
-      def configure_query(node_array)
-        allow(@query).to receive(:search).and_return([node_array])
-        allow(Chef::Search::Query).to receive(:new).and_return(@query)
+        allow(query_result).to receive(:search).with(any_args).and_yield(@node_foo).and_yield(@node_bar)
+        allow(Chef::Search::Query).to receive(:new).and_return(query_result)
       end
 
       def self.should_return_specified_attributes
         it "returns an array of the attributes specified on the command line OR config file, if only one is set" do
+          @node_bar["config"] = "10.0.0.2"
+          @node_foo["config"] = "10.0.0.1"
           @knife.config[:attribute] = "ipaddress"
           Chef::Config[:knife][:ssh_attribute] = "ipaddress" # this value will be in the config file
-          configure_query([@node_foo, @node_bar])
           expect(@knife).to receive(:session_from_list).with([["10.0.0.1", nil], ["10.0.0.2", nil]])
           @knife.configure_session
         end
 
         it "returns an array of the attributes specified on the command line even when a config value is set" do
+          @node_bar["config"] = "10.0.0.2"
+          @node_foo["config"] = "10.0.0.1"
           Chef::Config[:knife][:ssh_attribute] = "config_file" # this value will be in the config file
           @knife.config[:attribute] = "ipaddress" # this is the value of the command line via #configure_attribute
-          configure_query([@node_foo, @node_bar])
           expect(@knife).to receive(:session_from_list).with([["10.0.0.1", nil], ["10.0.0.2", nil]])
           @knife.configure_session
         end
       end
 
       it "searchs for and returns an array of fqdns" do
-        configure_query([@node_foo, @node_bar])
         expect(@knife).to receive(:session_from_list).with([
           ["foo.example.org", nil],
           ["bar.example.org", nil],
@@ -80,11 +79,10 @@ describe Chef::Knife::Ssh do
 
       context "when cloud hostnames are available" do
         before do
-          @node_foo.automatic_attrs[:cloud][:public_hostname] = "ec2-10-0-0-1.compute-1.amazonaws.com"
-          @node_bar.automatic_attrs[:cloud][:public_hostname] = "ec2-10-0-0-2.compute-1.amazonaws.com"
+          @node_foo["cloud"]["public_hostname"] = "ec2-10-0-0-1.compute-1.amazonaws.com"
+          @node_bar["cloud"]["public_hostname"] = "ec2-10-0-0-2.compute-1.amazonaws.com"
         end
         it "returns an array of cloud public hostnames" do
-          configure_query([@node_foo, @node_bar])
           expect(@knife).to receive(:session_from_list).with([
             ["ec2-10-0-0-1.compute-1.amazonaws.com", nil],
             ["ec2-10-0-0-2.compute-1.amazonaws.com", nil],
@@ -97,12 +95,11 @@ describe Chef::Knife::Ssh do
 
       context "when cloud hostnames are available but empty" do
         before do
-          @node_foo.automatic_attrs[:cloud][:public_hostname] = ""
-          @node_bar.automatic_attrs[:cloud][:public_hostname] = ""
+          @node_foo["cloud"]["public_hostname"] = ""
+          @node_bar["cloud"]["public_hostname"] = ""
         end
 
         it "returns an array of fqdns" do
-          configure_query([@node_foo, @node_bar])
           expect(@knife).to receive(:session_from_list).with([
             ["foo.example.org", nil],
             ["bar.example.org", nil],
@@ -114,7 +111,7 @@ describe Chef::Knife::Ssh do
       end
 
       it "should raise an error if no host are found" do
-        configure_query([ ])
+        allow(query_result).to receive(:search).with(any_args)
         expect(@knife.ui).to receive(:fatal)
         expect(@knife).to receive(:exit).with(10)
         @knife.configure_session
@@ -122,10 +119,8 @@ describe Chef::Knife::Ssh do
 
       context "when there are some hosts found but they do not have an attribute to connect with" do
         before do
-          allow(@query).to receive(:search).and_return([[@node_foo, @node_bar]])
-          @node_foo.automatic_attrs[:fqdn] = nil
-          @node_bar.automatic_attrs[:fqdn] = nil
-          allow(Chef::Search::Query).to receive(:new).and_return(@query)
+          @node_foo["fqdn"] = nil
+          @node_bar["fqdn"] = nil
         end
 
         it "should raise a specific error (CHEF-3402)" do
@@ -158,31 +153,34 @@ describe Chef::Knife::Ssh do
     before do
       Chef::Config[:knife][:ssh_attribute] = nil
       @knife.config[:attribute] = nil
-      @node_foo.automatic_attrs[:cloud][:public_hostname] = "ec2-10-0-0-1.compute-1.amazonaws.com"
-      @node_bar.automatic_attrs[:cloud][:public_hostname] = ""
+      @node_foo["cloud"]["public_hostname"] = "ec2-10-0-0-1.compute-1.amazonaws.com"
+      @node_bar["cloud"]["public_hostname"] = ""
     end
 
     it "should return fqdn by default" do
-      expect(@knife.get_ssh_attribute(Chef::Node.new)).to eq("fqdn")
+      expect(@knife.get_ssh_attribute({ "fqdn" => "fqdn" })).to eq("fqdn")
     end
 
     it "should return cloud.public_hostname attribute if available" do
-      expect(@knife.get_ssh_attribute(@node_foo)).to eq("cloud.public_hostname")
+      expect(@knife.get_ssh_attribute(@node_foo)).to eq("ec2-10-0-0-1.compute-1.amazonaws.com")
     end
 
     it "should favor to attribute_from_cli over config file and cloud" do
       @knife.config[:attribute] = "command_line"
       Chef::Config[:knife][:ssh_attribute] = "config_file"
+      @node_foo["config"] = "command_line"
+      @node_foo["knife_config"] = "config_file"
       expect( @knife.get_ssh_attribute(@node_foo)).to eq("command_line")
     end
 
     it "should favor config file over cloud and default" do
       Chef::Config[:knife][:ssh_attribute] = "config_file"
+      @node_foo["knife_config"] = "config_file"
       expect( @knife.get_ssh_attribute(@node_foo)).to eq("config_file")
     end
 
     it "should return fqdn if cloud.hostname is empty" do
-      expect( @knife.get_ssh_attribute(@node_bar)).to eq("fqdn")
+      expect( @knife.get_ssh_attribute(@node_bar)).to eq("bar.example.org")
     end
   end
 
@@ -190,7 +188,7 @@ describe Chef::Knife::Ssh do
     before :each do
       @knife.instance_variable_set(:@longest, 0)
       ssh_config = { :timeout => 50, :user => "locutus", :port => 23 }
-      allow(Net::SSH).to receive(:configuration_for).with("the.b.org").and_return(ssh_config)
+      allow(Net::SSH).to receive(:configuration_for).with("the.b.org", true).and_return(ssh_config)
     end
 
     it "uses the port from an ssh config file" do
@@ -294,7 +292,7 @@ describe Chef::Knife::Ssh do
   describe "#run" do
     before do
       @query = Chef::Search::Query.new
-      expect(@query).to receive(:search).and_return([[@node_foo]])
+      expect(@query).to receive(:search).and_yield(@node_foo)
       allow(Chef::Search::Query).to receive(:new).and_return(@query)
       allow(@knife).to receive(:ssh_command).and_return(exit_code)
       @knife.name_args = ["*:*", "false"]

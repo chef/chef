@@ -74,11 +74,11 @@ class Chef
 
       def node_supports_windows_architecture?(node, desired_architecture)
         assert_valid_windows_architecture!(desired_architecture)
-        return ( node_windows_architecture(node) == :x86_64 ) || ( desired_architecture == :i386 )
+        ( node_windows_architecture(node) == :x86_64 ) || ( desired_architecture == :i386 )
       end
 
       def valid_windows_architecture?(architecture)
-        return ( architecture == :x86_64 ) || ( architecture == :i386 )
+        ( architecture == :x86_64 ) || ( architecture == :i386 )
       end
 
       def assert_valid_windows_architecture!(architecture)

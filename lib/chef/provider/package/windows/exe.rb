@@ -69,10 +69,10 @@ class Chef
           def remove_package
             uninstall_version = new_resource.version || current_installed_version
             uninstall_entries.select { |entry| [uninstall_version].flatten.include?(entry.display_version) }
-              .map { |version| version.uninstall_string }.uniq.each do |uninstall_string|
-                Chef::Log.debug("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
-                shell_out!(uninstall_command(uninstall_string), { :timeout => new_resource.timeout, :returns => new_resource.returns })
-              end
+                             .map(&:uninstall_string).uniq.each do |uninstall_string|
+              Chef::Log.debug("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
+              shell_out!(uninstall_command(uninstall_string), timeout: new_resource.timeout, returns: new_resource.returns)
+            end
           end
 
           private
@@ -85,13 +85,13 @@ class Chef
               " ",
               unattended_flags,
             ].join
-            %Q{start "" /wait #{uninstall_string} & exit %%%%ERRORLEVEL%%%%}
+            %{start "" /wait #{uninstall_string} & exit %%%%ERRORLEVEL%%%%}
           end
 
           def current_installed_version
             @current_installed_version ||=
               if uninstall_entries.count != 0
-                uninstall_entries.map { |entry| entry.display_version }.uniq
+                uninstall_entries.map(&:display_version).uniq
               end
           end
 

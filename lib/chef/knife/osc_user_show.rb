@@ -48,7 +48,6 @@ class Chef
         user = Chef::User.load(@user_name)
         output(format_for_display(user))
       end
-
     end
   end
 end

@@ -23,7 +23,7 @@ yum_repository "epel" do
   gpgkey "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{node['platform_version'].to_i}"
   gpgcheck true
   mirrorlist "https://mirrors.fedoraproject.org/metalink?repo=epel-#{node['platform_version'].to_i}&arch=$basearch"
-  only_if { node["platform_family"] == "rhel" }
+  only_if { node["platform_family"] == "rhel" && node["platform"] != "amazon" }
 end
 
 include_recipe "build-essential"

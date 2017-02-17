@@ -104,6 +104,15 @@ describe Chef::Cookbook::CookbookVersionLoader do
 
     end
 
+    context "when a cookbook's metadata.rb does not parse but the compiled metadata.json is present" do
+      let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "prefer_metadata_json") }
+
+      it "reads the cookbook" do
+        expect(loaded_cookbook.metadata.name.to_s).to eq("prefer_metadata_json")
+        expect(loaded_cookbook.metadata.version.to_s).to eq("1.2.3")
+      end
+    end
+
     context "when the given path is not actually a cookbook" do
 
       let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "cookbooks/NOTHING_HERE_FOLKS") }

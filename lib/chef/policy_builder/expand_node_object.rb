@@ -112,7 +112,7 @@ class Chef
       # to create a PolicyBuilder::Dynamc policy builder and allow it to select
       # the proper implementation.
       def load_node
-        Chef.log_deprecation("ExpandNodeObject#load_node is deprecated. Please use Chef::PolicyBuilder::Dynamic instead of using ExpandNodeObject directly")
+        Chef.deprecated(:internal_api, "ExpandNodeObject#load_node is deprecated. Please use Chef::PolicyBuilder::Dynamic instead of using ExpandNodeObject directly")
 
         events.node_load_start(node_name, config)
         Chef::Log.debug("Building node object for #{node_name}")

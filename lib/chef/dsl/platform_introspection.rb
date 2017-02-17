@@ -68,41 +68,39 @@ class Chef
         private
 
         def match_versions(node)
-          begin
-            platform, version = node[:platform].to_s, node[:platform_version].to_s
-            return nil unless @values.key?(platform)
-            node_version = Chef::Version::Platform.new(version)
-            key_matches = []
-            keys = @values[platform].keys
-            keys.each do |k|
-              begin
-                if Chef::VersionConstraint::Platform.new(k).include?(node_version)
-                  key_matches << k
-                end
-              rescue Chef::Exceptions::InvalidVersionConstraint => e
-                Chef::Log.debug "Caught InvalidVersionConstraint. This means that a key in value_for_platform cannot be interpreted as a Chef::VersionConstraint::Platform."
-                Chef::Log.debug(e)
+          platform, version = node[:platform].to_s, node[:platform_version].to_s
+          return nil unless @values.key?(platform)
+          node_version = Chef::Version::Platform.new(version)
+          key_matches = []
+          keys = @values[platform].keys
+          keys.each do |k|
+            begin
+              if Chef::VersionConstraint::Platform.new(k).include?(node_version)
+                key_matches << k
               end
+            rescue Chef::Exceptions::InvalidVersionConstraint => e
+              Chef::Log.debug "Caught InvalidVersionConstraint. This means that a key in value_for_platform cannot be interpreted as a Chef::VersionConstraint::Platform."
+              Chef::Log.debug(e)
             end
-            return @values[platform][version] if key_matches.include?(version)
-            case key_matches.length
-            when 0
-              return nil
-            when 1
-              return @values[platform][key_matches.first]
-            else
-              raise "Multiple matches detected for #{platform} with values #{@values}. The matches are: #{key_matches}"
-            end
-          rescue Chef::Exceptions::InvalidCookbookVersion => e
-            # Lets not break because someone passes a weird string like 'default' :)
-            Chef::Log.debug(e)
-            Chef::Log.debug "InvalidCookbookVersion exceptions are common and expected here: the generic constraint matcher attempted to match something which is not a constraint. Moving on to next version or constraint"
-            return nil
-          rescue Chef::Exceptions::InvalidPlatformVersion => e
-            Chef::Log.debug "Caught InvalidPlatformVersion, this means that Chef::Version::Platform does not know how to turn #{node_version} into an x.y.z format"
-            Chef::Log.debug(e)
-            return nil
           end
+          return @values[platform][version] if key_matches.include?(version)
+          case key_matches.length
+          when 0
+            return nil
+          when 1
+            return @values[platform][key_matches.first]
+          else
+            raise "Multiple matches detected for #{platform} with values #{@values}. The matches are: #{key_matches}"
+          end
+        rescue Chef::Exceptions::InvalidCookbookVersion => e
+          # Lets not break because someone passes a weird string like 'default' :)
+          Chef::Log.debug(e)
+          Chef::Log.debug "InvalidCookbookVersion exceptions are common and expected here: the generic constraint matcher attempted to match something which is not a constraint. Moving on to next version or constraint"
+          return nil
+        rescue Chef::Exceptions::InvalidPlatformVersion => e
+          Chef::Log.debug "Caught InvalidPlatformVersion, this means that Chef::Version::Platform does not know how to turn #{node_version} into an x.y.z format"
+          Chef::Log.debug(e)
+          return nil
         end
 
         def set(platforms, value)
@@ -257,8 +255,8 @@ class Chef
       def docker?(node = run_context.nil? ? nil : run_context.node)
         # Using "File.exist?('/.dockerinit') || File.exist?('/.dockerenv')" makes Travis sad,
         # and that makes us sad too.
-        node && node[:virtualization] && node[:virtualization][:systems] &&
-          node[:virtualization][:systems][:docker] && node[:virtualization][:systems][:docker] == "guest"
+        !!(node && node[:virtualization] && node[:virtualization][:systems] &&
+           node[:virtualization][:systems][:docker] && node[:virtualization][:systems][:docker] == "guest")
       end
 
     end

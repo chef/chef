@@ -111,7 +111,7 @@ class Chef
         # match no_proxy with a fuzzy matcher, rather than letting Net::HTTP
         # do it.
         http_client = http_client_builder.new(host, port, nil)
-        http_client.proxy_port = nil if http_client.proxy_address == nil
+        http_client.proxy_port = nil if http_client.proxy_address.nil?
 
         if url.scheme == HTTPS
           configure_ssl(http_client)

@@ -21,33 +21,33 @@ class Chef
       module StateTracking
         attr_reader :__path__
         attr_reader :__root__
+        attr_reader :__node__
+        attr_reader :__precedence__
 
-        NULL = Object.new
-
-        def initialize(data = NULL, root = self)
+        def initialize(data = nil, root = self, node = nil, precedence = nil)
           # __path__ and __root__ must be nil when we call super so it knows
           # to avoid resetting the cache on construction
-          data == NULL ? super() : super(data)
+          data.nil? ? super() : super(data)
           @__path__ = []
           @__root__ = root
+          @__node__ = node
+          @__precedence__ = precedence
         end
 
-        def [](key)
+        def [](*args)
           ret = super
-          if ret.is_a?(StateTracking)
-            ret.__path__ = __path__ + [ convert_key(key) ]
-            ret.__root__ = __root__
-          end
-          ret
+          key = args.first
+          next_path = [ __path__, convert_key(key) ].flatten.compact
+          copy_state_to(ret, next_path)
         end
 
-        def []=(key, value)
+        def []=(*args)
           ret = super
-          if ret.is_a?(StateTracking)
-            ret.__path__ = __path__ + [ convert_key(key) ]
-            ret.__root__ = __root__
-          end
-          ret
+          key = args.first
+          value = args.last
+          next_path = [ __path__, convert_key(key) ].flatten.compact
+          send_attribute_changed_event(next_path, value)
+          copy_state_to(ret, next_path)
         end
 
         protected
@@ -60,10 +60,35 @@ class Chef
           @__root__ = root
         end
 
+        def __precedence__=(precedence)
+          @__precedence__ = precedence
+        end
+
+        def __node__=(node)
+          @__node__ = node
+        end
+
         private
 
-        def send_reset_cache(path = __path__)
-          __root__.reset_cache(path.first) if !__root__.nil? && __root__.respond_to?(:reset_cache) && !path.nil?
+        def send_attribute_changed_event(next_path, value)
+          if __node__ && __node__.run_context && __node__.run_context.events
+            __node__.run_context.events.attribute_changed(__precedence__, next_path, value)
+          end
+        end
+
+        def send_reset_cache(path = nil, key = nil)
+          next_path = [ path, key ].flatten.compact
+          __root__.reset_cache(next_path.first) if !__root__.nil? && __root__.respond_to?(:reset_cache) && !next_path.nil?
+        end
+
+        def copy_state_to(ret, next_path)
+          if ret.is_a?(StateTracking)
+            ret.__path__ = next_path
+            ret.__root__ = __root__
+            ret.__node__ = __node__
+            ret.__precedence__ = __precedence__
+          end
+          ret
         end
       end
     end

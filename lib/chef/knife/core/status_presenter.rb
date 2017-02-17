@@ -148,7 +148,7 @@ class Chef
           difference = difference % 3600
           minutes = (difference / 60).to_i
           seconds = (difference % 60)
-          return [hours, minutes, seconds]
+          [hours, minutes, seconds]
         end
 
       end

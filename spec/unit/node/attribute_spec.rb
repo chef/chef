@@ -21,7 +21,11 @@ require "spec_helper"
 require "chef/node/attribute"
 
 describe Chef::Node::Attribute do
+  let(:events) { instance_double(Chef::EventDispatch::Dispatcher) }
+  let(:run_context) { instance_double(Chef::RunContext, :events => events) }
+  let(:node) { instance_double(Chef::Node, :run_context => run_context) }
   before(:each) do
+    allow(events).to receive(:attribute_changed)
     @attribute_hash =
       { "dmi" => {},
         "command" => { "ps" => "ps -ef" },
@@ -166,7 +170,7 @@ describe Chef::Node::Attribute do
       },
     }
     @automatic_hash = { "week" => "friday" }
-    @attributes = Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash)
+    @attributes = Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash, node)
   end
 
   describe "initialize" do
@@ -1194,6 +1198,47 @@ describe Chef::Node::Attribute do
       expect(@attributes["foo"].class).to eql(Chef::Node::ImmutableMash)
       expect(@attributes["foo"]["baz"].class).to eql(Chef::Node::ImmutableMash)
       expect(@attributes["foo"]["baz"]["bar"]).to be true
+    end
+  end
+
+  describe "node state" do
+    it "sets __root__ correctly" do
+      @attributes.default["foo"]["bar"]["baz"] = "quux"
+      expect(@attributes["foo"].__root__).to eql(@attributes)
+      expect(@attributes["foo"]["bar"].__root__).to eql(@attributes)
+      expect(@attributes.default["foo"].__root__).to eql(@attributes)
+      expect(@attributes.default["foo"]["bar"].__root__).to eql(@attributes)
+    end
+
+    it "sets __node__ correctly" do
+      @attributes.default["foo"]["bar"]["baz"] = "quux"
+      expect(@attributes["foo"].__node__).to eql(node)
+      expect(@attributes["foo"]["bar"].__node__).to eql(node)
+      expect(@attributes.default["foo"].__node__).to eql(node)
+      expect(@attributes.default["foo"]["bar"].__node__).to eql(node)
+    end
+
+    it "sets __path__ correctly" do
+      @attributes.default["foo"]["bar"]["baz"] = "quux"
+      expect(@attributes["foo"].__path__).to eql(["foo"])
+      expect(@attributes["foo"]["bar"].__path__).to eql(%w{foo bar})
+      expect(@attributes.default["foo"].__path__).to eql(["foo"])
+      expect(@attributes.default["foo"]["bar"].__path__).to eql(%w{foo bar})
+    end
+
+    it "sets __precedence__ correctly" do
+      @attributes.default["foo"]["bar"]["baz"] = "quux"
+      expect(@attributes["foo"].__precedence__).to eql(:merged)
+      expect(@attributes["foo"]["bar"].__precedence__).to eql(:merged)
+      expect(@attributes.default["foo"].__precedence__).to eql(:default)
+      expect(@attributes.default["foo"]["bar"].__precedence__).to eql(:default)
+    end
+
+    it "notifies on attribute changes" do
+      expect(events).to receive(:attribute_changed).with(:default, ["foo"], {})
+      expect(events).to receive(:attribute_changed).with(:default, %w{foo bar}, {})
+      expect(events).to receive(:attribute_changed).with(:default, %w{foo bar baz}, "quux")
+      @attributes.default["foo"]["bar"]["baz"] = "quux"
     end
   end
 end

@@ -68,6 +68,8 @@ require "chef/config"
 
 require "chef/chef_fs/file_system_cache"
 
+require "chef/api_client_v1"
+
 if ENV["CHEF_FIPS"] == "1"
   Chef::Config.init_openssl
 end
@@ -139,6 +141,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :not_supported_on_gce => true if gce?
   config.filter_run_excluding :not_supported_on_nano => true if windows_nano_server?
   config.filter_run_excluding :win2k3_only => true unless windows_win2k3?
+  config.filter_run_excluding :win2012r2_only => true unless windows_2012r2?
   config.filter_run_excluding :windows_2008r2_or_later => true unless windows_2008r2_or_later?
   config.filter_run_excluding :windows64_only => true unless windows64?
   config.filter_run_excluding :windows32_only => true unless windows32?
@@ -149,6 +152,10 @@ RSpec.configure do |config|
   config.filter_run_excluding :windows_powershell_no_dsc_only => true unless ! windows_powershell_dsc?
   config.filter_run_excluding :windows_domain_joined_only => true unless windows_domain_joined?
   config.filter_run_excluding :windows_not_domain_joined_only => true if windows_domain_joined?
+  # We think this line was causing rspec tests to not run on the Jenkins windows
+  # testers. If we ever fix it we should restore it.
+  # config.filter_run_excluding :windows_service_requires_assign_token => true if !STDOUT.isatty && !windows_user_right?("SeAssignPrimaryTokenPrivilege")
+  config.filter_run_excluding :windows_service_requires_assign_token => true
   config.filter_run_excluding :solaris_only => true unless solaris?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
@@ -215,9 +222,11 @@ RSpec.configure do |config|
   end
 
   # raise if anyone commits any test to CI with :focus set on it
-  config.before(:example, :focus) do
-    raise "This example was committed with `:focus` and should not have been"
-  end if ENV["CI"]
+  if ENV["CI"]
+    config.before(:example, :focus) do
+      raise "This example was committed with `:focus` and should not have been"
+    end
+  end
 
   config.before(:suite) do
     ARGV.clear

@@ -11,7 +11,7 @@ class Chef
           end
 
           def read
-            return @value
+            @value
           end
         end
       end

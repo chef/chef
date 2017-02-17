@@ -28,7 +28,7 @@ class Chef
       state_attrs :mount_point, :device_type, :fstype, :username, :password, :domain
 
       default_action :mount
-      allowed_actions :mount, :umount, :remount, :enable, :disable
+      allowed_actions :mount, :umount, :unmount, :remount, :enable, :disable
 
       def initialize(name, run_context = nil)
         super

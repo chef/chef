@@ -21,6 +21,8 @@ require "ohai"
 class Chef
   class Provider
     class Ohai < Chef::Provider
+      use_inline_resources
+
       provides :ohai
 
       def whyrun_supported?
@@ -31,17 +33,17 @@ class Chef
         true
       end
 
-      def action_reload
+      action :reload do
         converge_by("re-run ohai and merge results into node attributes") do
           ohai = ::Ohai::System.new
 
-          # If @new_resource.plugin is nil, ohai will reload all the plugins
+          # If new_resource.plugin is nil, ohai will reload all the plugins
           # Otherwise it will only reload the specified plugin
           # Note that any changes to plugins, or new plugins placed on
           # the path are picked up by ohai.
-          ohai.all_plugins @new_resource.plugin
+          ohai.all_plugins new_resource.plugin
           node.automatic_attrs.merge! ohai.data
-          Chef::Log.info("#{@new_resource} reloaded")
+          Chef::Log.info("#{new_resource} reloaded")
         end
       end
     end

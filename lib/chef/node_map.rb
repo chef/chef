@@ -32,8 +32,8 @@ class Chef
     # @return [NodeMap] Returns self for possible chaining
     #
     def set(key, value, platform: nil, platform_version: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, canonical: nil, override: nil, &block)
-      Chef.log_deprecation("The on_platform option to node_map has been deprecated") if on_platform
-      Chef.log_deprecation("The on_platforms option to node_map has been deprecated") if on_platforms
+      Chef.deprecated(:internal_api, "The on_platform option to node_map has been deprecated") if on_platform
+      Chef.deprecated(:internal_api, "The on_platforms option to node_map has been deprecated") if on_platforms
       platform ||= on_platform || on_platforms
       filters = {}
       filters[:platform] = platform if platform
@@ -113,7 +113,7 @@ class Chef
       remaining
     end
 
-    protected
+    private
 
     #
     # Succeeds if:
@@ -172,7 +172,8 @@ class Chef
       !!canonical == !!matcher[:canonical]
     end
 
-    def compare_matchers(key, new_matcher, matcher)
+    # @api private
+    def dispatch_compare_matchers(key, new_matcher, matcher)
       cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:block] }
       return cmp if cmp != 0
       cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform_version] }
@@ -187,6 +188,21 @@ class Chef
       return cmp if cmp != 0
       # If all things are identical, return 0
       0
+    end
+
+    #
+    # "provides" lines with identical filters sort by class name (ascending).
+    #
+    def compare_matchers(key, new_matcher, matcher)
+      cmp = dispatch_compare_matchers(key, new_matcher, matcher)
+      if cmp == 0
+        # Sort by class name (ascending) as well, if all other properties
+        # are exactly equal
+        if new_matcher[:value].is_a?(Class) && !new_matcher[:override]
+          cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:value].name }
+        end
+      end
+      cmp
     end
 
     def compare_matcher_properties(new_matcher, matcher)

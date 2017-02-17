@@ -145,7 +145,7 @@ class Chef
     end
 
     def self.subcommand_class_from(args)
-      if args.size == 1 && args[0].strip.casecmp("rehash").zero?
+      if args.size == 1 && args[0].strip.casecmp("rehash") == 0
         # To prevent issues with the rehash file not pointing to the correct plugins,
         # we always use the glob loader when regenerating the rehash file
         @subcommand_loader = Chef::Knife::SubcommandLoader.gem_glob_loader(chef_config_dir)
@@ -430,11 +430,11 @@ class Chef
     end
 
     def show_usage
-      stdout.puts("USAGE: " + self.opt_parser.to_s)
+      stdout.puts("USAGE: " + opt_parser.to_s)
     end
 
     def run_with_pretty_exceptions(raise_exception = false)
-      unless self.respond_to?(:run)
+      unless respond_to?(:run)
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
       enforce_path_sanity
@@ -553,7 +553,7 @@ class Chef
 
       pretty_name ||= output
 
-      self.msg("Created #{pretty_name}")
+      msg("Created #{pretty_name}")
 
       output(output) if config[:print_after]
     end
@@ -572,7 +572,7 @@ class Chef
       output(format_for_display(object)) if config[:print_after]
 
       obj_name = delete_name ? "#{delete_name}[#{name}]" : object
-      self.msg("Deleted #{obj_name}")
+      msg("Deleted #{obj_name}")
     end
 
     # helper method for testing if a field exists

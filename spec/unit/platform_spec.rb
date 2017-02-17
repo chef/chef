@@ -21,6 +21,14 @@ require "spec_helper"
 describe Chef::Platform do
 
   context "while testing with fake data" do
+    def expect_platform_warning(method_name, times: 1, recurse: true)
+      expect(Chef).to receive(:deprecated).with(:chef_platform_methods, "Chef::Platform.#{method_name} is deprecated").exactly(times).times
+      return unless recurse
+
+      expect_platform_warning(:find_provider_for_node, times: times) if method_name == :provider_for_resource
+      expect_platform_warning(:find_provider, times: times) if method_name == :find_provider_for_node
+      expect_platform_warning(:find, times: times) if method_name == :find_provider
+    end
 
     before :all do
       @original_platform_map = Chef::Platform.platforms
@@ -57,57 +65,67 @@ describe Chef::Platform do
     end
 
     it "should allow you to look up a platform by name and version, returning the provider map for it" do
+      expect_platform_warning(:find)
       pmap = Chef::Platform.find("Darwin", "9.2.2")
       expect(pmap).to be_a_kind_of(Hash)
       expect(pmap[:file]).to eql("darwinian")
     end
 
     it "should allow you to look up a platform by name and version using \"greater than\" style operators" do
+      expect_platform_warning(:find)
       pmap = Chef::Platform.find("Darwin", "11.1.0")
       expect(pmap).to be_a_kind_of(Hash)
       expect(pmap[:file]).to eql("new_darwinian")
     end
 
     it "should use the default providers for an os if the specific version does not exist" do
+      expect_platform_warning(:find)
       pmap = Chef::Platform.find("Darwin", "1")
       expect(pmap).to be_a_kind_of(Hash)
       expect(pmap[:file]).to eql("old school")
     end
 
     it "should use the default providers if the os doesn't give me a default, but does exist" do
+      expect_platform_warning(:find)
       pmap = Chef::Platform.find("mars_volta", "1")
       expect(pmap).to be_a_kind_of(Hash)
       expect(pmap[:file]).to eql(Chef::Provider::File)
     end
 
     it "should use the default provider if the os does not exist" do
+      expect_platform_warning(:find)
       pmap = Chef::Platform.find("AIX", "1")
       expect(pmap).to be_a_kind_of(Hash)
       expect(pmap[:file]).to eql(Chef::Provider::File)
     end
 
     it "should merge the defaults for an os with the specific version" do
+      expect_platform_warning(:find)
       pmap = Chef::Platform.find("Darwin", "9.2.2")
       expect(pmap[:file]).to eql("darwinian")
       expect(pmap[:snicker]).to eql("snack")
     end
 
     it "should merge the defaults for an os with the universal defaults" do
+      expect_platform_warning(:find)
       pmap = Chef::Platform.find("Darwin", "9.2.2")
       expect(pmap[:file]).to eql("darwinian")
       expect(pmap[:pax]).to eql("brittania")
     end
 
     it "should allow you to look up a provider for a platform directly by symbol" do
+      expect_platform_warning(:find_provider)
       expect(Chef::Platform.find_provider("Darwin", "9.2.2", :file)).to eql("darwinian")
     end
 
     it "should raise an exception if a provider cannot be found for a resource type" do
+      expect_platform_warning(:find_provider)
       expect { Chef::Platform.find_provider("Darwin", "9.2.2", :coffee) }.to raise_error(Chef::Exceptions::ProviderNotFound)
     end
 
     it "should look up a provider for a resource with a Chef::Resource object" do
       kitty = Chef::Resource::Cat.new("loulou")
+      expect_platform_warning(:find_provider)
       expect(Chef::Platform.find_provider("Darwin", "9.2.2", kitty)).to eql("nice")
     end
 
@@ -117,10 +135,12 @@ describe Chef::Platform do
       node.name("Intel")
       node.automatic_attrs[:platform] = "mac_os_x"
       node.automatic_attrs[:platform_version] = "9.2.2"
+      expect_platform_warning(:find_provider_for_node)
       expect(Chef::Platform.find_provider_for_node(node, kitty)).to eql("nice")
     end
 
     it "should not throw an exception when the platform version has an unknown format" do
+      expect_platform_warning(:find_provider)
       expect(Chef::Platform.find_provider(:darwin, "bad-version", :file)).to eql("old school")
     end
 
@@ -131,6 +151,8 @@ describe Chef::Platform do
       node.name("Intel")
       node.automatic_attrs[:platform] = "mac_os_x"
       node.automatic_attrs[:platform_version] = "9.2.2"
+      expect_platform_warning(:find_provider_for_node, recurse: false)
+      expect_platform_warning(:find_provider, recurse: false)
       expect(Chef::Platform.find_provider_for_node(node, kitty)).to eql(Chef::Provider::File)
     end
 
@@ -142,6 +164,7 @@ describe Chef::Platform do
       node.name("Intel")
       node.automatic_attrs[:platform] = "mac_os_x"
       node.automatic_attrs[:platform_version] = "8.5"
+      expect_platform_warning(:find_provider_for_node)
       expect(Chef::Platform.find_provider_for_node(node, kitty)).to eql(Chef::Provider::Cat)
     end
 
@@ -155,6 +178,7 @@ describe Chef::Platform do
 
     it "returns a provider object given a Chef::Resource object which has a valid run context and an action" do
       file, run_context = setup_file_resource
+      expect_platform_warning(:provider_for_resource)
       provider = Chef::Platform.provider_for_resource(file, :foo)
       expect(provider).to be_an_instance_of(Chef::Provider::File)
       expect(provider.new_resource).to equal(file)
@@ -163,6 +187,7 @@ describe Chef::Platform do
 
     it "returns a provider object given a Chef::Resource object which has a valid run context without an action" do
       file, run_context = setup_file_resource
+      expect_platform_warning(:provider_for_resource)
       provider = Chef::Platform.provider_for_resource(file)
       expect(provider).to be_an_instance_of(Chef::Provider::File)
       expect(provider.new_resource).to equal(file)
@@ -171,6 +196,7 @@ describe Chef::Platform do
 
     it "raises an error when trying to find the provider for a resource with no run context" do
       file = Chef::Resource::File.new("whateva")
+      expect_platform_warning(:provider_for_resource, recurse: false)
       expect { Chef::Platform.provider_for_resource(file) }.to raise_error(ArgumentError)
     end
 
@@ -179,6 +205,7 @@ describe Chef::Platform do
     end
 
     it "should update the provider map with map" do
+      expect_platform_warning(:set, times: 7)
       Chef::Platform.set(
            :platform => :darwin,
            :version => "9.2.2",
@@ -227,6 +254,7 @@ describe Chef::Platform do
     end
 
     it "does not overwrite the platform map when using :default platform" do
+      expect_platform_warning(:set)
       Chef::Platform.set(
         :resource => :file,
         :platform => :default,

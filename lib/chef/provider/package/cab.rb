@@ -19,50 +19,80 @@
 require "chef/provider/package"
 require "chef/resource/cab_package"
 require "chef/mixin/shell_out"
+require "chef/mixin/uris"
+require "chef/mixin/checksum"
 
 class Chef
   class Provider
     class Package
       class Cab < Chef::Provider::Package
+        use_inline_resources
         include Chef::Mixin::ShellOut
+        include Chef::Mixin::Uris
+        include Chef::Mixin::Checksum
 
         provides :cab_package, os: "windows"
 
         def load_current_resource
           @current_resource = Chef::Resource::CabPackage.new(new_resource.name)
-          current_resource.source(new_resource.source)
+          current_resource.source(cab_file_source)
           new_resource.version(package_version)
           current_resource.version(installed_version)
           current_resource
         end
 
+        def cab_file_source
+          @cab_file_source ||= uri_scheme?(new_resource.source) ? download_source_file : new_resource.source
+        end
+
+        def download_source_file
+          source_resource.run_action(:create)
+          Chef::Log.debug("#{new_resource} fetched source file to #{source_resource.path}")
+          source_resource.path
+        end
+
+        def source_resource
+          @source_resource ||= declare_resource(:remote_file, new_resource.name) do
+            path default_download_cache_path
+            source new_resource.source
+            backup false
+          end
+        end
+
+        def default_download_cache_path
+          uri = ::URI.parse(new_resource.source)
+          filename = ::File.basename(::URI.unescape(uri.path))
+          file_cache_dir = Chef::FileCache.create_cache_path("package/")
+          Chef::Util::PathHelper.cleanpath("#{file_cache_dir}/#{filename}")
+        end
+
         def install_package(name, version)
-          dism_command("/Add-Package /PackagePath:\"#{@new_resource.source}\"")
+          dism_command("/Add-Package /PackagePath:\"#{cab_file_source}\"")
         end
 
         def remove_package(name, version)
-          dism_command("/Remove-Package /PackagePath:\"#{@new_resource.source}\"")
+          dism_command("/Remove-Package /PackagePath:\"#{cab_file_source}\"")
         end
 
         def dism_command(command)
-          shellout = Mixlib::ShellOut.new("dism.exe /Online #{command} /NoRestart", { :timeout => @new_resource.timeout })
+          shellout = Mixlib::ShellOut.new("dism.exe /Online /English #{command} /NoRestart", timeout: new_resource.timeout)
           with_os_architecture(nil) do
             shellout.run_command
           end
         end
 
         def installed_version
-          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{@new_resource.source}\"").stdout
+          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{cab_file_source}\"").stdout
           package_info = parse_dism_get_package_info(stdout)
           # e.g. Package_for_KB2975719~31bf3856ad364e35~amd64~~6.3.1.8
           package = split_package_identity(package_info["package_information"]["package_identity"])
           # Search for just the package name to catch a different version being installed
-          Chef::Log.debug("#{@new_resource} searching for installed package #{package['name']}")
+          Chef::Log.debug("#{new_resource} searching for installed package #{package['name']}")
           found_packages = installed_packages.select { |p| p["package_identity"] =~ /^#{package['name']}~/ }
-          if found_packages.length == 0
+          if found_packages.empty?
             nil
           elsif found_packages.length == 1
-            stdout = dism_command("/Get-PackageInfo /PackageName:\"#{found_packages.first["package_identity"]}\"").stdout
+            stdout = dism_command("/Get-PackageInfo /PackageName:\"#{found_packages.first['package_identity']}\"").stdout
             find_version(stdout)
           else
             # Presuming this won't happen, otherwise we need to handle it
@@ -71,8 +101,8 @@ class Chef
         end
 
         def package_version
-          Chef::Log.debug("#{@new_resource} getting product version for package at #{@new_resource.source}")
-          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{@new_resource.source}\"").stdout
+          Chef::Log.debug("#{new_resource} getting product version for package at #{cab_file_source}")
+          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{cab_file_source}\"").stdout
           find_version(stdout)
         end
 
@@ -85,22 +115,21 @@ class Chef
         # returns a hash of package state information given the output of dism /get-packages
         # expected keys: package_identity
         def parse_dism_get_packages(text)
-          packages = Array.new
+          packages = []
           text.each_line do |line|
             key, value = line.split(":") if line.start_with?("Package Identity")
-            unless key.nil? || value.nil?
-              package = Hash.new
-              package[key.downcase.strip.tr(" ", "_")] = value.strip.chomp
-              packages << package
-            end
+            next if key.nil? || value.nil?
+            package = {}
+            package[key.downcase.strip.tr(" ", "_")] = value.strip.chomp
+            packages << package
           end
           packages
         end
 
         # returns a hash of package information given the output of dism /get-packageinfo
         def parse_dism_get_package_info(text)
-          package_data = Hash.new
-          errors = Array.new
+          package_data = {}
+          errors = []
           in_section = false
           section_headers = [ "Package information", "Custom Properties", "Features" ]
           text.each_line do |line|
@@ -112,7 +141,7 @@ class Chef
               v = $2 # has to be first or the gsub below replaces this variable
               k = $1.downcase.strip.tr(" ", "_")
               if in_section
-                package_data[in_section] = Hash.new unless package_data[in_section]
+                package_data[in_section] = {} unless package_data[in_section]
                 package_data[in_section][k] = v
               else
                 package_data[k] = v
@@ -132,7 +161,7 @@ class Chef
         end
 
         def split_package_identity(identity)
-          data = Hash.new
+          data = {}
           data["name"], data["publisher"], data["arch"], data["resource_id"], data["version"] = identity.split("~")
           data
         end

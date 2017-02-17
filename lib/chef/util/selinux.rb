@@ -83,7 +83,7 @@ class Chef
         else
           # We assume selinux is not enabled if selinux utils are not
           # installed.
-          return false
+          false
         end
       end
 

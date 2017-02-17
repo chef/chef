@@ -326,7 +326,7 @@ class Chef
                     else
                       relative << path[1]
                     end
-                    relative = relative + file[:path].split("/")
+                    relative += file[:path].split("/")
                     file["url"] = ChefZero::RestBase.build_uri(request.base_uri, relative)
                   end
                 end
@@ -611,7 +611,7 @@ class Chef
       private
 
       def use_memory_store?(path)
-        return path[0] == "sandboxes" || path[0] == "file_store" && path[1] == "checksums" || path == %w{environments _default}
+        path[0] == "sandboxes" || path[0] == "file_store" && path[1] == "checksums" || path == %w{environments _default}
       end
 
       def write_cookbook(path, data, *options)
@@ -779,15 +779,13 @@ class Chef
       end
 
       def path_always_exists?(path)
-        return path.length == 1 && BASE_DIRNAMES.include?(path[0])
+        path.length == 1 && BASE_DIRNAMES.include?(path[0])
       end
 
       def with_entry(path)
-        begin
-          yield Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path))
-        rescue Chef::ChefFS::FileSystem::NotFoundError => e
-          raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
-        end
+        yield Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path))
+      rescue Chef::ChefFS::FileSystem::NotFoundError => e
+        raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
       end
 
       def with_parent_dir(path, *options)

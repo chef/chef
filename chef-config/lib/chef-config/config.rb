@@ -45,7 +45,7 @@ module ChefConfig
     #
     # +filename+ is used for context in stacktraces, but doesn't need to be the name of an actual file.
     def self.from_string(string, filename)
-      self.instance_eval(string, filename, 1)
+      instance_eval(string, filename, 1)
     end
 
     def self.inspect
@@ -56,11 +56,22 @@ module ChefConfig
       path = PathHelper.cleanpath(path)
       if ChefConfig.windows?
         # turns \etc\chef\client.rb and \var\chef\client.rb into C:/chef/client.rb
-        if env["SYSTEMDRIVE"] && path[0] == '\\' && path.split('\\')[2] == "chef"
-          path = PathHelper.join(env["SYSTEMDRIVE"], path.split('\\', 3)[2])
+        # Some installations will be on different drives so use the drive that
+        # the expanded path to __FILE__ is found.
+        drive = windows_installation_drive
+        if drive && path[0] == '\\' && path.split('\\')[2] == "chef"
+          path = PathHelper.join(drive, path.split('\\', 3)[2])
         end
       end
       path
+    end
+
+    def self.windows_installation_drive
+      if ChefConfig.windows?
+        drive = File.expand_path(__FILE__).split("/", 2)[0]
+        drive = ENV["SYSTEMDRIVE"] if drive.to_s == ""
+        drive
+      end
     end
 
     def self.add_formatter(name, file_path = nil)
@@ -131,16 +142,16 @@ module ChefConfig
     # that upload or download files (such as knife upload, knife role from file,
     # etc.) work.
     default :chef_repo_path do
-      if self.configuration[:cookbook_path]
-        if self.configuration[:cookbook_path].kind_of?(String)
-          File.expand_path("..", self.configuration[:cookbook_path])
+      if configuration[:cookbook_path]
+        if configuration[:cookbook_path].kind_of?(String)
+          File.expand_path("..", configuration[:cookbook_path])
         else
-          self.configuration[:cookbook_path].map do |path|
+          configuration[:cookbook_path].map do |path|
             File.expand_path("..", path)
           end
         end
       elsif configuration[:cookbook_artifact_path]
-        File.expand_path("..", self.configuration[:cookbook_artifact_path])
+        File.expand_path("..", configuration[:cookbook_artifact_path])
       else
         cache_path
       end
@@ -194,7 +205,7 @@ module ChefConfig
     # Defaults to <chef_repo_path>/cookbooks.  If chef_repo_path
     # is not specified, this is set to [/var/chef/cookbooks, /var/chef/site-cookbooks]).
     default(:cookbook_path) do
-      if self.configuration[:chef_repo_path]
+      if configuration[:chef_repo_path]
         derive_path_from_chef_repo_path("cookbooks")
       else
         Array(derive_path_from_chef_repo_path("cookbooks")).flatten +
@@ -401,10 +412,10 @@ module ChefConfig
     default(:chef_server_root) do
       # if the chef_server_url is a path to an organization, aka
       # 'some_url.../organizations/*' then remove the '/organization/*' by default
-      if self.configuration[:chef_server_url] =~ /\/organizations\/\S*$/
-        self.configuration[:chef_server_url].split("/")[0..-3].join("/")
-      elsif self.configuration[:chef_server_url] # default to whatever chef_server_url is
-        self.configuration[:chef_server_url]
+      if configuration[:chef_server_url] =~ /\/organizations\/\S*$/
+        configuration[:chef_server_url].split("/")[0..-3].join("/")
+      elsif configuration[:chef_server_url] # default to whatever chef_server_url is
+        configuration[:chef_server_url]
       else
         "https://localhost:443"
       end
@@ -555,7 +566,7 @@ module ChefConfig
     # Initialize openssl
     def self.init_openssl
       if fips
-        self.enable_fips_mode
+        enable_fips_mode
       end
     end
 
@@ -857,7 +868,13 @@ module ChefConfig
       # Full URL to the endpoint that will receive our data. If nil, the
       # data collector will not run.
       # Ex: http://my-data-collector.mycompany.com/ingest
-      default :server_url,       nil
+      default(:server_url) do
+        if config_parent.solo || config_parent.local_mode
+          nil
+        else
+          File.join(config_parent.chef_server_url, "/data-collector")
+        end
+      end
 
       # An optional pre-shared token to pass as an HTTP header (x-data-collector-token)
       # that can be used to determine whether or not the poster of this
@@ -1035,6 +1052,12 @@ module ChefConfig
     default :ruby_encoding, Encoding::UTF_8
 
     default :rubygems_url, "https://rubygems.org"
+
+    # This controls the behavior of resource cloning (and CHEF-3694 warnings).  For Chef < 12 the behavior
+    # has been that this is 'true', in Chef 13 this will change to false.  Setting this to 'true' in Chef
+    # 13 is not a viable or supported migration strategy since Chef 13 community cookbooks will be expected
+    # to break with this setting set to 'true'.
+    default :resource_cloning, true
 
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with

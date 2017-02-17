@@ -34,7 +34,7 @@ class Chef
       # gem will be installed via the gems API. When a String is given, the gem
       # will be installed by shelling out to the gem command. Using a Hash of
       # options with an explicit gem_binary will result in undefined behavior.
-      property :options, [ String, Hash, nil ], desired_state: false
+      property :options, [ String, Hash, Array, nil ], desired_state: false
 
     end
   end

@@ -354,6 +354,24 @@ describe Chef::Resource do
     end
   end
 
+  describe "to_text" do
+    it "prints nice message" do
+      resource_class = Class.new(Chef::Resource) { property :foo, String }
+      resource = resource_class.new("sensitive_property_tests")
+      resource.foo = "some value"
+      expect(resource.to_text).to match(/foo "some value"/)
+    end
+
+    context "when property is sensitive" do
+      it "supresses that properties value" do
+        resource_class = Class.new(Chef::Resource) { property :foo, String, sensitive: true }
+        resource = resource_class.new("sensitive_property_tests")
+        resource.foo = "some value"
+        expect(resource.to_text).to match(/foo "\*sensitive value suppressed\*"/)
+      end
+    end
+  end
+
   describe "self.resource_name" do
     context "When resource_name is not set" do
       it "and there are no provides lines, resource_name is nil" do
@@ -838,6 +856,8 @@ describe Chef::Resource do
     it "should run only_if/not_if conditionals when notified to run another action (CHEF-972)" do
       snitch_var1 = snitch_var2 = 0
       runner = Chef::Runner.new(run_context)
+
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       Chef::Platform.set(
         :resource => :cat,
         :provider => Chef::Provider::SnakeOil

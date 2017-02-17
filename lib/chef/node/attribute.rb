@@ -187,21 +187,22 @@ class Chef
        # return the automatic level attribute component
       attr_reader :automatic
 
-      def initialize(normal, default, override, automatic)
-        @default        = VividMash.new(default, self)
-        @env_default    = VividMash.new({}, self)
-        @role_default   = VividMash.new({}, self)
-        @force_default  = VividMash.new({}, self)
+      def initialize(normal, default, override, automatic, node = nil)
+        @default        = VividMash.new(default, self, node, :default)
+        @env_default    = VividMash.new({}, self, node, :env_default)
+        @role_default   = VividMash.new({}, self, node, :role_default)
+        @force_default  = VividMash.new({}, self, node, :force_default)
 
-        @normal         = VividMash.new(normal, self)
+        @normal         = VividMash.new(normal, self, node, :normal)
 
-        @override       = VividMash.new(override, self)
-        @role_override  = VividMash.new({}, self)
-        @env_override   = VividMash.new({}, self)
-        @force_override = VividMash.new({}, self)
+        @override       = VividMash.new(override, self, node, :override)
+        @role_override  = VividMash.new({}, self, node, :role_override)
+        @env_override   = VividMash.new({}, self, node, :env_override)
+        @force_override = VividMash.new({}, self, node, :force_override)
 
-        @automatic      = VividMash.new(automatic, self)
-        super()
+        @automatic      = VividMash.new(automatic, self, node, :automatic)
+
+        super(nil, self, node, :merged)
       end
 
        # Debug what's going on with an attribute. +args+ is a path spec to the
@@ -232,59 +233,59 @@ class Chef
        # Set the cookbook level default attribute component to +new_data+.
       def default=(new_data)
         reset
-        @default = VividMash.new(new_data, self)
+        @default = VividMash.new(new_data, self, __node__, :default)
       end
 
        # Set the role level default attribute component to +new_data+
       def role_default=(new_data)
         reset
-        @role_default = VividMash.new(new_data, self)
+        @role_default = VividMash.new(new_data, self, __node__, :role_default)
       end
 
        # Set the environment level default attribute component to +new_data+
       def env_default=(new_data)
         reset
-        @env_default = VividMash.new(new_data, self)
+        @env_default = VividMash.new(new_data, self, __node__, :env_default)
       end
 
        # Set the force_default (+default!+) level attributes to +new_data+
       def force_default=(new_data)
         reset
-        @force_default = VividMash.new(new_data, self)
+        @force_default = VividMash.new(new_data, self, __node__, :force_default)
       end
 
        # Set the normal level attribute component to +new_data+
       def normal=(new_data)
         reset
-        @normal = VividMash.new(new_data, self)
+        @normal = VividMash.new(new_data, self, __node__, :normal)
       end
 
        # Set the cookbook level override attribute component to +new_data+
       def override=(new_data)
         reset
-        @override = VividMash.new(new_data, self)
+        @override = VividMash.new(new_data, self, __node__, :override)
       end
 
        # Set the role level override attribute component to +new_data+
       def role_override=(new_data)
         reset
-        @role_override = VividMash.new(new_data, self)
+        @role_override = VividMash.new(new_data, self, __node__, :role_override)
       end
 
        # Set the environment level override attribute component to +new_data+
       def env_override=(new_data)
         reset
-        @env_override = VividMash.new(new_data, self)
+        @env_override = VividMash.new(new_data, self, __node__, :env_override)
       end
 
       def force_override=(new_data)
         reset
-        @force_override = VividMash.new(new_data, self)
+        @force_override = VividMash.new(new_data, self, __node__, :force_override)
       end
 
       def automatic=(new_data)
         reset
-        @automatic = VividMash.new(new_data, self)
+        @automatic = VividMash.new(new_data, self, __node__, :automatic)
       end
 
        #
@@ -415,23 +416,22 @@ class Chef
 
       def normal_unless(*args)
         return Decorator::Unchain.new(self, :normal_unless) unless args.length > 0
-        write(:normal, *args) if read(*args[0...-1]).nil?
+        write(:normal, *args) if normal.read(*args[0...-1]).nil?
       end
 
       def default_unless(*args)
         return Decorator::Unchain.new(self, :default_unless) unless args.length > 0
-        write(:default, *args) if read(*args[0...-1]).nil?
+        write(:default, *args) if default.read(*args[0...-1]).nil?
       end
 
       def override_unless(*args)
         return Decorator::Unchain.new(self, :override_unless) unless args.length > 0
-        write(:override, *args) if read(*args[0...-1]).nil?
+        write(:override, *args) if override.read(*args[0...-1]).nil?
       end
 
       def set_unless(*args)
-        Chef.log_deprecation("node.set_unless is deprecated and will be removed in Chef 14, please use node.default_unless/node.override_unless (or node.normal_unless if you really need persistence)")
-        return Decorator::Unchain.new(self, :default_unless) unless args.length > 0
-        write(:normal, *args) if read(*args[0...-1]).nil?
+        Chef.deprecated(:attributes, "node.set_unless is deprecated and will be removed in Chef 14, please use node.default_unless/node.override_unless (or node.normal_unless if you really need persistence)")
+        normal_unless(*args)
       end
 
       def has_key?(key)
@@ -454,19 +454,19 @@ class Chef
       end
 
       def write(level, *args, &block)
-        self.send(level).write(*args, &block)
+        send(level).write(*args, &block)
       end
 
       def write!(level, *args, &block)
-        self.send(level).write!(*args, &block)
+        send(level).write!(*args, &block)
       end
 
       def unlink(level, *path)
-        self.send(level).unlink(*path)
+        send(level).unlink(*path)
       end
 
       def unlink!(level, *path)
-        self.send(level).unlink!(*path)
+        send(level).unlink!(*path)
       end
 
       alias :attribute? :has_key?
@@ -480,14 +480,14 @@ class Chef
         if symbol == :to_ary
           merged_attributes.send(symbol, *args)
         elsif args.empty?
-          Chef.log_deprecation %q{method access to node attributes (node.foo.bar) is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]["bar"])}
+          Chef.deprecated(:attributes, %q{method access to node attributes (node.foo.bar) is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]["bar"])})
           if key?(symbol)
             self[symbol]
           else
             raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
           end
         elsif symbol.to_s =~ /=$/
-          Chef.log_deprecation %q{method setting of node attributes (node.foo="bar") is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]="bar")}
+          Chef.deprecated(:attributes, %q{method setting of node attributes (node.foo="bar") is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]="bar")})
           key_to_set = symbol.to_s[/^(.+)=$/, 1]
           self[key_to_set] = (args.length == 1 ? args[0] : args)
         else
@@ -565,7 +565,7 @@ class Chef
 
         return nil if components.compact.empty?
 
-        components.inject(ImmutableMash.new({}, self)) do |merged, component|
+        components.inject(ImmutableMash.new({}, self, __node__, :merged)) do |merged, component|
           Chef::Mixin::DeepMerge.hash_only_merge!(merged, component)
         end
       end

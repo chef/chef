@@ -238,6 +238,5 @@ describe Chef::Provider::Execute do
 
       end
     end
-
   end
 end

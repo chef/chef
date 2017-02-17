@@ -22,7 +22,7 @@ class Chef
       module RemoteDirectory
 
         def directory_root_in_cookbook_cache
-          Chef.log_deprecation "the Chef::Provider::RemoteDirectory#directory_root_in_cookbook_cache method is deprecated"
+          Chef.deprecated :internal_api, "the Chef::Provider::RemoteDirectory#directory_root_in_cookbook_cache method is deprecated"
 
           @directory_root_in_cookbook_cache ||=
             begin

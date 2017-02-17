@@ -21,7 +21,7 @@ require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
-exclude_test = !%w{aix centos redhat suse}.include?(ohai[:platform])
+exclude_test = !%w{aix rhel fedora suse}.include?(ohai[:platform_family])
 describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test do
   include Chef::Mixin::ShellOut
 
@@ -32,37 +32,34 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
   end
 
   def rpm_pkg_should_be_installed(resource)
-    case ohai[:platform]
     # Due to dependency issues , different rpm pkgs are used in different platforms.
     # dummy rpm package works in aix, without any dependency issues.
-    when "aix"
+    if ohai[:platform] == "aix"
       expect(shell_out("rpm -qa | grep dummy").exitstatus).to eq(0)
     # mytest rpm package works in centos, redhat and in suse without any dependency issues.
-    when "centos", "redhat", "suse"
+    else
       expect(shell_out("rpm -qa | grep mytest").exitstatus).to eq(0)
       ::File.exists?("/opt/mytest/mytest.sh") # The mytest rpm package contains the mytest.sh file
     end
   end
 
   def rpm_pkg_should_not_be_installed(resource)
-    case ohai[:platform]
-    when "aix"
+    if ohai[:platform] == "aix"
       expect(shell_out("rpm -qa | grep dummy").exitstatus).to eq(1)
-    when "centos", "redhat", "suse"
+    else
       expect(shell_out("rpm -qa | grep mytest").exitstatus).to eq(1)
       !::File.exists?("/opt/mytest/mytest.sh")
     end
   end
 
   before(:all) do
-    case ohai[:platform]
     # Due to dependency issues , different rpm pkgs are used in different platforms.
-    when "aix"
+    if ohai[:platform] == "aix"
       @pkg_name = "dummy"
       @pkg_version = "1-0"
       @pkg_path = "#{Dir.tmpdir}/dummy-1-0.aix6.1.noarch.rpm"
       FileUtils.cp(File.join(CHEF_SPEC_ASSETS, "dummy-1-0.aix6.1.noarch.rpm") , @pkg_path)
-    when "centos", "redhat", "suse"
+    else
       @pkg_name = "mytest"
       @pkg_version = "1.0-1"
       @pkg_path = "#{Dir.tmpdir}/mytest-1.0-1.noarch.rpm"

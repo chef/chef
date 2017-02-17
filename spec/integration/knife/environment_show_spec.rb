@@ -26,7 +26,7 @@ describe "knife environment show", :workstation do
   when_the_chef_server "has some environments" do
     before do
       environment "b", {
-        "default_attributes" => { "foo" => "bar" },
+        "default_attributes" => { "foo" => "bar", "baz" => { "raz.my" => "mataz" } },
       }
     end
 
@@ -36,6 +36,8 @@ describe "knife environment show", :workstation do
 chef_type:           environment
 cookbook_versions:
 default_attributes:
+  baz:
+    raz.my: mataz
   foo: bar
 description:         
 json_class:          Chef::Environment
@@ -46,11 +48,29 @@ EOM
     # rubocop:enable Style/TrailingWhitespace
 
     it "shows the requested attribute of an environment" do
-      pending "KnifeSupport doesn't appear to pass this through correctly"
-      knife("environment show b -a foo").should_succeed <<EOM
+      knife("environment show b -a default_attributes").should_succeed <<EOM
 b:
-  foo: bar
+  default_attributes:
+    baz:
+      raz.my: mataz
+    foo: bar
 EOM
+    end
+
+    it "shows the requested nested attribute of an environment" do
+      knife("environment show b -a default_attributes.baz").should_succeed <<EON
+b:
+  default_attributes.baz:
+    raz.my: mataz
+EON
+    end
+
+    it "shows the requested attribute of an environment with custom field separator" do
+      knife("environment show b -S: -a default_attributes:baz").should_succeed <<EOT
+b:
+  default_attributes:baz:
+    raz.my: mataz
+EOT
     end
   end
 end

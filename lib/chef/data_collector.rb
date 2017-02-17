@@ -2,7 +2,7 @@
 # Author:: Adam Leff (<adamleff@chef.io>)
 # Author:: Ryan Cragun (<ryan@chef.io>)
 #
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,20 +19,66 @@
 #
 
 require "uri"
+require "chef/server_api"
+require "chef/http/simple_json"
 require "chef/event_dispatch/base"
 require "chef/data_collector/messages"
 require "chef/data_collector/resource_report"
 require "ostruct"
+require "set"
 
 class Chef
 
   # == Chef::DataCollector
   # Provides methods for determinine whether a reporter should be registered.
   class DataCollector
+
+    # Whether or not to enable data collection:
+    # * always disabled for why run mode
+    # * disabled when the user sets `Chef::Config[:data_collector][:mode]` to a
+    #   value that excludes the mode (client or solo) that we are running as
+    # * disabled in solo mode if the user did not configure the auth token
+    # * disabled if `Chef::Config[:data_collector][:server_url]` is set to a
+    #   falsey value
     def self.register_reporter?
-      Chef::Config[:data_collector][:server_url] &&
-        !Chef::Config[:why_run] &&
-        self.reporter_enabled_for_current_mode?
+      if why_run?
+        Chef::Log.debug("data collector is disabled for why run mode")
+        return false
+      end
+      unless reporter_enabled_for_current_mode?
+        Chef::Log.debug("data collector is configured to only run in " \
+                        "#{Chef::Config[:data_collector][:mode].inspect} modes, disabling it")
+        return false
+      end
+      unless data_collector_url_configured?
+        Chef::Log.debug("data collector URL is not configured, disabling data collector")
+        return false
+      end
+      if solo? && !token_auth_configured?
+        Chef::Log.debug("Data collector token must be configured to use Chef Automate data collector with Chef Solo")
+      end
+      if !solo? && token_auth_configured?
+        Chef::Log.warn("Data collector token authentication is not recommended for client-server mode" \
+                       "Please upgrade Chef Server to 12.11.0 and remove the token from your config file " \
+                       "to use key based authentication instead")
+      end
+      true
+    end
+
+    def self.data_collector_url_configured?
+      !!Chef::Config[:data_collector][:server_url]
+    end
+
+    def self.why_run?
+      !!Chef::Config[:why_run]
+    end
+
+    def self.token_auth_configured?
+      !!Chef::Config[:data_collector][:token]
+    end
+
+    def self.solo?
+      !!Chef::Config[:solo] || !!Chef::Config[:local_mode]
     end
 
     def self.reporter_enabled_for_current_mode?
@@ -54,7 +100,7 @@ class Chef
     class Reporter < EventDispatch::Base
       attr_reader :all_resource_reports, :status, :exception, :error_descriptions,
                   :expanded_run_list, :run_context, :run_status, :http,
-                  :current_resource_report, :enabled
+                  :current_resource_report, :enabled, :deprecations
 
       def initialize
         validate_data_collector_server_url!
@@ -63,8 +109,10 @@ class Chef
         @current_resource_loaded = nil
         @error_descriptions      = {}
         @expanded_run_list       = {}
-        @http                    = Chef::HTTP.new(data_collector_server_url)
+        @deprecations            = Set.new
         @enabled                 = true
+
+        @http = setup_http_client
       end
 
       # see EventDispatch::Base#run_started
@@ -79,7 +127,7 @@ class Chef
 
         disable_reporter_on_error do
           send_to_data_collector(
-            Chef::DataCollector::Messages.run_start_message(current_run_status).to_json
+            Chef::DataCollector::Messages.run_start_message(current_run_status)
           )
         end
       end
@@ -126,12 +174,13 @@ class Chef
       # resource, and we only care about tracking top-level resources.
       def resource_current_state_loaded(new_resource, action, current_resource)
         return if nested_resource?(new_resource)
-        update_current_resource_report(create_resource_report(new_resource, action, current_resource))
+        initialize_resource_report_if_needed(new_resource, action, current_resource)
       end
 
       # see EventDispatch::Base#resource_up_to_date
       # Mark our ResourceReport status accordingly
       def resource_up_to_date(new_resource, action)
+        initialize_resource_report_if_needed(new_resource, action)
         current_resource_report.up_to_date unless nested_resource?(new_resource)
       end
 
@@ -142,15 +191,15 @@ class Chef
       def resource_skipped(new_resource, action, conditional)
         return if nested_resource?(new_resource)
 
-        resource_report = create_resource_report(new_resource, action)
-        resource_report.skipped(conditional)
-        update_current_resource_report(resource_report)
+        initialize_resource_report_if_needed(new_resource, action)
+        current_resource_report.skipped(conditional)
       end
 
       # see EventDispatch::Base#resource_updated
       # Flag the current ResourceReport instance as updated (as long as it's
       # a top-level resource).
       def resource_updated(new_resource, action)
+        initialize_resource_report_if_needed(new_resource, action)
         current_resource_report.updated unless nested_resource?(new_resource)
       end
 
@@ -159,6 +208,7 @@ class Chef
       # long as it's a top-level resource, and update the run error text
       # with the proper Formatter.
       def resource_failed(new_resource, action, exception)
+        initialize_resource_report_if_needed(new_resource, action)
         current_resource_report.failed(exception) unless nested_resource?(new_resource)
         update_error_description(
           Formatters::ErrorMapper.resource_failed(
@@ -176,7 +226,7 @@ class Chef
         if current_resource_report && !nested_resource?(new_resource)
           current_resource_report.finish
           add_resource_report(current_resource_report)
-          update_current_resource_report(nil)
+          clear_current_resource_report
         end
       end
 
@@ -223,7 +273,26 @@ class Chef
         )
       end
 
+      # see EventDispatch::Base#deprecation
+      # Append a received deprecation to the list of deprecations
+      def deprecation(message, location = caller(2..2)[0])
+        add_deprecation(message.message, message.url, location)
+      end
+
       private
+
+      # Selects the type of HTTP client to use based on whether we are using
+      # token-based or signed header authentication. Token authentication is
+      # intended to be used primarily for Chef Solo in which case no signing
+      # key will be available (in which case `Chef::ServerAPI.new()` would
+      # raise an exception.
+      def setup_http_client
+        if data_collector_token.nil?
+          Chef::ServerAPI.new(data_collector_server_url, validate_utf8: false)
+        else
+          Chef::HTTP::SimpleJSON.new(data_collector_server_url, validate_utf8: false)
+        end
+      end
 
       #
       # Yields to the passed-in block (which is expected to be some interaction
@@ -255,14 +324,15 @@ class Chef
           Chef::Log.error(msg)
           raise
         else
-          Chef::Log.warn(msg)
+          # Make the message non-scary for folks who don't have automate:
+          msg << " (This is normal if you do not have Chef Automate)"
+          Chef::Log.info(msg)
         end
       end
 
       def send_to_data_collector(message)
         return unless data_collector_accessible?
 
-        Chef::Log.debug("data_collector_reporter: POSTing the following message to #{data_collector_server_url}: #{message}")
         http.post(nil, message, headers)
       end
 
@@ -288,8 +358,9 @@ class Chef
             expanded_run_list: expanded_run_list,
             resources: all_resource_reports,
             status: opts[:status],
-            error_descriptions: error_descriptions
-          ).to_json
+            error_descriptions: error_descriptions,
+            deprecations: deprecations.to_a
+          )
         )
       end
 
@@ -332,12 +403,17 @@ class Chef
         @run_status = run_status
       end
 
-      def update_current_resource_report(resource_report)
-        @current_resource_report = resource_report
-      end
-
       def update_error_description(discription_hash)
         @error_descriptions = discription_hash
+      end
+
+      def add_deprecation(message, url, location)
+        @deprecations << { message: message, url: url, location: location }
+      end
+
+      def initialize_resource_report_if_needed(new_resource, action, current_resource = nil)
+        return unless current_resource_report.nil?
+        @current_resource_report = create_resource_report(new_resource, action, current_resource)
       end
 
       def create_resource_report(new_resource, action, current_resource = nil)
@@ -348,27 +424,38 @@ class Chef
         )
       end
 
+      def clear_current_resource_report
+        @current_resource_report = nil
+      end
+
       def detect_unprocessed_resources
-        # create a Set containing all resource+action combinations from
-        # the Resource Collection
-        collection_resources = Set.new
+        # create a Hash (for performance reasons, rather than an Array) containing all
+        # resource+action combinations from the Resource Collection
+        #
+        # We use the object ID instead of the resource itself in the Hash key because
+        # we currently allow users to create a property called "hash" which creates
+        # a #hash instance method on the resource. Ruby expects that to be a Fixnum,
+        # so bad things happen when adding an object to an Array or a Hash if it's not.
+        collection_resources = {}
         run_context.resource_collection.all_resources.each do |resource|
           Array(resource.action).each do |action|
-            collection_resources.add([resource, action])
+            collection_resources[[resource.__id__, action]] = resource
           end
         end
 
-        # Delete from the Set any resource+action combination we have
+        # Delete from the Hash any resource+action combination we have
         # already processed.
         all_resource_reports.each do |report|
-          collection_resources.delete([report.resource, report.action])
+          collection_resources.delete([report.resource.__id__, report.action])
         end
 
-        # The items remaining in the Set are unprocessed resource+actions,
+        # The items remaining in the Hash are unprocessed resource+actions,
         # so we'll create new resource reports for them which default to
         # a state of "unprocessed".
-        collection_resources.each do |resource, action|
-          add_resource_report(create_resource_report(resource, action))
+        collection_resources.each do |key, resource|
+          # The Hash key is an array of the Resource's object ID and the action.
+          # We need to pluck out the action.
+          add_resource_report(create_resource_report(resource, key[1]))
         end
       end
 
@@ -381,8 +468,10 @@ class Chef
       end
 
       def validate_data_collector_server_url!
-        raise Chef::Exceptions::ConfigurationError,
-          "Chef::Config[:data_collector][:server_url] is empty. Please supply a valid URL." if data_collector_server_url.empty?
+        if data_collector_server_url.empty?
+          raise Chef::Exceptions::ConfigurationError,
+            "Chef::Config[:data_collector][:server_url] is empty. Please supply a valid URL."
+        end
 
         begin
           uri = URI(data_collector_server_url)
@@ -390,8 +479,10 @@ class Chef
           raise Chef::Exceptions::ConfigurationError, "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is not a valid URI."
         end
 
-        raise Chef::Exceptions::ConfigurationError,
-          "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is a URI with no host. Please supply a valid URL." if uri.host.nil?
+        if uri.host.nil?
+          raise Chef::Exceptions::ConfigurationError,
+            "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is a URI with no host. Please supply a valid URL."
+        end
       end
     end
   end

@@ -102,8 +102,8 @@ class Chef
           when Hash
             validation.each do |check, carg|
               check_method = "_pv_#{check}"
-              if self.respond_to?(check_method, true)
-                self.send(check_method, opts, key, carg)
+              if respond_to?(check_method, true)
+                send(check_method, opts, key, carg)
               else
                 raise ArgumentError, "Validation map has unknown check: #{check}"
               end
@@ -333,7 +333,7 @@ class Chef
         if is_name_property
           if opts[key].nil?
             raise CannotValidateStaticallyError, "name_property cannot be evaluated without a resource." if self == Chef::Mixin::ParamsValidate
-            opts[key] = self.instance_variable_get(:"@name")
+            opts[key] = instance_variable_get(:"@name")
           end
         end
       end

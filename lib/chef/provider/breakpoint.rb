@@ -28,7 +28,7 @@ class Chef
       def action_break
         if defined?(Shell) && Shell.running?
           run_context.resource_collection.iterator.pause
-          @new_resource.updated_by_last_action(true)
+          new_resource.updated_by_last_action(true)
           run_context.resource_collection.iterator
         end
       end

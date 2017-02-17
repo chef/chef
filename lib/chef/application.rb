@@ -120,9 +120,10 @@ class Chef
     end
 
     def set_specific_recipes
-      Chef::Config[:specific_recipes] =
-        cli_arguments.map { |file| File.expand_path(file) } if
-        cli_arguments.respond_to?(:map)
+      if cli_arguments.respond_to?(:map)
+        Chef::Config[:specific_recipes] =
+          cli_arguments.map { |file| File.expand_path(file) }
+      end
     end
 
     # Initialize and configure the logger.
@@ -333,7 +334,7 @@ class Chef
 
     def emit_warnings
       if Chef::Config[:chef_gem_compile_time]
-        Chef.log_deprecation "setting chef_gem_compile_time to true is deprecated"
+        Chef.deprecated :chef_gem_compile_time, "setting chef_gem_compile_time to true is deprecated"
       end
     end
 
@@ -342,7 +343,7 @@ class Chef
         message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
 
         cause = e.cause if e.respond_to?(:cause)
-        while cause != nil
+        until cause.nil?
           message << "\n\n>>>> Caused by #{cause.class}: #{cause}\n#{cause.backtrace.join("\n")}"
           cause = cause.respond_to?(:cause) ? cause.cause : nil
         end

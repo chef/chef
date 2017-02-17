@@ -17,12 +17,12 @@
 #
 
 require "singleton"
-require "chef/platform/handler_map"
+require "chef/node_map"
 
 class Chef
   class Platform
     # @api private
-    class ResourceHandlerMap < Chef::Platform::HandlerMap
+    class ResourceHandlerMap < Chef::NodeMap
       include Singleton
     end
   end

@@ -108,10 +108,10 @@ class Chef
           @uploaded_cookbook_version_file = File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE)
         end
 
-        if File.exists?(File.join(cookbook_path, "metadata.rb"))
-          @metadata_filenames << File.join(cookbook_path, "metadata.rb")
-        elsif File.exists?(File.join(cookbook_path, "metadata.json"))
+        if File.exists?(File.join(cookbook_path, "metadata.json"))
           @metadata_filenames << File.join(cookbook_path, "metadata.json")
+        elsif File.exists?(File.join(cookbook_path, "metadata.rb"))
+          @metadata_filenames << File.join(cookbook_path, "metadata.rb")
         elsif @uploaded_cookbook_version_file
           @metadata_filenames << @uploaded_cookbook_version_file
         end
@@ -305,40 +305,34 @@ class Chef
       end
 
       def apply_ruby_metadata(file)
-        begin
-          @metadata.from_file(file)
-        rescue Chef::Exceptions::JSON::ParseError
-          Chef::Log.error("Error evaluating metadata.rb for #@inferred_cookbook_name in " + file)
-          raise
-        end
+        @metadata.from_file(file)
+      rescue Chef::Exceptions::JSON::ParseError
+        Chef::Log.error("Error evaluating metadata.rb for #{@inferred_cookbook_name} in " + file)
+        raise
       end
 
       def apply_json_metadata(file)
-        begin
-          @metadata.from_json(IO.read(file))
-        rescue Chef::Exceptions::JSON::ParseError
-          Chef::Log.error("Couldn't parse cookbook metadata JSON for #@inferred_cookbook_name in " + file)
-          raise
-        end
+        @metadata.from_json(IO.read(file))
+      rescue Chef::Exceptions::JSON::ParseError
+        Chef::Log.error("Couldn't parse cookbook metadata JSON for #{@inferred_cookbook_name} in " + file)
+        raise
       end
 
       def apply_json_cookbook_version_metadata(file)
-        begin
-          data = Chef::JSONCompat.parse(IO.read(file))
-          @metadata.from_hash(data["metadata"])
-          # the JSON cookbok metadata file is only used by chef-zero.
-          # The Chef Server API currently does not enforce that the metadata
-          # have a `name` field, but that will cause an error when attempting
-          # to load the cookbook. To keep compatibility, we fake it by setting
-          # the metadata name from the cookbook version object's name.
-          #
-          # This behavior can be removed if/when Chef Server enforces that the
-          # metadata contains a name key.
-          @metadata.name(data["cookbook_name"]) unless data["metadata"].key?("name")
-        rescue Chef::Exceptions::JSON::ParseError
-          Chef::Log.error("Couldn't parse cookbook metadata JSON for #@inferred_cookbook_name in " + file)
-          raise
-        end
+        data = Chef::JSONCompat.parse(IO.read(file))
+        @metadata.from_hash(data["metadata"])
+        # the JSON cookbok metadata file is only used by chef-zero.
+        # The Chef Server API currently does not enforce that the metadata
+        # have a `name` field, but that will cause an error when attempting
+        # to load the cookbook. To keep compatibility, we fake it by setting
+        # the metadata name from the cookbook version object's name.
+        #
+        # This behavior can be removed if/when Chef Server enforces that the
+        # metadata contains a name key.
+        @metadata.name(data["cookbook_name"]) unless data["metadata"].key?("name")
+      rescue Chef::Exceptions::JSON::ParseError
+        Chef::Log.error("Couldn't parse cookbook metadata JSON for #{@inferred_cookbook_name} in " + file)
+        raise
       end
 
       def set_frozen
@@ -347,7 +341,7 @@ class Chef
             data = Chef::JSONCompat.parse(IO.read(uploaded_cookbook_version_file))
             @frozen = data["frozen?"]
           rescue Chef::Exceptions::JSON::ParseError
-            Chef::Log.error("Couldn't parse cookbook metadata JSON for #@inferred_cookbook_name in #{uploaded_cookbook_version_file}")
+            Chef::Log.error("Couldn't parse cookbook metadata JSON for #{@inferred_cookbook_name} in #{uploaded_cookbook_version_file}")
             raise
           end
         end

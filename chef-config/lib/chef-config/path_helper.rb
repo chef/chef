@@ -187,7 +187,7 @@ module ChefConfig
     #
     # See self.all_homes.
     def self.home(*args)
-      @@home_dir ||= self.all_homes { |p| break p }
+      @@home_dir ||= all_homes { |p| break p }
       if @@home_dir
         path = File.join(@@home_dir, *args)
         block_given? ? (yield path) : path

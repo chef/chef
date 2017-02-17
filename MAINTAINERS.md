@@ -18,9 +18,7 @@ a maintainer, lieutenant, or the project lead.
 
 ## Chef Core
 
-Handles the core parts of the Chef DSL, base resource and provider
-infrastructure, the Chef applications and [omnibus-chef](https://github.com/chef/omnibus-chef). Includes anything not covered by
-another component.
+Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, chefstyle, and sundry others.
 
 To mention the team, use @chef/client-core
 
@@ -38,55 +36,16 @@ To mention the team, use @chef/client-core
 * [Jay Mundrawala](https://github.com/jaym)
 * [John Keiser](https://github.com/jkeiser)
 * [Jon Cowie](https://github.com/jonlives)
+* [Joshua Timberman](https://github.com/jtimberman)
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Claire McQuin](https://github.com/mcquin)
-* [Steven Murawski](https://github.com/smurawski)
-* [Tim Smith](https://github.com/tas50)
-* [Tyler Ball](https://github.com/tyler-ball)
-* [Ranjib Dey](https://github.com/ranjib)
 * [Matt Wrock](https://github.com/mwrock)
-
-## Ohai
-
-To mention the team, use @chef/ohai
-
-### Lieutenant
-
-* [Claire McQuin](https://github.com/mcquin)
-
-### Maintainers
-
-* [Bryan McLellan](https://github.com/btm)
-* [Tim Smith](https://github.com/tas50)
-
-## Dev Tools
-
-ChefDK, Chef Zero, Knife, Chef Apply and Chef Shell.
-To mention the team, use @chef/client-dev-tools
-
-### Maintainers
-
-* [Daniel DeLeo](https://github.com/danielsdeleo)
-* [John Keiser](https://github.com/jkeiser)
-* [Joshua Timberman](https://github.com/jtimberman)
-* [Lamont Granquist](https://github.com/lamont-granquist)
-* [Steven Danna](https://github.com/stevendanna)
-
-## Test Tools
-
-ChefSpec
-To mention the team, use @chef/client-test-tools
-
-### Lieutenant
-
-* [Seth Vargo](https://github.com/sethvargo)
-
-### Maintainers
-
-* [Joshua Timberman](https://github.com/jtimberman)
-* [Lamont Granquist](https://github.com/lamont-granquist)
-* [Tim Smith](https://github.com/tas50)
 * [Ranjib Dey](https://github.com/ranjib)
+* [Steven Murawski](https://github.com/smurawski)
+* [Steven Danna](https://github.com/stevendanna)
+* [Tim Smith](https://github.com/tas50)
+* [Tom Duffield](https://github.com/tduffield)
+* [Tyler Ball](https://github.com/tyler-ball)
 
 ## Chef Provisioning
 
@@ -101,9 +60,9 @@ To mention the team, use @chef/provisioning
 ### Maintainers
 
 * [John Keiser](https://github.com/jkeiser)
-* [Stuart Preston](https://github.com/stuartpreston)
 * [JJ Asghar](https://github.com/jjasghar)
 * [João Cravo](https://github.com/joaogbcravo)
+* [Stuart Preston](https://github.com/stuartpreston)
 * [Harley Alaniz](https://github.com/thehar)
 
 ## Platform Specific Components

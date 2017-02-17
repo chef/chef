@@ -34,7 +34,7 @@ describe Chef::Provider::User::Pw do
 
     # XXX: rip out in Chef-13
     Chef::Config[:treat_deprecation_warnings_as_errors] = false
-    @new_resource.supports :manage_home => true
+    @new_resource.supports manage_home: true
 
     @current_resource = Chef::Resource::User::PwUser.new("adam")
     @current_resource.comment  "Adam Jacob"
@@ -65,35 +65,36 @@ describe Chef::Provider::User::Pw do
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
         allow(@new_resource).to receive(attribute).and_return("hola")
-        expect(@provider.set_options).to eql(" #{@new_resource.username} #{option} '#{@new_resource.send(attribute)}' -m")
+        expect(@provider.set_options).to eql([ @new_resource.username, option, @new_resource.send(attribute), "-m"])
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not null, without homedir management" do
-        allow(@new_resource).to receive(:supports).and_return({ :manage_home => false })
+        allow(@new_resource).to receive(:supports).and_return(manage_home: false)
         allow(@new_resource).to receive(attribute).and_return("hola")
-        expect(@provider.set_options).to eql(" #{@new_resource.username} #{option} '#{@new_resource.send(attribute)}'")
+        expect(@provider.set_options).to eql([@new_resource.username, option, @new_resource.send(attribute)])
       end
     end
 
     it "should combine all the possible options" do
-      match_string = " adam"
+      match_array = [ "adam" ]
       field_list.sort { |a, b| a[0] <=> b[0] }.each do |attribute, option|
         allow(@new_resource).to receive(attribute).and_return("hola")
-        match_string << " #{option} 'hola'"
+        match_array << option
+        match_array << "hola"
       end
-      match_string << " -m"
-      expect(@provider.set_options).to eql(match_string)
+      match_array << "-m"
+      expect(@provider.set_options).to eql(match_array)
     end
   end
 
   describe "create_user" do
     before(:each) do
-      allow(@provider).to receive(:run_command).and_return(true)
+      allow(@provider).to receive(:shell_out!).and_return(true)
       allow(@provider).to receive(:modify_password).and_return(true)
     end
 
     it "should run pw useradd with the return of set_options" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw useradd adam -m" }).and_return(true)
+      expect(@provider).to receive(:shell_out!).with("pw", "useradd", "adam", "-m").and_return(true)
       @provider.create_user
     end
 
@@ -105,12 +106,12 @@ describe Chef::Provider::User::Pw do
 
   describe "manage_user" do
     before(:each) do
-      allow(@provider).to receive(:run_command).and_return(true)
+      allow(@provider).to receive(:shell_out!).and_return(true)
       allow(@provider).to receive(:modify_password).and_return(true)
     end
 
     it "should run pw usermod with the return of set_options" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw usermod adam -m" }).and_return(true)
+      expect(@provider).to receive(:shell_out!).with("pw", "usermod", "adam", "-m").and_return(true)
       @provider.manage_user
     end
 
@@ -122,13 +123,13 @@ describe Chef::Provider::User::Pw do
 
   describe "remove_user" do
     it "should run pw userdel with the new resources user name" do
-      @new_resource.supports :manage_home => false
-      expect(@provider).to receive(:run_command).with({ :command => "pw userdel #{@new_resource.username}" }).and_return(true)
+      @new_resource.supports manage_home: false
+      expect(@provider).to receive(:shell_out!).with("pw", "userdel", @new_resource.username).and_return(true)
       @provider.remove_user
     end
 
     it "should run pw userdel with the new resources user name and -r if manage_home is true" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw userdel #{@new_resource.username} -r" }).and_return(true)
+      expect(@provider).to receive(:shell_out!).with("pw", "userdel", @new_resource.username, "-r").and_return(true)
       @provider.remove_user
     end
   end
@@ -147,23 +148,26 @@ describe Chef::Provider::User::Pw do
 
   describe "when locking the user" do
     it "should run pw lock with the new resources username" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw lock #{@new_resource.username}" })
+      expect(@provider).to receive(:shell_out!).with("pw", "lock", @new_resource.username)
       @provider.lock_user
     end
   end
 
   describe "when unlocking the user" do
     it "should run pw unlock with the new resources username" do
-      expect(@provider).to receive(:run_command).with({ :command => "pw unlock #{@new_resource.username}" })
+      expect(@provider).to receive(:shell_out!).with("pw", "unlock", @new_resource.username)
       @provider.unlock_user
     end
   end
 
   describe "when modifying the password" do
     before(:each) do
-      @status = double("Status", :exitstatus => 0)
+      @status = double("Status", exitstatus: 0)
       allow(@provider).to receive(:popen4).and_return(@status)
-      @pid, @stdin, @stdout, @stderr = nil, nil, nil, nil
+      @pid = nil
+      @stdin = nil
+      @stdout = nil
+      @stderr = nil
     end
 
     describe "and the new password has not been specified" do
@@ -210,7 +214,7 @@ describe Chef::Provider::User::Pw do
       end
 
       it "should run pw usermod with the username and the option -H 0" do
-        expect(@provider).to receive(:popen4).with("pw usermod adam -H 0", :waitlast => true).and_return(@status)
+        expect(@provider).to receive(:popen4).with("pw usermod adam -H 0", waitlast: true).and_return(@status)
         @provider.modify_password
       end
 
@@ -239,12 +243,12 @@ describe Chef::Provider::User::Pw do
     end
 
     it "should raise an error if the required binary /usr/sbin/pw doesn't exist" do
-      expect(File).to receive(:exists?).with("/usr/sbin/pw").and_return(false)
+      expect(File).to receive(:exist?).with("/usr/sbin/pw").and_return(false)
       expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::User)
     end
 
     it "shouldn't raise an error if /usr/sbin/pw exists" do
-      allow(File).to receive(:exists?).and_return(true)
+      allow(File).to receive(:exist?).and_return(true)
       expect { @provider.load_current_resource }.not_to raise_error
     end
   end

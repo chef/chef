@@ -26,6 +26,9 @@ class Chef
     class Service
       class Upstart < Chef::Provider::Service::Simple
 
+        # to maintain a local state of service across restart's internal calls
+        attr_accessor :upstart_service_running
+
         provides :service, platform_family: "debian", override: true do |node|
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
         end
@@ -110,23 +113,23 @@ class Chef
 
             begin
               if shell_out!(@new_resource.status_command).exitstatus == 0
-                @current_resource.running true
+                @upstart_service_running = true
               end
             rescue
               @command_success = false
-              @current_resource.running false
+              @upstart_service_running = false
               nil
             end
           else
             begin
               if upstart_goal_state == "start"
-                @current_resource.running true
+                @upstart_service_running = true
               else
-                @current_resource.running false
+                @upstart_service_running = false
               end
             rescue Chef::Exceptions::Exec
               @command_success = false
-              @current_resource.running false
+              @upstart_service_running = false
               nil
             end
           end
@@ -153,13 +156,14 @@ class Chef
             @current_resource.enabled false
           end
 
+          @current_resource.running @upstart_service_running
           @current_resource
         end
 
         def start_service
           # Calling start on a service that is already started will return 1
           # Our 'goal' when we call start is to ensure the service is started
-          if @current_resource.running
+          if @upstart_service_running
             Chef::Log.debug("#{@new_resource} already running, not starting")
           else
             if @new_resource.start_command
@@ -168,12 +172,14 @@ class Chef
               shell_out_with_systems_locale!("/sbin/start #{@job}")
             end
           end
+
+          @upstart_service_running = true
         end
 
         def stop_service
           # Calling stop on a service that is already stopped will return 1
           # Our 'goal' when we call stop is to ensure the service is stopped
-          unless @current_resource.running
+          unless @upstart_service_running
             Chef::Log.debug("#{@new_resource} not running, not stopping")
           else
             if @new_resource.stop_command
@@ -182,6 +188,8 @@ class Chef
               shell_out_with_systems_locale!("/sbin/stop #{@job}")
             end
           end
+
+          @upstart_service_running = false
         end
 
         def restart_service
@@ -189,13 +197,19 @@ class Chef
             super
           # Upstart always provides restart functionality so we don't need to mimic it with stop/sleep/start.
           # Older versions of upstart would fail on restart if the service was currently stopped, check for that. LP:430883
+          # But for safe working of latest upstart job config being loaded, 'restart' can't be used as per link
+          # http://upstart.ubuntu.com/cookbook/#restart (it doesn't uses latest jon config from disk but retains old)
           else
-            if @current_resource.running
-              shell_out_with_systems_locale!("/sbin/restart #{@job}")
+            if @upstart_service_running
+              stop_service
+              sleep 1
+              start_service
             else
               start_service
             end
           end
+
+          @upstart_service_running = true
         end
 
         def reload_service
@@ -205,6 +219,8 @@ class Chef
             # upstart >= 0.6.3-4 supports reload (HUP)
             shell_out_with_systems_locale!("/sbin/reload #{@job}")
           end
+
+          @upstart_service_running = true
         end
 
         # https://bugs.launchpad.net/upstart/+bug/94065

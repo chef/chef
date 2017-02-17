@@ -101,12 +101,12 @@ class Chef
             status = nil
 
             begin
-              status = shell_out!("#{python_bin} #{yum_dump_path}#{opts}", :timeout => Chef::Config[:yum_timeout])
+              status = shell_out!("#{python_bin} #{yum_dump_path}#{opts}", timeout: Chef::Config[:yum_timeout])
               status.stdout.each_line do |line|
                 one_line = true
 
                 line.chomp!
-                if line =~ %r{\[option (.*)\] (.*)}
+                if line =~ /\[option (.*)\] (.*)/
                   if $1 == "installonlypkgs"
                     @allow_multi_install = $2.split
                   else
@@ -115,7 +115,7 @@ class Chef
                   next
                 end
 
-                if line =~ %r{^(\S+) ([0-9]+) (\S+) (\S+) (\S+) \[(.*)\] ([i,a,r]) (\S+)$}
+                if line =~ /^(\S+) ([0-9]+) (\S+) (\S+) (\S+) \[(.*)\] ([i,a,r]) (\S+)$/
                   name     = $1
                   epoch    = $2
                   version  = $3
@@ -125,7 +125,7 @@ class Chef
                   type     = $7
                   repoid   = $8
                 else
-                  Chef::Log.warn("Problem parsing line '#{line}' from yum-dump.py! " +
+                  Chef::Log.warn("Problem parsing line '#{line}' from yum-dump.py! " \
                                  "Please check your yum configuration.")
                   next
                 end
@@ -158,7 +158,7 @@ class Chef
               raise Chef::Exceptions::Package, "Yum failed - #{status.inspect} - returns: #{error}"
             else
               unless one_line
-                Chef::Log.warn("Odd, no output from yum-dump.py. Please check " +
+                Chef::Log.warn("Odd, no output from yum-dump.py. Please check " \
                                "your yum configuration.")
               end
             end
@@ -233,7 +233,7 @@ class Chef
             if @rpmdb.lookup(package_name)
               return true
             else
-              if package_name =~ %r{^(.*)\.(.*)$}
+              if package_name =~ /^(.*)\.(.*)$/
                 pkg_name = $1
                 pkg_arch = $2
 
@@ -245,7 +245,7 @@ class Chef
               end
             end
 
-            return false
+            false
           end
 
           # Returns a array of packages satisfying an RPMDependency
@@ -260,7 +260,7 @@ class Chef
               return true if desired_version == v
             end
 
-            return false
+            false
           end
 
           # Return the source repository for a package-version.arch
@@ -269,14 +269,14 @@ class Chef
               return pkg.repoid if desired_version == pkg.version.to_s
             end
 
-            return nil
+            nil
           end
 
           # Return the latest available version for a package.arch
           def available_version(package_name, arch = nil)
             version(package_name, arch, true, false)
           end
-          alias :candidate_version :available_version
+          alias candidate_version available_version
 
           # Return the currently installed version for a package.arch
           def installed_version(package_name, arch = nil)
@@ -361,12 +361,12 @@ class Chef
             # ['atk = 1.12.2-1.fc6', 'libatk-1.0.so.0']
             string.split(", ").each do |seg|
               # 'atk = 1.12.2-1.fc6'
-              if seg =~ %r{^'(.*)'$}
+              if seg =~ /^'(.*)'$/
                 ret << RPMProvide.parse($1)
               end
             end
 
-            return ret
+            ret
           end
 
         end # YumCache

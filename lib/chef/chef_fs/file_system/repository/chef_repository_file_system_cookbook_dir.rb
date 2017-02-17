@@ -80,18 +80,16 @@ class Chef
           # Customizations of base class
 
           def chef_object
-            begin
-              cb = cookbook_version
-              if !cb
-                Chef::Log.error("Cookbook #{file_path} empty.")
-                raise "Cookbook #{file_path} empty."
-              end
-              cb
-            rescue => e
-              Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{e}")
-              Chef::Log.error(e.backtrace.join("\n"))
-              raise
+            cb = cookbook_version
+            if !cb
+              Chef::Log.error("Cookbook #{file_path} empty.")
+              raise "Cookbook #{file_path} empty."
             end
+            cb
+          rescue => e
+            Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{e}")
+            Chef::Log.error(e.backtrace.join("\n"))
+            raise
           end
 
           def children
@@ -112,7 +110,7 @@ class Chef
           def self.canonical_cookbook_name(entry_name)
             name_match = Chef::ChefFS::FileSystem::ChefServer::VersionedCookbookDir::VALID_VERSIONED_COOKBOOK_NAME.match(entry_name)
             return nil if name_match.nil?
-            return name_match[1]
+            name_match[1]
           end
 
           def canonical_cookbook_name(entry_name)

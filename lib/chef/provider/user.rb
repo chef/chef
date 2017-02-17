@@ -36,10 +36,10 @@ class Chef
       end
 
       def convert_group_name
-        if @new_resource.gid.is_a? String
-          @new_resource.gid(Etc.getgrnam(@new_resource.gid).gid)
+        if new_resource.gid.is_a? String
+          new_resource.gid(Etc.getgrnam(new_resource.gid).gid)
         end
-      rescue ArgumentError => e
+      rescue ArgumentError
         @group_name_resolved = false
       end
 
@@ -48,62 +48,62 @@ class Chef
       end
 
       def load_current_resource
-        @current_resource = Chef::Resource::User.new(@new_resource.name)
-        @current_resource.username(@new_resource.username)
+        @current_resource = Chef::Resource::User.new(new_resource.name)
+        current_resource.username(new_resource.username)
 
         begin
-          user_info = Etc.getpwnam(@new_resource.username)
-        rescue ArgumentError => e
+          user_info = Etc.getpwnam(new_resource.username)
+        rescue ArgumentError
           @user_exists = false
-          Chef::Log.debug("#{@new_resource} user does not exist")
+          Chef::Log.debug("#{new_resource} user does not exist")
           user_info = nil
         end
 
         if user_info
-          @current_resource.uid(user_info.uid)
-          @current_resource.gid(user_info.gid)
-          @current_resource.home(user_info.dir)
-          @current_resource.shell(user_info.shell)
-          @current_resource.password(user_info.passwd)
+          current_resource.uid(user_info.uid)
+          current_resource.gid(user_info.gid)
+          current_resource.home(user_info.dir)
+          current_resource.shell(user_info.shell)
+          current_resource.password(user_info.passwd)
 
-          if @new_resource.comment
-            user_info.gecos.force_encoding(@new_resource.comment.encoding)
+          if new_resource.comment
+            user_info.gecos.force_encoding(new_resource.comment.encoding)
           end
-          @current_resource.comment(user_info.gecos)
+          current_resource.comment(user_info.gecos)
 
-          if @new_resource.password && @current_resource.password == "x"
+          if new_resource.password && current_resource.password == "x"
             begin
               require "shadow"
             rescue LoadError
               @shadow_lib_ok = false
             else
-              shadow_info = Shadow::Passwd.getspnam(@new_resource.username)
-              @current_resource.password(shadow_info.sp_pwdp)
+              shadow_info = Shadow::Passwd.getspnam(new_resource.username)
+              current_resource.password(shadow_info.sp_pwdp)
             end
           end
 
-          convert_group_name if @new_resource.gid
+          convert_group_name if new_resource.gid
         end
 
-        @current_resource
+        current_resource
       end
 
       def define_resource_requirements
         requirements.assert(:create, :modify, :manage, :lock, :unlock) do |a|
           a.assertion { @group_name_resolved }
-          a.failure_message Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"
-          a.whyrun "group name #{@new_resource.gid} does not exist.  This will cause group assignment to fail.  Assuming this group will have been created previously."
+          a.failure_message Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{new_resource.gid}"
+          a.whyrun "group name #{new_resource.gid} does not exist.  This will cause group assignment to fail.  Assuming this group will have been created previously."
         end
         requirements.assert(:all_actions) do |a|
           a.assertion { @shadow_lib_ok }
           a.failure_message Chef::Exceptions::MissingLibrary, "You must have ruby-shadow installed for password support!"
-          a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." +
+          a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." \
             "Note that user update converge may report false-positive on the basis of mismatched password. "
         end
         requirements.assert(:modify, :lock, :unlock) do |a|
           a.assertion { @user_exists }
-          a.failure_message(Chef::Exceptions::User, "Cannot modify user #{@new_resource.username} - does not exist!")
-          a.whyrun("Assuming user #{@new_resource.username} would have been created")
+          a.failure_message(Chef::Exceptions::User, "Cannot modify user #{new_resource.username} - does not exist!")
+          a.whyrun("Assuming user #{new_resource.username} would have been created")
         end
       end
 
@@ -113,10 +113,10 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If the users are identical
       def compare_user
-        return true if !@new_resource.home.nil? && Pathname.new(@new_resource.home).cleanpath != Pathname.new(@current_resource.home).cleanpath
+        return true if !new_resource.home.nil? && Pathname.new(new_resource.home).cleanpath != Pathname.new(current_resource.home).cleanpath
 
         [ :comment, :shell, :password, :uid, :gid ].each do |user_attrib|
-          return true if !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib).to_s != @current_resource.send(user_attrib).to_s
+          return true if !new_resource.send(user_attrib).nil? && new_resource.send(user_attrib).to_s != current_resource.send(user_attrib).to_s
         end
 
         false
@@ -124,64 +124,61 @@ class Chef
 
       def action_create
         if !@user_exists
-          converge_by("create user #{@new_resource.username}") do
+          converge_by("create user #{new_resource.username}") do
             create_user
-            Chef::Log.info("#{@new_resource} created")
+            Chef::Log.info("#{new_resource} created")
           end
         elsif compare_user
-          converge_by("alter user #{@new_resource.username}") do
+          converge_by("alter user #{new_resource.username}") do
             manage_user
-            Chef::Log.info("#{@new_resource} altered")
+            Chef::Log.info("#{new_resource} altered")
           end
         end
       end
 
       def action_remove
-        if @user_exists
-          converge_by("remove user #{@new_resource.username}") do
-            remove_user
-            Chef::Log.info("#{@new_resource} removed")
-          end
+        return unless @user_exists
+        converge_by("remove user #{new_resource.username}") do
+          remove_user
+          Chef::Log.info("#{new_resource} removed")
         end
       end
 
       def action_manage
-        if @user_exists && compare_user
-          converge_by("manage user #{@new_resource.username}") do
-            manage_user
-            Chef::Log.info("#{@new_resource} managed")
-          end
+        return unless @user_exists && compare_user
+        converge_by("manage user #{new_resource.username}") do
+          manage_user
+          Chef::Log.info("#{new_resource} managed")
         end
       end
 
       def action_modify
-        if compare_user
-          converge_by("modify user #{@new_resource.username}") do
-            manage_user
-            Chef::Log.info("#{@new_resource} modified")
-          end
+        return unless compare_user
+        converge_by("modify user #{new_resource.username}") do
+          manage_user
+          Chef::Log.info("#{new_resource} modified")
         end
       end
 
       def action_lock
-        if check_lock() == false
-          converge_by("lock the user #{@new_resource.username}") do
+        if check_lock == false
+          converge_by("lock the user #{new_resource.username}") do
             lock_user
-            Chef::Log.info("#{@new_resource} locked")
+            Chef::Log.info("#{new_resource} locked")
           end
         else
-          Chef::Log.debug("#{@new_resource} already locked - nothing to do")
+          Chef::Log.debug("#{new_resource} already locked - nothing to do")
         end
       end
 
       def action_unlock
-        if check_lock() == true
-          converge_by("unlock user #{@new_resource.username}") do
+        if check_lock == true
+          converge_by("unlock user #{new_resource.username}") do
             unlock_user
-            Chef::Log.info("#{@new_resource} unlocked")
+            Chef::Log.info("#{new_resource} unlocked")
           end
         else
-          Chef::Log.debug("#{@new_resource} already unlocked - nothing to do")
+          Chef::Log.debug("#{new_resource} already unlocked - nothing to do")
         end
       end
 

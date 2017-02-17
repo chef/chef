@@ -44,6 +44,7 @@ require "chef/chef_fs/data_handler/role_data_handler"
 require "chef/chef_fs/data_handler/user_data_handler"
 require "chef/chef_fs/data_handler/group_data_handler"
 require "chef/chef_fs/data_handler/container_data_handler"
+require "chef/win32/security" if Chef::Platform.windows?
 
 class Chef
   module ChefFS
@@ -109,7 +110,19 @@ class Chef
             else
               child_paths[name].each do |path|
                 begin
-                  Dir.mkdir(path)
+                  Dir.mkdir(path, 0700)
+                  if Chef::Platform.windows?
+                    all_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_ALL
+                    administrators = Chef::ReservedNames::Win32::Security::SID.Administrators
+                    owner = Chef::ReservedNames::Win32::Security::SID.default_security_object_owner
+                    dacl = Chef::ReservedNames::Win32::Security::ACL.create([
+                      Chef::ReservedNames::Win32::Security::ACE.access_allowed(owner, all_mask),
+                      Chef::ReservedNames::Win32::Security::ACE.access_allowed(administrators, all_mask),
+                    ])
+                    so = Chef::ReservedNames::Win32::Security::SecurableObject.new(path)
+                    so.owner = owner
+                    so.set_dacl(dacl, false)
+                  end
                 rescue Errno::EEXIST
                 end
               end

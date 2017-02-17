@@ -38,7 +38,7 @@ describe Chef::Knife::Configure do
   let(:default_validator_key) { "/etc/chef-server/chef-validator.pem" }
   let(:default_validator_key_win32) { File.expand_path(default_validator_key) }
 
-  let(:default_server_url) { "https://#{fqdn}:443" }
+  let(:default_server_url) { "https://#{fqdn}/organizations/myorg" }
 
   it "asks the user for the URL of the chef server" do
     @knife.ask_user_for_config

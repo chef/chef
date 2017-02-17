@@ -23,6 +23,7 @@ require "chef/data_collector"
 require "chef/resource_builder"
 
 describe Chef::DataCollector do
+
   describe ".register_reporter?" do
     context "when no data collector URL is configured" do
       it "returns false" do
@@ -44,23 +45,93 @@ describe Chef::DataCollector do
       end
 
       context "when not operating in why_run mode" do
+
         before do
           Chef::Config[:why_run] = false
+          Chef::Config[:data_collector][:token] = token
         end
 
-        context "when report is enabled for current mode" do
-          it "returns true" do
-            allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(true)
-            expect(Chef::DataCollector.register_reporter?).to be_truthy
+        context "when a token is configured" do
+
+          let(:token) { "supersecrettoken" }
+
+          context "when report is enabled for current mode" do
+            it "returns true" do
+              allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(true)
+              expect(Chef::DataCollector.register_reporter?).to be_truthy
+            end
           end
+
+          context "when report is disabled for current mode" do
+            it "returns false" do
+              allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(false)
+              expect(Chef::DataCollector.register_reporter?).to be_falsey
+            end
+          end
+
         end
 
-        context "when report is disabled for current mode" do
-          it "returns false" do
-            allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(false)
-            expect(Chef::DataCollector.register_reporter?).to be_falsey
+        # `Chef::Config[:data_collector][:server_url]` defaults to a URL
+        # relative to the `chef_server_url`, so we use configuration of the
+        # token to infer whether a solo/local mode user intends for data
+        # collection to be enabled.
+        context "when a token is not configured" do
+
+          let(:token) { nil }
+
+          context "when report is enabled for current mode" do
+
+            before do
+              allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(true)
+            end
+
+            context "when the current mode is solo" do
+
+              before do
+                Chef::Config[:solo] = true
+              end
+
+              it "returns true" do
+                expect(Chef::DataCollector.register_reporter?).to be(true)
+              end
+
+            end
+
+            context "when the current mode is local mode" do
+
+              before do
+                Chef::Config[:local_mode] = true
+              end
+
+              it "returns false" do
+                expect(Chef::DataCollector.register_reporter?).to be(true)
+              end
+            end
+
+            context "when the current mode is client mode" do
+
+              before do
+                Chef::Config[:local_mode] = false
+                Chef::Config[:solo] = false
+              end
+
+              it "returns true" do
+                expect(Chef::DataCollector.register_reporter?).to be_truthy
+              end
+
+            end
+
           end
+
+          context "when report is disabled for current mode" do
+            it "returns false" do
+              allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(false)
+              expect(Chef::DataCollector.register_reporter?).to be_falsey
+            end
+          end
+
         end
+
       end
     end
   end
@@ -150,14 +221,52 @@ describe Chef::DataCollector do
       end
     end
   end
+
 end
 
 describe Chef::DataCollector::Reporter do
   let(:reporter) { described_class.new }
   let(:run_status) { Chef::RunStatus.new(Chef::Node.new, Chef::EventDispatch::Dispatcher.new) }
 
+  let(:token) { "supersecrettoken" }
+
   before do
     Chef::Config[:data_collector][:server_url] = "http://my-data-collector-server.mycompany.com"
+    Chef::Config[:data_collector][:token] = token
+  end
+
+  describe "selecting token or signed header authentication" do
+
+    context "when the token is set in the config" do
+
+      before do
+        Chef::Config[:client_key] = "/no/key/should/exist/at/this/path.pem"
+      end
+
+      it "configures an HTTP client that doesn't do signed header auth" do
+        # Initializing with the wrong kind of HTTP class should cause Chef::Exceptions::PrivateKeyMissing
+        expect { reporter.http }.to_not raise_error
+      end
+
+    end
+
+    context "when no token is set in the config" do
+
+      let(:token) { nil }
+
+      let(:client_key) { File.join(CHEF_SPEC_DATA, "ssl", "private_key.pem") }
+
+      before do
+        Chef::Config[:client_key] = client_key
+      end
+
+      it "configures an HTTP client that does signed header auth" do
+        expect { reporter.http }.to_not raise_error
+        expect(reporter.http.options).to have_key(:signing_key_filename)
+        expect(reporter.http.options[:signing_key_filename]).to eq(client_key)
+      end
+    end
+
   end
 
   describe "#run_started" do
@@ -177,24 +286,52 @@ describe Chef::DataCollector::Reporter do
         .to receive(:run_start_message)
         .with(run_status)
         .and_return(key: "value")
-      expect(reporter).to receive(:send_to_data_collector).with('{"key":"value"}')
+      expect(reporter).to receive(:send_to_data_collector).with({ key: "value" })
       reporter.run_started(run_status)
     end
   end
 
-  describe "#run_completed" do
-    it "sends the run completion" do
-      node = Chef::Node.new
+  describe "when sending a message at chef run completion" do
 
-      expect(reporter).to receive(:send_run_completion).with(status: "success")
-      reporter.run_completed(node)
+    let(:node) { Chef::Node.new }
+
+    let(:run_status) do
+      instance_double("Chef::RunStatus",
+                      run_id: "run_id",
+                      node: node,
+                      start_time: Time.new,
+                      end_time: Time.new,
+                      exception: exception)
     end
-  end
 
-  describe "#run_failed" do
-    it "updates the exception and sends the run completion" do
-      expect(reporter).to receive(:send_run_completion).with(status: "failure")
-      reporter.run_failed("test_exception")
+    before do
+      reporter.send(:update_run_status, run_status)
+    end
+
+    describe "#run_completed" do
+
+      let(:exception) { nil }
+
+      it "sends the run completion" do
+        expect(reporter).to receive(:send_to_data_collector) do |message|
+          expect(message).to be_a(Hash)
+          expect(message["status"]).to eq("success")
+        end
+        reporter.run_completed(node)
+      end
+    end
+
+    describe "#run_failed" do
+
+      let(:exception) { StandardError.new("oops") }
+
+      it "updates the exception and sends the run completion" do
+        expect(reporter).to receive(:send_to_data_collector) do |message|
+          expect(message).to be_a(Hash)
+          expect(message["status"]).to eq("failure")
+        end
+        reporter.run_failed("test_exception")
+      end
     end
   end
 
@@ -234,12 +371,10 @@ describe Chef::DataCollector::Reporter do
     end
 
     context "when resource is not a nested resource" do
-      it "creates the resource report and stores it as the current one" do
+      it "initializes the resource report" do
         allow(reporter).to receive(:nested_resource?).and_return(false)
-        expect(reporter).to receive(:create_resource_report)
+        expect(reporter).to receive(:initialize_resource_report_if_needed)
           .with(new_resource, action, current_resource)
-          .and_return(resource_report)
-        expect(reporter).to receive(:update_current_resource_report).with(resource_report)
         reporter.resource_current_state_loaded(new_resource, action, current_resource)
       end
     end
@@ -281,7 +416,6 @@ describe Chef::DataCollector::Reporter do
 
     before do
       allow(reporter).to receive(:nested_resource?)
-      allow(reporter).to receive(:create_resource_report).and_return(resource_report)
       allow(resource_report).to receive(:skipped)
     end
 
@@ -294,17 +428,10 @@ describe Chef::DataCollector::Reporter do
     end
 
     context "when the resource is not a nested resource" do
-      it "creates the resource report and stores it as the current one" do
+      it "initializes the resource report and marks it as skipped" do
         allow(reporter).to receive(:nested_resource?).and_return(false)
-        expect(reporter).to receive(:create_resource_report)
-          .with(new_resource, action)
-          .and_return(resource_report)
-        expect(reporter).to receive(:update_current_resource_report).with(resource_report)
-        reporter.resource_skipped(new_resource, action, conditional)
-      end
-
-      it "marks the resource report as skipped" do
-        allow(reporter).to receive(:nested_resource?).with(new_resource).and_return(false)
+        allow(reporter).to receive(:current_resource_report).and_return(resource_report)
+        expect(reporter).to receive(:initialize_resource_report_if_needed).with(new_resource, action)
         expect(resource_report).to receive(:skipped).with(conditional)
         reporter.resource_skipped(new_resource, action, conditional)
       end
@@ -411,7 +538,7 @@ describe Chef::DataCollector::Reporter do
         end
 
         it "nils out the current resource report" do
-          expect(reporter).to receive(:update_current_resource_report).with(nil)
+          expect(reporter).to receive(:clear_current_resource_report)
           reporter.resource_completed(new_resource)
         end
       end
@@ -511,9 +638,9 @@ describe Chef::DataCollector::Reporter do
         end
 
         context "when raise-on-failure is disabled" do
-          it "logs a warning and does not raise an exception" do
+          it "logs an info message and does not raise an exception" do
             Chef::Config[:data_collector][:raise_on_failure] = false
-            expect(Chef::Log).to receive(:warn)
+            expect(Chef::Log).to receive(:info)
             expect { reporter.send(:disable_reporter_on_error) { raise exception_class.new("bummer") } }.not_to raise_error
           end
         end
@@ -552,6 +679,62 @@ describe Chef::DataCollector::Reporter do
             expect { reporter.send(:validate_data_collector_server_url!) }.not_to raise_error
           end
         end
+      end
+    end
+  end
+
+  describe "#detect_unprocessed_resources" do
+    context "when resources do not override core methods" do
+      it "adds resource reports for any resources that have not yet been processed" do
+        resource_a  = Chef::Resource::Service.new("processed service")
+        resource_b  = Chef::Resource::Service.new("unprocessed service")
+
+        resource_a.action = [ :enable, :start ]
+        resource_b.action = :start
+
+        run_context = Chef::RunContext.new(Chef::Node.new, Chef::CookbookCollection.new, nil)
+        run_context.resource_collection.insert(resource_a)
+        run_context.resource_collection.insert(resource_b)
+
+        allow(reporter).to receive(:run_context).and_return(run_context)
+
+        # process the actions for resource_a, but not resource_b
+        reporter.resource_up_to_date(resource_a, :enable)
+        reporter.resource_completed(resource_a)
+        reporter.resource_up_to_date(resource_a, :start)
+        reporter.resource_completed(resource_a)
+        expect(reporter.all_resource_reports.size).to eq(2)
+
+        # detect unprocessed resources, which should find that resource_b has not yet been processed
+        reporter.send(:detect_unprocessed_resources)
+        expect(reporter.all_resource_reports.size).to eq(3)
+      end
+    end
+
+    context "when a resource overrides a core method, such as #hash" do
+      it "does not raise an exception" do
+        resource_a  = Chef::Resource::Service.new("processed service")
+        resource_b  = Chef::Resource::Service.new("unprocessed service")
+
+        resource_a.action = :start
+        resource_b.action = :start
+
+        run_context = Chef::RunContext.new(Chef::Node.new, Chef::CookbookCollection.new, nil)
+        run_context.resource_collection.insert(resource_a)
+        run_context.resource_collection.insert(resource_b)
+
+        allow(reporter).to receive(:run_context).and_return(run_context)
+
+        # override the #hash method on resource_a to return a String instead of
+        # a Fixnum. Without the fix in chef/chef#5604, this would raise an
+        # exception when getting added to the Set/Hash.
+        resource_a.define_singleton_method(:hash) { "a string" }
+
+        # process the actions for resource_a, but not resource_b
+        reporter.resource_up_to_date(resource_a, :start)
+        reporter.resource_completed(resource_a)
+
+        expect { reporter.send(:detect_unprocessed_resources) }.not_to raise_error
       end
     end
   end

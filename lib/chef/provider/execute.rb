@@ -27,7 +27,7 @@ class Chef
 
       provides :execute
 
-      def_delegators :@new_resource, :command, :returns, :environment, :user, :group, :cwd, :umask, :creates
+      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates
 
       def load_current_resource
         current_resource = Chef::Resource::Execute.new(new_resource.name)
@@ -39,7 +39,7 @@ class Chef
       end
 
       def define_resource_requirements
-         # @todo: this should change to raise in some appropriate major version bump.
+        # @todo: this should change to raise in some appropriate major version bump.
         if creates && creates_relative? && !cwd
           Chef::Log.warn "Providing a relative path for the creates attribute without the cwd is deprecated and will be changed to fail in the future (CHEF-3819)"
         end
@@ -92,6 +92,8 @@ class Chef
         opts[:returns]     = returns if returns
         opts[:environment] = environment if environment
         opts[:user]        = user if user
+        opts[:domain]      = domain if domain
+        opts[:password]    = password if password
         opts[:group]       = group if group
         opts[:cwd]         = cwd if cwd
         opts[:umask]       = umask if umask
@@ -120,6 +122,7 @@ class Chef
            ( cwd && creates_relative? ) ? ::File.join(cwd, creates) : creates
         ))
       end
+
     end
   end
 end

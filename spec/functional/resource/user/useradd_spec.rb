@@ -119,7 +119,7 @@ describe Chef::Provider::User::Useradd, metadata do
         break if status.exitstatus != 8
 
         sleep 1
-        max_retries = max_retries - 1
+        max_retries -= 1
       rescue UserNotFound
         break
       end
@@ -644,6 +644,15 @@ describe Chef::Provider::User::Useradd, metadata do
           it "errors out trying to unlock the user" do
             expect(@error).to be_a(Mixlib::ShellOut::ShellCommandFailed)
             expect(@error.message).to include("Cannot unlock the password")
+          end
+        elsif %w{rhel}.include?(OHAI_SYSTEM["platform_family"]) &&
+            OHAI_SYSTEM["platform_version"].to_f == 6.8
+          # usermod -U returns following message for rhel68 on s390x platforms
+          # usermod: unlocking the user's password would result in a passwordless account.
+          #You should set a password with usermod -p to unlock this user's password.
+          it "errors out trying to unlock the user" do
+            expect(@error).to be_a(Mixlib::ShellOut::ShellCommandFailed)
+            expect(@error.message).to include("You should set a password")
           end
         else
 
