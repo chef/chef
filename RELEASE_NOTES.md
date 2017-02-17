@@ -83,6 +83,10 @@ end
 - Ensure that the Windows Administrator group can access the chef-solo nodes directory
 - When loading a cookbook in Chef Solo, use `metadata.json` in preference to `metadata.rb`
 
+## Deprecation Notice
+
+- As of version 12.19, chef client will no longer be build or tested on the Cisco NX-OS and IOS XR platforms.
+
 # Ohai Release Notes 8.23:
 
 ## Cumulus Linux Platform
