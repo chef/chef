@@ -678,7 +678,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "configures the ssh gateway identity" do
-        expect(knife_ssh.config[:ssh_gateway_identity]).to eq('~/.ssh/gateway.rsa')
+        expect(knife_ssh.config[:ssh_gateway_identity]).to eq("~/.ssh/gateway.rsa")
       end
 
       it "configures the host key verify mode" do
