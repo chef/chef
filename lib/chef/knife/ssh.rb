@@ -94,8 +94,7 @@ class Chef
 
       option :ssh_gateway_identity,
         :long => "--ssh-gateway-identity SSH_GATEWAY_IDENTITY",
-        :description => "The SSH identity file used for gateway authentication",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway_identity] = key.strip }
+        :description => "The SSH identity file used for gateway authentication"
 
       option :forward_agent,
         :short => "-A",
@@ -554,6 +553,11 @@ class Chef
         config[:ssh_identity_file] = get_stripped_unfrozen_value(config[:ssh_identity_file] || config[:identity_file] || Chef::Config[:knife][:ssh_identity_file])
       end
 
+      def configure_ssh_gateway_identity
+        # config[:identity_file] is DEPRECATED in favor of :ssh_identity_file
+        config[:ssh_gateway_identity] = get_stripped_unfrozen_value(config[:ssh_gateway_identity] || Chef::Config[:knife][:ssh_gateway_identity])
+      end
+
       def run
         @longest = 0
 
@@ -561,6 +565,7 @@ class Chef
         configure_password
         @password = config[:ssh_password] if config[:ssh_password]
         configure_ssh_identity_file
+        configure_ssh_gateway_identity
         configure_gateway
         configure_session
 
