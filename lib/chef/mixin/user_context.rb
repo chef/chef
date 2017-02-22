@@ -17,29 +17,15 @@
 #
 
 require "chef/util/windows/logon_session" if Chef::Platform.windows?
-require "chef/mixin/user_identity"
 
 class Chef
   module Mixin
     module UserContext
 
-      include Chef::Mixin::UserIdentity
-
-      def with_user_context(specified_user, password, specified_domain = nil, &block)
-        if ! Chef::Platform.windows?
-          raise Exceptions::UnsupportedPlatform, "User context impersonation is supported only on the Windows platform"
-        end
-
+      def with_user_context(user, password, domain = nil, &block)
         if ! block_given?
           raise ArgumentError, "You must supply a block to `with_user_context`"
         end
-
-        validate_identity(specified_user, password, specified_domain)
-
-        identity = qualify_user(specified_user, specified_domain)
-
-        user = identity[:user]
-        domain = identity[:domain]
 
         login_session = nil
 
