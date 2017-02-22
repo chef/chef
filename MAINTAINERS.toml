@@ -150,26 +150,6 @@ The specific components of Chef related to a given platform - including (but not
           "tas50"
         ]
 
-      [Org.Components.Subsystems.CiscoNXOS]
-        title = "Cisco NX-OS"
-        team = "client-nxos"
-
-        lieutenant = "adamleff"
-
-        maintainers = [
-          "adamleff"
-        ]
-
-      [Org.Components.Subsystems.CiscoIOSXR]
-        title = "Cisco IOS XR"
-        team = "client-iosxr"
-
-        lieutenant = "adamleff"
-
-        maintainers = [
-          "adamleff"
-        ]
-
     [Org.Components.Subsystems.Fedora]
         title = "Fedora"
         team = "client-fedora"
@@ -242,10 +222,6 @@ The specific components of Chef related to a given platform - including (but not
   [people.adamhjk]
     Name = "Adam Jacob"
     GitHub = "adamhjk"
-
-  [people.adamleff]
-    Name = "Adam Leff"
-    GitHub = "adamleff"
 
   [people.Aevin1387]
     Name = "Cory Stephenson"

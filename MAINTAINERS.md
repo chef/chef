@@ -157,30 +157,6 @@ To mention the team, use @chef/client-debian
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Tim Smith](https://github.com/tas50)
 
-## Cisco NX-OS
-
-To mention the team, use @chef/client-nxos
-
-### Lieutenant
-
-* [Adam Leff](https://github.com/adamleff)
-
-### Maintainers
-
-* [Adam Leff](https://github.com/adamleff)
-
-## Cisco IOS XR
-
-To mention the team, use @chef/client-iosxr
-
-### Lieutenant
-
-* [Adam Leff](https://github.com/adamleff)
-
-### Maintainers
-
-* [Adam Leff](https://github.com/adamleff)
-
 ## Fedora
 
 To mention the team, use @chef/client-fedora
