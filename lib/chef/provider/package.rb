@@ -23,6 +23,7 @@ require "chef/log"
 require "chef/file_cache"
 require "chef/platform"
 require "chef/decorator/lazy_array"
+require "shellwords"
 
 class Chef
   class Provider
@@ -54,10 +55,7 @@ class Chef
 
       def options
         if new_resource.options.is_a?(String)
-          # XXX: needs to handle double quotes, single quotes, nested quotes, etc and probably act
-          # more like a space-separated "C"SV file -- although users can fix this just by passing in
-          # a correctly pre-split Array.
-          new_resource.options.split(" ")
+          new_resource.options.shellsplit
         else
           new_resource.options
         end
