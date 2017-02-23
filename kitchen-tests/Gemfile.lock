@@ -246,7 +246,7 @@ PLATFORMS
 DEPENDENCIES
   berkshelf
   kitchen-appbundle-updater
-  kitchen-dokken (< 2.0)
+  kitchen-dokken
   kitchen-ec2
   kitchen-inspec
   kitchen-vagrant
