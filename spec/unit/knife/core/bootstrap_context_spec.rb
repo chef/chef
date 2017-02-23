@@ -213,6 +213,23 @@ EXPECTED
     end
   end
 
+  describe "fips mode" do
+    before do
+      Chef::Config[:fips] = true
+    end
+
+    it "adds the chef version check" do
+      expect(bootstrap_context.config_content).to include <<-CONFIG.gsub(/^ {8}/, "")
+        fips true
+        require "chef/version"
+        chef_version = ::Chef::VERSION.split(".")
+        unless chef_version[0].to_i > 12 || (chef_version[0].to_i == 12 && chef_version[1].to_i >= 8)
+          raise "FIPS Mode requested but not supported by this client"
+        end
+      CONFIG
+    end
+  end
+
   describe "verify_api_cert" do
     it "isn't set in the config_content by default" do
       expect(bootstrap_context.config_content).not_to include("verify_api_cert")
