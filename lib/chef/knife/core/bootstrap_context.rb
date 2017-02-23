@@ -161,13 +161,14 @@ validation_client_name "#{@chef_config[:validation_client_name]}"
           end
 
           if Chef::Config[:fips]
-            client_rb << <<-CONFIG
-fips true
-chef_version = ::Chef::VERSION.split(".")
-unless chef_version[0].to_i > 12 || (chef_version[0].to_i == 12 && chef_version[1].to_i >= 8)
-  raise "FIPS Mode requested but not supported by this client"
-end
-CONFIG
+            client_rb << <<-CONFIG.gsub(/^ {14}/, "")
+              fips true
+              require "chef/version"
+              chef_version = ::Chef::VERSION.split(".")
+              unless chef_version[0].to_i > 12 || (chef_version[0].to_i == 12 && chef_version[1].to_i >= 8)
+                raise "FIPS Mode requested but not supported by this client"
+              end
+            CONFIG
           end
 
           client_rb
