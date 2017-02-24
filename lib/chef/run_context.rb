@@ -103,7 +103,7 @@ class Chef
     #
     # @see CookbookCompiler
     #
-    attr_reader :resource_collection
+    attr_accessor :resource_collection
 
     #
     # The list of control groups to execute during the audit phase
