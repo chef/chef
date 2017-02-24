@@ -99,6 +99,9 @@ matrix:
       TEST_GEM: halite
     script: tasks/bin/run_external_test $TEST_GEM rake spec
     rvm: 2.3.3
+    # this has been broken for some time and running incorrectly, see:
+    #
+    # see https://github.com/chef/knife-windows/pull/421
     #- env:
     #  TEST_GEM: knife-windows
     #script: tasks/bin/run_external_test $TEST_GEM rake unit_spec
