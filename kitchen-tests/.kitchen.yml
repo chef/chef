@@ -15,6 +15,7 @@ provisioner:
   chef_omnibus_install_options: "-c current"
   github_owner: "chef"
   github_repo: "chef"
+  ohai_refname: "master"
   refname: <%= %x(git rev-parse HEAD) %>
   data_path: test/fixtures
   client_rb:
