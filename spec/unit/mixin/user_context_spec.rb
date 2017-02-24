@@ -41,28 +41,13 @@ describe "a class that mixes in user_context" do
     before do
       allow(::Chef::Platform).to receive(:windows?).and_return(true)
       allow(::Chef::Util::Windows::LogonSession).to receive(:new).and_return(logon_session)
+      allow(instance_with_user_context).to receive(:node).and_return({ "platform_family" => "windows" })
     end
 
     let(:logon_session) { instance_double("::Chef::Util::Windows::LogonSession", :set_user_context => nil, :open => nil, :close => nil) }
 
     it "does not raise an exception when the user and all parameters are nil" do
       expect { instance_with_user_context.with_context(nil, nil, nil) {} }.not_to raise_error
-    end
-
-    it "raises an exception if the user is supplied but not the domain and password" do
-      expect { instance_with_user_context.with_context("kamilah", nil, nil) {} }.to raise_error(ArgumentError)
-    end
-
-    it "raises an exception if the domain is supplied but not the user and password" do
-      expect { instance_with_user_context.with_context(nil, "xanadu", nil) {} }.to raise_error(ArgumentError)
-    end
-
-    it "raises an exception if the password is supplied but not the user and domain" do
-      expect { instance_with_user_context.with_context(nil, nil, "chef4life") {} }.to raise_error(ArgumentError)
-    end
-
-    it "raises an exception if the user and domain is supplied but the password is not" do
-      expect { instance_with_user_context.with_context("kamilah", "xanadu", nil) {} }.to raise_error(ArgumentError)
     end
 
     context "when given valid user credentials" do
@@ -94,7 +79,7 @@ describe "a class that mixes in user_context" do
       end
 
       context "when the block raises an exception" do
-        class UserContextTestException < Exception
+        class UserContextTestException < RuntimeError
         end
         let(:block_parameter) { Proc.new { raise UserContextTextException } }
 
@@ -114,7 +99,7 @@ describe "a class that mixes in user_context" do
 
   context "when not running on Windows" do
     before do
-      allow(::Chef::Platform).to receive(:windows?).and_return(false)
+      allow(instance_with_user_context).to receive(:node).and_return({ "platform_family" => "ubuntu" })
     end
 
     it "raises a ::Chef::Exceptions::UnsupportedPlatform exception" do

@@ -37,7 +37,7 @@ describe ::Chef::Util::Windows::LogonSession do
 
   shared_examples_for "it received an incorrect username and password combination" do
     before do
-      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(0)
+      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(false)
     end
 
     it "raises a Chef::Exceptions::Win32APIError exception when the open method is called" do
@@ -49,14 +49,14 @@ describe ::Chef::Util::Windows::LogonSession do
 
   shared_examples_for "it received valid credentials" do
     it "does not raise an exception when the open method is called" do
-      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(1)
+      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(true)
       expect { session.open }.not_to raise_error
     end
   end
 
   shared_examples_for "the session is not open" do
     it "does not raise an exception when #open is called" do
-      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(1)
+      expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(true)
       expect { session.open }.not_to raise_error
     end
 
@@ -169,7 +169,7 @@ describe ::Chef::Util::Windows::LogonSession do
         let(:session_domain) { "fairyland" }
 
         before do
-          expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(1)
+          expect(Chef::ReservedNames::Win32::API::Security).to receive(:LogonUserW).and_return(true)
           expect { session.open }.not_to raise_error
         end
 
@@ -191,13 +191,13 @@ describe ::Chef::Util::Windows::LogonSession do
         end
 
         it "can impersonate the user" do
-          expect(Chef::ReservedNames::Win32::API::Security).to receive(:ImpersonateLoggedOnUser).and_return(1)
+          expect(Chef::ReservedNames::Win32::API::Security).to receive(:ImpersonateLoggedOnUser).and_return(true)
           expect { session.set_user_context }.not_to raise_error
         end
 
         context "when #set_user_context fails due to low resources causing a failure to impersonate" do
           before do
-            expect(Chef::ReservedNames::Win32::API::Security).to receive(:ImpersonateLoggedOnUser).and_return(0)
+            expect(Chef::ReservedNames::Win32::API::Security).to receive(:ImpersonateLoggedOnUser).and_return(false)
           end
 
           it "raises an exception when #set_user_context fails because impersonation failed" do
@@ -216,7 +216,7 @@ describe ::Chef::Util::Windows::LogonSession do
 
         context "when #set_user_context successfully impersonates the user" do
           before do
-            expect(Chef::ReservedNames::Win32::API::Security).to receive(:ImpersonateLoggedOnUser).and_return(1)
+            expect(Chef::ReservedNames::Win32::API::Security).to receive(:ImpersonateLoggedOnUser).and_return(true)
             expect { session.set_user_context }.not_to raise_error
           end
 
@@ -228,14 +228,14 @@ describe ::Chef::Util::Windows::LogonSession do
 
           describe "the impersonation will be reverted" do
             before do
-              expect(Chef::ReservedNames::Win32::API::Security).to receive(:RevertToSelf)
+              expect(Chef::ReservedNames::Win32::API::Security).to receive(:RevertToSelf).and_return(true)
             end
             it_behaves_like "the session is open"
           end
 
           context "when the attempt to revert impersonation fails" do
             before do
-              expect(Chef::ReservedNames::Win32::API::Security).to receive(:RevertToSelf).and_return(0)
+              expect(Chef::ReservedNames::Win32::API::Security).to receive(:RevertToSelf).and_return(false)
             end
 
             it "raises an exception when #restore_user_context is called" do
@@ -253,7 +253,7 @@ describe ::Chef::Util::Windows::LogonSession do
 
               context "when revert continues to fail" do
                 before do
-                  expect(Chef::ReservedNames::Win32::API::Security).to receive(:RevertToSelf).and_return(0)
+                  expect(Chef::ReservedNames::Win32::API::Security).to receive(:RevertToSelf).and_return(false)
                 end
                 it "raises an exception when #close is called and impersonation fails" do
                   expect { session.close }.to raise_error(Chef::Exceptions::Win32APIError)
@@ -262,7 +262,7 @@ describe ::Chef::Util::Windows::LogonSession do
 
               context "when revert stops failing and succeeds" do
                 before do
-                  expect(Chef::ReservedNames::Win32::API::Security).to receive(:RevertToSelf).and_return(1)
+                  expect(Chef::ReservedNames::Win32::API::Security).to receive(:RevertToSelf).and_return(true)
                 end
 
                 it "does not raise an exception when #restore_user_context is called" do

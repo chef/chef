@@ -44,6 +44,8 @@ class Chef
             a.whyrun("Assuming that the platform is Windows while passing 'remote_user', 'remote_domain' and 'remote_password' properties")
           end
         end
+
+        super
       end
 
       def load_current_resource

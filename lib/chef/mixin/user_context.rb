@@ -24,7 +24,7 @@ class Chef
 
       def with_user_context(user, password, domain = nil, &block)
         if node["platform_family"] != "windows"
-           raise Exceptions::UnsupportedPlatform, "User context impersonation is supported only on the Windows platform"
+          raise Exceptions::UnsupportedPlatform, "User context impersonation is supported only on the Windows platform"
         end
 
         if ! block_given?

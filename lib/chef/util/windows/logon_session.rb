@@ -40,7 +40,7 @@ class Chef
 
         def open
           if session_opened
-            raise RuntimeError, "Attempted to open a logon session that was already open."
+            raise "Attempted to open a logon session that was already open."
           end
 
           username = wstring(original_username)
@@ -73,11 +73,11 @@ class Chef
           validate_session_open!
 
           if ! session_opened
-            raise RuntimeError, "Attempted to set the user context before opening a session."
+            raise "Attempted to set the user context before opening a session."
           end
 
           if impersonating
-            raise RuntimeError, "Attempt to set the user context when the user context is already set."
+            raise "Attempt to set the user context when the user context is already set."
           end
 
           status = Chef::ReservedNames::Win32::API::Security.ImpersonateLoggedOnUser(token.read_ulong)
@@ -117,7 +117,7 @@ class Chef
 
         def validate_session_open!
           if ! session_opened
-            raise RuntimeError, "Attempted to set the user context before opening a session."
+            raise "Attempted to set the user context before opening a session."
           end
         end
       end
