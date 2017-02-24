@@ -20,10 +20,6 @@
 require "spec_helper"
 
 describe Chef::Provider::RemoteFile::NetworkFile do
-  before do
-    allow(::Chef::Platform).to receive(:windows?).and_return(true)
-  end
-
   let(:source) { "\\\\foohost\\fooshare\\Foo.tar.gz" }
 
   let(:new_resource) { Chef::Resource::RemoteFile.new("network file (new_resource)") }
@@ -35,6 +31,10 @@ describe Chef::Provider::RemoteFile::NetworkFile do
     let(:tempfile) { double("Tempfile", :path => "/tmp/foo/bar/Foo.tar.gz", :close => nil) }
     let(:chef_tempfile) { double("Chef::FileContentManagement::Tempfile", :tempfile => tempfile) }
     let(:source_file) { double("::File", :read => nil) }
+
+    before do
+      allow(fetcher).to receive(:node).and_return({ "platform_family" => "windows" })
+    end
 
     it "stages the local file to a temporary file" do
       expect(Chef::FileContentManagement::Tempfile).to receive(:new).with(new_resource).and_return(chef_tempfile)
