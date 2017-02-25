@@ -4,7 +4,7 @@
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (<mmzyk@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -824,13 +824,6 @@ module ChefConfig
     # (leading to many confusing 403 errors on template/cookbook_file resources).
     #
     default :no_lazy_load, true
-
-    # Default for the chef_gem compile_time attribute.  Nil is the same as true but will emit
-    # warnings on every use of chef_gem prompting the user to be explicit.  If the user sets this to
-    # true then the user will get backcompat behavior but with a single nag warning that cookbooks
-    # may break with this setting in the future.  The false setting is the recommended setting and
-    # will become the default.
-    default :chef_gem_compile_time, nil
 
     # A whitelisted array of attributes you want sent over the wire when node
     # data is saved.

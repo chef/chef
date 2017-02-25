@@ -14,3 +14,11 @@ to simply delete it.
 This was always a usage mistake.  The command property was used internally by the script resource and was not intended to be exposed
 to users.  Users should use the code property instead (or use the command property on an execute resource to execute a single command).
 
+### The chef_gem resource defaults to not run at compile time
+
+The `compile_time true` flag may still be used to force compile time.
+
+### The Chef::Config[:chef_gem_compile_time] config option has been removed
+
+In order to for community cookbooks to behave consistently across all users this optional flag has been removed.
+

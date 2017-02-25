@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2016 Chef Software, Inc.
+# Copyright:: Copyright 2016-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,15 +86,7 @@ class Chef
       end
     end
 
-    class ChefGemCompileTime < Base
-      def id
-        3
-      end
-
-      def target
-        "chef_gem_compile_time.html"
-      end
-    end
+    # id 3 has been deleted
 
     class Attributes < Base
       def id
