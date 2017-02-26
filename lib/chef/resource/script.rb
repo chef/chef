@@ -28,12 +28,10 @@ class Chef
       def initialize(name, run_context = nil)
         super
         @command = nil
-        @code = nil
-        @interpreter = nil
-        @flags = nil
         @default_guard_interpreter = :default
       end
 
+      # FIXME: remove this and use an execute sub-resource instead of inheriting from Execute
       def command(arg = nil)
         unless arg.nil?
           raise Chef::Exceptions::Script, "Do not use the command attribute on a #{resource_name} resource, use the 'code' attribute instead."
@@ -41,29 +39,9 @@ class Chef
         super
       end
 
-      def code(arg = nil)
-        set_or_return(
-          :code,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def interpreter(arg = nil)
-        set_or_return(
-          :interpreter,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def flags(arg = nil)
-        set_or_return(
-          :flags,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :code, String, required: true
+      property :interpreter, String
+      property :flags, String
 
     end
   end
