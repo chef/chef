@@ -1,6 +1,6 @@
 #
 # Author:: Dreamcat4 (<dreamcat4@gmail.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -297,7 +297,7 @@ user password using shadow hash.")
             return
           end
 
-          if managing_home_dir?
+          if new_resource.manage_home
             validate_home_dir_specification!
 
             if (current_resource.home == new_resource.home) && !new_home_exists?
@@ -442,7 +442,7 @@ user password using shadow hash.")
         # and deleting home directory if needed.
         #
         def remove_user
-          if managing_home_dir?
+          if new_resource.manage_home
             # Remove home directory
             FileUtils.rm_rf(current_resource.home)
           end

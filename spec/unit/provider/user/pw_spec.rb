@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Haynes (<sh@nomitor.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,9 +32,7 @@ describe Chef::Provider::User::Pw do
     @new_resource.shell     "/usr/bin/zsh"
     @new_resource.password  "abracadabra"
 
-    # XXX: rip out in Chef-13
-    Chef::Config[:treat_deprecation_warnings_as_errors] = false
-    @new_resource.supports manage_home: true
+    @new_resource.manage_home true
 
     @current_resource = Chef::Resource::User::PwUser.new("adam")
     @current_resource.comment  "Adam Jacob"
@@ -66,12 +64,6 @@ describe Chef::Provider::User::Pw do
       it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
         allow(@new_resource).to receive(attribute).and_return("hola")
         expect(@provider.set_options).to eql([ @new_resource.username, option, @new_resource.send(attribute), "-m"])
-      end
-
-      it "should set the option for #{attribute} if the new resources #{attribute} is not null, without homedir management" do
-        allow(@new_resource).to receive(:supports).and_return(manage_home: false)
-        allow(@new_resource).to receive(attribute).and_return("hola")
-        expect(@provider.set_options).to eql([@new_resource.username, option, @new_resource.send(attribute)])
       end
     end
 
@@ -123,7 +115,7 @@ describe Chef::Provider::User::Pw do
 
   describe "remove_user" do
     it "should run pw userdel with the new resources user name" do
-      @new_resource.supports manage_home: false
+      @new_resource.manage_home false
       expect(@provider).to receive(:shell_out!).with("pw", "userdel", @new_resource.username).and_return(true)
       @provider.remove_user
     end

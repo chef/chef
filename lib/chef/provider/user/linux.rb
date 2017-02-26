@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software Inc.
+# Copyright:: Copyright 2016-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,14 +52,14 @@ class Chef
           opts << "-s" << new_resource.shell if should_set?(:shell)
           opts << "-u" << new_resource.uid if should_set?(:uid)
           opts << "-d" << new_resource.home if updating_home?
-          opts << "-o" if non_unique?
+          opts << "-o" if new_resource.non_unique
           opts
         end
 
         def usermod_options
           opts = []
           if updating_home?
-            if managing_home_dir?
+            if new_resource.manage_home
               opts << "-m"
             end
           end
@@ -69,7 +69,7 @@ class Chef
         def useradd_options
           opts = []
           opts << "-r" if new_resource.system
-          opts << if managing_home_dir?
+          opts << if new_resource.manage_home
                     "-m"
                   else
                     "-M"
@@ -79,7 +79,7 @@ class Chef
 
         def userdel_options
           opts = []
-          opts << "-r" if managing_home_dir?
+          opts << "-r" if new_resource.manage_home
           opts << "-f" if new_resource.force
           opts
         end

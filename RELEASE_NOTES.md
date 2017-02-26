@@ -28,3 +28,7 @@ The `compile_time true` flag may still be used to force compile time.
 
 In order to for community cookbooks to behave consistently across all users this optional flag has been removed.
 
+### The `supports[:manage_home]` and `supports[:non_unique]` API has been removed from all user providers
+
+The remediation is to set the manage_home and non_unique properties directly.
+
