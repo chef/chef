@@ -9,10 +9,16 @@ _This file holds "in progress" release notes for the current release under devel
 It was never implemented in the provider, so it was always a no-op to use it, the remediation is
 to simply delete it.
 
-### Using the command property on the script resource (and bash and all other resources that inherit from script) is now a hard error
+### Using the command property on any script resource (including bash, etc) is now a hard error
 
 This was always a usage mistake.  The command property was used internally by the script resource and was not intended to be exposed
 to users.  Users should use the code property instead (or use the command property on an execute resource to execute a single command).
+
+### Omitting the code property on any script resource (including bash, etc) is now a hard error
+
+It is possible that this was being used as a no-op resource, but the log resource is a better choice for that until we get a null
+resource added.  Omitting the code property or mixing up the code property with the command property are also common usage mistakes
+that we need to catch and error on.
 
 ### The chef_gem resource defaults to not run at compile time
 
