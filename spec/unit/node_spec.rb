@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -1657,55 +1657,9 @@ describe Chef::Node do
 
           end
 
-          context "on Chef Client 13 and later" do
-
-            # Though we normally attempt to provide compatibility with chef
-            # server one major version back, policyfiles were beta when we
-            # added the policyfile attributes to the node JSON, therefore
-            # policyfile users need to be on 12.3 minimum when upgrading Chef
-            # Client to 13+
-            it "lets the 400 pass through", chef: ">= 13" do
-              expect { node.save }.to raise_error(http_exception)
-            end
-
-          end
-
-          context "when the node exists" do
-
-            it "falls back to saving without policyfile attributes" do
-              expect(@rest).to receive(:put).with("nodes/example-node", node.for_json).and_raise(http_exception)
-              expect(@rest).to receive(:put).with("nodes/example-node", trimmed_node).and_return(@node)
-              expect { node.save }.to_not raise_error
-            end
-
-          end
-
-          context "when the node doesn't exist" do
-
-            let(:response_404) do
-              Net::HTTPResponse.send(:response_class, "404").new("1.0", "404", "Not Found")
-            end
-
-            let(:http_exception_404) do
-              begin
-                response_404.error!
-              rescue => e
-                e
-              end
-            end
-
-            it "falls back to saving without policyfile attributes" do
-              expect(@rest).to receive(:put).with("nodes/example-node", node.for_json).and_raise(http_exception)
-              expect(@rest).to receive(:put).with("nodes/example-node", trimmed_node).and_raise(http_exception_404)
-              expect(@rest).to receive(:post).with("nodes", trimmed_node).and_return(@node)
-              node.save
-            end
-
-            it "creates the node without policyfile attributes" do
-              expect(@rest).to receive(:post).with("nodes", node.for_json).and_raise(http_exception)
-              expect(@rest).to receive(:post).with("nodes", trimmed_node).and_return(@node)
-              node.create
-            end
+          it "lets the 400 pass through" do
+            expect(@rest).to receive(:put).and_raise(http_exception)
+            expect { node.save }.to raise_error(http_exception)
           end
 
         end
