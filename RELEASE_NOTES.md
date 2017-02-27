@@ -43,5 +43,9 @@ This change is most likely to only affect internals of tooling like chefspec if 
 
 ### PolicyFile failback to create non-policyfile nodes on Chef Server < 12.3 has been removed
 
-PolicyFile users on Chef-13 should be using Chef Server 12.3 or higher
+PolicyFile users on Chef-13 should be using Chef Server 12.3 or higher.
+
+### Cookbooks with self dependencies are no longer allowed
+
+The remediation is removing the self-dependency `depends` line in the metadata.
 
