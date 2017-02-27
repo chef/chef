@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,11 +34,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:node)
     end
 
-    it "implements a load_node method for backwards compatibility until Chef 13" do
-      expect(policy_builder).to respond_to(:load_node)
-    end
-
-    it "has removed the deprecated #load_node method", chef: ">= 13" do
+    it "has removed the deprecated #load_node method" do
       expect(policy_builder).to_not respond_to(:load_node)
     end
 

@@ -37,3 +37,7 @@ The remediation is to set the manage_home and non_unique properties directly.
 Without a declared cwd the relative path was (most likely?) relative to wherever chef-client happened to be invoked which is
 not deterministic or easy to intuit behavior.
 
+### Chef::PolicyBuilder::ExpandNodeObject#load_node has been removed
+
+This change is most likely to only affect internals of tooling like chefspec if it affects anything at all.
+
