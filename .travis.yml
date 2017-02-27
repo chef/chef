@@ -80,17 +80,17 @@ matrix:
       TEST_GEM: cheffish
     script: tasks/bin/run_external_test $TEST_GEM rake spec
     rvm: 2.3.3
-  - env:
-      TEST_GEM: chefspec
-    # The chefspec tests + bundler cache + "gem update --system" interact badly :/
-    # (Cucumber doesn't start.)
-    before_install:
-      - gem uninstall bundler -a -x
-      - rvm @global do gem uninstall bundler -a -x
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
-      - bundle config --local without server:docgen:maintenance:omnibus_package:development:ruby_prof:pry
-    script: tasks/bin/run_external_test $TEST_GEM rake
-    rvm: 2.3.3
+    #- env:
+    #  TEST_GEM: chefspec
+    ## The chefspec tests + bundler cache + "gem update --system" interact badly :/
+    ## (Cucumber doesn't start.)
+    #before_install:
+    #  - gem uninstall bundler -a -x
+    #  - rvm @global do gem uninstall bundler -a -x
+    #  - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    #  - bundle config --local without server:docgen:maintenance:omnibus_package:development:ruby_prof:pry
+    #script: tasks/bin/run_external_test $TEST_GEM rake
+    #rvm: 2.3.3
   - env:
       TEST_GEM: foodcritic
     script: tasks/bin/run_external_test $TEST_GEM rake test
