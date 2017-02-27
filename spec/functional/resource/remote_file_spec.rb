@@ -165,9 +165,11 @@ describe Chef::Resource::RemoteFile do
         before do
           resource.path(local_destination_path)
           resource.source(smb_remote_path)
-          resource.remote_user_domain(remote_domain)
+          resource.remote_domain(remote_domain)
           resource.remote_user(remote_user)
-          resource.remote_user_password(remote_password)
+          resource.remote_password(remote_password)
+          resource.node.default["platform_family"] = "windows"
+          allow_any_instance_of(Chef::Provider::RemoteFile::NetworkFile).to receive(:node).and_return({ "platform_family" => "windows" })
         end
 
         shared_examples_for "a remote_file resource accessing a remote file to which the specified user has access" do
@@ -180,6 +182,13 @@ describe Chef::Resource::RemoteFile do
         shared_examples_for "a remote_file resource accessing a remote file to which the specified user does not have access" do
           it "causes an error to be raised" do
             expect { resource.run_action(:create) }.to raise_error(Errno::EACCES)
+          end
+        end
+
+        shared_examples_for "a remote_file resource accessing a remote file with invalid user" do
+          it "causes an error to be raised" do
+            allow(Chef::Util::Windows::LogonSession).to receive(:validate_session_open!).and_return(true)
+            expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::Win32APIError)
           end
         end
 
@@ -253,14 +262,6 @@ describe Chef::Resource::RemoteFile do
             it_behaves_like "a remote_file resource accessing a remote file to which the specified user has access"
           end
 
-          context "when the resource is accessed using the specific qualified alternate user identity with access" do
-            let(:remote_user) { windows_nonadmin_user_qualified }
-            let(:remote_domain) { nil }
-            let(:remote_password) { windows_nonadmin_user_password }
-
-            it_behaves_like "a remote_file resource accessing a remote file to which the specified user has access"
-          end
-
           context "when the resource is accessed using the current user's identity" do
             it_behaves_like "a remote_file resource accessing a remote file to which the specified user does not have access"
           end
@@ -274,7 +275,11 @@ describe Chef::Resource::RemoteFile do
             let(:remote_domain) { nil }
             let(:remote_password) { windows_nonadmin_user_password }
 
-            it_behaves_like "a remote_file resource accessing a remote file to which the specified user does not have access"
+            before do
+              allow_any_instance_of(Chef::Util::Windows::LogonSession).to receive(:validate_session_open!).and_return(true)
+            end
+
+            it_behaves_like "a remote_file resource accessing a remote file with invalid user"
           end
         end
       end

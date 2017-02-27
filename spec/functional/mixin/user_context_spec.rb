@@ -63,8 +63,13 @@ describe Chef::Mixin::UserContext, windows_only: true do
     username
   end
 
+  before do
+    allow_any_instance_of(described_class).to receive(:node).and_return({ "platform_family" => "windows" })
+  end
+
   shared_examples_for "method that executes the block while impersonating the alternate user" do
     it "sets the current thread token to that of the alternate user when the correct password is specified" do
+      allow_any_instance_of(Chef::Util::Windows::LogonSession).to receive(:validate_session_open!).and_return(true)
       expect(username_while_impersonating.downcase).to eq(username_to_impersonate.downcase)
     end
   end
@@ -94,12 +99,6 @@ describe Chef::Mixin::UserContext, windows_only: true do
 
         context "when a valid password and a non-qualified user is given and no domain is specified" do
           let(:domain_to_impersonate) { nil }
-          it_behaves_like "method that executes the block while impersonating the alternate user"
-        end
-
-        context "when a valid password and a qualified user is given and no domain is specified" do
-          let(:domain_to_impersonate) { nil }
-          let(:username_domain_qualification) { test_domain }
           it_behaves_like "method that executes the block while impersonating the alternate user"
         end
 
