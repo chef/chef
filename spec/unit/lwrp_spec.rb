@@ -1,6 +1,6 @@
 #
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -324,14 +324,7 @@ describe "LWRP" do
           end
         end
 
-        def raise_if_deprecated!
-          if Chef::VERSION.split(".").first.to_i > 12
-            raise "This test should be removed and the associated code should be removed!"
-          end
-        end
-
         it "amends actions when they are already defined" do
-          raise_if_deprecated!
           expect(child.actions).to eq([:nothing, :eat, :sleep, :drink])
         end
       end
