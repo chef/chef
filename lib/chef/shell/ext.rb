@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'chef/recipe'
-require 'fileutils'
-require 'chef/dsl/platform_introspection'
-require 'chef/version'
-require 'chef/shell/shell_session'
-require 'chef/shell/model_wrapper'
-require 'chef/shell/shell_rest'
-require 'chef/json_compat'
+require "tempfile"
+require "chef/recipe"
+require "fileutils"
+require "chef/dsl/platform_introspection"
+require "chef/version"
+require "chef/shell/shell_session"
+require "chef/shell/model_wrapper"
+require "chef/server_api"
+require "chef/json_compat"
 
 module Shell
   module Extensions
@@ -39,18 +39,18 @@ module Shell
         # irb breaks if you prematurely define IRB::JobMangager
         # so these methods need to be defined at the latest possible time.
         unless jobs.respond_to?(:select_session_by_context)
-          def jobs.select_session_by_context(&block)
-            @jobs.select { |job| block.call(job[1].context.main)}
+          def jobs.select_session_by_context(&block) # rubocop:disable Lint/NestedMethodDefinition
+            @jobs.select { |job| block.call(job[1].context.main) }
           end
         end
 
         unless jobs.respond_to?(:session_select)
-          def jobs.select_shell_session(target_context)
+          def jobs.select_shell_session(target_context) # rubocop:disable Lint/NestedMethodDefinition
             session = if target_context.kind_of?(Class)
-              select_session_by_context { |main| main.kind_of?(target_context) }
-            else
-              select_session_by_context { |main| main.equal?(target_context) }
-            end
+                        select_session_by_context { |main| main.kind_of?(target_context) }
+                      else
+                        select_session_by_context { |main| main.equal?(target_context) }
+                      end
             Array(session.first)[1]
           end
         end
@@ -73,7 +73,7 @@ module Shell
         banner << "| " + "Command".ljust(25) + "| " + "Description"
         banner << "".ljust(80, "=")
 
-        self.all_help_descriptions.each do |help_text|
+        all_help_descriptions.each do |help_text|
           banner << "| " + help_text.cmd.ljust(25) + "| " + help_text.desc
         end
         banner << "".ljust(80, "=")
@@ -84,7 +84,7 @@ module Shell
       end
 
       def explain_command(method_name)
-        help = self.all_help_descriptions.find { |h| h.cmd.to_s == method_name.to_s }
+        help = all_help_descriptions.find { |h| h.cmd.to_s == method_name.to_s }
         if help
           puts ""
           puts "Command: #{method_name}"
@@ -125,7 +125,7 @@ module Shell
         @explain = explain_text
       end
 
-      def subcommands(subcommand_help={})
+      def subcommands(subcommand_help = {})
         @subcommand_help = subcommand_help
       end
 
@@ -159,7 +159,7 @@ module Shell
 
     module Symbol
       def on_off_to_bool
-        self.to_s.on_off_to_bool
+        to_s.on_off_to_bool
       end
     end
 
@@ -196,8 +196,8 @@ module Shell
   chef-shell commands. When called with an argument COMMAND, +help+
   prints a detailed explanation of the command if available, or the
   description if no explanation is available.
-E
-      def help(commmand=nil)
+      E
+      def help(commmand = nil)
         if commmand
           explain_command(commmand)
         else
@@ -209,10 +209,10 @@ E
 
       desc "prints information about chef"
       def version
-        puts  "This is the chef-shell.\n" +
-              " Chef Version: #{::Chef::VERSION}\n" +
-              " http://www.chef.io/\n" +
-              " http://docs.chef.io/"
+        puts "This is the chef-shell.\n" +
+          " Chef Version: #{::Chef::VERSION}\n" +
+          " https://www.chef.io/\n" +
+          " https://docs.chef.io/"
         :ucanhaz_automation
       end
       alias :shell :version
@@ -295,7 +295,7 @@ E
       end
 
       desc "pretty print the node's attributes"
-      def ohai(key=nil)
+      def ohai(key = nil)
         pp(key ? node.attribute[key] : node.attribute)
       end
     end
@@ -314,7 +314,7 @@ E
   1. Looks for an EDITOR set by Shell.editor = "EDITOR"
   2. Looks for an EDITOR configured in your chef-shell config file
   3. Uses the value of the EDITOR environment variable
-E
+      E
       def edit(object)
         unless Shell.editor
           puts "Please set your editor with Shell.editor = \"vim|emacs|mate|ed\""
@@ -331,7 +331,7 @@ E
         edited_data = Tempfile.open([filename, ".js"]) do |tempfile|
           tempfile.sync = true
           tempfile.puts Chef::JSONCompat.to_json(object)
-          system("#{Shell.editor.to_s} #{tempfile.path}")
+          system("#{Shell.editor} #{tempfile.path}")
           tempfile.rewind
           tempfile.read
         end
@@ -392,7 +392,7 @@ E
       end
 
   This will strip the admin privileges from any client named after borat.
-E
+      E
       subcommands :all        => "list all api clients",
                   :show       => "load an api client by name",
                   :search     => "search for API clients",
@@ -454,7 +454,7 @@ E
       end
 
   This will assign the attribute to every node with a FQDN matching the regex.
-E
+      E
       subcommands :all        => "list all nodes",
                   :show       => "load a node by name",
                   :search     => "search for nodes",
@@ -476,7 +476,7 @@ E
 
 ## SEE ALSO ##
   See the help for +nodes+ for more information about the subcommands.
-E
+      E
       subcommands :all        => "list all roles",
                   :show       => "load a role by name",
                   :search     => "search for roles",
@@ -502,7 +502,7 @@ E
 ## SEE ALSO ##
   See the help for +nodes+ for more information about the subcommands.
 
-E
+      E
       subcommands :all        => "list all items in the data bag",
                   :show       => "load a data bag item by id",
                   :search     => "search for items in the data bag",
@@ -525,7 +525,7 @@ E
 
 ## SEE ALSO ##
   See the help for +nodes+ for more information about the subcommands.
-E
+      E
       subcommands :all        => "list all environments",
                   :show       => "load an environment by name",
                   :search     => "search for environments",
@@ -536,7 +536,7 @@ E
 
       desc "A REST Client configured to authenticate with the API"
       def api
-        @rest = Shell::ShellREST.new(Chef::Config[:chef_server_url])
+        @rest = Chef::ServerAPI.new(Chef::Config[:chef_server_url])
       end
 
     end

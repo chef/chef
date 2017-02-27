@@ -1,6 +1,6 @@
 #
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
-require 'chef/version_class'
+require "spec_helper"
+require "chef/version_class"
 
 describe Chef::Version do
   before do
@@ -44,7 +44,7 @@ describe Chef::Version do
   end
 
   describe "when creating valid Versions" do
-    good_versions = %w(1.2 1.2.3 1000.80.50000 0.300.25 001.02.00003)
+    good_versions = %w{1.2 1.2.3 1000.80.50000 0.300.25 001.02.00003}
     good_versions.each do |v|
       it "should accept '#{v}'" do
         Chef::Version.new v
@@ -90,7 +90,7 @@ describe Chef::Version do
                   ["1.2", "1.3.0"],
                   ["1.2", "1.3"],
                   ["1.2", "2.1.1"],
-                  ["1.2", "2.1"]
+                  ["1.2", "2.1"],
                  ]
       examples.each do |smaller, larger|
         sm = Chef::Version.new(smaller)
@@ -105,7 +105,7 @@ describe Chef::Version do
       a = %w{0.0.0 0.0.1 0.1.0 0.1.1 1.0.0 1.1.0 1.1.1}.map do |s|
         Chef::Version.new(s)
       end
-      got = a.sort.map {|v| v.to_s }
+      got = a.sort.map { |v| v.to_s }
       expect(got).to eq(%w{0.0.0 0.0.1 0.1.0 0.1.1 1.0.0 1.1.0 1.1.1})
     end
 
@@ -158,7 +158,7 @@ describe Chef::Version do
        [ "1.2.2", :>=, "1.2.1", true ],
        [ "1.2.2", :==, "1.2.1", false ],
        [ "1.2.2", :<=, "1.2.1", false ],
-       [ "1.2.2", :<, "1.2.1", false ]
+       [ "1.2.2", :<, "1.2.1", false ],
       ].each do |spec|
         it "(#{spec.first(3).join(' ')}) should be #{spec[3]}" do
           got = Chef::Version.new(spec[0]).send(spec[1],
@@ -169,4 +169,3 @@ describe Chef::Version do
     end
   end
 end
-

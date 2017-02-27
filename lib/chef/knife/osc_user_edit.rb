@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (<steve@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Steven Danna (<steve@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 # DEPRECATION NOTE
 # This code only remains to support users still operating with
@@ -28,8 +28,8 @@ class Chef
     class OscUserEdit < Knife
 
       deps do
-        require 'chef/user'
-        require 'chef/json_compat'
+        require "chef/user"
+        require "chef/json_compat"
       end
 
       banner "knife osc_user edit USER (options)"
@@ -44,13 +44,13 @@ class Chef
         end
 
         original_user = Chef::User.load(@user_name).to_hash
-        edited_user = edit_data(original_user)
+        edited_user = edit_hash(original_user)
         if original_user != edited_user
           user = Chef::User.from_hash(edited_user)
           user.update
           ui.msg("Saved #{user}.")
         else
-          ui.msg("User unchaged, not saving.")
+          ui.msg("User unchanged, not saving.")
         end
       end
     end

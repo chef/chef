@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleEdit do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::RoleEdit.new
     @knife.config[:print_after] = nil
     @knife.name_args = [ "adam" ]
@@ -39,7 +39,7 @@ describe Chef::Knife::RoleEdit do
     end
 
     it "should edit the role data" do
-      expect(@knife.ui).to receive(:edit_data).with(@role)
+      expect(@knife.ui).to receive(:edit_data).with(@role, object_class: Chef::Role)
       @knife.run
     end
 
@@ -47,7 +47,7 @@ describe Chef::Knife::RoleEdit do
       pansy = Chef::Role.new
 
       @role.name("new_role_name")
-      expect(@knife.ui).to receive(:edit_data).with(@role).and_return(pansy)
+      expect(@knife.ui).to receive(:edit_data).with(@role, object_class: Chef::Role).and_return(pansy)
       expect(pansy).to receive(:save)
       @knife.run
     end
@@ -55,7 +55,7 @@ describe Chef::Knife::RoleEdit do
     it "should not save the unedited role data" do
       pansy = Chef::Role.new
 
-      expect(@knife.ui).to receive(:edit_data).with(@role).and_return(pansy)
+      expect(@knife.ui).to receive(:edit_data).with(@role, object_class: Chef::Role).and_return(pansy)
       expect(pansy).not_to receive(:save)
       @knife.run
 
@@ -75,5 +75,3 @@ describe Chef::Knife::RoleEdit do
     end
   end
 end
-
-

@@ -1,8 +1,8 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Author:: Claire McQuin (<claire@getchef.com>)
+# Author:: Claire McQuin (<claire@chef.io>)
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'securerandom'
+require "spec_helper"
+require "securerandom"
 
 describe Chef::Audit::AuditData do
 
@@ -72,8 +72,8 @@ describe Chef::Audit::AuditData do
 
     describe ":control_groups" do
 
-      let(:control_hash_1) { {:name => "control group 1"} }
-      let(:control_hash_2) { {:name => "control group 2"} }
+      let(:control_hash_1) { { :name => "control group 1" } }
+      let(:control_hash_2) { { :name => "control group 2" } }
 
       let(:control_groups) { audit_data_hash[:control_groups] }
 
@@ -122,10 +122,10 @@ describe Chef::Audit::ControlData do
   let(:context) { nil }
   let(:line_number) { 27 }
 
-  let(:control_data) { described_class.new(name: name,
-    resource_type: resource_type, resource_name: resource_name,
-    context: context, line_number: line_number) }
-
+  let(:control_data) do
+    described_class.new(name: name,
+                        resource_type: resource_type, resource_name: resource_name,
+                        context: context, line_number: line_number) end
 
   describe "#to_hash" do
 
@@ -172,30 +172,31 @@ describe Chef::Audit::ControlGroupData do
     let(:context) { nil }
     let(:line_number) { 0 }
 
-    let(:control_data) {
+    let(:control_data) do
       {
         :name => name,
         :resource_type => resource_type,
         :resource_name => resource_name,
         :context => context,
-        :line_number => line_number
+        :line_number => line_number,
       }
-    }
+    end
 
   end
 
   shared_context "control" do
     include_context "control data"
 
-    let(:control) { Chef::Audit::ControlData.new(name: name,
-      resource_type: resource_type, resource_name: resource_name,
-      context: context, line_number: line_number) }
+    let(:control) do
+      Chef::Audit::ControlData.new(name: name,
+                                   resource_type: resource_type, resource_name: resource_name,
+                                   context: context, line_number: line_number) end
 
     before do
       allow(Chef::Audit::ControlData).to receive(:new).
         with(name: name, resource_type: resource_type,
-          resource_name: resource_name, context: context,
-          line_number: line_number).
+             resource_name: resource_name, context: context,
+             line_number: line_number).
         and_return(control)
     end
   end
@@ -361,19 +362,19 @@ describe Chef::Audit::ControlGroupData do
 
     context "and it's the first audit" do
       include_examples "mixed audit results" do
-        let(:audit_results) { ["failure", "success", "success"] }
+        let(:audit_results) { %w{failure success success} }
       end
     end
 
     context "and it's an audit in the middle" do
       include_examples "mixed audit results" do
-        let(:audit_results) { ["success", "failure", "success"] }
+        let(:audit_results) { %w{success failure success} }
       end
     end
 
     context "and it's the last audit" do
       include_examples "mixed audit results" do
-        let(:audit_results) { ["success", "success", "failure"] }
+        let(:audit_results) { %w{success success failure} }
       end
     end
   end
@@ -433,19 +434,22 @@ describe Chef::Audit::ControlGroupData do
 
       context "with multiple controls added" do
 
-        let(:control_hash_1) { {:line_number => 27} }
-        let(:control_hash_2) { {:line_number => 13} }
-        let(:control_hash_3) { {:line_number => 35} }
+        let(:control_hash_1) { { :line_number => 27 } }
+        let(:control_hash_2) { { :line_number => 13 } }
+        let(:control_hash_3) { { :line_number => 35 } }
 
-        let(:control_1) { double("control 1",
+        let(:control_1) do
+          double("control 1",
           :line_number => control_hash_1[:line_number],
-          :to_hash => control_hash_1) }
-        let(:control_2) { double("control 2",
+          :to_hash => control_hash_1) end
+        let(:control_2) do
+          double("control 2",
           :line_number => control_hash_2[:line_number],
-          :to_hash => control_hash_2) }
-        let(:control_3) { double("control 3",
+          :to_hash => control_hash_2) end
+        let(:control_3) do
+          double("control 3",
           :line_number => control_hash_3[:line_number],
-          :to_hash => control_hash_3) }
+          :to_hash => control_hash_3) end
 
         let(:control_list) { [control_1, control_2, control_3] }
         let(:ordered_control_hashes) { [control_hash_2, control_hash_1, control_hash_3] }

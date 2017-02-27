@@ -1,6 +1,6 @@
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright 2010-2011 Opscode, Inc.
+# Author:: Seth Falcon (<seth@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,19 +14,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require 'chef/version_class'
+require "chef/version_class"
 
 class Chef
   class VersionConstraint
     DEFAULT_CONSTRAINT = ">= 0.0.0"
-    STANDARD_OPS = %w(< > <= >=)
-    OPS = %w(< > = <= >= ~>)
+    STANDARD_OPS = %w{< > <= >=}
+    OPS = %w{< > = <= >= ~>}
     PATTERN = /^(#{OPS.join('|')}) *([0-9].*)$/
     VERSION_CLASS = Chef::Version
 
     attr_reader :op, :version
 
-    def initialize(constraint_spec=DEFAULT_CONSTRAINT)
+    def initialize(constraint_spec = DEFAULT_CONSTRAINT)
       case constraint_spec
       when nil
         parse(DEFAULT_CONSTRAINT)
@@ -46,19 +46,19 @@ class Chef
                 else
                   self.class::VERSION_CLASS.new(v.to_s)
                 end
-     do_op(version)
+      do_op(version)
     end
 
     def inspect
-      "(#{to_s})"
+      "(#{self})"
     end
 
     def to_s
       "#{@op} #{@raw_version}"
     end
 
-    def eql?(o)
-      o.class == self.class && @op == o.op && @version == o.version
+    def eql?(other)
+      other.class == self.class && @op == other.op && @version == other.version
     end
     alias_method :==, :eql?
 
@@ -67,9 +67,9 @@ class Chef
     def do_op(other_version)
       if STANDARD_OPS.include? @op
         other_version.send(@op.to_sym, @version)
-      elsif @op == '='
+      elsif @op == "="
         other_version == @version
-      elsif @op == '~>'
+      elsif @op == "~>"
         if @missing_patch_level
           (other_version.major == @version.major &&
            other_version.minor >= @version.minor)
@@ -78,7 +78,7 @@ class Chef
            other_version.minor == @version.minor &&
            other_version.patch >= @version.patch)
         end
-      else                      # should never happen
+      else # should never happen
         raise "bad op #{@op}"
       end
     end
@@ -106,7 +106,7 @@ class Chef
         @op = $1
         @raw_version = $2
         @version = self.class::VERSION_CLASS.new(@raw_version)
-        if @raw_version.split('.').size <= 2
+        if @raw_version.split(".").size <= 2
           @missing_patch_level = true
         end
       else

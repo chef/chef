@@ -1,5 +1,5 @@
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 #
 
 require File.expand_path("../../spec_helper", __FILE__)
-require 'chef/scan_access_control'
+require "chef/scan_access_control"
 
 describe Chef::ScanAccessControl do
 
@@ -33,7 +33,7 @@ describe Chef::ScanAccessControl do
       @new_resource.tap do |f|
         f.owner("root")
         f.group("root")
-        f.mode('0755')
+        f.mode("0755")
       end
       @scanner.set_all!
     end
@@ -181,4 +181,3 @@ describe Chef::ScanAccessControl do
     end
   end
 end
-

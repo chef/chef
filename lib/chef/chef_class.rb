@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,10 +26,13 @@
 # injected" into this class by other objects and do not reference the class symbols in those files
 # directly and we do not need to require those files here.
 
-require 'chef/platform/provider_priority_map'
-require 'chef/platform/resource_priority_map'
-require 'chef/platform/provider_handler_map'
-require 'chef/platform/resource_handler_map'
+require "chef/platform/provider_priority_map"
+require "chef/platform/resource_priority_map"
+require "chef/platform/provider_handler_map"
+require "chef/platform/resource_handler_map"
+require "chef/deprecated"
+require "chef/event_dispatch/dsl"
+require "chef/deprecated"
 
 class Chef
   class << self
@@ -56,7 +59,7 @@ class Chef
     #
     # @return[Chef::EventDispatch::Base] handler object
     def event_handler(&block)
-      dsl = Chef::EventDispatch::DSL.new('Chef client DSL')
+      dsl = Chef::EventDispatch::DSL.new("Chef client DSL")
       dsl.instance_eval(&block)
     end
 
@@ -178,14 +181,17 @@ class Chef
       # these slurp in the resource+provider world, so be exceedingly lazy about requiring them
       @provider_priority_map ||= Chef::Platform::ProviderPriorityMap.instance
     end
+
     # @api private
     def resource_priority_map
       @resource_priority_map ||= Chef::Platform::ResourcePriorityMap.instance
     end
+
     # @api private
     def provider_handler_map
       @provider_handler_map ||= Chef::Platform::ProviderHandlerMap.instance
     end
+
     # @api private
     def resource_handler_map
       @resource_handler_map ||= Chef::Platform::ResourceHandlerMap.instance
@@ -194,35 +200,34 @@ class Chef
     #
     # Emit a deprecation message.
     #
-    # @param message The message to send.
+    # @param type The message to send. This should be a symbol, referring to
+    #   a class defined in Chef::Deprecated
+    # @param message  An explicit message to display, rather than the generic one
+    #   associated with the deprecation.
     # @param location The location. Defaults to the caller who called you (since
     #   generally the person who triggered the check is the one that needs to be
     #   fixed).
     #
     # @example
-    #     Chef.deprecation("Deprecated!")
+    #     Chef.deprecated(:my_deprecation, message: "This is deprecated!")
     #
     # @api private this will likely be removed in favor of an as-yet unwritten
     #      `Chef.log`
-    def log_deprecation(message, location=nil)
-      if !location
-        # Pick the first caller that is *not* part of the Chef gem, that's the
-        # thing the user wrote.
-        chef_gem_path = File.expand_path("../..", __FILE__)
-        caller(0..10).each do |c|
-          if !c.start_with?(chef_gem_path)
-            location = c
-            break
-          end
-        end
-      end
+    def deprecated(type, message, location = nil)
+      location ||= Chef::Log.caller_location
+      deprecation = Chef::Deprecated.create(type, message, location)
       # `run_context.events` is the primary deprecation target if we're in a
       # run. If we are not yet in a run, print to `Chef::Log`.
       if run_context && run_context.events
-        run_context.events.deprecation(message, location)
+        run_context.events.deprecation(deprecation, location)
       else
-        Chef::Log.deprecation(message, location)
+        Chef::Log.deprecation(deprecation, location)
       end
+    end
+
+    def log_deprecation(message, location = nil)
+      location ||= Chef::Log.caller_location
+      Chef.deprecated(:generic, message, location)
     end
   end
 

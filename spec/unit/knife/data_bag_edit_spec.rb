@@ -1,6 +1,6 @@
 #
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tempfile'
+require "spec_helper"
+require "tempfile"
 
 describe Chef::Knife::DataBagEdit do
   before do
@@ -33,11 +33,11 @@ describe Chef::Knife::DataBagEdit do
     k
   end
 
-  let(:raw_hash) { {"login_name" => "alphaomega", "id" => "item_name"} }
-  let(:db) { Chef::DataBagItem.from_hash(raw_hash)}
-  let(:raw_edited_hash) { {"login_name" => "rho", "id" => "item_name", "new_key" => "new_value"} }
+  let(:raw_hash) { { "login_name" => "alphaomega", "id" => "item_name" } }
+  let(:db) { Chef::DataBagItem.from_hash(raw_hash) }
+  let(:raw_edited_hash) { { "login_name" => "rho", "id" => "item_name", "new_key" => "new_value" } }
 
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }
@@ -55,8 +55,8 @@ describe Chef::Knife::DataBagEdit do
     it "correctly edits then uploads the data bag" do
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(db)
       expect(knife).to receive(:encrypted?).with(db.raw_data).and_return(is_encrypted?)
-      expect(knife).to receive(:edit_data).with(data_to_edit).and_return(raw_edited_hash)
-      expect(rest).to receive(:put_rest).with("data/#{bag_name}/#{item_name}", transmitted_hash).ordered
+      expect(knife).to receive(:edit_hash).with(data_to_edit).and_return(raw_edited_hash)
+      expect(rest).to receive(:put).with("data/#{bag_name}/#{item_name}", transmitted_hash).ordered
 
       knife.run
     end
@@ -65,7 +65,7 @@ describe Chef::Knife::DataBagEdit do
   it "requires data bag and item arguments" do
     knife.name_args = []
     expect(stdout).to receive(:puts).twice.with(anything)
-    expect {knife.run}.to exit_with_code(1)
+    expect { knife.run }.to exit_with_code(1)
     expect(stdout.string).to eq("")
   end
 
@@ -74,7 +74,7 @@ describe Chef::Knife::DataBagEdit do
   end
 
   context "when config[:print_after] is set" do
-    let(:config) { {:print_after => true} }
+    let(:config) { { :print_after => true } }
     before do
       expect(knife.ui).to receive(:output).with(raw_edited_hash)
     end
@@ -121,7 +121,7 @@ describe Chef::Knife::DataBagEdit do
     expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(false)
 
     expect(knife.ui).to receive(:fatal).with("You cannot edit an encrypted data bag without providing the secret.")
-    expect {knife.run}.to exit_with_code(1)
+    expect { knife.run }.to exit_with_code(1)
   end
 
 end

@@ -1,6 +1,6 @@
 #
-# Author:: Adam Edwards (<adamed@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Adam Edwards (<adamed@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,19 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/resource/windows_script'
+require "chef/resource/windows_script"
 
 class Chef
   class Resource
     class PowershellScript < Chef::Resource::WindowsScript
       provides :powershell_script, os: "windows"
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super(name, run_context, nil, "powershell.exe")
         @convert_boolean_return = false
       end
 
-      def convert_boolean_return(arg=nil)
+      def convert_boolean_return(arg = nil)
         set_or_return(
           :convert_boolean_return,
           arg,
@@ -43,7 +43,7 @@ class Chef
       # guard context and recipe resource context will have the
       # same behavior.
       def self.get_default_attributes(opts)
-        {:convert_boolean_return => true}
+        { :convert_boolean_return => true }
       end
     end
   end

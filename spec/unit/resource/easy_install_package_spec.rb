@@ -1,6 +1,6 @@
 #
 # Author:: Joe Williams (<joe@joetify.com>)
-# Copyright:: Copyright (c) 2009 Joe Williams
+# Copyright:: Copyright 2009-2016, Joe Williams
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::EasyInstallPackage, "initialize" do
 
@@ -25,7 +25,7 @@ describe Chef::Resource::EasyInstallPackage, "initialize" do
     resource: Chef::Resource::EasyInstallPackage,
     provider: Chef::Provider::Package::EasyInstall,
     name: :easy_install_package,
-    action: :install,
+    action: :install
   )
 
   before(:each) do

@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,10 @@
 #
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'win32/service'
+  require "win32/service"
 end
-require 'chef/config'
-require 'mixlib/cli'
+require "chef/config"
+require "mixlib/cli"
 
 class Chef
   class Application
@@ -51,8 +51,7 @@ class Chef
       option :log_location,
         :short        => "-L LOGLOCATION",
         :long         => "--logfile LOGLOCATION",
-        :description  => "Set the log file location for chef-service",
-        :default => "#{ENV['SYSTEMDRIVE']}/chef/client.log"
+        :description  => "Set the log file location for chef-service"
 
       option :help,
         :short        => "-h",
@@ -68,7 +67,7 @@ class Chef
         :long         => "--version",
         :description  => "Show chef version",
         :boolean      => true,
-        :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+        :proc         => lambda { |v| puts "Chef: #{::Chef::VERSION}" },
         :exit         => 0
 
       def initialize(service_options)
@@ -100,11 +99,11 @@ class Chef
         parse_options(params)
 
         case config[:action]
-        when 'install'
+        when "install"
           if service_exists?
             puts "Service #{@service_name} already exists on the system."
           else
-            ruby = File.join(RbConfig::CONFIG['bindir'], 'ruby')
+            ruby = File.join(RbConfig::CONFIG["bindir"], "ruby")
 
             opts = ""
             opts << " -c #{config[:config_file]}" if config[:config_file]
@@ -127,35 +126,37 @@ class Chef
               :password           => @password,
               :dependencies       => @dependencies
             )
-            ::Win32::Service.configure(
-              :service_name     => @service_name,
-              :delayed_start    => @delayed_start
-            ) unless @delayed_start.nil?
+            unless @delayed_start.nil?
+              ::Win32::Service.configure(
+                :service_name     => @service_name,
+                :delayed_start    => @delayed_start
+              )
+            end
             puts "Service '#{@service_name}' has successfully been installed."
           end
-        when 'status'
+        when "status"
           if !service_exists?
             puts "Service #{@service_name} doesn't exist on the system."
           else
             puts "State of #{@service_name} service is: #{current_state}"
           end
-        when 'start'
+        when "start"
           # TODO: allow override of startup parameters here?
-          take_action('start', RUNNING)
-        when 'stop'
-          take_action('stop', STOPPED)
-        when 'uninstall', 'delete'
-          take_action('stop', STOPPED)
+          take_action("start", RUNNING)
+        when "stop"
+          take_action("stop", STOPPED)
+        when "uninstall", "delete"
+          take_action("stop", STOPPED)
           unless service_exists?
             puts "Service #{@service_name} doesn't exist on the system."
           else
             ::Win32::Service.delete(@service_name)
             puts "Service #{@service_name} deleted"
           end
-        when 'pause'
-          take_action('pause', PAUSED)
-        when 'resume'
-          take_action('resume', RUNNING)
+        when "pause"
+          take_action("pause", PAUSED)
+        when "resume"
+          take_action("resume", RUNNING)
         end
       end
 
@@ -167,10 +168,10 @@ class Chef
       PAUSED = "paused"
 
       def service_exists?
-        return ::Win32::Service.exists?(@service_name)
+        ::Win32::Service.exists?(@service_name)
       end
 
-      def take_action(action=nil, desired_state=nil)
+      def take_action(action = nil, desired_state = nil)
         if service_exists?
           if current_state != desired_state
             ::Win32::Service.send(action, @service_name)

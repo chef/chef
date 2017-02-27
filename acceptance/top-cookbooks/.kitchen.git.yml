@@ -1,0 +1,11 @@
+suites:
+  - name: git-default
+    # Ubuntu images need to run apt update
+    run_list: ["recipe[apt]","recipe[git]"]
+    includes: [ubuntu-14.04]
+  - name: git-source
+    run_list: ["recipe[git::source]"]
+    includes: [nonexistent]
+  - name: git-default-windows
+    run_list: ["recipe[git]"]
+    includes: [windows-2012r2]

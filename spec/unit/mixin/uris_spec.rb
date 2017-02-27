@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/uris'
+require "spec_helper"
+require "chef/mixin/uris"
 
 class Chef::UrisTest
   include Chef::Mixin::Uris
@@ -28,25 +28,25 @@ describe Chef::Mixin::Uris do
 
   describe "#uri_scheme?" do
     it "matches 'scheme://foo.com'" do
-      expect(uris.uri_scheme?('scheme://foo.com')).to eq(true)
+      expect(uris.uri_scheme?("scheme://foo.com")).to eq(true)
     end
 
     it "does not match 'c:/foo.com'" do
-      expect(uris.uri_scheme?('c:/foo.com')).to eq(false)
+      expect(uris.uri_scheme?("c:/foo.com")).to eq(false)
     end
 
     it "does not match '/usr/bin/foo.com'" do
-      expect(uris.uri_scheme?('/usr/bin/foo.com')).to eq(false)
+      expect(uris.uri_scheme?("/usr/bin/foo.com")).to eq(false)
     end
 
     it "does not match 'c:/foo.com://bar.com'" do
-      expect(uris.uri_scheme?('c:/foo.com://bar.com')).to eq(false)
+      expect(uris.uri_scheme?("c:/foo.com://bar.com")).to eq(false)
     end
   end
 
   describe "#as_uri" do
     it "parses a file scheme uri with spaces" do
-      expect{ uris.as_uri("file:///c:/foo bar.txt") }.not_to raise_exception
+      expect { uris.as_uri("file:///c:/foo bar.txt") }.not_to raise_exception
     end
 
     it "returns a URI object" do

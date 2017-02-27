@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/core/node_presenter'
+require "chef/knife"
+require "chef/knife/core/node_presenter"
+require "addressable/uri"
 
 class Chef
   class Knife
@@ -26,10 +27,10 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require 'chef/node'
-        require 'chef/environment'
-        require 'chef/api_client'
-        require 'chef/search/query'
+        require "chef/node"
+        require "chef/environment"
+        require "chef/api_client"
+        require "chef/search/query"
       end
 
       include Knife::Core::NodeFormattingOptions
@@ -74,19 +75,18 @@ class Chef
       option :filter_result,
         :short => "-f FILTER",
         :long => "--filter-result FILTER",
-        :description => "Only bring back specific attributes of the matching objects; for example: \"ServerName=name, Kernel=kernel.version\""
+        :description => "Only return specific attributes of the matching objects; for example: \"ServerName=name, Kernel=kernel.version\""
 
       def run
         read_cli_args
         fuzzify_query
 
-        if @type == 'node'
+        if @type == "node"
           ui.use_presenter Knife::Core::NodePresenter
         end
 
         q = Chef::Search::Query.new
-        escaped_query = URI.escape(@query,
-                           Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+        escaped_query = Addressable::URI.encode_component(@query, Addressable::URI::CharacterClasses::QUERY)
 
         result_items = []
         result_count = 0
@@ -106,7 +106,7 @@ class Chef
             formatted_item = Hash.new
             if item.is_a?(Hash)
               # doing a little magic here to set the correct name
-              formatted_item[item["__display_name"]] = item.reject{|k| k == "__display_name"}
+              formatted_item[item["__display_name"]] = item.reject { |k| k == "__display_name" }
             else
               formatted_item = format_for_display(item)
             end
@@ -120,7 +120,7 @@ class Chef
         end
 
         if ui.interchange?
-          output({:results => result_count, :rows => result_items})
+          output({ :results => result_count, :rows => result_items })
         else
           ui.log "#{result_count} items found"
           ui.log("\n")
@@ -177,13 +177,13 @@ class Chef
       # See lib/chef/search/query.rb for more examples of this.
       def create_result_filter(filter_string)
         final_filter = Hash.new
-        filter_string.gsub!(" ", "")
+        filter_string.delete!(" ")
         filters = filter_string.split(",")
         filters.each do |f|
           return_id, attr_path = f.split("=")
           final_filter[return_id.to_sym] = attr_path.split(".")
         end
-        return final_filter
+        final_filter
       end
 
       def create_result_filter_from_attributes(filter_array)
@@ -193,7 +193,7 @@ class Chef
         end
         # adding magic filter so we can actually pull the name as before
         final_filter["__display_name"] = [ "name" ]
-        return final_filter
+        final_filter
       end
 
     end

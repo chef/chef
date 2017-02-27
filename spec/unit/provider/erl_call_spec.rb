@@ -1,6 +1,6 @@
 #
 # Author:: Joe Williams (<joe@joetify.com>)
-# Copyright:: Copyright (c) 2009 Joe Williams
+# Copyright:: Copyright 2009-2016, Joe Williams
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::ErlCall do
   before(:each) do
@@ -33,7 +33,7 @@ describe Chef::Provider::ErlCall do
 
     allow(@provider).to receive(:popen4).and_return(@status)
     @stdin = StringIO.new
-    @stdout = StringIO.new('{ok, woohoo}')
+    @stdout = StringIO.new("{ok, woohoo}")
     @stderr = StringIO.new
     @pid = 2342999
   end
@@ -83,4 +83,3 @@ describe Chef::Provider::ErlCall do
   end
 
 end
-

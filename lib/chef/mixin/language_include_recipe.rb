@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/dsl/include_recipe'
-require 'chef/mixin/deprecation'
+require "chef/dsl/include_recipe"
+require "chef/mixin/deprecation"
 
 class Chef
   module Mixin
@@ -29,4 +29,3 @@ EOM
 
   end
 end
-

@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,8 +32,8 @@ class Chef
     # @return [NodeMap] Returns self for possible chaining
     #
     def set(key, value, platform: nil, platform_version: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, canonical: nil, override: nil, &block)
-      Chef.log_deprecation("The on_platform option to node_map has been deprecated") if on_platform
-      Chef.log_deprecation("The on_platforms option to node_map has been deprecated") if on_platforms
+      Chef.deprecated(:internal_api, "The on_platform option to node_map has been deprecated") if on_platform
+      Chef.deprecated(:internal_api, "The on_platforms option to node_map has been deprecated") if on_platforms
       platform ||= on_platform || on_platforms
       filters = {}
       filters[:platform] = platform if platform
@@ -49,7 +49,7 @@ class Chef
       # our place in it (just before the first value with the same preference level).
       insert_at = nil
       map[key] ||= []
-      map[key].each_with_index do |matcher,index|
+      map[key].each_with_index do |matcher, index|
         cmp = compare_matchers(key, new_matcher, matcher)
         insert_at ||= index if cmp && cmp <= 0
       end
@@ -113,7 +113,7 @@ class Chef
       remaining
     end
 
-    protected
+    private
 
     #
     # Succeeds if:
@@ -128,7 +128,7 @@ class Chef
       value = node[attribute]
 
       # Split the blacklist and whitelist
-      blacklist, whitelist = filter_values.partition { |v| v.is_a?(String) && v.start_with?('!') }
+      blacklist, whitelist = filter_values.partition { |v| v.is_a?(String) && v.start_with?("!") }
 
       # If any blacklist value matches, we don't match
       return false if blacklist.any? { |v| v[1..-1] == value }
@@ -145,16 +145,16 @@ class Chef
       value = node[attribute]
 
       filter_values.empty? ||
-      Array(filter_values).any? do |v|
-        Chef::VersionConstraint::Platform.new(v).include?(value)
-      end
+        Array(filter_values).any? do |v|
+          Chef::VersionConstraint::Platform.new(v).include?(value)
+        end
     end
 
     def filters_match?(node, filters)
       matches_black_white_list?(node, filters, :os) &&
-      matches_black_white_list?(node, filters, :platform_family) &&
-      matches_black_white_list?(node, filters, :platform) &&
-      matches_version_list?(node, filters, :platform_version)
+        matches_black_white_list?(node, filters, :platform_family) &&
+        matches_black_white_list?(node, filters, :platform) &&
+        matches_version_list?(node, filters, :platform_version)
     end
 
     def block_matches?(node, block)
@@ -172,7 +172,8 @@ class Chef
       !!canonical == !!matcher[:canonical]
     end
 
-    def compare_matchers(key, new_matcher, matcher)
+    # @api private
+    def dispatch_compare_matchers(key, new_matcher, matcher)
       cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:block] }
       return cmp if cmp != 0
       cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform_version] }
@@ -189,14 +190,29 @@ class Chef
       0
     end
 
+    #
+    # "provides" lines with identical filters sort by class name (ascending).
+    #
+    def compare_matchers(key, new_matcher, matcher)
+      cmp = dispatch_compare_matchers(key, new_matcher, matcher)
+      if cmp == 0
+        # Sort by class name (ascending) as well, if all other properties
+        # are exactly equal
+        if new_matcher[:value].is_a?(Class) && !new_matcher[:override]
+          cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:value].name }
+        end
+      end
+      cmp
+    end
+
     def compare_matcher_properties(new_matcher, matcher)
       a = yield(new_matcher)
       b = yield(matcher)
 
       # Check for blcacklists ('!windows'). Those always come *after* positive
       # whitelists.
-      a_negated = Array(a).any? { |f| f.is_a?(String) && f.start_with?('!') }
-      b_negated = Array(b).any? { |f| f.is_a?(String) && f.start_with?('!') }
+      a_negated = Array(a).any? { |f| f.is_a?(String) && f.start_with?("!") }
+      b_negated = Array(b).any? { |f| f.is_a?(String) && f.start_with?("!") }
       if a_negated != b_negated
         return 1 if a_negated
         return -1 if b_negated

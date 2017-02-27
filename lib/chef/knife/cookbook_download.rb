@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
@@ -27,7 +27,7 @@ class Chef
       attr_accessor :cookbook_name
 
       deps do
-        require 'chef/cookbook_version'
+        require "chef/cookbook_version"
       end
 
       banner "knife cookbook download COOKBOOK [VERSION] (options)"
@@ -69,7 +69,7 @@ class Chef
 
         ui.info("Downloading #{@cookbook_name} cookbook version #{@version}")
 
-        cookbook = rest.get_rest("cookbooks/#{@cookbook_name}/#{@version}")
+        cookbook = Chef::CookbookVersion.load(@cookbook_name, @version)
         manifest = cookbook.manifest
 
         basedir = File.join(config[:download_directory], "#{@cookbook_name}-#{cookbook.version}")
@@ -87,11 +87,10 @@ class Chef
           next unless manifest.has_key?(segment)
           ui.info("Downloading #{segment}")
           manifest[segment].each do |segment_file|
-            dest = File.join(basedir, segment_file['path'].gsub('/', File::SEPARATOR))
+            dest = File.join(basedir, segment_file["path"].gsub("/", File::SEPARATOR))
             Chef::Log.debug("Downloading #{segment_file['path']} to #{dest}")
             FileUtils.mkdir_p(File.dirname(dest))
-            rest.sign_on_redirect = false
-            tempfile = rest.get_rest(segment_file['url'], true)
+            tempfile = rest.streaming_request(segment_file["url"])
             FileUtils.mv(tempfile.path, dest)
           end
         end
@@ -99,7 +98,6 @@ class Chef
       end
 
       def determine_version
-
         if available_versions.nil?
           nil
         elsif available_versions.size == 1

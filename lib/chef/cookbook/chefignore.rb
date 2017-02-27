@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ class Chef
       end
 
       def ignored?(file_name)
-        @ignores.any? {|glob| File.fnmatch?(glob, file_name)}
+        @ignores.any? { |glob| File.fnmatch?(glob, file_name) }
       end
 
       private
@@ -52,7 +52,7 @@ class Chef
             ignore_globs << line.strip unless line =~ COMMENTS_AND_WHITESPACE
           end
         else
-          Chef::Log.debug("No chefignore file found at #@ignore_file no files will be ignored")
+          Chef::Log.debug("No chefignore file found at #{@ignore_file} no files will be ignored")
         end
         ignore_globs
       end
@@ -61,7 +61,7 @@ class Chef
         if File.basename(path) =~ /chefignore/
           path
         else
-          File.join(path, 'chefignore')
+          File.join(path, "chefignore")
         end
       end
 
@@ -72,4 +72,3 @@ class Chef
     end
   end
 end
-

@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs'
-require 'pathname'
+require "chef/chef_fs"
+require "pathname"
 
 class Chef
   module ChefFS
@@ -45,9 +45,9 @@ class Chef
         # Determine if it started with a slash
         absolute = parts[0].length == 0 || parts[0].length > 0 && parts[0] =~ /^#{regexp_path_separator}/
         # Remove leading and trailing slashes from each part so that the join will work (and the slash at the end will go away)
-        parts = parts.map { |part| part.gsub(/^#{regexp_path_separator}+|#{regexp_path_separator}+$/, '') }
+        parts = parts.map { |part| part.gsub(/^#{regexp_path_separator}+|#{regexp_path_separator}+$/, "") }
         # Don't join empty bits
-        result = parts.select { |part| part != '' }.join('/')
+        result = parts.select { |part| part != "" }.join("/")
         # Put the / back on
         absolute ? "/#{result}" : result
       end
@@ -57,13 +57,14 @@ class Chef
       end
 
       def self.regexp_path_separator
-        Chef::ChefFS::windows? ? '[\/\\\\]' : '/'
+        Chef::ChefFS.windows? ? '[\/\\\\]' : "/"
       end
 
       # Given a server path, determines if it is absolute.
       def self.is_absolute?(path)
         !!(path =~ /^#{regexp_path_separator}/)
       end
+
       # Given a path which may only be partly real (i.e. /x/y/z when only /x exists,
       # or /x/y/*/blah when /x/y/z/blah exists), call File.realpath on the biggest
       # part that actually exists.  The paths operated on here are not Chef-FS paths.
@@ -82,7 +83,7 @@ class Chef
 
         # File.dirname happens to return the path as its own dirname if you're
         # at the root (such as at \\foo\bar, C:\ or /)
-        until parent_path == path do
+        until parent_path == path
           # This can occur if a path such as "C:" is given.  Ruby gives the parent as "C:."
           # for reasons only it knows.
           raise ArgumentError "Invalid path segment #{path}" if parent_path.length > path.length
@@ -100,7 +101,7 @@ class Chef
 
       # Compares two path fragments according to the case-sentitivity of the host platform.
       def self.os_path_eq?(left, right)
-        Chef::ChefFS::windows? ? left.casecmp(right) == 0 : left == right
+        Chef::ChefFS.windows? ? left.casecmp(right) == 0 : left == right
       end
 
       # Given two general OS-dependent file paths, determines the relative path of the
@@ -113,9 +114,9 @@ class Chef
         candidate_fragment = path[0, ancestor.length]
         return nil unless PathUtils.os_path_eq?(candidate_fragment, ancestor)
         if ancestor.length == path.length
-          ''
-        elsif path[ancestor.length,1] =~ /#{PathUtils.regexp_path_separator}/
-          path[ancestor.length+1..-1]
+          ""
+        elsif path[ancestor.length, 1] =~ /#{PathUtils.regexp_path_separator}/
+          path[ancestor.length + 1..-1]
         else
           nil
         end

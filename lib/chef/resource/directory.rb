@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/directory'
-require 'chef/mixin/securable'
+require "chef/resource"
+require "chef/provider/directory"
+require "chef/mixin/securable"
 
 class Chef
   class Resource
@@ -35,13 +35,13 @@ class Chef
       default_action :create
       allowed_actions :create, :delete
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @path = name
         @recursive = false
       end
 
-      def recursive(arg=nil)
+      def recursive(arg = nil)
         set_or_return(
           :recursive,
           arg,
@@ -49,7 +49,7 @@ class Chef
         )
       end
 
-      def path(arg=nil)
+      def path(arg = nil)
         set_or_return(
           :path,
           arg,

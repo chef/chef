@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Scm do
 
@@ -101,7 +101,7 @@ describe Chef::Resource::Scm do
   it "takes the depth as an integer for shallow clones" do
     @resource.depth 5
     expect(@resource.depth).to eq(5)
-    expect {@resource.depth "five"}.to raise_error(ArgumentError)
+    expect { @resource.depth "five" }.to raise_error(ArgumentError)
   end
 
   it "defaults to nil depth for a full clone" do
@@ -111,7 +111,7 @@ describe Chef::Resource::Scm do
   it "takes a boolean for #enable_submodules" do
     @resource.enable_submodules true
     expect(@resource.enable_submodules).to be_truthy
-    expect {@resource.enable_submodules "lolz"}.to raise_error(ArgumentError)
+    expect { @resource.enable_submodules "lolz" }.to raise_error(ArgumentError)
   end
 
   it "defaults to not enabling submodules" do
@@ -121,7 +121,7 @@ describe Chef::Resource::Scm do
   it "takes a boolean for #enable_checkout" do
     @resource.enable_checkout true
     expect(@resource.enable_checkout).to be_truthy
-    expect {@resource.enable_checkout "lolz"}.to raise_error(ArgumentError)
+    expect { @resource.enable_checkout "lolz" }.to raise_error(ArgumentError)
   end
 
   it "defaults to enabling checkout" do
@@ -131,7 +131,7 @@ describe Chef::Resource::Scm do
   it "takes a string for the remote" do
     @resource.remote "opscode"
     expect(@resource.remote).to eql("opscode")
-    expect {@resource.remote 1337}.to raise_error(ArgumentError)
+    expect { @resource.remote 1337 }.to raise_error(ArgumentError)
   end
 
   it "defaults to ``origin'' for the remote" do
@@ -184,7 +184,7 @@ describe Chef::Resource::Scm do
   end
 
   describe "when it has a environment attribute" do
-    let(:test_environment) { {'CHEF_ENV' => '/tmp' } }
+    let(:test_environment) { { "CHEF_ENV" => "/tmp" } }
     before { @resource.environment(test_environment) }
     it "stores this environment" do
       expect(@resource.environment).to eq(test_environment)

@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/dpkg'
+require "chef/resource/package"
 
 class Chef
   class Resource
     class DpkgPackage < Chef::Resource::Package
-
+      resource_name :dpkg_package
       provides :dpkg_package, os: "linux"
 
+      property :source, [ String, Array, nil ]
     end
   end
 end

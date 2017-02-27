@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org)
-# Copyright:: Copyright (c) 2009 Bryan McLellan
+# Copyright:: Copyright 2009-2016, Bryan McLellan
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource/service'
-require 'chef/provider/service/init'
-require 'chef/mixin/command'
+require "chef/resource/service"
+require "chef/provider/service/init"
+require "chef/mixin/command"
 
 class Chef
   class Provider
@@ -27,7 +27,7 @@ class Chef
 
         attr_reader :enabled_state_found
 
-        provides :service, os: [ "freebsd", "netbsd" ]
+        provides :service, os: %w{freebsd netbsd}
 
         include Chef::Mixin::ShellOut
 
@@ -51,7 +51,7 @@ class Chef
           Chef::Log.debug("#{current_resource} found at #{init_command}")
 
           @status_load_success = true
-          determine_current_status!  # see Chef::Provider::Service::Simple
+          determine_current_status! # see Chef::Provider::Service::Simple
 
           determine_enabled_status!
           current_resource
@@ -74,7 +74,7 @@ class Chef
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { service_enable_variable_name != nil }
+            a.assertion { !service_enable_variable_name.nil? }
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end
@@ -119,11 +119,11 @@ class Chef
         private
 
         def read_rc_conf
-          ::File.open("/etc/rc.conf", 'r') { |file| file.readlines }
+          ::File.open("/etc/rc.conf", "r") { |file| file.readlines }
         end
 
         def write_rc_conf(lines)
-          ::File.open("/etc/rc.conf", 'w') do |file|
+          ::File.open("/etc/rc.conf", "w") do |file|
             lines.each { |line| file.puts(line) }
           end
         end

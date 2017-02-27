@@ -1,6 +1,6 @@
 #
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/util/path_helper'
+require "chef/util/path_helper"
 
 class Chef
   class Util
@@ -49,7 +49,7 @@ class Chef
       def backup_filename
         @backup_filename ||= begin
           time = Time.now
-          nanoseconds = sprintf("%6f", time.to_f).split('.')[1]
+          nanoseconds = sprintf("%6f", time.to_f).split(".")[1]
           savetime = time.strftime("%Y%m%d%H%M%S.#{nanoseconds}")
           backup_filename = "#{path}.chef-#{savetime}"
           backup_filename = backup_filename.sub(/^([A-Za-z]:)/, "") #strip drive letter on Windows
@@ -83,11 +83,11 @@ class Chef
         fn = Regexp.escape(::File.basename(path))
         Dir.entries(::File.dirname(backup_path)).select do |f|
           !!(f =~ /\A#{fn}.chef-[0-9.]*\B/)
-        end.map {|f| ::File.join(::File.dirname(backup_path), f)}
+        end.map { |f| ::File.join(::File.dirname(backup_path), f) }
       end
 
       def sorted_backup_files
-        unsorted_backup_files.sort { |a,b| b <=> a }
+        unsorted_backup_files.sort { |a, b| b <=> a }
       end
     end
   end

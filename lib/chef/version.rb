@@ -1,4 +1,4 @@
-# Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
+# Copyright:: Copyright 2010-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,8 +20,8 @@
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 class Chef
-  CHEF_ROOT = File.dirname(File.expand_path(File.dirname(__FILE__)))
-  VERSION = '12.5.1'
+  CHEF_ROOT = File.expand_path("../..", __FILE__)
+  VERSION = "12.19.39"
 end
 
 #

@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,17 +22,12 @@ require "spec_helper"
 
 describe Chef::DSL::RebootPending, :windows_only do
   def run_ohai
-    ohai = Ohai::System.new
-    # Would be nice to limit this to platform/kernel/arch etc for Ohai 7
-    ohai.all_plugins
-    node.consume_external_attrs(ohai.data,{})
-
-    ohai
+    node.consume_external_attrs(OHAI_SYSTEM.data, {})
   end
 
   let(:node) { Chef::Node.new }
-  let(:events) { Chef::EventDispatch::Dispatcher.new }
   let!(:ohai) { run_ohai } # Ensure we have necessary node data
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:recipe) { Chef::Recipe.new("a windows cookbook", "the windows recipe", run_context) }
   let(:registry) { Chef::Win32::Registry.new(run_context) }
@@ -47,19 +42,19 @@ describe Chef::DSL::RebootPending, :windows_only do
 
     describe 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations' do
       let(:reg_key) { 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager' }
-      let(:original_set) { registry.value_exists?(reg_key, { :name => 'PendingFileRenameOperations' }) }
+      let(:original_set) { registry.value_exists?(reg_key, { :name => "PendingFileRenameOperations" }) }
 
       it "returns true if the registry value exists" do
-        skip 'found existing registry key' if original_set
+        skip "found existing registry key" if original_set
         registry.set_value(reg_key,
-            { :name => 'PendingFileRenameOperations', :type => :multi_string, :data => ['\??\C:\foo.txt|\??\C:\bar.txt'] })
+            { :name => "PendingFileRenameOperations", :type => :multi_string, :data => ['\??\C:\foo.txt|\??\C:\bar.txt'] })
 
         expect(recipe.reboot_pending?).to be_truthy
       end
 
       after do
         unless original_set
-          registry.delete_value(reg_key, { :name => 'PendingFileRenameOperations' })
+          registry.delete_value(reg_key, { :name => "PendingFileRenameOperations" })
         end
       end
     end
@@ -69,7 +64,7 @@ describe Chef::DSL::RebootPending, :windows_only do
       let(:original_set) { registry.key_exists?(reg_key) }
 
       it "returns true if the registry key exists" do
-        skip 'found existing registry key' if original_set
+        skip "found existing registry key" if original_set
         pending "Permissions are limited to 'TrustedInstaller' by default"
         registry.create_key(reg_key, false)
 
@@ -88,7 +83,7 @@ describe Chef::DSL::RebootPending, :windows_only do
       let(:original_set) { registry.key_exists?(reg_key) }
 
       it "returns true if the registry key exists" do
-        skip 'found existing registry key' if original_set
+        skip "found existing registry key" if original_set
         registry.create_key(reg_key, false)
 
         expect(recipe.reboot_pending?).to be_truthy
@@ -103,7 +98,7 @@ describe Chef::DSL::RebootPending, :windows_only do
 
     describe "when there is nothing to indicate a reboot is pending" do
       it "should return false" do
-        skip 'reboot pending' if @any_flag.any? { |_,v| v == true }
+        skip "reboot pending" if @any_flag.any? { |_, v| v == true }
         expect(recipe.reboot_pending?).to be_falsey
       end
     end

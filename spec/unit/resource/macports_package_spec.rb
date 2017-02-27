@@ -1,6 +1,6 @@
 #
 # Author:: David Balatero (<dbalatero@gmail.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::MacportsPackage, "initialize" do
 
@@ -26,7 +26,7 @@ describe Chef::Resource::MacportsPackage, "initialize" do
     provider: Chef::Provider::Package::Macports,
     name: :macports_package,
     action: :install,
-    os: "mac_os_x",
+    os: "mac_os_x"
   )
 
 end

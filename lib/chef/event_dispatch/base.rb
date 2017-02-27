@@ -139,6 +139,26 @@ class Chef
       def cookbook_sync_complete
       end
 
+      # Called when starting to collect gems from the cookbooks
+      def cookbook_gem_start(gems)
+      end
+
+      # Called when the result of installing the bundle is to install the gem
+      def cookbook_gem_installing(gem, version)
+      end
+
+      # Called when the result of installing the bundle is to use the gem
+      def cookbook_gem_using(gem, version)
+      end
+
+      # Called when finished installing cookbook gems
+      def cookbook_gem_finished
+      end
+
+      # Called when cookbook gem installation fails
+      def cookbook_gem_failed(exception)
+      end
+
       ## TODO: add cookbook name to the API for file load callbacks
 
       ## TODO: add callbacks for overall cookbook eval start and complete.
@@ -212,11 +232,11 @@ class Chef
       end
 
       # Called after the recipe has been loaded
-      def recipe_file_loaded(path)
+      def recipe_file_loaded(path, recipe)
       end
 
       # Called after a recipe file fails to load
-      def recipe_file_load_failed(path, exception)
+      def recipe_file_load_failed(path, exception, recipe)
       end
 
       # Called when a recipe cannot be resolved
@@ -298,7 +318,7 @@ class Chef
       #
 
       # Called before action is executed on a resource.
-      def resource_action_start(resource, action, notification_type=nil, notifier=nil)
+      def resource_action_start(resource, action, notification_type = nil, notifier = nil)
       end
 
       # Called when a resource action has been skipped b/c of a conditional
@@ -322,6 +342,12 @@ class Chef
       # times per resource, e.g., a file may have its content updated, and then
       # its permissions updated.
       def resource_update_applied(resource, action, update)
+      end
+
+      # Called when a progress notification should be sent to the user to
+      # indicate the overall progress of a long running operation, such as
+      # a large file download.
+      def resource_update_progress(resource, current, total, interval)
       end
 
       # Called when a resource fails, but will retry.
@@ -381,7 +407,7 @@ class Chef
       end
 
       # Emit a message about something being deprecated.
-      def deprecation(message, location=caller(2..2)[0])
+      def deprecation(message, location = caller(2..2)[0])
       end
 
       def run_list_expanded(run_list_expansion)
@@ -395,6 +421,9 @@ class Chef
       def msg(message)
       end
 
+      # Called when an attribute is changed by simple assignment
+      def attribute_changed(precedence, keys, value)
+      end
     end
   end
 end

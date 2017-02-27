@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require File.expand_path('../../spec_helper', __FILE__)
-require 'chef/client'
+require File.expand_path("../../spec_helper", __FILE__)
+require "chef/client"
 
 describe Chef::RunLock do
 
@@ -28,28 +28,27 @@ describe Chef::RunLock do
 
     let(:random_temp_root) do
       Kernel.srand(Time.now.to_i + Process.pid)
-      "/tmp/#{Kernel.rand(Time.now.to_i + Process.pid)}"
+      "#{Dir.tmpdir}/#{Kernel.rand(Time.now.to_i + Process.pid)}"
     end
 
-    let(:lockfile){ "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
+    let(:lockfile) { "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
 
     # make sure to start with a clean slate.
-    before(:each){ log_event("rm -rf before"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
-    after(:each){ log_event("rm -rf after"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
+    before(:each) { log_event("rm -rf before"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
+    after(:each) { log_event("rm -rf after"); FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
 
-    def log_event(message, time=Time.now.strftime("%H:%M:%S.%L"))
+    def log_event(message, time = Time.now.strftime("%H:%M:%S.%L"))
       events << [ message, time ]
     end
+
     def events
       @events ||= []
     end
 
     WAIT_ON_LOCK_TIME = 1.0
-    def wait_on_lock
-      Timeout::timeout(WAIT_ON_LOCK_TIME) do
-        until File.exist?(lockfile)
-          sleep 0.1
-        end
+    def wait_on_lock(from_fork)
+      Timeout.timeout(WAIT_ON_LOCK_TIME) do
+        from_fork.readline
       end
     rescue Timeout::Error
       raise "Lockfile never created, abandoning test"
@@ -59,8 +58,8 @@ describe Chef::RunLock do
     BREATHING_ROOM = 1
 
     # ClientProcess is defined below
-    let!(:p1) { ClientProcess.new(self, 'p1') }
-    let!(:p2) { ClientProcess.new(self, 'p2') }
+    let!(:p1) { ClientProcess.new(self, "p1") }
+    let!(:p2) { ClientProcess.new(self, "p2") }
     after(:each) do |example|
       begin
         p1.stop
@@ -103,7 +102,7 @@ describe Chef::RunLock do
           end
 
           it "the lockfile is empty" do
-            expect(IO.read(lockfile)).to eq('')
+            expect(IO.read(lockfile)).to eq("")
           end
 
           context "and a second client gets the lock" do
@@ -157,7 +156,7 @@ describe Chef::RunLock do
         end
 
         it "the lockfile is empty" do
-          expect(IO.read(lockfile)).to eq('')
+          expect(IO.read(lockfile)).to eq("")
         end
 
         it "and a second client tries to acquire the lock, it doesn't get the lock until *after* the first client exits" do
@@ -257,37 +256,48 @@ describe Chef::RunLock do
 
     it "test returns true and acquires the lock" do
       run_lock = Chef::RunLock.new(lockfile)
+      from_tests, to_fork = IO.pipe
+      from_fork, to_tests = IO.pipe
       p1 = fork do
         expect(run_lock.test).to eq(true)
-        run_lock.save_pid
-        sleep 2
-        exit! 1
+        to_tests.puts "lock acquired"
+        # Wait for the test to tell us we can exit before exiting
+        from_tests.readline
+        exit! 0
       end
 
-      wait_on_lock
+      wait_on_lock(from_fork)
 
       p2 = fork do
         expect(run_lock.test).to eq(false)
         exit! 0
       end
 
-      Process.waitpid2(p2)
-      Process.waitpid2(p1)
+      pid, exit_status = Process.waitpid2(p2)
+      expect(exit_status).to eq(0)
+      to_fork.puts "you can exit now"
+      pid, exit_status = Process.waitpid2(p1)
+      expect(exit_status).to eq(0)
     end
 
     it "test returns without waiting when the lock is acquired" do
       run_lock = Chef::RunLock.new(lockfile)
+      from_tests, to_fork = IO.pipe
+      from_fork, to_tests = IO.pipe
       p1 = fork do
         run_lock.acquire
-        run_lock.save_pid
-        sleep 2
-        exit! 1
+        to_tests.puts "lock acquired"
+        # Wait for the test to tell us we can exit before exiting
+        from_tests.readline
+        exit! 0
       end
 
-      wait_on_lock
-
+      wait_on_lock(from_fork)
       expect(run_lock.test).to eq(false)
-      Process.waitpid2(p1)
+
+      to_fork.puts "you can exit now"
+      pid, exit_status = Process.waitpid2(p1)
+      expect(exit_status).to eq(0)
     end
 
   end
@@ -321,7 +331,7 @@ describe Chef::RunLock do
     attr_reader :pid
 
     def last_event
-      while true
+      loop do
         line = readline_nonblock(read_from_process)
         break if line.nil?
         event, time = line.split("@")
@@ -342,10 +352,10 @@ describe Chef::RunLock do
       write_to_process.print "#{to_event}\n"
 
       # Run the background block
-      background_block.call if background_block
+      yield if background_block
 
       # Wait until it gets there
-      Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+      Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
         until @last_event == "after #{to_event}"
           got_event, time = read_from_process.gets.split("@")
           example.log_event("#{name}.last_event got #{got_event}")
@@ -372,7 +382,7 @@ describe Chef::RunLock do
 
     def wait_for_exit
       example.log_event("#{name}.wait_for_exit (pid #{pid})")
-      Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+      Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
         Process.wait(pid) if pid
       end
       example.log_event("#{name}.wait_for_exit finished (pid #{pid})")
@@ -383,11 +393,9 @@ describe Chef::RunLock do
         example.log_event("#{name}.stop (pid #{pid})")
         begin
           # Send it the kill signal over and over until it dies
-          Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+          Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
             Process.kill(:KILL, pid)
-            while !Process.waitpid2(pid, Process::WNOHANG)
-              sleep(0.05)
-            end
+            sleep(0.05) until Process.waitpid2(pid, Process::WNOHANG)
           end
           example.log_event("#{name}.stop finished (stopped pid #{pid})")
         # Process not found is perfectly fine when we're trying to kill a process :)
@@ -430,7 +438,7 @@ describe Chef::RunLock do
       example.log_event("#{name}.start")
       @pid = fork do
         begin
-          Timeout::timeout(CLIENT_PROCESS_TIMEOUT) do
+          Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
             run_lock = TestRunLock.new(example.lockfile)
             run_lock.client_process = self
             fire_event("started")

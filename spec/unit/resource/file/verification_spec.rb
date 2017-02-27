@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc
+# Copyright:: Copyright 2014-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::File::Verification do
   let(:t_block) { Proc.new { true } }
   let(:f_block) { Proc.new { false } }
-  let(:path_block) { Proc.new { |path| path }}
+  let(:path_block) { Proc.new { |path| path } }
   let(:temp_path) { "/tmp/foobar" }
 
   describe "verification registration" do
@@ -33,7 +33,7 @@ describe Chef::Resource::File::Verification do
     end
 
     it "raises an error if a verification can't be found" do
-      expect{Chef::Resource::File::Verification.lookup(:dne)}.to raise_error(Chef::Exceptions::VerificationNotFound)
+      expect { Chef::Resource::File::Verification.lookup(:dne) }.to raise_error(Chef::Exceptions::VerificationNotFound)
     end
   end
 
@@ -42,13 +42,13 @@ describe Chef::Resource::File::Verification do
 
     it "expects a string argument" do
       v = Chef::Resource::File::Verification.new(parent_resource, nil, {}) {}
-      expect{ v.verify("/foo/bar") }.to_not raise_error
-      expect{ v.verify }.to raise_error
+      expect { v.verify("/foo/bar") }.to_not raise_error
+      expect { v.verify }.to raise_error(ArgumentError)
     end
 
     it "accepts an options hash" do
       v = Chef::Resource::File::Verification.new(parent_resource, nil, {}) {}
-      expect{ v.verify("/foo/bar", {:future => true}) }.to_not raise_error
+      expect { v.verify("/foo/bar", { :future => true }) }.to_not raise_error
     end
 
     context "with a verification block" do
@@ -82,27 +82,27 @@ describe Chef::Resource::File::Verification do
       end
 
       it "substitutes \%{file} with the path" do
-        test_command = platform_specific_verify_command('file')
+        test_command = platform_specific_verify_command("file")
         v = Chef::Resource::File::Verification.new(parent_resource, test_command, {})
         expect(v.verify(temp_path)).to eq(true)
       end
 
       it "warns about deprecation when \%{file} is used" do
-        expect(Chef::Log).to receive(:deprecation).with(/%{file} is deprecated/, /verification_spec\.rb/)
-        test_command = platform_specific_verify_command('file')
+        expect(Chef).to receive(:deprecated).with(:verify_file, /%{file} is deprecated/)
+        test_command = platform_specific_verify_command("file")
         Chef::Resource::File::Verification.new(parent_resource, test_command, {})
           .verify(temp_path)
       end
 
       it "does not warn about deprecation when \%{file} is not used" do
         expect(Chef::Log).to_not receive(:deprecation)
-        test_command = platform_specific_verify_command('path')
+        test_command = platform_specific_verify_command("path")
         Chef::Resource::File::Verification.new(parent_resource, test_command, {})
           .verify(temp_path)
       end
 
       it "substitutes \%{path} with the path" do
-        test_command = platform_specific_verify_command('path')
+        test_command = platform_specific_verify_command("path")
         v = Chef::Resource::File::Verification.new(parent_resource, test_command, {})
         expect(v.verify(temp_path)).to eq(true)
       end

@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ class Chef
           error_description.section(exception.class.name, exception.message)
 
           if found_error_in_cookbooks?
-            traceback = filtered_bt.map {|line| "  #{line}"}.join("\n")
+            traceback = filtered_bt.map { |line| "  #{line}" }.join("\n")
             error_description.section("Cookbook Trace:", traceback)
             error_description.section("Relevant File Content:", context)
           end
@@ -74,7 +74,7 @@ class Chef
 
             MESSAGE
 
-            error_description.section("Additional information:", msg.gsub(/^ {6}/, ''))
+            error_description.section("Additional information:", msg.gsub(/^ {6}/, ""))
           end
         end
 
@@ -107,22 +107,22 @@ class Chef
 
         def culprit_backtrace_entry
           @culprit_backtrace_entry ||= begin
-             bt_entry = filtered_bt.first
-             Chef::Log.debug("Backtrace entry for compile error: '#{bt_entry}'")
-             bt_entry
+            bt_entry = filtered_bt.first
+            Chef::Log.debug("Backtrace entry for compile error: '#{bt_entry}'")
+            bt_entry
           end
         end
 
         def culprit_line
           @culprit_line ||= begin
-            line_number = culprit_backtrace_entry[/^(?:.\:)?[^:]+:([\d]+)/,1].to_i
+            line_number = culprit_backtrace_entry[/^(?:.\:)?[^:]+:([\d]+)/, 1].to_i
             Chef::Log.debug("Line number of compile error: '#{line_number}'")
             line_number
           end
         end
 
         def culprit_file
-          @culprit_file ||= culprit_backtrace_entry[/^((?:.\:)?[^:]+):([\d]+)/,1]
+          @culprit_file ||= culprit_backtrace_entry[/^((?:.\:)?[^:]+):([\d]+)/, 1]
         end
 
         def filtered_bt
@@ -136,8 +136,8 @@ class Chef
         def backtrace_lines_in_cookbooks
           @backtrace_lines_in_cookbooks ||=
             begin
-              filters = Array(Chef::Config.cookbook_path).map {|p| /^#{Regexp.escape(p)}/i }
-              r = exception.backtrace.select {|line| filters.any? {|filter| line =~ filter }}
+              filters = Array(Chef::Config.cookbook_path).map { |p| /^#{Regexp.escape(p)}/i }
+              r = exception.backtrace.select { |line| filters.any? { |filter| line =~ filter } }
               Chef::Log.debug("Filtered backtrace of compile error: #{r.join(",")}")
               r
             end

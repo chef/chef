@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,20 +18,19 @@
 # limitations under the License.
 #
 
-require 'open3'
+require "open3"
 
 class Chef
   module Mixin
     module Command
       module Windows
-        def popen4(cmd, args={}, &b)
-
+        def popen4(cmd, args = {}, &b)
           # By default, we are waiting before we yield the block.
           args[:waitlast] ||= false
 
           #XXX :user, :group, :environment support?
 
-          Open3.popen3(cmd) do |stdin,stdout,stderr,cid|
+          Open3.popen3(cmd) do |stdin, stdout, stderr, cid|
             if b
               if args[:waitlast]
                 b[cid, stdin, stdout, stderr]

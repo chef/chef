@@ -1,7 +1,7 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright (c) 2012, 2015 Chef Software, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,20 +17,20 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 Chef::Knife::UserCreate.load_deps
 
 describe Chef::Knife::UserCreate do
   let(:knife) { Chef::Knife::UserCreate.new }
 
-  let(:stderr) {
+  let(:stderr) do
     StringIO.new
-  }
+  end
 
-  let(:stdout) {
+  let(:stdout) do
     StringIO.new
-  }
+  end
 
   before(:each) do
     allow(knife.ui).to receive(:stdout).and_return(stdout)
@@ -41,18 +41,18 @@ describe Chef::Knife::UserCreate do
   # delete this once OSC11 support is gone
   context "when only one name_arg is passed" do
     before do
-      knife.name_args = ['some_user']
+      knife.name_args = ["some_user"]
       allow(knife).to receive(:run_osc_11_user_create).and_raise(SystemExit)
     end
 
     it "displays the osc warning" do
       expect(knife.ui).to receive(:warn).with(knife.osc_11_warning)
-      expect{ knife.run }.to raise_error(SystemExit)
+      expect { knife.run }.to raise_error(SystemExit)
     end
 
     it "calls knife osc_user create" do
       expect(knife).to receive(:run_osc_11_user_create)
-      expect{ knife.run }.to raise_error(SystemExit)
+      expect { knife.run }.to raise_error(SystemExit)
     end
 
   end
@@ -61,7 +61,7 @@ describe Chef::Knife::UserCreate do
     # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
       let(:name_args) { [] }
-      let(:fieldname) { 'username' }
+      let(:fieldname) { "username" }
     end
   end
 
@@ -79,39 +79,39 @@ describe Chef::Knife::UserCreate do
   context "when FIRST_NAME isn't specified" do
     # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
-      let(:name_args) { ['some_user', 'some_display_name'] }
-      let(:fieldname) { 'first name' }
+      let(:name_args) { %w{some_user some_display_name} }
+      let(:fieldname) { "first name" }
     end
   end
 
   context "when LAST_NAME isn't specified" do
     # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
-      let(:name_args) { ['some_user', 'some_display_name', 'some_first_name'] }
-      let(:fieldname) { 'last name' }
+      let(:name_args) { %w{some_user some_display_name some_first_name} }
+      let(:fieldname) { "last name" }
     end
   end
 
   context "when EMAIL isn't specified" do
     # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
-      let(:name_args) { ['some_user', 'some_display_name', 'some_first_name', 'some_last_name'] }
-      let(:fieldname) { 'email' }
+      let(:name_args) { %w{some_user some_display_name some_first_name some_last_name} }
+      let(:fieldname) { "email" }
     end
   end
 
   context "when PASSWORD isn't specified" do
     # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
-      let(:name_args) { ['some_user', 'some_display_name', 'some_first_name', 'some_last_name', 'some_email'] }
-      let(:fieldname) { 'password' }
+      let(:name_args) { %w{some_user some_display_name some_first_name some_last_name some_email} }
+      let(:fieldname) { "password" }
     end
   end
 
   context "when all mandatory fields are validly specified" do
     before do
-      knife.name_args = ['some_user', 'some_display_name', 'some_first_name', 'some_last_name', 'some_email', 'some_password']
-      allow(knife).to receive(:edit_data).and_return(knife.user.to_hash)
+      knife.name_args = %w{some_user some_display_name some_first_name some_last_name some_email some_password}
+      allow(knife).to receive(:edit_hash).and_return(knife.user.to_hash)
       allow(knife).to receive(:create_user_from_hash).and_return(knife.user)
     end
 
@@ -122,12 +122,12 @@ describe Chef::Knife::UserCreate do
 
     it "sets all the mandatory fields" do
       knife.run
-      expect(knife.user.username).to eq('some_user')
-      expect(knife.user.display_name).to eq('some_display_name')
-      expect(knife.user.first_name).to eq('some_first_name')
-      expect(knife.user.last_name).to eq('some_last_name')
-      expect(knife.user.email).to eq('some_email')
-      expect(knife.user.password).to eq('some_password')
+      expect(knife.user.username).to eq("some_user")
+      expect(knife.user.display_name).to eq("some_display_name")
+      expect(knife.user.first_name).to eq("some_first_name")
+      expect(knife.user.last_name).to eq("some_last_name")
+      expect(knife.user.email).to eq("some_email")
+      expect(knife.user.password).to eq("some_password")
     end
 
     context "when user_key and prevent_keygen are passed" do
@@ -166,14 +166,14 @@ describe Chef::Knife::UserCreate do
 
     context "when --user-key is passed" do
       before do
-        knife.config[:user_key] = 'some_key'
-        allow(File).to receive(:read).and_return('some_key')
+        knife.config[:user_key] = "some_key"
+        allow(File).to receive(:read).and_return("some_key")
         allow(File).to receive(:expand_path)
       end
 
       it "sets user.public_key" do
         knife.run
-        expect(knife.user.public_key).to eq('some_key')
+        expect(knife.user.public_key).to eq("some_key")
       end
     end
 
@@ -186,25 +186,25 @@ describe Chef::Knife::UserCreate do
 
     context "when a private_key is returned" do
       before do
-        allow(knife).to receive(:create_user_from_hash).and_return(Chef::UserV1.from_hash(knife.user.to_hash.merge({"private_key" => "some_private_key"})))
+        allow(knife).to receive(:create_user_from_hash).and_return(Chef::UserV1.from_hash(knife.user.to_hash.merge({ "private_key" => "some_private_key" })))
       end
 
       context "when --file is passed" do
         before do
-          knife.config[:file] = '/some/path'
+          knife.config[:file] = "/some/path"
         end
 
         it "creates a new file of the path passed" do
-          filehandle = double('filehandle')
-          expect(filehandle).to receive(:print).with('some_private_key')
-          expect(File).to receive(:open).with('/some/path', 'w').and_yield(filehandle)
+          filehandle = double("filehandle")
+          expect(filehandle).to receive(:print).with("some_private_key")
+          expect(File).to receive(:open).with("/some/path", "w").and_yield(filehandle)
           knife.run
         end
       end
 
       context "when --file is not passed" do
         it "prints the private key to stdout" do
-          expect(knife.ui).to receive(:msg).with('some_private_key')
+          expect(knife.ui).to receive(:msg).with("some_private_key")
           knife.run
         end
       end

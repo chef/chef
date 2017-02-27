@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Will Albenzi (<walbenzi@gmail.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,18 +17,18 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleEnvRunListSet do
   before(:each) do
-    Chef::Config[:role_name]  = "will"
-    Chef::Config[:env_name]  = "QA"
+    Chef::Config[:role_name] = "will"
+    Chef::Config[:env_name] = "QA"
     @setup = Chef::Knife::RoleEnvRunListAdd.new
     @setup.name_args = [ "will", "QA", "role[monkey]", "role[person]", "role[bucket]" ]
 
     @knife = Chef::Knife::RoleEnvRunListSet.new
     @knife.config = {
-      :print_after => nil
+      :print_after => nil,
     }
     @knife.name_args = [ "will", "QA", "role[owen]", "role[mauntel]" ]
     allow(@knife).to receive(:output).and_return(true)
@@ -42,10 +42,7 @@ describe Chef::Knife::RoleEnvRunListSet do
 
   end
 
-
-
   describe "run" do
-
 
 #    it "should display all the things" do
 #      @knife.run
@@ -60,9 +57,9 @@ describe Chef::Knife::RoleEnvRunListSet do
     it "should replace all the items in the runlist with what is specified" do
       @setup.run
       @knife.run
-      expect(@role.run_list_for('QA')[0]).to eq("role[owen]") 
-      expect(@role.run_list_for('QA')[1]).to eq("role[mauntel]") 
-      expect(@role.run_list_for('QA')[2]).to be_nil
+      expect(@role.run_list_for("QA")[0]).to eq("role[owen]")
+      expect(@role.run_list_for("QA")[1]).to eq("role[mauntel]")
+      expect(@role.run_list_for("QA")[2]).to be_nil
       expect(@role.run_list[0]).to be_nil
     end
 
@@ -86,15 +83,15 @@ describe Chef::Knife::RoleEnvRunListSet do
         @setup.run
         @knife.name_args = [ "will", "QA", "role[coke]", "role[pepsi]" ]
         @knife.run
-        expect(@role.run_list_for('QA')[0]).to eq("role[coke]")
-        expect(@role.run_list_for('QA')[1]).to eq("role[pepsi]")
-        expect(@role.run_list_for('QA')[2]).to be_nil
-        expect(@role.run_list_for('PRD')[0]).to eq('recipe[orange::chicken]')
-        expect(@role.run_list_for('PRD')[1]).to eq('role[monkey]')
-        expect(@role.run_list_for('PRD')[2]).to eq('recipe[duck::type]')
-        expect(@role.run_list_for('PRD')[3]).to eq('role[person]')
-        expect(@role.run_list_for('PRD')[4]).to eq('role[bird]')
-        expect(@role.run_list_for('PRD')[5]).to eq('role[town]')
+        expect(@role.run_list_for("QA")[0]).to eq("role[coke]")
+        expect(@role.run_list_for("QA")[1]).to eq("role[pepsi]")
+        expect(@role.run_list_for("QA")[2]).to be_nil
+        expect(@role.run_list_for("PRD")[0]).to eq("recipe[orange::chicken]")
+        expect(@role.run_list_for("PRD")[1]).to eq("role[monkey]")
+        expect(@role.run_list_for("PRD")[2]).to eq("recipe[duck::type]")
+        expect(@role.run_list_for("PRD")[3]).to eq("role[person]")
+        expect(@role.run_list_for("PRD")[4]).to eq("role[bird]")
+        expect(@role.run_list_for("PRD")[5]).to eq("role[town]")
         expect(@role.run_list[0]).to be_nil
       end
     end

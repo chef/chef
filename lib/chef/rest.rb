@@ -1,10 +1,10 @@
 #--
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Thom May (<thom@clearairturbulence.org>)
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Author:: Christopher Brown (<cb@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,23 +20,24 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'chef/http'
+require "tempfile"
+require "chef/http"
 class Chef
   class HTTP; end
   class REST < HTTP; end
 end
 
-require 'chef/http/authenticator'
-require 'chef/http/decompressor'
-require 'chef/http/json_input'
-require 'chef/http/json_to_model_output'
-require 'chef/http/cookie_manager'
-require 'chef/http/validate_content_length'
-require 'chef/config'
-require 'chef/exceptions'
-require 'chef/platform/query_helpers'
-require 'chef/http/remote_request_id'
+require "chef/http/authenticator"
+require "chef/http/decompressor"
+require "chef/http/json_input"
+require "chef/http/json_to_model_output"
+require "chef/http/cookie_manager"
+require "chef/http/validate_content_length"
+require "chef/config"
+require "chef/exceptions"
+require "chef/platform/query_helpers"
+require "chef/http/remote_request_id"
+require "chef/chef_class"
 
 class Chef
 
@@ -57,7 +58,8 @@ class Chef
     # all subsequent requests. For example, when initialized with a base url
     # http://localhost:4000, a call to +get_rest+ with 'nodes' will make an
     # HTTP GET request to http://localhost:4000/nodes
-    def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
+    def initialize(url, client_name = Chef::Config[:node_name], signing_key_filename = Chef::Config[:client_key], options = {})
+      Chef.deprecated(:chef_rest, "Chef::REST is deprecated. Please use Chef::ServerAPI, or investigate Ridley or ChefAPI.")
 
       signing_key_filename = nil if chef_zero_uri?(url)
 
@@ -82,7 +84,6 @@ class Chef
       # because the order of middlewares is reversed when handling
       # responses.
       @middlewares << ValidateContentLength.new(options)
-
     end
 
     def signing_key_filename
@@ -113,7 +114,7 @@ class Chef
     # path:: The path to GET
     # raw:: Whether you want the raw body returned, or JSON inflated.  Defaults
     #   to JSON inflated.
-    def get(path, raw=false, headers={})
+    def get(path, raw = false, headers = {})
       if raw
         streaming_request(path, headers)
       else
@@ -134,8 +135,8 @@ class Chef
     # If you rename the tempfile, it will not be deleted.
     # Beware that if the server streams infinite content, this method will
     # stream it until you run out of disk space.
-    def fetch(path, headers={})
-      streaming_request(create_url(path), headers) {|tmp_file| yield tmp_file }
+    def fetch(path, headers = {})
+      streaming_request(create_url(path), headers) { |tmp_file| yield tmp_file }
     end
 
     alias :api_request :request
@@ -201,7 +202,7 @@ class Chef
       @decompressor.decompress_body(body)
     end
 
-    def authentication_headers(method, url, json_body=nil)
+    def authentication_headers(method, url, json_body = nil)
       authenticator.authentication_headers(method, url, json_body)
     end
 

@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +16,18 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tiny_server'
+require "spec_helper"
+require "tiny_server"
 
 describe Chef::Knife::Ssh do
 
-  before(:all) do
+  before(:each) do
     Chef::Knife::Ssh.load_deps
     @server = TinyServer::Manager.new
     @server.start
   end
 
-  after(:all) do
+  after(:each) do
     @server.stop
   end
 
@@ -50,55 +50,55 @@ describe Chef::Knife::Ssh do
   describe "identity file" do
     context "when knife[:ssh_identity_file] is set" do
       before do
-        setup_knife(['*:*', 'uptime'])
+        setup_knife(["*:*", "uptime"])
         Chef::Config[:knife][:ssh_identity_file] = "~/.ssh/aws.rsa"
       end
 
       it "uses the ssh_identity_file" do
         @knife.run
-        expect(@knife.config[:identity_file]).to eq("~/.ssh/aws.rsa")
+        expect(@knife.config[:ssh_identity_file]).to eq("~/.ssh/aws.rsa")
       end
     end
 
     context "when knife[:ssh_identity_file] is set and frozen" do
       before do
-        setup_knife(['*:*', 'uptime'])
+        setup_knife(["*:*", "uptime"])
         Chef::Config[:knife][:ssh_identity_file] = "~/.ssh/aws.rsa".freeze
       end
 
       it "uses the ssh_identity_file" do
         @knife.run
-        expect(@knife.config[:identity_file]).to eq("~/.ssh/aws.rsa")
+        expect(@knife.config[:ssh_identity_file]).to eq("~/.ssh/aws.rsa")
       end
     end
 
     context "when -i is provided" do
       before do
-        setup_knife(['-i ~/.ssh/aws.rsa', '*:*', 'uptime'])
+        setup_knife(["-i ~/.ssh/aws.rsa", "*:*", "uptime"])
         Chef::Config[:knife][:ssh_identity_file] = nil
       end
 
       it "should use the value on the command line" do
         @knife.run
-        expect(@knife.config[:identity_file]).to eq("~/.ssh/aws.rsa")
+        expect(@knife.config[:ssh_identity_file]).to eq("~/.ssh/aws.rsa")
       end
 
       it "should override what is set in knife.rb" do
         Chef::Config[:knife][:ssh_identity_file] = "~/.ssh/other.rsa"
         @knife.run
-        expect(@knife.config[:identity_file]).to eq("~/.ssh/aws.rsa")
+        expect(@knife.config[:ssh_identity_file]).to eq("~/.ssh/aws.rsa")
       end
     end
 
     context "when knife[:ssh_identity_file] is not provided]" do
       before do
-        setup_knife(['*:*', 'uptime'])
+        setup_knife(["*:*", "uptime"])
         Chef::Config[:knife][:ssh_identity_file] = nil
       end
 
       it "uses the default" do
         @knife.run
-        expect(@knife.config[:identity_file]).to eq(nil)
+        expect(@knife.config[:ssh_identity_file]).to eq(nil)
       end
     end
   end
@@ -106,7 +106,7 @@ describe Chef::Knife::Ssh do
   describe "port" do
     context "when -p 31337 is provided" do
       before do
-        setup_knife(['-p 31337', '*:*', 'uptime'])
+        setup_knife(["-p 31337", "*:*", "uptime"])
       end
 
       it "uses the ssh_port" do
@@ -119,7 +119,7 @@ describe Chef::Knife::Ssh do
   describe "user" do
     context "when knife[:ssh_user] is set" do
       before do
-        setup_knife(['*:*', 'uptime'])
+        setup_knife(["*:*", "uptime"])
         Chef::Config[:knife][:ssh_user] = "ubuntu"
       end
 
@@ -131,7 +131,7 @@ describe Chef::Knife::Ssh do
 
     context "when knife[:ssh_user] is set and frozen" do
       before do
-        setup_knife(['*:*', 'uptime'])
+        setup_knife(["*:*", "uptime"])
         Chef::Config[:knife][:ssh_user] = "ubuntu".freeze
       end
 
@@ -143,7 +143,7 @@ describe Chef::Knife::Ssh do
 
     context "when -x is provided" do
       before do
-        setup_knife(['-x ubuntu', '*:*', 'uptime'])
+        setup_knife(["-x ubuntu", "*:*", "uptime"])
         Chef::Config[:knife][:ssh_user] = nil
       end
 
@@ -161,7 +161,7 @@ describe Chef::Knife::Ssh do
 
     context "when knife[:ssh_user] is not provided]" do
       before do
-        setup_knife(['*:*', 'uptime'])
+        setup_knife(["*:*", "uptime"])
         Chef::Config[:knife][:ssh_user] = nil
       end
 
@@ -175,31 +175,31 @@ describe Chef::Knife::Ssh do
   describe "attribute" do
     context "when knife[:ssh_attribute] is set" do
       before do
-        setup_knife(['*:*', 'uptime'])
+        setup_knife(["*:*", "uptime"])
         Chef::Config[:knife][:ssh_attribute] = "ec2.public_hostname"
       end
 
       it "uses the ssh_attribute" do
         @knife.run
-        expect(@knife.get_ssh_attribute(Chef::Node.new)).to eq("ec2.public_hostname")
+        expect(@knife.get_ssh_attribute({ "knife_config" => "ec2.public_hostname" })).to eq("ec2.public_hostname")
       end
     end
 
     context "when knife[:ssh_attribute] is not provided]" do
       before do
-        setup_knife(['*:*', 'uptime'])
+        setup_knife(["*:*", "uptime"])
         Chef::Config[:knife][:ssh_attribute] = nil
       end
 
       it "uses the default" do
         @knife.run
-        expect(@knife.get_ssh_attribute(Chef::Node.new)).to eq("fqdn")
+        expect(@knife.get_ssh_attribute({ "fqdn" => "fqdn" })).to eq("fqdn")
       end
     end
 
-    context "when -a ec2.public_ipv4 is provided" do
+    context "when -a ec2.public_public_hostname is provided" do
       before do
-        setup_knife(['-a ec2.public_hostname', '*:*', 'uptime'])
+        setup_knife(["-a ec2.public_hostname", "*:*", "uptime"])
         Chef::Config[:knife][:ssh_attribute] = nil
       end
 
@@ -212,7 +212,7 @@ describe Chef::Knife::Ssh do
         # This is the setting imported from knife.rb
         Chef::Config[:knife][:ssh_attribute] = "fqdn"
         # Then we run knife with the -a flag, which sets the above variable
-        setup_knife(['-a ec2.public_hostname', '*:*', 'uptime'])
+        setup_knife(["-a ec2.public_hostname", "*:*", "uptime"])
         @knife.run
         expect(@knife.config[:attribute]).to eq("ec2.public_hostname")
       end
@@ -222,7 +222,7 @@ describe Chef::Knife::Ssh do
   describe "gateway" do
     context "when knife[:ssh_gateway] is set" do
       before do
-        setup_knife(['*:*', 'uptime'])
+        setup_knife(["*:*", "uptime"])
         Chef::Config[:knife][:ssh_gateway] = "user@ec2.public_hostname"
       end
 
@@ -235,7 +235,7 @@ describe Chef::Knife::Ssh do
 
     context "when -G user@ec2.public_hostname is provided" do
       before do
-        setup_knife(['-G user@ec2.public_hostname', '*:*', 'uptime'])
+        setup_knife(["-G user@ec2.public_hostname", "*:*", "uptime"])
         Chef::Config[:knife][:ssh_gateway] = nil
       end
 
@@ -248,7 +248,7 @@ describe Chef::Knife::Ssh do
 
     context "when the gateway requires a password" do
       before do
-        setup_knife(['-G user@ec2.public_hostname', '*:*', 'uptime'])
+        setup_knife(["-G user@ec2.public_hostname", "*:*", "uptime"])
         Chef::Config[:knife][:ssh_gateway] = nil
         allow(@knife.session).to receive(:via) do |host, user, options|
           raise Net::SSH::AuthenticationFailed unless options[:password]
@@ -262,7 +262,7 @@ describe Chef::Knife::Ssh do
     end
   end
 
-  def setup_knife(params=[])
+  def setup_knife(params = [])
     @knife = Chef::Knife::Ssh.new(params)
     # We explicitly avoid running #configure_chef, which would read a knife.rb
     # if available, but #merge_configs (which is called by #configure_chef) is
@@ -274,11 +274,11 @@ describe Chef::Knife::Ssh do
 
     Chef::Config[:node_name] = nil
     Chef::Config[:client_key] = nil
-    Chef::Config[:chef_server_url] = 'http://localhost:9000'
+    Chef::Config[:chef_server_url] = "http://localhost:9000"
 
-    @api.get("/search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0", 200) {
-      %({"total":1, "start":0, "rows":[{"name":"i-xxxxxxxx", "json_class":"Chef::Node", "automatic":{"fqdn":"the.fqdn", "ec2":{"public_hostname":"the_public_hostname"}},"recipes":[]}]})
-    }
+    @api.post("/search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0", 200) do
+      %({"total":1, "start":0, "rows":[{"data": {"fqdn":"the.fqdn", "config": "the_public_hostname", "knife_config": "the_public_hostname" }}]})
+    end
   end
 
 end

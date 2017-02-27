@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/http/json_output'
+require "chef/http/json_output"
 
 class Chef
   class HTTP
@@ -25,7 +25,7 @@ class Chef
     # possible, and converts it into an appropriate model object if it contains
     # a `json_class` key.
     class JSONToModelOutput < JSONOutput
-      def initialize(opts={})
+      def initialize(opts = {})
         opts[:inflate_json_class] = true if !opts.has_key?(:inflate_json_class)
         super
       end

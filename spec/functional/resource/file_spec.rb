@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tmpdir'
+require "spec_helper"
+require "tmpdir"
 
 describe Chef::Resource::File do
   include_context Chef::Resource::File
@@ -25,17 +25,17 @@ describe Chef::Resource::File do
   let(:file_base) { "file_spec" }
   let(:expected_content) { "Don't fear the ruby." }
 
-  def create_resource(opts={})
+  def create_resource(opts = {})
     events = Chef::EventDispatch::Dispatcher.new
     node = Chef::Node.new
     run_context = Chef::RunContext.new(node, {}, events)
 
     use_path = if opts[:use_relative_path]
-      Dir.chdir(Dir.tmpdir)
-      File.basename(path)
-    else
-      path
-    end
+                 Dir.chdir(Dir.tmpdir)
+                 File.basename(path)
+               else
+                 path
+               end
 
     Chef::Resource::File.new(use_path, run_context)
   end
@@ -86,7 +86,6 @@ describe Chef::Resource::File do
     end
   end
 
-
   describe "when using backup" do
     before do
       Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
@@ -102,9 +101,9 @@ describe Chef::Resource::File do
     end
 
     it "only stores the number of requested backups" do
-      resource_without_content.content('foo')
+      resource_without_content.content("foo")
       resource_without_content.run_action(:create)
-      resource_without_content.content('bar')
+      resource_without_content.content("bar")
       resource_without_content.run_action(:create)
       expect(Dir.glob(backup_glob).length).to eq(1)
     end

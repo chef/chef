@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright (c) 2015 Opscode, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe "Chef class" do
   let(:platform) { "debian" }
 
   let(:node) do
     node = Chef::Node.new
-    node.automatic['platform'] = platform
+    node.automatic["platform"] = platform
     node
   end
 
@@ -61,14 +61,14 @@ describe "Chef class" do
     end
     context "#set_provider_priority_array" do
       it "should delegate to the provider_priority_map" do
-        expect(provider_priority_map).to receive(:set_priority_array).with(:http_request, ["a", "b"], platform: "debian").and_return("stuff")
-        expect(Chef.set_provider_priority_array(:http_request, ["a", "b"], platform: "debian")).to eql("stuff")
+        expect(provider_priority_map).to receive(:set_priority_array).with(:http_request, %w{a b}, platform: "debian").and_return("stuff")
+        expect(Chef.set_provider_priority_array(:http_request, %w{a b}, platform: "debian")).to eql("stuff")
       end
     end
     context "#set_priority_map_for_resource" do
       it "should delegate to the resource_priority_map" do
-        expect(resource_priority_map).to receive(:set_priority_array).with(:http_request, ["a", "b"], platform: "debian").and_return("stuff")
-        expect(Chef.set_resource_priority_array(:http_request, ["a", "b"], platform: "debian")).to eql("stuff")
+        expect(resource_priority_map).to receive(:set_priority_array).with(:http_request, %w{a b}, platform: "debian").and_return("stuff")
+        expect(Chef.set_resource_priority_array(:http_request, %w{a b}, platform: "debian")).to eql("stuff")
       end
     end
   end
@@ -85,8 +85,8 @@ describe "Chef class" do
     end
   end
 
-  context '#event_handler' do
-    it 'adds a new handler' do
+  context "#event_handler" do
+    it "adds a new handler" do
       x = 1
       Chef.event_handler do
         on :converge_start do
@@ -98,7 +98,7 @@ describe "Chef class" do
       expect(x).to eq(2)
     end
 
-    it 'raise error if unknown event type is passed' do
+    it "raise error if unknown event type is passed" do
       expect do
         Chef.event_handler do
           on :yolo do

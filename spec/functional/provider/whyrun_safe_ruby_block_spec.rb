@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::WhyrunSafeRubyBlock do
   let(:node) { Chef::Node.new }
 
-  let(:run_context) {
+  let(:run_context) do
     events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, {}, events)
-  }
+  end
 
   before do
     $evil_global_evil_laugh = :wahwah
@@ -43,7 +43,7 @@ describe Chef::Resource::WhyrunSafeRubyBlock do
     end
 
     it "updates the evil laugh, even in why-run mode" do
-      Array(new_resource.action).each {|action| new_resource.run_action(action) }
+      Array(new_resource.action).each { |action| new_resource.run_action(action) }
       expect($evil_global_evil_laugh).to eq(:mwahahaha)
       expect(new_resource).to be_updated
     end

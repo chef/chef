@@ -1,6 +1,6 @@
 #
 # Author::
-# Copyright:: Copyright (c) 2009 Opscode, Inc
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/provider/mount'
+require "chef/provider/mount"
 
 class Chef
   class Provider
     class Mount
       class Aix < Chef::Provider::Mount::Mount
-        provides :mount, platform: %w(aix)
+        provides :mount, platform: %w{aix}
 
         # Override for aix specific handling
         def initialize(new_resource, run_context)
@@ -42,7 +42,7 @@ class Chef
 
           # lsfs o/p = #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
           # search only for current mount point
-          shell_out("lsfs -c #{@new_resource.mount_point}").stdout.each_line do | line |
+          shell_out("lsfs -c #{@new_resource.mount_point}").stdout.each_line do |line|
             case line
             when /^#\s/
               next
@@ -61,7 +61,7 @@ class Chef
               Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/filesystems")
               next
             when /^#{Regexp.escape(@new_resource.mount_point)}/
-              enabled=false
+              enabled = false
               Chef::Log.debug("Found conflicting mount point #{@new_resource.mount_point} in /etc/filesystems")
             end
           end
@@ -99,13 +99,13 @@ class Chef
             end
 
             command << case @new_resource.device_type
-            when :device
-              " #{device_real}"
-            when :label
-              " -L #{@new_resource.device}"
-            when :uuid
-              " -U #{@new_resource.device}"
-            end
+                       when :device
+                         " #{device_real}"
+                       when :label
+                         " -L #{@new_resource.device}"
+                       when :uuid
+                         " -U #{@new_resource.device}"
+                       end
             command << " #{@new_resource.mount_point}"
             shell_out!(command)
             Chef::Log.debug("#{@new_resource} is mounted at #{@new_resource.mount_point}")
@@ -116,9 +116,9 @@ class Chef
 
         def remount_command
           if !(@new_resource.options.nil? || @new_resource.options.empty?)
-            return "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.device} #{@new_resource.mount_point}"
+            "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.device} #{@new_resource.mount_point}"
           else
-            return "mount -o remount #{@new_resource.device} #{@new_resource.mount_point}"
+            "mount -o remount #{@new_resource.device} #{@new_resource.mount_point}"
           end
         end
 
@@ -167,14 +167,14 @@ class Chef
               end
             end
             ::File.open("/etc/filesystems", "w") do |fstab|
-              contents.each { |line| fstab.puts line}
+              contents.each { |line| fstab.puts line }
             end
           else
             Chef::Log.debug("#{@new_resource} is not enabled - nothing to do")
           end
         end
 
+      end
     end
-   end
   end
 end

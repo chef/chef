@@ -1,6 +1,6 @@
 #
-# Author:: Lamont Granquist (lamont@opscode.com)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Lamont Granquist (lamont@chef.io)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,26 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 shared_examples_for "a registry key" do
-  before(:each) do
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
-
-    @new_resource = Chef::Resource::RegistryKey.new("windows is fun", @run_context)
-    @new_resource.key keyname
-    @new_resource.values( testval1 )
-    @new_resource.recursive false
-
-    @provider = Chef::Provider::RegistryKey.new(@new_resource, @run_context)
-
-    allow(@provider).to receive(:running_on_windows!).and_return(true)
-    @double_registry = double(Chef::Win32::Registry)
-    allow(@provider).to receive(:registry).and_return(@double_registry)
-  end
-
   describe "when first created" do
   end
 
@@ -273,6 +256,23 @@ shared_examples_for "a registry key" do
 end
 
 describe Chef::Provider::RegistryKey do
+  before(:each) do
+    @node = Chef::Node.new
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+
+    @new_resource = Chef::Resource::RegistryKey.new("windows is fun", @run_context)
+    @new_resource.key keyname
+    @new_resource.values( testval1 )
+    @new_resource.recursive false
+
+    @provider = Chef::Provider::RegistryKey.new(@new_resource, @run_context)
+
+    allow(@provider).to receive(:running_on_windows!).and_return(true)
+    @double_registry = double(Chef::Win32::Registry)
+    allow(@provider).to receive(:registry).and_return(@double_registry)
+  end
+
   context "when the key data is safe" do
     let(:keyname) { 'HKLM\Software\Opscode\Testing\Safe' }
     let(:testval1) { { :name => "one", :type => :string, :data => "1" } }
@@ -291,5 +291,117 @@ describe Chef::Provider::RegistryKey do
     let(:testval2) { { :name => "two", :type => :binary, :data => 0.chr * 1 } }
 
     it_should_behave_like "a registry key"
+  end
+
+  describe "action_create" do
+    context "when key exists and type matches" do
+      let(:keyname) { 'hklm\\software\\opscode\\testing\\dword' }
+      let(:dword_passed_as_integer) { { :name => "one", :type => :dword, :data => 12345 } }
+      let(:testval1) { { :name => "one", :type => :dword, :data => "12345" } }
+      before do
+        expect(@double_registry).to receive(:key_exists?).twice.with(keyname).and_return(true)
+      end
+
+      it "does not make a change for datatype of data value differing" do
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( dword_passed_as_integer )
+        expect(@double_registry).not_to receive(:set_value)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+    end
+  end
+end
+
+describe Chef::Provider::RegistryKey, "key_missing?" do
+  let(:provider) { Chef::Provider::RegistryKey.new(nil, nil) }
+  let(:all_keys_present_in_all_hash) do
+    [ { :name => "input1_value1", :type => :string, :data => "my_value1" },
+      { :name => "input1_value2", :type => :string, :data => "my_value2" },
+    ]
+  end
+  let(:type_key_not_present_in_any_hash) do
+    [ { :name => "input2_value1", :data => "my_value1" },
+      { :name => "input2_value2", :data => "my_value2" },
+    ]
+  end
+  let(:type_key_not_present_in_some_hash) do
+    [ { :name => "input3_value1", :data => "my_value1" },
+      { :name => "input3_value2", :type => :string, :data => "my_value2" },
+    ]
+  end
+  let(:data_key_not_present_in_any_hash) do
+    [ { :name => "input4_value1", :type => :string },
+      { :name => "input4_value2", :type => :string },
+    ]
+  end
+  let(:data_key_not_present_in_some_hash) do
+    [ { :name => "input5_value1", :type => :string, :data => "my_value1" },
+      { :name => "input5_value2", :type => :string },
+    ]
+  end
+  let(:only_name_key_present_in_all_hash) do
+    [ { :name => "input6_value1" },
+      { :name => "input6_value2" },
+    ]
+  end
+
+  context "type key" do
+    context "when type key is present in all the values hash of registry_key resource" do
+      it "returns false" do
+        response = provider.key_missing?(all_keys_present_in_all_hash, :type)
+        expect(response).to be == false
+      end
+    end
+
+    context "when type key is not present in any of the values hash of registry_key resource" do
+      it "returns true" do
+        response = provider.key_missing?(type_key_not_present_in_any_hash, :type)
+        expect(response).to be == true
+      end
+    end
+
+    context "when type key is not present only in some of the values hash of registry_key resource" do
+      it "returns true" do
+        response = provider.key_missing?(type_key_not_present_in_some_hash, :type)
+        expect(response).to be == true
+      end
+    end
+
+    context "when only name key is present in all the values hash of registry_key resource" do
+      it "returns true" do
+        response = provider.key_missing?(only_name_key_present_in_all_hash, :type)
+        expect(response).to be == true
+      end
+    end
+  end
+
+  context "data key" do
+    context "when data key is present in all the values hash of registry_key resource" do
+      it "returns false" do
+        response = provider.key_missing?(all_keys_present_in_all_hash, :data)
+        expect(response).to be == false
+      end
+    end
+
+    context "when data key is not present in any of the values hash of registry_key resource" do
+      it "returns true" do
+        response = provider.key_missing?(data_key_not_present_in_any_hash, :data)
+        expect(response).to be == true
+      end
+    end
+
+    context "when data key is not present only in some of the values hash of registry_key resource" do
+      it "returns true" do
+        response = provider.key_missing?(data_key_not_present_in_some_hash, :data)
+        expect(response).to be == true
+      end
+    end
+
+    context "when only name key is present in all the values hash of registry_key resource" do
+      it "returns true" do
+        response = provider.key_missing?(only_name_key_present_in_all_hash, :data)
+        expect(response).to be == true
+      end
+    end
   end
 end

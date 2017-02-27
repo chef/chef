@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +43,6 @@ shared_context "deploying via destdir" do
     Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
   end
 end
-
 
 shared_examples_for "a file with the wrong content" do
   before do
@@ -103,7 +102,7 @@ shared_examples_for "a file with the wrong content" do
         end
 
         it "raises an exception" do
-          expect{ resource.run_action(:create) }.to raise_error(Chef::Exceptions::ChecksumMismatch)
+          expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::ChecksumMismatch)
         end
       end
     end
@@ -144,7 +143,7 @@ shared_examples_for "a file with the wrong content" do
   end
 
   context "when diff is enabled" do
-    describe 'sensitive attribute' do
+    describe "sensitive attribute" do
       context "should be insensitive by default" do
         it { expect(resource.sensitive).to(be_falsey) }
       end
@@ -165,7 +164,7 @@ shared_examples_for "a file with the wrong content" do
           end
 
           it "should suppress the diff" do
-            expect(resource.diff).to(include('suppressed sensitive resource'))
+            expect(resource.diff).to(include("suppressed sensitive resource"))
             expect(reporter_messages[1]).to eq("suppressed sensitive resource")
           end
 
@@ -308,14 +307,14 @@ shared_examples_for "a file resource" do
 
   describe "when setting atomic_update" do
     it "booleans should work" do
-      expect {resource.atomic_update(true)}.not_to raise_error
-      expect {resource.atomic_update(false)}.not_to raise_error
+      expect { resource.atomic_update(true) }.not_to raise_error
+      expect { resource.atomic_update(false) }.not_to raise_error
     end
 
     it "anything else should raise an error" do
-      expect {resource.atomic_update(:copy)}.to raise_error(ArgumentError)
-      expect {resource.atomic_update(:move)}.to raise_error(ArgumentError)
-      expect {resource.atomic_update(958)}.to raise_error(ArgumentError)
+      expect { resource.atomic_update(:copy) }.to raise_error(ArgumentError)
+      expect { resource.atomic_update(:move) }.to raise_error(ArgumentError)
+      expect { resource.atomic_update(958) }.to raise_error(ArgumentError)
     end
   end
 
@@ -351,13 +350,13 @@ shared_examples_for "file resource not pointing to a real file" do
 
   describe "when force_unlink is set to false" do
     it ":create raises an error" do
-      expect {resource.run_action(:create) }.to raise_error(Chef::Exceptions::FileTypeMismatch)
+      expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::FileTypeMismatch)
     end
   end
 
   describe "when force_unlink is not set (default)" do
     it ":create raises an error" do
-      expect {resource.run_action(:create) }.to raise_error(Chef::Exceptions::FileTypeMismatch)
+      expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::FileTypeMismatch)
     end
   end
 end
@@ -401,10 +400,9 @@ shared_examples_for "a configured file resource" do
   end
 
   context "when the target file is a symlink", :not_supported_on_win2k3 do
-    let(:symlink_target) {
+    let(:symlink_target) do
       File.join(CHEF_SPEC_DATA, "file-test-target")
-    }
-
+    end
 
     describe "when configured not to manage symlink's target" do
       before(:each) do
@@ -574,7 +572,6 @@ shared_examples_for "a configured file resource" do
             File.open(path, "wb") { |f| f.write(expected_content) }
           end
 
-
           include_context "setup broken permissions"
 
           include_examples "a securable resource with existing target"
@@ -721,7 +718,7 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
-  context "when the target file is a blockdev",:unix_only, :requires_root, :not_supported_on_solaris do
+  context "when the target file is a blockdev", :unix_only, :requires_root, :not_supported_on_solaris do
     include Chef::Mixin::ShellOut
     let(:path) do
       File.join(CHEF_SPEC_DATA, "testdev")
@@ -739,7 +736,7 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
-  context "when the target file is a chardev",:unix_only, :requires_root, :not_supported_on_solaris do
+  context "when the target file is a chardev", :unix_only, :requires_root, :not_supported_on_solaris do
     include Chef::Mixin::ShellOut
     let(:path) do
       File.join(CHEF_SPEC_DATA, "testdev")
@@ -757,7 +754,7 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
-  context "when the target file is a pipe",:unix_only do
+  context "when the target file is a pipe", :unix_only do
     include Chef::Mixin::ShellOut
     let(:path) do
       File.join(CHEF_SPEC_DATA, "testpipe")
@@ -775,8 +772,8 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
-  context "when the target file is a socket",:unix_only do
-    require 'socket'
+  context "when the target file is a socket", :unix_only do
+    require "socket"
 
     # It turns out that the path to a socket can have at most ~104
     # bytes. Therefore we are creating our sockets in tmpdir so that
@@ -784,11 +781,11 @@ shared_examples_for "a configured file resource" do
     let(:test_socket_dir) { File.join(Dir.tmpdir, "sockets") }
 
     before do
-      FileUtils::mkdir_p(test_socket_dir)
+      FileUtils.mkdir_p(test_socket_dir)
     end
 
     after do
-      FileUtils::rm_rf(test_socket_dir)
+      FileUtils.rm_rf(test_socket_dir)
     end
 
     let(:path) do
@@ -823,9 +820,9 @@ shared_examples_for "a configured file resource" do
     end
 
     describe "when path is specified with windows separator", :windows_only do
-      let(:path) {
+      let(:path) do
         File.join(test_file_dir, make_tmpname(file_base)).gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)
-      }
+      end
 
       before do
         @notified_resource = Chef::Resource.new("punk", resource.run_context)
@@ -1018,16 +1015,16 @@ shared_examples_for "a configured file resource" do
 
 end
 
-shared_context Chef::Resource::File  do
+shared_context Chef::Resource::File do
   if windows?
-    require 'chef/win32/file'
+    require "chef/win32/file"
   end
 
   # We create the files in a different directory than tmp to exercise
   # different file deployment strategies more completely.
   let(:test_file_dir) do
     if windows?
-      File.join(ENV['systemdrive'], "test-dir")
+      File.join(ENV["systemdrive"], "test-dir")
     else
       File.join(CHEF_SPEC_DATA, "test-dir")
     end
@@ -1038,7 +1035,8 @@ shared_context Chef::Resource::File  do
   end
 
   before do
-    FileUtils::mkdir_p(test_file_dir)
+    FileUtils.rm_rf(test_file_dir)
+    FileUtils.mkdir_p(test_file_dir)
   end
 
   after(:each) do
@@ -1047,6 +1045,6 @@ shared_context Chef::Resource::File  do
   end
 
   after do
-    FileUtils::rm_rf(test_file_dir)
+    FileUtils.rm_rf(test_file_dir)
   end
 end

@@ -1,6 +1,6 @@
 #
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2010-2011 Opscode, Inc.
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'base64'
-require 'digest/sha2'
-require 'openssl'
-require 'ffi_yajl'
-require 'chef/encrypted_data_bag_item'
-require 'chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format'
-require 'chef/encrypted_data_bag_item/encryption_failure'
-require 'chef/encrypted_data_bag_item/assertions'
+require "base64"
+require "digest/sha2"
+require "openssl"
+require "ffi_yajl"
+require "chef/encrypted_data_bag_item"
+require "chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format"
+require "chef/encrypted_data_bag_item/encryption_failure"
+require "chef/encrypted_data_bag_item/assertions"
 
 class Chef::EncryptedDataBagItem
 
@@ -35,7 +35,7 @@ class Chef::EncryptedDataBagItem
     # for the desired encrypted data bag format version.
     #
     # +Chef::Config[:data_bag_encrypt_version]+ determines which version is used.
-    def self.new(value, secret, iv=nil)
+    def self.new(value, secret, iv = nil)
       format_version = Chef::Config[:data_bag_encrypt_version]
       case format_version
       when 1
@@ -65,7 +65,7 @@ class Chef::EncryptedDataBagItem
       # * iv: The optional +iv+ parameter is intended for testing use only. When
       # *not* supplied, Encryptor will use OpenSSL to generate a secure random
       # IV, which is what you want.
-      def initialize(plaintext_data, key, iv=nil)
+      def initialize(plaintext_data, key, iv = nil)
         @plaintext_data = plaintext_data
         @key = key
         @iv = iv && Base64.decode64(iv)
@@ -83,7 +83,7 @@ class Chef::EncryptedDataBagItem
           "encrypted_data" => encrypted_data,
           "iv" => Base64.encode64(iv),
           "version" => 1,
-          "cipher" => algorithm
+          "cipher" => algorithm,
         }
       end
 
@@ -127,7 +127,7 @@ class Chef::EncryptedDataBagItem
       end
 
       def self.encryptor_keys
-        %w( encrypted_data iv version cipher )
+        %w{ encrypted_data iv version cipher }
       end
     end
 
@@ -141,7 +141,7 @@ class Chef::EncryptedDataBagItem
           "hmac" => hmac,
           "iv" => Base64.encode64(iv),
           "version" => 2,
-          "cipher" => algorithm
+          "cipher" => algorithm,
         }
       end
 
@@ -155,14 +155,14 @@ class Chef::EncryptedDataBagItem
       end
 
       def self.encryptor_keys
-        super + %w( hmac )
+        super + %w{ hmac }
       end
     end
 
     class Version3Encryptor < Version1Encryptor
       include Chef::EncryptedDataBagItem::Assertions
 
-      def initialize(plaintext_data, key, iv=nil)
+      def initialize(plaintext_data, key, iv = nil)
         super
         assert_aead_requirements_met!(algorithm)
         @auth_tag = nil
@@ -176,7 +176,7 @@ class Chef::EncryptedDataBagItem
           "iv" => Base64.encode64(iv),
           "auth_tag" => Base64.encode64(auth_tag),
           "version" => 3,
-          "cipher" => algorithm
+          "cipher" => algorithm,
         }
       end
 
@@ -201,7 +201,7 @@ class Chef::EncryptedDataBagItem
       def openssl_encryptor
         @openssl_encryptor ||= begin
           encryptor = super
-          encryptor.auth_data = ''
+          encryptor.auth_data = ""
           encryptor
         end
       end
@@ -216,7 +216,7 @@ class Chef::EncryptedDataBagItem
       end
 
       def self.encryptor_keys
-        super + %w( auth_tag )
+        super + %w{ auth_tag }
       end
 
     end

@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::RunList::RunListExpansion do
   before do
     @run_list = Chef::RunList.new
-    @run_list << 'recipe[lobster::mastercookbook@0.1.0]' << 'role[rage]' << 'recipe[fist@0.1]'
+    @run_list << "recipe[lobster::mastercookbook@0.1.0]" << "role[rage]" << "recipe[fist@0.1]"
     @expansion = Chef::RunList::RunListExpansion.new("_default", @run_list.run_list_items)
   end
 
@@ -43,7 +43,7 @@ describe Chef::RunList::RunListExpansion do
     end
 
     it "has not applied its roles" do
-      expect(@expansion.applied_role?('rage')).to be_falsey
+      expect(@expansion.applied_role?("rage")).to be_falsey
     end
   end
 
@@ -51,7 +51,7 @@ describe Chef::RunList::RunListExpansion do
     before do
       @rage_role = Chef::Role.new.tap do |r|
         r.name("rage")
-        r.env_run_lists('_default' => [], "prod" => ["recipe[prod-only]"])
+        r.env_run_lists("_default" => [], "prod" => ["recipe[prod-only]"])
       end
       @expansion = Chef::RunList::RunListExpansion.new("prod", @run_list.run_list_items)
       expect(@expansion).to receive(:fetch_role).and_return(@rage_role)
@@ -67,34 +67,34 @@ describe Chef::RunList::RunListExpansion do
   describe "after applying a role" do
     before do
       allow(@expansion).to receive(:fetch_role).and_return(Chef::Role.new)
-      @expansion.inflate_role('rage', "role[base]")
+      @expansion.inflate_role("rage", "role[base]")
     end
 
     it "tracks the applied role" do
-      expect(@expansion.applied_role?('rage')).to be_truthy
+      expect(@expansion.applied_role?("rage")).to be_truthy
     end
 
     it "does not inflate the role again" do
-      expect(@expansion.inflate_role('rage', "role[base]")).to be_falsey
+      expect(@expansion.inflate_role("rage", "role[base]")).to be_falsey
     end
   end
 
   describe "after expanding a run list" do
     before do
       @first_role = Chef::Role.new
-      @first_role.name('rage')
-      @first_role.run_list('role[mollusk]')
-      @first_role.default_attributes({'foo' => 'bar'})
-      @first_role.override_attributes({'baz' => 'qux'})
+      @first_role.name("rage")
+      @first_role.run_list("role[mollusk]")
+      @first_role.default_attributes({ "foo" => "bar" })
+      @first_role.override_attributes({ "baz" => "qux" })
       @second_role = Chef::Role.new
-      @second_role.name('rage')
-      @second_role.run_list('recipe[crabrevenge]')
-      @second_role.default_attributes({'foo' => 'boo'})
-      @second_role.override_attributes({'baz' => 'bux'})
+      @second_role.name("rage")
+      @second_role.run_list("recipe[crabrevenge]")
+      @second_role.default_attributes({ "foo" => "boo" })
+      @second_role.override_attributes({ "baz" => "bux" })
       allow(@expansion).to receive(:fetch_role).and_return(@first_role, @second_role)
       @expansion.expand
       @json = '{"id":"_default","run_list":[{"type":"recipe","name":"lobster::mastercookbook","version":"0.1.0",'
-      .concat(
+              .concat(
 '"skipped":false},{"type":"role","name":"rage","children":[{"type":"role","name":"mollusk","children":[],"missing":null,'
       .concat(
 '"error":null,"skipped":null},{"type":"recipe","name":"crabrevenge","version":null,"skipped":false}],"missing":null,'
@@ -104,29 +104,29 @@ describe Chef::RunList::RunListExpansion do
     end
 
     it "produces json tree upon tracing expansion" do
-      jsonRunList = @expansion.to_json
-      expect(jsonRunList).to eq(@json)
+      json_run_list = @expansion.to_json
+      expect(json_run_list).to eq(@json)
     end
 
     it "has the ordered list of recipes" do
-      expect(@expansion.recipes).to eq(['lobster::mastercookbook', 'crabrevenge', 'fist'])
+      expect(@expansion.recipes).to eq(["lobster::mastercookbook", "crabrevenge", "fist"])
     end
 
     it "has the merged attributes from the roles with outer roles overriding inner" do
-      expect(@expansion.default_attrs).to eq({'foo' => 'bar'})
-      expect(@expansion.override_attrs).to eq({'baz' => 'qux'})
+      expect(@expansion.default_attrs).to eq({ "foo" => "bar" })
+      expect(@expansion.override_attrs).to eq({ "baz" => "qux" })
     end
 
     it "has the list of all roles applied" do
       # this is the correct order, but 1.8 hash order is not stable
-      expect(@expansion.roles).to match_array(['rage', 'mollusk'])
+      expect(@expansion.roles).to match_array(%w{rage mollusk})
     end
 
   end
 
   describe "after expanding a run list with a non existent role" do
     before do
-      allow(@expansion).to receive(:fetch_role) { @expansion.role_not_found('crabrevenge', "role[base]") }
+      allow(@expansion).to receive(:fetch_role) { @expansion.role_not_found("crabrevenge", "role[base]") }
       @expansion.expand
     end
 
@@ -136,7 +136,7 @@ describe Chef::RunList::RunListExpansion do
     end
 
     it "has a list of invalid role names" do
-      expect(@expansion.errors).to include('crabrevenge')
+      expect(@expansion.errors).to include("crabrevenge")
     end
 
   end

@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::User, "initialize" do
   before(:each) do
@@ -29,7 +29,7 @@ describe Chef::Resource::User, "initialize" do
   end
 
   it "should set the resource_name to :user" do
-    expect(@resource.resource_name).to eql(:user)
+    expect(@resource.resource_name).to eql(:user_resource_abstract_base_class)
   end
 
   it "should set the username equal to the argument to initialize" do
@@ -68,7 +68,7 @@ describe Chef::Resource::User, "initialize" do
     expect { @resource.username "domain\@user" }.not_to raise_error
     expect(@resource.username).to eq("domain\@user")
     expect { @resource.username "domain\\user" }.not_to raise_error
-    expect(@resource.username).to  eq("domain\\user")
+    expect(@resource.username).to eq("domain\\user")
   end
 end
 

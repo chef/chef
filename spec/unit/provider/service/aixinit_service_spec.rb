@@ -1,6 +1,6 @@
 #
 # Author:: kaustubh (<kaustubh@clogeny.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::AixInit do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = {:ps => 'fuuuu'}
+    @node.automatic_attrs[:command] = { :ps => "fuuuu" }
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -102,7 +102,7 @@ describe Chef::Provider::Service::AixInit do
 
     context "when the service doesn't set a priority" do
       it "creates symlink with status S" do
-        expect(@provider).to receive(:create_symlink).with(2,'S','')
+        expect(@provider).to receive(:create_symlink).with(2, "S", "")
 
         @provider.enable_service
       end
@@ -114,7 +114,7 @@ describe Chef::Provider::Service::AixInit do
       end
 
       it "creates a symlink with status S and a priority" do
-        expect(@provider).to receive(:create_symlink).with(2,'S',75)
+        expect(@provider).to receive(:create_symlink).with(2, "S", 75)
 
         @provider.enable_service
       end
@@ -122,13 +122,13 @@ describe Chef::Provider::Service::AixInit do
 
     context "when the service sets complex priorities (hash)" do
       before do
-        priority = {2 => [:start, 20], 3 => [:stop, 10]}
+        priority = { 2 => [:start, 20], 3 => [:stop, 10] }
         @new_resource.priority(priority)
       end
 
       it "create symlink with status start (S) or stop (K) and a priority " do
-        expect(@provider).to receive(:create_symlink).with(2,'S',20)
-        expect(@provider).to receive(:create_symlink).with(3,'K',10)
+        expect(@provider).to receive(:create_symlink).with(2, "S", 20)
+        expect(@provider).to receive(:create_symlink).with(3, "K", 10)
 
         @provider.enable_service
       end
@@ -142,7 +142,7 @@ describe Chef::Provider::Service::AixInit do
 
     context "when the service doesn't set a priority" do
       it "creates symlinks with status stop (K)" do
-        expect(@provider).to receive(:create_symlink).with(2,'K','')
+        expect(@provider).to receive(:create_symlink).with(2, "K", "")
 
         @provider.disable_service
       end
@@ -154,7 +154,7 @@ describe Chef::Provider::Service::AixInit do
       end
 
       it "create symlink with status stop (k) and a priority " do
-        expect(@provider).to receive(:create_symlink).with(2,'K',25)
+        expect(@provider).to receive(:create_symlink).with(2, "K", 25)
 
         @provider.disable_service
       end
@@ -162,12 +162,12 @@ describe Chef::Provider::Service::AixInit do
 
     context "when the service sets complex priorities (hash)" do
       before do
-        @priority = {2 => [:start, 20], 3 => [:stop, 10]}
+        @priority = { 2 => [:start, 20], 3 => [:stop, 10] }
         @new_resource.priority(@priority)
       end
 
       it "create symlink with status stop (k) and a priority " do
-        expect(@provider).to receive(:create_symlink).with(3,'K',90)
+        expect(@provider).to receive(:create_symlink).with(3, "K", 90)
 
         @provider.disable_service
       end
@@ -183,17 +183,17 @@ describe Chef::Provider::Service::AixInit do
       end
 
       it "the service is enabled" do
-       expect(@provider.current_resource).to receive(:enabled).with(true)
-       expect(@provider.current_resource).to receive(:priority).with(20)
+        expect(@provider.current_resource).to receive(:enabled).with(true)
+        expect(@provider.current_resource).to receive(:priority).with(20)
 
-       @provider.set_current_resource_attributes
+        @provider.set_current_resource_attributes
       end
     end
 
     context "when rc2.d contains only stop script" do
       before do
         files = ["/etc/rc.d/rc2.d/K20apache"]
-        @priority = {2 => [:stop, 20]}
+        @priority = { 2 => [:stop, 20] }
 
         allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]chef"]).and_return(files)
       end
@@ -208,7 +208,9 @@ describe Chef::Provider::Service::AixInit do
     context "when rc2.d contains both start and stop scripts" do
       before do
         @files = ["/etc/rc.d/rc2.d/S20apache", "/etc/rc.d/rc2.d/K80apache"]
-        @priority = {2 => [:start, 20], 2 => [:stop, 80]}
+        # FIXME: this is clearly buggy the duplicated keys do not work
+        #@priority = {2 => [:start, 20], 2 => [:stop, 80]}
+        @priority = { 2 => [:stop, 80] }
 
         allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]chef"]).and_return(@files)
       end
@@ -228,17 +230,17 @@ describe Chef::Provider::Service::AixInit do
       end
 
       it "the service is enabled" do
-       expect(@provider.current_resource).to receive(:enabled).with(true)
-       expect(@provider.current_resource).to receive(:priority).with('')
+        expect(@provider.current_resource).to receive(:enabled).with(true)
+        expect(@provider.current_resource).to receive(:priority).with("")
 
-       @provider.set_current_resource_attributes
+        @provider.set_current_resource_attributes
       end
     end
 
     context "when rc2.d contains only stop script (without priority)" do
       before do
         files = ["/etc/rc.d/rc2.d/Kapache"]
-        @priority = {2 => [:stop, '']}
+        @priority = { 2 => [:stop, ""] }
 
         allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return(files)
       end
@@ -253,7 +255,9 @@ describe Chef::Provider::Service::AixInit do
     context "when rc2.d contains both start and stop scripts" do
       before do
         files = ["/etc/rc.d/rc2.d/Sapache", "/etc/rc.d/rc2.d/Kapache"]
-        @priority = {2 => [:start, ''], 2 => [:stop, '']}
+        # FIXME: this is clearly buggy the duplicated keys do not work
+        #@priority = {2 => [:start, ''], 2 => [:stop, '']}
+        @priority = { 2 => [:stop, ""] }
 
         allow(Dir).to receive(:glob).with(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).and_return(files)
       end
@@ -266,4 +270,3 @@ describe Chef::Provider::Service::AixInit do
     end
   end
 end
-

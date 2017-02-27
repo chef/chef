@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,7 +56,7 @@ class Chef
         def source_file(source, current_checksum, &block)
           if absolute_uri?(source)
             fetch_from_uri(source, &block)
-          elsif !Chef::Config[:solo]
+          elsif !Chef::Config[:solo_legacy_mode]
             fetch_from_chef_server(source, current_checksum, &block)
           else
             fetch_from_local_cookbook(source, &block)
@@ -64,7 +64,7 @@ class Chef
         end
 
         def http_client_opts(source)
-          opts={}
+          opts = {}
           # CHEF-3140
           # 1. If it's already compressed, trying to compress it more will
           # probably be counter-productive.
@@ -73,7 +73,7 @@ class Chef
           # which tricks Chef::REST into decompressing the response body. In this
           # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
           # which is not what you wanted.
-          if @new_resource.path =~ /gz$/ or source =~ /gz$/
+          if @new_resource.path =~ /gz$/ || source =~ /gz$/
             opts[:disable_gzip] = true
           end
           opts

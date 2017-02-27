@@ -1,6 +1,6 @@
 #
-# Author:: Adam Edwards (<adamed@getchef.com>)
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Author:: Adam Edwards (<adamed@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,28 +16,28 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Env, :windows_only do
-  context 'when running on Windows' do
-    let(:chef_env_test_lower_case) { 'chefenvtest' }
-    let(:chef_env_test_mixed_case) { 'chefENVtest' }
-    let(:env_dne_key) { 'env_dne_key' }
-    let(:env_value1) { 'value1' }
-    let(:env_value2) { 'value2' }
+  context "when running on Windows" do
+    let(:chef_env_test_lower_case) { "chefenvtest" }
+    let(:chef_env_test_mixed_case) { "chefENVtest" }
+    let(:env_dne_key) { "env_dne_key" }
+    let(:env_value1) { "value1" }
+    let(:env_value2) { "value2" }
 
-    let(:env_value_expandable) { '%SystemRoot%' }
-    let(:test_run_context) {
+    let(:env_value_expandable) { "%SystemRoot%" }
+    let(:test_run_context) do
       node = Chef::Node.new
-      node.default['os'] = 'windows'
-      node.default['platform'] = 'windows'
-      node.default['platform_version'] = '6.1'
+      node.default["os"] = "windows"
+      node.default["platform"] = "windows"
+      node.default["platform_version"] = "6.1"
       empty_events = Chef::EventDispatch::Dispatcher.new
       Chef::RunContext.new(node, {}, empty_events)
-    }
-    let(:test_resource) {
-      Chef::Resource::Env.new('unknown', test_run_context)
-    }
+    end
+    let(:test_resource) do
+      Chef::Resource::Env.new("unknown", test_run_context)
+    end
 
     before(:each) do
       resource_lower = Chef::Resource::Env.new(chef_env_test_lower_case, test_run_context)
@@ -47,7 +47,7 @@ describe Chef::Resource::Env, :windows_only do
     end
 
     context "when the create action is invoked" do
-      it 'should create an environment variable for action create' do
+      it "should create an environment variable for action create" do
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
         test_resource.key_name(chef_env_test_lower_case)
         test_resource.value(env_value1)
@@ -76,7 +76,7 @@ describe Chef::Resource::Env, :windows_only do
         expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
       end
 
-      it 'should not expand environment variables if the variable is not PATH' do
+      it "should not expand environment variables if the variable is not PATH" do
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
         test_resource.key_name(chef_env_test_lower_case)
         test_resource.value(env_value_expandable)
@@ -90,7 +90,7 @@ describe Chef::Resource::Env, :windows_only do
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
         test_resource.key_name(chef_env_test_lower_case)
         test_resource.value(env_value1)
-        expect {test_resource.run_action(:modify) }.to raise_error(Chef::Exceptions::Env)
+        expect { test_resource.run_action(:modify) }.to raise_error(Chef::Exceptions::Env)
       end
 
       it "should modify an existing variable's value to a new value" do
@@ -115,7 +115,7 @@ describe Chef::Resource::Env, :windows_only do
         expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
       end
 
-      it 'should not expand environment variables if the variable is not PATH' do
+      it "should not expand environment variables if the variable is not PATH" do
         test_resource.key_name(chef_env_test_lower_case)
         test_resource.value(env_value1)
         test_resource.run_action(:create)
@@ -125,27 +125,27 @@ describe Chef::Resource::Env, :windows_only do
         expect(ENV[chef_env_test_lower_case]).to eq(env_value_expandable)
       end
 
-      context 'when using PATH' do
+      context "when using PATH" do
         let(:random_name) { Time.now.to_i }
-        let(:env_val) { "#{env_value_expandable}_#{random_name}"}
-        let!(:path_before) { test_resource.provider_for_action(test_resource.action).env_value('PATH') || '' }
-        let!(:env_path_before) { ENV['PATH'] }
+        let(:env_val) { "#{env_value_expandable}_#{random_name}" }
+        let!(:path_before) { test_resource.provider_for_action(test_resource.action).env_value("PATH") || "" }
+        let!(:env_path_before) { ENV["PATH"] }
 
-        it 'should expand PATH' do
+        it "should expand PATH" do
           expect(path_before).not_to include(env_val)
-          test_resource.key_name('PATH')
+          test_resource.key_name("PATH")
           test_resource.value("#{path_before};#{env_val}")
           test_resource.run_action(:create)
-          expect(ENV['PATH']).not_to include(env_val)
-          expect(ENV['PATH']).to include("#{random_name}")
+          expect(ENV["PATH"]).not_to include(env_val)
+          expect(ENV["PATH"]).to include("#{random_name}")
         end
 
         after(:each) do
           # cleanup so we don't flood the path
-          test_resource.key_name('PATH')
+          test_resource.key_name("PATH")
           test_resource.value(path_before)
           test_resource.run_action(:create)
-          ENV['PATH'] = env_path_before
+          ENV["PATH"] = env_path_before
         end
       end
 
@@ -165,7 +165,7 @@ describe Chef::Resource::Env, :windows_only do
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
         test_resource.key_name(chef_env_test_lower_case)
         test_resource.value(env_value1)
-        expect{test_resource.run_action(:delete)}.not_to raise_error
+        expect { test_resource.run_action(:delete) }.not_to raise_error
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
       end
 

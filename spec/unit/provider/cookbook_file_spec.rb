@@ -1,7 +1,7 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2009-2013 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,21 +17,21 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
-require 'support/shared/unit/provider/file'
+require "support/shared/unit/provider/file"
 
 describe Chef::Provider::CookbookFile do
-  let(:node) { double('Chef::Node') }
-  let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
-  let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
-  let(:enclosing_directory) {
+  let(:node) { double("Chef::Node") }
+  let(:events) { double("Chef::Events").as_null_object } # mock all the methods
+  let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
+  let(:enclosing_directory) do
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
-  }
-  let(:resource_path) {
+  end
+  let(:resource_path) do
     canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
-  }
+  end
 
   # Subject
 
@@ -44,12 +44,12 @@ describe Chef::Provider::CookbookFile do
   let(:resource) do
     resource = Chef::Resource::CookbookFile.new("seattle", @run_context)
     resource.path(resource_path)
-    resource.cookbook_name = 'apache2'
+    resource.cookbook_name = "apache2"
     resource
   end
 
   let(:content) do
-    content = double('Chef::Provider::CookbookFile::Content')
+    content = double("Chef::Provider::CookbookFile::Content")
   end
 
   it_behaves_like Chef::Provider::File

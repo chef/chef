@@ -1,6 +1,6 @@
 #
 # Author:: Caleb Tennis (<caleb.tennis@gmail.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Package::Portage, "load_current_resource" do
   before(:each) do
@@ -54,6 +54,12 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
       allow(::Dir).to receive(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0-r1"])
       @provider.load_current_resource
       expect(@provider.current_resource.version).to eq("1.0.0-r1")
+    end
+
+    it "should return a current resource with the correct version if the package is found with version with character" do
+      allow(::Dir).to receive(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0d"])
+      @provider.load_current_resource
+      expect(@provider.current_resource.version).to eq("1.0.0d")
     end
 
     it "should return a current resource with a nil version if the package is not found" do
@@ -278,31 +284,30 @@ EOF
 
     describe Chef::Provider::Package::Portage, "install_package" do
       it "should install a normally versioned package using portage" do
-        expect(@provider).to receive(:shell_out!).with("emerge -g --color n --nospinner --quiet =dev-util/git-1.0.0")
+        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "=dev-util/git-1.0.0")
         @provider.install_package("dev-util/git", "1.0.0")
       end
 
       it "should install a tilde versioned package using portage" do
-        expect(@provider).to receive(:shell_out!).with("emerge -g --color n --nospinner --quiet ~dev-util/git-1.0.0")
+        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "~dev-util/git-1.0.0")
         @provider.install_package("dev-util/git", "~1.0.0")
       end
 
       it "should add options to the emerge command when specified" do
-        expect(@provider).to receive(:shell_out!).with("emerge -g --color n --nospinner --quiet --oneshot =dev-util/git-1.0.0")
-        allow(@new_resource).to receive(:options).and_return("--oneshot")
-
+        expect(@provider).to receive(:shell_out!).with("emerge", "-g", "--color", "n", "--nospinner", "--quiet", "--oneshot", "=dev-util/git-1.0.0")
+        @new_resource.options "--oneshot"
         @provider.install_package("dev-util/git", "1.0.0")
       end
     end
 
     describe Chef::Provider::Package::Portage, "remove_package" do
       it "should un-emerge the package with no version specified" do
-        expect(@provider).to receive(:shell_out!).with("emerge --unmerge --color n --nospinner --quiet dev-util/git")
+        expect(@provider).to receive(:shell_out!).with("emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", "dev-util/git")
         @provider.remove_package("dev-util/git", nil)
       end
 
       it "should un-emerge the package with a version specified" do
-        expect(@provider).to receive(:shell_out!).with("emerge --unmerge --color n --nospinner --quiet =dev-util/git-1.0.0")
+        expect(@provider).to receive(:shell_out!).with("emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", "=dev-util/git-1.0.0")
         @provider.remove_package("dev-util/git", "1.0.0")
       end
     end

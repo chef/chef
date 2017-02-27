@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/file'
-require 'chef/deprecation/provider/cookbook_file'
-require 'chef/deprecation/warnings'
+require "chef/provider/file"
+require "chef/deprecation/provider/cookbook_file"
+require "chef/deprecation/warnings"
 
 class Chef
   class Provider
@@ -36,15 +36,15 @@ class Chef
       end
 
       def load_current_resource
-        @current_resource = Chef::Resource::CookbookFile.new(@new_resource.name)
+        @current_resource = Chef::Resource::CookbookFile.new(new_resource.name)
         super
       end
 
       private
 
       def managing_content?
-        return true if @new_resource.checksum
-        return true if !@new_resource.source.nil? && @action != :create_if_missing
+        return true if new_resource.checksum
+        return true if !new_resource.source.nil? && @action != :create_if_missing
         false
       end
 

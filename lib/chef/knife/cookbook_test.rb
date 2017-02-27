@@ -1,9 +1,9 @@
 #
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Matthew Kent (<mkent@magoazul.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
-# Copyright:: Copyright (c) 2010 Matthew Kent
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2016, Matthew Kent
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,15 +18,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookTest < Knife
 
       deps do
-        require 'chef/cookbook_loader'
-        require 'chef/cookbook/syntax_check'
+        require "chef/cookbook_loader"
+        require "chef/cookbook/syntax_check"
       end
 
       banner "knife cookbook test [COOKBOOKS...] (options)"
@@ -69,13 +69,12 @@ class Chef
 
       def test_cookbook(cookbook)
         ui.info("Running syntax check on #{cookbook}")
-        Array(config[:cookbook_path]).reverse.each do |path|
+        Array(config[:cookbook_path]).reverse_each do |path|
           syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cookbook, path)
           test_ruby(syntax_checker)
           test_templates(syntax_checker)
         end
       end
-
 
       def test_ruby(syntax_checker)
         ui.info("Validating ruby files")

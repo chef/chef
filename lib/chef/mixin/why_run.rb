@@ -1,7 +1,7 @@
 #
-# Author:: Dan DeLeo ( <dan@opscode.com> )
-# Author:: Marc Paradise ( <marc@opscode.com> )
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Dan DeLeo ( <dan@chef.io> )
+# Author:: Marc Paradise ( <marc@chef.io> )
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +49,7 @@ class Chef
         def add_action(descriptions, &block)
           @actions << [descriptions, block]
           if (@resource.respond_to?(:is_guard_interpreter) && @resource.is_guard_interpreter) || !Chef::Config[:why_run]
-            block.call
+            yield
           end
           events.resource_update_applied(@resource, @action, descriptions)
         end
@@ -222,7 +222,6 @@ class Chef
             @assertion_failed
           end
 
-
           # Runs the assertion/assumption logic. Will raise an Exception of the
           # type specified in #failure_message (or AssertionFailure by default)
           # if the requirement is not met and Chef is not running in why run
@@ -247,7 +246,7 @@ class Chef
 
         def initialize(resource, run_context)
           @resource, @run_context = resource, run_context
-          @assertions = Hash.new {|h,k| h[k] = [] }
+          @assertions = Hash.new { |h, k| h[k] = [] }
           @blocked_actions = []
         end
 
@@ -313,16 +312,16 @@ class Chef
         def assert(*actions)
           assertion = Assertion.new
           yield assertion
-          actions.each {|action| @assertions[action] << assertion }
+          actions.each { |action| @assertions[action] << assertion }
         end
 
         # Run the assertion and assumption logic.
         def run(action)
           @assertions[action.to_sym].each do |a|
             a.run(action, events, @resource)
-            if a.assertion_failed? and a.block_action?
+            if a.assertion_failed? && a.block_action?
               @blocked_actions << action
-              return
+              break
             end
           end
         end

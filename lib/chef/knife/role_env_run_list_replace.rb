@@ -1,6 +1,6 @@
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: William Albenzi (<walbenzi@gmail.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,22 +16,22 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class RoleEnvRunListReplace < Knife
 
       deps do
-        require 'chef/role'
-        require 'chef/json_compat'
+        require "chef/role"
+        require "chef/json_compat"
       end
 
       banner "knife role env_run_list replace [ROLE] [ENVIRONMENT] [OLD_ENTRY] [NEW_ENTRY] "
 
       def replace_in_env_run_list(role, environment, old_entry, new_entry)
         nlist = []
-        role.run_list_for(environment).each do |entry| 
+        role.run_list_for(environment).each do |entry|
           if entry == old_entry
             nlist << new_entry
           else

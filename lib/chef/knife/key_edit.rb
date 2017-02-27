@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/key'
-require 'chef/json_compat'
-require 'chef/exceptions'
+require "chef/key"
+require "chef/json_compat"
+require "chef/exceptions"
 
 class Chef
   class Knife
@@ -41,7 +41,7 @@ class Chef
       end
 
       def public_key_and_create_key_error_msg
-<<EOS
+        <<EOS
 You passed both --public-key and --create-key. Only pass one, or the other, or neither.
 Do not pass either if you do not want to change the public_key field of your key.
 Pass --public-key if you want to update the public_key field of your key from a specific public key.
@@ -51,6 +51,10 @@ EOS
 
       def edit_data(key)
         @ui.edit_data(key)
+      end
+
+      def edit_hash(key)
+        @ui.edit_hash(key)
       end
 
       def display_info(input)
@@ -95,7 +99,7 @@ EOS
           key.expiration_date(@config[:expiration_date])
         end
 
-        output = edit_data(key)
+        output = edit_hash(key)
         key = update_key_from_hash(output)
 
         to_display = "Updated key: #{key.name}"

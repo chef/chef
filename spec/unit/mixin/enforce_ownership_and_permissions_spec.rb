@@ -1,6 +1,6 @@
 #
-# Author:: Mark Mzyk (<mmzyk@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Mark Mzyk (<mmzyk@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'etc'
-require 'ostruct'
+require "spec_helper"
+require "etc"
+require "ostruct"
 
 describe Chef::Mixin::EnforceOwnershipAndPermissions do
 
@@ -52,8 +52,8 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
       allow_any_instance_of(Chef::FileAccessControl).to receive(:describe_changes)
 
       passwd_struct = OpenStruct.new(:name => "root", :passwd => "x",
-                                     :uid => 0, :gid => 0, :dir => '/root',
-                                     :shell => '/bin/bash')
+                                     :uid => 0, :gid => 0, :dir => "/root",
+                                     :shell => "/bin/bash")
 
       group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
       allow(Etc).to receive(:getpwuid).and_return(passwd_struct)
@@ -76,8 +76,8 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
       allow_any_instance_of(Chef::FileAccessControl).to receive(:describe_changes)
 
       passwd_struct = OpenStruct.new(:name => "root", :passwd => "x",
-                                     :uid => 0, :gid => 0, :dir => '/root',
-                                     :shell => '/bin/bash')
+                                     :uid => 0, :gid => 0, :dir => "/root",
+                                     :shell => "/bin/bash")
 
       group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
       allow(Etc).to receive(:getpwuid).and_return(passwd_struct)

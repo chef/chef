@@ -1,6 +1,6 @@
 #
 # Author:: Jesse Campbell (<hikeit@gmail.com>)
-# Copyright:: Copyright (c) 2013 Jesse Campbell
+# Copyright:: Copyright 2013-2016, Jesse Campbell
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::RemoteFile::FTP do
-  let(:enclosing_directory) {
+  let(:enclosing_directory) do
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
-  }
-  let(:resource_path) {
+  end
+  let(:resource_path) do
     canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
-  }
+  end
 
   let(:new_resource) do
     r = Chef::Resource::RemoteFile.new("remote file ftp backend test (new resource)")
@@ -38,7 +38,7 @@ describe Chef::Provider::RemoteFile::FTP do
   end
 
   let(:ftp) do
-    ftp = double(Net::FTP, { })
+    ftp = double(Net::FTP, {})
     allow(ftp).to receive(:connect)
     allow(ftp).to receive(:login)
     allow(ftp).to receive(:voidcmd)
@@ -200,9 +200,7 @@ describe Chef::Provider::RemoteFile::FTP do
 
     context "and proxying is enabled" do
       before do
-        Chef::Config[:ftp_proxy] = "socks5://socks.example.com:5000"
-        Chef::Config[:ftp_proxy_user] = "bill"
-        Chef::Config[:ftp_proxy_pass] = "ted"
+        stub_const("ENV", "ftp_proxy" => "socks5://bill:ted@socks.example.com:5000")
       end
 
       it "fetches the file via the proxy" do

@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/path_utils'
-require 'chef/chef_fs/file_system/operation_not_allowed_error'
+require "chef/chef_fs/path_utils"
+require "chef/chef_fs/file_system/exceptions"
 
 class Chef
   module ChefFS
@@ -27,18 +27,22 @@ class Chef
           @parent = parent
           @name = name
           if parent
-            @path = Chef::ChefFS::PathUtils::join(parent.path, name)
+            @path = Chef::ChefFS::PathUtils.join(parent.path, name)
           else
-            if name != ''
+            if name != ""
               raise ArgumentError, "Name of root object must be empty string: was '#{name}' instead"
             end
-            @path = '/'
+            @path = "/"
           end
         end
 
         attr_reader :name
         attr_reader :parent
         attr_reader :path
+
+        alias_method :display_path, :path
+        alias_method :display_name, :name
+        alias_method :bare_name, :name
 
         # Override this if you have a special comparison algorithm that can tell
         # you whether this entry is the same as another--either a quicker or a
@@ -146,10 +150,10 @@ class Chef
         def path_for_printing
           if parent
             parent_path = parent.path_for_printing
-            if parent_path == '.'
+            if parent_path == "."
               name
             else
-              Chef::ChefFS::PathUtils::join(parent.path_for_printing, name)
+              Chef::ChefFS::PathUtils.join(parent.path_for_printing, name)
             end
           else
             name
@@ -180,4 +184,4 @@ class Chef
   end
 end
 
-require 'chef/chef_fs/file_system/nonexistent_fs_object'
+require "chef/chef_fs/file_system/nonexistent_fs_object"

@@ -1,6 +1,6 @@
 #
 # Author:: Richard Manyanza (<liseki@nyikacraftsmen.com>)
-# Copyright:: Copyright (c) 2014 Richard Manyanza.
+# Copyright:: Copyright 2014-2016, Richard Manyanza.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/platform/priority_map'
+require "chef/exceptions"
+require "chef/platform/priority_map"
 
 class Chef
   #
@@ -90,8 +90,10 @@ class Chef
       @prioritized_handlers ||= begin
         supported_handlers = self.supported_handlers
         if supported_handlers.empty?
-          # if none of the providers specifically support the resource, we still need to pick one of the providers that are
-          # enabled on the node to handle the why-run use case. FIXME we should only do this in why-run mode then.
+          # We always require a provider to be able to call define_resource_requirements on.  In the why-run case we need
+          # a provider to say "assuming /etc/init.d/whatever would have been installed" and in the non-why-run case we
+          # need to make a best guess at "cannot find /etc/init.d/whatever".  We are essentially defining a "default" provider
+          # for the platform, which is the best we can do, but which might give misleading errors, but we cannot read minds.
           Chef::Log.debug "No providers responded true to `supports?` for action #{action} on resource #{resource}, falling back to enabled handlers so we can return something anyway."
           supported_handlers = enabled_handlers
         end
@@ -157,8 +159,8 @@ class Chef
             # perf concern otherwise.)
             handlers = providers.select { |handler| overrode_provides?(handler) && handler.provides?(node, resource) }
             handlers.each do |handler|
-              Chef.log_deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource.resource_name}, but provides #{resource.resource_name.inspect} was never called!")
-              Chef.log_deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
+              message = "#{handler}.provides? returned true when asked if it provides DSL #{resource.resource_name}, but provides #{resource.resource_name.inspect} was never called!  In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself."
+              Chef.deprecated(:custom_resource, message)
             end
           end
           handlers

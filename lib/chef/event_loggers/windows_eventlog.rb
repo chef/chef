@@ -1,7 +1,7 @@
 #
-# Author:: Jay Mundrawala (<jdm@getchef.com>)
+# Author:: Jay Mundrawala (<jdm@chef.io>)
 #
-# Copyright:: 2014, Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/event_loggers/base'
-require 'chef/platform/query_helpers'
-require 'chef/win32/eventlog'
+require "chef/event_loggers/base"
+require "chef/platform/query_helpers"
+require "chef/win32/eventlog"
 
 class Chef
   module EventLoggers
@@ -35,14 +35,14 @@ class Chef
       LOG_CATEGORY_ID = 11001
 
       # Since we must install the event logger, this is not really configurable
-      SOURCE = 'Chef'
+      SOURCE = "Chef"
 
       def self.available?
-        return Chef::Platform::windows?
+        Chef::Platform.windows?
       end
 
       def initialize
-        @eventlog = ::Win32::EventLog::open('Application')
+        @eventlog = ::Win32::EventLog.open("Application")
       end
 
       def run_start(version)
@@ -83,7 +83,7 @@ class Chef
             [@run_status.run_id,
              @run_status.elapsed_time.to_s]
           else
-            ["UNKNOWN", "UNKNOWN"]
+            %w{UNKNOWN UNKNOWN}
           end
 
         @eventlog.report_event(

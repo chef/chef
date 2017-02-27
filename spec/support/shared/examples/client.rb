@@ -1,6 +1,6 @@
 
-require 'spec_helper'
-require 'spec/support/shared/context/client'
+require "spec_helper"
+require "spec/support/shared/context/client"
 
 # requires platform and platform_version be defined
 shared_examples "a completed run" do
@@ -24,7 +24,7 @@ shared_examples "a completed run with audit failure" do
   end
 
   it "converges, runs audits, saves the node and raises the error in a wrapping error" do
-    expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+    expect { client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
       expect(error.wrapped_errors.size).to eq(run_errors.size)
       run_errors.each do |run_error|
         expect(error.wrapped_errors).to include(run_error)
@@ -42,7 +42,7 @@ shared_examples "a failed run" do
   include_context "run failed"
 
   it "skips node save and raises the error in a wrapping error" do
-    expect{ client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
+    expect { client.run }.to raise_error(Chef::Exceptions::RunFailedWrappingError) do |error|
       expect(error.wrapped_errors.size).to eq(run_errors.size)
       run_errors.each do |run_error|
         expect(error.wrapped_errors).to include(run_error)

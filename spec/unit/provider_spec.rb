@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,17 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-
+require "spec_helper"
 
 class NoWhyrunDemonstrator < Chef::Provider
   attr_reader :system_state_altered
   def whyrun_supported?
     false
   end
-  def load_current_resource
 
+  def load_current_resource
   end
+
   def action_foo
     @system_state_altered = true
   end
@@ -54,7 +54,6 @@ class CheckResourceSemanticsDemonstrator < ConvergeActionDemonstrator
     raise Chef::Exceptions::InvalidResourceSpecification.new("check_resource_semantics!")
   end
 end
-
 
 describe Chef::Provider do
   before(:each) do
@@ -107,7 +106,7 @@ describe Chef::Provider do
   it "evals embedded recipes with a pristine resource collection" do
     @provider.run_context.instance_variable_set(:@resource_collection, "doesn't matter what this is")
     temporary_collection = nil
-    snitch = Proc.new {temporary_collection = @run_context.resource_collection}
+    snitch = Proc.new { temporary_collection = @run_context.resource_collection }
     @provider.send(:recipe_eval, &snitch)
     expect(temporary_collection).to be_an_instance_of(Chef::ResourceCollection)
     expect(@provider.run_context.instance_variable_get(:@resource_collection)).to eq("doesn't matter what this is")
@@ -115,7 +114,7 @@ describe Chef::Provider do
 
   it "does not re-load recipes when creating the temporary run context" do
     expect_any_instance_of(Chef::RunContext).not_to receive(:load)
-    snitch = Proc.new {temporary_collection = @run_context.resource_collection}
+    snitch = Proc.new { temporary_collection = @run_context.resource_collection }
     @provider.send(:recipe_eval, &snitch)
   end
 

@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/exceptions'
-require 'chef/mixin/params_validate'
-require 'chef/version_constraint/platform'
-require 'chef/provider'
+require "chef/log"
+require "chef/exceptions"
+require "chef/mixin/params_validate"
+require "chef/version_constraint/platform"
+require "chef/provider"
 
 class Chef
   class Platform
@@ -35,6 +35,7 @@ class Chef
       include Chef::Mixin::ParamsValidate
 
       def find(name, version)
+        Chef.deprecated(:chef_platform_methods, "#{self.name}.find is deprecated")
         provider_map = platforms[:default].clone
 
         name_sym = name
@@ -45,7 +46,7 @@ class Chef
         end
 
         if platforms.has_key?(name_sym)
-          platform_versions = platforms[name_sym].select {|k, v| k != :default }
+          platform_versions = platforms[name_sym].select { |k, v| k != :default }
           if platforms[name_sym].has_key?(:default)
             provider_map.merge!(platforms[name_sym][:default])
           end
@@ -53,7 +54,7 @@ class Chef
             begin
               version_constraint = Chef::VersionConstraint::Platform.new(platform_version)
               if version_constraint.include?(version)
-                Chef::Log.debug("Platform #{name.to_s} version #{version} found")
+                Chef::Log.debug("Platform #{name} version #{version} found")
                 provider_map.merge!(provider)
               end
             rescue Chef::Exceptions::InvalidPlatformVersion
@@ -86,10 +87,11 @@ class Chef
 
         raise ArgumentError, "Cannot find a version for #{node}" unless version
 
-        return platform, version
+        [platform, version]
       end
 
-      def provider_for_resource(resource, action=:nothing)
+      def provider_for_resource(resource, action = :nothing)
+        Chef.deprecated(:chef_platform_methods, "#{name}.provider_for_resource is deprecated")
         node = resource.run_context && resource.run_context.node
         raise ArgumentError, "Cannot find the provider for a resource with no run context set" unless node
         provider = find_provider_for_node(node, resource).new(resource, resource.run_context)
@@ -98,15 +100,17 @@ class Chef
       end
 
       def provider_for_node(node, resource_type)
-        raise NotImplementedError, "#{self.class.name} no longer supports #provider_for_node"
+        raise NotImplementedError, "#{name} no longer supports #provider_for_node"
       end
 
       def find_provider_for_node(node, resource_type)
+        Chef.deprecated(:chef_platform_methods, "#{name}.find_provider_for_node is deprecated")
         platform, version = find_platform_and_version(node)
         find_provider(platform, version, resource_type)
       end
 
       def set(args)
+        Chef.deprecated(:chef_platform_methods, "#{name}.set is deprecated")
         validate(
           args,
           {
@@ -123,7 +127,7 @@ class Chef
             },
             :provider => {
               :kind_of => [ String, Symbol, Class ],
-            }
+            },
           }
         )
         if args.has_key?(:platform)
@@ -133,14 +137,14 @@ class Chef
                 platforms[args[:platform]][args[:version]][args[:resource].to_sym] = args[:provider]
               else
                 platforms[args[:platform]][args[:version]] = {
-                  args[:resource].to_sym => args[:provider]
+                  args[:resource].to_sym => args[:provider],
                 }
               end
             else
               platforms[args[:platform]] = {
                 args[:version] => {
-                  args[:resource].to_sym => args[:provider]
-                }
+                  args[:resource].to_sym => args[:provider],
+                },
               }
             end
           else
@@ -155,8 +159,8 @@ class Chef
             else
               platforms[args[:platform]] = {
                 :default => {
-                  args[:resource].to_sym => args[:provider]
-                }
+                  args[:resource].to_sym => args[:provider],
+                },
               }
             end
           end
@@ -165,16 +169,17 @@ class Chef
             platforms[:default][args[:resource].to_sym] = args[:provider]
           else
             platforms[:default] = {
-              args[:resource].to_sym => args[:provider]
+              args[:resource].to_sym => args[:provider],
             }
           end
         end
       end
 
       def find_provider(platform, version, resource_type)
+        Chef.deprecated(:chef_platform_methods, "#{name}.find_provider is deprecated")
         provider_klass = explicit_provider(platform, version, resource_type) ||
-                         platform_provider(platform, version, resource_type) ||
-                         resource_matching_provider(platform, version, resource_type)
+          platform_provider(platform, version, resource_type) ||
+          resource_matching_provider(platform, version, resource_type)
 
         raise Chef::Exceptions::ProviderNotFound, "Cannot find a provider for #{resource_type} on #{platform} version #{version}" if provider_klass.nil?
 
@@ -183,31 +188,34 @@ class Chef
 
       private
 
-        def explicit_provider(platform, version, resource_type)
-          resource_type.kind_of?(Chef::Resource) ? resource_type.provider : nil
-        end
+      def explicit_provider(platform, version, resource_type)
+        resource_type.kind_of?(Chef::Resource) ? resource_type.provider : nil
+      end
 
-        def platform_provider(platform, version, resource_type)
-          pmap = Chef::Platform.find(platform, version)
-          rtkey = resource_type.kind_of?(Chef::Resource) ? resource_type.resource_name.to_sym : resource_type
-          pmap.has_key?(rtkey) ? pmap[rtkey] : nil
-        end
+      def platform_provider(platform, version, resource_type)
+        pmap = Chef::Platform.find(platform, version)
+        rtkey = resource_type.kind_of?(Chef::Resource) ? resource_type.resource_name.to_sym : resource_type
+        pmap.has_key?(rtkey) ? pmap[rtkey] : nil
+      end
 
-        include Chef::Mixin::ConvertToClassName
+      include Chef::Mixin::ConvertToClassName
 
-        def resource_matching_provider(platform, version, resource_type)
-          if resource_type.kind_of?(Chef::Resource)
-            class_name = resource_type.class.name ? resource_type.class.name.split('::').last :
-              convert_to_class_name(resource_type.resource_name.to_s)
+      def resource_matching_provider(platform, version, resource_type)
+        if resource_type.kind_of?(Chef::Resource)
+          class_name = if resource_type.class.name
+                         resource_type.class.name.split("::").last
+                       else
+                         convert_to_class_name(resource_type.resource_name.to_s)
+                       end
 
-            if Chef::Provider.const_defined?(class_name)
-              Chef::Log.warn("Class Chef::Provider::#{class_name} does not declare 'provides #{convert_to_snake_case(class_name).to_sym.inspect}'.")
-              Chef::Log.warn("This will no longer work in Chef 13: you must use 'provides' to use the resource's DSL.")
-              return Chef::Provider.const_get(class_name)
-            end
+          if Chef::Provider.const_defined?(class_name, false)
+            Chef::Log.warn("Class Chef::Provider::#{class_name} does not declare 'provides #{convert_to_snake_case(class_name).to_sym.inspect}'.")
+            Chef::Log.warn("This will no longer work in Chef 13: you must use 'provides' to use the resource's DSL.")
+            return Chef::Provider.const_get(class_name, false)
           end
-          nil
         end
+        nil
+      end
 
     end
   end

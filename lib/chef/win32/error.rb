@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/error'
-require 'chef/win32/memory'
-require 'chef/win32/unicode'
-require 'chef/exceptions'
+require "chef/win32/api/error"
+require "chef/win32/memory"
+require "chef/win32/unicode"
+require "chef/exceptions"
 
 class Chef
   module ReservedNames::Win32
@@ -29,11 +29,21 @@ class Chef
 
       def self.format_message(message_id = 0, args = {})
         flags = args[:flags] || FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY
-        source = args[:source]
+        flags |= FORMAT_MESSAGE_ALLOCATE_BUFFER
+        source = args[:source] || 0
         language_id = args[:language_id] || 0
         varargs = args[:varargs] || [:int, 0]
         buffer = FFI::MemoryPointer.new :pointer
-        num_chars = FormatMessageW(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, source, message_id, language_id, buffer, 0, *varargs)
+        num_chars = FormatMessageW(flags, source, message_id, language_id, buffer, 0, *varargs)
+        if num_chars == 0
+          source = LoadLibraryExW("netmsg.dll".to_wstring, 0, LOAD_LIBRARY_AS_DATAFILE)
+          begin
+            num_chars = FormatMessageW(flags | FORMAT_MESSAGE_FROM_HMODULE, source, message_id, language_id, buffer, 0, *varargs)
+          ensure
+            FreeLibrary(source)
+          end
+        end
+
         if num_chars == 0
           raise!
         end
@@ -57,16 +67,19 @@ class Chef
       # nil::: always returns nil when it does not raise
       # === Raises
       # Chef::Exceptions::Win32APIError:::
-      def self.raise!(message = nil)
-        code = get_last_error
+      def self.raise!(message = nil, code = get_last_error)
         msg = format_message(code).strip
-        formatted_message = ""
-        formatted_message << message if message
-        formatted_message << "---- Begin Win32 API output ----\n"
-        formatted_message << "System Error Code: #{code}\n"
-        formatted_message << "System Error Message: #{msg}\n"
-        formatted_message << "---- End Win32 API output ----\n"
-        raise Chef::Exceptions::Win32APIError, msg + "\n" + formatted_message
+        if code == ERROR_USER_NOT_FOUND
+          raise Chef::Exceptions::UserIDNotFound, msg
+        else
+          formatted_message = ""
+          formatted_message << message if message
+          formatted_message << "---- Begin Win32 API output ----\n"
+          formatted_message << "System Error Code: #{code}\n"
+          formatted_message << "System Error Message: #{msg}\n"
+          formatted_message << "---- End Win32 API output ----\n"
+          raise Chef::Exceptions::Win32APIError, msg + "\n" + formatted_message
+        end
       end
     end
   end

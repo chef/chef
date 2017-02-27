@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'set'
-require 'chef/log'
-require 'chef/recipe'
-require 'chef/resource/lwrp_base'
-require 'chef/provider/lwrp_base'
-require 'chef/resource_definition_list'
+require "set"
+require "chef/log"
+require "chef/recipe"
+require "chef/resource/lwrp_base"
+require "chef/provider/lwrp_base"
+require "chef/resource_definition_list"
 
 class Chef
   class RunContext
@@ -137,13 +137,14 @@ class Chef
         @events.recipe_load_start(run_list_expansion.recipes.size)
         run_list_expansion.recipes.each do |recipe|
           begin
+            path = resolve_recipe(recipe)
             @run_context.load_recipe(recipe)
+            @events.recipe_file_loaded(path, recipe)
           rescue Chef::Exceptions::RecipeNotFound => e
             @events.recipe_not_found(e)
             raise
           rescue Exception => e
-            path = resolve_recipe(recipe)
-            @events.recipe_file_load_failed(path, e)
+            @events.recipe_file_load_failed(path, e, recipe)
             raise
           end
         end
@@ -165,7 +166,7 @@ class Chef
 
       def load_attributes_from_cookbook(cookbook_name)
         list_of_attr_files = files_in_cookbook_by_segment(cookbook_name, :attributes).dup
-        if default_file = list_of_attr_files.find {|path| File.basename(path) == "default.rb" }
+        if default_file = list_of_attr_files.find { |path| File.basename(path) == "default.rb" }
           list_of_attr_files.delete(default_file)
           load_attribute_file(cookbook_name.to_s, default_file)
         end
@@ -186,6 +187,7 @@ class Chef
 
       def load_libraries_from_cookbook(cookbook_name)
         files_in_cookbook_by_segment(cookbook_name, :libraries).each do |filename|
+          next unless File.extname(filename) == ".rb"
           begin
             Chef::Log.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
             Kernel.load(filename)
@@ -224,7 +226,6 @@ class Chef
         raise
       end
 
-
       def load_resource_definitions_from_cookbook(cookbook_name)
         files_in_cookbook_by_segment(cookbook_name, :definitions).each do |filename|
           begin
@@ -258,7 +259,6 @@ class Chef
         ordered_cookbooks << cookbook
       end
 
-
       def count_files_by_segment(segment)
         cookbook_collection.inject(0) do |count, cookbook_by_name|
           count + cookbook_by_name[1].segment_filenames(segment).size
@@ -275,7 +275,7 @@ class Chef
       # +cookbook_name+ in lexical sort order.
       def each_cookbook_dep(cookbook_name, &block)
         cookbook = cookbook_collection[cookbook_name]
-        cookbook.metadata.dependencies.keys.sort.map{|x| x.to_sym}.each(&block)
+        cookbook.metadata.dependencies.keys.sort.map { |x| x.to_sym }.each(&block)
       end
 
       # Given a +recipe_name+, finds the file associated with the recipe.
@@ -284,7 +284,6 @@ class Chef
         cookbook = cookbook_collection[cookbook_name]
         cookbook.recipe_filenames_by_name[recipe_short_name]
       end
-
 
     end
 

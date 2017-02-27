@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,8 @@
 # limitations under the License.
 #
 
-require 'uri'
+require "uri"
+require "addressable/uri"
 
 class Chef
   module Mixin
@@ -29,14 +30,11 @@ class Chef
         !!(%r{\A[A-Za-z][A-Za-z0-9+\-\.]*://} =~ source)
       end
 
-
       def as_uri(source)
-        begin
-          URI.parse(source)
-        rescue URI::InvalidURIError
-          Chef::Log.warn("#{source} was an invalid URI. Trying to escape invalid characters")
-          URI.parse(URI.escape(source))
-        end
+        URI.parse(source)
+      rescue URI::InvalidURIError
+        Chef::Log.warn("#{source} was an invalid URI. Trying to escape invalid characters")
+        URI.parse(Addressable::URI.encode(source))
       end
 
     end

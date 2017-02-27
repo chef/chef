@@ -3,7 +3,7 @@
 # ./chef-apply - Run a single chef recipe
 #
 # Author:: Bryan W. Berry (<bryan.berry@gmail.com>)
-# Copyright:: Copyright (c) 2012 Bryan W. Berry
+# Copyright:: Copyright 2012-2016, Bryan W. Berry
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'rubygems'
+require "rubygems"
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-require 'chef/application/apply'
+require "chef/application/apply"
 
 Chef::Application::Apply.new.run

@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,7 @@
 # limitations under the License.
 #
 
-
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::RunStatus do
   before do
@@ -82,7 +81,7 @@ describe Chef::RunStatus do
 
     describe "with resources in the resource_collection" do
       before do
-        @all_resources = [Chef::Resource::Cat.new("whiskers"), Chef::Resource::ZenMaster.new('dtz')]
+        @all_resources = [Chef::Resource::Cat.new("whiskers"), Chef::Resource::ZenMaster.new("dtz")]
         @run_context.resource_collection.all_resources.replace(@all_resources)
       end
 
@@ -101,7 +100,7 @@ describe Chef::RunStatus do
 
       describe "and some have been updated" do
         before do
-          @all_resources.first.updated = true
+          @all_resources.first.updated_by_last_action true
         end
 
         it "lists the updated resources" do

@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,7 @@ class Chef
         # The original appears in external/open4.rb in its unmodified form.
         #
         # Thanks Ara!
-        def popen4(cmd, args={}, &b)
+        def popen4(cmd, args = {}, &b)
           # Ruby 1.8 suffers from intermittent segfaults believed to be due to GC while IO.select
           # See CHEF-2916 / CHEF-1305
           GC.disable
@@ -64,7 +64,7 @@ class Chef
             $VERBOSE = nil
             ps.last.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
-            cid = fork {
+            cid = fork do
               pw.last.close
               STDIN.reopen pw.first
               pw.first.close
@@ -89,7 +89,7 @@ class Chef
                 Process.uid = args[:user]
               end
 
-              args[:environment].each do |key,value|
+              args[:environment].each do |key, value|
                 ENV[key] = value
               end
 
@@ -104,19 +104,19 @@ class Chef
                 else
                   Kernel.exec(cmd)
                 end
-                raise 'forty-two'
+                raise "forty-two"
               rescue Exception => e
                 Marshal.dump(e, ps.last)
                 ps.last.flush
               end
-              ps.last.close unless (ps.last.closed?)
+              ps.last.close unless ps.last.closed?
               exit!
-            }
+            end
           ensure
             $VERBOSE = verbose
           end
 
-          [pw.first, pr.last, pe.last, ps.last].each{|fd| fd.close}
+          [pw.first, pr.last, pe.last, ps.last].each { |fd| fd.close }
 
           begin
             e = Marshal.load ps.first
@@ -205,7 +205,7 @@ class Chef
                 results.last
               end
             ensure
-              pi.each{|fd| fd.close unless fd.closed?}
+              pi.each { |fd| fd.close unless fd.closed? }
             end
           else
             [cid, pw.last, pr.first, pe.first]

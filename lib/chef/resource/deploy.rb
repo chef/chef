@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,17 +59,17 @@ class Chef
       default_action :deploy
       allowed_actions :force_deploy, :deploy, :rollback
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @deploy_to = name
         @environment = nil
-        @repository_cache = 'cached-copy'
+        @repository_cache = "cached-copy"
         @copy_exclude = []
         @purge_before_symlink = %w{log tmp/pids public/system}
         @create_dirs_before_symlink = %w{tmp public config}
-        @symlink_before_migrate = {"config/database.yml" => "config/database.yml"}
-        @symlinks = {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
-        @revision = 'HEAD'
+        @symlink_before_migrate = { "config/database.yml" => "config/database.yml" }
+        @symlinks = { "system" => "public/system", "pids" => "tmp/pids", "log" => "log" }
+        @revision = "HEAD"
         @migrate = false
         @rollback_on_error = false
         @remote = "origin"
@@ -99,7 +99,7 @@ class Chef
         @current_path ||= @deploy_to + "/current"
       end
 
-      def depth(arg=@shallow_clone ? 5 : nil)
+      def depth(arg = @shallow_clone ? 5 : nil)
         set_or_return(
           :depth,
           arg,
@@ -108,7 +108,7 @@ class Chef
       end
 
       # note: deploy_to is your application "meta-root."
-      def deploy_to(arg=nil)
+      def deploy_to(arg = nil)
         set_or_return(
           :deploy_to,
           arg,
@@ -116,7 +116,7 @@ class Chef
         )
       end
 
-      def repo(arg=nil)
+      def repo(arg = nil)
         set_or_return(
           :repo,
           arg,
@@ -125,7 +125,7 @@ class Chef
       end
       alias :repository :repo
 
-      def remote(arg=nil)
+      def remote(arg = nil)
         set_or_return(
           :remote,
           arg,
@@ -133,7 +133,7 @@ class Chef
         )
       end
 
-      def role(arg=nil)
+      def role(arg = nil)
         set_or_return(
           :role,
           arg,
@@ -141,7 +141,7 @@ class Chef
         )
       end
 
-      def restart_command(arg=nil, &block)
+      def restart_command(arg = nil, &block)
         arg ||= block
         set_or_return(
           :restart_command,
@@ -151,7 +151,7 @@ class Chef
       end
       alias :restart :restart_command
 
-      def migrate(arg=nil)
+      def migrate(arg = nil)
         set_or_return(
           :migrate,
           arg,
@@ -159,7 +159,7 @@ class Chef
         )
       end
 
-      def migration_command(arg=nil)
+      def migration_command(arg = nil)
         set_or_return(
           :migration_command,
           arg,
@@ -167,7 +167,7 @@ class Chef
         )
       end
 
-      def rollback_on_error(arg=nil)
+      def rollback_on_error(arg = nil)
         set_or_return(
           :rollback_on_error,
           arg,
@@ -175,7 +175,7 @@ class Chef
         )
       end
 
-      def user(arg=nil)
+      def user(arg = nil)
         set_or_return(
           :user,
           arg,
@@ -183,7 +183,7 @@ class Chef
         )
       end
 
-      def group(arg=nil)
+      def group(arg = nil)
         set_or_return(
           :group,
           arg,
@@ -191,7 +191,7 @@ class Chef
         )
       end
 
-      def enable_submodules(arg=nil)
+      def enable_submodules(arg = nil)
         set_or_return(
           :enable_submodules,
           arg,
@@ -199,7 +199,7 @@ class Chef
         )
       end
 
-      def shallow_clone(arg=nil)
+      def shallow_clone(arg = nil)
         set_or_return(
           :shallow_clone,
           arg,
@@ -207,7 +207,7 @@ class Chef
         )
       end
 
-      def repository_cache(arg=nil)
+      def repository_cache(arg = nil)
         set_or_return(
           :repository_cache,
           arg,
@@ -215,7 +215,7 @@ class Chef
         )
       end
 
-      def copy_exclude(arg=nil)
+      def copy_exclude(arg = nil)
         set_or_return(
           :copy_exclude,
           arg,
@@ -223,7 +223,7 @@ class Chef
         )
       end
 
-      def revision(arg=nil)
+      def revision(arg = nil)
         set_or_return(
           :revision,
           arg,
@@ -232,7 +232,7 @@ class Chef
       end
       alias :branch :revision
 
-      def git_ssh_wrapper(arg=nil)
+      def git_ssh_wrapper(arg = nil)
         set_or_return(
           :git_ssh_wrapper,
           arg,
@@ -241,7 +241,7 @@ class Chef
       end
       alias :ssh_wrapper :git_ssh_wrapper
 
-      def svn_username(arg=nil)
+      def svn_username(arg = nil)
         set_or_return(
           :svn_username,
           arg,
@@ -249,7 +249,7 @@ class Chef
         )
       end
 
-      def svn_password(arg=nil)
+      def svn_password(arg = nil)
         set_or_return(
           :svn_password,
           arg,
@@ -257,7 +257,7 @@ class Chef
         )
       end
 
-      def svn_arguments(arg=nil)
+      def svn_arguments(arg = nil)
         set_or_return(
           :svn_arguments,
           arg,
@@ -265,14 +265,14 @@ class Chef
         )
       end
 
-      def svn_info_args(arg=nil)
+      def svn_info_args(arg = nil)
         set_or_return(
           :svn_arguments,
           arg,
           :kind_of => [ String ])
       end
 
-      def scm_provider(arg=nil)
+      def scm_provider(arg = nil)
         klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
                   lookup_provider_constant(arg)
                 else
@@ -291,7 +291,7 @@ class Chef
         Chef::Provider::Deploy
       end
 
-      def svn_force_export(arg=nil)
+      def svn_force_export(arg = nil)
         set_or_return(
           :svn_force_export,
           arg,
@@ -299,11 +299,11 @@ class Chef
         )
       end
 
-      def environment(arg=nil)
+      def environment(arg = nil)
         if arg.is_a?(String)
           Chef::Log.debug "Setting RAILS_ENV, RACK_ENV, and MERB_ENV to `#{arg}'"
           Chef::Log.warn "[DEPRECATED] please modify your deploy recipe or attributes to set the environment using a hash"
-          arg = {"RAILS_ENV"=>arg,"MERB_ENV"=>arg,"RACK_ENV"=>arg}
+          arg = { "RAILS_ENV" => arg, "MERB_ENV" => arg, "RACK_ENV" => arg }
         end
         set_or_return(
           :environment,
@@ -313,7 +313,7 @@ class Chef
       end
 
        # The number of old release directories to keep around after cleanup
-      def keep_releases(arg=nil)
+      def keep_releases(arg = nil)
         [set_or_return(
           :keep_releases,
           arg,
@@ -324,7 +324,7 @@ class Chef
       # SCM clone/checkout before symlinking. Use this to get rid of files and
       # directories you want to be shared between releases.
       # Default: ["log", "tmp/pids", "public/system"]
-      def purge_before_symlink(arg=nil)
+      def purge_before_symlink(arg = nil)
         set_or_return(
           :purge_before_symlink,
           arg,
@@ -340,7 +340,7 @@ class Chef
       # then specify tmp here so that the tmp directory will exist when you
       # symlink the pids directory in to the current release.
       # Default: ["tmp", "public", "config"]
-      def create_dirs_before_symlink(arg=nil)
+      def create_dirs_before_symlink(arg = nil)
         set_or_return(
           :create_dirs_before_symlink,
           arg,
@@ -354,7 +354,7 @@ class Chef
       # $shared/pids that you would like to symlink as $current_release/tmp/pids
       # you specify it as "pids" => "tmp/pids"
       # Default {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
-      def symlinks(arg=nil)
+      def symlinks(arg = nil)
         set_or_return(
           :symlinks,
           arg,
@@ -369,7 +369,7 @@ class Chef
       # For a rails/merb app, this is used to link in a known good database.yml
       # (with the production db password) before running migrate.
       # Default {"config/database.yml" => "config/database.yml"}
-      def symlink_before_migrate(arg=nil)
+      def symlink_before_migrate(arg = nil)
         set_or_return(
           :symlink_before_migrate,
           arg,
@@ -378,30 +378,30 @@ class Chef
       end
 
       # Callback fires before migration is run.
-      def before_migrate(arg=nil, &block)
+      def before_migrate(arg = nil, &block)
         arg ||= block
         set_or_return(:before_migrate, arg, :kind_of => [Proc, String])
       end
 
       # Callback fires before symlinking
-      def before_symlink(arg=nil, &block)
+      def before_symlink(arg = nil, &block)
         arg ||= block
         set_or_return(:before_symlink, arg, :kind_of => [Proc, String])
       end
 
       # Callback fires before restart
-      def before_restart(arg=nil, &block)
+      def before_restart(arg = nil, &block)
         arg ||= block
         set_or_return(:before_restart, arg, :kind_of => [Proc, String])
       end
 
       # Callback fires after restart
-      def after_restart(arg=nil, &block)
+      def after_restart(arg = nil, &block)
         arg ||= block
         set_or_return(:after_restart, arg, :kind_of => [Proc, String])
       end
 
-      def additional_remotes(arg=nil)
+      def additional_remotes(arg = nil)
         set_or_return(
           :additional_remotes,
           arg,
@@ -409,7 +409,7 @@ class Chef
         )
       end
 
-      def enable_checkout(arg=nil)
+      def enable_checkout(arg = nil)
         set_or_return(
           :enable_checkout,
           arg,
@@ -417,7 +417,7 @@ class Chef
         )
       end
 
-      def checkout_branch(arg=nil)
+      def checkout_branch(arg = nil)
         set_or_return(
           :checkout_branch,
           arg,
@@ -430,7 +430,7 @@ class Chef
       # timeout for SCM operations. The deploy resource must therefore support
       # a timeout method, but the timeout it describes is for SCM operations,
       # not the overall deployment. This is potentially confusing.
-      def timeout(arg=nil)
+      def timeout(arg = nil)
         set_or_return(
           :timeout,
           arg,

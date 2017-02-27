@@ -1,6 +1,6 @@
 #
 # Author:: Jan Zimmek (<jan.zimmek@web.de>)
-# Copyright:: Copyright (c) 2010 Jan Zimmek
+# Copyright:: Copyright 2010-2016, Jan Zimmek
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Package::Pacman do
   before(:each) do
@@ -51,7 +51,7 @@ ERR
     end
 
     it "should run pacman query with the package name" do
-      expect(@provider).to receive(:shell_out).with("pacman -Qi #{@new_resource.package_name}", {timeout: 900}).and_return(@status)
+      expect(@provider).to receive(:shell_out).with("pacman", "-Qi", @new_resource.package_name, { timeout: 900 }).and_return(@status)
       @provider.load_current_resource
     end
 
@@ -62,7 +62,6 @@ ERR
 
     it "should set the installed version to nil on the current resource if pacman installed version not exists" do
       allow(@provider).to receive(:shell_out).and_return(@status)
-      expect(@current_resource).to receive(:version).with(nil).and_return(true)
       @provider.load_current_resource
     end
 
@@ -103,7 +102,7 @@ PACMAN
     end
 
     it "should use pacman.conf to determine valid repo names for package versions" do
-     @pacman_conf = <<-PACMAN_CONF
+      @pacman_conf = <<-PACMAN_CONF
 [options]
 HoldPkg      = pacman glibc
 Architecture = auto
@@ -122,7 +121,7 @@ Include = /etc/pacman.d/mirrorlist
 PACMAN_CONF
 
       status = double(:stdout => "customrepo nano 1.2.3-4", :exitstatus => 0)
-      allow(::File).to receive(:exists?).with("/etc/pacman.conf").and_return(true)
+      allow(::File).to receive(:exist?).with("/etc/pacman.conf").and_return(true)
       allow(::File).to receive(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
       allow(@provider).to receive(:shell_out).and_return(status)
 
@@ -152,12 +151,12 @@ PACMAN_CONF
 
   describe Chef::Provider::Package::Pacman, "install_package" do
     it "should run pacman install with the package name and version" do
-      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar nano", {timeout: 900})
+      expect(@provider).to receive(:shell_out!).with("pacman", "--sync", "--noconfirm", "--noprogressbar", "nano", { timeout: 900 })
       @provider.install_package("nano", "1.0")
     end
 
     it "should run pacman install with the package name and version and options if specified" do
-      expect(@provider).to receive(:shell_out!).with("pacman --sync --noconfirm --noprogressbar --debug nano", {timeout: 900})
+      expect(@provider).to receive(:shell_out!).with("pacman", "--sync", "--noconfirm", "--noprogressbar", "--debug", "nano", { timeout: 900 })
       allow(@new_resource).to receive(:options).and_return("--debug")
 
       @provider.install_package("nano", "1.0")
@@ -173,12 +172,12 @@ PACMAN_CONF
 
   describe Chef::Provider::Package::Pacman, "remove_package" do
     it "should run pacman remove with the package name" do
-      expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar nano", {timeout: 900})
+      expect(@provider).to receive(:shell_out!).with("pacman", "--remove", "--noconfirm", "--noprogressbar", "nano", { timeout: 900 })
       @provider.remove_package("nano", "1.0")
     end
 
     it "should run pacman remove with the package name and options if specified" do
-      expect(@provider).to receive(:shell_out!).with("pacman --remove --noconfirm --noprogressbar --debug nano", {timeout: 900})
+      expect(@provider).to receive(:shell_out!).with("pacman", "--remove", "--noconfirm", "--noprogressbar", "--debug", "nano", { timeout: 900 })
       allow(@new_resource).to receive(:options).and_return("--debug")
 
       @provider.remove_package("nano", "1.0")

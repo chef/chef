@@ -1,6 +1,6 @@
 #
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookCreate < Knife
 
       deps do
-        require 'chef/json_compat'
-        require 'uri'
-        require 'fileutils'
+        require "chef/json_compat"
+        require "uri"
+        require "fileutils"
       end
 
       banner "knife cookbook create COOKBOOK (options)"
@@ -56,6 +56,10 @@ class Chef
         :description => "Email address of cookbook maintainer"
 
       def run
+        Chef::Log.deprecation <<EOF
+This command is being deprecated in favor of `chef generate cookbook` and will soon return an error.
+Please use `chef generate cookbook` instead of this command.
+EOF
         self.config = Chef::Config.merge!(config)
         if @name_args.length < 1
           show_usage
@@ -182,16 +186,14 @@ EOH
 
       def create_changelog(dir, cookbook_name)
         msg("** Creating CHANGELOG for cookbook: #{cookbook_name}")
-        unless File.exists?(File.join(dir,cookbook_name,'CHANGELOG.md'))
-          open(File.join(dir, cookbook_name, 'CHANGELOG.md'),'w') do |file|
+        unless File.exists?(File.join(dir, cookbook_name, "CHANGELOG.md"))
+          open(File.join(dir, cookbook_name, "CHANGELOG.md"), "w") do |file|
             file.puts <<-EOH
-#{cookbook_name} CHANGELOG
-#{'='*"#{cookbook_name} CHANGELOG".length}
+# #{cookbook_name} CHANGELOG
 
 This file is used to list changes made in each version of the #{cookbook_name} cookbook.
 
-0.1.0
------
+## 0.1.0
 - [your_name] - Initial release of #{cookbook_name}
 
 - - -
@@ -205,7 +207,7 @@ EOH
 
       def create_readme(dir, cookbook_name, readme_format)
         msg("** Creating README for cookbook: #{cookbook_name}")
-        unless File.exists?(File.join(dir, cookbook_name, "README.#{readme_format}"))
+        unless File.exist?(File.join(dir, cookbook_name, "README.#{readme_format}"))
           open(File.join(dir, cookbook_name, "README.#{readme_format}"), "w") do |file|
             case readme_format
             when "rdoc"
@@ -271,29 +273,39 @@ e.g.
 == License and Authors
 Authors: TODO: List authors
 EOH
-            when "md","mkd","txt"
+            when "md", "mkd", "txt"
               file.puts <<-EOH
-#{cookbook_name} Cookbook
-#{'='*"#{cookbook_name} Cookbook".length}
+# #{cookbook_name} Cookbook
+
 TODO: Enter the cookbook description here.
 
 e.g.
 This cookbook makes your favorite breakfast sandwich.
 
-Requirements
-------------
+## Requirements
+
 TODO: List your cookbook requirements. Be sure to include any requirements this cookbook has on platforms, libraries, other cookbooks, packages, operating systems, etc.
 
 e.g.
-#### packages
+### Platforms
+
+- SandwichOS
+
+### Chef
+
+- Chef 12.0 or later
+
+### Cookbooks
+
 - `toaster` - #{cookbook_name} needs toaster to brown your bagel.
 
-Attributes
-----------
+## Attributes
+
 TODO: List your cookbook attributes here.
 
 e.g.
-#### #{cookbook_name}::default
+### #{cookbook_name}::default
+
 <table>
   <tr>
     <th>Key</th>
@@ -309,9 +321,10 @@ e.g.
   </tr>
 </table>
 
-Usage
------
-#### #{cookbook_name}::default
+## Usage
+
+### #{cookbook_name}::default
+
 TODO: Write usage instructions for each cookbook.
 
 e.g.
@@ -326,8 +339,8 @@ Just include `#{cookbook_name}` in your node's `run_list`:
 }
 ```
 
-Contributing
-------------
+## Contributing
+
 TODO: (optional) If this is a public cookbook, detail the process for contributing. If this is a private cookbook, remove this section.
 
 e.g.
@@ -338,14 +351,15 @@ e.g.
 5. Run the tests, ensuring they all pass
 6. Submit a Pull Request using Github
 
-License and Authors
--------------------
+## License and Authors
+
 Authors: TODO: List authors
+
 EOH
             else
               file.puts <<-EOH
 #{cookbook_name} Cookbook
-#{'='*"#{cookbook_name} Cookbook".length}
+#{'=' * "#{cookbook_name} Cookbook".length}
   TODO: Enter the cookbook description here.
 
   e.g.
@@ -415,9 +429,9 @@ EOH
                          "All rights reserved"
                        end
 
-        unless File.exists?(File.join(dir, cookbook_name, "metadata.rb"))
+        unless File.exist?(File.join(dir, cookbook_name, "metadata.rb"))
           open(File.join(dir, cookbook_name, "metadata.rb"), "w") do |file|
-            if File.exists?(File.join(dir, cookbook_name, "README.#{readme_format}"))
+            if File.exist?(File.join(dir, cookbook_name, "README.#{readme_format}"))
               long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.#{readme_format}'))"
             end
             file.puts <<-EOH

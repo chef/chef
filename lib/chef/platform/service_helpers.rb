@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,12 @@
 # limitations under the License.
 #
 
-# XXX: mixing shellout into a mixin into classes has to be code smell
-require 'chef/mixin/shell_out'
-require 'chef/mixin/which'
-require 'chef/chef_class'
+require "chef/chef_class"
 
 class Chef
   class Platform
     class ServiceHelpers
       class << self
-
-        include Chef::Mixin::ShellOut
-        include Chef::Mixin::Which
-
         # This helper is mostly used to sort out the mess of different
         # linux mechanisms that can be used to start services.  It does
         # not necessarily need to linux-specific, but currently all our
@@ -53,21 +46,20 @@ class Chef
             providers << :invokercd
           end
 
+          if ::File.exist?(Chef.path_to("/sbin/initctl"))
+            providers << :upstart
+          end
+
           if ::File.exist?(Chef.path_to("/sbin/insserv"))
             providers << :insserv
           end
 
-          # debian >= 6.0 has /etc/init but does not have upstart
-          if ::File.exist?(Chef.path_to("/etc/init")) && ::File.exist?(Chef.path_to("/sbin/start"))
-            providers << :upstart
+          if systemd_is_init?
+            providers << :systemd
           end
 
           if ::File.exist?(Chef.path_to("/sbin/chkconfig"))
             providers << :redhat
-          end
-
-          if systemd_sanity_check?
-            providers << :systemd
           end
 
           providers
@@ -96,7 +88,7 @@ class Chef
             configs << :usr_local_etc_rcd
           end
 
-          if systemd_sanity_check? && platform_has_systemd_unit?(service_name)
+          if has_systemd_service_unit?(service_name) || has_systemd_unit?(service_name)
             configs << :systemd
           end
 
@@ -105,34 +97,24 @@ class Chef
 
         private
 
-        def systemctl_path
-          which("systemctl")
+        def systemd_is_init?
+          ::File.exist?(Chef.path_to("/proc/1/comm")) &&
+            ::File.open(Chef.path_to("/proc/1/comm")).gets.chomp == "systemd"
         end
 
-        def systemd_sanity_check?
-          systemctl_path && File.exist?(Chef.path_to("/proc/1/comm")) && File.open(Chef.path_to("/proc/1/comm")).gets.chomp == "systemd"
-        end
-
-        def extract_systemd_services(command)
-          output = shell_out!(command).stdout
-          # first line finds e.g. "sshd.service"
-          services = []
-          output.each_line do |line|
-            fields = line.split
-            services << fields[0] if fields[1] == "loaded" || fields[1] == "not-found"
+        def has_systemd_service_unit?(svc_name)
+          %w{ /etc /usr/lib /lib /run }.any? do |load_path|
+            ::File.exist?(
+              Chef.path_to("#{load_path}/systemd/system/#{svc_name.gsub(/@.*$/, '@')}.service")
+            )
           end
-          # this splits off the suffix after the last dot to return "sshd"
-          services += services.select {|s| s.match(/\.service$/) }.map { |s| s.sub(/(.*)\.service$/, '\1') }
-        rescue Mixlib::ShellOut::ShellCommandFailed
-          []
         end
 
-        def platform_has_systemd_unit?(service_name)
-          services = extract_systemd_services("#{systemctl_path} --all") +
-            extract_systemd_services("#{systemctl_path} list-unit-files")
-          services.include?(service_name)
-        rescue Mixlib::ShellOut::ShellCommandFailed
-          false
+        def has_systemd_unit?(svc_name)
+          # TODO: stop supporting non-service units with service resource
+          %w{ /etc /usr/lib /lib /run }.any? do |load_path|
+            ::File.exist?(Chef.path_to("#{load_path}/systemd/system/#{svc_name}"))
+          end
         end
       end
     end

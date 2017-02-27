@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/util/path_helper'
+require "chef/knife"
+require "chef/util/path_helper"
 
 class Chef::Knife::Exec < Chef::Knife
 
@@ -35,15 +35,15 @@ class Chef::Knife::Exec < Chef::Knife
     :proc => lambda { |o| o.split(":") }
 
   deps do
-    require 'chef/shell/ext'
+    require "chef/shell/ext"
   end
 
   def run
     config[:script_path] ||= Array(Chef::Config[:script_path])
 
     # Default script paths are chef-repo/.chef/scripts and ~/.chef/scripts
-    config[:script_path] << File.join(Chef::Knife.chef_config_dir, 'scripts') if Chef::Knife.chef_config_dir
-    Chef::Util::PathHelper.home('.chef', 'scripts') { |p| config[:script_path] << p }
+    config[:script_path] << File.join(Chef::Knife.chef_config_dir, "scripts") if Chef::Knife.chef_config_dir
+    Chef::Util::PathHelper.home(".chef", "scripts") { |p| config[:script_path] << p }
 
     scripts = Array(name_args)
     context = Object.new

@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +15,12 @@
 # limitations under the License.
 #
 
-require 'stringio'
+require "stringio"
 
 class Chef
   class Audit
     class Logger
-      def self.puts(message="")
+      def self.puts(message = "")
         @buffer ||= StringIO.new
         @buffer.puts(message)
 

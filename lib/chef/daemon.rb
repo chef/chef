@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,9 @@
 
 # I love you Merb (lib/merb-core/server.rb)
 
-require 'chef/config'
-require 'chef/run_lock'
-require 'etc'
+require "chef/config"
+require "chef/run_lock"
+require "etc"
 
 class Chef
   class Daemon
@@ -61,7 +61,7 @@ class Chef
       # String::
       #   Location of the pid file for @name
       def pid_file
-         Chef::Config[:pid_file] or "/tmp/#{@name}.pid"
+        Chef::Config[:pid_file] || "/tmp/#{@name}.pid"
       end
 
       # Suck the pid out of pid_file
@@ -82,7 +82,7 @@ class Chef
       def change_privilege
         Dir.chdir("/")
 
-        if Chef::Config[:user] and Chef::Config[:group]
+        if Chef::Config[:user] && Chef::Config[:group]
           Chef::Log.info("About to change privilege to #{Chef::Config[:user]}:#{Chef::Config[:group]}")
           _change_privilege(Chef::Config[:user], Chef::Config[:group])
         elsif Chef::Config[:user]
@@ -100,7 +100,7 @@ class Chef
       # ==== Alternatives
       # If group is left out, the user will be used (changing to user:user)
       #
-      def _change_privilege(user, group=user)
+      def _change_privilege(user, group = user)
         uid, gid = Process.euid, Process.egid
 
         begin
@@ -117,7 +117,7 @@ class Chef
           return false
         end
 
-        if (uid != target_uid) or (gid != target_gid)
+        if (uid != target_uid) || (gid != target_gid)
           Process.initgroups(user, target_gid)
           Process::GID.change_privilege(target_gid)
           Process::UID.change_privilege(target_uid)

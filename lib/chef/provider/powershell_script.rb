@@ -1,6 +1,6 @@
 #
-# Author:: Adam Edwards (<adamed@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Adam Edwards (<adamed@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/platform/query_helpers'
-require 'chef/provider/windows_script'
+require "chef/platform/query_helpers"
+require "chef/provider/windows_script"
 
 class Chef
   class Provider
@@ -25,8 +25,8 @@ class Chef
 
       provides :powershell_script, os: "windows"
 
-      def initialize (new_resource, run_context)
-        super(new_resource, run_context, '.ps1')
+      def initialize(new_resource, run_context)
+        super(new_resource, run_context, ".ps1")
         add_exit_status_wrapper
       end
 
@@ -36,7 +36,7 @@ class Chef
       end
 
       def command
-        basepath = is_forced_32bit ? wow64_directory : run_context.node.kernel.os_info.system_directory
+        basepath = is_forced_32bit ? wow64_directory : run_context.node["kernel"]["os_info"]["system_directory"]
 
         # Powershell.exe is always in "v1.0" folder (for backwards compatibility)
         interpreter_path = Chef::Util::PathHelper.join(basepath, "WindowsPowerShell", "v1.0", interpreter)
@@ -58,10 +58,10 @@ class Chef
       end
 
       def flags
-        interpreter_flags = [*default_interpreter_flags].join(' ')
+        interpreter_flags = [*default_interpreter_flags].join(" ")
 
-        if ! (@new_resource.flags.nil?)
-          interpreter_flags = [@new_resource.flags, interpreter_flags].join(' ')
+        if ! (new_resource.flags.nil?)
+          interpreter_flags = [new_resource.flags, interpreter_flags].join(" ")
         end
 
         interpreter_flags
@@ -73,13 +73,13 @@ class Chef
       # special handling to cover common use cases.
       def add_exit_status_wrapper
         self.code = wrapper_script
-        Chef::Log.debug("powershell_script provider called with script code:\n\n#{@new_resource.code}\n")
-        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{self.code}\n")
+        Chef::Log.debug("powershell_script provider called with script code:\n\n#{new_resource.code}\n")
+        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{code}\n")
       end
 
       def validate_script_syntax!
-        interpreter_arguments = default_interpreter_flags.join(' ')
-        Tempfile.open(['chef_powershell_script-user-code', '.ps1']) do | user_script_file |
+        interpreter_arguments = default_interpreter_flags.join(" ")
+        Tempfile.open(["chef_powershell_script-user-code", ".ps1"]) do |user_script_file|
           # Wrap the user's code in a PowerShell script block so that
           # it isn't executed. However, syntactically invalid script
           # in that block will still trigger a syntax error which is
@@ -87,7 +87,7 @@ class Chef
           # actually running the script.
           user_code_wrapped_in_powershell_script_block = <<-EOH
 {
-  #{@new_resource.code}
+  #{new_resource.code}
 }
 EOH
           user_script_file.puts user_code_wrapped_in_powershell_script_block
@@ -110,7 +110,7 @@ EOH
           # means a non-zero return and thus a syntactically invalid script.
 
           with_os_architecture(node, architecture: new_resource.architecture) do
-            shell_out!(validation_command, {returns: [0]})
+            shell_out!(validation_command, { returns: [0] })
           end
         end
       end
@@ -122,7 +122,7 @@ EOH
         # user input confirmation for files such as PowerShell modules
         # downloaded from the Internet. However, 'Bypass' is not supported
         # prior to PowerShell 3.0, so the fallback is 'Unrestricted'
-        execution_policy = Chef::Platform.supports_powershell_execution_bypass?(run_context.node) ? 'Bypass' : 'Unrestricted'
+        execution_policy = Chef::Platform.supports_powershell_execution_bypass?(run_context.node) ? "Bypass" : "Unrestricted"
 
         [
           "-NoLogo",
@@ -131,7 +131,7 @@ EOH
           "-ExecutionPolicy #{execution_policy}",
           # Powershell will hang if STDIN is redirected
           # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
-          "-InputFormat None"
+          "-InputFormat None",
         ]
       end
 
@@ -146,8 +146,16 @@ EOH
       # executed, otherwise 0 or 1 based on whether $? is set to true
       # (success, where we return 0) or false (where we return 1).
       def wrapper_script
-<<-EOH
+        <<-EOH
 # Chef Client wrapper for powershell_script resources
+
+# In rare cases, such as when PowerShell is executed
+# as an alternate user, the new-variable cmdlet is not
+# available, so import it just in case
+if ( get-module -ListAvailable Microsoft.PowerShell.Utility )
+{
+    Import-Module Microsoft.PowerShell.Utility
+}
 
 # LASTEXITCODE can be uninitialized -- make it explictly 0
 # to avoid incorrect detection of failure (non-zero) codes
@@ -159,7 +167,7 @@ $global:LASTEXITCODE = 0
 trap [Exception] {write-error ($_.Exception.Message);exit 1}
 
 # Variable state that should not be accessible to the user code
-new-variable -name interpolatedexitcode -visibility private -value $#{@new_resource.convert_boolean_return}
+new-variable -name interpolatedexitcode -visibility private -value $#{new_resource.convert_boolean_return}
 new-variable -name chefscriptresult -visibility private
 
 # Initialize a variable we use to capture $? inside a block
@@ -168,7 +176,7 @@ $global:lastcmdlet = $null
 # Execute the user's code in a script block --
 $chefscriptresult =
 {
- #{@new_resource.code}
+ #{new_resource.code}
 
  # This assignment doesn't affect the block's return value
  $global:lastcmdlet = $?

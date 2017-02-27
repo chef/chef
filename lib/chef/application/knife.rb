@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/knife'
-require 'chef/application'
-require 'mixlib/log'
-require 'ohai/config'
-require 'chef/monkey_patches/net_http.rb'
+require "chef/knife"
+require "chef/application"
+require "mixlib/log"
+require "ohai/config"
+require "chef/monkey_patches/net_http.rb"
 
 class Chef::Application::Knife < Chef::Application
 
@@ -33,16 +33,24 @@ class Chef::Application::Knife < Chef::Application
     :description => "The configuration file to use",
     :proc => lambda { |path| File.expand_path(path, Dir.pwd) }
 
+  option :config_option,
+    :long         => "--config-option OPTION=VALUE",
+    :description  => "Override a single configuration option",
+    :proc         => lambda { |option, existing|
+      (existing ||= []) << option
+      existing
+    }
+
   verbosity_level = 0
   option :verbosity,
-    :short => '-V',
-    :long  => '--verbose',
+    :short => "-V",
+    :long  => "--verbose",
     :description => "More verbose output. Use twice for max verbosity",
-    :proc  => Proc.new { verbosity_level += 1},
+    :proc => Proc.new { verbosity_level += 1 },
     :default => 0
 
   option :color,
-    :long         => '--[no-]color',
+    :long         => "--[no-]color",
     :boolean      => true,
     :default      => true,
     :description  => "Use colored output, defaults to enabled"
@@ -56,14 +64,14 @@ class Chef::Application::Knife < Chef::Application
     :short        => "-e EDITOR",
     :long         => "--editor EDITOR",
     :description  => "Set the editor to use for interactive commands",
-    :default      => ENV['EDITOR']
+    :default      => ENV["EDITOR"]
 
   option :disable_editing,
     :short        => "-d",
     :long         => "--disable-editing",
     :description  => "Do not open EDITOR, just accept the data as is",
     :boolean      => true,
-    :default       => false
+    :default      => false
 
   option :help,
     :short        => "-h",
@@ -131,8 +139,14 @@ class Chef::Application::Knife < Chef::Application
     :long         => "--version",
     :description  => "Show chef version",
     :boolean      => true,
-    :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+    :proc         => lambda { |v| puts "Chef: #{::Chef::VERSION}" },
     :exit         => 0
+
+  option :fips,
+    :long         => "--[no-]fips",
+    :description  => "Enable fips mode",
+    :boolean      => true,
+    :default      => nil
 
   # Run knife
   def run
@@ -161,8 +175,8 @@ class Chef::Application::Knife < Chef::Application
     if no_command_given?
       print_help_and_exit(1, NO_COMMAND_GIVEN)
     elsif no_subcommand_given?
-      if (want_help? || want_version?)
-        print_help_and_exit
+      if want_help? || want_version?
+        print_help_and_exit(0)
       else
         print_help_and_exit(2, NO_COMMAND_GIVEN)
       end
@@ -185,15 +199,15 @@ class Chef::Application::Knife < Chef::Application
     ARGV[0] =~ /^(--version|-v)$/
   end
 
-  def print_help_and_exit(exitcode=1, fatal_message=nil)
+  def print_help_and_exit(exitcode = 1, fatal_message = nil)
     Chef::Log.error(fatal_message) if fatal_message
 
     begin
-      self.parse_options
+      parse_options
     rescue OptionParser::InvalidOption => e
       puts "#{e}\n"
     end
-    puts self.opt_parser
+    puts opt_parser
     puts
     Chef::Knife.list_commands
     exit exitcode

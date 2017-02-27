@@ -1,8 +1,8 @@
 #
-# Author:: Nuo Yan <nuo@opscode.com>
+# Author:: Nuo Yan <nuo@chef.io>
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Author:: Seth Chisamore <schisamo@opscode.com>
-# Copyright:: Copyright (c) 2010-2011 Opscode, Inc
+# Author:: Seth Chisamore <schisamo@chef.io>
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/simple'
+require "chef/provider/service/simple"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'chef/win32/error'
-  require 'win32/service'
+  require "chef/win32/error"
+  require "win32/service"
 end
 
 class Chef::Provider::Service::Windows < Chef::Provider::Service
@@ -32,20 +32,22 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   include Chef::ReservedNames::Win32::API::Error rescue LoadError
 
   #Win32::Service.get_start_type
-  AUTO_START = 'auto start'
-  MANUAL = 'demand start'
-  DISABLED = 'disabled'
+  AUTO_START = "auto start"
+  MANUAL = "demand start"
+  DISABLED = "disabled"
 
   #Win32::Service.get_current_state
-  RUNNING = 'running'
-  STOPPED = 'stopped'
-  CONTINUE_PENDING = 'continue pending'
-  PAUSE_PENDING = 'pause pending'
-  PAUSED = 'paused'
-  START_PENDING = 'start pending'
-  STOP_PENDING  = 'stop pending'
+  RUNNING = "running"
+  STOPPED = "stopped"
+  CONTINUE_PENDING = "continue pending"
+  PAUSE_PENDING = "pause pending"
+  PAUSED = "paused"
+  START_PENDING = "start pending"
+  STOP_PENDING  = "stop pending"
 
-  TIMEOUT  = 60
+  TIMEOUT = 60
+
+  SERVICE_RIGHT = "SeServiceLogonRight"
 
   def whyrun_supported?
     false
@@ -73,15 +75,15 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         service_name: @new_resource.service_name,
         service_start_name: @new_resource.run_as_user,
         password: @new_resource.run_as_password,
-      }.reject { |k,v| v.nil? || v.length == 0 }
+      }.reject { |k, v| v.nil? || v.length == 0 }
 
       Win32::Service.configure(new_config)
       Chef::Log.info "#{@new_resource} configured with #{new_config.inspect}"
 
-      # it would be nice to check if the user already has the logon privilege, but that turns out to be
-      # nontrivial.
       if new_config.has_key?(:service_start_name)
-        grant_service_logon(new_config[:service_start_name])
+        unless Chef::ReservedNames::Win32::Security.get_account_right(canonicalize_username(new_config[:service_start_name])).include?(SERVICE_RIGHT)
+          grant_service_logon(new_config[:service_start_name])
+        end
       end
 
       state = current_state
@@ -236,74 +238,26 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   private
-  def make_policy_text(username)
-    text = <<-EOS
-[Unicode]
-Unicode=yes
-[Privilege Rights]
-SeServiceLogonRight = \\\\#{canonicalize_username(username)},*S-1-5-80-0
-[Version]
-signature="$CHICAGO$"
-Revision=1
-EOS
-  end
-
-  def grant_logfile_name(username)
-    Chef::Util::PathHelper.canonical_path("#{Dir.tmpdir}/logon_grant-#{clean_username_for_path(username)}-#{$$}.log", prefix=false)
-  end
-
-  def grant_policyfile_name(username)
-    Chef::Util::PathHelper.canonical_path("#{Dir.tmpdir}/service_logon_policy-#{clean_username_for_path(username)}-#{$$}.inf", prefix=false)
-  end
-
-  def grant_dbfile_name(username)
-    "#{ENV['TEMP']}\\secedit.sdb"
-  end
 
   def grant_service_logon(username)
-    logfile = grant_logfile_name(username)
-    policy_file = ::File.new(grant_policyfile_name(username), 'w')
-    policy_text = make_policy_text(username)
-    dbfile = grant_dbfile_name(username)        # this is just an audit file.
-
     begin
-      Chef::Log.debug "Policy file text:\n#{policy_text}"
-      policy_file.puts(policy_text)
-      policy_file.close   # need to flush the buffer.
-
-      # it would be nice to do this with APIs instead, but the LSA_* APIs are
-      # particularly onerous and life is short.
-      cmd = %Q{secedit.exe /configure /db "#{dbfile}" /cfg "#{policy_file.path}" /areas USER_RIGHTS SECURITYPOLICY SERVICES /log "#{logfile}"}
-      Chef::Log.debug "Granting logon-as-service privilege with: #{cmd}"
-      runner = shell_out(cmd)
-
-      if runner.exitstatus != 0
-        Chef::Log.fatal "Logon-as-service grant failed with output: #{runner.stdout}"
-        raise Chef::Exceptions::Service, <<-EOS
-Logon-as-service grant failed with policy file #{policy_file.path}.
-You can look at #{logfile} for details, or do `secedit /analyze #{dbfile}`.
-The failed command was `#{cmd}`.
-EOS
-      end
-
-      Chef::Log.info "Grant logon-as-service to user '#{username}' successful."
-
-      ::File.delete(dbfile) rescue nil
-      ::File.delete(policy_file)
-      ::File.delete(logfile) rescue nil     # logfile is not always present at end.
+      Chef::ReservedNames::Win32::Security.add_account_right(canonicalize_username(username), SERVICE_RIGHT)
+    rescue Chef::Exceptions::Win32APIError => err
+      Chef::Log.fatal "Logon-as-service grant failed with output: #{err}"
+      raise Chef::Exceptions::Service, "Logon-as-service grant failed for #{username}: #{err}"
     end
+
+    Chef::Log.info "Grant logon-as-service to user '#{username}' successful."
     true
   end
 
   # remove characters that make for broken or wonky filenames.
   def clean_username_for_path(username)
-    username.gsub(/[\/\\. ]+/, '_')
+    username.gsub(/[\/\\. ]+/, "_")
   end
 
-  # the security policy file only seems to accept \\username, so fix .\username or .\\username.
-  # TODO: this probably has to be fixed to handle various valid Windows names correctly.
   def canonicalize_username(username)
-    username.sub(/^\.?\\+/, '')
+    username.sub(/^\.?\\+/, "")
   end
 
   def current_state

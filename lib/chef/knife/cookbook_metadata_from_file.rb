@@ -1,9 +1,9 @@
 #
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Matthew Kent (<mkent@magoazul.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
-# Copyright:: Copyright (c) 2010 Matthew Kent
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2016, Matthew Kent
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,14 +19,14 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookMetadataFromFile < Knife
 
       deps do
-        require 'chef/cookbook/metadata'
+        require "chef/cookbook/metadata"
       end
 
       banner "knife cookbook metadata from FILE (options)"

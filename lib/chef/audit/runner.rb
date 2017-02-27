@@ -1,6 +1,6 @@
 #
-# Author:: Claire McQuin (<claire@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Claire McQuin (<claire@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/audit/logger'
+require "chef/audit/logger"
 
 class Chef
   class Audit
@@ -52,6 +52,7 @@ class Chef
       end
 
       private
+
       # Prepare to run audits:
       #  - Require files
       #  - Configure RSpec
@@ -78,16 +79,16 @@ class Chef
       # prevents Specinfra and Serverspec from modifying the RSpec configuration
       # used by our spec tests.
       def require_deps
-        require 'rspec'
-        require 'rspec/its'
-        require 'specinfra'
-        require 'specinfra/helper'
-        require 'specinfra/helper/set'
-        require 'serverspec/helper'
-        require 'serverspec/matcher'
-        require 'serverspec/subject'
-        require 'chef/audit/audit_event_proxy'
-        require 'chef/audit/rspec_formatter'
+        require "rspec"
+        require "rspec/its"
+        require "specinfra"
+        require "specinfra/helper"
+        require "specinfra/helper/set"
+        require "serverspec/helper"
+        require "serverspec/matcher"
+        require "serverspec/subject"
+        require "chef/audit/audit_event_proxy"
+        require "chef/audit/rspec_formatter"
 
         Specinfra::Backend::Cmd.send(:include, Specinfra::Helper::Set)
       end
@@ -106,6 +107,7 @@ class Chef
         RSpec.configure do |c|
           c.color = Chef::Config[:color]
           c.expose_dsl_globally = false
+          c.project_source_dirs = Array(Chef::Config[:cookbook_path])
           c.backtrace_exclusion_patterns << exclusion_pattern
         end
       end
@@ -146,7 +148,7 @@ class Chef
       def configure_specinfra
         if Chef::Platform.windows?
           Specinfra.configuration.backend = :cmd
-          Specinfra.configuration.os = { :family => 'windows' }
+          Specinfra.configuration.os = { :family => "windows" }
         else
           Specinfra.configuration.backend = :exec
         end
@@ -163,7 +165,7 @@ class Chef
         add_example_group_methods
         run_context.audits.each do |name, group|
           ctl_grp = RSpec::Core::ExampleGroup.__control_group__(*group.args, &group.block)
-          RSpec.world.register(ctl_grp)
+          RSpec.world.record(ctl_grp)
         end
       end
 

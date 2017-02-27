@@ -1,6 +1,6 @@
 #--
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'erubis'
+require "tempfile"
+require "erubis"
 
 class Chef
   module Mixin
@@ -105,9 +105,8 @@ class Chef
         def node
           return @node if @node
           raise "Could not find a value for node. If you are explicitly setting variables in a template, " +
-                "include a node variable if you plan to use it."
+            "include a node variable if you plan to use it."
         end
-
 
         #
         # Takes the name of the partial, plus a hash of options. Returns a
@@ -177,7 +176,7 @@ class Chef
           # this template.
 
           if Chef::Platform.windows?
-            output = output.gsub(/\r?\n/,"\r\n")
+            output = output.gsub(/\r?\n/, "\r\n")
           end
 
           output
@@ -187,7 +186,7 @@ class Chef
           module_names.each do |mod|
             context_methods = [:node, :render, :render_template, :render_template_from_string]
             context_methods.each do |core_method|
-              if mod.method_defined?(core_method) or mod.private_method_defined?(core_method)
+              if mod.method_defined?(core_method) || mod.private_method_defined?(core_method)
                 Chef::Log.warn("Core template method `#{core_method}' overridden by extension module #{mod}")
               end
             end
@@ -225,7 +224,7 @@ class Chef
         end
 
         def line_number
-          @line_number ||= $1.to_i if original_exception.backtrace.find {|line| line =~ /\(erubis\):(\d+)/ }
+          @line_number ||= $1.to_i if original_exception.backtrace.find { |line| line =~ /\(erubis\):(\d+)/ }
         end
 
         def source_location
@@ -246,7 +245,7 @@ class Chef
             contextual_lines = lines[beginning_line, source_size]
             output = []
             contextual_lines.each_with_index do |line, index|
-              line_number = (index+beginning_line+1).to_s.rjust(3)
+              line_number = (index + beginning_line + 1).to_s.rjust(3)
               output << "#{line_number}: #{line}"
             end
             output.join("\n")

@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 if Chef::Platform.windows?
-  require 'chef/application/windows_service_manager'
+  require "chef/application/windows_service_manager"
 end
 
 #
@@ -81,7 +81,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
       end
 
       it "other actions => should say service doesn't exist" do
-        ["delete", "start", "stop", "pause", "resume", "uninstall"].each do |action|
+        %w{delete start stop pause resume uninstall}.each do |action|
           service_manager.run(["-a", action])
           expect(@service_manager_output.grep(/doesn't exist on the system/).length).to be > 0
           @service_manager_output = [ ]
@@ -101,12 +101,12 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
       end
 
       it "install => should say service already exists" do
-          service_manager.run(["-a", "install"])
-          expect(@service_manager_output.grep(/already exists/).length).to be > 0
+        service_manager.run(["-a", "install"])
+        expect(@service_manager_output.grep(/already exists/).length).to be > 0
       end
 
       context "and service is stopped" do
-        ["delete", "uninstall"].each do |action|
+        %w{delete uninstall}.each do |action|
           it "#{action} => should remove the service", :volatile do
             service_manager.run(["-a", action])
             expect(test_service_exists?).to be_falsey
@@ -133,8 +133,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
           expect(test_service_state).to eq("stopped")
         end
 
-
-        ["pause", "resume"].each do |action|
+        %w{pause resume}.each do |action|
           it "#{action} => should raise error" do
             expect { service_manager.run(["-a", action]) }.to raise_error(SystemCallError)
           end
@@ -145,7 +144,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
             service_manager.run(["-a", "start"])
           end
 
-          ["delete", "uninstall"].each do |action|
+          %w{delete uninstall}.each do |action|
             it "#{action} => should remove the service", :volatile do
               service_manager.run(["-a", action])
               expect(test_service_exists?).to be_falsey
@@ -183,7 +182,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
             service_manager.run(["-a", "pause"])
           end
 
-          actions = ["delete", "uninstall"]
+          actions = %w{delete uninstall}
           actions.each do |action|
             it "#{action} => should remove the service" do
               service_manager.run(["-a", action])
@@ -211,7 +210,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
           end
 
           it "start should raise an error" do
-            expect {service_manager.run(["-a", "start"])}.to raise_error(::Win32::Service::Error)
+            expect { service_manager.run(["-a", "start"]) }.to raise_error(::Win32::Service::Error)
           end
 
         end

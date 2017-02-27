@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,23 +16,21 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Ohai do
-  let(:ohai) {
-    o = Ohai::System.new
-    o.all_plugins
-    o
-  }
+  let(:ohai) do
+    OHAI_SYSTEM
+  end
 
   let(:node) { Chef::Node.new }
 
-  let(:run_context) {
+  let(:run_context) do
     node.default[:platform] = ohai[:platform]
     node.default[:platform_version] = ohai[:platform_version]
     events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, {}, events)
-  }
+  end
 
   shared_examples_for "reloaded :uptime" do
     it "should reload :uptime" do
@@ -47,18 +45,17 @@ describe Chef::Resource::Ohai do
   end
 
   describe "when reloading all plugins" do
-    let(:ohai_resource) { Chef::Resource::Ohai.new("reload all", run_context)}
+    let(:ohai_resource) { Chef::Resource::Ohai.new("reload all", run_context) }
 
     it_behaves_like "reloaded :uptime"
   end
 
   describe "when reloading only uptime" do
-    let(:ohai_resource) {
+    let(:ohai_resource) do
       r = Chef::Resource::Ohai.new("reload all", run_context)
       r.plugin("uptime")
       r
-    }
-
+    end
 
     it_behaves_like "reloaded :uptime"
   end

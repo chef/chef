@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/exceptions'
-require 'tmpdir'
-require 'fcntl'
-require 'etc'
+require "chef/log"
+require "chef/exceptions"
+require "tmpdir"
+require "fcntl"
+require "etc"
 
 class Chef
   module Mixin
@@ -50,11 +50,11 @@ class Chef
       # NOTE: run_command is deprecated in favor of using Chef::Shellout which now comes from the mixlib-shellout gem. NOTE #
 
       if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-        require 'chef/mixin/command/windows'
+        require "chef/mixin/command/windows"
         include ::Chef::Mixin::Command::Windows
         extend  ::Chef::Mixin::Command::Windows
       else
-        require 'chef/mixin/command/unix'
+        require "chef/mixin/command/unix"
         include ::Chef::Mixin::Command::Unix
         extend  ::Chef::Mixin::Command::Unix
       end
@@ -75,7 +75,7 @@ class Chef
       #
       # === Returns
       # Returns the exit status of args[:command]
-      def run_command(args={})
+      def run_command(args = {})
         status, stdout, stderr = run_command_and_return_stdout_stderr(args)
 
         status
@@ -84,7 +84,7 @@ class Chef
       # works same as above, except that it returns stdout and stderr
       # requirement => platforms like solaris 9,10 has weird issues where
       # even in command failure the exit code is zero, so we need to lookup stderr.
-      def run_command_and_return_stdout_stderr(args={})
+      def run_command_and_return_stdout_stderr(args = {})
         command_output = ""
 
         args[:ignore_failure] ||= false
@@ -103,10 +103,11 @@ class Chef
         command_output << "STDERR: #{stderr}"
         handle_command_failures(status, command_output, args)
 
-        return status, stdout, stderr
+        [status, stdout, stderr]
       end
 
       def output_of_command(command, args)
+        Chef.deprecated(:run_command, "Chef::Mixin::Command.run_command is deprecated, please use shell_out")
         Chef::Log.debug("Executing #{command}")
         stderr_string, stdout_string, status = "", "", nil
 
@@ -140,10 +141,10 @@ class Chef
           Chef::Log.debug("Ran #{command} returned #{status.exitstatus}")
         end
 
-        return status, stdout_string, stderr_string
+        [status, stdout_string, stderr_string]
       end
 
-      def handle_command_failures(status, command_output, opts={})
+      def handle_command_failures(status, command_output, opts = {})
         return if opts[:ignore_failure]
         opts[:returns] ||= 0
         return if Array(opts[:returns]).include?(status.exitstatus)
@@ -165,7 +166,7 @@ class Chef
       #
       # === Returns
       # Returns the result of #run_command
-      def run_command_with_systems_locale(args={})
+      def run_command_with_systems_locale(args = {})
         args[:environment] ||= {}
         args[:environment]["LC_ALL"] = ENV["LC_ALL"]
         run_command args
@@ -177,13 +178,14 @@ class Chef
 
       # module_function :popen4
 
-      def chdir_or_tmpdir(dir, &block)
+      # FIXME: yard with @yield
+      def chdir_or_tmpdir(dir)
         dir ||= Dir.tmpdir
         unless File.directory?(dir)
           raise Chef::Exceptions::Exec, "#{dir} does not exist or is not a directory"
         end
         Dir.chdir(dir) do
-          block.call
+          yield
         end
       end
 

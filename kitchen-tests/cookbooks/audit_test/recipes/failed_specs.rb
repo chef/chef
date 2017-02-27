@@ -2,7 +2,7 @@
 # Cookbook Name:: audit_test
 # Recipe:: failed_specs
 #
-# Copyright (c) 2014 The Authors, All Rights Reserved.
+# Copyright 2014-2016, The Authors, All Rights Reserved.
 
 control_group "basic control group" do
   control "basic math" do

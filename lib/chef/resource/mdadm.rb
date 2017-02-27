@@ -1,7 +1,7 @@
 #
 # Author:: Joe Williams (<joe@joetify.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2009 Joe Williams
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2009-2016, Joe Williams
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
@@ -30,7 +30,7 @@ class Chef
       default_action :create
       allowed_actions :create, :assemble, :stop
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
 
         @chunk = 16
@@ -40,9 +40,10 @@ class Chef
         @metadata = "0.90"
         @bitmap = nil
         @raid_device = name
+        @layout = nil
       end
 
-      def chunk(arg=nil)
+      def chunk(arg = nil)
         set_or_return(
           :chunk,
           arg,
@@ -50,7 +51,7 @@ class Chef
         )
       end
 
-      def devices(arg=nil)
+      def devices(arg = nil)
         set_or_return(
           :devices,
           arg,
@@ -58,7 +59,7 @@ class Chef
         )
       end
 
-      def exists(arg=nil)
+      def exists(arg = nil)
         set_or_return(
           :exists,
           arg,
@@ -66,7 +67,7 @@ class Chef
         )
       end
 
-      def level(arg=nil)
+      def level(arg = nil)
         set_or_return(
           :level,
           arg,
@@ -74,7 +75,7 @@ class Chef
         )
       end
 
-      def metadata(arg=nil)
+      def metadata(arg = nil)
         set_or_return(
           :metadata,
           arg,
@@ -82,7 +83,7 @@ class Chef
         )
       end
 
-      def bitmap(arg=nil)
+      def bitmap(arg = nil)
         set_or_return(
           :bitmap,
           arg,
@@ -90,7 +91,7 @@ class Chef
         )
       end
 
-      def raid_device(arg=nil)
+      def raid_device(arg = nil)
         set_or_return(
           :raid_device,
           arg,
@@ -98,6 +99,13 @@ class Chef
         )
       end
 
+      def layout(arg = nil)
+        set_or_return(
+          :layout,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
 
     end
   end

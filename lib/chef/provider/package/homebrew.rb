@@ -1,9 +1,9 @@
 #
-# Author:: Joshua Timberman (<joshua@getchef.com>)
+# Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Graeme Mathieson (<mathie@woss.name>)
 #
-# Copyright 2011-2013, Opscode, Inc.
-# Copyright 2014, Chef Software, Inc <legal@getchef.com>
+# Copyright 2011-2016, Chef Software Inc.
+# Copyright 2014-2016, Chef Software, Inc <legal@chef.io>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'etc'
-require 'chef/mixin/homebrew_user'
+require "etc"
+require "chef/mixin/homebrew_user"
 
 class Chef
   class Provider
@@ -32,7 +32,7 @@ class Chef
         include Chef::Mixin::HomebrewUser
 
         def load_current_resource
-          self.current_resource = Chef::Resource::Package.new(new_resource.name)
+          self.current_resource = Chef::Resource::HomebrewPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
           current_resource.version(current_installed_version)
           Chef::Log.debug("#{new_resource} current version is #{current_resource.version}") if current_resource.version
@@ -46,34 +46,35 @@ class Chef
 
         def install_package(name, version)
           unless current_resource.version == version
-            brew('install', new_resource.options, name)
+            brew("install", options, name)
           end
         end
 
         def upgrade_package(name, version)
           current_version = current_resource.version
 
-          if current_version.nil? or current_version.empty?
+          if current_version.nil? || current_version.empty?
             install_package(name, version)
           elsif current_version != version
-            brew('upgrade', new_resource.options, name)
+            brew("upgrade", options, name)
           end
         end
 
         def remove_package(name, version)
           if current_resource.version
-            brew('uninstall', new_resource.options, name)
+            brew("uninstall", options, name)
           end
         end
 
         # Homebrew doesn't really have a notion of purging, do a "force remove"
         def purge_package(name, version)
-          new_resource.options((new_resource.options || '') << ' --force').strip
-          remove_package(name, version)
+          if current_resource.version
+            brew("uninstall", "--force", options, name)
+          end
         end
 
         def brew(*args)
-          get_response_from_command("brew #{args.join(' ')}")
+          get_response_from_command("brew", *args)
         end
 
         # We implement a querying method that returns the JSON-as-Hash
@@ -85,7 +86,7 @@ class Chef
         #
         # https://github.com/Homebrew/homebrew/wiki/Querying-Brew
         def brew_info
-          @brew_info ||= Chef::JSONCompat.from_json(brew('info', '--json=v1', new_resource.package_name)).first
+          @brew_info ||= Chef::JSONCompat.from_json(brew("info", "--json=v1", new_resource.package_name)).first
         end
 
         # Some packages (formula) are "keg only" and aren't linked,
@@ -95,14 +96,14 @@ class Chef
         # that brew thinks is linked as the current version.
         #
         def current_installed_version
-          if brew_info['keg_only']
-            if brew_info['installed'].empty?
+          if brew_info["keg_only"]
+            if brew_info["installed"].empty?
               nil
             else
-              brew_info['installed'].last['version']
+              brew_info["installed"].last["version"]
             end
           else
-            brew_info['linked_keg']
+            brew_info["linked_keg"]
           end
         end
 
@@ -116,18 +117,18 @@ class Chef
         #
         # https://github.com/Homebrew/homebrew/wiki/Acceptable-Formulae#stable-versions
         def candidate_version
-          brew_info['versions']['stable']
+          brew_info["versions"]["stable"]
         end
 
         private
 
-        def get_response_from_command(command)
+        def get_response_from_command(*command)
           homebrew_uid = find_homebrew_uid(new_resource.respond_to?(:homebrew_user) && new_resource.homebrew_user)
           homebrew_user = Etc.getpwuid(homebrew_uid)
 
-          Chef::Log.debug "Executing '#{command}' as user '#{homebrew_user.name}'"
+          Chef::Log.debug "Executing '#{command.join(' ')}' as user '#{homebrew_user.name}'"
           # FIXME: this 1800 second default timeout should be deprecated
-          output = shell_out_with_timeout!(command, :timeout => 1800, :user => homebrew_uid, :environment => { 'HOME' => homebrew_user.dir, 'RUBYOPT' => nil })
+          output = shell_out_compact_timeout!(*command, timeout: 1800, user: homebrew_uid, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
           output.stdout.chomp
         end
 

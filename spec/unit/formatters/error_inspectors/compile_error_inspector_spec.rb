@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-BAD_RECIPE=<<-E
+BAD_RECIPE = <<-E
 #
 # Cookbook Name:: syntax-err
 # Recipe:: default
 #
-# Copyright 2012, YOUR_COMPANY_NAME
+# Copyright 2012-2016, YOUR_COMPANY_NAME
 #
 # All rights reserved - Do Not Redistribute
 #
@@ -63,7 +63,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
         [
           "/home/someuser/dev-laptop/cookbooks/syntax-err/recipes/default.rb:14:in `from_file'",
           "/home/someuser/dev-laptop/cookbooks/syntax-err/recipes/default.rb:11:in `from_file'",
-          "/home/someuser/.multiruby/gems/chef/lib/chef/client.rb:123:in `run'"
+          "/home/someuser/.multiruby/gems/chef/lib/chef/client.rb:123:in `run'",
         ]
       end
 
@@ -91,7 +91,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
 
       describe "when explaining an error in the compile phase" do
         before do
-          recipe_lines = BAD_RECIPE.split("\n").map {|l| l << "\n" }
+          recipe_lines = BAD_RECIPE.split("\n").map { |l| l << "\n" }
           expect(IO).to receive(:readlines).with(path_to_failed_file).and_return(recipe_lines)
           inspector.add_explanation(description)
         end
@@ -122,7 +122,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
       let(:trace) do
         [
           "/tmp/kitchen/cache/cookbooks/foo/recipes/default.rb:2:in `block in from_file'",
-          "/tmp/kitchen/cache/cookbooks/foo/recipes/default.rb:1:in `from_file'"
+          "/tmp/kitchen/cache/cookbooks/foo/recipes/default.rb:1:in `from_file'",
         ]
       end
 
@@ -148,7 +148,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
           "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:229:in `block in foreach_cookbook_load_segment'",
           "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:227:in `each'",
           "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:227:in `foreach_cookbook_load_segment'",
-          "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:137:in `load_libraries'"
+          "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:137:in `load_libraries'",
         ]
       end
 
@@ -199,7 +199,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
         "C:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/application.rb:70:in `run'",
         "C:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/bin/chef-client:26:in `<top (required)>'",
         "C:/opscode/chef/bin/chef-client:19:in `load'",
-        "C:/opscode/chef/bin/chef-client:19:in `<main>'"
+        "C:/opscode/chef/bin/chef-client:19:in `<main>'",
       ]
     end
 
@@ -209,7 +209,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
 
     before do
       allow(Chef::Config).to receive(:cookbook_path).and_return([ "C:/opscode/chef/var/cache/cookbooks" ])
-      recipe_lines = BAD_RECIPE.split("\n").map {|l| l << "\n" }
+      recipe_lines = BAD_RECIPE.split("\n").map { |l| l << "\n" }
       expect(IO).to receive(:readlines).at_least(1).times.with(full_path_to_failed_file).and_return(recipe_lines)
       inspector.add_explanation(description)
     end

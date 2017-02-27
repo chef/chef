@@ -1,6 +1,6 @@
 #
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::RemoteFile::Content do
 
@@ -141,7 +141,6 @@ describe Chef::Provider::RemoteFile::Content do
     it_behaves_like "the resource needs fetching"
   end
 
-
   describe "when the fetcher throws an exception" do
     before do
       allow(new_resource).to receive(:checksum).and_return(nil)
@@ -160,10 +159,10 @@ describe Chef::Provider::RemoteFile::Content do
 
   describe "when there is an array of sources and the first fails" do
 
-    # https://github.com/opscode/chef/pull/1358#issuecomment-40853299
+    # https://github.com/chef/chef/pull/1358#issuecomment-40853299
     def create_exception(exception_class)
       if [ Net::HTTPServerException, Net::HTTPFatalError ].include? exception_class
-        exception_class.new("message", {"something" => 1})
+        exception_class.new("message", { "something" => 1 })
       else
         exception_class.new
       end
@@ -180,7 +179,8 @@ describe Chef::Provider::RemoteFile::Content do
       Timeout::Error,
       Net::HTTPServerException,
       Net::HTTPFatalError,
-      Net::FTPError
+      Net::FTPError,
+      Errno::ETIMEDOUT,
     ].each do |exception|
       describe "with an exception of #{exception}" do
         before do

@@ -1,6 +1,6 @@
 #
 # Author:: Igor Afonov <afonov@gmail.com>
-# Copyright:: Copyright (c) 2011 Igor Afonov
+# Copyright:: Copyright 2011-2016, Igor Afonov
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'etc'
-require 'rexml/document'
-require 'chef/resource/service'
-require 'chef/resource/macosx_service'
-require 'chef/provider/service/simple'
-require 'chef/util/path_helper'
+require "etc"
+require "rexml/document"
+require "chef/resource/service"
+require "chef/resource/macosx_service"
+require "chef/provider/service/simple"
+require "chef/util/path_helper"
 
 class Chef
   class Provider
@@ -36,14 +36,14 @@ class Chef
                          /Library/LaunchDaemons
                          /System/Library/LaunchAgents
                          /System/Library/LaunchDaemons }
-          Chef::Util::PathHelper.home('Library', 'LaunchAgents') { |p| locations << p }
+          Chef::Util::PathHelper.home("Library", "LaunchAgents") { |p| locations << p }
           locations
         end
 
         PLIST_DIRS = gather_plist_dirs
 
         def this_version_or_newer?(this_version)
-          Gem::Version.new(node['platform_version']) >= Gem::Version.new(this_version)
+          Gem::Version.new(node["platform_version"]) >= Gem::Version.new(this_version)
         end
 
         def load_current_resource
@@ -53,17 +53,17 @@ class Chef
           @plist = @new_resource.plist ? @new_resource.plist : find_service_plist
           @service_label = find_service_label
           # LauchAgents should be loaded as the console user.
-          @console_user = @plist ? @plist.include?('LaunchAgents') : false
+          @console_user = @plist ? @plist.include?("LaunchAgents") : false
           @session_type = @new_resource.session_type
 
           if @console_user
             @console_user = Etc.getlogin
             Chef::Log.debug("#{new_resource} console_user: '#{@console_user}'")
             cmd = "su "
-            param = this_version_or_newer?('10.10') ? '' : '-l '
+            param = this_version_or_newer?("10.10") ? "" : "-l "
             @base_user_cmd = cmd + param + "#{@console_user} -c"
             # Default LauchAgent session should be Aqua
-            @session_type = 'Aqua' if @session_type.nil?
+            @session_type = "Aqua" if @session_type.nil?
           end
 
           Chef::Log.debug("#{new_resource} Plist: '#{@plist}' service_label: '#{@service_label}'")
@@ -74,7 +74,7 @@ class Chef
 
         def define_resource_requirements
           requirements.assert(:reload) do |a|
-            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
+            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} does not support :reload"
           end
 
           requirements.assert(:all_actions) do |a|
@@ -83,7 +83,7 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion {::File.exists?(@plist.to_s) }
+            a.assertion { ::File.exists?(@plist.to_s) }
             a.failure_message Chef::Exceptions::Service,
               "Could not find plist for #{@new_resource}"
           end
@@ -160,14 +160,14 @@ class Chef
           end
         end
 
-       def load_service
-          session = @session_type ? "-S #{@session_type} " : ''
-          cmd = 'launchctl load -w ' + session + @plist
+        def load_service
+          session = @session_type ? "-S #{@session_type} " : ""
+          cmd = "launchctl load -w " + session + @plist
           shell_out_as_user(cmd)
         end
 
         def unload_service
-          cmd = 'launchctl unload -w ' + @plist
+          cmd = "launchctl unload -w " + @plist
           shell_out_as_user(cmd)
         end
 
@@ -181,7 +181,7 @@ class Chef
         end
 
         def set_service_status
-          return if @plist == nil or @service_label.to_s.empty?
+          return if @plist.nil? || @service_label.to_s.empty?
 
           cmd = "launchctl list #{@service_label}"
           res = shell_out_as_user(cmd)
@@ -197,7 +197,7 @@ class Chef
               case line.downcase
               when /\s+\"pid\"\s+=\s+(\d+).*/
                 pid = $1
-                @current_resource.running(!pid.to_i.zero?)
+                @current_resource.running(pid.to_i != 0)
                 Chef::Log.debug("Current PID for #{@service_label} is #{pid}")
               end
             end
@@ -206,7 +206,7 @@ class Chef
           end
         end
 
-      private
+        private
 
         def find_service_label
           # CHEF-5223 "you can't glob for a file that hasn't been converged
@@ -236,7 +236,7 @@ class Chef
           plists = PLIST_DIRS.inject([]) do |results, dir|
             edir = ::File.expand_path(dir)
             entries = Dir.glob(
-              "#{edir}/*#{Chef::Util::PathHelper.escape_glob(@current_resource.service_name)}*.plist"
+              "#{edir}/*#{Chef::Util::PathHelper.escape_glob_dir(@current_resource.service_name)}*.plist"
             )
             entries.any? ? results << entries : results
           end

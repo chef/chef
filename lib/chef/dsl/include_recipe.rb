@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/log'
+require "chef/log"
 
 class Chef
   module DSL
@@ -41,4 +41,4 @@ end
 
 # **DEPRECATED**
 # This used to be part of chef/mixin/language_include_recipe. Load the file to activate the deprecation code.
-require 'chef/mixin/language_include_recipe'
+require "chef/mixin/language_include_recipe"

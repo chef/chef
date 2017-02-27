@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service do
   before do
@@ -48,7 +48,6 @@ describe Chef::Provider::Service do
       expect(@provider.new_resource).not_to be_updated
     end
   end
-
 
   describe "when disabling the service" do
     it "should disable the service if enabled and set the resource as updated" do

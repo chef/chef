@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/convert_to_class_name'
-require 'chef/mixin/language'
+require "chef/mixin/convert_to_class_name"
+require "chef/mixin/language"
 
 module Shell
   class ModelWrapper
@@ -26,7 +26,7 @@ module Shell
 
     attr_reader :model_symbol
 
-    def initialize(model_class, symbol=nil)
+    def initialize(model_class, symbol = nil)
       @model_class = model_class
       @model_symbol = symbol || convert_to_snake_case(model_class.name, "Chef").to_sym
     end
@@ -59,7 +59,8 @@ module Shell
 
     alias :load :show
 
-    def transform(what_to_transform, &block)
+    # FIXME: yard with @yield
+    def transform(what_to_transform)
       if what_to_transform == :all
         objects_to_transform = list_objects
       else
@@ -79,8 +80,8 @@ module Shell
     # paper over inconsistencies in the model classes APIs, and return the objects
     # the user wanted instead of the URI=>object stuff
     def list_objects
-      objects = @model_class.method(:list).arity == 0? @model_class.list : @model_class.list(true)
-      objects.map { |obj| Array(obj).find {|o| o.kind_of?(@model_class)} }
+      objects = @model_class.method(:list).arity == 0 ? @model_class.list : @model_class.list(true)
+      objects.map { |obj| Array(obj).find { |o| o.kind_of?(@model_class) } }
     end
 
     def format_query(query)
@@ -97,7 +98,6 @@ module Shell
     def initialize(databag_name)
       @model_symbol = @databag_name = databag_name
     end
-
 
     alias :list :all
 

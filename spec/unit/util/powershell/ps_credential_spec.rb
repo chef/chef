@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala <jdm@chef.io>
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,28 @@
 # limitations under the License.
 #
 
-require 'chef'
-require 'chef/util/powershell/ps_credential'
+require "chef"
+require "chef/util/powershell/ps_credential"
 
 describe Chef::Util::Powershell::PSCredential do
-  let (:username) { 'foo' }
-  let (:password) { 'password' }
+  let (:username) { "foo" }
+  let (:password) { "ThIsIsThEpAsSwOrD" }
 
-  context 'when username and password are provided' do
-    let(:ps_credential) { Chef::Util::Powershell::PSCredential.new(username, password)}
-    context 'when calling to_psobject' do
-      it 'should create the script to create a PSCredential when calling' do
-        allow(ps_credential).to receive(:encrypt).with(password).and_return('encrypted')
+  context "when username and password are provided" do
+    let(:ps_credential) { Chef::Util::Powershell::PSCredential.new(username, password) }
+    context "when calling to_psobject" do
+      it "should create the script to create a PSCredential when calling" do
+        allow(ps_credential).to receive(:encrypt).with(password).and_return("encrypted")
         expect(ps_credential.to_psobject).to eq(
         "New-Object System.Management.Automation.PSCredential("\
             "'#{username}',('encrypted' | ConvertTo-SecureString))")
+      end
+    end
+
+    context "when to_text is called" do
+      it "should not contain the password" do
+        allow(ps_credential).to receive(:encrypt).with(password).and_return("encrypted")
+        expect(ps_credential.to_text).not_to match(/#{password}/)
       end
     end
   end

@@ -1,4 +1,4 @@
-require File.expand_path('../../spec_helper', __FILE__)
+require File.expand_path("../../spec_helper", __FILE__)
 
 describe "Chef::ShellOut deprecation notices" do
   it "logs a warning when initializing a new Chef::ShellOut object" do

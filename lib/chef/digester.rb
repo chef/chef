@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'openssl'
-require 'singleton'
+require "openssl"
+require "singleton"
 
 class Chef
   class Digester
@@ -60,7 +60,7 @@ class Chef
     private
 
     def checksum_file(file, digest)
-      File.open(file, 'rb') { |f| checksum_io(f, digest) }
+      File.open(file, "rb") { |f| checksum_io(f, digest) }
     end
 
     def checksum_io(io, digest)

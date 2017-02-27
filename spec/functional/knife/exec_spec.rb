@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,17 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tiny_server'
+require "spec_helper"
+require "tiny_server"
 
 describe Chef::Knife::Exec do
-  before(:all) do
-    @server = TinyServer::Manager.new#(:debug => true)
+  before(:each) do
+    @server = TinyServer::Manager.new #(:debug => true)
     @server.start
+  end
+
+  after(:each) do
+    @server.stop
   end
 
   before(:each) do
@@ -32,19 +36,15 @@ describe Chef::Knife::Exec do
 
     Chef::Config[:node_name] = nil
     Chef::Config[:client_key] = nil
-    Chef::Config[:chef_server_url] = 'http://localhost:9000'
+    Chef::Config[:chef_server_url] = "http://localhost:9000"
 
     $output = StringIO.new
-  end
-
-  after(:all) do
-    @server.stop
   end
 
   it "executes a script in the context of the chef-shell main context" do
     @node = Chef::Node.new
     @node.name("ohai-world")
-    response = {"rows" => [@node],"start" => 0,"total" => 1}
+    response = { "rows" => [@node], "start" => 0, "total" => 1 }
     @api.get(%r{^/search/node}, 200, Chef::JSONCompat.to_json(response))
     code = "$output.puts nodes.all"
     @knife.config[:exec] = code

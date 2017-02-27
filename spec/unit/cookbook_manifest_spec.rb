@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright (c) 2015 Opscode, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
-require 'chef/cookbook_manifest'
-require 'chef/digester'
-require 'pathname'
+require "spec_helper"
+require "chef/cookbook_manifest"
+require "chef/digester"
+require "pathname"
 
 describe Chef::CookbookManifest do
 
@@ -32,7 +32,7 @@ describe Chef::CookbookManifest do
     end
   end
 
-  let(:cookbook_root) { '/tmp/blah' }
+  let(:cookbook_root) { "/tmp/blah" }
 
   let(:cookbook_version) do
     Chef::CookbookVersion.new("tatft", cookbook_root).tap do |c|
@@ -62,7 +62,7 @@ describe Chef::CookbookManifest do
     end
 
     it "delegates `root_paths' to cookbook_version" do
-      expect(cookbook_manifest.root_paths).to eq(['/tmp/blah'])
+      expect(cookbook_manifest.root_paths).to eq(["/tmp/blah"])
     end
 
     it "delegates `metadata' to cookbook_version" do
@@ -101,15 +101,15 @@ describe Chef::CookbookManifest do
 
         "frozen?" => false,
 
-        "recipes"     =>[],
-        "definitions" =>[],
-        "libraries"   =>[],
-        "attributes"  =>[],
-        "files"       =>[],
-        "templates"   =>[],
-        "resources"   =>[],
-        "providers"   =>[],
-        "root_files"  =>[],
+        "recipes" => [],
+        "definitions" => [],
+        "libraries" => [],
+        "attributes" => [],
+        "files" => [],
+        "templates" => [],
+        "resources" => [],
+        "providers" => [],
+        "root_files" => [],
       }
     end
 
@@ -121,18 +121,18 @@ describe Chef::CookbookManifest do
 
   context "when given a cookbook with files" do
 
-    let(:cookbook_root) { File.join(CHEF_SPEC_DATA, 'cb_version_cookbooks', 'tatft') }
+    let(:cookbook_root) { File.join(CHEF_SPEC_DATA, "cb_version_cookbooks", "tatft") }
 
-    let(:attribute_filenames)   { Dir[File.join(cookbook_root, 'attributes', '**', '*.rb')] }
-    let(:definition_filenames)  { Dir[File.join(cookbook_root, 'definitions', '**', '*.rb')] }
-    let(:file_filenames)        { Dir[File.join(cookbook_root, 'files', '**', '*.tgz')] }
-    let(:recipe_filenames)      { Dir[File.join(cookbook_root, 'recipes', '**', '*.rb')] }
-    let(:template_filenames)    { Dir[File.join(cookbook_root, 'templates', '**', '*.erb')] }
-    let(:library_filenames)     { Dir[File.join(cookbook_root, 'libraries', '**', '*.rb')] }
-    let(:resource_filenames)    { Dir[File.join(cookbook_root, 'resources', '**', '*.rb')] }
-    let(:provider_filenames)    { Dir[File.join(cookbook_root, 'providers', '**', '*.rb')] }
-    let(:root_filenames)        { Array(File.join(cookbook_root, 'README.rdoc')) }
-    let(:metadata_filenames)    { Array(File.join(cookbook_root, 'metadata.json')) }
+    let(:attribute_filenames)   { Dir[File.join(cookbook_root, "attributes", "**", "*.rb")] }
+    let(:definition_filenames)  { Dir[File.join(cookbook_root, "definitions", "**", "*.rb")] }
+    let(:file_filenames)        { Dir[File.join(cookbook_root, "files", "**", "*.tgz")] }
+    let(:recipe_filenames)      { Dir[File.join(cookbook_root, "recipes", "**", "*.rb")] }
+    let(:template_filenames)    { Dir[File.join(cookbook_root, "templates", "**", "*.erb")] }
+    let(:library_filenames)     { Dir[File.join(cookbook_root, "libraries", "**", "*.rb")] }
+    let(:resource_filenames)    { Dir[File.join(cookbook_root, "resources", "**", "*.rb")] }
+    let(:provider_filenames)    { Dir[File.join(cookbook_root, "providers", "**", "*.rb")] }
+    let(:root_filenames)        { Array(File.join(cookbook_root, "README.rdoc")) }
+    let(:metadata_filenames)    { Array(File.join(cookbook_root, "metadata.json")) }
 
     let(:match_md5) { /[0-9a-f]{32}/ }
 
@@ -241,4 +241,3 @@ describe Chef::CookbookManifest do
   end
 
 end
-

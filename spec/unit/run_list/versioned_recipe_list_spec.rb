@@ -1,6 +1,6 @@
 #
-# Author:: Stephen Delano (<stephen@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Stephen Delano (<stephen@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::RunList::VersionedRecipeList do
 
@@ -34,50 +34,50 @@ describe Chef::RunList::VersionedRecipeList do
 
   before do
     recipes.each { |r| list << r }
-    versioned_recipes.each {|r| list.add_recipe r[:name], r[:version]}
+    versioned_recipes.each { |r| list.add_recipe r[:name], r[:version] }
   end
 
   describe "add_recipe" do
 
-    let(:recipes) { %w[ apt god apache2 ] }
+    let(:recipes) { %w{ apt god apache2 } }
 
     it "should append the recipe to the end of the list" do
       list.add_recipe "rails"
-      expect(list).to eq(["apt", "god", "apache2", "rails"])
+      expect(list).to eq(%w{apt god apache2 rails})
     end
 
     it "should not duplicate entries" do
       list.add_recipe "apt"
-      expect(list).to eq(["apt", "god", "apache2"])
+      expect(list).to eq(%w{apt god apache2})
     end
 
     it "should allow you to specify a version" do
       list.add_recipe "rails", "1.0.0"
-      expect(list).to eq(["apt", "god", "apache2", "rails"])
-      expect(list.with_versions).to include({:name => "rails", :version => "1.0.0"})
+      expect(list).to eq(%w{apt god apache2 rails})
+      expect(list.with_versions).to include({ :name => "rails", :version => "1.0.0" })
     end
 
     it "should allow you to specify a version for a recipe that already exists" do
       list.add_recipe "apt", "1.2.3"
-      expect(list).to eq(["apt", "god", "apache2"])
-      expect(list.with_versions).to include({:name => "apt", :version => "1.2.3"})
+      expect(list).to eq(%w{apt god apache2})
+      expect(list.with_versions).to include({ :name => "apt", :version => "1.2.3" })
     end
 
     it "should allow you to specify the same version of a recipe twice" do
       list.add_recipe "rails", "1.0.0"
       list.add_recipe "rails", "1.0.0"
-      expect(list.with_versions).to include({:name => "rails", :version => "1.0.0"})
+      expect(list.with_versions).to include({ :name => "rails", :version => "1.0.0" })
     end
 
     it "should allow you to spcify no version, even when a version already exists" do
       list.add_recipe "rails", "1.0.0"
       list.add_recipe "rails"
-      expect(list.with_versions).to include({:name => "rails", :version => "1.0.0"})
+      expect(list.with_versions).to include({ :name => "rails", :version => "1.0.0" })
     end
 
     it "should not allow multiple versions of the same recipe" do
       list.add_recipe "rails", "1.0.0"
-      expect {list.add_recipe "rails", "0.1.0"}.to raise_error Chef::Exceptions::CookbookVersionConflict
+      expect { list.add_recipe "rails", "0.1.0" }.to raise_error Chef::Exceptions::CookbookVersionConflict
     end
   end
 
@@ -85,9 +85,9 @@ describe Chef::RunList::VersionedRecipeList do
 
     let(:versioned_recipes) do
       [
-        {:name => "apt", :version => "1.0.0"},
-        {:name => "god", :version => nil},
-        {:name => "apache2", :version => "0.0.1"}
+        { :name => "apt", :version => "1.0.0" },
+        { :name => "god", :version => nil },
+        { :name => "apache2", :version => "0.0.1" },
       ]
     end
     it "should return an array of hashes with :name and :version" do
@@ -106,12 +106,11 @@ describe Chef::RunList::VersionedRecipeList do
 
     let(:versioned_recipes) do
       [
-        {:name => "apt", :version => "~> 1.2.0"},
-        {:name => "god", :version => nil},
-        {:name => "apache2", :version => "0.0.1"}
+        { :name => "apt", :version => "~> 1.2.0" },
+        { :name => "god", :version => nil },
+        { :name => "apache2", :version => "0.0.1" },
       ]
     end
-
 
     it "should return an array of hashes with :name and :version_constraint" do
       list.with_version_constraints.each_with_index do |recipe_spec, i|
@@ -130,20 +129,20 @@ describe Chef::RunList::VersionedRecipeList do
 
     context "with bare cookbook names" do
 
-      let(:recipes) { %w[ apache2 ] }
+      let(:recipes) { %w{ apache2 } }
 
       it "gives $cookbook_name::default" do
-        expect(fq_names).to eq( %w[ apache2::default ] )
+        expect(fq_names).to eq( %w{ apache2::default } )
       end
 
     end
 
     context "with qualified recipe names but no versions" do
 
-      let(:recipes) { %w[ mysql::server ] }
+      let(:recipes) { %w{ mysql::server } }
 
       it "returns the qualified recipe names" do
-        expect(fq_names).to eq( %w[ mysql::server ] )
+        expect(fq_names).to eq( %w{ mysql::server } )
       end
 
     end
@@ -152,7 +151,7 @@ describe Chef::RunList::VersionedRecipeList do
 
       let(:versioned_recipes) do
         [
-          {:name => "apt", :version => "~> 1.2.0"},
+          { :name => "apt", :version => "~> 1.2.0" },
         ]
       end
 
@@ -171,7 +170,7 @@ describe Chef::RunList::VersionedRecipeList do
 
       let(:versioned_recipes) do
         [
-          {:name => "apt::cacher", :version => "~> 1.2.0"},
+          { :name => "apt::cacher", :version => "~> 1.2.0" },
         ]
       end
 
@@ -187,7 +186,7 @@ describe Chef::RunList::VersionedRecipeList do
     end
   end
 
-  context "with duplicated names", :chef_gte_13_only do
+  context "with duplicated names", chef: ">= 13" do
     it "should fail in Chef 13" do
       expect(list).to_not respond_to(:with_duplicate_names)
     end

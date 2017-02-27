@@ -1,7 +1,7 @@
 #
-# Author:: Joshua Timberman (<joshua@getchef.com>)
-# Author:: Lamont Granquist (<lamont@getchef.com>)
-# Copyright:: Copyright (c) 2008-2014 Chef Software, Inc.
+# Author:: Joshua Timberman (<joshua@chef.io>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Mount do
 
@@ -28,7 +28,7 @@ describe Chef::Provider::Mount do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
   let(:new_resource) do
-    new_resource = Chef::Resource::Mount.new('/tmp/foo')
+    new_resource = Chef::Resource::Mount.new("/tmp/foo")
     new_resource.device      "/dev/sdz1"
     new_resource.name        "/tmp/foo"
     new_resource.mount_point "/tmp/foo"
@@ -38,7 +38,7 @@ describe Chef::Provider::Mount do
 
   let(:current_resource) do
     # this abstract superclass has no load_current_resource to call
-    current_resource = Chef::Resource::Mount.new('/tmp/foo')
+    current_resource = Chef::Resource::Mount.new("/tmp/foo")
     current_resource.device      "/dev/sdz1"
     current_resource.name        "/tmp/foo"
     current_resource.mount_point "/tmp/foo"
@@ -60,25 +60,6 @@ describe Chef::Provider::Mount do
       provider.run_action(:mount)
       expect(new_resource).to be_updated_by_last_action
     end
-
-    it "should remount the filesystem if it is mounted and the options have changed" do
-      allow(current_resource).to receive(:mounted).and_return(true)
-      allow(provider).to receive(:mount_options_unchanged?).and_return(false)
-      expect(provider).to receive(:umount_fs).and_return(true)
-      expect(provider).to receive(:wait_until_unmounted)
-      expect(provider).to receive(:mount_fs).and_return(true)
-      provider.run_action(:mount)
-      expect(new_resource).to be_updated_by_last_action
-    end
-
-    it "should not mount the filesystem if it is mounted and the options have not changed" do
-      allow(current_resource).to receive(:mounted).and_return(true)
-      expect(provider).to receive(:mount_options_unchanged?).and_return(true)
-      expect(provider).not_to receive(:mount_fs)
-      provider.run_action(:mount)
-      expect(new_resource).not_to be_updated_by_last_action
-    end
-
   end
 
   describe "when the target state is an unmounted filesystem" do
@@ -86,6 +67,13 @@ describe Chef::Provider::Mount do
       allow(current_resource).to receive(:mounted).and_return(true)
       expect(provider).to receive(:umount_fs).and_return(true)
       provider.run_action(:umount)
+      expect(new_resource).to be_updated_by_last_action
+    end
+
+    it "should unmount the filesystem if it is mounted" do
+      allow(current_resource).to receive(:mounted).and_return(true)
+      expect(provider).to receive(:umount_fs).and_return(true)
+      provider.run_action(:unmount)
       expect(new_resource).to be_updated_by_last_action
     end
 
@@ -135,7 +123,7 @@ describe Chef::Provider::Mount do
       provider.unmount_retries = 1
       expect(provider).to receive(:umount_fs)
       expect(provider).to receive(:mounted?).and_return(true, true)
-      expect{ provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
+      expect { provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
     end
   end
 
@@ -180,7 +168,6 @@ describe Chef::Provider::Mount do
       expect(new_resource).not_to be_updated_by_last_action
     end
   end
-
 
   it "should delegates the mount implementation to subclasses" do
     expect { provider.mount_fs }.to raise_error(Chef::Exceptions::UnsupportedAction)

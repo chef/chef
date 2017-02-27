@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'pathname'
+require "chef/knife"
+require "pathname"
 
 class Chef
   module ChefFS
@@ -25,11 +25,11 @@ class Chef
       # Workaround for CHEF-3932
       def self.deps
         super do
-          require 'chef/config'
-          require 'chef/chef_fs/parallelizer'
-          require 'chef/chef_fs/config'
-          require 'chef/chef_fs/file_pattern'
-          require 'chef/chef_fs/path_utils'
+          require "chef/config"
+          require "chef/chef_fs/parallelizer"
+          require "chef/chef_fs/config"
+          require "chef/chef_fs/file_pattern"
+          require "chef/chef_fs/path_utils"
           yield
         end
       end
@@ -45,16 +45,16 @@ class Chef
       end
 
       option :repo_mode,
-        :long => '--repo-mode MODE',
+        :long => "--repo-mode MODE",
         :description => "Specifies the local repository layout.  Values: static, everything, hosted_everything.  Default: everything/hosted_everything"
 
       option :chef_repo_path,
-        :long => '--chef-repo-path PATH',
-        :description => 'Overrides the location of chef repo. Default is specified by chef_repo_path in the config'
+        :long => "--chef-repo-path PATH",
+        :description => "Overrides the location of chef repo. Default is specified by chef_repo_path in the config"
 
       option :concurrency,
-        :long => '--concurrency THREADS',
-        :description => 'Maximum number of simultaneous requests to send (default: 10)'
+        :long => "--concurrency THREADS",
+        :description => "Maximum number of simultaneous requests to send (default: 10)"
 
       def configure_chef
         super
@@ -111,7 +111,7 @@ class Chef
           end
           # Use the original path because we can't be sure.
           inferred_path = arg
-        elsif arg[0,1] == '~'
+        elsif arg[0, 1] == "~"
           # Let's be nice and fix it if possible - but warn the user.
           ui.warn("A path relative to a user home directory has been provided: #{arg}")
           ui.warn("Paths provided need to be rooted at the chef-repo being considered or be relative paths.")
@@ -131,7 +131,7 @@ class Chef
           ui.error("Current working directory is '#{@chef_fs_config.cwd}'.")
           exit(1)
         else
-          inferred_path = Chef::ChefFS::PathUtils::join(@chef_fs_config.base_path, arg)
+          inferred_path = Chef::ChefFS::PathUtils.join(@chef_fs_config.base_path, arg)
         end
         Chef::ChefFS::FilePattern.new(inferred_path)
       end
@@ -145,7 +145,7 @@ class Chef
       end
 
       def discover_repo_dir(dir)
-        %w(.chef cookbooks data_bags environments roles).each do |subdir|
+        %w{.chef cookbooks data_bags environments roles}.each do |subdir|
           return dir if File.directory?(File.join(dir, subdir))
         end
         # If this isn't it, check the parent

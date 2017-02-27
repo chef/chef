@@ -1,6 +1,6 @@
 #
 # Author:: Sahil Muthoo (<sahil.muthoo@gmail.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::Status do
   before(:each) do
@@ -34,10 +34,11 @@ describe Chef::Knife::Status do
   end
 
   describe "run" do
-    let(:opts) {{filter_result:
+    let(:opts) do
+      { filter_result:
                  { name: ["name"], ipaddress: ["ipaddress"], ohai_time: ["ohai_time"],
-                  ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
-                  platform_version: ["platform_version"], chef_environment: ["chef_environment"]}}}
+                   ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
+                   platform_version: ["platform_version"], chef_environment: ["chef_environment"] } } end
 
     it "should default to searching for everything" do
       expect(@query).to receive(:search).with(:node, "*:*", opts)

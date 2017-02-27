@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 Chef::Knife::ClientCreate.load_deps
 
@@ -24,12 +24,11 @@ describe Chef::Knife::ClientCreate do
   let(:stderr) { StringIO.new }
   let(:stdout) { StringIO.new }
 
-
   let(:default_client_hash) do
     {
       "name" => "adam",
       "validator" => false,
-      "admin" => false
+      "admin" => false,
     }
   end
 
@@ -41,7 +40,7 @@ describe Chef::Knife::ClientCreate do
     k = Chef::Knife::ClientCreate.new
     k.name_args = []
     allow(k).to receive(:client).and_return(client)
-    allow(k).to receive(:edit_data).with(client).and_return(client)
+    allow(k).to receive(:edit_hash).with(client).and_return(client)
     allow(k.ui).to receive(:stderr).and_return(stderr)
     allow(k.ui).to receive(:stdout).and_return(stdout)
     k
@@ -53,7 +52,7 @@ describe Chef::Knife::ClientCreate do
   end
 
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
   end
 
   describe "run" do
@@ -61,13 +60,13 @@ describe Chef::Knife::ClientCreate do
       # from spec/support/shared/unit/knife_shared.rb
       it_should_behave_like "mandatory field missing" do
         let(:name_args) { [] }
-        let(:fieldname) { 'client name' }
+        let(:fieldname) { "client name" }
       end
     end
 
     context "when clientname is passed" do
       before do
-        knife.name_args = ['adam']
+        knife.name_args = ["adam"]
       end
 
       context "when public_key and prevent_keygen are passed" do
@@ -119,7 +118,7 @@ describe Chef::Knife::ClientCreate do
       end
 
       it "should allow you to edit the data" do
-        expect(knife).to receive(:edit_data).with(client).and_return(client)
+        expect(knife).to receive(:edit_hash).with(client).and_return(client)
         knife.run
       end
 
@@ -131,7 +130,7 @@ describe Chef::Knife::ClientCreate do
         it "should write the private key to a file" do
           knife.config[:file] = "/tmp/monkeypants"
           filehandle = double("Filehandle")
-          expect(filehandle).to receive(:print).with('woot')
+          expect(filehandle).to receive(:print).with("woot")
           expect(File).to receive(:open).with("/tmp/monkeypants", "w").and_yield(filehandle)
           knife.run
         end
@@ -150,14 +149,14 @@ describe Chef::Knife::ClientCreate do
 
       describe "with -p or --public-key" do
         before do
-          knife.config[:public_key] = 'some_key'
-          allow(File).to receive(:read).and_return('some_key')
+          knife.config[:public_key] = "some_key"
+          allow(File).to receive(:read).and_return("some_key")
           allow(File).to receive(:expand_path)
         end
 
         it "sets the public key" do
           knife.run
-          expect(client.public_key).to eq('some_key')
+          expect(client.public_key).to eq("some_key")
         end
       end
 

@@ -1,5 +1,5 @@
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
@@ -24,13 +24,20 @@ class Chef
       banner "knife cookbook site search QUERY (options)"
       category "cookbook site"
 
+      option :supermarket_site,
+        :short => "-m SUPERMARKET_SITE",
+        :long => "--supermarket-site SUPERMARKET_SITE",
+        :description => "Supermarket Site",
+        :default => "https://supermarket.chef.io",
+        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+
       def run
         output(search_cookbook(name_args[0]))
       end
 
-      def search_cookbook(query, items=10, start=0, cookbook_collection={})
-        cookbooks_url = "https://supermarket.chef.io/api/v1/search?q=#{query}&items=#{items}&start=#{start}"
-        cr = noauth_rest.get_rest(cookbooks_url)
+      def search_cookbook(query, items = 10, start = 0, cookbook_collection = {})
+        cookbooks_url = "#{config[:supermarket_site]}/api/v1/search?q=#{query}&items=#{items}&start=#{start}"
+        cr = noauth_rest.get(cookbooks_url)
         cr["items"].each do |cookbook|
           cookbook_collection[cookbook["cookbook_name"]] = cookbook
         end
@@ -44,8 +51,3 @@ class Chef
     end
   end
 end
-
-
-
-
-

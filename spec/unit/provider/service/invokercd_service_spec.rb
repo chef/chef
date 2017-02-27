@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Invokercd, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = {:ps => "ps -ef"}
+    @node.automatic_attrs[:command] = { :ps => "ps -ef" }
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -48,12 +48,12 @@ PS
 
   it "should set the current resources service name to the new resources service name" do
     @provider.load_current_resource
-    expect(@current_resource.service_name).to eq('chef')
+    expect(@current_resource.service_name).to eq("chef")
   end
 
   describe "when the service supports status" do
     before do
-      @new_resource.supports({:status => true})
+      @new_resource.supports({ :status => true })
     end
 
     it "should run '/usr/sbin/invoke-rc.d service_name status'" do
@@ -95,14 +95,14 @@ PS
 
   describe "when the node has not specified a ps command" do
     it "should raise error if the node has a nil ps attribute and no other means to get status" do
-      @node.automatic_attrs[:command] = {:ps => nil}
+      @node.automatic_attrs[:command] = { :ps => nil }
       @provider.action = :start
       @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
     end
 
     it "should raise error if the node has an empty ps attribute and no other means to get status" do
-      @node.automatic_attrs[:command] = {:ps => ""}
+      @node.automatic_attrs[:command] = { :ps => "" }
       @provider.action = :start
       @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
@@ -176,7 +176,7 @@ RUNNING_PS
 
   describe "when restarting a service" do
     it "should call 'restart' on the service_name if the resource supports it" do
-      @new_resource.supports({:restart => true})
+      @new_resource.supports({ :restart => true })
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restart")
       @provider.restart_service()
     end
@@ -197,7 +197,7 @@ RUNNING_PS
 
   describe "when reloading a service" do
     it "should call 'reload' on the service if it supports it" do
-      @new_resource.supports({:reload => true})
+      @new_resource.supports({ :reload => true })
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/usr/sbin/invoke-rc.d chef reload")
       @provider.reload_service()
     end

@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,26 +15,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'support/shared/integration/integration_helper'
-require 'support/shared/context/config'
-require 'chef/knife/list'
+require "support/shared/integration/integration_helper"
+require "support/shared/context/config"
+require "chef/knife/list"
 
-describe 'redirection', :workstation do
+describe "redirection", :workstation do
   include IntegrationSupport
   include KnifeSupport
   include AppServerSupport
 
   include_context "default config options"
 
-  when_the_chef_server 'has a role' do
-    before { role 'x', {} }
+  when_the_chef_server "has a role" do
+    before { role "x", {} }
 
-    context 'and another server redirects to it with 302' do
+    context "and another server redirects to it with 302" do
       before :each do
         real_chef_server_url = Chef::Config.chef_server_url
         Chef::Config.chef_server_url = "http://localhost:9018"
         app = lambda do |env|
-          [302, {'Content-Type' => 'text','Location' => "#{real_chef_server_url}#{env['PATH_INFO']}" }, ['302 found'] ]
+          [302, { "Content-Type" => "text", "Location" => "#{real_chef_server_url}#{env['PATH_INFO']}" }, ["302 found"] ]
         end
         @redirector_server, @redirector_server_thread = start_app_server(app, 9018)
       end
@@ -44,8 +44,8 @@ describe 'redirection', :workstation do
         @redirector_thread.kill if @redirector_thread
       end
 
-      it 'knife list /roles returns the role' do
-        knife('list /roles').should_succeed "/roles/x.json\n"
+      it "knife list /roles returns the role" do
+        knife("list /roles").should_succeed "/roles/x.json\n"
       end
     end
   end

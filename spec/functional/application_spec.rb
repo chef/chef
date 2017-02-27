@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "chef/mixin/shell_out"
 
 describe Chef::Application do
   include Chef::Mixin::ShellOut
@@ -42,15 +42,15 @@ describe Chef::Application do
       Chef::Config[:ftp_proxy] = nil
       Chef::Config[:no_proxy] = nil
 
-      @app.configure_proxy_environment_variables
+      Chef::Config.export_proxies
     end
 
     it "saves built proxy to ENV which shell_out can use" do
       so = if windows?
-        shell_out("echo %http_proxy%")
-      else
-        shell_out("echo $http_proxy")
-      end
+             shell_out("echo %http_proxy%")
+           else
+             shell_out("echo $http_proxy")
+           end
 
       expect(so.stdout.chomp).to eq("http://proxy.example.org:8080")
     end

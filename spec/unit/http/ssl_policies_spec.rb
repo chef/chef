@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010, 2013 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/http/ssl_policies'
+require "spec_helper"
+require "chef/http/ssl_policies"
 
 describe "HTTP SSL Policy" do
 
@@ -54,7 +54,7 @@ describe "HTTP SSL Policy" do
 
       it "raises a ConfigurationError if :ssl_ca_path is set to a path that doesn't exist" do
         Chef::Config[:ssl_ca_path] = "/dev/null/nothing_here"
-        expect {http_client}.to raise_error(Chef::Exceptions::ConfigurationError)
+        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
       end
 
       it "should set the CA path if that is set in the configuration" do
@@ -64,12 +64,12 @@ describe "HTTP SSL Policy" do
 
       it "raises a ConfigurationError if :ssl_ca_file is set to a file that does not exist" do
         Chef::Config[:ssl_ca_file] = "/dev/null/nothing_here"
-        expect {http_client}.to raise_error(Chef::Exceptions::ConfigurationError)
+        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
       end
 
       it "should set the CA file if that is set in the configuration" do
-        Chef::Config[:ssl_ca_file] = CHEF_SPEC_DATA + '/ssl/5e707473.0'
-        expect(http_client.ca_file).to eq(CHEF_SPEC_DATA + '/ssl/5e707473.0')
+        Chef::Config[:ssl_ca_file] = CHEF_SPEC_DATA + "/ssl/5e707473.0"
+        expect(http_client.ca_file).to eq(CHEF_SPEC_DATA + "/ssl/5e707473.0")
       end
     end
 
@@ -85,31 +85,31 @@ describe "HTTP SSL Policy" do
     end
 
     describe "when configured with a client certificate" do
-      before {@url = URI.parse("https://chef.example.com:4443/")}
+      before { @url = URI.parse("https://chef.example.com:4443/") }
 
       it "raises ConfigurationError if the certificate file doesn't exist" do
         Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
-        Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
-        expect {http_client}.to raise_error(Chef::Exceptions::ConfigurationError)
+        Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + "/ssl/chef-rspec.key"
+        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
       end
 
       it "raises ConfigurationError if the certificate file doesn't exist" do
-        Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
+        Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + "/ssl/chef-rspec.cert"
         Chef::Config[:ssl_client_key]  = "/dev/null/nothing_here"
-        expect {http_client}.to raise_error(Chef::Exceptions::ConfigurationError)
+        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
       end
 
       it "raises a ConfigurationError if one of :ssl_client_cert and :ssl_client_key is set but not both" do
         Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
         Chef::Config[:ssl_client_key]  = nil
-        expect {http_client}.to raise_error(Chef::Exceptions::ConfigurationError)
+        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
       end
 
       it "configures the HTTP client's cert and private key" do
-        Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
-        Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
-        expect(http_client.cert.to_s).to eq(OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.cert')).to_s)
-        expect(http_client.key.to_s).to  eq(IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.key'))
+        Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + "/ssl/chef-rspec.cert"
+        Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + "/ssl/chef-rspec.key"
+        expect(http_client.cert.to_s).to eq(OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.cert")).to_s)
+        expect(http_client.key.to_s).to eq(OpenSSL::PKey::RSA.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.key")).to_s)
       end
     end
 
@@ -167,4 +167,3 @@ describe "HTTP SSL Policy" do
 
   end
 end
-

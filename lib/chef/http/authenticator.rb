@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/http/auth_credentials'
-require 'chef/exceptions'
-require 'openssl'
+require "chef/http/auth_credentials"
+require "chef/exceptions"
+require "openssl"
 
 class Chef
   class HTTP
@@ -33,7 +33,7 @@ class Chef
 
       attr_accessor :sign_request
 
-      def initialize(opts={})
+      def initialize(opts = {})
         @raw_key = nil
         @sign_request = true
         @signing_key_filename = opts[:signing_key_filename]
@@ -46,9 +46,9 @@ class Chef
         end
       end
 
-      def handle_request(method, url, headers={}, data=false)
-        headers.merge!(authentication_headers(method, url, data)) if sign_requests?
-        headers.merge!({'X-Ops-Server-API-Version' => @api_version})
+      def handle_request(method, url, headers = {}, data = false)
+        headers["X-Ops-Server-API-Version"] = @api_version
+        headers.merge!(authentication_headers(method, url, data, headers)) if sign_requests?
         [method, url, headers, data]
       end
 
@@ -73,9 +73,9 @@ class Chef
       end
 
       def load_signing_key(key_file, raw_key = nil)
-        if (!!key_file)
+        if !!key_file
           @raw_key = IO.read(key_file).strip
-        elsif (!!raw_key)
+        elsif !!raw_key
           @raw_key = raw_key.strip
         else
           return nil
@@ -90,12 +90,17 @@ class Chef
         raise Chef::Exceptions::InvalidPrivateKey, msg
       end
 
-      def authentication_headers(method, url, json_body=nil)
-        request_params = {:http_method => method, :path => url.path, :body => json_body, :host => "#{url.host}:#{url.port}"}
+      def authentication_headers(method, url, json_body = nil, headers = nil)
+        request_params = {
+          :http_method => method,
+          :path => url.path,
+          :body => json_body,
+          :host => "#{url.host}:#{url.port}",
+          :headers => headers,
+        }
         request_params[:body] ||= ""
         auth_credentials.signature_headers(request_params)
       end
-
     end
   end
 end

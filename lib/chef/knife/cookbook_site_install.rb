@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +16,19 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/exceptions'
-require 'shellwords'
+require "chef/knife"
+require "chef/exceptions"
+require "shellwords"
+require "mixlib/archive"
 
 class Chef
   class Knife
     class CookbookSiteInstall < Knife
 
       deps do
-        require 'chef/mixin/shell_out'
-        require 'chef/knife/core/cookbook_scm_repo'
-        require 'chef/cookbook/metadata'
+        require "chef/mixin/shell_out"
+        require "chef/knife/core/cookbook_scm_repo"
+        require "chef/cookbook/metadata"
       end
 
       banner "knife cookbook site install COOKBOOK [VERSION] (options)"
@@ -53,11 +54,18 @@ class Chef
         :default => "master"
 
       option :use_current_branch,
-        :short =>  "-b",
+        :short => "-b",
         :long => "--use-current-branch",
         :description => "Use the current branch",
         :boolean => true,
         :default => false
+
+      option :supermarket_site,
+        :short => "-m SUPERMARKET_SITE",
+        :long => "--supermarket-site SUPERMARKET_SITE",
+        :description => "Supermarket Site",
+        :default => "https://supermarket.chef.io",
+        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 
       attr_reader :cookbook_name
       attr_reader :vendor_path
@@ -75,7 +83,7 @@ class Chef
         # Check to ensure we have a valid source of cookbooks before continuing
         #
         @install_path = File.expand_path(Array(config[:cookbook_path]).first)
-        ui.info "Installing #@cookbook_name to #{@install_path}"
+        ui.info "Installing #{@cookbook_name} to #{@install_path}"
 
         @repo = CookbookSCMRepo.new(@install_path, ui, config)
         #cookbook_path = File.join(vendor_path, name_args[0])
@@ -123,7 +131,7 @@ class Chef
           ui.error("Please specify a cookbook to download and install.")
           exit 1
         elsif name_args.size >= 2
-          unless name_args.last.match(/^(\d+)(\.\d+){1,2}$/) and name_args.size == 2
+          unless name_args.last.match(/^(\d+)(\.\d+){1,2}$/) && name_args.size == 2
             ui.error("Installing multiple cookbooks at once is not supported.")
             exit 1
           end
@@ -134,6 +142,7 @@ class Chef
       def download_cookbook_to(download_path)
         downloader = Chef::Knife::CookbookSiteDownload.new
         downloader.config[:file] = download_path
+        downloader.config[:supermarket_site] = config[:supermarket_site]
         downloader.name_args = name_args
         downloader.run
         downloader
@@ -141,12 +150,7 @@ class Chef
 
       def extract_cookbook(upstream_file, version)
         ui.info("Uncompressing #{@cookbook_name} version #{version}.")
-        # FIXME: Detect if we have the bad tar from git on Windows: https://github.com/opscode/chef/issues/1753
-        extract_command="tar zxvf \"#{convert_path upstream_file}\"" 
-        if Chef::Platform.windows?
-          extract_command << " --force-local"
-        end
-        shell_out!(extract_command, :cwd => @install_path)
+        Mixlib::Archive.new(convert_path(upstream_file)).extract(@install_path, perms: false)
       end
 
       def clear_existing_files(cookbook_path)
@@ -156,10 +160,10 @@ class Chef
 
       def convert_path(upstream_file)
         # converts a Windows path (C:\foo) to a mingw path (/c/foo)
-        if ENV['MSYSTEM'] == 'MINGW32'
-          return upstream_file.sub(/^([[:alpha:]]):/, '/\1')
+        if ENV["MSYSTEM"] == "MINGW32"
+          upstream_file.sub(/^([[:alpha:]]):/, '/\1')
         else
-          return Shellwords.escape upstream_file
+          Shellwords.escape upstream_file
         end
       end
 
@@ -172,7 +176,7 @@ class Chef
       def preferred_metadata
         md = Chef::Cookbook::Metadata.new
 
-        rb   = File.join(@install_path, @cookbook_name, "metadata.rb")
+        rb = File.join(@install_path, @cookbook_name, "metadata.rb")
         if File.exist?(rb)
           md.from_file(rb)
           return md

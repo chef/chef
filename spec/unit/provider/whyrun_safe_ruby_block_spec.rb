@@ -1,6 +1,6 @@
 #
 # Author:: Phil Dibowitz (<phild@fb.com>)
-# Copyright:: Copyright (c) 2013 Facebook
+# Copyright:: Copyright 2013-2016, Facebook
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::WhyrunSafeRubyBlock, "initialize" do
   before(:each) do
@@ -25,7 +25,7 @@ describe Chef::Provider::WhyrunSafeRubyBlock, "initialize" do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::WhyrunSafeRubyBlock.new("bloc party")
-    @new_resource.block { $evil_global_evil_laugh = :mwahahaha}
+    @new_resource.block { $evil_global_evil_laugh = :mwahahaha }
     @provider = Chef::Provider::WhyrunSafeRubyBlock.new(@new_resource, @run_context)
   end
 
@@ -44,4 +44,3 @@ describe Chef::Provider::WhyrunSafeRubyBlock, "initialize" do
   end
 
 end
-

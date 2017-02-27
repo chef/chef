@@ -1,5 +1,5 @@
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::ResourceCollection::StepableIterator do
   CRSI = Chef::ResourceCollection::StepableIterator
@@ -26,7 +26,7 @@ describe Chef::ResourceCollection::StepableIterator do
 
   describe "doing basic iteration" do
     before do
-      @simple_collection = [1,2,3,4]
+      @simple_collection = [1, 2, 3, 4]
       @iterator = CRSI.for_collection(@simple_collection)
     end
 
@@ -57,7 +57,7 @@ describe Chef::ResourceCollection::StepableIterator do
       @iterator.each_with_index do |element, index|
         collected[index] = element
       end
-      expect(collected).to eq({0=>1, 1=>2, 2=>3, 3=>4})
+      expect(collected).to eq({ 0 => 1, 1 => 2, 2 => 3, 3 => 4 })
     end
 
   end
@@ -117,7 +117,7 @@ describe Chef::ResourceCollection::StepableIterator do
 
     it "doesn't step if there are no more steps" do
       expect(@iterator.step).to eq(3)
-      expect {@iterator.step}.not_to raise_error
+      expect { @iterator.step }.not_to raise_error
       expect(@iterator.step).to be_nil
     end
 
@@ -131,7 +131,7 @@ describe Chef::ResourceCollection::StepableIterator do
     end
 
     it "should work correctly when elements are added to the collection during iteration" do
-      @collection.insert(2, lambda { @snitch_var = 815})
+      @collection.insert(2, lambda { @snitch_var = 815 })
       @collection.insert(3, lambda { @iterator.pause })
       @iterator.resume
       expect(@snitch_var).to eq(815)

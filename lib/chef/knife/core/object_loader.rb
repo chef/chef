@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'ffi_yajl'
-require 'chef/util/path_helper'
-require 'chef/data_bag_item'
+require "ffi_yajl"
+require "chef/util/path_helper"
+require "chef/data_bag_item"
 
 class Chef
   class Knife
@@ -71,14 +71,14 @@ class Chef
         #
         # @api public
         def find_all_objects(path)
-          path = File.join(Chef::Util::PathHelper.escape_glob(File.expand_path(path)), '*')
-          path << '.{json,rb}'
+          path = File.join(Chef::Util::PathHelper.escape_glob_dir(File.expand_path(path)), "*")
+          path << ".{json,rb}"
           objects = Dir.glob(path)
           objects.map { |o| File.basename(o) }
         end
 
         def find_all_object_dirs(path)
-          path = File.join(Chef::Util::PathHelper.escape_glob(File.expand_path(path)), '*')
+          path = File.join(Chef::Util::PathHelper.escape_glob_dir(File.expand_path(path)), "*")
           objects = Dir.glob(path)
           objects.delete_if { |o| !File.directory?(o) }
           objects.map { |o| File.basename(o) }
@@ -93,7 +93,7 @@ class Chef
             if @klass == Chef::DataBagItem
               r
             else
-              @klass.json_create(r)
+              @klass.from_hash(r)
             end
           when /\.rb$/
             r = klass.new

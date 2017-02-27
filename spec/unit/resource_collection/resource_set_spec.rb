@@ -1,6 +1,6 @@
 #
-# Author:: Tyler Ball (<tball@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Tyler Ball (<tball@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::ResourceCollection::ResourceSet do
   let(:collection) { Chef::ResourceCollection::ResourceSet.new }
@@ -78,13 +78,13 @@ describe Chef::ResourceCollection::ResourceSet do
     it "should find a resource by type symbol and array of names" do
       collection.insert_as(zen_master)
       collection.insert_as(zen_master2)
-      check_by_names(collection.find(:zen_master => [zen_master_name,zen_master2_name]), zen_master_name, zen_master2_name)
+      check_by_names(collection.find(:zen_master => [zen_master_name, zen_master2_name]), zen_master_name, zen_master2_name)
     end
 
     it "should find a resource by type symbol and array of names with custom names" do
       collection.insert_as(zen_master, :zzz, "name1")
       collection.insert_as(zen_master2, :zzz, "name2")
-      check_by_names(collection.find( :zzz => ["name1","name2"]), zen_master_name, zen_master2_name)
+      check_by_names(collection.find( :zzz => %w{name1 name2}), zen_master_name, zen_master2_name)
     end
 
     it "should find resources of multiple kinds (:zen_master => a, :zen_follower => b)" do
@@ -98,7 +98,7 @@ describe Chef::ResourceCollection::ResourceSet do
       collection.insert_as(zen_master, :zzz, "name1")
       collection.insert_as(zen_master2, :zzz, "name2")
       collection.insert_as(zen_follower, :yyy, "name3")
-      check_by_names(collection.find(:zzz => ["name1","name2"], :yyy => ["name3"]),
+      check_by_names(collection.find(:zzz => %w{name1 name2}, :yyy => ["name3"]),
                      zen_master_name, zen_follower_name, zen_master2_name)
     end
 
@@ -138,13 +138,13 @@ describe Chef::ResourceCollection::ResourceSet do
       collection.insert_as(zen_master2, :zzz, "name2")
       collection.insert_as(zen_follower, :yyy, "name3")
       check_by_names(collection.find("zzz[name1,name2]", "yyy[name3]"),
-                     zen_master_name, zen_follower_name,zen_master2_name)
+                     zen_master_name, zen_follower_name, zen_master2_name)
     end
 
     it "should only keep the last copy when multiple instances of a Resource are inserted" do
       collection.insert_as(zen_master)
       expect(collection.find("zen_master[#{zen_master_name}]")).to eq(zen_master)
-      new_zm =zen_master.dup
+      new_zm = zen_master.dup
       new_zm.retries = 10
       expect(new_zm).to_not eq(zen_master)
       collection.insert_as(new_zm)
@@ -192,7 +192,7 @@ describe Chef::ResourceCollection::ResourceSet do
   def check_by_names(results, *names)
     expect(results.size).to eq(names.size)
     names.each do |name|
-      expect(results.detect{|r| r.name == name}).to_not eq(nil)
+      expect(results.detect { |r| r.name == name }).to_not eq(nil)
     end
   end
 

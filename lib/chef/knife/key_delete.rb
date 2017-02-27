@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/key'
+require "chef/key"
 
 class Chef
   class Knife
@@ -39,7 +39,7 @@ class Chef
       end
 
       def print_destroyed
-        @ui.info("Destroyed key named #{@name} for the #{@actor_field_name} named #{@actor}")
+        @ui.info("Deleted key named #{@name} for the #{@actor_field_name} named #{@actor}")
       end
 
       def run

@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class NodeBulkDelete < Knife
 
       deps do
-        require 'chef/node'
-        require 'chef/json_compat'
+        require "chef/node"
+        require "chef/json_compat"
       end
 
       banner "knife node bulk delete REGEX (options)"
@@ -34,7 +34,6 @@ class Chef
           ui.fatal("You must supply a regular expression to match the results against")
           exit 42
         end
-
 
         nodes_to_delete = {}
         matcher = /#{name_args[0]}/
@@ -55,7 +54,6 @@ class Chef
         ui.msg("")
         ui.confirm("Are you sure you want to delete these nodes")
 
-
         nodes_to_delete.sort.each do |name, node|
           node.destroy
           ui.msg("Deleted node #{name}")
@@ -66,7 +64,7 @@ class Chef
         node_uris_by_name = Chef::Node.list
 
         node_uris_by_name.keys.inject({}) do |nodes_by_name, name|
-          nodes_by_name[name] = Chef::Node.new.tap {|n| n.name(name)}
+          nodes_by_name[name] = Chef::Node.new.tap { |n| n.name(name) }
           nodes_by_name
         end
       end
@@ -74,7 +72,3 @@ class Chef
     end
   end
 end
-
-
-
-

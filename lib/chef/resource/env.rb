@@ -1,7 +1,7 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,14 +30,14 @@ class Chef
       default_action :create
       allowed_actions :create, :delete, :modify
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @key_name = name
         @value = nil
         @delim = nil
       end
 
-      def key_name(arg=nil)
+      def key_name(arg = nil)
         set_or_return(
           :key_name,
           arg,
@@ -45,7 +45,7 @@ class Chef
         )
       end
 
-      def value(arg=nil)
+      def value(arg = nil)
         set_or_return(
           :value,
           arg,
@@ -53,7 +53,7 @@ class Chef
         )
       end
 
-      def delim(arg=nil)
+      def delim(arg = nil)
         set_or_return(
           :delim,
           arg,

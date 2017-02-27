@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/rest'
-require 'chef/exceptions'
+require "chef/config"
+require "chef/server_api"
+require "chef/exceptions"
 
 class Chef
   class ApiClient
@@ -45,7 +45,7 @@ class Chef
       #--
       # If client creation fails with a 5xx, it is retried up to 5 times. These
       # retries are on top of the retries with randomized exponential backoff
-      # built in to Chef::REST. The retries here are a workaround for failures
+      # built in to Chef::ServerAPI. The retries here are a workaround for failures
       # caused by resource contention in Hosted Chef when creating a very large
       # number of clients simultaneously, (e.g., spinning up 100s of ec2 nodes
       # at once). Future improvements to the affected component should make
@@ -53,8 +53,9 @@ class Chef
       def run
         assert_destination_writable!
         retries = Config[:client_registration_retries] || 5
+        client = nil
         begin
-          create_or_update
+          client = api_client(create_or_update)
         rescue Net::HTTPFatalError => e
           # HTTPFatalError implies 5xx.
           raise if retries <= 0
@@ -64,10 +65,11 @@ class Chef
           retry
         end
         write_key
+        client
       end
 
       def assert_destination_writable!
-        if (File.exists?(destination) && !File.writable?(destination)) or !File.writable?(File.dirname(destination))
+        if (File.exists?(destination) && !File.writable?(destination)) || !File.writable?(File.dirname(destination))
           abs_path = File.expand_path(destination)
           raise Chef::Exceptions::CannotWritePrivateKey, "I can't write your private key to #{abs_path} - check permissions?"
         end
@@ -106,6 +108,28 @@ class Chef
         response
       end
 
+      def api_client(response)
+        return response if response.is_a?(Chef::ApiClient)
+
+        client = Chef::ApiClient.new
+        client.name(name)
+        client.public_key(api_client_key(response, "public_key"))
+        client.private_key(api_client_key(response, "private_key"))
+        client
+      end
+
+      def api_client_key(response, key_name)
+        if response[key_name]
+          if response[key_name].respond_to?(:to_pem)
+            response[key_name].to_pem
+          else
+            response[key_name]
+          end
+        elsif response["chef_key"]
+          response["chef_key"][key_name]
+        end
+      end
+
       def put_data
         base_put_data = { :name => name, :admin => false }
         if self_generate_keys?
@@ -123,9 +147,13 @@ class Chef
       end
 
       def http_api
-        @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url],
-                                     Chef::Config[:validation_client_name],
-                                     Chef::Config[:validation_key])
+        @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url],
+                                          {
+                                            :api_version => "0",
+                                            :client_name => Chef::Config[:validation_client_name],
+                                            :signing_key_filename => Chef::Config[:validation_key],
+                                          }
+                                         )
       end
 
       # Whether or not to generate keys locally and post the public key to the
@@ -152,7 +180,7 @@ class Chef
       end
 
       def file_flags
-        base_flags = File::CREAT|File::TRUNC|File::RDWR
+        base_flags = File::CREAT | File::TRUNC | File::RDWR
         # Windows doesn't have symlinks, so it doesn't have NOFOLLOW
         if defined?(File::NOFOLLOW) && !Chef::Config[:follow_client_key_symlink]
           base_flags |= File::NOFOLLOW

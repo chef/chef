@@ -7,7 +7,7 @@ file tells you who needs to review your patch - you need a simple majority of ma
 for the relevant subsystems to provide a :+1: on your pull request. Additionally, you need
 to not receive a veto from a Lieutenant or the Project Lead.
 
-Check out [How Chef is Maintained](https://github.com/opscode/chef-rfc/blob/master/rfc030-maintenance-policy.md#how-the-project-is-maintained) for details on the process, how to become
+Check out [How Chef is Maintained](https://github.com/chef/chef-rfc/blob/master/rfc030-maintenance-policy.md#how-the-project-is-maintained) for details on the process, how to become
 a maintainer, lieutenant, or the project lead.
 
 # Project Lead
@@ -18,9 +18,7 @@ a maintainer, lieutenant, or the project lead.
 
 ## Chef Core
 
-Handles the core parts of the Chef DSL, base resource and provider
-infrastructure, the Chef applications and [omnibus-chef](https://github.com/chef/omnibus-chef). Includes anything not covered by
-another component.
+Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, chefstyle, and sundry others.
 
 To mention the team, use @chef/client-core
 
@@ -36,40 +34,36 @@ To mention the team, use @chef/client-core
 * [AJ Christensen](https://github.com/fujin)
 * [Phil Dibowitz](https://github.com/jaymzh)
 * [Jay Mundrawala](https://github.com/jaym)
+* [John Keiser](https://github.com/jkeiser)
 * [Jon Cowie](https://github.com/jonlives)
-* [Lamont Granquist](https://github.com/lamont-granquist)
-* [Claire McQuin](https://github.com/mcquin)
-* [Steven Murawski](https://github.com/smurawski)
-* [Tyler Ball](https://github.com/tyler-ball)
-* [Ranjib Dey](https://github.com/ranjib)
-* [Matt Wrock](https://github.com/mwrock)
-
-## Dev Tools
-
-Chef Zero, Knife, Chef Apply and Chef Shell.
-To mention the team, use @chef/client-dev-tools
-
-### Maintainers
-
-* [Daniel DeLeo](https://github.com/danielsdeleo)
 * [Joshua Timberman](https://github.com/jtimberman)
 * [Lamont Granquist](https://github.com/lamont-granquist)
+* [Claire McQuin](https://github.com/mcquin)
+* [Matt Wrock](https://github.com/mwrock)
+* [Ranjib Dey](https://github.com/ranjib)
+* [Steven Murawski](https://github.com/smurawski)
 * [Steven Danna](https://github.com/stevendanna)
+* [Tim Smith](https://github.com/tas50)
+* [Tom Duffield](https://github.com/tduffield)
+* [Tyler Ball](https://github.com/tyler-ball)
 
-## Test Tools
+## Chef Provisioning
 
-ChefSpec
-To mention the team, use @chef/client-test-tools
+Chef Provisioning and Drivers.  Supported Drivers are listed in the [README](https://github.com/chef/chef-provisioning/blob/master/README.md#chef-provisioning).
+
+To mention the team, use @chef/provisioning
 
 ### Lieutenant
 
-* [Seth Vargo](https://github.com/sethvargo)
+* [Tyler Ball](https://github.com/tyler-ball)
 
 ### Maintainers
 
-* [Joshua Timberman](https://github.com/jtimberman)
-* [Lamont Granquist](https://github.com/lamont-granquist)
-* [Ranjib Dey](https://github.com/ranjib)
+* [John Keiser](https://github.com/jkeiser)
+* [JJ Asghar](https://github.com/jjasghar)
+* [João Cravo](https://github.com/joaogbcravo)
+* [Stuart Preston](https://github.com/stuartpreston)
+* [Harley Alaniz](https://github.com/thehar)
 
 ## Platform Specific Components
 
@@ -99,6 +93,7 @@ To mention the team, use @chef/client-ubuntu
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
+* [Tim Smith](https://github.com/tas50)
 * [Thom May](https://github.com/thommay)
 
 ## Windows
@@ -160,6 +155,7 @@ To mention the team, use @chef/client-debian
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
+* [Tim Smith](https://github.com/tas50)
 
 ## Fedora
 
@@ -176,6 +172,7 @@ To mention the team, use @chef/client-opensuse
 ### Maintainers
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
+* [Tim Smith](https://github.com/tas50)
 
 ## SUSE Enterprise Linux Server
 
@@ -197,7 +194,7 @@ To mention the team, use @chef/client-freebsd
 
 * [Cory Stephenson](https://github.com/Aevin1387)
 * [David Aronsohn](https://github.com/tbunnyman)
-* [Bryant Lippert](https://github.com/agentmeerkat)
+* [Bryant Lippert](https://github.com/AgentMeerkat)
 
 ## OpenBSD
 

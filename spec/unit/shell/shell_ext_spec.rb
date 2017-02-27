@@ -1,6 +1,6 @@
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Shell::Extensions do
   describe "extending object for top level methods" do
@@ -92,9 +92,9 @@ describe Shell::Extensions do
     end
 
     it "prints node attributes" do
-      node = double("node", :attribute => {:foo => :bar})
+      node = double("node", :attribute => { :foo => :bar })
       @shell_client.node = node
-      expect(@root_context).to receive(:pp).with({:foo => :bar})
+      expect(@root_context).to receive(:pp).with({ :foo => :bar })
       @root_context.ohai
       expect(@root_context).to receive(:pp).with(:bar)
       @root_context.ohai(:foo)

@@ -1,7 +1,7 @@
 #
 # Author:: Jesse Campbell (<hikeit@gmail.com>)
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'uri'
-require 'tempfile'
-require 'chef/file_content_management/content_base'
-require 'chef/mixin/uris'
+require "uri"
+require "tempfile"
+require "chef/file_content_management/content_base"
+require "chef/mixin/uris"
 
 class Chef
   class Provider
@@ -49,13 +49,13 @@ class Chef
           source = sources.shift
           begin
             uri = if Chef::Provider::RemoteFile::Fetcher.network_share?(source)
-              source
-            else
-              as_uri(source)
-            end
+                    source
+                  else
+                    as_uri(source)
+                  end
             raw_file = grab_file_from_uri(uri)
-          rescue SocketError, Errno::ECONNREFUSED, Errno::ENOENT, Errno::EACCES, Timeout::Error, Net::HTTPServerException, Net::HTTPFatalError, Net::FTPError => e
-            Chef::Log.warn("#{@new_resource} cannot be downloaded from #{source}: #{e.to_s}")
+          rescue SocketError, Errno::ECONNREFUSED, Errno::ENOENT, Errno::EACCES, Timeout::Error, Net::HTTPServerException, Net::HTTPFatalError, Net::FTPError, Errno::ETIMEDOUT => e
+            Chef::Log.warn("#{@new_resource} cannot be downloaded from #{source}: #{e}")
             if source = sources.shift
               Chef::Log.info("#{@new_resource} trying to download from another mirror")
               retry

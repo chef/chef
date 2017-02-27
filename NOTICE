@@ -1,21 +1,21 @@
 Chef NOTICE
 ===========
 
-Developed at Opscode (http://www.opscode.com).
+Developed at Chef (https://www.chef.io).
 
 Contributors and Copyright holders:
 
- * Copyright 2008, Adam Jacob <adam@opscode.com>
- * Copyright 2008, Arjuna Christensen <aj@hjksolutions.com>
- * Copyright 2008, Bryan McLellan <btm@loftninjas.org>
- * Copyright 2008, Ezra Zygmuntowicz <ezra@engineyard.com>
- * Copyright 2009, Sean Cribbs <seancribbs@gmail.com>
- * Copyright 2009, Christopher Brown <cb@opscode.com>
- * Copyright 2009, Thom May <thom@clearairturbulence.org>
- * Copyright 2009, Joe Williams <joe@joetify.com>
+ * Copyright 2008-2016, Adam Jacob <adam@chef.io>
+ * Copyright 2008-2016, Arjuna Christensen <aj@hjksolutions.com>
+ * Copyright 2008-2016, Bryan McLellan <btm@loftninjas.org>
+ * Copyright 2008-2016, Ezra Zygmuntowicz <ezra@engineyard.com>
+ * Copyright 2009-2016, Sean Cribbs <seancribbs@gmail.com>
+ * Copyright 2009-2016, Christopher Brown <cb@chef.io>
+ * Copyright 2009-2016, Thom May <thom@clearairturbulence.org>
+ * Copyright 2009-2016, Joe Williams <joe@joetify.com>
 
 Chef incorporates code modified from Open4 (http://www.codeforpeople.com/lib/ruby/open4/), which was written by Ara T. Howard.
 
-Chef incorporates code modified from deep_merge (http://trac.misuse.org/science/wiki/DeepMerge), which is Copyright (c) 2008 Steve Midgley
+Chef incorporates code modified from deep_merge (http://trac.misuse.org/science/wiki/DeepMerge), which is Copyright 2008-2016, Steve Midgley
 
 Chef incorporates code modified from diff-lcs (http://diff-lcs.rubyforge.org/), which is Copyright (c) 2004–2013 Austin Ziegler

@@ -1,6 +1,6 @@
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/mixin/shell_out'
+require "chef/knife"
+require "chef/mixin/shell_out"
 
 class Chef
   class Knife
@@ -26,10 +26,10 @@ class Chef
       include Chef::Mixin::ShellOut
 
       deps do
-        require 'chef/cookbook_loader'
-        require 'chef/cookbook_uploader'
-        require 'chef/cookbook_site_streaming_uploader'
-        require 'mixlib/shellout'
+        require "chef/cookbook_loader"
+        require "chef/cookbook_uploader"
+        require "chef/cookbook_site_streaming_uploader"
+        require "mixlib/shellout"
       end
 
       include Chef::Mixin::ShellOut
@@ -44,11 +44,18 @@ class Chef
         :proc => lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
       option :dry_run,
-        :long => '--dry-run',
-        :short => '-n',
+        :long => "--dry-run",
+        :short => "-n",
         :boolean => true,
         :default => false,
         :description => "Don't take action, only print what files will be uploaded to Supermarket."
+
+      option :supermarket_site,
+        :short => "-m SUPERMARKET_SITE",
+        :long => "--supermarket-site SUPERMARKET_SITE",
+        :description => "Supermarket Site",
+        :default => "https://supermarket.chef.io",
+        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
@@ -90,7 +97,7 @@ class Chef
 
           begin
             do_upload("#{tmp_cookbook_dir}/#{cookbook_name}.tgz", category, Chef::Config[:node_name], Chef::Config[:client_key])
-            ui.info("Upload complete!")
+            ui.info("Upload complete")
             Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
             FileUtils.rm_rf tmp_cookbook_dir
           rescue => e
@@ -103,39 +110,32 @@ class Chef
           ui.error("Could not find cookbook #{cookbook_name} in your cookbook path.")
           exit(1)
         end
-
       end
 
       def get_category(cookbook_name)
-        begin
-          data = noauth_rest.get_rest("https://supermarket.chef.io/api/v1/cookbooks/#{@name_args[0]}")
-          if !data["category"] && data["error_code"]
-            ui.fatal("Received an error from Supermarket: #{data["error_code"]}. On the first time you upload it, you are required to specify the category you want to share this cookbook to.")
-            exit(1)
-          else
-            data['category']
-          end
-        rescue => e
-          ui.fatal("Unable to reach Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
-          Chef::Log.debug("\n#{e.backtrace.join("\n")}")
-          exit(1)
-        end
+        data = noauth_rest.get("#{config[:supermarket_site]}/api/v1/cookbooks/#{@name_args[0]}")
+        data["category"]
+      rescue => e
+        return "Other" if e.kind_of?(Net::HTTPServerException) && e.response.code == "404"
+        ui.fatal("Unable to reach Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
+        Chef::Log.debug("\n#{e.backtrace.join("\n")}")
+        exit(1)
       end
 
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)
-        uri = "https://supermarket.chef.io/api/v1/cookbooks"
+        uri = "#{config[:supermarket_site]}/api/v1/cookbooks"
 
-        category_string = Chef::JSONCompat.to_json({ 'category'=>cookbook_category })
+        category_string = Chef::JSONCompat.to_json({ "category" => cookbook_category })
 
         http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
           :tarball => File.open(cookbook_filename),
-          :cookbook => category_string
+          :cookbook => category_string,
         })
 
         res = Chef::JSONCompat.from_json(http_resp.body)
         if http_resp.code.to_i != 201
-          if res['error_messages']
-            if res['error_messages'][0] =~ /Version already exists/
+          if res["error_messages"]
+            if res["error_messages"][0] =~ /Version already exists/
               ui.error "The same version of this cookbook already exists on Supermarket."
               exit(1)
             else

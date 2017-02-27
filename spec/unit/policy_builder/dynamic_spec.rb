@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright 2014 Chef Software, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/policy_builder'
+require "spec_helper"
+require "chef/policy_builder"
 
 describe Chef::PolicyBuilder::Dynamic do
 
   let(:node_name) { "joe_node" }
-  let(:ohai_data) { {"platform" => "ubuntu", "platform_version" => "13.04", "fqdn" => "joenode.example.com"} }
-  let(:json_attribs) { {"custom_attr" => "custom_attr_value"} }
+  let(:ohai_data) { { "platform" => "ubuntu", "platform_version" => "13.04", "fqdn" => "joenode.example.com" } }
+  let(:json_attribs) { { "custom_attr" => "custom_attr_value" } }
   let(:override_runlist) { nil }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
 
@@ -123,7 +123,7 @@ describe Chef::PolicyBuilder::Dynamic do
 
         context "and no policyfile attributes are present in json_attribs" do
 
-          let(:json_attribs) { {"foo" => "bar"} }
+          let(:json_attribs) { { "foo" => "bar" } }
 
           it "uses the ExpandNodeObject implementation" do
             expect(implementation).to be_a(Chef::PolicyBuilder::ExpandNodeObject)
@@ -171,7 +171,7 @@ describe Chef::PolicyBuilder::Dynamic do
 
         context "and policyfile attributes are present in json_attribs" do
 
-          let(:json_attribs) { {"policy_name" => "example-policy", "policy_group" => "testing"} }
+          let(:json_attribs) { { "policy_name" => "example-policy", "policy_group" => "testing" } }
 
           it "uses the Policyfile implementation" do
             expect(implementation).to be_a(Chef::PolicyBuilder::Policyfile)
@@ -206,7 +206,6 @@ describe Chef::PolicyBuilder::Dynamic do
       end
 
       context "when not running chef solo" do
-
 
         context "when successful" do
 
@@ -243,7 +242,6 @@ describe Chef::PolicyBuilder::Dynamic do
             expect(implementation).to receive(:finish_load_node).and_raise("oops")
           end
 
-
           it "sends a node_load_failed event and re-raises" do
             expect(events).to receive(:node_load_failed)
             expect { policy_builder.load_node }.to raise_error("oops")
@@ -256,7 +254,7 @@ describe Chef::PolicyBuilder::Dynamic do
       context "when running chef solo" do
 
         before do
-          Chef::Config[:solo] = true
+          Chef::Config[:solo_legacy_mode] = true
           expect(Chef::Node).to receive(:build).with(node_name).and_return(node)
           expect(policy_builder).to receive(:select_implementation).with(node)
           expect(implementation).to receive(:finish_load_node).with(node)

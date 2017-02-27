@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: AJ Christensen (<aj@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/ruby_block'
+require "chef/resource"
+require "chef/provider/ruby_block"
 
 class Chef
   class Resource
@@ -28,20 +28,20 @@ class Chef
 
       identity_attr :block_name
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @block_name = name
       end
 
       def block(&block)
-        if block_given? and block
+        if block_given? && block
           @block = block
         else
           @block
         end
       end
 
-      def block_name(arg=nil)
+      def block_name(arg = nil)
         set_or_return(
           :block_name,
           arg,

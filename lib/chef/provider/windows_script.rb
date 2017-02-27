@@ -1,6 +1,6 @@
 #
-# Author:: Adam Edwards (<adamed@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Adam Edwards (<adamed@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/provider/script'
-require 'chef/mixin/windows_architecture_helper'
+require "chef/provider/script"
+require "chef/mixin/windows_architecture_helper"
 
 class Chef
   class Provider
@@ -29,12 +29,15 @@ class Chef
 
       include Chef::Mixin::WindowsArchitectureHelper
 
-      def initialize( new_resource, run_context, script_extension='')
+      def initialize( new_resource, run_context, script_extension = "")
         super( new_resource, run_context )
         @script_extension = script_extension
 
-        target_architecture = new_resource.architecture.nil? ?
-          node_windows_architecture(run_context.node) : new_resource.architecture
+        target_architecture = if new_resource.architecture.nil?
+                                node_windows_architecture(run_context.node)
+                              else
+                                new_resource.architecture
+                              end
 
         @is_wow64 = wow64_architecture_override_required?(run_context.node, target_architecture)
 

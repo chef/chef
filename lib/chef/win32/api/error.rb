@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
+require "chef/win32/api"
 
 class Chef
   module ReservedNames::Win32
@@ -178,7 +178,7 @@ class Chef
         ERROR_LOCK_FAILED               = 167
         ERROR_BUSY                      = 170
         ERROR_CANCEL_VIOLATION          = 173
-        ERROR_ATOMIC_LOCKS_NOT_SUPPORTED= 174
+        ERROR_ATOMIC_LOCKS_NOT_SUPPORTED = 174
 
         ERROR_INVALID_SEGMENT_NUMBER    = 180
         ERROR_INVALID_CALLGATE          = 181
@@ -194,12 +194,12 @@ class Chef
         ERROR_INVALID_EXE_SIGNATURE     = 191
         ERROR_EXE_MARKED_INVALID        = 192
         ERROR_BAD_EXE_FORMAT            = 193
-        ERROR_ITERATED_DATA_EXCEEDS_64k = 194
+        ERROR_ITERATED_DATA_EXCEEDS_64k = 194 # rubocop:disable Style/ConstantName
         ERROR_INVALID_MINALLOCSIZE      = 195
         ERROR_DYNLINK_FROM_INVALID_RING = 196
         ERROR_IOPL_NOT_ENABLED          = 197
         ERROR_INVALID_SEGDPL            = 198
-        ERROR_AUTODATASEG_EXCEEDS_64k   = 199
+        ERROR_AUTODATASEG_EXCEEDS_64k   = 199 # rubocop:disable Style/ConstantName
         ERROR_RING2SEG_MUST_BE_MOVABLE  = 200
         ERROR_RELOC_CHAIN_XEEDS_SEGLIM  = 201
         ERROR_INFLOOP_IN_RELOC_CHAIN    = 202
@@ -446,7 +446,7 @@ class Chef
         ERROR_DOWNGRADE_DETECTED              = 1265
         ERROR_MACHINE_LOCKED                  = 1271
         ERROR_CALLBACK_SUPPLIED_INVALID_DATA  = 1273
-        ERROR_SYNC_FOREGROUND_REFRESH_REQUIRED= 1274
+        ERROR_SYNC_FOREGROUND_REFRESH_REQUIRED = 1274
         ERROR_DRIVER_BLOCKED                  = 1275
         ERROR_INVALID_IMPORT_OF_NON_DLL       = 1276
         ERROR_NOT_ALL_ASSIGNED                = 1300
@@ -750,7 +750,7 @@ class Chef
         ERROR_NETLOGON_NOT_STARTED            = 1792
         ERROR_ACCOUNT_EXPIRED                 = 1793
         ERROR_REDIRECTOR_HAS_OPEN_HANDLES     = 1794
-        ERROR_PRINTER_DRIVER_ALREADY_INSTALLED= 1795
+        ERROR_PRINTER_DRIVER_ALREADY_INSTALLED = 1795
         ERROR_UNKNOWN_PORT                    = 1796
         ERROR_UNKNOWN_PRINTER_DRIVER          = 1797
         ERROR_UNKNOWN_PRINTPROCESSOR          = 1798
@@ -824,9 +824,9 @@ class Chef
         ERROR_CONTEXT_EXPIRED                 = 1931
         ERROR_PER_USER_TRUST_QUOTA_EXCEEDED   = 1932
         ERROR_ALL_USER_TRUST_QUOTA_EXCEEDED   = 1933
-        ERROR_USER_DELETE_TRUST_QUOTA_EXCEEDED= 1934
-        ERROR_AUTHENTICATION_FIREWALL_FAILED  = 1935
-        ERROR_REMOTE_PRINT_CONNECTIONS_BLOCKED= 1936
+        ERROR_USER_DELETE_TRUST_QUOTA_EXCEEDED = 1934
+        ERROR_AUTHENTICATION_FIREWALL_FAILED = 1935
+        ERROR_REMOTE_PRINT_CONNECTIONS_BLOCKED = 1936
         ERROR_INVALID_PIXEL_FORMAT            = 2000
         ERROR_BAD_DRIVER                      = 2001
         ERROR_INVALID_WINDOW_STYLE            = 2002
@@ -848,6 +848,7 @@ class Chef
         ERROR_INVALID_COLORINDEX              = 2022
         ERROR_CONNECTED_OTHER_PASSWORD        = 2108
         ERROR_BAD_USERNAME                    = 2202
+        ERROR_USER_NOT_FOUND                  = 2221
         ERROR_NOT_CONNECTED                   = 2250
         ERROR_OPEN_FILES                      = 2401
         ERROR_ACTIVE_CONNECTIONS              = 2402
@@ -873,11 +874,25 @@ class Chef
         SEM_NOGPFAULTERRORBOX      = 0x0002
         SEM_NOOPENFILEERRORBOX     = 0x8000
 
+        # Flags for LoadLibraryEx
+
+        DONT_RESOLVE_DLL_REFERENCES = 0x00000001
+        LOAD_IGNORE_CODE_AUTHZ_LEVEL = 0x00000010
+        LOAD_LIBRARY_AS_DATAFILE = 0x00000002
+        LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE = 0x00000040
+        LOAD_LIBRARY_AS_IMAGE_RESOURCE = 0x00000020
+        LOAD_LIBRARY_SEARCH_APPLICATION_DIR = 0x00000200
+        LOAD_LIBRARY_SEARCH_DEFAULT_DIRS = 0x00001000
+        LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR = 0x00000100
+        LOAD_LIBRARY_SEARCH_SYSTEM32 = 0x00000800
+        LOAD_LIBRARY_SEARCH_USER_DIRS = 0x00000400
+        LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008
+
         ###############################################
         # Win32 API Bindings
         ###############################################
 
-        ffi_lib 'kernel32', 'user32'
+        ffi_lib "kernel32", "user32"
 
 =begin
 DWORD WINAPI FormatMessage(
@@ -890,8 +905,8 @@ DWORD WINAPI FormatMessage(
   __in_opt  va_list *Arguments
 );
 =end
-        safe_attach_function :FormatMessageA, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPTSTR, :DWORD, :varargs], :DWORD
-        safe_attach_function :FormatMessageW, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPWSTR, :DWORD, :varargs], :DWORD
+        safe_attach_function :FormatMessageA, [:DWORD, :HANDLE, :DWORD, :DWORD, :LPTSTR, :DWORD, :varargs], :DWORD
+        safe_attach_function :FormatMessageW, [:DWORD, :HANDLE, :DWORD, :DWORD, :LPWSTR, :DWORD, :varargs], :DWORD
 
 =begin
 DWORD WINAPI GetLastError(void);
@@ -915,6 +930,23 @@ UINT WINAPI SetErrorMode(
 =end
         safe_attach_function :SetErrorMode, [:UINT], :UINT
 
+=begin
+https://msdn.microsoft.com/en-us/library/windows/desktop/ms684179(v=vs.85).aspx
+HMODULE WINAPI LoadLibraryEx(
+  _In_       LPCTSTR lpFileName,
+  _Reserved_ HANDLE  hFile,
+  _In_       DWORD   dwFlags
+);
+=end
+        safe_attach_function :LoadLibraryExW, [:LPCTSTR, :HANDLE, :DWORD], :HANDLE
+
+=begin
+https://msdn.microsoft.com/en-us/library/windows/desktop/ms683152(v=vs.85).aspx
+BOOL WINAPI FreeLibrary(
+  _In_ HMODULE hModule
+);
+=end
+        safe_attach_function :FreeLibrary, [:HANDLE], :BOOL
       end
     end
   end

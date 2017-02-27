@@ -1,7 +1,7 @@
 #
-# Author:: Adam Edwards (<adamed@getchef.com>)
+# Author:: Adam Edwards (<adamed@chef.io>)
 #
-# Copyright:: 2014, Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/util/powershell/cmdlet'
+require "chef/util/powershell/cmdlet"
 
 class Chef::Util::DSC
   class ConfigurationGenerator
@@ -27,9 +27,9 @@ class Chef::Util::DSC
 
     def configuration_document_from_script_code(code, configuration_flags, imports, shellout_flags)
       Chef::Log.debug("DSC: DSC code:\n '#{code}'")
-      generated_script_path = write_document_generation_script(code, 'chef_dsc', imports)
+      generated_script_path = write_document_generation_script(code, "chef_dsc", imports)
       begin
-        configuration_document_from_script_path(generated_script_path, 'chef_dsc', configuration_flags, shellout_flags)
+        configuration_document_from_script_path(generated_script_path, "chef_dsc", configuration_flags, shellout_flags)
       ensure
         ::FileUtils.rm(generated_script_path)
       end
@@ -48,7 +48,7 @@ class Chef::Util::DSC
       configuration_document_location = find_configuration_document(configuration_name)
 
       if ! configuration_document_location
-        raise RuntimeError, "No DSC configuration for '#{configuration_name}' was generated from supplied DSC script"
+        raise "No DSC configuration for '#{configuration_name}' was generated from supplied DSC script"
       end
 
       configuration_document = get_configuration_document(configuration_document_location)
@@ -68,11 +68,11 @@ class Chef::Util::DSC
     end
 
     def get_merged_configuration_flags!(configuration_flags, configuration_name)
-      merged_configuration_flags = { :outputpath  => configuration_document_directory(configuration_name) }
+      merged_configuration_flags = { :outputpath => configuration_document_directory(configuration_name) }
       if configuration_flags
-        configuration_flags.map do | switch, value |
+        configuration_flags.map do |switch, value|
           if merged_configuration_flags.key?(switch.to_s.downcase.to_sym)
-            raise ArgumentError, "The `flags` attribute for the dsc_script resource contained a command line switch :#{switch.to_s} that is disallowed."
+            raise ArgumentError, "The `flags` attribute for the dsc_script resource contained a command line switch :#{switch} that is disallowed."
           end
           merged_configuration_flags[switch.to_s.downcase.to_sym] = value
         end
@@ -97,7 +97,7 @@ Configuration '#{configuration_name}'
     def generate_import_resource_statements(imports)
       if imports
         imports.map do |resource_module, resources|
-          if resources.length == 0 || resources.include?('*')
+          if resources.length == 0 || resources.include?("*")
             "Import-DscResource -ModuleName #{resource_module}"
           else
             "Import-DscResource -ModuleName #{resource_module} -Name #{resources.join(',')}"
@@ -114,7 +114,7 @@ Configuration '#{configuration_name}'
 
     def write_document_generation_script(code, configuration_name, imports)
       script_path = "#{@config_directory}/chef_dsc_config.ps1"
-      ::File.open(script_path, 'wt') do | script |
+      ::File.open(script_path, "wt") do |script|
         script.write(configuration_code(code, configuration_name, imports))
       end
       script_path
@@ -122,7 +122,7 @@ Configuration '#{configuration_name}'
 
     def find_configuration_document(configuration_name)
       document_directory = configuration_document_directory(configuration_name)
-      document_file_name = ::Dir.entries(document_directory).find { | path | path =~ /.*.mof/ }
+      document_file_name = ::Dir.entries(document_directory).find { |path| path =~ /.*.mof/ }
       ::File.join(document_directory, document_file_name) if document_file_name
     end
 
@@ -131,7 +131,7 @@ Configuration '#{configuration_name}'
     end
 
     def get_configuration_document(document_path)
-      ::File.open(document_path, 'rb') do | file |
+      ::File.open(document_path, "rb") do |file|
         file.read
       end
     end

@@ -1,6 +1,6 @@
 #
 # Author:: Jimmy McCrory (<jimmy.mccrory@gmail.com>)
-# Copyright:: Copyright (c) 2014 Jimmy McCrory
+# Copyright:: Copyright 2014-2016, Jimmy McCrory
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class NodeEnvironmentSet < Knife
 
       deps do
-        require 'chef/node'
+        require "chef/node"
       end
 
       banner "knife node environment set NODE ENVIRONMENT"
@@ -46,7 +46,7 @@ class Chef
 
         config[:attribute] = "chef_environment"
 
-        output(format_for_display(node))   
+        output(format_for_display(node))
       end
 
     end

@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'rspec/core/sandbox'
-require 'chef/audit/runner'
-require 'rspec/support/spec/in_sub_process'
-require 'rspec/support/spec/stderr_splitter'
-require 'tempfile'
+require "spec_helper"
+require "rspec/core/sandbox"
+require "chef/audit/runner"
+require "rspec/support/spec/in_sub_process"
+require "rspec/support/spec/stderr_splitter"
+require "tempfile"
 
 ##
 # This functional test ensures that our runner can be setup to not interfere with existing RSpec
@@ -52,6 +52,10 @@ describe Chef::Audit::Runner do
     let(:run_context) { instance_double(Chef::RunContext, :events => events, :audits => audits) }
     let(:control_group_name) { "control_group_name" }
 
+    # Set cookbook path to include our parent, so that it will recognize this
+    # rspec file as one that should show up in the backtrace.
+    before(:each) { Chef::Config[:cookbook_path] = File.dirname(__FILE__) }
+
     shared_context "passing audit" do
       let(:audits) do
         should_pass = lambda do
@@ -59,7 +63,7 @@ describe Chef::Audit::Runner do
             expect(2 - 2).to eq(0)
           end
         end
-        { control_group_name => Struct.new(:args, :block).new([control_group_name], should_pass)}
+        { control_group_name => Struct.new(:args, :block).new([control_group_name], should_pass) }
       end
     end
 
@@ -70,7 +74,7 @@ describe Chef::Audit::Runner do
             expect(2 - 1).to eq(0)
           end
         end
-        { control_group_name => Struct.new(:args, :block).new([control_group_name], should_fail)}
+        { control_group_name => Struct.new(:args, :block).new([control_group_name], should_fail) }
       end
     end
 

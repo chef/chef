@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
   before do
@@ -38,7 +38,6 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
       @run_list_expansion.missing_roles_with_including_role << [ "role[another-missing-role]", "role[base]" ]
 
       @exception = Chef::Exceptions::MissingRole.new(@run_list_expansion)
-
 
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
       @inspector.add_explanation(@description)
@@ -78,8 +77,8 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
 
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
       allow(@inspector).to receive(:config).and_return(:node_name => "unit-test.example.com",
-                                           :client_key => "/etc/chef/client.pem",
-                                           :chef_server_url => "http://chef.example.com")
+                                                       :client_key => "/etc/chef/client.pem",
+                                                       :chef_server_url => "http://chef.example.com")
 
       @inspector.add_explanation(@description)
     end
@@ -90,4 +89,3 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
   end
 
 end
-

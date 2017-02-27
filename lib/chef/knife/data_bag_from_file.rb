@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/util/path_helper'
-require 'chef/knife/data_bag_secret_options'
+require "chef/knife"
+require "chef/util/path_helper"
+require "chef/knife/data_bag_secret_options"
 
 class Chef
   class Knife
@@ -27,11 +27,11 @@ class Chef
       include DataBagSecretOptions
 
       deps do
-        require 'chef/data_bag'
-        require 'chef/data_bag_item'
-        require 'chef/knife/core/object_loader'
-        require 'chef/json_compat'
-        require 'chef/encrypted_data_bag_item'
+        require "chef/data_bag"
+        require "chef/data_bag_item"
+        require "chef/knife/core/object_loader"
+        require "chef/json_compat"
+        require "chef/encrypted_data_bag_item"
       end
 
       banner "knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] (options)"
@@ -60,6 +60,7 @@ class Chef
       end
 
       private
+
       def data_bags_path
         @data_bag_path ||= "data_bags"
       end
@@ -101,7 +102,7 @@ class Chef
         paths = Array.new
         args.each do |path|
           if File.directory?(path)
-            paths.concat(Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(path), "*.json")))
+            paths.concat(Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(path), "*.json")))
           else
             paths << path
           end

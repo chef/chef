@@ -1,7 +1,7 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright (c) 2012, 2015 Chef Software, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/osc_user_create'
+require "chef/knife"
+require "chef/knife/osc_user_create"
 
 class Chef
   class Knife
@@ -27,8 +27,8 @@ class Chef
       attr_accessor :user_field
 
       deps do
-        require 'chef/user_v1'
-        require 'chef/json_compat'
+        require "chef/user_v1"
+        require "chef/json_compat"
       end
 
       option :file,
@@ -38,12 +38,12 @@ class Chef
 
       option :user_key,
         :long => "--user-key FILENAME",
-        :description =>  "Set the initial default key for the user from a file on disk (cannot pass with --prevent-keygen)."
+        :description => "Set the initial default key for the user from a file on disk (cannot pass with --prevent-keygen)."
 
       option :prevent_keygen,
         :short => "-k",
         :long  => "--prevent-keygen",
-        :description => "API V1 only. Prevent server from generating a default key pair for you. Cannot be passed with --user-key.",
+        :description => "API V1 (Chef Server 12.1+) only. Prevent server from generating a default key pair for you. Cannot be passed with --user-key.",
         :boolean => true
 
       option :admin,
@@ -69,7 +69,7 @@ class Chef
       end
 
       def osc_11_warning
-<<-EOF
+        <<-EOF
 IF YOU ARE USING CHEF SERVER 12+, PLEASE FOLLOW THE INSTRUCTIONS UNDER knife user create --help.
 You only passed a single argument to knife user create.
 For backwards compatibility, when only a single argument is passed,
@@ -130,7 +130,7 @@ EOF
             user.public_key File.read(File.expand_path(config[:user_key]))
           end
 
-          output = edit_data(user)
+          output = edit_hash(user)
           final_user = create_user_from_hash(output)
 
           ui.info("Created #{user}")
@@ -144,8 +144,6 @@ EOF
             end
           end
         end
-
-
       end
     end
   end

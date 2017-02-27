@@ -1,6 +1,6 @@
 #
 # Author:: David Balatero (<dbalatero@gmail.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Package::Macports do
   before(:each) do
@@ -70,7 +70,7 @@ describe Chef::Provider::Package::Macports do
 
   describe "current_installed_version" do
     it "should return the current version if the package is installed" do
-      stdout =  <<EOF
+      stdout = <<EOF
 The following ports are currently installed:
   openssl @0.9.8k_0 (active)
 EOF
@@ -105,7 +105,7 @@ EOF
     it "should run the port install command with the correct version" do
       expect(@current_resource).to receive(:version).and_return("4.1.6")
       @provider.current_resource = @current_resource
-      expect(@provider).to receive(:shell_out!).with("port install zsh @4.2.7", timeout: 900)
+      expect(@provider).to receive(:shell_out!).with("port", "install", "zsh", "@4.2.7", timeout: 900)
 
       @provider.install_package("zsh", "4.2.7")
     end
@@ -122,7 +122,7 @@ EOF
       expect(@current_resource).to receive(:version).and_return("4.1.6")
       @provider.current_resource = @current_resource
       allow(@new_resource).to receive(:options).and_return("-f")
-      expect(@provider).to receive(:shell_out!).with("port -f install zsh @4.2.7", timeout: 900)
+      expect(@provider).to receive(:shell_out!).with("port", "-f", "install", "zsh", "@4.2.7", timeout: 900)
 
       @provider.install_package("zsh", "4.2.7")
     end
@@ -130,36 +130,36 @@ EOF
 
   describe "purge_package" do
     it "should run the port uninstall command with the correct version" do
-      expect(@provider).to receive(:shell_out!).with("port uninstall zsh @4.2.7", timeout: 900)
+      expect(@provider).to receive(:shell_out!).with("port", "uninstall", "zsh", "@4.2.7", timeout: 900)
       @provider.purge_package("zsh", "4.2.7")
     end
 
     it "should purge the currently active version if no explicit version is passed in" do
-      expect(@provider).to receive(:shell_out!).with("port uninstall zsh", timeout: 900)
+      expect(@provider).to receive(:shell_out!).with("port", "uninstall", "zsh", timeout: 900)
       @provider.purge_package("zsh", nil)
     end
 
     it "should add options to the port command when specified" do
       allow(@new_resource).to receive(:options).and_return("-f")
-      expect(@provider).to receive(:shell_out!).with("port -f uninstall zsh @4.2.7", timeout: 900)
+      expect(@provider).to receive(:shell_out!).with("port", "-f", "uninstall", "zsh", "@4.2.7", timeout: 900)
       @provider.purge_package("zsh", "4.2.7")
     end
   end
 
   describe "remove_package" do
     it "should run the port deactivate command with the correct version" do
-      expect(@provider).to receive(:shell_out!).with("port deactivate zsh @4.2.7", timeout: 900)
+      expect(@provider).to receive(:shell_out!).with("port", "deactivate", "zsh", "@4.2.7", timeout: 900)
       @provider.remove_package("zsh", "4.2.7")
     end
 
     it "should remove the currently active version if no explicit version is passed in" do
-      expect(@provider).to receive(:shell_out!).with("port deactivate zsh", timeout: 900)
+      expect(@provider).to receive(:shell_out!).with("port", "deactivate", "zsh", timeout: 900)
       @provider.remove_package("zsh", nil)
     end
 
     it "should add options to the port command when specified" do
       allow(@new_resource).to receive(:options).and_return("-f")
-      expect(@provider).to receive(:shell_out!).with("port -f deactivate zsh @4.2.7", timeout: 900)
+      expect(@provider).to receive(:shell_out!).with("port", "-f", "deactivate", "zsh", "@4.2.7", timeout: 900)
       @provider.remove_package("zsh", "4.2.7")
     end
   end
@@ -169,7 +169,7 @@ EOF
       expect(@current_resource).to receive(:version).at_least(:once).and_return("4.1.6")
       @provider.current_resource = @current_resource
 
-      expect(@provider).to receive(:shell_out!).with("port upgrade zsh @4.2.7", timeout: 900)
+      expect(@provider).to receive(:shell_out!).with("port", "upgrade", "zsh", "@4.2.7", timeout: 900)
 
       @provider.upgrade_package("zsh", "4.2.7")
     end
@@ -195,7 +195,7 @@ EOF
       expect(@current_resource).to receive(:version).at_least(:once).and_return("4.1.6")
       @provider.current_resource = @current_resource
 
-      expect(@provider).to receive(:shell_out!).with("port -f upgrade zsh @4.2.7", timeout: 900)
+      expect(@provider).to receive(:shell_out!).with("port", "-f", "upgrade", "zsh", "@4.2.7", timeout: 900)
 
       @provider.upgrade_package("zsh", "4.2.7")
     end

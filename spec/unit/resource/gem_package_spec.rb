@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::GemPackage, "initialize" do
 
@@ -25,7 +25,7 @@ describe Chef::Resource::GemPackage, "initialize" do
     resource: Chef::Resource::GemPackage,
     provider: Chef::Provider::Package::Rubygems,
     name: :gem_package,
-    action: :install,
+    action: :install
   )
 
 end

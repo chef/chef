@@ -1,6 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/provider/mount'
+require "chef/provider/mount"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require 'chef/util/windows/net_use'
-  require 'chef/util/windows/volume'
+  require "chef/util/windows/net_use"
+  require "chef/util/windows/volume"
 end
 
 class Chef
@@ -78,6 +78,12 @@ class Chef
           else
             Chef::Log.debug("#{@new_resource} is not mounted at #{@new_resource.mount_point}")
           end
+        end
+
+        private
+
+        def mount_options_unchanged?
+          @current_resource.device == @new_resource.device
         end
 
       end

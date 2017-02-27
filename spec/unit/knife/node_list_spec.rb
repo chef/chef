@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,17 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::NodeList do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     Chef::Config[:environment] = nil # reset this value each time, as it is not reloaded
     @knife = Chef::Knife::NodeList.new
     allow(@knife).to receive(:output).and_return(true)
     @list = {
       "foo" => "http://example.com/foo",
-      "bar" => "http://example.com/foo"
+      "bar" => "http://example.com/foo",
     }
     allow(Chef::Node).to receive(:list).and_return(@list)
     allow(Chef::Node).to receive(:list_by_environment).and_return(@list)
@@ -40,7 +40,7 @@ describe Chef::Knife::NodeList do
 
     it "should pretty print the list" do
       expect(Chef::Node).to receive(:list).and_return(@list)
-      expect(@knife).to receive(:output).with([ "bar", "foo" ])
+      expect(@knife).to receive(:output).with(%w{bar foo})
       @knife.run
     end
 
@@ -60,4 +60,3 @@ describe Chef::Knife::NodeList do
     end
   end
 end
-

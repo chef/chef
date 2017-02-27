@@ -1,6 +1,6 @@
 #
-# Author:: Adam Edwards (<adamed@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Adam Edwards (<adamed@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource/windows_script'
+require "chef/resource/windows_script"
 
 class Chef
   class Resource
@@ -24,7 +24,7 @@ class Chef
 
       provides :batch, os: "windows"
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super(name, run_context, nil, "cmd.exe")
       end
 

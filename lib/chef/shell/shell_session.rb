@@ -1,8 +1,8 @@
 #--
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,22 +18,22 @@
 # limitations under the License.
 #
 
-require 'chef/recipe'
-require 'chef/run_context'
-require 'chef/config'
-require 'chef/client'
-require 'chef/cookbook/cookbook_collection'
-require 'chef/cookbook_loader'
-require 'chef/run_list/run_list_expansion'
-require 'chef/formatters/base'
-require 'chef/formatters/doc'
-require 'chef/formatters/minimal'
+require "chef/recipe"
+require "chef/run_context"
+require "chef/config"
+require "chef/client"
+require "chef/cookbook/cookbook_collection"
+require "chef/cookbook_loader"
+require "chef/run_list/run_list_expansion"
+require "chef/formatters/base"
+require "chef/formatters/doc"
+require "chef/formatters/minimal"
 
 module Shell
   class ShellSession
     include Singleton
 
-    def self.session_type(type=nil)
+    def self.session_type(type = nil)
       @session_type = type if type
       @session_type
     end
@@ -126,8 +126,8 @@ module Shell
     end
 
     def shorten_node_inspect
-      def @node.inspect
-        "<Chef::Node:0x#{self.object_id.to_s(16)} @name=\"#{self.name}\">"
+      def @node.inspect # rubocop:disable Lint/NestedMethodDefinition
+        "<Chef::Node:0x#{object_id.to_s(16)} @name=\"#{name}\">"
       end
     end
 
@@ -150,7 +150,7 @@ module Shell
     private
 
     def rebuild_node
-      Chef::Config[:solo] = true
+      Chef::Config[:solo_legacy_mode] = true
       @client = Chef::Client.new(nil, Chef::Config[:shell_config])
       @client.run_ohai
       @client.load_node
@@ -182,7 +182,7 @@ module Shell
 
     def rebuild_node
       # Tell the client we're chef solo so it won't try to contact the server
-      Chef::Config[:solo] = true
+      Chef::Config[:solo_legacy_mode] = true
       @client = Chef::Client.new(nil, Chef::Config[:shell_config])
       @client.run_ohai
       @client.load_node
@@ -201,7 +201,7 @@ module Shell
 
     def rebuild_context
       @run_status = Chef::RunStatus.new(@node, @events)
-      Chef::Cookbook::FileVendor.fetch_from_remote(Chef::REST.new(Chef::Config[:chef_server_url]))
+      Chef::Cookbook::FileVendor.fetch_from_remote(Chef::ServerAPI.new(Chef::Config[:chef_server_url]))
       cookbook_hash = @client.sync_cookbooks
       cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
       @run_context = Chef::RunContext.new(node, cookbook_collection, @events)
@@ -213,7 +213,7 @@ module Shell
 
     def rebuild_node
       # Make sure the client knows this is not chef solo
-      Chef::Config[:solo] = false
+      Chef::Config[:solo_legacy_mode] = false
       @client = Chef::Client.new(nil, Chef::Config[:shell_config])
       @client.run_ohai
       @client.register
@@ -235,7 +235,7 @@ module Shell
     # Run the very smallest amount of ohai we can get away with and still
     # hope to have things work. Otherwise we're not very good doppelgangers
     def run_ohai
-      @ohai.require_plugin('os')
+      @ohai.require_plugin("os")
     end
 
     # DoppelGanger implementation of build_node. preserves as many of the node's
@@ -244,8 +244,8 @@ module Shell
       Chef::Log.debug("Building node object for #{@node_name}")
       @node = Chef::Node.find_or_create(node_name)
       ohai_data = @ohai.data.merge(@node.automatic_attrs)
-      @node.consume_external_attrs(ohai_data,nil)
-      @run_list_expansion = @node.expand!('server')
+      @node.consume_external_attrs(ohai_data, nil)
+      @run_list_expansion = @node.expand!("server")
       @expanded_run_list_with_versions = @run_list_expansion.recipes.with_version_constraints_strings
       Chef::Log.info("Run List is [#{@node.run_list}]")
       Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
@@ -253,7 +253,8 @@ module Shell
     end
 
     def register
-      @rest = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:node_name], Chef::Config[:client_key])
+      @rest = Chef::ServerAPI.new(Chef::Config[:chef_server_url], :client_name => Chef::Config[:node_name],
+                                                                  :signing_key_filename => Chef::Config[:client_key])
     end
 
   end

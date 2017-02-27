@@ -1,6 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Env do
 
@@ -199,12 +199,12 @@ describe Chef::Provider::Env do
       expect(@new_resource).to be_updated
     end
 
-    context "when new_resource's value contains the delimiter"  do
+    context "when new_resource's value contains the delimiter" do
       it "should return false if all the elements are deleted" do
         # This indicates that the entire key needs to be deleted
         @new_resource.value("C:/foo/bin;C:/bar/bin")
         expect(@provider.delete_element).to eql(false)
-        expect(@new_resource).not_to be_updated  # This will be updated in action_delete
+        expect(@new_resource).not_to be_updated # This will be updated in action_delete
       end
 
       it "should return true if any, but not all, of the elements are deleted" do
@@ -251,7 +251,7 @@ describe Chef::Provider::Env do
       expect(@provider.requires_modify_or_create?).to be_truthy
     end
 
-    context "when new_resource's value contains the delimiter"  do
+    context "when new_resource's value contains the delimiter" do
       it "should return false if all the current values are contained in specified order" do
         @new_resource.value("C:/biz;C:/baz")
         @new_resource.delim(";")

@@ -1,7 +1,7 @@
 #
-# Author:: Tyler Cloke (<tyler@opscode.com>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-require 'chef/event_dispatch/base'
-require 'chef/formatters/error_inspectors'
-require 'chef/formatters/error_descriptor'
-require 'chef/formatters/error_mapper'
-require 'chef/formatters/indentable_output_stream'
+require "chef/event_dispatch/base"
+require "chef/formatters/error_inspectors"
+require "chef/formatters/error_description"
+require "chef/formatters/error_mapper"
+require "chef/formatters/indentable_output_stream"
 
 class Chef
 
@@ -51,8 +51,8 @@ class Chef
     #--
     # TODO: is it too clever to be defining new() on a module like this?
     def self.new(name, out, err)
-      formatter_class = by_name(name.to_s) or
-        raise UnknownFormatter, "No output formatter found for #{name} (available: #{available_formatters.join(', ')})"
+      formatter_class = by_name(name.to_s)
+      raise UnknownFormatter, "No output formatter found for #{name} (available: #{available_formatters.join(', ')})" unless formatter_class
 
       formatter_class.new(out, err)
     end
@@ -203,20 +203,33 @@ class Chef
       end
 
       # Delegates to #file_loaded
-      def recipe_file_loaded(path)
+      def recipe_file_loaded(path, recipe)
         file_loaded(path)
       end
 
       # Delegates to #file_load_failed
-      def recipe_file_load_failed(path, exception)
+      def recipe_file_load_failed(path, exception, recipe)
         file_load_failed(path, exception)
       end
 
-      def deprecation(message, location=caller(2..2)[0])
-        Chef::Log.deprecation("#{message} at #{location}")
+      def deprecation(message, location = caller(2..2)[0])
+        out = if is_structured_deprecation?(message)
+                message.inspect
+              else
+                "#{message} at #{location}"
+              end
+
+        Chef::Log.deprecation(out)
+      end
+
+      def is_structured_deprecation?(deprecation)
+        deprecation.kind_of?(Chef::Deprecated::Base)
+      end
+
+      def is_formatter?
+        true
       end
     end
-
 
     # == NullFormatter
     # Formatter that doesn't actually produce any output. You can use this to
@@ -225,6 +238,9 @@ class Chef
 
       cli_name(:null)
 
+      def is_formatter?
+        false
+      end
     end
 
   end

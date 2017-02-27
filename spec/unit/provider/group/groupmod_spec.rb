@@ -1,6 +1,6 @@
 #
 # Author:: Dan Crosta (<dcrosta@late.am>)
-# Copyright:: Copyright (c) 2012 OpsCode, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,34 +16,34 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Group::Groupmod do
-    before do
-      @node = Chef::Node.new
-      @events = Chef::EventDispatch::Dispatcher.new
-      @run_context = Chef::RunContext.new(@node, {}, @events)
-      @new_resource = Chef::Resource::Group.new("wheel")
-      @new_resource.gid 123
-      @new_resource.members %w{lobster rage fist}
-      @new_resource.append false
-      @provider = Chef::Provider::Group::Groupmod.new(@new_resource, @run_context)
-    end
+  before do
+    @node = Chef::Node.new
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+    @new_resource = Chef::Resource::Group.new("wheel")
+    @new_resource.gid 123
+    @new_resource.members %w{lobster rage fist}
+    @new_resource.append false
+    @provider = Chef::Provider::Group::Groupmod.new(@new_resource, @run_context)
+  end
 
   describe "manage_group" do
     describe "when determining the current group state" do
       it "should raise an error if the required binary /usr/sbin/group doesn't exist" do
-        expect(File).to receive(:exists?).with("/usr/sbin/group").and_return(false)
+        expect(File).to receive(:exist?).with("/usr/sbin/group").and_return(false)
         expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Group)
       end
       it "should raise an error if the required binary /usr/sbin/user doesn't exist" do
-        expect(File).to receive(:exists?).with("/usr/sbin/group").and_return(true)
-        expect(File).to receive(:exists?).with("/usr/sbin/user").and_return(false)
+        expect(File).to receive(:exist?).with("/usr/sbin/group").and_return(true)
+        expect(File).to receive(:exist?).with("/usr/sbin/user").and_return(false)
         expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Group)
       end
 
       it "shouldn't raise an error if the required binaries exist" do
-        allow(File).to receive(:exists?).and_return(true)
+        allow(File).to receive(:exist?).and_return(true)
         expect { @provider.load_current_resource }.not_to raise_error
       end
     end
@@ -62,9 +62,9 @@ describe Chef::Provider::Group::Groupmod do
 
         it "logs a message and sets group's members to 'none', then removes existing group members" do
           expect(Chef::Log).to receive(:debug).with("group[wheel] setting group members to: none")
-          expect(@provider).to receive(:shell_out!).with("group mod -n wheel_bak wheel")
-          expect(@provider).to receive(:shell_out!).with("group add -g '123' -o wheel")
-          expect(@provider).to receive(:shell_out!).with("group del wheel_bak")
+          expect(@provider).to receive(:shell_out!).with("group", "mod", "-n", "wheel_bak", "wheel")
+          expect(@provider).to receive(:shell_out!).with("group", "add", "-g", "123", "-o", "wheel")
+          expect(@provider).to receive(:shell_out!).with("group", "del", "wheel_bak")
           @provider.manage_group
         end
       end
@@ -90,10 +90,10 @@ describe Chef::Provider::Group::Groupmod do
 
         it "updates group membership correctly" do
           allow(Chef::Log).to receive(:debug)
-          expect(@provider).to receive(:shell_out!).with("group mod -n wheel_bak wheel")
-          expect(@provider).to receive(:shell_out!).with("user mod -G wheel lobster")
-          expect(@provider).to receive(:shell_out!).with("group add -g '123' -o wheel")
-          expect(@provider).to receive(:shell_out!).with("group del wheel_bak")
+          expect(@provider).to receive(:shell_out!).with("group", "mod", "-n", "wheel_bak", "wheel")
+          expect(@provider).to receive(:shell_out!).with("user", "mod", "-G", "wheel", "lobster")
+          expect(@provider).to receive(:shell_out!).with("group", "add", "-g", "123", "-o", "wheel")
+          expect(@provider).to receive(:shell_out!).with("group", "del", "wheel_bak")
           @provider.manage_group
         end
       end
@@ -108,10 +108,10 @@ describe Chef::Provider::Group::Groupmod do
       end
 
       it "should run a group add command and some user mod commands" do
-        expect(@provider).to receive(:shell_out!).with("group add -g '123' wheel")
-        expect(@provider).to receive(:shell_out!).with("user mod -G wheel lobster")
-        expect(@provider).to receive(:shell_out!).with("user mod -G wheel rage")
-        expect(@provider).to receive(:shell_out!).with("user mod -G wheel fist")
+        expect(@provider).to receive(:shell_out!).with("group", "add", "-g", "123", "wheel")
+        expect(@provider).to receive(:shell_out!).with("user", "mod", "-G", "wheel", "lobster")
+        expect(@provider).to receive(:shell_out!).with("user", "mod", "-G", "wheel", "rage")
+        expect(@provider).to receive(:shell_out!).with("user", "mod", "-G", "wheel", "fist")
         @provider.create_group
       end
     end
@@ -125,7 +125,7 @@ describe Chef::Provider::Group::Groupmod do
       end
 
       it "should run a group del command" do
-        expect(@provider).to receive(:shell_out!).with("group del wheel")
+        expect(@provider).to receive(:shell_out!).with("group", "del", "wheel")
         @provider.remove_group
       end
     end

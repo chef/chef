@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource/file'
-require 'chef/provider/cookbook_file'
-require 'chef/mixin/securable'
+require "chef/resource/file"
+require "chef/provider/cookbook_file"
+require "chef/mixin/securable"
 
 class Chef
   class Resource
@@ -29,18 +29,18 @@ class Chef
 
       default_action :create
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @provider = Chef::Provider::CookbookFile
         @source = ::File.basename(name)
         @cookbook = nil
       end
 
-      def source(source_filename=nil)
+      def source(source_filename = nil)
         set_or_return(:source, source_filename, :kind_of => [ String, Array ])
       end
 
-      def cookbook(cookbook_name=nil)
+      def cookbook(cookbook_name = nil)
         set_or_return(:cookbook, cookbook_name, :kind_of => String)
       end
 

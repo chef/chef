@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/security'
-require 'chef/win32/error'
-require 'chef/win32/memory'
-require 'chef/win32/process'
-require 'chef/win32/unicode'
-require 'chef/win32/security/token'
-require 'chef/mixin/wide_string'
+require "chef/win32/api/security"
+require "chef/win32/error"
+require "chef/win32/memory"
+require "chef/win32/process"
+require "chef/win32/unicode"
+require "chef/win32/security/token"
+require "chef/mixin/wide_string"
 
 class Chef
   module ReservedNames::Win32
@@ -104,6 +104,22 @@ class Chef
         end
       end
 
+      def self.add_account_right(name, privilege)
+        privilege_pointer = FFI::MemoryPointer.new LSA_UNICODE_STRING, 1
+        privilege_lsa_string = LSA_UNICODE_STRING.new(privilege_pointer)
+        privilege_lsa_string[:Buffer] = FFI::MemoryPointer.from_string(privilege.to_wstring)
+        privilege_lsa_string[:Length] = privilege.length * 2
+        privilege_lsa_string[:MaximumLength] = (privilege.length + 1) * 2
+
+        with_lsa_policy(name) do |policy_handle, sid|
+          result = LsaAddAccountRights(policy_handle.read_pointer, sid, privilege_pointer, 1)
+          win32_error = LsaNtStatusToWinError(result)
+          if win32_error != 0
+            Chef::ReservedNames::Win32::Error.raise!(nil, win32_error)
+          end
+        end
+      end
+
       def self.adjust_token_privileges(token, privileges)
         token = token.handle if token.respond_to?(:handle)
         old_privileges_size = FFI::Buffer.new(:long).write_long(privileges.size_with_privileges)
@@ -165,6 +181,29 @@ class Chef
         end
       end
 
+      def self.get_account_right(name)
+        privileges = []
+        privilege_pointer = FFI::MemoryPointer.new(:pointer)
+        privilege_length = FFI::MemoryPointer.new(:ulong)
+
+        with_lsa_policy(name) do |policy_handle, sid|
+          result = LsaEnumerateAccountRights(policy_handle.read_pointer, sid, privilege_pointer, privilege_length)
+          win32_error = LsaNtStatusToWinError(result)
+          return [] if win32_error == 2 # FILE_NOT_FOUND - No rights assigned
+          if win32_error != 0
+            Chef::ReservedNames::Win32::Error.raise!(nil, win32_error)
+          end
+
+          privilege_length.read_ulong.times do |i|
+            privilege = LSA_UNICODE_STRING.new(privilege_pointer.read_pointer + i * LSA_UNICODE_STRING.size)
+            privileges << privilege[:Buffer].read_wstring
+          end
+          LsaFreeMemory(privilege_pointer)
+        end
+
+        privileges
+      end
+
       def self.get_ace(acl, index)
         acl = acl.pointer if acl.respond_to?(:pointer)
         ace = FFI::Buffer.new :pointer
@@ -196,12 +235,11 @@ class Chef
         SecurityDescriptor.new(security_descriptor_ptr)
       end
 
-
       def self.get_named_security_info(path, type = :SE_FILE_OBJECT, info = OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION)
         security_descriptor = FFI::MemoryPointer.new :pointer
         hr = GetNamedSecurityInfoW(path.to_wstring, type, info, nil, nil, nil, nil, security_descriptor)
         if hr != ERROR_SUCCESS
-          Chef::ReservedNames::Win32::Error.raise!("get_named_security_info(#{path}, #{type}, #{info})")
+          Chef::ReservedNames::Win32::Error.raise!("get_named_security_info(#{path}, #{type}, #{info})", hr)
         end
 
         result_pointer = security_descriptor.read_pointer
@@ -346,7 +384,7 @@ class Chef
         end
 
         sid = FFI::MemoryPointer.new :char, sid_size.read_long
-        referenced_domain_name = FFI::MemoryPointer.new :char, (referenced_domain_name_size.read_long*2)
+        referenced_domain_name = FFI::MemoryPointer.new :char, (referenced_domain_name_size.read_long * 2)
         use = FFI::Buffer.new(:long).write_long(0)
         unless LookupAccountNameW(system_name, name.to_wstring, sid, sid_size, referenced_domain_name, referenced_domain_name_size, use)
           Chef::ReservedNames::Win32::Error.raise!
@@ -367,8 +405,8 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        name = FFI::MemoryPointer.new :char, (name_size.read_long*2)
-        referenced_domain_name = FFI::MemoryPointer.new :char, (referenced_domain_name_size.read_long*2)
+        name = FFI::MemoryPointer.new :char, (name_size.read_long * 2)
+        referenced_domain_name = FFI::MemoryPointer.new :char, (referenced_domain_name_size.read_long * 2)
         use = FFI::Buffer.new(:long).write_long(0)
         unless LookupAccountSidW(system_name, sid, name, name_size, referenced_domain_name, referenced_domain_name_size, use)
           Chef::ReservedNames::Win32::Error.raise!
@@ -386,7 +424,7 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        name = FFI::MemoryPointer.new :char, (name_size.read_long*2)
+        name = FFI::MemoryPointer.new :char, (name_size.read_long * 2)
         unless LookupPrivilegeNameW(system_name, luid, name, name_size)
           Chef::ReservedNames::Win32::Error.raise!
         end
@@ -404,7 +442,7 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        display_name = FFI::MemoryPointer.new :char, (display_name_size.read_long*2)
+        display_name = FFI::MemoryPointer.new :char, (display_name_size.read_long * 2)
         unless LookupPrivilegeDisplayNameW(system_name, name.to_wstring, display_name, display_name_size, language_id)
           Chef::ReservedNames::Win32::Error.raise!
         end
@@ -500,7 +538,7 @@ class Chef
 
         hr = SetNamedSecurityInfoW(path.to_wstring, type, security_information, owner, group, dacl, sacl)
         if hr != ERROR_SUCCESS
-          Chef::ReservedNames::Win32::Error.raise!
+          Chef::ReservedNames::Win32::Error.raise! nil, hr
         end
       end
 
@@ -513,7 +551,7 @@ class Chef
       def set_security_descriptor_dacl(security_descriptor, acl, defaulted = false, present = nil)
         security_descriptor = security_descriptor.pointer if security_descriptor.respond_to?(:pointer)
         acl = acl.pointer if acl.respond_to?(:pointer)
-        present = !security_descriptor.null? if present == nil
+        present = !security_descriptor.null? if present.nil?
 
         unless SetSecurityDescriptorDacl(security_descriptor, present, acl, defaulted)
           Chef::ReservedNames::Win32::Error.raise!
@@ -541,10 +579,34 @@ class Chef
       def self.set_security_descriptor_sacl(security_descriptor, acl, defaulted = false, present = nil)
         security_descriptor = security_descriptor.pointer if security_descriptor.respond_to?(:pointer)
         acl = acl.pointer if acl.respond_to?(:pointer)
-        present = !security_descriptor.null? if present == nil
+        present = !security_descriptor.null? if present.nil?
 
         unless SetSecurityDescriptorSacl(security_descriptor, present, acl, defaulted)
           Chef::ReservedNames::Win32::Error.raise!
+        end
+      end
+
+      def self.with_lsa_policy(username)
+        sid = lookup_account_name(username)[1]
+
+        access = 0
+        access |= POLICY_CREATE_ACCOUNT
+        access |= POLICY_LOOKUP_NAMES
+
+        policy_handle = FFI::MemoryPointer.new(:pointer)
+        result = LsaOpenPolicy(nil, LSA_OBJECT_ATTRIBUTES.new, access, policy_handle)
+        win32_error = LsaNtStatusToWinError(result)
+        if win32_error != 0
+          Chef::ReservedNames::Win32::Error.raise!(nil, win32_error)
+        end
+
+        begin
+          yield policy_handle, sid.pointer
+        ensure
+          win32_error = LsaNtStatusToWinError(LsaClose(policy_handle.read_pointer))
+          if win32_error != 0
+            Chef::ReservedNames::Win32::Error.raise!(nil, win32_error)
+          end
         end
       end
 
@@ -596,8 +658,8 @@ class Chef
   end
 end
 
-require 'chef/win32/security/ace'
-require 'chef/win32/security/acl'
-require 'chef/win32/security/securable_object'
-require 'chef/win32/security/security_descriptor'
-require 'chef/win32/security/sid'
+require "chef/win32/security/ace"
+require "chef/win32/security/acl"
+require "chef/win32/security/securable_object"
+require "chef/win32/security/security_descriptor"
+require "chef/win32/security/sid"

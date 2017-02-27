@@ -1,5 +1,5 @@
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 require "ostruct"
-
 
 class TestableShellSession < Shell::ShellSession
 
@@ -49,8 +48,8 @@ end
 
 describe Shell::ClientSession do
   before do
-    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new('shell::override')] }
-    @chef_rest = double("Chef::REST")
+    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
+    @chef_rest = double("Chef::ServerAPI")
     @session = Shell::ClientSession.instance
     @node = Chef::Node.build("foo")
     @session.node = @node
@@ -67,7 +66,7 @@ describe Shell::ClientSession do
     @expansion = Chef::RunList::RunListExpansion.new(@node.chef_environment, [])
 
     expect(@node.run_list).to receive(:expand).with(@node.chef_environment).and_return(@expansion)
-    expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(@chef_rest)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(@chef_rest)
     @session.rebuild_context
   end
 
@@ -80,7 +79,7 @@ end
 
 describe Shell::StandAloneSession do
   before do
-    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new('shell::override')] }
+    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
     @session = Shell::StandAloneSession.instance
     @node = @session.node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -131,7 +130,7 @@ end
 
 describe Shell::SoloSession do
   before do
-    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new('shell::override')] }
+    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
     Chef::Config[:shell_solo] = true
     @session = Shell::SoloSession.instance
     @node = Chef::Node.new
@@ -158,8 +157,8 @@ describe Shell::SoloSession do
   end
 
   it "keeps json attribs and passes them to the node for consumption" do
-    @session.node_attributes = {"besnard_lakes" => "are_the_dark_horse"}
-    expect(@session.node.besnard_lakes).to eq("are_the_dark_horse")
+    @session.node_attributes = { "besnard_lakes" => "are_the_dark_horse" }
+    expect(@session.node["besnard_lakes"]).to eq("are_the_dark_horse")
     #pending "1) keep attribs in an ivar 2) pass them to the node 3) feed them to the node on reset"
   end
 

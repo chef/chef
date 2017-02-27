@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/win32/security'
-require 'chef/win32/security/ace'
-require 'ffi'
+require "chef/win32/security"
+require "chef/win32/security/ace"
+require "ffi"
 
 class Chef
   module ReservedNames::Win32
@@ -34,7 +34,7 @@ class Chef
         end
 
         def self.create(aces)
-          aces_size = aces.inject(0) { |sum,ace| sum + ace.size }
+          aces_size = aces.inject(0) { |sum, ace| sum + ace.size }
           acl_size = align_dword(Chef::ReservedNames::Win32::API::Security::ACLStruct.size + aces_size) # What the heck is 94???
           acl = Chef::ReservedNames::Win32::Security.initialize_acl(acl_size)
           aces.each { |ace| Chef::ReservedNames::Win32::Security.add_ace(acl, ace) }
@@ -45,10 +45,10 @@ class Chef
 
         def ==(other)
           return false if length != other.length
-          0.upto(length-1) do |i|
+          0.upto(length - 1) do |i|
             return false if self[i] != other[i]
           end
-          return true
+          true
         end
 
         def pointer
@@ -64,7 +64,7 @@ class Chef
         end
 
         def each
-          0.upto(length-1) { |i| yield self[i] }
+          0.upto(length - 1) { |i| yield self[i] }
         end
 
         def insert(index, *aces)
@@ -88,7 +88,7 @@ class Chef
         end
 
         def to_s
-          "[#{self.collect { |ace| ace.to_s }.join(", ")}]"
+          "[#{collect { |ace| ace.to_s }.join(", ")}]"
         end
 
         def self.align_dword(size)

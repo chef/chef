@@ -1,6 +1,6 @@
 #
 # Author:: Cary Penniman (<cary@rightscale.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Log::ChefLog do
 
@@ -71,5 +71,19 @@ describe Chef::Provider::Log::ChefLog do
     Chef::Config[:why_run] = true
     expect(Chef::Log).to receive(:info).with(log_str).and_return(true)
     provider.run_action(:write)
+  end
+
+  context "when count_log_resource_updates is passed in knife.rb" do
+    it "updates the resource count if count_log_resource_updates=true" do
+      Chef::Config[:count_log_resource_updates] = true
+      expect(new_resource).to receive(:updated_by_last_action)
+      provider.run_action(:write)
+    end
+
+    it "doesn't update the resource count if count_log_resource_updates=false" do
+      Chef::Config[:count_log_resource_updates] = false
+      expect(new_resource).not_to receive(:updated_by_last_action)
+      provider.run_action(:write)
+    end
   end
 end

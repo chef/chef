@@ -1,0 +1,6 @@
+AllCops:
+  Exclude:
+    - "spec/data/**/*"
+    - "vendor/**/*"
+    - "pkg/**/*"
+    - "chef-config/pkg/**/*"

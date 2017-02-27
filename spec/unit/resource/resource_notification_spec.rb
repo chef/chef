@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'spec_helper'
-require 'chef/resource/resource_notification'
+require "spec_helper"
+require "chef/resource/resource_notification"
 
 describe Chef::Resource::Notification do
 
@@ -50,7 +50,7 @@ describe Chef::Resource::Notification do
   end
 
   it "raises an ArgumentError if you try to check a non-ducktype object for duplication" do
-    expect {notification.duplicates?(:not_a_notification)}.to raise_error(ArgumentError)
+    expect { notification.duplicates?(:not_a_notification) }.to raise_error(ArgumentError)
   end
 
   it "takes no action to resolve a resource reference that doesn't need to be resolved" do
@@ -65,7 +65,7 @@ describe Chef::Resource::Notification do
   end
 
   it "resolves a lazy reference to a resource" do
-    notification.resource = {:cat => "keyboard_cat"}
+    notification.resource = { :cat => "keyboard_cat" }
     @keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     @resource_collection = Chef::ResourceCollection.new
     @resource_collection << @keyboard_cat
@@ -78,7 +78,7 @@ describe Chef::Resource::Notification do
   it "resolves a lazy reference to its notifying resource" do
     @keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     notification.resource = @keyboard_cat
-    notification.notifying_resource = {:cat => "long_cat"}
+    notification.notifying_resource = { :cat => "long_cat" }
     @long_cat = Chef::Resource::Cat.new("long_cat")
     @resource_collection = Chef::ResourceCollection.new
     @resource_collection << @long_cat
@@ -87,11 +87,11 @@ describe Chef::Resource::Notification do
   end
 
   it "resolves lazy references to both its resource and its notifying resource" do
-    notification.resource = {:cat => "keyboard_cat"}
+    notification.resource = { :cat => "keyboard_cat" }
     @keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     @resource_collection = Chef::ResourceCollection.new
     @resource_collection << @keyboard_cat
-    notification.notifying_resource = {:cat => "long_cat"}
+    notification.notifying_resource = { :cat => "long_cat" }
     @long_cat = Chef::Resource::Cat.new("long_cat")
     @resource_collection << @long_cat
     notification.resolve_resource_reference(@resource_collection)
@@ -100,7 +100,7 @@ describe Chef::Resource::Notification do
   end
 
   it "raises a RuntimeError if you try to reference multiple resources" do
-    notification.resource = {:cat => ["keyboard_cat", "cheez_cat"]}
+    notification.resource = { :cat => %w{keyboard_cat cheez_cat} }
     @keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     @cheez_cat = Chef::Resource::Cat.new("cheez_cat")
     @resource_collection = Chef::ResourceCollection.new
@@ -108,11 +108,11 @@ describe Chef::Resource::Notification do
     @resource_collection << @cheez_cat
     @long_cat = Chef::Resource::Cat.new("long_cat")
     notification.notifying_resource = @long_cat
-    expect {notification.resolve_resource_reference(@resource_collection)}.to raise_error(RuntimeError)
+    expect { notification.resolve_resource_reference(@resource_collection) }.to raise_error(RuntimeError)
   end
 
   it "raises a RuntimeError if you try to reference multiple notifying resources" do
-    notification.notifying_resource = {:cat => ["long_cat", "cheez_cat"]}
+    notification.notifying_resource = { :cat => %w{long_cat cheez_cat} }
     @long_cat = Chef::Resource::Cat.new("long_cat")
     @cheez_cat = Chef::Resource::Cat.new("cheez_cat")
     @resource_collection = Chef::ResourceCollection.new
@@ -120,27 +120,27 @@ describe Chef::Resource::Notification do
     @resource_collection << @cheez_cat
     @keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     notification.resource = @keyboard_cat
-    expect {notification.resolve_resource_reference(@resource_collection)}.to raise_error(RuntimeError)
+    expect { notification.resolve_resource_reference(@resource_collection) }.to raise_error(RuntimeError)
   end
 
   it "raises a RuntimeError if it can't find a resource in the resource collection when resolving a lazy reference" do
-    notification.resource = {:cat => "keyboard_cat"}
+    notification.resource = { :cat => "keyboard_cat" }
     @cheez_cat = Chef::Resource::Cat.new("cheez_cat")
     @resource_collection = Chef::ResourceCollection.new
     @resource_collection << @cheez_cat
     @long_cat = Chef::Resource::Cat.new("long_cat")
     notification.notifying_resource = @long_cat
-    expect {notification.resolve_resource_reference(@resource_collection)}.to raise_error(RuntimeError)
+    expect { notification.resolve_resource_reference(@resource_collection) }.to raise_error(RuntimeError)
   end
 
   it "raises a RuntimeError if it can't find a notifying resource in the resource collection when resolving a lazy reference" do
-    notification.notifying_resource = {:cat => "long_cat"}
+    notification.notifying_resource = { :cat => "long_cat" }
     @cheez_cat = Chef::Resource::Cat.new("cheez_cat")
     @resource_collection = Chef::ResourceCollection.new
     @resource_collection << @cheez_cat
     @keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     notification.resource = @keyboard_cat
-    expect {notification.resolve_resource_reference(@resource_collection)}.to raise_error(RuntimeError)
+    expect { notification.resolve_resource_reference(@resource_collection) }.to raise_error(RuntimeError)
   end
 
   it "raises an ArgumentError if improper syntax is used in the lazy reference to its resource" do
@@ -150,7 +150,7 @@ describe Chef::Resource::Notification do
     @resource_collection << @keyboard_cat
     @long_cat = Chef::Resource::Cat.new("long_cat")
     notification.notifying_resource = @long_cat
-    expect {notification.resolve_resource_reference(@resource_collection)}.to raise_error(ArgumentError)
+    expect { notification.resolve_resource_reference(@resource_collection) }.to raise_error(ArgumentError)
   end
 
   it "raises an ArgumentError if improper syntax is used in the lazy reference to its notifying resource" do
@@ -160,7 +160,7 @@ describe Chef::Resource::Notification do
     @resource_collection << @long_cat
     @keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
     notification.resource = @keyboard_cat
-    expect {notification.resolve_resource_reference(@resource_collection)}.to raise_error(ArgumentError)
+    expect { notification.resolve_resource_reference(@resource_collection) }.to raise_error(ArgumentError)
   end
 
   # Create test to resolve lazy references to both notifying resource and dest. resource

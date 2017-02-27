@@ -1,0 +1,7 @@
+suites:
+  - name: learn-the-basics-windows-default
+    run_list:
+      - recipe[learn-the-basics-windows::setup]
+      - recipe[learn-the-basics-windows::lesson1]
+      - recipe[learn-the-basics-windows::lesson2]
+    includes: [windows-2012r2]

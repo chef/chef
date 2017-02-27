@@ -1,6 +1,6 @@
 #
 # Author:: Jan Zimmek (<jan.zimmek@web.de>)
-# Copyright:: Copyright (c) 2010 Jan Zimmek
+# Copyright:: Copyright 2010-2016, Jan Zimmek
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::PacmanPackage, "initialize" do
 
@@ -26,7 +26,7 @@ describe Chef::Resource::PacmanPackage, "initialize" do
     provider: Chef::Provider::Package::Pacman,
     name: :pacman_package,
     action: :install,
-    os: "linux",
+    os: "linux"
   )
 
 end

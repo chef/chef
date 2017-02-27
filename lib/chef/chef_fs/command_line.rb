@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system'
-require 'chef/chef_fs/file_system/operation_failed_error'
-require 'chef/chef_fs/file_system/operation_not_allowed_error'
-require 'chef/util/diff'
+require "chef/chef_fs/file_system"
+require "chef/chef_fs/file_system/exceptions"
+require "chef/util/diff"
 
 class Chef
   module ChefFS
@@ -64,6 +63,13 @@ class Chef
             end
 
           when :deleted
+            # This is kind of a kludge - because the "new" entry isn't there, we can't predict
+            # it's true file name, because we've not got enough information. So because we know
+            # the two entries really ought to have the same extension, we'll just grab the old one
+            # and use it. (This doesn't affect cookbook files, since they'll always have extensions)
+            if File.extname(old_path) != File.extname(new_path)
+              new_path += File.extname(old_path)
+            end
             next if diff_filter && diff_filter !~ /D/
             if output_mode == :name_only
               yield "#{new_path}\n"
@@ -72,7 +78,7 @@ class Chef
             elsif old_value
               result = "diff --knife #{old_path} #{new_path}\n"
               result << "deleted file\n"
-              result << diff_text(old_path, '/dev/null', old_value, '')
+              result << diff_text(old_path, "/dev/null", old_value, "")
               yield result
             else
               yield "Only in #{format_path.call(old_entry.parent)}: #{old_entry.name}\n"
@@ -87,7 +93,7 @@ class Chef
             elsif new_value
               result = "diff --knife #{old_path} #{new_path}\n"
               result << "new file\n"
-              result << diff_text('/dev/null', new_path, '', new_value)
+              result << diff_text("/dev/null", new_path, "", new_value)
               yield result
             else
               yield "Only in #{format_path.call(new_entry.parent)}: #{new_entry.name}\n"
@@ -223,7 +229,7 @@ class Chef
               end
             end
 
-            if old_value == :none || (old_value == nil && !old_entry.exists?)
+            if old_value == :none || (old_value.nil? && !old_entry.exists?)
               return [ [ :added, old_entry, new_entry, old_value, new_value ] ]
             elsif new_value == :none
               return [ [ :deleted, old_entry, new_entry, old_value, new_value ] ]
@@ -236,30 +242,31 @@ class Chef
         return [ [ :error, old_entry, new_entry, nil, nil, e ] ]
       end
 
-      private
+      class << self
+        private
 
-      def self.sort_keys(json_object)
-        if json_object.is_a?(Array)
-          json_object.map { |o| sort_keys(o) }
-        elsif json_object.is_a?(Hash)
-          new_hash = {}
-          json_object.keys.sort.each { |key| new_hash[key] = sort_keys(json_object[key]) }
-          new_hash
-        else
-          json_object
+        def sort_keys(json_object)
+          if json_object.is_a?(Array)
+            json_object.map { |o| sort_keys(o) }
+          elsif json_object.is_a?(Hash)
+            new_hash = {}
+            json_object.keys.sort.each { |key| new_hash[key] = sort_keys(json_object[key]) }
+            new_hash
+          else
+            json_object
+          end
         end
-      end
 
-      def self.canonicalize_json(json_text)
-        parsed_json = Chef::JSONCompat.parse(json_text)
-        sorted_json = sort_keys(parsed_json)
-        Chef::JSONCompat.to_json_pretty(sorted_json)
-      end
+        def canonicalize_json(json_text)
+          parsed_json = Chef::JSONCompat.parse(json_text)
+          sorted_json = sort_keys(parsed_json)
+          Chef::JSONCompat.to_json_pretty(sorted_json)
+        end
 
-      def self.diff_text(old_path, new_path, old_value, new_value)
-        # Copy to tempfiles before diffing
-        # TODO don't copy things that are already in files!  Or find an in-memory diff algorithm
-        begin
+        def diff_text(old_path, new_path, old_value, new_value)
+          # Copy to tempfiles before diffing
+          # TODO don't copy things that are already in files!  Or find an in-memory diff algorithm
+
           new_tempfile = Tempfile.new("new")
           new_tempfile.write(new_value)
           new_tempfile.close

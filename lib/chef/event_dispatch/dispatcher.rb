@@ -1,4 +1,4 @@
-require 'chef/event_dispatch/base'
+require "chef/event_dispatch/base"
 
 class Chef
   module EventDispatch
@@ -18,6 +18,11 @@ class Chef
       # Add a new subscriber to the list of registered subscribers
       def register(subscriber)
         @subscribers << subscriber
+      end
+
+      # Check to see if we are dispatching to a formatter
+      def formatter?
+        @subscribers.any? { |s| s.respond_to?(:is_formatter?) && s.is_formatter? }
       end
 
       ####
@@ -49,7 +54,7 @@ class Chef
       end
 
       # Special case deprecation, since it needs to know its caller
-      def deprecation(message, location=caller(2..2)[0])
+      def deprecation(message, location = caller(2..2)[0])
         call_subscribers(:deprecation, message, location)
       end
     end

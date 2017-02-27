@@ -1,7 +1,7 @@
 #
 # Author:: Cary Penniman (<cary@rightscale.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/log'
+require "chef/resource"
+require "chef/provider/log"
 
 class Chef
   class Resource
@@ -48,13 +48,13 @@ class Chef
       # name<String>:: Message to log
       # collection<Array>:: Collection of included recipes
       # node<Chef::Node>:: Node where resource will be used
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @level = :info
         @message = name
       end
 
-      def message(arg=nil)
+      def message(arg = nil)
         set_or_return(
           :message,
           arg,
@@ -63,7 +63,7 @@ class Chef
       end
 
       # <Symbol> Log level, one of :debug, :info, :warn, :error or :fatal
-      def level(arg=nil)
+      def level(arg = nil)
         set_or_return(
           :level,
           arg,

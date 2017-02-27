@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Fail fast (e) and echo commands (vx)
+set -evx
+
+# Arguments
+TEST_GEM=$1
+shift
+
+PROJECT_ROOT=$(pwd)
+PROJECT_BUNDLE_PATH=${BUNDLE_PATH:-$(grep BUNDLE_PATH: $PROJECT_ROOT/.bundle/config | cut -d' ' -f2-)}
+if [ -n "$PROJECT_BUNDLE_PATH" ]; then
+  PROJECT_BUNDLE_PATH=$PROJECT_ROOT/$PROJECT_BUNDLE_PATH
+fi
+
+TEST_GEM_ROOT=$(bundle show $TEST_GEM)
+
+# Make a copy of the original Gemfile and stitch in our Gemfile.lock
+TEST_GEMFILE=$TEST_GEM_ROOT/Gemfile
+MODIFIED_TEST_GEMFILE=$TEST_GEMFILE.externaltest
+cat <<EOM > $MODIFIED_TEST_GEMFILE
+require_relative "$PROJECT_ROOT/tasks/gemfile_util"
+GemfileUtil.include_locked_gemfile(self, "$PROJECT_ROOT/Gemfile", gems: ["$TEST_GEM"] + "$TEST_WITH_GEMS".split(/\s+/))
+$TEST_GEM_OVERRIDES
+EOM
+cat $TEST_GEMFILE >> $MODIFIED_TEST_GEMFILE
+if [ -f $TEST_GEMFILE.lock ]; then
+  cp $TEST_GEMFILE.lock $MODIFIED_TEST_GEMFILE.lock
+elif [ -f $MODIFIED_TEST_GEMFILE.lock ]; then
+  rm -f $MODIFIED_TEST_GEMFILE.lock
+fi
+
+# Run the bundle install
+cd $TEST_GEM_ROOT
+export BUNDLE_GEMFILE=$MODIFIED_TEST_GEMFILE
+# Don't read from the project .bundle/config, just our env vars
+export BUNDLE_IGNORE_CONFIG=true
+# Use the top level bundle cache so we don't have to reinstall their packages
+if [ -n "$PROJECT_BUNDLE_PATH" ]; then
+  export BUNDLE_PATH=$PROJECT_BUNDLE_PATH
+fi
+export BUNDLE_FROZEN=
+bundle install
+export BUNDLE_FROZEN=true
+
+bundle config
+bundle exec $@

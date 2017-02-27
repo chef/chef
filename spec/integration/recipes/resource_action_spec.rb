@@ -1,131 +1,150 @@
-require 'support/shared/integration/integration_helper'
+require "support/shared/integration/integration_helper"
 
-describe "Resource.action" do
-  include IntegrationSupport
+# Houses any classes we declare
+module ResourceActionSpec
 
-  shared_context "ActionJackson" do
-    it "the default action is the first declared action" do
-      converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
-        end
-      EOM
-      expect(ActionJackson.ran_action).to eq :access_recipe_dsl
-      expect(ActionJackson.succeeded).to eq true
-    end
+  describe "Resource.action" do
+    include IntegrationSupport
 
-    it "the action can access recipe DSL" do
-      converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
-          action :access_recipe_dsl
-        end
-      EOM
-      expect(ActionJackson.ran_action).to eq :access_recipe_dsl
-      expect(ActionJackson.succeeded).to eq true
-    end
-
-    it "the action can access attributes" do
-      converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
-          action :access_attribute
-        end
-      EOM
-      expect(ActionJackson.ran_action).to eq :access_attribute
-      expect(ActionJackson.succeeded).to eq 'foo!'
-    end
-
-    it "the action can access public methods" do
-      converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
-          action :access_method
-        end
-      EOM
-      expect(ActionJackson.ran_action).to eq :access_method
-      expect(ActionJackson.succeeded).to eq 'foo_public!'
-    end
-
-    it "the action can access protected methods" do
-      converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
-          action :access_protected_method
-        end
-      EOM
-      expect(ActionJackson.ran_action).to eq :access_protected_method
-      expect(ActionJackson.succeeded).to eq 'foo_protected!'
-    end
-
-    it "the action cannot access private methods" do
-      expect {
-        converge(<<-EOM, __FILE__, __LINE__+1)
-          #{resource_dsl} 'hi' do
-            foo 'foo!'
-            action :access_private_method
+    shared_context "ActionJackson" do
+      it "the default action is the first declared action" do
+        converge <<-EOM, __FILE__, __LINE__ + 1
+          #{resource_dsl} "hi" do
+            foo "foo!"
           end
         EOM
-      }.to raise_error(NameError)
-      expect(ActionJackson.ran_action).to eq :access_private_method
-    end
+        expect(ActionJackson.ran_action).to eq :access_recipe_dsl
+        expect(ActionJackson.succeeded).to eq true
+      end
 
-    it "the action cannot access resource instance variables" do
-      converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
-          action :access_instance_variable
+      context "when running in whyrun mode" do
+        before do
+          Chef::Config[:why_run] = true
         end
-      EOM
-      expect(ActionJackson.ran_action).to eq :access_instance_variable
-      expect(ActionJackson.succeeded).to be_nil
-    end
 
-    it "the action does not compile until the prior resource has converged" do
-      converge <<-EOM, __FILE__, __LINE__+1
-        ruby_block 'wow' do
-          block do
-            ActionJackson.ruby_block_converged = 'ruby_block_converged!'
+        it "the default action runs" do
+          converge <<-EOM, __FILE__, __LINE__ + 1
+            #{resource_dsl} "hi" do
+              foo "foo!"
+            end
+          EOM
+          expect(ActionJackson.ran_action).to eq :access_recipe_dsl
+          expect(ActionJackson.succeeded).to eq true
+        end
+      end
+
+      it "the action can access recipe DSL" do
+        converge <<-EOM, __FILE__, __LINE__ + 1
+          #{resource_dsl} "hi" do
+            foo "foo!"
+            action :access_recipe_dsl
           end
-        end
+        EOM
+        expect(ActionJackson.ran_action).to eq :access_recipe_dsl
+        expect(ActionJackson.succeeded).to eq true
+      end
 
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
-          action :access_class_method
-        end
-      EOM
-      expect(ActionJackson.ran_action).to eq :access_class_method
-      expect(ActionJackson.succeeded).to eq 'ruby_block_converged!'
-    end
+      it "the action can access attributes" do
+        converge <<-EOM, __FILE__, __LINE__ + 1
+          #{resource_dsl} "hi" do
+            foo "foo!"
+            action :access_attribute
+          end
+        EOM
+        expect(ActionJackson.ran_action).to eq :access_attribute
+        expect(ActionJackson.succeeded).to eq "foo!"
+      end
 
-    it "the action's resources converge before the next resource converges" do
-      converge <<-EOM, __FILE__, __LINE__+1
-        #{resource_dsl} 'hi' do
-          foo 'foo!'
+      it "the action can access public methods" do
+        converge <<-EOM, __FILE__, __LINE__ + 1
+          #{resource_dsl} "hi" do
+            foo "foo!"
+            action :access_method
+          end
+        EOM
+        expect(ActionJackson.ran_action).to eq :access_method
+        expect(ActionJackson.succeeded).to eq "foo_public!"
+      end
+
+      it "the action can access protected methods" do
+        converge <<-EOM, __FILE__, __LINE__ + 1
+          #{resource_dsl} "hi" do
+            foo "foo!"
+            action :access_protected_method
+          end
+        EOM
+        expect(ActionJackson.ran_action).to eq :access_protected_method
+        expect(ActionJackson.succeeded).to eq "foo_protected!"
+      end
+
+      it "the action cannot access private methods" do
+        expect do
+          converge(<<-EOM, __FILE__, __LINE__ + 1)
+            #{resource_dsl} "hi" do
+              foo "foo!"
+              action :access_private_method
+            end
+          EOM
+        end.to raise_error(NameError)
+        expect(ActionJackson.ran_action).to eq :access_private_method
+      end
+
+      it "the action cannot access resource instance variables" do
+        converge <<-EOM, __FILE__, __LINE__ + 1
+          #{resource_dsl} "hi" do
+            foo "foo!"
+            action :access_instance_variable
+          end
+        EOM
+        expect(ActionJackson.ran_action).to eq :access_instance_variable
+        expect(ActionJackson.succeeded).to be_nil
+      end
+
+      it "the action does not compile until the prior resource has converged" do
+        converge <<-EOM, __FILE__, __LINE__ + 1
+          ruby_block "wow" do
+            block do
+              ResourceActionSpec::ActionJackson.ruby_block_converged = "ruby_block_converged!"
+            end
+          end
+
+          #{resource_dsl} "hi" do
+            foo "foo!"
+            action :access_class_method
+          end
+        EOM
+        expect(ActionJackson.ran_action).to eq :access_class_method
+        expect(ActionJackson.succeeded).to eq "ruby_block_converged!"
+      end
+
+      it "the action's resources converge before the next resource converges" do
+        converge <<-EOM, __FILE__, __LINE__ + 1
+        #{resource_dsl} "hi" do
+          foo "foo!"
           action :access_attribute
         end
 
-        ruby_block 'wow' do
+        ruby_block "wow" do
           block do
-            ActionJackson.ruby_block_converged = ActionJackson.succeeded
+            ResourceActionSpec::ActionJackson.ruby_block_converged = ResourceActionSpec::ActionJackson.succeeded
           end
         end
       EOM
-      expect(ActionJackson.ran_action).to eq :access_attribute
-      expect(ActionJackson.succeeded).to eq 'foo!'
-      expect(ActionJackson.ruby_block_converged).to eq 'foo!'
+        expect(ActionJackson.ran_action).to eq :access_attribute
+        expect(ActionJackson.succeeded).to eq "foo!"
+        expect(ActionJackson.ruby_block_converged).to eq "foo!"
+      end
     end
-  end
 
-  context "With resource 'action_jackson'" do
-    before(:context) {
+    context "With resource 'action_jackson'" do
       class ActionJackson < Chef::Resource
         use_automatic_resource_name
-        def foo(value=nil)
+        def foo(value = nil)
           @foo = value if value
           @foo
         end
-        def blarghle(value=nil)
+
+        def blarghle(value = nil)
           @blarghle = value if value
           @blarghle
         end
@@ -136,23 +155,9 @@ describe "Resource.action" do
           attr_accessor :ruby_block_converged
         end
 
-        public
-        def foo_public
-          'foo_public!'
-        end
-        protected
-        def foo_protected
-          'foo_protected!'
-        end
-        private
-        def foo_private
-          'foo_private!'
-        end
-
-        public
         action :access_recipe_dsl do
           ActionJackson.ran_action = :access_recipe_dsl
-          ruby_block 'hi there' do
+          whyrun_safe_ruby_block "hi there" do
             block do
               ActionJackson.succeeded = true
             end
@@ -190,45 +195,61 @@ describe "Resource.action" do
           ActionJackson.ran_action = :access_class_method
           ActionJackson.succeeded = ActionJackson.ruby_block_converged
         end
-      end
-    }
-    before(:each) {
-      ActionJackson.ran_action = :error
-      ActionJackson.succeeded = :error
-      ActionJackson.ruby_block_converged = :error
-    }
 
-    it_behaves_like "ActionJackson" do
-      let(:resource_dsl) { :action_jackson }
-    end
-
-    it "Can retrieve ancestors of action class without crashing" do
-      converge { action_jackson 'hi' }
-      expect { ActionJackson.action_class.ancestors.join(",") }.not_to raise_error
-    end
-
-    context "And 'action_jackgrandson' inheriting from ActionJackson and changing nothing" do
-      before(:context) {
-        class ActionJackgrandson < ActionJackson
-          use_automatic_resource_name
+        def foo_public
+          "foo_public!"
         end
-      }
+
+        protected
+
+        def foo_protected
+          "foo_protected!"
+        end
+
+        private
+
+        def foo_private
+          "foo_private!"
+        end
+      end
+
+      before(:each) do
+        ActionJackson.ran_action = :error
+        ActionJackson.succeeded = :error
+        ActionJackson.ruby_block_converged = :error
+      end
 
       it_behaves_like "ActionJackson" do
-        let(:resource_dsl) { :action_jackgrandson }
+        let(:resource_dsl) { :action_jackson }
       end
-    end
 
-    context "And 'action_jackalope' inheriting from ActionJackson with an extra attribute, action and custom method" do
-      before(:context) {
+      it "Can retrieve ancestors of action class without crashing" do
+        converge { action_jackson "hi" }
+        expect { ActionJackson.action_class.ancestors.join(",") }.not_to raise_error
+      end
+
+      context "And 'action_jackgrandson' inheriting from ActionJackson and changing nothing" do
+        before(:context) do
+          class ActionJackgrandson < ActionJackson
+            use_automatic_resource_name
+          end
+        end
+
+        it_behaves_like "ActionJackson" do
+          let(:resource_dsl) { :action_jackgrandson }
+        end
+      end
+
+      context "And 'action_jackalope' inheriting from ActionJackson with an extra attribute, action and custom method" do
         class ActionJackalope < ActionJackson
           use_automatic_resource_name
 
-          def foo(value=nil)
+          def foo(value = nil)
             @foo = "#{value}alope" if value
             @foo
           end
-          def bar(value=nil)
+
+          def bar(value = nil)
             @bar = "#{value}alope" if value
             @bar
           end
@@ -246,78 +267,76 @@ describe "Resource.action" do
             ActionJackalope.succeeded = ActionJackson.succeeded
           end
         end
-      }
-      before do
-        ActionJackalope.jackalope_ran = nil
-        ActionJackalope.load_current_resource_ran = nil
-      end
+        before do
+          ActionJackalope.jackalope_ran = nil
+          ActionJackalope.load_current_resource_ran = nil
+        end
 
-      context "action_jackson still behaves the same" do
-        it_behaves_like "ActionJackson" do
-          let(:resource_dsl) { :action_jackson }
+        context "action_jackson still behaves the same" do
+          it_behaves_like "ActionJackson" do
+            let(:resource_dsl) { :action_jackson }
+          end
+        end
+
+        it "the default action remains the same even though new actions were specified first" do
+          converge do
+            action_jackalope "hi" do
+              foo "foo!"
+              bar "bar!"
+            end
+          end
+          expect(ActionJackson.ran_action).to eq :access_recipe_dsl
+          expect(ActionJackson.succeeded).to eq true
+        end
+
+        it "new actions run, and can access overridden, new, and overridden attributes" do
+          converge do
+            action_jackalope "hi" do
+              foo "foo!"
+              bar "bar!"
+              blarghle "blarghle!"
+              action :access_jackalope
+            end
+          end
+          expect(ActionJackalope.jackalope_ran).to eq :access_jackalope
+          expect(ActionJackalope.succeeded).to eq "foo!alope blarghle! bar!alope"
+        end
+
+        it "overridden actions run, call super, and can access overridden, new, and overridden attributes" do
+          converge do
+            action_jackalope "hi" do
+              foo "foo!"
+              bar "bar!"
+              blarghle "blarghle!"
+              action :access_attribute
+            end
+          end
+          expect(ActionJackson.ran_action).to eq :access_attribute
+          expect(ActionJackson.succeeded).to eq "foo!alope blarghle! bar!alope"
+          expect(ActionJackalope.jackalope_ran).to eq :access_attribute
+          expect(ActionJackalope.succeeded).to eq "foo!alope blarghle! bar!alope"
+        end
+
+        it "non-overridden actions run and can access overridden and non-overridden variables (but not necessarily new ones)" do
+          converge do
+            action_jackalope "hi" do
+              foo "foo!"
+              bar "bar!"
+              blarghle "blarghle!"
+              action :access_attribute2
+            end
+          end
+          expect(ActionJackson.ran_action).to eq :access_attribute2
+          expect(ActionJackson.succeeded).to eq("foo!alope blarghle! bar!alope").or(eq("foo!alope blarghle!"))
         end
       end
-
-      it "the default action remains the same even though new actions were specified first" do
-        converge {
-          action_jackalope 'hi' do
-            foo 'foo!'
-            bar 'bar!'
-          end
-        }
-        expect(ActionJackson.ran_action).to eq :access_recipe_dsl
-        expect(ActionJackson.succeeded).to eq true
-      end
-
-      it "new actions run, and can access overridden, new, and overridden attributes" do
-        converge {
-          action_jackalope 'hi' do
-            foo 'foo!'
-            bar 'bar!'
-            blarghle 'blarghle!'
-            action :access_jackalope
-          end
-        }
-        expect(ActionJackalope.jackalope_ran).to eq :access_jackalope
-        expect(ActionJackalope.succeeded).to eq "foo!alope blarghle! bar!alope"
-      end
-
-      it "overridden actions run, call super, and can access overridden, new, and overridden attributes" do
-        converge {
-          action_jackalope 'hi' do
-            foo 'foo!'
-            bar 'bar!'
-            blarghle 'blarghle!'
-            action :access_attribute
-          end
-        }
-        expect(ActionJackson.ran_action).to eq :access_attribute
-        expect(ActionJackson.succeeded).to eq "foo!alope blarghle! bar!alope"
-        expect(ActionJackalope.jackalope_ran).to eq :access_attribute
-        expect(ActionJackalope.succeeded).to eq "foo!alope blarghle! bar!alope"
-      end
-
-      it "non-overridden actions run and can access overridden and non-overridden variables (but not necessarily new ones)" do
-        converge {
-          action_jackalope 'hi' do
-            foo 'foo!'
-            bar 'bar!'
-            blarghle 'blarghle!'
-            action :access_attribute2
-          end
-        }
-        expect(ActionJackson.ran_action).to eq :access_attribute2
-        expect(ActionJackson.succeeded).to eq("foo!alope blarghle! bar!alope").or(eq("foo!alope blarghle!"))
-      end
     end
-  end
 
-  context "With a resource with no actions" do
-    before(:context) {
+    context "With a resource with no actions" do
       class NoActionJackson < Chef::Resource
         use_automatic_resource_name
 
-        def foo(value=nil)
+        def foo(value = nil)
           @foo = value if value
           @foo
         end
@@ -326,20 +345,19 @@ describe "Resource.action" do
           attr_accessor :action_was
         end
       end
-    }
-    it "the default action is :nothing" do
-      converge {
-        no_action_jackson 'hi' do
-          foo 'foo!'
-          NoActionJackson.action_was = action
-        end
-      }
-      expect(NoActionJackson.action_was).to eq [:nothing]
-    end
-  end
 
-  context "With a resource with action a-b-c d" do
-    before(:context) {
+      it "the default action is :nothing" do
+        converge do
+          no_action_jackson "hi" do
+            foo "foo!"
+            NoActionJackson.action_was = action
+          end
+        end
+        expect(NoActionJackson.action_was).to eq [:nothing]
+      end
+    end
+
+    context "With a resource with action a-b-c d" do
       class WeirdActionJackson < Chef::Resource
         use_automatic_resource_name
 
@@ -351,13 +369,213 @@ describe "Resource.action" do
           WeirdActionJackson.action_was = action
         end
       end
-    }
 
-    it "Running the action works" do
-      expect_recipe {
-        weird_action_jackson 'hi'
-      }.to be_up_to_date
-      expect(WeirdActionJackson.action_was).to eq :"a-b-c d"
+      it "Running the action works" do
+        expect_recipe do
+          weird_action_jackson "hi"
+        end.to be_up_to_date
+        expect(WeirdActionJackson.action_was).to eq :"a-b-c d"
+      end
+    end
+
+    context "With a resource with property x" do
+      class ResourceActionSpecWithX < Chef::Resource
+        resource_name :resource_action_spec_with_x
+        property :x, default: 20
+        action :set do
+          # Access x during converge to ensure that we emit no warnings there
+          x
+        end
+      end
+
+      context "And another resource with a property x and an action that sets property x to its value" do
+        class ResourceActionSpecAlsoWithX < Chef::Resource
+          resource_name :resource_action_spec_also_with_x
+          property :x
+          action :set_x_to_x do
+            resource_action_spec_with_x "hi" do
+              x x
+            end
+          end
+          def self.x_warning_line
+            __LINE__ - 4
+          end
+          action :set_x_to_x_in_non_initializer do
+            r = resource_action_spec_with_x "hi" do
+              x 10
+            end
+            x_times_2 = r.x * 2
+          end
+          action :set_x_to_10 do
+            resource_action_spec_with_x "hi" do
+              x 10
+            end
+          end
+        end
+
+        attr_reader :x_warning_line
+
+        it "Using the enclosing resource to set x to x emits a warning that you're using the wrong x" do
+          recipe = converge do
+            resource_action_spec_also_with_x "hi" do
+              x 1
+              action :set_x_to_x
+            end
+          end
+          warnings = recipe.logs.lines.select { |l| l =~ /warn/i }
+          expect(warnings.size).to eq 1
+          expect(warnings[0]).to match(/property x is declared in both resource_action_spec_with_x\[hi\] and resource_action_spec_also_with_x\[hi\] action :set_x_to_x. Use new_resource.x instead. At #{__FILE__}:#{ResourceActionSpecAlsoWithX.x_warning_line}/)
+        end
+
+        it "Using the enclosing resource to set x to x outside the initializer emits no warning" do
+          expect_recipe do
+            resource_action_spec_also_with_x "hi" do
+              x 1
+              action :set_x_to_x_in_non_initializer
+            end
+          end.to emit_no_warnings_or_errors
+        end
+
+        it "Using the enclosing resource to set x to 10 emits no warning" do
+          expect_recipe do
+            resource_action_spec_also_with_x "hi" do
+              x 1
+              action :set_x_to_10
+            end
+          end.to emit_no_warnings_or_errors
+        end
+
+        it "Using the enclosing resource to set x to 10 emits no warning" do
+          expect_recipe do
+            r = resource_action_spec_also_with_x "hi"
+            r.x 1
+            r.action :set_x_to_10
+          end.to emit_no_warnings_or_errors
+        end
+      end
+
+    end
+
+    context "With a resource with a set_or_return property named group (same name as a resource)" do
+      class ResourceActionSpecWithGroupAction < Chef::Resource
+        resource_name :resource_action_spec_set_group_to_nil
+        action :set_group_to_nil do
+          # Access x during converge to ensure that we emit no warnings there
+          resource_action_spec_with_group "hi" do
+            group nil
+            action :nothing
+          end
+        end
+      end
+
+      class ResourceActionSpecWithGroup < Chef::Resource
+        resource_name :resource_action_spec_with_group
+        def group(value = nil)
+          set_or_return(:group, value, {})
+        end
+      end
+
+      it "Setting group to nil in an action does not emit a warning about it being defined in two places" do
+        expect_recipe do
+          resource_action_spec_set_group_to_nil "hi" do
+            action :set_group_to_nil
+          end
+        end.to emit_no_warnings_or_errors
+      end
+    end
+
+    context "When a resource has a property with the same name as another resource" do
+      class HasPropertyNamedTemplate < Chef::Resource
+        use_automatic_resource_name
+        property :template
+        action :create do
+          template "x" do
+            "blah"
+          end
+        end
+      end
+
+      it "Raises an error when attempting to use a template in the action" do
+        expect_converge do
+          has_property_named_template "hi"
+        end.to raise_error(/Property `template` of `has_property_named_template\[hi\]` was incorrectly passed a block.  Possible property-resource collision.  To call a resource named `template` either rename the property or else use `declare_resource\(:template, ...\)`/)
+      end
+    end
+
+    context "When a resource declares methods in action_class and declare_action_class" do
+      class DeclaresActionClassMethods < Chef::Resource
+        use_automatic_resource_name
+        property :x
+        action :create do
+          new_resource.x = a + b + c + d
+        end
+        action_class do
+          def a
+            1
+          end
+        end
+        declare_action_class do
+          def b
+            2
+          end
+        end
+        action_class do
+          def c
+            3
+          end
+        end
+        declare_action_class do
+          def d
+            4
+          end
+        end
+      end
+
+      it "the methods are not available on the resource" do
+        expect { DeclaresActionClassMethods.new("hi").a }.to raise_error(NameError)
+        expect { DeclaresActionClassMethods.new("hi").b }.to raise_error(NameError)
+        expect { DeclaresActionClassMethods.new("hi").c }.to raise_error(NameError)
+        expect { DeclaresActionClassMethods.new("hi").d }.to raise_error(NameError)
+      end
+
+      it "the methods are available to the action" do
+        r = nil
+        expect_recipe do
+          r = declares_action_class_methods "hi"
+        end.to emit_no_warnings_or_errors
+        expect(r.x).to eq(10)
+      end
+
+      context "And a subclass also creates a method" do
+        class DeclaresActionClassMethodsToo < DeclaresActionClassMethods
+          use_automatic_resource_name
+          action :create do
+            new_resource.x a + b + c + d + e
+          end
+          action_class do
+            def e
+              5
+            end
+          end
+        end
+
+        it "the methods are not available on the resource" do
+          expect { DeclaresActionClassMethods.new("hi").a }.to raise_error(NameError)
+          expect { DeclaresActionClassMethods.new("hi").b }.to raise_error(NameError)
+          expect { DeclaresActionClassMethods.new("hi").c }.to raise_error(NameError)
+          expect { DeclaresActionClassMethods.new("hi").d }.to raise_error(NameError)
+          expect { DeclaresActionClassMethods.new("hi").e }.to raise_error(NameError)
+        end
+
+        it "the methods are available to the action" do
+          r = nil
+          expect_recipe do
+            r = declares_action_class_methods_too "hi"
+          end.to emit_no_warnings_or_errors
+          expect(r.x).to eq(15)
+        end
+      end
     end
   end
+
 end

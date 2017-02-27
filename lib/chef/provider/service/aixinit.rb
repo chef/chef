@@ -1,6 +1,6 @@
 #
 # Author:: kaustubh (<kaustubh@clogeny.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service/init'
+require "chef/provider/service/init"
 
 class Chef
   class Provider
@@ -44,7 +44,7 @@ class Chef
           else
             priority_ok = @current_resource.priority == @new_resource.priority
           end
-          if @current_resource.enabled and priority_ok
+          if @current_resource.enabled && priority_ok
             Chef::Log.debug("#{@new_resource} already enabled - nothing to do")
           else
             converge_by("enable service #{@new_resource}") do
@@ -57,17 +57,17 @@ class Chef
         end
 
         def enable_service
-          Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| ::File.delete(f)}
+          Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| ::File.delete(f) }
 
           if @new_resource.priority.is_a? Integer
-            create_symlink(2, 'S', @new_resource.priority)
+            create_symlink(2, "S", @new_resource.priority)
 
           elsif @new_resource.priority.is_a? Hash
-            @new_resource.priority.each do |level,o|
-              create_symlink(level,(o[0] == :start ? 'S' : 'K'),o[1])
+            @new_resource.priority.each do |level, o|
+              create_symlink(level, (o[0] == :start ? "S" : "K"), o[1])
             end
           else
-            create_symlink(2, 'S', '')
+            create_symlink(2, "S", "")
           end
         end
 
@@ -75,13 +75,13 @@ class Chef
           Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| ::File.delete(f) }
 
           if @new_resource.priority.is_a? Integer
-            create_symlink(2, 'K',100 - @new_resource.priority)
+            create_symlink(2, "K", 100 - @new_resource.priority)
           elsif @new_resource.priority.is_a? Hash
-            @new_resource.priority.each do |level,o|
-              create_symlink(level, 'K', 100 - o[1]) if o[0] == :stop
+            @new_resource.priority.each do |level, o|
+              create_symlink(level, "K", 100 - o[1]) if o[0] == :stop
             end
           else
-            create_symlink(2, 'K', '')
+            create_symlink(2, "K", "")
           end
         end
 
@@ -97,8 +97,8 @@ class Chef
           priority = {}
 
           files.each do |file|
-            if (RC_D_SCRIPT_NAME =~ file)
-              priority[2] = [($1 == "S" ? :start : :stop), ($2.empty? ? '' : $2.to_i)]
+            if RC_D_SCRIPT_NAME =~ file
+              priority[2] = [($1 == "S" ? :start : :stop), ($2.empty? ? "" : $2.to_i)]
               if $1 == "S"
                 is_enabled = true
               end

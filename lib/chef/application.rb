@@ -1,7 +1,7 @@
 #
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Author:: Mark Mzyk (mmzyk@opscode.com)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: AJ Christensen (<aj@chef.io>)
+# Author:: Mark Mzyk (mmzyk@chef.io)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +16,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'pp'
-require 'uri'
-require 'socket'
-require 'chef/config'
-require 'chef/config_fetcher'
-require 'chef/exceptions'
-require 'chef/local_mode'
-require 'chef/log'
-require 'chef/platform'
-require 'mixlib/cli'
-require 'tmpdir'
-require 'rbconfig'
+require "pp"
+require "socket"
+require "chef/config"
+require "chef/config_fetcher"
+require "chef/exceptions"
+require "chef/local_mode"
+require "chef/log"
+require "chef/platform"
+require "mixlib/cli"
+require "tmpdir"
+require "rbconfig"
+require "chef/application/exit_code"
 
 class Chef
   class Application
@@ -47,7 +47,6 @@ class Chef
     def reconfigure
       configure_chef
       configure_logging
-      configure_proxy_environment_variables
       configure_encoding
       emit_warnings
     end
@@ -62,11 +61,11 @@ class Chef
 
     def setup_signal_handlers
       trap("INT") do
-        Chef::Application.fatal!("SIGINT received, stopping", 2)
+        Chef::Application.fatal!("SIGINT received, stopping", Chef::Exceptions::SigInt.new)
       end
 
       trap("TERM") do
-        Chef::Application.fatal!("SIGTERM received, stopping", 3)
+        Chef::Application.fatal!("SIGTERM received, stopping", Chef::Exceptions::SigTerm.new)
       end
 
       unless Chef::Platform.windows?
@@ -85,11 +84,20 @@ class Chef
     def configure_chef
       parse_options
       load_config_file
+      Chef::Config.export_proxies
+      Chef::Config.init_openssl
     end
 
     # Parse the config file
     def load_config_file
       config_fetcher = Chef::ConfigFetcher.new(config[:config_file])
+
+      # Some config settings are derived relative to the config file path; if
+      # given as a relative path, this is computed relative to cwd, but
+      # chef-client will later chdir to root, so we need to get the absolute path
+      # here.
+      config[:config_file] = config_fetcher.expanded_path
+
       if config[:config_file].nil?
         Chef::Log.warn("No config file found or specified on command line, using command line options.")
       elsif config_fetcher.config_missing?
@@ -100,13 +108,22 @@ class Chef
         config_content = config_fetcher.read_config
         apply_config(config_content, config[:config_file])
       end
+      extra_config_options = config.delete(:config_option)
       Chef::Config.merge!(config)
+      apply_extra_config_options(extra_config_options)
+    end
+
+    def apply_extra_config_options(extra_config_options)
+      Chef::Config.apply_extra_config_options(extra_config_options)
+    rescue ChefConfig::UnparsableConfigOption => e
+      Chef::Application.fatal!(e.message)
     end
 
     def set_specific_recipes
-      Chef::Config[:specific_recipes] =
-        cli_arguments.map { |file| File.expand_path(file) } if
-        cli_arguments.respond_to?(:map)
+      if cli_arguments.respond_to?(:map)
+        Chef::Config[:specific_recipes] =
+          cli_arguments.map { |file| File.expand_path(file) }
+      end
     end
 
     # Initialize and configure the logger.
@@ -134,6 +151,7 @@ class Chef
     # that a user has configured a log_location in client.rb, but is running
     # chef-client by hand to troubleshoot a problem.
     def configure_logging
+      configure_log_location
       Chef::Log.init(MonoLogger.new(Chef::Config[:log_location]))
       if want_additional_logger?
         configure_stdout_logger
@@ -141,13 +159,27 @@ class Chef
       Chef::Log.level = resolve_log_level
     rescue StandardError => error
       Chef::Log.fatal("Failed to open or create log file at #{Chef::Config[:log_location]}: #{error.class} (#{error.message})")
-      Chef::Application.fatal!("Aborting due to invalid 'log_location' configuration", 2)
+      Chef::Application.fatal!("Aborting due to invalid 'log_location' configuration", error)
+    end
+
+    # Turn `log_location :syslog` and `log_location :win_evt` into the
+    # appropriate loggers.
+    def configure_log_location
+      log_location = Chef::Config[:log_location]
+      return unless log_location.respond_to?(:to_sym)
+
+      Chef::Config[:log_location] =
+        case log_location.to_sym
+          when :syslog then Chef::Log::Syslog.new
+          when :win_evt then Chef::Log::WinEvt.new
+          else log_location # Probably a path; let MonoLogger sort it out
+        end
     end
 
     def configure_stdout_logger
       stdout_logger = MonoLogger.new(STDOUT)
       stdout_logger.formatter = Chef::Log.logger.formatter
-      Chef::Log.loggers <<  stdout_logger
+      Chef::Log.loggers << stdout_logger
     end
 
     # Based on config and whether or not STDOUT is a tty, should we setup a
@@ -180,14 +212,6 @@ class Chef
       end
     end
 
-    # Configure and set any proxy environment variables according to the config.
-    def configure_proxy_environment_variables
-      configure_http_proxy
-      configure_https_proxy
-      configure_ftp_proxy
-      configure_no_proxy
-    end
-
     # Sets the default external encoding to UTF-8 (users can change this, but they shouldn't)
     def configure_encoding
       Encoding.default_external = Chef::Config[:ruby_encoding]
@@ -195,18 +219,18 @@ class Chef
 
     # Called prior to starting the application, by the run method
     def setup_application
-      raise Chef::Exceptions::Application, "#{self.to_s}: you must override setup_application"
+      raise Chef::Exceptions::Application, "#{self}: you must override setup_application"
     end
 
     # Actually run the application
     def run_application
-      raise Chef::Exceptions::Application, "#{self.to_s}: you must override run_application"
+      raise Chef::Exceptions::Application, "#{self}: you must override run_application"
     end
 
     # Initializes Chef::Client instance and runs it
     def run_chef_client(specific_recipes = [])
       unless specific_recipes.respond_to?(:size)
-        raise ArgumentError, 'received non-Array like specific_recipes argument'
+        raise ArgumentError, "received non-Array like specific_recipes argument"
       end
 
       Chef::LocalMode.with_server_connectivity do
@@ -233,6 +257,7 @@ class Chef
     end
 
     private
+
     def can_fork?
       # win32-process gem exposes some form of :fork for Process
       # class. So we are separately ensuring that the platform we're
@@ -244,7 +269,7 @@ class Chef
     # signal to finish the converge and exists.
     def run_with_graceful_exit_option
       # Override the TERM signal.
-      trap('TERM') do
+      trap("TERM") do
         Chef::Log.debug("SIGTERM received during converge," +
           " finishing converge to exit normally (send SIGINT to terminate immediately)")
       end
@@ -258,7 +283,7 @@ class Chef
       pid = fork do
         # Want to allow forked processes to finish converging when
         # TERM singal is received (exit gracefully)
-        trap('TERM') do
+        trap("TERM") do
           Chef::Log.debug("SIGTERM received during converge," +
             " finishing converge to exit normally (send SIGINT to terminate immediately)")
         end
@@ -270,7 +295,7 @@ class Chef
           @chef_client.run
         rescue Exception => e
           Chef::Log.error(e.to_s)
-          exit 1
+          exit Chef::Application.normalize_exit_code(e)
         else
           exit 0
         end
@@ -298,81 +323,8 @@ class Chef
     rescue Exception => error
       Chef::Log.fatal("Configuration error #{error.class}: #{error.message}")
       filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
-      filtered_trace.each {|line| Chef::Log.fatal("  " + line )}
-      Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", 2)
-    end
-
-    # Set ENV['http_proxy']
-    def configure_http_proxy
-      if http_proxy = Chef::Config[:http_proxy]
-        http_proxy_string = configure_proxy("http", http_proxy,
-          Chef::Config[:http_proxy_user], Chef::Config[:http_proxy_pass])
-        env['http_proxy'] = http_proxy_string unless env['http_proxy']
-        env['HTTP_PROXY'] = http_proxy_string unless env['HTTP_PROXY']
-      end
-    end
-
-    # Set ENV['https_proxy']
-    def configure_https_proxy
-      if https_proxy = Chef::Config[:https_proxy]
-        https_proxy_string = configure_proxy("https", https_proxy,
-          Chef::Config[:https_proxy_user], Chef::Config[:https_proxy_pass])
-        env['https_proxy'] = https_proxy_string unless env['https_proxy']
-        env['HTTPS_PROXY'] = https_proxy_string unless env['HTTPS_PROXY']
-      end
-    end
-
-    # Set ENV['ftp_proxy']
-    def configure_ftp_proxy
-      if ftp_proxy = Chef::Config[:ftp_proxy]
-        ftp_proxy_string = configure_proxy("ftp", ftp_proxy,
-          Chef::Config[:ftp_proxy_user], Chef::Config[:ftp_proxy_pass])
-        env['ftp_proxy'] = ftp_proxy_string unless env['ftp_proxy']
-        env['FTP_PROXY'] = ftp_proxy_string unless env['FTP_PROXY']
-      end
-    end
-
-    # Set ENV['no_proxy']
-    def configure_no_proxy
-      if Chef::Config[:no_proxy]
-        env['no_proxy'] = Chef::Config[:no_proxy] unless env['no_proxy']
-        env['NO_PROXY'] = Chef::Config[:no_proxy] unless env['NO_PROXY']
-      end
-    end
-
-    # Builds a proxy uri. Examples:
-    #   http://username:password@hostname:port
-    #   https://username@hostname:port
-    #   ftp://hostname:port
-    # when
-    #   scheme = "http", "https", or "ftp"
-    #   hostport = hostname:port
-    #   user = username
-    #   pass = password
-    def configure_proxy(scheme, path, user, pass)
-      begin
-        path = "#{scheme}://#{path}" unless path.include?('://')
-        # URI.split returns the following parts:
-        # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
-        parts = URI.split(URI.encode(path))
-        # URI::Generic.build requires an integer for the port, but URI::split gives
-        # returns a string for the port.
-        parts[3] = parts[3].to_i if parts[3]
-        if user
-          userinfo = URI.encode(URI.encode(user), '@:')
-          if pass
-            userinfo << ":#{URI.encode(URI.encode(pass), '@:')}"
-          end
-          parts[1] = userinfo
-        end
-
-        return URI::Generic.build(parts).to_s
-      rescue URI::Error => e
-        # URI::Error messages generally include the offending string. Including a message
-        # for which proxy config item has the issue should help deduce the issue when
-        # the URI::Error message is vague.
-        raise Chef::Exceptions::BadProxyURI, "Cannot configure #{scheme} proxy. Does not comply with URI scheme. #{e.message}"
-      end
+      filtered_trace.each { |line| Chef::Log.fatal("  " + line ) }
+      Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", error)
     end
 
     # This is a hook for testing
@@ -382,31 +334,43 @@ class Chef
 
     def emit_warnings
       if Chef::Config[:chef_gem_compile_time]
-        Chef.log_deprecation "setting chef_gem_compile_time to true is deprecated"
+        Chef.deprecated :chef_gem_compile_time, "setting chef_gem_compile_time to true is deprecated"
       end
     end
 
     class << self
       def debug_stacktrace(e)
         message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-        chef_stacktrace_out = "Generated at #{Time.now.to_s}\n"
+
+        cause = e.cause if e.respond_to?(:cause)
+        until cause.nil?
+          message << "\n\n>>>> Caused by #{cause.class}: #{cause}\n#{cause.backtrace.join("\n")}"
+          cause = cause.respond_to?(:cause) ? cause.cause : nil
+        end
+
+        chef_stacktrace_out = "Generated at #{Time.now}\n"
         chef_stacktrace_out += message
 
         Chef::FileCache.store("chef-stacktrace.out", chef_stacktrace_out)
         Chef::Log.fatal("Stacktrace dumped to #{Chef::FileCache.load("chef-stacktrace.out", false)}")
+        Chef::Log.fatal("Please provide the contents of the stacktrace.out file if you file a bug report")
         Chef::Log.debug(message)
         true
       end
 
-      # Log a fatal error message to both STDERR and the Logger, exit the application
-      def fatal!(msg, err = -1)
-        Chef::Log.fatal(msg)
-        Process.exit err
+      def normalize_exit_code(exit_code)
+        Chef::Application::ExitCode.normalize_exit_code(exit_code)
       end
 
-      def exit!(msg, err = -1)
+      # Log a fatal error message to both STDERR and the Logger, exit the application
+      def fatal!(msg, err = nil)
+        Chef::Log.fatal(msg)
+        Process.exit(normalize_exit_code(err))
+      end
+
+      def exit!(msg, err = nil)
         Chef::Log.debug(msg)
-        Process.exit err
+        Process.exit(normalize_exit_code(err))
       end
     end
 

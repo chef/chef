@@ -1,6 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class Chef
   class Util
@@ -100,9 +100,9 @@ describe Chef::Provider::Mount::Windows do
 
       it "should mount the filesystem if it is not mounted" do
         expect(@vol).to receive(:add).with(:remote => @new_resource.device,
-                                       :username => @new_resource.username,
-                                       :domainname => @new_resource.domain,
-                                       :password => @new_resource.password)
+                                           :username => @new_resource.username,
+                                           :domainname => @new_resource.domain,
+                                           :password => @new_resource.password)
         @provider.mount_fs
       end
 
@@ -112,18 +112,16 @@ describe Chef::Provider::Mount::Windows do
         @provider.mount_fs
       end
 
-      it "should remount the filesystem if it is mounted and the options have changed" do
-        expect(@vol).to receive(:add).with(:remote => @new_resource.device,
-                                       :username => @new_resource.username,
-                                       :domainname => @new_resource.domain,
-                                       :password => @new_resource.password)
-        @provider.mount_fs
-      end
+      context "mount_options_unchanged?" do
+        it "should return true if mounted device is the same" do
+          allow(@current_resource).to receive(:device).and_return(GUID)
+          expect(@provider.send :mount_options_unchanged?).to be true
+        end
 
-      it "should not mount the filesystem if it is mounted and the options have not changed" do
-        expect(@vol).to_not receive(:add)
-        allow(@current_resource).to receive(:mounted).and_return(true)
-        @provider.mount_fs
+        it "should return false if mounted device has changed" do
+          allow(@current_resource).to receive(:device).and_return("XXXX")
+          expect(@provider.send :mount_options_unchanged?).to be false
+        end
       end
     end
 

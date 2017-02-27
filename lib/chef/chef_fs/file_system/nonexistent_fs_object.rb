@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/base_fs_object'
-require 'chef/chef_fs/file_system/not_found_error'
+require "chef/chef_fs/file_system/base_fs_object"
+require "chef/chef_fs/file_system/exceptions"
 
 class Chef
   module ChefFS
     module FileSystem
       class NonexistentFSObject < BaseFSObject
-        def initialize(name, parent)
-          super
-        end
-
         def exists?
           false
         end

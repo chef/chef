@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2008-2016, 2009-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,31 +17,21 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/from_file'
-require 'chef/mixin/convert_to_class_name'
-require 'chef/mixin/enforce_ownership_and_permissions'
-require 'chef/mixin/why_run'
-require 'chef/mixin/shell_out'
-require 'chef/mixin/powershell_out'
-require 'chef/mixin/provides'
-require 'chef/platform/service_helpers'
-require 'chef/node_map'
-require 'forwardable'
+require "chef/mixin/from_file"
+require "chef/mixin/convert_to_class_name"
+require "chef/mixin/enforce_ownership_and_permissions"
+require "chef/mixin/why_run"
+require "chef/mixin/shell_out"
+require "chef/mixin/provides"
+require "chef/dsl/core"
+require "chef/platform/service_helpers"
+require "chef/node_map"
+require "forwardable"
 
 class Chef
   class Provider
-    require 'chef/mixin/why_run'
-    require 'chef/mixin/shell_out'
-    require 'chef/mixin/provides'
-    include Chef::Mixin::WhyRun
-    include Chef::Mixin::ShellOut
-    include Chef::Mixin::PowershellOut
-    extend Chef::Mixin::Provides
-
-    # supports the given resource and action (late binding)
-    def self.supports?(resource, action)
-      true
-    end
+    require "chef/mixin/why_run"
+    require "chef/mixin/provides"
 
     attr_accessor :new_resource
     attr_accessor :current_resource
@@ -49,6 +39,17 @@ class Chef
 
     attr_reader :recipe_name
     attr_reader :cookbook_name
+
+    include Chef::Mixin::WhyRun
+    extend Chef::Mixin::Provides
+
+    # includes the "core" DSL and not the "recipe" DSL by design
+    include Chef::DSL::Core
+
+    # supports the given resource and action (late binding)
+    def self.supports?(resource, action)
+      true
+    end
 
     #--
     # TODO: this should be a reader, and the action should be passed in the
@@ -94,7 +95,7 @@ class Chef
     end
 
     def load_current_resource
-      raise Chef::Exceptions::Override, "You must override load_current_resource in #{self.to_s}"
+      raise Chef::Exceptions::Override, "You must override load_current_resource in #{self}"
     end
 
     def define_resource_requirements
@@ -104,7 +105,7 @@ class Chef
     end
 
     def action_nothing
-      Chef::Log.debug("Doing nothing for #{@new_resource.to_s}")
+      Chef::Log.debug("Doing nothing for #{@new_resource}")
       true
     end
 
@@ -112,7 +113,7 @@ class Chef
       run_context.events
     end
 
-    def run_action(action=nil)
+    def run_action(action = nil)
       @action = action unless action.nil?
 
       # TODO: it would be preferable to get the action to be executed in the
@@ -204,26 +205,39 @@ class Chef
         specified_properties = properties.select { |property| new_resource.property_is_set?(property) }
         modified = specified_properties.select { |p| new_resource.send(p) != current_resource.send(p) }
         if modified.empty?
-          Chef::Log.debug("Skipping update of #{new_resource.to_s}: has not changed any of the specified properties #{specified_properties.map { |p| "#{p}=#{new_resource.send(p).inspect}" }.join(", ")}.")
+          properties_str = if new_resource.sensitive
+                             specified_properties.join(", ")
+                           else
+                             specified_properties.map { |p| "#{p}=#{new_resource.send(p).inspect}" }.join(", ")
+                           end
+          Chef::Log.debug("Skipping update of #{new_resource}: has not changed any of the specified properties #{properties_str}.")
           return false
         end
 
         # Print the pretty green text and run the block
         property_size = modified.map { |p| p.size }.max
-        modified = modified.map { |p| "  set #{p.to_s.ljust(property_size)} to #{new_resource.send(p).inspect} (was #{current_resource.send(p).inspect})" }
+        modified.map! do |p|
+          properties_str = if new_resource.sensitive
+                             "(suppressed sensitive property)"
+                           else
+                             "#{new_resource.send(p).inspect} (was #{current_resource.send(p).inspect})"
+                           end
+          "  set #{p.to_s.ljust(property_size)} to #{properties_str}"
+        end
         converge_by([ "update #{current_resource.identity}" ] + modified, &converge_block)
 
       else
         # The resource doesn't exist. Mark that we are *creating* this, and
         # write down any properties we are setting.
         property_size = properties.map { |p| p.size }.max
-        created = []
-        properties.each do |property|
-          if new_resource.property_is_set?(property)
-            created << "  set #{property.to_s.ljust(property_size)} to #{new_resource.send(property).inspect}"
-          else
-            created << "  set #{property.to_s.ljust(property_size)} to #{new_resource.send(property).inspect} (default value)"
-          end
+        created = properties.map do |property|
+          default = " (default value)" unless new_resource.property_is_set?(property)
+          properties_str = if new_resource.sensitive
+                             "(suppressed sensitive property)"
+                           else
+                             new_resource.send(property).inspect
+                           end
+          "  set #{property.to_s.ljust(property_size)} to #{properties_str}#{default}"
         end
 
         converge_by([ "create #{new_resource.identity}" ] + created, &converge_block)
@@ -231,7 +245,7 @@ class Chef
       true
     end
 
-    def self.provides(short_name, opts={}, &block)
+    def self.provides(short_name, opts = {}, &block)
       Chef.provider_handler_map.set(short_name, self, opts, &block)
     end
 
@@ -286,10 +300,10 @@ class Chef
             EOM
           end
           dsl_methods =
-             resource.class.public_instance_methods +
-             resource.class.protected_instance_methods -
-             provider_class.instance_methods -
-             resource.class.properties.keys
+            resource.class.public_instance_methods +
+            resource.class.protected_instance_methods -
+            provider_class.instance_methods -
+            resource.class.properties.keys
           def_delegators(:new_resource, *dsl_methods)
         end
         include @included_resource_dsl_module
@@ -338,10 +352,20 @@ class Chef
     # @api private
     module InlineResources
 
-      # Our run context is a child of the main run context; that gives us a
-      # whole new resource collection and notification set.
-      def initialize(resource, run_context)
-        super(resource, run_context.create_child)
+      # Create a child run_context, compile the block, and converge it.
+      #
+      # @api private
+      def compile_and_converge_action(&block)
+        old_run_context = run_context
+        @run_context = run_context.create_child
+        return_value = instance_eval(&block)
+        Chef::Runner.new(run_context).converge
+        return_value
+      ensure
+        if run_context.resource_collection.any? { |r| r.updated? }
+          new_resource.updated_by_last_action(true)
+        end
+        @run_context = old_run_context
       end
 
       # Class methods for InlineResources. Overrides the `action` DSL method
@@ -353,41 +377,20 @@ class Chef
         # compile the resources, converging them, and then checking if any
         # were updated (and updating new-resource if so)
         def action(name, &block)
-          # We first try to create the method using "def method_name", which is
-          # preferred because it actually shows up in stack traces. If that
-          # fails, we try define_method.
+          # We need the block directly in a method so that `super` works
+          define_method("compile_action_#{name}", &block)
+          # We try hard to use `def` because define_method doesn't show the method name in the stack.
           begin
-            class_eval <<-EOM, __FILE__, __LINE__+1
+            class_eval <<-EOM
               def action_#{name}
-                return_value = compile_action_#{name}
-                Chef::Runner.new(run_context).converge
-                return_value
-              ensure
-                if run_context.resource_collection.any? {|r| r.updated? }
-                  new_resource.updated_by_last_action(true)
-                end
+                compile_and_converge_action { compile_action_#{name} }
               end
             EOM
           rescue SyntaxError
-            define_method("action_#{name}") do
-              begin
-                return_value = send("compile_action_#{name}")
-                Chef::Runner.new(run_context).converge
-                return_value
-              ensure
-                if run_context.resource_collection.any? {|r| r.updated? }
-                  new_resource.updated_by_last_action(true)
-                end
-              end
-            end
+            define_method("action_#{name}") { send("compile_action_#{name}") }
           end
-          # We put the action in its own method so that super() works.
-          define_method("compile_action_#{name}", &block)
         end
       end
-
-      require 'chef/dsl/recipe'
-      include Chef::DSL::Recipe::FullDSL
     end
 
     protected
@@ -420,9 +423,9 @@ class Chef
 
     module DeprecatedLWRPClass
       def const_missing(class_name)
-        if deprecated_constants[class_name.to_sym]
-          Chef.log_deprecation("Using an LWRP provider by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::ProviderResolver.new(node, resource, action) instead.")
-          deprecated_constants[class_name.to_sym]
+        if Chef::Provider.deprecated_constants[class_name.to_sym]
+          Chef.deprecated(:custom_resource, "Using an LWRP provider by its name (#{class_name}) directly is no longer supported in Chef 12 and will be removed.  Use Chef::ProviderResolver.new(node, resource, action) instead.")
+          Chef::Provider.deprecated_constants[class_name.to_sym]
         else
           raise NameError, "uninitialized constant Chef::Provider::#{class_name}"
         end
@@ -435,13 +438,12 @@ class Chef
         if Chef::Provider.const_defined?(class_name, false)
           Chef::Log.warn "Chef::Provider::#{class_name} already exists!  Cannot create deprecation class for #{provider_class}"
         else
-          deprecated_constants[class_name.to_sym] = provider_class
+          Chef::Provider.deprecated_constants[class_name.to_sym] = provider_class
         end
       end
 
-      private
-
       def deprecated_constants
+        raise "Deprecated constants should be called only on Chef::Provider" unless self == Chef::Provider
         @deprecated_constants ||= {}
       end
     end
@@ -450,7 +452,7 @@ class Chef
 end
 
 # Requiring things at the bottom breaks cycles
-require 'chef/chef_class'
-require 'chef/mixin/why_run'
-require 'chef/resource_collection'
-require 'chef/runner'
+require "chef/chef_class"
+require "chef/mixin/why_run"
+require "chef/resource_collection"
+require "chef/runner"

@@ -1,6 +1,6 @@
 #
-# Author:: Joshua Timberman (<joshua@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc
+# Author:: Joshua Timberman (<joshua@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/provider/mount'
-require 'chef/log'
+require "chef/provider/mount"
+require "chef/log"
 
 class Chef
   class Provider
@@ -42,12 +42,12 @@ class Chef
 
         def mountable?
           # only check for existence of non-remote devices
-          if (device_should_exist? && !::File.exists?(device_real) )
+          if device_should_exist? && !::File.exists?(device_real)
             raise Chef::Exceptions::Mount, "Device #{@new_resource.device} does not exist"
-          elsif( @new_resource.mount_point != "none" && !::File.exists?(@new_resource.mount_point) )
+          elsif @new_resource.mount_point != "none" && !::File.exists?(@new_resource.mount_point)
             raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
           end
-          return true
+          true
         end
 
         def enabled?
@@ -104,13 +104,13 @@ class Chef
             command = "mount -t #{@new_resource.fstype}"
             command << " -o #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
             command << case @new_resource.device_type
-            when :device
-              " #{device_real}"
-            when :label
-              " -L #{@new_resource.device}"
-            when :uuid
-              " -U #{@new_resource.device}"
-            end
+                       when :device
+                         " #{device_real}"
+                       when :label
+                         " -L #{@new_resource.device}"
+                       when :uuid
+                         " -U #{@new_resource.device}"
+                       end
             command << " #{@new_resource.mount_point}"
             shell_out!(command)
             Chef::Log.debug("#{@new_resource} is mounted at #{@new_resource.mount_point}")
@@ -129,11 +129,11 @@ class Chef
         end
 
         def remount_command
-          return "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.mount_point}"
+          "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.mount_point}"
         end
 
         def remount_fs
-          if @current_resource.mounted and @new_resource.supports[:remount]
+          if @current_resource.mounted && @new_resource.supports[:remount]
             shell_out!(remount_command)
             @new_resource.updated_by_last_action(true)
             Chef::Log.debug("#{@new_resource} is remounted at #{@new_resource.mount_point}")
@@ -179,7 +179,7 @@ class Chef
             end
 
             ::File.open("/etc/fstab", "w") do |fstab|
-              contents.reverse_each { |line| fstab.puts line}
+              contents.reverse_each { |line| fstab.puts line }
             end
           else
             Chef::Log.debug("#{@new_resource} is not enabled - nothing to do")
@@ -193,7 +193,7 @@ class Chef
         def device_should_exist?
           ( @new_resource.device != "none" ) &&
             ( not network_device? ) &&
-            ( not %w[ cgroup tmpfs fuse ].include? @new_resource.fstype )
+            ( not %w{ cgroup tmpfs fuse vboxsf zfs }.include? @new_resource.fstype )
         end
 
         private
@@ -210,7 +210,7 @@ class Chef
         end
 
         def device_real
-          if @real_device == nil
+          if @real_device.nil?
             if @new_resource.device_type == :device
               @real_device = @new_resource.device
             else
@@ -237,13 +237,13 @@ class Chef
         def device_mount_regex
           if network_device?
             # ignore trailing slash
-            Regexp.escape(device_real)+"/?"
+            Regexp.escape(device_real) + "/?"
           elsif ::File.symlink?(device_real)
             # This regular expression tries to match device_real. If that does not match it will try to match the target of device_real.
             # So given a symlink like this:
             # /dev/mapper/vgroot-tmp.vol -> /dev/dm-9
             # First it will try to match "/dev/mapper/vgroot-tmp.vol". If there is no match it will try matching for "/dev/dm-9".
-            "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.expand_path(::File.readlink(device_real),::File.dirname(device_real)))})"
+            "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.expand_path(::File.readlink(device_real), ::File.dirname(device_real)))})"
           else
             Regexp.escape(device_real)
           end
@@ -258,10 +258,10 @@ class Chef
         end
 
         def mount_options_unchanged?
-          @current_resource.fstype == @new_resource.fstype and
-          @current_resource.options == @new_resource.options and
-          @current_resource.dump == @new_resource.dump and
-          @current_resource.pass == @new_resource.pass
+          @current_resource.fstype == @new_resource.fstype &&
+            @current_resource.options == @new_resource.options &&
+            @current_resource.dump == @new_resource.dump &&
+            @current_resource.pass == @new_resource.pass
         end
 
       end

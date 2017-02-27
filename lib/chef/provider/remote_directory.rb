@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,17 @@
 # limitations under the License.
 #
 
-require 'chef/provider/directory'
-require 'chef/resource/file'
-require 'chef/resource/directory'
-require 'chef/resource/cookbook_file'
-require 'chef/mixin/file_class'
-require 'chef/platform/query_helpers'
-require 'chef/util/path_helper'
-require 'chef/deprecation/warnings'
-require 'chef/deprecation/provider/remote_directory'
+require "chef/provider/directory"
+require "chef/resource/file"
+require "chef/resource/directory"
+require "chef/resource/cookbook_file"
+require "chef/mixin/file_class"
+require "chef/platform/query_helpers"
+require "chef/util/path_helper"
+require "chef/deprecation/warnings"
+require "chef/deprecation/provider/remote_directory"
 
-require 'forwardable'
+require "forwardable"
 
 class Chef
   class Provider
@@ -36,9 +36,9 @@ class Chef
 
       provides :remote_directory
 
-      def_delegators :@new_resource, :purge, :path, :source, :cookbook, :cookbook_name
-      def_delegators :@new_resource, :files_rights, :files_mode, :files_group, :files_owner, :files_backup
-      def_delegators :@new_resource, :rights, :mode, :group, :owner
+      def_delegators :new_resource, :purge, :path, :source, :cookbook, :cookbook_name
+      def_delegators :new_resource, :files_rights, :files_mode, :files_group, :files_owner, :files_backup
+      def_delegators :new_resource, :rights, :mode, :group, :owner
 
       # The overwrite property on the resource.  Delegates to new_resource but can be mutated.
       #
@@ -104,9 +104,9 @@ class Chef
       #
       def purge_unmanaged_files
         if purge
-          Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob(path), '**', '*'), ::File::FNM_DOTMATCH).sort!.reverse!.each do |file|
+          Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob_dir(path), "**", "*"), ::File::FNM_DOTMATCH).sort!.reverse!.each do |file|
             # skip '.' and '..'
-            next if ['.','..'].include?(Pathname.new(file).basename().to_s)
+            next if [".", ".."].include?(Pathname.new(file).basename().to_s)
 
             # Clean the path.  This is required because of the ::File.join
             file = Chef::Util::PathHelper.cleanpath(file)
@@ -209,6 +209,8 @@ class Chef
       def cookbook_file_resource(target_path, relative_source_path)
         res = Chef::Resource::CookbookFile.new(target_path, run_context)
         res.cookbook_name = resource_cookbook
+        # Set the sensitivity level
+        res.sensitive(new_resource.sensitive)
         res.source(::File.join(source, relative_source_path))
         if Chef::Platform.windows? && files_rights
           files_rights.each_pair do |permission, *args|
@@ -251,7 +253,7 @@ class Chef
           # Windows will handle inheritance.
           if dir == path
             rights.each do |r|
-              r = r.dup  # do not update the new_resource
+              r = r.dup # do not update the new_resource
               permissions = r.delete(:permissions)
               principals = r.delete(:principals)
               res.rights(permissions, principals, r)

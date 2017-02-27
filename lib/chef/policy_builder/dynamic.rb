@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,13 @@
 # limitations under the License.
 #
 
-require 'forwardable'
+require "forwardable"
 
-require 'chef/log'
-require 'chef/rest'
-require 'chef/run_context'
-require 'chef/config'
-require 'chef/node'
-require 'chef/exceptions'
+require "chef/log"
+require "chef/run_context"
+require "chef/config"
+require "chef/node"
+require "chef/exceptions"
 
 class Chef
   module PolicyBuilder
@@ -67,7 +66,7 @@ class Chef
         Chef::Log.debug("Building node object for #{node_name}")
 
         @node =
-          if Chef::Config[:solo]
+          if Chef::Config[:solo_legacy_mode]
             Chef::Node.build(node_name)
           else
             Chef::Node.find_or_create(node_name)
@@ -140,7 +139,7 @@ class Chef
       #
       # @return [PolicyBuilder::Policyfile, PolicyBuilder::ExpandNodeObject]
       def implementation
-        @implementation or raise Exceptions::InvalidPolicybuilderCall, "#load_node must be called before other policy builder methods"
+        @implementation || raise(Exceptions::InvalidPolicybuilderCall, "#load_node must be called before other policy builder methods")
       end
 
       # @api private

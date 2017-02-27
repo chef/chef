@@ -1,6 +1,6 @@
 #
 # Author:: Phil Dibowitz (<phild@fb.com>)
-# Copyright:: Copyright (c) 2013 Facebook
+# Copyright:: Copyright 2013-2016, Facebook
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,10 +22,10 @@ class Chef
       provides :whyrun_safe_ruby_block
 
       def action_run
-        @new_resource.block.call
-        @new_resource.updated_by_last_action(true)
-        @run_context.events.resource_update_applied(@new_resource, :create, "execute the whyrun_safe_ruby_block #{@new_resource.name}")
-        Chef::Log.info("#{@new_resource} called")
+        new_resource.block.call
+        new_resource.updated_by_last_action(true)
+        @run_context.events.resource_update_applied(new_resource, :create, "execute the whyrun_safe_ruby_block #{new_resource.name}")
+        Chef::Log.info("#{new_resource} called")
       end
     end
   end

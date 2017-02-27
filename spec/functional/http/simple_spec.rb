@@ -1,6 +1,6 @@
 #
-# Author:: Lamont Granquist (<lamont@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tiny_server'
-require 'support/shared/functional/http'
+require "spec_helper"
+require "tiny_server"
+require "support/shared/functional/http"
 
 describe Chef::HTTP::Simple do
   include ChefHTTPShared
@@ -26,11 +26,11 @@ describe Chef::HTTP::Simple do
   let(:http_client) { described_class.new(source) }
   let(:http_client_disable_gzip) { described_class.new(source, { :disable_gzip => true } ) }
 
-  before(:all) do
+  before(:each) do
     start_tiny_server
   end
 
-  after(:all) do
+  after(:each) do
     stop_tiny_server
   end
 
@@ -84,14 +84,14 @@ describe Chef::HTTP::Simple do
   context "when Chef::Log.level = :debug" do
     before do
       Chef::Log.level = :debug
-      @debug_log = ''
+      @debug_log = ""
       allow(Chef::Log).to receive(:debug) { |str| @debug_log << str }
     end
 
-    let(:source) { 'http://localhost:9000' }
+    let(:source) { "http://localhost:9000" }
 
     it "Logs the request and response for 200's but not the body" do
-      http_client.get('http://localhost:9000/nyan_cat.png')
+      http_client.get("http://localhost:9000/nyan_cat.png")
       expect(@debug_log).to match(/200/)
       expect(@debug_log).to match(/HTTP Request Header Data/)
       expect(@debug_log).to match(/HTTP Status and Header Data/)
@@ -101,7 +101,7 @@ describe Chef::HTTP::Simple do
     end
 
     it "Logs the request and response for 200 POST, but not the body" do
-      http_client.post('http://localhost:9000/posty', 'hithere')
+      http_client.post("http://localhost:9000/posty", "hithere")
       expect(@debug_log).to match(/200/)
       expect(@debug_log).to match(/HTTP Request Header Data/)
       expect(@debug_log).to match(/HTTP Status and Header Data/)
@@ -113,7 +113,7 @@ describe Chef::HTTP::Simple do
 
     it "Logs the request and response and bodies for 400 response" do
       expect do
-        http_client.get('http://localhost:9000/bad_request')
+        http_client.get("http://localhost:9000/bad_request")
       end.to raise_error(Net::HTTPServerException)
       expect(@debug_log).to match(/400/)
       expect(@debug_log).to match(/HTTP Request Header Data/)
@@ -126,7 +126,7 @@ describe Chef::HTTP::Simple do
 
     it "Logs the request and response and bodies for 400 POST response" do
       expect do
-        http_client.post('http://localhost:9000/bad_request', 'hithere')
+        http_client.post("http://localhost:9000/bad_request", "hithere")
       end.to raise_error(Net::HTTPServerException)
       expect(@debug_log).to match(/400/)
       expect(@debug_log).to match(/HTTP Request Header Data/)

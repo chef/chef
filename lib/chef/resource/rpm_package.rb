@@ -1,6 +1,6 @@
 #
 # Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
-# Copyright:: Copyright (c) 2010 Thomas Bishop
+# Copyright:: Copyright 2010-2016, Thomas Bishop
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,26 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/rpm'
+require "chef/resource/package"
+require "chef/provider/package/rpm"
 
 class Chef
   class Resource
     class RpmPackage < Chef::Resource::Package
-      provides :rpm_package, os: [ "linux", "aix" ]
+      resource_name :rpm_package
+      provides :rpm_package, os: %w{linux aix}
 
-      def initialize(name, run_context=nil)
-        super
-        @allow_downgrade = false
-      end
-
-      def allow_downgrade(arg=nil)
-        set_or_return(
-          :allow_downgrade,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :allow_downgrade, [ true, false ], default: false, desired_state: false
 
     end
   end

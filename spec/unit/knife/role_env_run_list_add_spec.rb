@@ -1,15 +1,15 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Will Albenzi (<walbenzi@gmail.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleEnvRunListAdd do
   before(:each) do
@@ -25,11 +25,11 @@ describe Chef::Knife::RoleEnvRunListAdd do
 #    Chef::Config[:env_name]  = "QA"
     @knife = Chef::Knife::RoleEnvRunListAdd.new
     @knife.config = {
-      :after => nil
+      :after => nil,
     }
     @knife.name_args = [ "will", "QA", "role[monkey]" ]
     allow(@knife).to receive(:output).and_return(true)
-    @role = Chef::Role.new() 
+    @role = Chef::Role.new()
     allow(@role).to receive(:save).and_return(true)
     allow(Chef::Role).to receive(:load).and_return(@role)
   end
@@ -48,7 +48,7 @@ describe Chef::Knife::RoleEnvRunListAdd do
 
     it "should have a QA environment" do
       @knife.run
-      expect(@role.active_run_list_for('QA')).to eq('QA')
+      expect(@role.active_run_list_for("QA")).to eq("QA")
     end
 
     it "should load the role named will" do
@@ -58,7 +58,7 @@ describe Chef::Knife::RoleEnvRunListAdd do
 
     it "should be able to add an environment specific run list" do
       @knife.run
-      expect(@role.run_list_for('QA')[0]).to eq('role[monkey]')
+      expect(@role.run_list_for("QA")[0]).to eq("role[monkey]")
     end
 
     it "should save the role" do
@@ -180,7 +180,7 @@ describe Chef::Knife::RoleEnvRunListAdd do
         expect(@role.run_list[1]).to be_nil
       end
     end
-    
+
     describe "with more than one command" do
       it "should be able to the environment run list by running multiple knife commands" do
         @knife.name_args = [ "will", "QA", "role[blue]," ]

@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::WindowsPackage, "initialize" do
   before(:each) do
@@ -80,12 +80,12 @@ describe Chef::Resource::WindowsPackage, "initialize" do
   end
 
   it "supports the checksum attribute" do
-    resource.checksum('somechecksum')
-    expect(resource.checksum).to eq('somechecksum')
+    resource.checksum("somechecksum")
+    expect(resource.checksum).to eq("somechecksum")
   end
 
-  context 'when a URL is used' do
-    let(:resource_source) { 'https://foo.bar/solitare.msi' }
+  context "when a URL is used" do
+    let(:resource_source) { "https://foo.bar/solitare.msi" }
     let(:resource) { Chef::Resource::WindowsPackage.new(resource_source) }
 
     it "should return the source unmodified" do

@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/mixin/securable'
+require "chef/resource"
+require "chef/mixin/securable"
 
 class Chef
   class Resource
@@ -32,7 +32,7 @@ class Chef
       default_action :create
       allowed_actions :create, :delete
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         verify_links_supported!
         super
         @to = nil
@@ -40,7 +40,7 @@ class Chef
         @target_file = name
       end
 
-      def to(arg=nil)
+      def to(arg = nil)
         set_or_return(
           :to,
           arg,
@@ -48,7 +48,7 @@ class Chef
         )
       end
 
-      def target_file(arg=nil)
+      def target_file(arg = nil)
         set_or_return(
           :target_file,
           arg,
@@ -56,7 +56,7 @@ class Chef
         )
       end
 
-      def link_type(arg=nil)
+      def link_type(arg = nil)
         real_arg = arg.kind_of?(String) ? arg.to_sym : arg
         set_or_return(
           :link_type,
@@ -65,7 +65,7 @@ class Chef
         )
       end
 
-      def group(arg=nil)
+      def group(arg = nil)
         set_or_return(
           :group,
           arg,
@@ -73,7 +73,7 @@ class Chef
         )
       end
 
-      def owner(arg=nil)
+      def owner(arg = nil)
         set_or_return(
           :owner,
           arg,
@@ -87,12 +87,13 @@ class Chef
       end
 
       private
+
       def verify_links_supported!
         # On certain versions of windows links are not supported. Make
         # sure we are not on such a platform.
 
         if Chef::Platform.windows?
-          require 'chef/win32/file'
+          require "chef/win32/file"
           begin
             Chef::ReservedNames::Win32::File.verify_links_supported!
           rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e

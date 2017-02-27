@@ -1,8 +1,8 @@
 # Encoding: utf-8
 # Author:: Hugo Fichter
-# Author:: Lamont Granquist (<lamont@getchef.com>)
-# Author:: Joshua Timberman (<joshua@getchef.com>)
-# Copyright:: Copyright (c) 2009-2014 Chef Software, Inc
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Author:: Joshua Timberman (<joshua@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,20 +18,20 @@
 # limitations under the License.
 #
 
-require 'chef/provider/mount'
-require 'chef/log'
-require 'forwardable'
+require "chef/provider/mount"
+require "chef/log"
+require "forwardable"
 
 class Chef
   class Provider
     class Mount
       # Mount Solaris File systems
       class Solaris < Chef::Provider::Mount
-        provides :mount, platform: %w(openindiana opensolaris nexentacore omnios solaris2 smartos)
+        provides :mount, platform: %w{openindiana opensolaris nexentacore omnios solaris2 smartos}
 
         extend Forwardable
 
-        VFSTAB = '/etc/vfstab'.freeze
+        VFSTAB = "/etc/vfstab".freeze
 
         def_delegator :@new_resource, :device, :device
         def_delegator :@new_resource, :device_type, :device_type
@@ -58,7 +58,7 @@ class Chef
             a.whyrun("Assuming device #{device} would have been created")
           end
 
-          unless fsck_device == '-'
+          unless fsck_device == "-"
             requirements.assert(:mount, :remount) do |a|
               a.assertion { ::File.exist?(fsck_device) }
               a.failure_message(Chef::Exceptions::Mount, "Device #{fsck_device} does not exist")
@@ -75,7 +75,7 @@ class Chef
 
         def mount_fs
           actual_options = options || []
-          actual_options.delete('noauto')
+          actual_options.delete("noauto")
           command = "mount -F #{fstype}"
           command << " -o #{actual_options.join(',')}" unless actual_options.empty?
           command << " #{device} #{mount_point}"
@@ -89,8 +89,8 @@ class Chef
         def remount_fs
           # FIXME: Should remount always do the remount or only if the options change?
           actual_options = options || []
-          actual_options.delete('noauto')
-          mount_options = actual_options.empty? ? '' : ",#{actual_options.join(',')}"
+          actual_options.delete("noauto")
+          mount_options = actual_options.empty? ? "" : ",#{actual_options.join(',')}"
           shell_out!("mount -o remount#{mount_options} #{mount_point}")
         end
 
@@ -117,7 +117,7 @@ class Chef
         end
 
         def etc_tempfile
-          yield Tempfile.open('vfstab', '/etc')
+          yield Tempfile.open("vfstab", "/etc")
         end
 
         def mount_options_unchanged?
@@ -129,7 +129,7 @@ class Chef
             current_options == new_options &&
             current_resource.dump == dump &&
             current_resource.pass == pass &&
-            current_resource.options.include?('noauto') == !mount_at_boot?
+            current_resource.options.include?("noauto") == !mount_at_boot?
         end
 
         def update_current_resource_state
@@ -150,7 +150,7 @@ class Chef
         # /dev/dsk/c1t0d0s0 on / type ufs read/write/setuid/devices/intr/largefiles/logging/xattr/onerror=panic/dev=700040 on Tue May  1 11:33:55 2012
         def mounted?
           mounted = false
-          shell_out!('mount -v').stdout.each_line do |line|
+          shell_out!("mount -v").stdout.each_line do |line|
             case line
             when /^#{device_regex}\s+on\s+#{Regexp.escape(mount_point)}\s+/
               Chef::Log.debug("Special device #{device} is mounted as #{mount_point}")
@@ -182,14 +182,14 @@ class Chef
               options = Regexp.last_match[4]
               # Store the 'mount at boot' column from vfstab as the 'noauto' option
               # in current_resource.options (linux style)
-              if Regexp.last_match[3] == 'no'
+              if Regexp.last_match[3] == "no"
                 if options.nil? || options.empty?
-                  options = 'noauto'
+                  options = "noauto"
                 else
-                  options += ',noauto'
+                  options += ",noauto"
                 end
               end
-              pass = (Regexp.last_match[2] == '-') ? 0 : Regexp.last_match[2].to_i
+              pass = (Regexp.last_match[2] == "-") ? 0 : Regexp.last_match[2].to_i
               Chef::Log.debug("Found mount #{device} to #{mount_point} in #{VFSTAB}")
               next
             when /^[-\/\w]+\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+/
@@ -202,16 +202,16 @@ class Chef
         end
 
         def device_should_exist?
-          !%w(tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs vxfs).include?(fstype)
+          !%w{tmpfs nfs ctfs proc mntfs objfs sharefs fd smbfs vxfs}.include?(fstype)
         end
 
         def mount_at_boot?
-          options.nil? || !options.include?('noauto')
+          options.nil? || !options.include?("noauto")
         end
 
         def vfstab_write(contents)
           etc_tempfile do |f|
-            f.write(contents.join(''))
+            f.write(contents.join(""))
             f.close
             # move, preserving modes of destination file
             mover = Chef::FileContentManagement::Deploy.strategy(true)
@@ -221,13 +221,13 @@ class Chef
 
         def vfstab_entry
           actual_options = unless options.nil?
-            tempops = options.dup
-            tempops.delete('noauto')
-            tempops
-          end
-          autostr = mount_at_boot? ? 'yes' : 'no'
-          passstr = pass == 0 ? '-' : pass
-          optstr = (actual_options.nil? || actual_options.empty?) ? '-' : actual_options.join(',')
+                             tempops = options.dup
+                             tempops.delete("noauto")
+                             tempops
+                           end
+          autostr = mount_at_boot? ? "yes" : "no"
+          passstr = pass == 0 ? "-" : pass
+          optstr = (actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(",")
           "\n#{device}\t#{fsck_device}\t#{mount_point}\t#{fstype}\t#{passstr}\t#{autostr}\t#{optstr}\n"
         end
 
@@ -254,7 +254,7 @@ class Chef
         def options_remove_noauto(temp_options)
           new_options = []
           new_options += temp_options.nil? ? [] : temp_options
-          new_options.delete('noauto')
+          new_options.delete("noauto")
           new_options
         end
 

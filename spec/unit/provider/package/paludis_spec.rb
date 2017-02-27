@@ -1,6 +1,6 @@
 #
 # Author:: Vasiliy Tolstov <v.tolstov@selfip.ru>
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 # based on the ips specs
 
@@ -33,7 +33,7 @@ describe Chef::Provider::Package::Paludis do
 
     @stdin = StringIO.new
     @stderr = StringIO.new
-    @stdout =<<-PKG_STATUS
+    @stdout = <<-PKG_STATUS
 group/ntp 0 accounts
 group/ntp 0 installed-accounts
 net/ntp 4.2.6_p5-r2 arbor
@@ -42,7 +42,7 @@ user/ntp 0 installed-accounts
 net/ntp 4.2.6_p5-r1 installed
 PKG_STATUS
     @pid = 12345
-    @shell_out = OpenStruct.new(:stdout => @stdout,:stdin => @stdin,:stderr => @stderr,:status => @status,:exitstatus => 0)
+    @shell_out = OpenStruct.new(:stdout => @stdout, :stdin => @stdin, :stderr => @stderr, :status => @status, :exitstatus => 0)
   end
 
   context "when loading current resource" do
@@ -59,7 +59,7 @@ PKG_STATUS
     end
 
     it "should run pkg info with the package name" do
-      expect(@provider).to receive(:shell_out!).with("cave -L warning print-ids -M none -m \"#{@new_resource.package_name}\" -f \"%c/%p %v %r\n\"").and_return(@shell_out)
+      expect(@provider).to receive(:shell_out!).with("cave", "-L", "warning", "print-ids", "-M", "none", "-m", @new_resource.package_name, "-f", "%c/%p %v %r\n").and_return(@shell_out)
       @provider.load_current_resource
     end
 
@@ -86,14 +86,13 @@ INSTALLED
 
   context "when installing a package" do
     it "should run pkg install with the package name and version" do
-      expect(@provider).to receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>@new_resource.timeout})
+      expect(@provider).to receive(:shell_out!).with("cave", "-L", "warning", "resolve", "-x", "=net/ntp-4.2.6_p5-r2", { :timeout => @new_resource.timeout || 900 })
       @provider.install_package("net/ntp", "4.2.6_p5-r2")
     end
 
-
     it "should run pkg install with the package name and version and options if specified" do
-      expect(@provider).to receive(:shell_out!).with("cave -L warning resolve -x --preserve-world \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>@new_resource.timeout})
-      allow(@new_resource).to receive(:options).and_return("--preserve-world")
+      expect(@provider).to receive(:shell_out!).with("cave", "-L", "warning", "resolve", "-x", "--preserve-world", "=net/ntp-4.2.6_p5-r2", { :timeout => @new_resource.timeout || 900 })
+      @new_resource.options "--preserve-world"
       @provider.install_package("net/ntp", "4.2.6_p5-r2")
     end
 
@@ -102,7 +101,7 @@ INSTALLED
 sys-process/lsof 4.87 arbor
 sys-process/lsof 4.87 x86_64
 PKG_STATUS
-      expect(@provider).to receive(:shell_out!).with("cave -L warning resolve -x \"=sys-process/lsof-4.87\"", {:timeout=>@new_resource.timeout})
+      expect(@provider).to receive(:shell_out!).with("cave", "-L", "warning", "resolve", "-x", "=sys-process/lsof-4.87", { :timeout => @new_resource.timeout || 900 })
       @provider.install_package("sys-process/lsof", "4.87")
     end
 
@@ -120,14 +119,14 @@ PKG_STATUS
 
   context "when upgrading a package" do
     it "should run pkg install with the package name and version" do
-      expect(@provider).to receive(:shell_out!).with("cave -L warning resolve -x \"=net/ntp-4.2.6_p5-r2\"", {:timeout=>@new_resource.timeout})
+      expect(@provider).to receive(:shell_out!).with("cave", "-L", "warning", "resolve", "-x", "=net/ntp-4.2.6_p5-r2", { :timeout => @new_resource.timeout || 900 })
       @provider.upgrade_package("net/ntp", "4.2.6_p5-r2")
     end
   end
 
   context "when uninstalling a package" do
     it "should run pkg uninstall with the package name and version" do
-      expect(@provider).to receive(:shell_out!).with("cave -L warning uninstall -x \"=net/ntp-4.2.6_p5-r2\"")
+      expect(@provider).to receive(:shell_out!).with("cave", "-L", "warning", "uninstall", "-x", "=net/ntp-4.2.6_p5-r2")
       @provider.remove_package("net/ntp", "4.2.6_p5-r2")
     end
 

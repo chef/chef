@@ -1,6 +1,6 @@
 #
-# Author:: Tyler Ball (<tball@getchef.com>)
-# Copyright:: Copyright (c) 2010-2014 Opscode, Inc.
+# Author:: Tyler Ball (<tball@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/encrypted_data_bag_item/check_encrypted'
+require "spec_helper"
+require "chef/encrypted_data_bag_item/check_encrypted"
 
 class CheckEncryptedTester
   include Chef::EncryptedDataBagItem::CheckEncrypted
@@ -32,21 +32,22 @@ describe Chef::EncryptedDataBagItem::CheckEncrypted do
   end
 
   it "detects the item is not encrypted when the data only contains an id" do
-    expect(tester.encrypted?({id: "foo"})).to eq(false)
+    expect(tester.encrypted?({ id: "foo" })).to eq(false)
   end
 
   context "when the item is encrypted" do
 
     let(:default_secret) { "abc123SECRET" }
     let(:item_name) { "item_name" }
-    let(:raw_data) {{
+    let(:raw_data) do
+      {
         "id" => item_name,
         "greeting" => "hello",
         "nested" => {
             "a1" => [1, 2, 3],
-            "a2" => { "b1" => true }
-        }
-    }}
+            "a2" => { "b1" => true },
+        },
+    } end
 
     let(:version) { 1 }
     let(:encoded_data) do
@@ -83,7 +84,7 @@ describe Chef::EncryptedDataBagItem::CheckEncrypted do
       end
     end
 
-    context "when encryption version is 3", :aes_256_gcm_only, :ruby_20_only do
+    context "when encryption version is 3", :aes_256_gcm_only, ruby: "~> 2.0.0" do
       include_examples "encryption detected" do
         let(:version) { 3 }
         let(:encryptor) { Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor }

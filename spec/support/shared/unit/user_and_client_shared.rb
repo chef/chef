@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,7 @@ shared_examples_for "user or client create" do
 
     it "creates a new object via the API with a public_key when it exists" do
       object.public_key "some_public_key"
-      expect(rest_v1).to receive(:post).with(url, payload.merge({:public_key => "some_public_key"})).and_return({})
+      expect(rest_v1).to receive(:post).with(url, payload.merge({ :public_key => "some_public_key" })).and_return({})
       object.create
     end
 
@@ -49,19 +49,19 @@ shared_examples_for "user or client create" do
       end
 
       it "creates a new object via the API with create_key" do
-        expect(rest_v1).to receive(:post).with(url, payload.merge({:create_key => true})).and_return({})
+        expect(rest_v1).to receive(:post).with(url, payload.merge({ :create_key => true })).and_return({})
         object.create
       end
     end
 
     context "when chef_key is returned by the server" do
-      let(:chef_key) {
+      let(:chef_key) do
         {
           "chef_key" => {
-            "public_key" => "some_public_key"
-          }
+            "public_key" => "some_public_key",
+          },
         }
-      }
+      end
 
       it "puts the public key into the objectr returned by create" do
         expect(rest_v1).to receive(:post).with(url, payload).and_return(payload.merge(chef_key))
@@ -70,14 +70,14 @@ shared_examples_for "user or client create" do
       end
 
       context "when private_key is returned in chef_key" do
-        let(:chef_key) {
+        let(:chef_key) do
           {
             "chef_key" => {
               "public_key" => "some_public_key",
-              "private_key" => "some_private_key"
-            }
+              "private_key" => "some_private_key",
+            },
           }
-        }
+        end
 
         it "puts the private key into the object returned by create" do
           expect(rest_v1).to receive(:post).with(url, payload).and_return(payload.merge(chef_key))
@@ -104,7 +104,7 @@ shared_examples_for "user or client create" do
 
       it "creates a new object via the API with a public_key when it exists" do
         object.public_key "some_public_key"
-        expect(rest_v0).to receive(:post).with(url, payload.merge({:public_key => "some_public_key"})).and_return({})
+        expect(rest_v0).to receive(:post).with(url, payload.merge({ :public_key => "some_public_key" })).and_return({})
         object.create
       end
 
@@ -112,4 +112,3 @@ shared_examples_for "user or client create" do
   end # when server API V1 is not valid on the Chef Server receiving the request
 
 end # user or client create
-

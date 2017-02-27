@@ -1,7 +1,7 @@
 #
 # Author:: Jan Zimmek (<jan.zimmek@web.de>)
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 # most of this code has been ripped from init_service_spec.rb
 # and is only slightly modified to match "arch" needs.
@@ -26,14 +26,14 @@ require 'ostruct'
 describe Chef::Provider::Service::Arch, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = {:ps => "ps -ef"}
+    @node.automatic_attrs[:command] = { :ps => "ps -ef" }
 
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Service.new("chef")
     @new_resource.pattern("chef")
-    @new_resource.supports({:status => false})
+    @new_resource.supports({ :status => false })
 
     @provider = Chef::Provider::Service::Arch.new(@new_resource, @run_context)
 
@@ -45,13 +45,13 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
     it "should set the current resources service name to the new resources service name" do
       allow(@provider).to receive(:shell_out).and_return(OpenStruct.new(:exitstatus => 0, :stdout => ""))
       @provider.load_current_resource
-      expect(@provider.current_resource.service_name).to eq('chef')
+      expect(@provider.current_resource.service_name).to eq("chef")
     end
   end
 
   describe "when the service supports status" do
     before do
-      @new_resource.supports({:status => true})
+      @new_resource.supports({ :status => true })
     end
 
     it "should run '/etc/rc.d/service_name status'" do
@@ -92,14 +92,14 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
   end
 
   it "should raise error if the node has a nil ps attribute and no other means to get status" do
-    @node.automatic_attrs[:command] = {:ps => nil}
+    @node.automatic_attrs[:command] = { :ps => nil }
     @provider.define_resource_requirements
     @provider.action = :start
     expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
   end
 
   it "should raise error if the node has an empty ps attribute and no other means to get status" do
-    @node.automatic_attrs[:command] = {:ps => ""}
+    @node.automatic_attrs[:command] = { :ps => "" }
     @provider.define_resource_requirements
     @provider.action = :start
     expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
@@ -125,7 +125,7 @@ DEFAULT_PS
       @status = double("Status", :exitstatus => 0, :stdout => @stdout)
       allow(@provider).to receive(:shell_out!).and_return(@status)
 
-      @node.automatic_attrs[:command] = {:ps => "ps -ef"}
+      @node.automatic_attrs[:command] = { :ps => "ps -ef" }
     end
 
     it "determines the service is running when it appears in ps" do
@@ -155,7 +155,7 @@ RUNNING_PS
 
   it "should return existing entries in DAEMONS array" do
     allow(::File).to receive(:read).with("/etc/rc.conf").and_return("DAEMONS=(network !apache ssh)")
-    expect(@provider.daemons).to eq(['network', '!apache', 'ssh'])
+    expect(@provider.daemons).to eq(["network", "!apache", "ssh"])
   end
 
   context "when the current service status is known" do
@@ -180,7 +180,7 @@ RUNNING_PS
 
       it "should add chef to DAEMONS array" do
         allow(::File).to receive(:read).with("/etc/rc.conf").and_return("DAEMONS=(network)")
-        expect(@provider).to receive(:update_daemons).with(['network', 'chef'])
+        expect(@provider).to receive(:update_daemons).with(%w{network chef})
         @provider.enable_service()
       end
     end
@@ -201,7 +201,7 @@ RUNNING_PS
 
       it "should remove chef from DAEMONS array" do
         allow(::File).to receive(:read).with("/etc/rc.conf").and_return("DAEMONS=(network chef)")
-        expect(@provider).to receive(:update_daemons).with(['network', '!chef'])
+        expect(@provider).to receive(:update_daemons).with(["network", "!chef"])
         @provider.disable_service()
       end
     end
@@ -274,7 +274,7 @@ RUNNING_PS
       # end
 
       it "should call 'restart' on the service_name if the resource supports it" do
-        allow(@new_resource).to receive(:supports).and_return({:restart => true})
+        allow(@new_resource).to receive(:supports).and_return({ :restart => true })
         expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{@new_resource.service_name} restart")
         @provider.restart_service()
       end
@@ -309,7 +309,7 @@ RUNNING_PS
       # end
 
       it "should call 'reload' on the service if it supports it" do
-        allow(@new_resource).to receive(:supports).and_return({:reload => true})
+        allow(@new_resource).to receive(:supports).and_return({ :reload => true })
         expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/rc.d/#{@new_resource.service_name} reload")
         @provider.reload_service()
       end

@@ -1,6 +1,6 @@
 #
 # Author:: Prabhu Das (<prabhu.das@clogeny.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::SolarisPackage, "initialize" do
 
@@ -28,7 +28,7 @@ describe Chef::Resource::SolarisPackage, "initialize" do
       name: :solaris_package,
       action: :install,
       os: "solaris2",
-      platform_family: platform_family,
+      platform_family: platform_family
     )
   end
 

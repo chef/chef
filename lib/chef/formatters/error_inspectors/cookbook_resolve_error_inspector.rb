@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/formatters/error_inspectors/api_error_formatting'
+require "chef/formatters/error_inspectors/api_error_formatting"
 
 class Chef
   module Formatters
@@ -37,10 +37,12 @@ class Chef
           case exception
           when Net::HTTPServerException, Net::HTTPFatalError
             humanize_http_exception(error_description)
+          when EOFError
+            describe_eof_error(error_description)
           when *NETWORK_ERROR_CLASSES
             describe_network_errors(error_description)
           else
-            error_description.section("Unexpected Error:","#{exception.class.name}: #{exception.message}")
+            error_description.section("Unexpected Error:", "#{exception.class.name}: #{exception.message}")
           end
         end
 
@@ -54,7 +56,7 @@ class Chef
             # TODO: we're rescuing errors from Node.find_or_create
             # * could be no write on nodes container
             # * could be no read on the node
-            error_description.section("Authorization Error",<<-E)
+            error_description.section("Authorization Error", <<-E)
 This client is not authorized to read some of the information required to
 access its cookbooks (HTTP 403).
 
@@ -126,7 +128,7 @@ EOM
         end
 
         def expanded_run_list_ul
-          @expanded_run_list.map {|i| "* #{i}"}.join("\n")
+          @expanded_run_list.map { |i| "* #{i}" }.join("\n")
         end
 
         # In my tests, the error from the server is double JSON encoded, but we
@@ -160,9 +162,7 @@ EOM
           maybe_json_string
         end
 
-
       end
     end
   end
 end
-

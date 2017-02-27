@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'zlib'
-require 'chef/http/http_request'
+require "zlib"
+require "chef/http/http_request"
 
 class Chef
   class HTTP
@@ -50,12 +50,12 @@ class Chef
       DEFLATE           = "deflate".freeze
       IDENTITY          = "identity".freeze
 
-      def initialize(opts={})
+      def initialize(opts = {})
         @disable_gzip = false
         handle_options(opts)
       end
 
-      def handle_request(method, url, headers={}, data=false)
+      def handle_request(method, url, headers = {}, data = false)
         headers[HTTPRequest::ACCEPT_ENCODING] = HTTPRequest::ENCODING_GZIP_DEFLATE unless gzip_disabled?
         [method, url, headers, data]
       end
@@ -114,7 +114,6 @@ class Chef
         end
       end
 
-
       # gzip is disabled using the disable_gzip => true option in the
       # constructor. When gzip is disabled, no 'Accept-Encoding' header will be
       # set, and the response will not be decompressed, no matter what the
@@ -132,12 +131,11 @@ class Chef
       def handle_options(opts)
         opts.each do |name, value|
           case name.to_s
-          when 'disable_gzip'
+          when "disable_gzip"
             @disable_gzip = value
           end
         end
       end
-
 
     end
   end

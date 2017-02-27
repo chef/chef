@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::IndexRebuild do
 
-  let(:knife){Chef::Knife::IndexRebuild.new}
-  let(:rest_client){double(Chef::REST)}
+  let(:knife) { Chef::Knife::IndexRebuild.new }
+  let(:rest_client) { double(Chef::ServerAPI) }
 
   let(:stub_rest!) do
     expect(knife).to receive(:rest).and_return(rest_client)
@@ -45,18 +45,18 @@ describe Chef::Knife::IndexRebuild do
 
     before(:each) do
       stub_rest!
-      allow(rest_client).to receive(:get_rest).and_raise(http_server_exception)
+      allow(rest_client).to receive(:get).and_raise(http_server_exception)
     end
 
     context "against a Chef 11 server" do
-      let(:api_header_value){"flavor=osc;version=11.0.0;erchef=1.2.3"}
+      let(:api_header_value) { "flavor=osc;version=11.0.0;erchef=1.2.3" }
       it "retrieves API information" do
-        expect(knife.grab_api_info).to eq({"flavor" => "osc", "version" => "11.0.0", "erchef" => "1.2.3"})
+        expect(knife.grab_api_info).to eq({ "flavor" => "osc", "version" => "11.0.0", "erchef" => "1.2.3" })
       end
     end # Chef 11
 
     context "against a Chef 10 server" do
-      let(:api_header_value){nil}
+      let(:api_header_value) { nil }
       it "finds no API information" do
         expect(knife.grab_api_info).to eq({})
       end
@@ -66,11 +66,11 @@ describe Chef::Knife::IndexRebuild do
   context "#unsupported_version?" do
     context "with Chef 11 API metadata" do
       it "is unsupported" do
-        expect(knife.unsupported_version?({"version" => "11.0.0", "flavor" => "osc", "erchef" => "1.2.3"})).to be_truthy
+        expect(knife.unsupported_version?({ "version" => "11.0.0", "flavor" => "osc", "erchef" => "1.2.3" })).to be_truthy
       end
 
       it "only truly relies on the version being non-nil" do
-        expect(knife.unsupported_version?({"version" => "1", "flavor" => "osc", "erchef" => "1.2.3"})).to be_truthy
+        expect(knife.unsupported_version?({ "version" => "1", "flavor" => "osc", "erchef" => "1.2.3" })).to be_truthy
       end
     end
 
@@ -91,9 +91,9 @@ describe Chef::Knife::IndexRebuild do
 
     context "against a Chef 11 server" do
       let(:api_info) do
-        {"flavor" => "osc",
+        { "flavor" => "osc",
           "version" => "11.0.0",
-          "erchef" => "1.2.3"
+          "erchef" => "1.2.3",
         }
       end
       let(:server_specific_stubs!) do
@@ -107,10 +107,10 @@ describe Chef::Knife::IndexRebuild do
     end
 
     context "against a Chef 10 server" do
-      let(:api_info){ {} }
+      let(:api_info) { {} }
       let(:server_specific_stubs!) do
         stub_rest!
-        expect(rest_client).to receive(:post_rest).with("/search/reindex", {}).and_return("representative output")
+        expect(rest_client).to receive(:post).with("/search/reindex", {}).and_return("representative output")
         expect(knife).not_to receive(:unsupported_server_message)
         expect(knife).to receive(:deprecated_server_message)
         expect(knife).to receive(:nag)
@@ -123,6 +123,3 @@ describe Chef::Knife::IndexRebuild do
   end
 
 end
-
-
-

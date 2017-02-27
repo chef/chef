@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (steve@opscode.com)
-# Copyright:: Copyright 2012 Opscode, Inc.
+# Author:: Steven Danna (steve@chef.io)
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/search/query'
-require 'chef/mixin/api_version_request_handling'
-require 'chef/exceptions'
-require 'chef/server_api'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/search/query"
+require "chef/mixin/api_version_request_handling"
+require "chef/exceptions"
+require "chef/server_api"
 
 # OSC 11 BACKWARDS COMPATIBILITY NOTE (remove after OSC 11 support ends)
 #
@@ -39,7 +39,7 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::ApiVersionRequestHandling
 
-    SUPPORTED_API_VERSIONS = [0,1]
+    SUPPORTED_API_VERSIONS = [0, 1]
 
     def initialize
       @username = nil
@@ -52,75 +52,69 @@ class Chef
       @public_key = nil
       @private_key = nil
       @create_key = nil
-      @password = nil
     end
 
     def chef_root_rest_v0
-      @chef_root_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], {:api_version => "0"})
+      @chef_root_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], { :api_version => "0" })
     end
 
     def chef_root_rest_v1
-      @chef_root_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], {:api_version => "1"})
+      @chef_root_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], { :api_version => "1" })
     end
 
-    def username(arg=nil)
+    def username(arg = nil)
       set_or_return(:username, arg,
                     :regex => /^[a-z0-9\-_]+$/)
     end
 
-    def display_name(arg=nil)
+    def display_name(arg = nil)
       set_or_return(:display_name,
                     arg, :kind_of => String)
     end
 
-    def first_name(arg=nil)
+    def first_name(arg = nil)
       set_or_return(:first_name,
                     arg, :kind_of => String)
     end
 
-    def middle_name(arg=nil)
+    def middle_name(arg = nil)
       set_or_return(:middle_name,
                     arg, :kind_of => String)
     end
 
-    def last_name(arg=nil)
+    def last_name(arg = nil)
       set_or_return(:last_name,
                     arg, :kind_of => String)
     end
 
-    def email(arg=nil)
+    def email(arg = nil)
       set_or_return(:email,
                     arg, :kind_of => String)
     end
 
-    def password(arg=nil)
-      set_or_return(:password,
-                    arg, :kind_of => String)
-    end
-
-    def create_key(arg=nil)
+    def create_key(arg = nil)
       set_or_return(:create_key, arg,
                     :kind_of => [TrueClass, FalseClass])
     end
 
-    def public_key(arg=nil)
+    def public_key(arg = nil)
       set_or_return(:public_key,
                     arg, :kind_of => String)
     end
 
-    def private_key(arg=nil)
+    def private_key(arg = nil)
       set_or_return(:private_key,
                     arg, :kind_of => String)
     end
 
-    def password(arg=nil)
+    def password(arg = nil)
       set_or_return(:password,
                     arg, :kind_of => String)
     end
 
     def to_hash
       result = {
-        "username" => @username
+        "username" => @username,
       }
       result["display_name"] = @display_name unless @display_name.nil?
       result["first_name"] = @first_name unless @first_name.nil?
@@ -140,7 +134,7 @@ class Chef
 
     def destroy
       # will default to the current API version (Chef::Authenticator::DEFAULT_SERVER_API_VERSION)
-      Chef::REST.new(Chef::Config[:chef_server_url]).delete("users/#{@username}")
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url]).delete("users/#{@username}")
     end
 
     def create
@@ -152,7 +146,7 @@ class Chef
           :first_name => @first_name,
           :last_name => @last_name,
           :email => @email,
-          :password => @password
+          :password => @password,
         }
         payload[:public_key] = @public_key unless @public_key.nil?
         payload[:create_key] = @create_key unless @create_key.nil?
@@ -161,12 +155,12 @@ class Chef
         new_user = chef_root_rest_v1.post("users", payload)
 
         # get the private_key out of the chef_key hash if it exists
-        if new_user['chef_key']
-          if new_user['chef_key']['private_key']
-            new_user['private_key'] = new_user['chef_key']['private_key']
+        if new_user["chef_key"]
+          if new_user["chef_key"]["private_key"]
+            new_user["private_key"] = new_user["chef_key"]["private_key"]
           end
-          new_user['public_key'] = new_user['chef_key']['public_key']
-          new_user.delete('chef_key')
+          new_user["public_key"] = new_user["chef_key"]["public_key"]
+          new_user.delete("chef_key")
         end
       rescue Net::HTTPServerException => e
         # rescue API V0 if 406 and the server supports V0
@@ -178,7 +172,7 @@ class Chef
           :first_name => @first_name,
           :last_name => @last_name,
           :email => @email,
-          :password => @password
+          :password => @password,
         }
         payload[:middle_name] = @middle_name unless @middle_name.nil?
         payload[:public_key] = @public_key unless @public_key.nil?
@@ -186,12 +180,12 @@ class Chef
         new_user = chef_root_rest_v0.post("users", payload)
       end
 
-      Chef::UserV1.from_hash(self.to_hash.merge(new_user))
+      Chef::UserV1.from_hash(to_hash.merge(new_user))
     end
 
-    def update(new_key=false)
+    def update(new_key = false)
       begin
-        payload = {:username => username}
+        payload = { :username => username }
         payload[:display_name] = display_name unless display_name.nil?
         payload[:first_name] = first_name unless first_name.nil?
         payload[:middle_name] = middle_name unless middle_name.nil?
@@ -219,25 +213,23 @@ class Chef
         end
         updated_user = chef_root_rest_v0.put("users/#{username}", payload)
       end
-      Chef::UserV1.from_hash(self.to_hash.merge(updated_user))
+      Chef::UserV1.from_hash(to_hash.merge(updated_user))
     end
 
-    def save(new_key=false)
-      begin
-        create
-      rescue Net::HTTPServerException => e
-        if e.response.code == "409"
-          update(new_key)
-        else
-          raise e
-        end
+    def save(new_key = false)
+      create
+    rescue Net::HTTPServerException => e
+      if e.response.code == "409"
+        update(new_key)
+      else
+        raise e
       end
     end
 
     # Note: remove after API v0 no longer supported by client (and knife command).
     def reregister
       begin
-        payload = self.to_hash.merge({"private_key" => true})
+        payload = to_hash.merge({ "private_key" => true })
         reregistered_self = chef_root_rest_v0.put("users/#{username}", payload)
         private_key(reregistered_self["private_key"])
       # only V0 supported for reregister
@@ -265,16 +257,16 @@ class Chef
 
     def self.from_hash(user_hash)
       user = Chef::UserV1.new
-      user.username user_hash['username']
-      user.display_name user_hash['display_name'] if user_hash.key?('display_name')
-      user.first_name user_hash['first_name'] if user_hash.key?('first_name')
-      user.middle_name user_hash['middle_name'] if user_hash.key?('middle_name')
-      user.last_name user_hash['last_name'] if user_hash.key?('last_name')
-      user.email user_hash['email'] if user_hash.key?('email')
-      user.password user_hash['password'] if user_hash.key?('password')
-      user.public_key user_hash['public_key'] if user_hash.key?('public_key')
-      user.private_key user_hash['private_key'] if user_hash.key?('private_key')
-      user.create_key user_hash['create_key'] if user_hash.key?('create_key')
+      user.username user_hash["username"]
+      user.display_name user_hash["display_name"] if user_hash.key?("display_name")
+      user.first_name user_hash["first_name"] if user_hash.key?("first_name")
+      user.middle_name user_hash["middle_name"] if user_hash.key?("middle_name")
+      user.last_name user_hash["last_name"] if user_hash.key?("last_name")
+      user.email user_hash["email"] if user_hash.key?("email")
+      user.password user_hash["password"] if user_hash.key?("password")
+      user.public_key user_hash["public_key"] if user_hash.key?("public_key")
+      user.private_key user_hash["private_key"] if user_hash.key?("private_key")
+      user.create_key user_hash["create_key"] if user_hash.key?("create_key")
       user
     end
 
@@ -282,12 +274,13 @@ class Chef
       Chef::UserV1.from_hash(Chef::JSONCompat.from_json(json))
     end
 
-    class << self
-      alias_method :json_create, :from_json
+    def self.json_create(json)
+      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::UserV1#from_json or Chef::UserV1#load.")
+      Chef::UserV1.from_json(json)
     end
 
-    def self.list(inflate=false)
-      response = Chef::REST.new(Chef::Config[:chef_server_url]).get('users')
+    def self.list(inflate = false)
+      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("users")
       users = if response.is_a?(Array)
                 # EC 11 / CS 12 V0, V1
                 #   GET /organizations/<org>/users
@@ -312,7 +305,7 @@ class Chef
 
     def self.load(username)
       # will default to the current API version (Chef::Authenticator::DEFAULT_SERVER_API_VERSION)
-      response = Chef::REST.new(Chef::Config[:chef_server_url]).get("users/#{username}")
+      response = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("users/#{username}")
       Chef::UserV1.from_hash(response)
     end
 
@@ -323,7 +316,7 @@ class Chef
     def self.transform_list_response(response)
       new_response = Hash.new
       response.each do |u|
-        name = u['user']['username']
+        name = u["user"]["username"]
         new_response[name] = Chef::Config[:chef_server_url] + "/users/#{name}"
       end
       new_response

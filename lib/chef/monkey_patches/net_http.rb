@@ -5,7 +5,7 @@ module ChefNetHTTPExceptionExtensions
   attr_accessor :chef_rest_request
 end
 
-require 'net/http'
+require "net/http"
 module Net
   class HTTPError
     include ChefNetHTTPExceptionExtensions
@@ -21,7 +21,7 @@ module Net
   end
 end
 
-if Net::HTTP.instance_methods.map {|m| m.to_s}.include?("proxy_uri")
+if Net::HTTP.instance_methods.map { |m| m.to_s }.include?("proxy_uri")
   begin
     # Ruby 2.0 changes the way proxy support is implemented in Net::HTTP.
     # The implementation does not work correctly with IPv6 literals because it

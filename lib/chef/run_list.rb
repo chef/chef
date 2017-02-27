@@ -1,10 +1,10 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Nuo Yan (<nuoyan@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Nuo Yan (<nuoyan@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/run_list/run_list_item'
-require 'chef/run_list/run_list_expansion'
-require 'chef/run_list/versioned_recipe_list'
-require 'chef/mixin/params_validate'
+require "chef/run_list/run_list_item"
+require "chef/run_list/run_list_expansion"
+require "chef/run_list/versioned_recipe_list"
+require "chef/mixin/params_validate"
 
 class Chef
   class RunList
@@ -47,13 +47,13 @@ class Chef
     end
 
     def role_names
-      @run_list_items.inject([]){|memo, run_list_item| memo << run_list_item.name if run_list_item.role? ; memo}
+      @run_list_items.inject([]) { |memo, run_list_item| memo << run_list_item.name if run_list_item.role?; memo }
     end
 
     alias :roles :role_names
 
     def recipe_names
-      @run_list_items.inject([]){|memo, run_list_item| memo << run_list_item.name if run_list_item.recipe? ; memo}
+      @run_list_items.inject([]) { |memo, run_list_item| memo << run_list_item.name if run_list_item.recipe?; memo }
     end
 
     alias :recipes :recipe_names
@@ -105,12 +105,14 @@ class Chef
       @run_list_items[pos] = parse_entry(item)
     end
 
-    def each(&block)
-      @run_list_items.each { |i| block.call(i) }
+    # FIXME: yard with @yield
+    def each
+      @run_list_items.each { |i| yield(i) }
     end
 
-    def each_index(&block)
-      @run_list_items.each_index { |i| block.call(i) }
+    # FIXME: yard with @yield
+    def each_index
+      @run_list_items.each_index { |i| yield(i) }
     end
 
     def include?(item)
@@ -130,7 +132,7 @@ class Chef
     end
 
     def remove(item)
-      @run_list_items.delete_if{|i| i == item}
+      @run_list_items.delete_if { |i| i == item }
       self
     end
     alias :delete :remove
@@ -138,7 +140,7 @@ class Chef
     # Expands this run_list: recursively expand roles into their included
     # recipes.
     # Returns a RunListExpansion object.
-    def expand(environment, data_source='server', expansion_opts={})
+    def expand(environment, data_source = "server", expansion_opts = {})
       expansion = expansion_for_data_source(environment, data_source, expansion_opts)
       expansion.expand
       expansion
@@ -153,11 +155,11 @@ class Chef
       item.kind_of?(RunListItem) ? item : parse_entry(item)
     end
 
-    def expansion_for_data_source(environment, data_source, opts={})
+    def expansion_for_data_source(environment, data_source, opts = {})
       case data_source.to_s
-      when 'disk'
+      when "disk"
         RunListExpansionFromDisk.new(environment, @run_list_items)
-      when 'server'
+      when "server"
         RunListExpansionFromAPI.new(environment, @run_list_items, opts[:rest])
       end
     end

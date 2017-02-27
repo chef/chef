@@ -1,6 +1,6 @@
 #
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,9 +21,9 @@
 # ACL information on the dst file.
 #
 
-require 'chef/platform/query_helpers'
+require "chef/platform/query_helpers"
 if Chef::Platform.windows?
-  require 'chef/win32/security'
+  require "chef/win32/security"
 end
 
 class Chef
@@ -96,10 +96,8 @@ class Chef
           dst_so.owner = dst_sd.owner
           dst_so.set_dacl(apply_dacl, dst_sd.dacl_inherits?) if dacl_present
           dst_so.set_sacl(apply_sacl, dst_sd.sacl_inherits?) if sacl_present
-
         end
       end
     end
   end
 end
-

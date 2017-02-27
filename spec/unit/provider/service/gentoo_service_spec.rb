@@ -1,7 +1,7 @@
 #
 # Author:: Lee Jensen (<ljensen@engineyard.com>)
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
+# Author:: AJ Christensen (<aj@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Gentoo do
   before(:each) do
@@ -100,7 +100,7 @@ describe Chef::Provider::Service::Gentoo do
         end
       end
 
-  end
+    end
 
     it "should return the current_resource" do
       expect(@provider.load_current_resource).to eq(@current_resource)

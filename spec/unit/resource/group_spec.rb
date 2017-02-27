@@ -1,7 +1,7 @@
 #
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>);
-# Copyright:: Copyright (c) 2008 OpsCode, Inc.
+# Author:: AJ Christensen (<aj@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>);
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Group, "initialize" do
   before(:each) do
@@ -110,9 +110,14 @@ describe Chef::Resource::Group, "members" do
       expect(@resource.send(method)).to eql(["aj"])
     end
 
+    it "(#{method}) should split a string on commas" do
+      @resource.send(method, "aj,adam")
+      expect(@resource.send(method)).to eql( %w{aj adam} )
+    end
+
     it "(#{method}) should allow an array" do
-      @resource.send(method, [ "aj", "adam" ])
-      expect(@resource.send(method)).to eql( ["aj", "adam"] )
+      @resource.send(method, %w{aj adam})
+      expect(@resource.send(method)).to eql( %w{aj adam} )
     end
 
     it "(#{method}) should not allow a hash" do
@@ -142,12 +147,12 @@ describe Chef::Resource::Group, "append" do
   describe "when it has members" do
     before do
       @resource.group_name("pokemon")
-      @resource.members(["blastoise", "pikachu"])
+      @resource.members(%w{blastoise pikachu})
     end
 
     it "describes its state" do
       state = @resource.state
-      expect(state[:members]).to eql(["blastoise", "pikachu"])
+      expect(state[:members]).to eql(%w{blastoise pikachu})
     end
 
     it "returns the group name as its identity" do

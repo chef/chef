@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (steve@opscode.com)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Steven Danna (steve@chef.io)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,10 +21,10 @@
 # Open Source Chef Server 11 and should be removed once support
 # for OSC 11 ends. New development should occur in user_spec.rb.
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/user'
-require 'tempfile'
+require "chef/user"
+require "tempfile"
 
 describe Chef::User do
   before(:each) do
@@ -59,7 +59,6 @@ describe Chef::User do
       # &
       expect { @user.name "foo&" }.to raise_error(ArgumentError)
     end
-
 
     it "should not accept spaces" do
       expect { @user.name "ops master" }.to raise_error(ArgumentError)
@@ -168,10 +167,10 @@ describe Chef::User do
   describe "when deserializing from JSON" do
     before(:each) do
       user = { "name" => "mr_spinks",
-        "public_key" => "turtles",
-        "private_key" => "pandas",
-        "password" => "password",
-        "admin" => true }
+               "public_key" => "turtles",
+               "private_key" => "pandas",
+               "password" => "password",
+               "admin" => true }
       @user = Chef::User.from_json(Chef::JSONCompat.to_json(user))
     end
 
@@ -212,8 +211,8 @@ describe Chef::User do
     describe "list" do
       before(:each) do
         Chef::Config[:chef_server_url] = "http://www.example.com"
-        @osc_response = { "admin" => "http://www.example.com/users/admin"}
-        @ohc_response = [ { "user" => { "username" => "admin" }} ]
+        @osc_response = { "admin" => "http://www.example.com/users/admin" }
+        @ohc_response = [ { "user" => { "username" => "admin" } } ]
         allow(Chef::User).to receive(:load).with("admin").and_return(@user)
         @osc_inflated_response = { "admin" => @user }
       end
@@ -244,14 +243,14 @@ describe Chef::User do
     describe "create" do
       it "creates a new user via the API" do
         @user.password "password"
-        expect(@http_client).to receive(:post).with("users", {:name => "foobar", :admin => false, :password => "password"}).and_return({})
+        expect(@http_client).to receive(:post).with("users", { :name => "foobar", :admin => false, :password => "password" }).and_return({})
         @user.create
       end
     end
 
     describe "read" do
       it "loads a named user from the API" do
-        expect(@http_client).to receive(:get).with("users/foobar").and_return({"name" => "foobar", "admin" => true, "public_key" => "pubkey"})
+        expect(@http_client).to receive(:get).with("users/foobar").and_return({ "name" => "foobar", "admin" => true, "public_key" => "pubkey" })
         user = Chef::User.load("foobar")
         expect(user.name).to eq("foobar")
         expect(user.admin).to eq(true)
@@ -261,7 +260,7 @@ describe Chef::User do
 
     describe "update" do
       it "updates an existing user on via the API" do
-        expect(@http_client).to receive(:put).with("users/foobar", {:name => "foobar", :admin => false}).and_return({})
+        expect(@http_client).to receive(:put).with("users/foobar", { :name => "foobar", :admin => false }).and_return({})
         @user.update
       end
     end

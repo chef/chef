@@ -1,6 +1,6 @@
 #
-# Author:: Joshua Timberman (<joshua@opscode.com>)
-# Copyright:: Copyright (c) 2008 OpsCode, Inc.
+# Author:: Joshua Timberman (<joshua@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Provider::Mount::Mount do
   before(:each) do
@@ -42,15 +42,15 @@ describe Chef::Provider::Mount::Mount do
 
   describe "when discovering the current fs state" do
     before do
-      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => ''))
+      allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => ""))
       allow(::File).to receive(:foreach).with("/etc/fstab")
     end
 
     it "should create a current resource with the same mount point and device" do
       @provider.load_current_resource
-      expect(@provider.current_resource.name).to eq('/tmp/foo')
-      expect(@provider.current_resource.mount_point).to eq('/tmp/foo')
-      expect(@provider.current_resource.device).to eq('/dev/sdz1')
+      expect(@provider.current_resource.name).to eq("/tmp/foo")
+      expect(@provider.current_resource.mount_point).to eq("/tmp/foo")
+      expect(@provider.current_resource.device).to eq("/dev/sdz1")
     end
 
     it "should accecpt device_type :uuid", :not_supported_on_solaris do
@@ -82,7 +82,7 @@ describe Chef::Provider::Mount::Mount do
 
     it "should raise an error if the mount device does not exist" do
       allow(::File).to receive(:exists?).with("/dev/sdz1").and_return false
-      expect { @provider.load_current_resource();@provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
+      expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
     it "should not call mountable? with load_current_resource - CHEF-1565" do
@@ -99,25 +99,25 @@ describe Chef::Provider::Mount::Mount do
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
       expect(::File).to receive(:exists?).with("").and_return(false)
-      expect { @provider.load_current_resource();@provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
+      expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
     it "should raise an error if the mount point does not exist" do
       allow(::File).to receive(:exists?).with("/tmp/foo").and_return false
-      expect { @provider.load_current_resource();@provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
+      expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
-    [ "tmpfs", "fuse", "cgroup" ].each do |fstype|
+    %w{tmpfs fuse cgroup vboxsf zfs}.each do |fstype|
       it "does not expect the device to exist for #{fstype}" do
         @new_resource.fstype(fstype)
         @new_resource.device("whatever")
-        expect { @provider.load_current_resource();@provider.mountable? }.not_to raise_error
+        expect { @provider.load_current_resource(); @provider.mountable? }.not_to raise_error
       end
     end
 
     it "does not expect the device to exist if it's none" do
       @new_resource.device("none")
-      expect { @provider.load_current_resource();@provider.mountable? }.not_to raise_error
+      expect { @provider.load_current_resource(); @provider.mountable? }.not_to raise_error
     end
 
     it "should set mounted true if the mount point is found in the mounts list" do
@@ -134,7 +134,7 @@ describe Chef::Provider::Mount::Mount do
 
     it "should set mounted true if the symlink target of the device is found in the mounts list" do
       # expand the target path to correct specs on Windows
-      target = ::File.expand_path('/dev/mapper/target')
+      target = ::File.expand_path("/dev/mapper/target")
 
       allow(::File).to receive(:symlink?).with("#{@new_resource.device}").and_return(true)
       allow(::File).to receive(:readlink).with("#{@new_resource.device}").and_return(target)
@@ -239,12 +239,12 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should ignore commented lines in fstab " do
-       fstab = "\# #{@new_resource.device}  #{@new_resource.mount_point}  ext3  defaults  1 2\n"
-       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
+      fstab = "\# #{@new_resource.device}  #{@new_resource.mount_point}  ext3  defaults  1 2\n"
+      allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
 
-       @provider.load_current_resource
-       expect(@provider.current_resource.enabled).to be_falsey
-     end
+      @provider.load_current_resource
+      expect(@provider.current_resource.enabled).to be_falsey
+    end
 
     it "should set enabled to false if the mount point is not last in fstab" do
       line_1 = "#{@new_resource.device} #{@new_resource.mount_point}  ext3  defaults  1 2\n"
@@ -266,7 +266,7 @@ describe Chef::Provider::Mount::Mount do
       fstab = "#{@new_resource.device} #{@new_resource.mount_point} #{@new_resource.fstype} #{options} 1 2\n"
       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
       @provider.load_current_resource
-      expect(@provider.current_resource.options).to eq(options.split(','))
+      expect(@provider.current_resource.options).to eq(options.split(","))
     end
 
     it "should not mangle the mount options if the symlink target is in fstab" do
@@ -279,7 +279,7 @@ describe Chef::Provider::Mount::Mount do
       fstab = "#{target} #{@new_resource.mount_point} #{@new_resource.fstype} #{options} 1 2\n"
       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
       @provider.load_current_resource
-      expect(@provider.current_resource.options).to eq(options.split(','))
+      expect(@provider.current_resource.options).to eq(options.split(","))
     end
   end
 
@@ -311,7 +311,7 @@ describe Chef::Provider::Mount::Mount do
         @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
         @new_resource.device_type :uuid
         allow(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
-        @stdout_mock = double('stdout mock')
+        @stdout_mock = double("stdout mock")
         allow(@stdout_mock).to receive(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
         expect(@provider).to receive(:shell_out!).with("mount -t #{@new_resource.fstype} -o defaults -U #{@new_resource.device} #{@new_resource.mount_point}").and_return(@stdout_mock)
         @provider.mount_fs()
@@ -320,12 +320,6 @@ describe Chef::Provider::Mount::Mount do
       it "should not mount the filesystem if it is mounted" do
         allow(@current_resource).to receive(:mounted).and_return(true)
         expect(@provider).not_to receive(:shell_out!)
-        @provider.mount_fs()
-      end
-
-      it "should not mount the filesystem if it is mounted and the options have not changed" do
-        allow(@current_resource).to receive(:mounted).and_return(true)
-        expect(@provider).to_not receive(:shell_out!)
         @provider.mount_fs()
       end
 
@@ -347,14 +341,14 @@ describe Chef::Provider::Mount::Mount do
 
     describe "remount_fs" do
       it "should use mount -o remount if remount is supported" do
-        @new_resource.supports({:remount => true})
+        @new_resource.supports({ :remount => true })
         @current_resource.mounted(true)
         expect(@provider).to receive(:shell_out!).with("mount -o remount,defaults #{@new_resource.mount_point}")
         @provider.remount_fs
       end
 
       it "should use mount -o remount with new mount options if remount is supported" do
-        @new_resource.supports({:remount => true})
+        @new_resource.supports({ :remount => true })
         options = "rw,noexec,noauto"
         @new_resource.options(%w{rw noexec noauto})
         @current_resource.mounted(true)
@@ -363,7 +357,7 @@ describe Chef::Provider::Mount::Mount do
       end
 
       it "should umount and mount if remount is not supported" do
-        @new_resource.supports({:remount => false})
+        @new_resource.supports({ :remount => false })
         @current_resource.mounted(true)
         expect(@provider).to receive(:umount_fs)
         expect(@provider).to receive(:sleep).with(1)

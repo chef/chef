@@ -1,0 +1,7 @@
+suites:
+  - name: learn-the-basics-ubuntu-default
+    run_list:
+      - recipe[learn-the-basics-ubuntu::setup]
+      - recipe[learn-the-basics-ubuntu::lesson1]
+      - recipe[learn-the-basics-ubuntu::lesson2]
+    includes: [ubuntu-14.04]

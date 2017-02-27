@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::Deploy do
 
@@ -25,21 +25,20 @@ describe Chef::Resource::Deploy do
     resource: Chef::Resource::Deploy,
     provider: Chef::Provider::Deploy::Timestamped,
     name: :deploy,
-    action: :deploy,
+    action: :deploy
   )
-
 
   class << self
     def resource_has_a_string_attribute(attr_name)
-      it "has a String attribute for #{attr_name.to_s}" do
+      it "has a String attribute for #{attr_name}" do
         @resource.send(attr_name, "this is a string")
         expect(@resource.send(attr_name)).to eql("this is a string")
-        expect {@resource.send(attr_name, 8675309)}.to raise_error(ArgumentError)
+        expect { @resource.send(attr_name, 8675309) }.to raise_error(ArgumentError)
       end
     end
 
-    def resource_has_a_boolean_attribute(attr_name, opts={:defaults_to=>false})
-      it "has a Boolean attribute for #{attr_name.to_s}" do
+    def resource_has_a_boolean_attribute(attr_name, opts = { :defaults_to => false })
+      it "has a Boolean attribute for #{attr_name}" do
         expect(@resource.send(attr_name)).to eql(opts[:defaults_to])
         @resource.send(attr_name, !opts[:defaults_to])
         expect(@resource.send(attr_name)).to eql( !opts[:defaults_to] )
@@ -49,12 +48,12 @@ describe Chef::Resource::Deploy do
     def resource_has_a_callback_attribute(attr_name)
       it "has a Callback attribute #{attr_name}" do
         callback_block = lambda { :noop }
-        expect {@resource.send(attr_name, &callback_block)}.not_to raise_error
+        expect { @resource.send(attr_name, &callback_block) }.not_to raise_error
         expect(@resource.send(attr_name)).to eq(callback_block)
         callback_file = "path/to/callback.rb"
-        expect {@resource.send(attr_name, callback_file)}.not_to raise_error
+        expect { @resource.send(attr_name, callback_file) }.not_to raise_error
         expect(@resource.send(attr_name)).to eq(callback_file)
-        expect {@resource.send(attr_name, :this_is_fail)}.to raise_error(ArgumentError)
+        expect { @resource.send(attr_name, :this_is_fail) }.to raise_error(ArgumentError)
       end
     end
   end
@@ -80,9 +79,9 @@ describe Chef::Resource::Deploy do
   resource_has_a_string_attribute(:svn_arguments)
   resource_has_a_string_attribute(:svn_info_args)
 
-  resource_has_a_boolean_attribute(:migrate, :defaults_to=>false)
-  resource_has_a_boolean_attribute(:enable_submodules, :defaults_to=>false)
-  resource_has_a_boolean_attribute(:shallow_clone, :defaults_to=>false)
+  resource_has_a_boolean_attribute(:migrate, :defaults_to => false)
+  resource_has_a_boolean_attribute(:enable_submodules, :defaults_to => false)
+  resource_has_a_boolean_attribute(:shallow_clone, :defaults_to => false)
 
   it "uses the first argument as the deploy directory" do
     expect(@resource.deploy_to).to eql("/my/deploy/dir")
@@ -118,17 +117,17 @@ describe Chef::Resource::Deploy do
     expect(@resource.svn_force_export).to be_falsey
     @resource.svn_force_export true
     expect(@resource.svn_force_export).to be_truthy
-    expect {@resource.svn_force_export(10053)}.to raise_error(ArgumentError)
+    expect { @resource.svn_force_export(10053) }.to raise_error(ArgumentError)
   end
 
   it "takes arbitrary environment variables in a hash" do
     @resource.environment "RAILS_ENV" => "production"
-    expect(@resource.environment).to eq({"RAILS_ENV" => "production"})
+    expect(@resource.environment).to eq({ "RAILS_ENV" => "production" })
   end
 
   it "takes string arguments to environment for backwards compat, setting RAILS_ENV, RACK_ENV, and MERB_ENV" do
     @resource.environment "production"
-    expect(@resource.environment).to eq({"RAILS_ENV"=>"production", "RACK_ENV"=>"production","MERB_ENV"=>"production"})
+    expect(@resource.environment).to eq({ "RAILS_ENV" => "production", "RACK_ENV" => "production", "MERB_ENV" => "production" })
   end
 
   it "sets destination to $deploy_to/shared/$repository_cache" do
@@ -183,16 +182,16 @@ describe Chef::Resource::Deploy do
   end
 
   it 'has a Hash attribute symlinks, default: {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}' do
-    default = { "system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
+    default = { "system" => "public/system", "pids" => "tmp/pids", "log" => "log" }
     expect(@resource.symlinks).to eq(default)
     @resource.symlinks "foo" => "bar/baz"
-    expect(@resource.symlinks).to eq({"foo" => "bar/baz"})
+    expect(@resource.symlinks).to eq({ "foo" => "bar/baz" })
   end
 
   it 'has a Hash attribute symlink_before_migrate, default "config/database.yml" => "config/database.yml"' do
-    expect(@resource.symlink_before_migrate).to eq({"config/database.yml" => "config/database.yml"})
+    expect(@resource.symlink_before_migrate).to eq({ "config/database.yml" => "config/database.yml" })
     @resource.symlink_before_migrate "wtf?" => "wtf is going on"
-    expect(@resource.symlink_before_migrate).to eq({"wtf?" => "wtf is going on"})
+    expect(@resource.symlink_before_migrate).to eq({ "wtf?" => "wtf is going on" })
   end
 
   resource_has_a_callback_attribute :before_migrate
@@ -206,7 +205,7 @@ describe Chef::Resource::Deploy do
   end
 
   it "takes a block for the restart parameter" do
-    restart_like_this = lambda {p :noop}
+    restart_like_this = lambda { p :noop }
     @resource.restart(&restart_like_this)
     expect(@resource.restart).to eq(restart_like_this)
   end
@@ -264,8 +263,8 @@ describe Chef::Resource::Deploy do
       @resource.group("pokemon")
       @resource.scm_provider(Chef::Provider::Git)
       @resource.repository_cache("cached-copy")
-      @resource.environment({"SUDO" => "TRUE"})
-      @resource.symlinks({"system" => "public/system"})
+      @resource.environment({ "SUDO" => "TRUE" })
+      @resource.symlinks({ "system" => "public/system" })
       @resource.migrate(false)
 
     end

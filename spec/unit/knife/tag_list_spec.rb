@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::TagList do
   before(:each) do
@@ -14,7 +14,7 @@ describe Chef::Knife::TagList do
 
   describe "run" do
     it "can list tags on a node" do
-      expected = %w(sadtag happytag)
+      expected = %w{sadtag happytag}
       expect(@node.tags).to eq(expected)
       expect(@knife).to receive(:output).with(expected)
       @knife.run

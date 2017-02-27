@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/core/node_presenter'
+require "chef/knife"
+require "chef/knife/core/node_presenter"
 
 class Chef
   class Knife
@@ -27,8 +27,8 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require 'chef/node'
-        require 'chef/json_compat'
+        require "chef/node"
+        require "chef/json_compat"
       end
 
       banner "knife node show NODE (options)"
@@ -55,13 +55,7 @@ class Chef
 
         node = Chef::Node.load(@node_name)
         output(format_for_display(node))
-        self.class.attrs_to_show = []
-      end
-
-      def self.attrs_to_show=(attrs)
-        @attrs_to_show = attrs
       end
     end
   end
 end
-

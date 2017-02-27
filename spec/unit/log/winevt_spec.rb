@@ -1,7 +1,7 @@
 #
 # Author:: Jay Mundrawala (jdm@chef.io)
 # Author:: SAWANOBORI Yukihiko (<sawanoboriyu@higanworks.com>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Log::WinEvt do
-  let(:evtlog) { instance_double("Win32::EventLog")}
+  let(:evtlog) { instance_double("Win32::EventLog") }
   let(:winevt) { Chef::Log::WinEvt.new(evtlog) }
   let(:app) { Chef::Application.new }
 

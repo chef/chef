@@ -1,6 +1,6 @@
 #
 # Author:: Mathieu Sauve-Frankel <msf@kisoku.net>
-# Copyright:: Copyright (c) 2009, Mathieu Sauve Frankel
+# Copyright:: Copyright 2009-2016, Mathieu Sauve Frankel
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Simple, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = {:ps => "ps -ef"}
+    @node.automatic_attrs[:command] = { :ps => "ps -ef" }
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -51,13 +51,13 @@ NOMOCKINGSTRINGSPLZ
   end
 
   it "should raise error if the node has a nil ps attribute and no other means to get status" do
-    @node.automatic_attrs[:command] = {:ps => nil}
+    @node.automatic_attrs[:command] = { :ps => nil }
     @provider.define_resource_requirements
     expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
   end
 
   it "should raise error if the node has an empty ps attribute and no other means to get status" do
-    @node.automatic_attrs[:command] = {:ps => ""}
+    @node.automatic_attrs[:command] = { :ps => "" }
     @provider.define_resource_requirements
     expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
   end

@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 Chef::Knife::NodeFromFile.load_deps
 
 describe Chef::Knife::NodeFromFile do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeFromFile.new
     @knife.config = {
-      :print_after => nil
+      :print_after => nil,
     }
     @knife.name_args = [ "adam.rb" ]
     allow(@knife).to receive(:output).and_return(true)
@@ -39,7 +39,7 @@ describe Chef::Knife::NodeFromFile do
 
   describe "run" do
     it "should load from a file" do
-      expect(@knife.loader).to receive(:load_from).with('nodes', 'adam.rb').and_return(@node)
+      expect(@knife.loader).to receive(:load_from).with("nodes", "adam.rb").and_return(@node)
       @knife.run
     end
 

@@ -1,9 +1,9 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,30 +19,24 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/platform/resource_priority_map'
+require "spec_helper"
+require "chef/platform/resource_priority_map"
 
 describe Chef::Recipe do
 
-  let(:cookbook_repo) { File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks")) }
-
-  let(:cookbook_loader) do
-    loader = Chef::CookbookLoader.new(cookbook_repo)
-    loader.load_cookbooks
-    loader
+  let(:cookbook_collection) do
+    cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
+    cookbook_loader = Chef::CookbookLoader.new(cookbook_repo)
+    cookbook_loader.load_cookbooks
+    Chef::CookbookCollection.new(cookbook_loader)
   end
-
-  let(:cookbook_collection) { Chef::CookbookCollection.new(cookbook_loader) }
 
   let(:node) do
-    Chef::Node.new.tap {|n| n.normal[:tags] = [] }
-  end
-
-  let(:events) do
-    Chef::EventDispatch::Dispatcher.new
+    Chef::Node.new
   end
 
   let(:run_context) do
+    events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, cookbook_collection, events)
   end
 
@@ -81,15 +75,15 @@ describe Chef::Recipe do
       end
 
       it "should require a name argument" do
-        expect {
+        expect do
           recipe.cat
-        }.to raise_error(ArgumentError)
+        end.to raise_error(ArgumentError)
       end
 
       it "should allow regular errors (not NameErrors) to pass unchanged" do
-        expect {
+        expect do
           recipe.cat("felix") { raise ArgumentError, "You Suck" }
-        }.to raise_error(ArgumentError)
+        end.to raise_error(ArgumentError)
       end
 
       it "should add our zen_master to the collection" do
@@ -106,7 +100,7 @@ describe Chef::Recipe do
           end
         end
 
-        expect(run_context.resource_collection.map{|r| r.name}).to eql(["monkey", "dog", "cat"])
+        expect(run_context.resource_collection.map { |r| r.name }).to eql(%w{monkey dog cat})
       end
 
       it "should return the new resource after creating it" do
@@ -199,11 +193,41 @@ describe Chef::Recipe do
       end
     end
 
+    describe "when resource cloning is disabled" do
+      def not_expect_warning
+        expect(Chef::Log).not_to receive(:warn).with(/3694/)
+        expect(Chef::Log).not_to receive(:warn).with(/Previous/)
+        expect(Chef::Log).not_to receive(:warn).with(/Current/)
+      end
+
+      before do
+        Chef::Config[:resource_cloning] = false
+      end
+
+      it "should emit a 3694 warning when attributes change" do
+        recipe.zen_master "klopp" do
+          something "bvb"
+        end
+        not_expect_warning
+        recipe.zen_master "klopp" do
+          something "vbv"
+        end
+      end
+
+      it "should not copy attributes from a prior resource" do
+        recipe.zen_master "klopp" do
+          something "bvb"
+        end
+        not_expect_warning
+        recipe.zen_master "klopp"
+        expect(run_context.resource_collection.first.something).to eql("bvb")
+        expect(run_context.resource_collection[1].something).to be nil
+      end
+    end
+
     describe "when cloning resources" do
       def expect_warning
-        expect(Chef::Log).to receive(:warn).with(/3694/)
-        expect(Chef::Log).to receive(:warn).with(/Previous/)
-        expect(Chef::Log).to receive(:warn).with(/Current/)
+        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
       end
 
       it "should emit a 3694 warning when attributes change" do
@@ -250,7 +274,7 @@ describe Chef::Recipe do
 
       it "should not emit a 3694 warning for completely trivial resource cloning" do
         recipe.zen_master "klopp"
-        expect(Chef::Log).to_not receive(:warn)
+        expect(Chef).to_not receive(:deprecated)
         recipe.zen_master "klopp"
       end
 
@@ -258,7 +282,7 @@ describe Chef::Recipe do
         recipe.zen_master "klopp" do
           action :nothing
         end
-        expect(Chef::Log).to_not receive(:warn)
+        expect(Chef).to_not receive(:deprecated)
         recipe.zen_master "klopp" do
           action :score
         end
@@ -268,21 +292,41 @@ describe Chef::Recipe do
         recipe.zen_master "klopp" do
           action :score
         end
-        expect(Chef::Log).to_not receive(:warn)
+        expect(Chef).to_not receive(:deprecated)
         recipe.zen_master "klopp" do
           action :nothing
         end
       end
 
+      class Coerced < Chef::Resource
+        resource_name :coerced
+        provides :coerced
+        default_action :whatever
+        property :package_name, [String, Array], coerce: proc { |x| [x].flatten }, name_property: true
+        def after_created
+          Array(action).each do |action|
+            run_action(action)
+          end
+        end
+        action :whatever do
+          package_name # unlazy the package_name
+        end
+      end
+
+      it "does not emit 3694 when the name_property is unlazied by running it at compile_time" do
+        recipe.coerced "string"
+        expect(Chef).to_not receive(:deprecated)
+        recipe.coerced "string"
+      end
+
       it "validating resources via build_resource" do
-        expect {recipe.build_resource(:remote_file, "klopp") do
-          source Chef::DelayedEvaluator.new {"http://chef.io"}
-        end}.to_not raise_error
+        expect do
+          recipe.build_resource(:remote_file, "klopp") do
+            source Chef::DelayedEvaluator.new { "http://chef.io" }
+          end end.to_not raise_error
       end
 
     end
-
-
 
     describe "creating resources via declare_resource" do
       let(:zm_resource) do
@@ -304,6 +348,36 @@ describe Chef::Recipe do
       it "adds the resource to the resource collection" do
         zm_resource # force let binding evaluation
         expect(run_context.resource_collection.resources(:zen_master => "klopp")).to eq(zm_resource)
+      end
+
+      it "will insert another resource if create_if_missing is not set (cloned resource as of Chef-12)" do
+        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
+        zm_resource
+        recipe.declare_resource(:zen_master, "klopp")
+        expect(run_context.resource_collection.count).to eql(2)
+      end
+
+      it "does not insert two resources if create_if_missing is used" do
+        zm_resource
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+        recipe.declare_resource(:zen_master, "klopp", create_if_missing: true)
+        expect(run_context.resource_collection.count).to eql(1)
+      end
+
+      context "injecting a different run_context" do
+        let(:run_context2) do
+          events = Chef::EventDispatch::Dispatcher.new
+          Chef::RunContext.new(node, cookbook_collection, events)
+        end
+
+        it "should insert resources into the correct run_context" do
+          zm_resource
+          recipe.declare_resource(:zen_master, "klopp2", run_context: run_context2)
+          run_context2.resource_collection.lookup("zen_master[klopp2]")
+          expect { run_context2.resource_collection.lookup("zen_master[klopp]") }.to raise_error(Chef::Exceptions::ResourceNotFound)
+          expect { run_context.resource_collection.lookup("zen_master[klopp2]") }.to raise_error(Chef::Exceptions::ResourceNotFound)
+          run_context.resource_collection.lookup("zen_master[klopp]")
+        end
       end
     end
 
@@ -333,7 +407,6 @@ describe Chef::Recipe do
         end
       end
 
-
       it "defines the resource using the declaration name with long name" do
         resource_zn_follower
         expect(run_context.resource_collection.lookup("zen_follower[srst]")).not_to be_nil
@@ -345,7 +418,7 @@ describe Chef::Recipe do
       it "gives a sane error message when using method_missing" do
         expect do
           recipe.no_such_resource("foo")
-        end.to raise_error(NoMethodError, %q[No resource or method named `no_such_resource' for `Chef::Recipe "test"'])
+        end.to raise_error(NoMethodError, %q{No resource or method named `no_such_resource' for `Chef::Recipe "test"'})
       end
 
       it "gives a sane error message when using method_missing 'bare'" do
@@ -354,7 +427,7 @@ describe Chef::Recipe do
             # Giving an argument will change this from NameError to NoMethodError
             no_such_resource
           end
-        end.to raise_error(NameError, %q[No resource, method, or local variable named `no_such_resource' for `Chef::Recipe "test"'])
+        end.to raise_error(NameError, %q{No resource, method, or local variable named `no_such_resource' for `Chef::Recipe "test"'})
       end
 
       it "gives a sane error message when using build_resource" do
@@ -401,15 +474,18 @@ describe Chef::Recipe do
       end
 
       it "copies attributes from the first resource" do
+        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
         expect(duplicated_resource.something).to eq("bvb09")
       end
 
       it "does not copy the action from the first resource" do
+        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
         expect(original_resource.action).to eq([:score])
         expect(duplicated_resource.action).to eq([:nothing])
       end
 
       it "does not copy the source location of the first resource" do
+        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
         # sanity check source location:
         expect(original_resource.source_line).to include(__FILE__)
         expect(duplicated_resource.source_line).to include(__FILE__)
@@ -418,10 +494,12 @@ describe Chef::Recipe do
       end
 
       it "sets the cookbook name on the cloned resource to that resource's cookbook" do
+        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
         expect(duplicated_resource.cookbook_name).to eq("second_cb")
       end
 
       it "sets the recipe name on the cloned resource to that resoure's recipe" do
+        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
         expect(duplicated_resource.recipe_name).to eq("second_recipe")
       end
 
@@ -615,21 +693,25 @@ describe Chef::Recipe do
       end
     end
 
+    it "should initialize tags to an empty Array" do
+      expect(node.tags).to eql([])
+    end
+
     it "should set tags via tag" do
       recipe.tag "foo"
-      expect(node[:tags]).to include("foo")
+      expect(node.tags).to include("foo")
     end
 
     it "should set multiple tags via tag" do
       recipe.tag "foo", "bar"
-      expect(node[:tags]).to include("foo")
-      expect(node[:tags]).to include("bar")
+      expect(node.tags).to include("foo")
+      expect(node.tags).to include("bar")
     end
 
     it "should not set the same tag twice via tag" do
       recipe.tag "foo"
       recipe.tag "foo"
-      expect(node[:tags]).to eql([ "foo" ])
+      expect(node.tags).to eql([ "foo" ])
     end
 
     it "should return the current list of tags from tag with no arguments" do
@@ -653,13 +735,13 @@ describe Chef::Recipe do
     it "should remove a tag from the tag list via untag" do
       recipe.tag "foo"
       recipe.untag "foo"
-      expect(node[:tags]).to eql([])
+      expect(node.tags).to eql([])
     end
 
     it "should remove multiple tags from the tag list via untag" do
       recipe.tag "foo", "bar"
       recipe.untag "bar", "foo"
-      expect(node[:tags]).to eql([])
+      expect(node.tags).to eql([])
     end
   end
 

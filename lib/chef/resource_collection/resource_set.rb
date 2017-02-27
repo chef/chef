@@ -1,6 +1,6 @@
 #
-# Author:: Tyler Ball (<tball@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Tyler Ball (<tball@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/resource_collection/resource_collection_serialization'
+require "chef/resource"
+require "chef/resource_collection/resource_collection_serialization"
 
 class Chef
   class ResourceCollection
@@ -40,7 +40,7 @@ class Chef
         @resources_by_key.keys
       end
 
-      def insert_as(resource, resource_type=nil, instance_name=nil)
+      def insert_as(resource, resource_type = nil, instance_name = nil)
         is_chef_resource!(resource)
         resource_type ||= resource.resource_name
         instance_name ||= resource.name
@@ -49,18 +49,22 @@ class Chef
       end
 
       def lookup(key)
-        case
-          when key.kind_of?(String)
-            lookup_by = key
-          when key.kind_of?(Chef::Resource)
-            lookup_by = create_key(key.resource_name, key.name)
-          else
-            raise ArgumentError, "Must pass a Chef::Resource or String to lookup"
-        end
-
-        res = @resources_by_key[lookup_by]
+        raise ArgumentError, "Must pass a Chef::Resource or String to lookup" unless key.is_a?(String) || key.is_a?(Chef::Resource)
+        key = key.to_s
+        res = @resources_by_key[key]
         unless res
-          raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{lookup_by} (did you define it first?)"
+          raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
+        end
+        res
+      end
+
+      def delete(key)
+        raise ArgumentError, "Must pass a Chef::Resource or String to delete" unless key.is_a?(String) || key.is_a?(Chef::Resource)
+        key = key.to_s
+        res = @resources_by_key.delete(key)
+
+        if res == @resources_by_key.default
+          raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
         end
         res
       end
@@ -124,7 +128,7 @@ class Chef
           else
             raise Chef::Exceptions::InvalidResourceSpecification,
                   "The object `#{query_object.inspect}' is not valid for resource collection lookup. " +
-                      "Use a String like `resource_type[resource_name]' or a Chef::Resource object"
+              "Use a String like `resource_type[resource_name]' or a Chef::Resource object"
         end
       end
 
@@ -142,7 +146,7 @@ class Chef
             results << lookup(create_key(resource_type, instance_name))
           end
         end
-        return results
+        results
       end
 
       def find_resource_by_string(arg)
@@ -162,9 +166,8 @@ class Chef
           else
             raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
         end
-        return results
+        results
       end
-
     end
   end
 end

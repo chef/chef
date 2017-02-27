@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/constants'
-require 'chef/property'
-require 'chef/delayed_evaluator'
+require "chef/constants"
+require "chef/property"
+require "chef/delayed_evaluator"
 
 class Chef
   module Mixin
     module ParamsValidate
-
       # Takes a hash of options, along with a map to validate them.  Returns the original
       # options hash, plus any changes that might have been made (through things like setting
       # default values in the validation map)
@@ -103,8 +102,8 @@ class Chef
           when Hash
             validation.each do |check, carg|
               check_method = "_pv_#{check}"
-              if self.respond_to?(check_method, true)
-                self.send(check_method, opts, key, carg)
+              if respond_to?(check_method, true)
+                send(check_method, opts, key, carg)
               else
                 raise ArgumentError, "Validation map has unknown check: #{check}"
               end
@@ -141,7 +140,7 @@ class Chef
       end
 
       # Raise an exception if the parameter is not found.
-      def _pv_required(opts, key, is_required=true, explicitly_allows_nil=false)
+      def _pv_required(opts, key, is_required = true, explicitly_allows_nil = false)
         if is_required
           return true if opts.has_key?(key.to_s) && (explicitly_allows_nil || !opts[key.to_s].nil?)
           return true if opts.has_key?(key.to_sym) && (explicitly_allows_nil || !opts[key.to_sym].nil?)
@@ -330,10 +329,11 @@ class Chef
       #    property :x, name_property: true
       #   ```
       #
-      def _pv_name_property(opts, key, is_name_property=true)
+      def _pv_name_property(opts, key, is_name_property = true)
         if is_name_property
           if opts[key].nil?
-            opts[key] = self.instance_variable_get(:"@name")
+            raise CannotValidateStaticallyError, "name_property cannot be evaluated without a resource." if self == Chef::Mixin::ParamsValidate
+            opts[key] = instance_variable_get(:"@name")
           end
         end
       end
@@ -400,22 +400,34 @@ class Chef
         return true if !opts.has_key?(key.to_s) && !opts.has_key?(key.to_sym)
         value = _pv_opts_lookup(opts, key)
         to_be = [ to_be ].flatten(1)
-        to_be.each do |tb|
+        errors = []
+        passed = to_be.any? do |tb|
           case tb
           when Proc
-            return true if instance_exec(value, &tb)
+            raise CannotValidateStaticallyError, "is: proc { } must be evaluated once for each resource" if self == Chef::Mixin::ParamsValidate
+            instance_exec(value, &tb)
           when Property
-            validate(opts, { key => tb.validation_options })
-            return true
+            begin
+              validate(opts, { key => tb.validation_options })
+              true
+            rescue Exceptions::ValidationFailed
+              # re-raise immediately if there is only one "is" so we get a better stack
+              raise if to_be.size == 1
+              errors << $!
+              false
+            end
           else
-            return true if tb === value
+            tb === value
           end
         end
-
-        if raise_error
-          raise Exceptions::ValidationFailed, "Option #{key} must be one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
+        if passed
+          true
         else
-          false
+          message = "Property #{key} must be one of: #{to_be.map { |v| v.inspect }.join(", ")}!  You passed #{value.inspect}."
+          unless errors.empty?
+            message << " Errors:\n#{errors.map { |m| "- #{m}" }.join("\n")}"
+          end
+          raise Exceptions::ValidationFailed, message
         end
       end
 
@@ -436,17 +448,25 @@ class Chef
       #
       def _pv_coerce(opts, key, coercer)
         if opts.has_key?(key.to_s)
+          raise CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
           opts[key.to_s] = instance_exec(opts[key], &coercer)
         elsif opts.has_key?(key.to_sym)
+          raise CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
           opts[key.to_sym] = instance_exec(opts[key], &coercer)
         end
       end
+
+      # We allow Chef::Mixin::ParamsValidate.validate(), but we will raise an
+      # error if you try to do anything requiring there to be an actual resource.
+      # This way, you can statically validate things if you have constant validation
+      # (which is the norm).
+      extend self
 
       # Used by #set_or_return to avoid emitting a deprecation warning for
       # "value nil" and to keep default stickiness working exactly the same
       # @api private
       class SetOrReturnProperty < Chef::Property
-        def get(resource)
+        def get(resource, nil_set: false)
           value = super
           # All values are sticky, frozen or not
           if !is_set?(resource)
@@ -455,10 +475,10 @@ class Chef
           value
         end
 
-        def call(resource, value=NOT_PASSED)
+        def call(resource, value = NOT_PASSED)
           # setting to nil does a get
           if value.nil? && !explicitly_accepts_nil?(resource)
-            get(resource)
+            get(resource, nil_set: true)
           else
             super
           end

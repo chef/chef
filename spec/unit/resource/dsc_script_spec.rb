@@ -1,6 +1,6 @@
 #
-# Author:: Adam Edwards (<adamed@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Adam Edwards (<adamed@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,33 +16,33 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::DscScript do
-  let(:dsc_test_resource_name) { 'DSCTest' }
+  let(:dsc_test_resource_name) { "DSCTest" }
 
-  context 'when Powershell supports Dsc' do
-    let(:dsc_test_run_context) {
+  context "when Powershell supports Dsc" do
+    let(:dsc_test_run_context) do
       node = Chef::Node.new
-      node.automatic[:languages][:powershell][:version] = '4.0'
+      node.automatic[:languages][:powershell][:version] = "4.0"
       empty_events = Chef::EventDispatch::Dispatcher.new
       Chef::RunContext.new(node, {}, empty_events)
-    }
-    let(:dsc_test_resource) {
+    end
+    let(:dsc_test_resource) do
       Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context)
-    }
-    let(:configuration_code) {'echo "This is supposed to create a configuration document."'}
-    let(:configuration_path) {'c:/myconfigs/formatc.ps1'}
-    let(:configuration_name) { 'formatme' }
+    end
+    let(:configuration_code) { 'echo "This is supposed to create a configuration document."' }
+    let(:configuration_path) { "c:/myconfigs/formatc.ps1" }
+    let(:configuration_name) { "formatme" }
     let(:configuration_data) { '@{AllNodes = @( @{ NodeName = "localhost"; PSDscAllowPlainTextPassword = $true })}' }
-    let(:configuration_data_script) { 'c:/myconfigs/data/safedata.psd1' }
+    let(:configuration_data_script) { "c:/myconfigs/data/safedata.psd1" }
 
     it "has a default action of `:run`" do
       expect(dsc_test_resource.action).to eq([:run])
     end
 
     it "has an allowed_actions attribute with only the `:run` and `:nothing` attributes" do
-      expect(dsc_test_resource.allowed_actions.to_set).to eq([:run,:nothing].to_set)
+      expect(dsc_test_resource.allowed_actions.to_set).to eq([:run, :nothing].to_set)
     end
 
     it "allows the code attribute to be set" do
@@ -75,9 +75,9 @@ describe Chef::Resource::DscScript do
     end
 
     context "when calling imports" do
-      let(:module_name)   { 'FooModule' }
-      let(:module_name_b)   { 'BarModule' }
-      let(:dsc_resources) { ['ResourceA', 'ResourceB'] }
+      let(:module_name)   { "FooModule" }
+      let(:module_name_b)   { "BarModule" }
+      let(:dsc_resources) { %w{ResourceA ResourceB} }
 
       it "allows an arbitrary number of resources to be set for a module to be set" do
         dsc_test_resource.imports module_name, *dsc_resources
@@ -88,7 +88,7 @@ describe Chef::Resource::DscScript do
       it "adds * to the imports when no resources are set for a moudle" do
         dsc_test_resource.imports module_name
         module_imports = dsc_test_resource.imports[module_name]
-        expect(module_imports).to eq(['*'])
+        expect(module_imports).to eq(["*"])
       end
 
       it "allows an arbitrary number of modules" do

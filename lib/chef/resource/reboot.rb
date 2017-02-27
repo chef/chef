@@ -1,6 +1,6 @@
 #
-# Author:: Chris Doherty <cdoherty@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef, Inc.
+# Author:: Chris Doherty <cdoherty@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 # In using this resource via notifications, it's important to *only* use
 # immediate notifications. Delayed notifications produce unintuitive and
@@ -26,7 +26,7 @@ class Chef
     class Reboot < Chef::Resource
       allowed_actions :request_reboot, :reboot_now, :cancel
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @provider = Chef::Provider::Reboot
 
@@ -36,12 +36,12 @@ class Chef
         # no default action.
       end
 
-      def reason(arg=nil)
+      def reason(arg = nil)
         set_or_return(:reason, arg, :kind_of => String)
       end
 
-      def delay_mins(arg=nil)
-        set_or_return(:delay_mins, arg, :kind_of => Fixnum)
+      def delay_mins(arg = nil)
+        set_or_return(:delay_mins, arg, :kind_of => Integer)
       end
     end
   end

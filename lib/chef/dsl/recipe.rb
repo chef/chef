@@ -1,7 +1,7 @@
 #--
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2008-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,96 +17,52 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/convert_to_class_name'
-require 'chef/exceptions'
-require 'chef/mixin/shell_out'
-require 'chef/mixin/powershell_out'
-require 'chef/dsl/resources'
-require 'chef/dsl/definitions'
+require "chef/exceptions"
+require "chef/dsl/resources"
+require "chef/dsl/definitions"
+require "chef/dsl/data_query"
+require "chef/dsl/include_recipe"
+require "chef/dsl/registry_helper"
+require "chef/dsl/reboot_pending"
+require "chef/dsl/audit"
+require "chef/dsl/powershell"
+require "chef/dsl/core"
+require "chef/dsl/method_missing"
+require "chef/mixin/lazy_module_include"
 
 class Chef
   module DSL
-
-    # == Chef::DSL::Recipe
-    # Provides the primary recipe DSL functionality for defining Chef resource
-    # objects via method calls.
+    # Part of a family of DSL mixins.
+    #
+    # Chef::DSL::Recipe mixes into Recipes and LWRP Providers.
+    #   - this does not target core chef resources and providers.
+    #   - this is restricted to recipe/resource/provider context where a resource collection exists.
+    #   - cookbook authors should typically include modules into here.
+    #
+    # Chef::DSL::Core mixes into Recipes, LWRP Providers and Core Providers
+    #   - this adds cores providers on top of the Recipe DSL.
+    #   - this is restricted to recipe/resource/provider context where a resource collection exists.
+    #   - core chef authors should typically include modules into here.
+    #
+    # Chef::DSL::Universal mixes into Recipes, LWRP Resources+Providers, Core Resources+Providers, and Attributes files.
+    #   - this adds resources and attributes files.
+    #   - do not add helpers which manipulate the resource collection.
+    #   - this is for general-purpose stuff that is useful nearly everywhere.
+    #   - it also pollutes the namespace of nearly every context, watch out.
+    #
     module Recipe
-
-      include Chef::Mixin::ShellOut
-      include Chef::Mixin::PowershellOut
-
+      include Chef::DSL::Core
+      include Chef::DSL::DataQuery
+      include Chef::DSL::IncludeRecipe
+      include Chef::DSL::RegistryHelper
+      include Chef::DSL::RebootPending
+      include Chef::DSL::Audit
+      include Chef::DSL::Powershell
       include Chef::DSL::Resources
       include Chef::DSL::Definitions
-
-      #
-      # Instantiates a resource (via #build_resource), then adds it to the
-      # resource collection. Note that resource classes are looked up directly,
-      # so this will create the resource you intended even if the method name
-      # corresponding to that resource has been overridden.
-      #
-      # @param type [Symbol] The type of resource (e.g. `:file` or `:package`)
-      # @param name [String] The name of the resource (e.g. '/x/y.txt' or 'apache2')
-      # @param created_at [String] The caller of the resource.  Use `caller[0]`
-      #   to get the caller of your function.  Defaults to the caller of this
-      #   function.
-      # @param resource_attrs_block A block that lets you set attributes of the
-      #   resource (it is instance_eval'd on the resource instance).
-      #
-      # @return [Chef::Resource] The new resource.
-      #
-      # @example
-      #   declare_resource(:file, '/x/y.txy', caller[0]) do
-      #     action :delete
-      #   end
-      #   # Equivalent to
-      #   file '/x/y.txt' do
-      #     action :delete
-      #   end
-      #
-      def declare_resource(type, name, created_at=nil, &resource_attrs_block)
-        created_at ||= caller[0]
-
-        resource = build_resource(type, name, created_at, &resource_attrs_block)
-
-        run_context.resource_collection.insert(resource, resource_type: type, instance_name: name)
-        resource
-      end
-
-      #
-      # Instantiate a resource of the given +type+ with the given +name+ and
-      # attributes as given in the +resource_attrs_block+.
-      #
-      # The resource is NOT added to the resource collection.
-      #
-      # @param type [Symbol] The type of resource (e.g. `:file` or `:package`)
-      # @param name [String] The name of the resource (e.g. '/x/y.txt' or 'apache2')
-      # @param created_at [String] The caller of the resource.  Use `caller[0]`
-      #   to get the caller of your function.  Defaults to the caller of this
-      #   function.
-      # @param resource_attrs_block A block that lets you set attributes of the
-      #   resource (it is instance_eval'd on the resource instance).
-      #
-      # @return [Chef::Resource] The new resource.
-      #
-      # @example
-      #   build_resource(:file, '/x/y.txy', caller[0]) do
-      #     action :delete
-      #   end
-      #
-      def build_resource(type, name, created_at=nil, &resource_attrs_block)
-        created_at ||= caller[0]
-
-        Chef::ResourceBuilder.new(
-          type:                type,
-          name:                name,
-          created_at:          created_at,
-          params:              @params,
-          run_context:         run_context,
-          cookbook_name:       cookbook_name,
-          recipe_name:         recipe_name,
-          enclosing_provider:  self.is_a?(Chef::Provider) ? self :  nil
-        ).build(&resource_attrs_block)
-      end
+      # method_missing will disappear in Chef 13
+      include Chef::DSL::MethodMissing
+      extend Chef::Mixin::LazyModuleInclude
 
       def resource_class_for(snake_case_name)
         Chef::Resource.resource_for_node(snake_case_name, run_context.node)
@@ -118,87 +74,22 @@ class Chef
         false
       end
 
-      def describe_self_for_error
-        if respond_to?(:name)
-          %Q[`#{self.class} "#{name}"']
-        elsif respond_to?(:recipe_name)
-          %Q[`#{self.class} "#{recipe_name}"']
-        else
-          to_s
-        end
-      end
-
       def exec(args)
         raise Chef::Exceptions::ResourceNotFound, "exec was called, but you probably meant to use an execute resource.  If not, please call Kernel#exec explicitly.  The exec block called was \"#{args}\""
       end
 
-      # DEPRECATED:
-      # method_missing must live for backcompat purposes until Chef 13.
-      def method_missing(method_symbol, *args, &block)
-        #
-        # If there is already DSL for this, someone must have called
-        # method_missing manually. Not a fan. Not. A. Fan.
-        #
-        if respond_to?(method_symbol)
-          Chef.log_deprecation("Calling method_missing(#{method_symbol.inspect}) directly is deprecated in Chef 12 and will be removed in Chef 13. Use public_send() or send() instead.")
-          return send(method_symbol, *args, &block)
-        end
-
-        #
-        # If a definition exists, then Chef::DSL::Definitions.add_definition was
-        # never called.  DEPRECATED.
-        #
-        if run_context.definitions.has_key?(method_symbol.to_sym)
-          Chef.log_deprecation("Definition #{method_symbol} (#{run_context.definitions[method_symbol.to_sym]}) was added to the run_context without calling Chef::DSL::Definitions.add_definition(#{method_symbol.to_sym.inspect}).  This will become required in Chef 13.")
-          Chef::DSL::Definitions.add_definition(method_symbol)
-          return send(method_symbol, *args, &block)
-        end
-
-        #
-        # See if the resource exists anyway.  If the user had set
-        # Chef::Resource::Blah = <resource>, a deprecation warning will be
-        # emitted and the DSL method 'blah' will be added to the DSL.
-        #
-        resource_class = Chef::ResourceResolver.resolve(method_symbol, node: run_context ? run_context.node : nil)
-        if resource_class
-          Chef::DSL::Resources.add_resource_dsl(method_symbol)
-          return send(method_symbol, *args, &block)
-        end
-
-        begin
-          super
-        rescue NoMethodError
-          raise NoMethodError, "No resource or method named `#{method_symbol}' for #{describe_self_for_error}"
-        rescue NameError
-          raise NameError, "No resource, method, or local variable named `#{method_symbol}' for #{describe_self_for_error}"
-        end
-      end
-
+      # @deprecated Use Chef::DSL::Recipe instead, will be removed in Chef 13
       module FullDSL
-        require 'chef/dsl/data_query'
-        require 'chef/dsl/platform_introspection'
-        require 'chef/dsl/include_recipe'
-        require 'chef/dsl/registry_helper'
-        require 'chef/dsl/reboot_pending'
-        require 'chef/dsl/audit'
-        require 'chef/dsl/powershell'
-        include Chef::DSL::DataQuery
-        include Chef::DSL::PlatformIntrospection
-        include Chef::DSL::IncludeRecipe
         include Chef::DSL::Recipe
-        include Chef::DSL::RegistryHelper
-        include Chef::DSL::RebootPending
-        include Chef::DSL::Audit
-        include Chef::DSL::Powershell
+        extend Chef::Mixin::LazyModuleInclude
       end
     end
   end
 end
 
 # Avoid circular references for things that are only used in instance methods
-require 'chef/resource_builder'
-require 'chef/resource'
+require "chef/resource"
 
 # **DEPRECATED**
 # This used to be part of chef/mixin/recipe_definition_dsl_core. Load the file to activate the deprecation code.
-require 'chef/mixin/recipe_definition_dsl_core'
+require "chef/mixin/recipe_definition_dsl_core"

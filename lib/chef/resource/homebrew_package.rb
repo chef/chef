@@ -1,9 +1,9 @@
 #
-# Author:: Joshua Timberman (<joshua@getchef.com>)
+# Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Graeme Mathieson (<mathie@woss.name>)
 #
-# Copyright 2011-2013, Opscode, Inc.
-# Copyright 2014, Chef Software, Inc <legal@getchef.com>
+# Copyright 2011-2016, Chef Software Inc.
+# Copyright 2014-2016, Chef Software, Inc <legal@chef.io>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,27 +18,16 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package'
-require 'chef/resource/package'
+require "chef/provider/package"
+require "chef/resource/package"
 
 class Chef
   class Resource
     class HomebrewPackage < Chef::Resource::Package
-
+      resource_name :homebrew_package
       provides :package, os: "darwin"
 
-      def initialize(name, run_context=nil)
-        super
-        @homebrew_user = nil
-      end
-
-      def homebrew_user(arg=nil)
-        set_or_return(
-            :homebrew_user,
-            arg,
-            :kind_of => [ String, Integer ]
-        )
-      end
+      property :homebrew_user, [ String, Integer ]
 
     end
   end

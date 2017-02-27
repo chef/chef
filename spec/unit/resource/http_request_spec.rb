@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::HttpRequest do
 
@@ -48,7 +48,7 @@ describe Chef::Resource::HttpRequest do
     before do
       @resource.url("http://www.trololol.net")
       @resource.message("Get sum post brah.")
-      @resource.headers({"head" => "tail"})
+      @resource.headers({ "head" => "tail" })
     end
 
     it "returns the url as its identity" do

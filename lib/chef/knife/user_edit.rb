@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (<steve@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Steven Danna (<steve@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,21 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class UserEdit < Knife
 
       deps do
-        require 'chef/user_v1'
-        require 'chef/json_compat'
+        require "chef/user_v1"
+        require "chef/json_compat"
       end
 
       banner "knife user edit USER (options)"
 
       def osc_11_warning
-<<-EOF
+        <<-EOF
 The Chef Server you are using does not support the username field.
 This means it is an Open Source 11 Server.
 knife user edit for Open Source 11 Server is being deprecated.
@@ -66,7 +66,7 @@ EOF
           ui.warn(osc_11_warning)
           run_osc_11_user_edit
         else # EC / CS 12 user create
-          edited_user = edit_data(original_user)
+          edited_user = edit_hash(original_user)
           if original_user != edited_user
             user = Chef::UserV1.from_hash(edited_user)
             user.update
@@ -75,7 +75,6 @@ EOF
             ui.msg("User unchanged, not saving.")
           end
         end
-
       end
     end
   end

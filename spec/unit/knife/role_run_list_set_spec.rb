@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Will Albenzi (<walbenzi@gmail.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,17 +17,17 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleRunListSet do
   before(:each) do
-    Chef::Config[:role_name]  = "will"
+    Chef::Config[:role_name] = "will"
     @setup = Chef::Knife::RoleRunListAdd.new
     @setup.name_args = [ "will", "role[monkey]", "role[person]", "role[bucket]" ]
 
     @knife = Chef::Knife::RoleRunListSet.new
     @knife.config = {
-      :print_after => nil
+      :print_after => nil,
     }
     @knife.name_args = [ "will", "role[owen]", "role[mauntel]" ]
     allow(@knife).to receive(:output).and_return(true)
@@ -41,10 +41,7 @@ describe Chef::Knife::RoleRunListSet do
 
   end
 
-
-
   describe "run" do
-
 
 #    it "should display all the things" do
 #      @knife.run
@@ -59,8 +56,8 @@ describe Chef::Knife::RoleRunListSet do
     it "should replace all the items in the runlist with what is specified" do
       @setup.run
       @knife.run
-      expect(@role.run_list[0]).to eq("role[owen]") 
-      expect(@role.run_list[1]).to eq("role[mauntel]") 
+      expect(@role.run_list[0]).to eq("role[owen]")
+      expect(@role.run_list[1]).to eq("role[mauntel]")
       expect(@role.run_list[2]).to be_nil
     end
 

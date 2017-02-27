@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,22 +16,22 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/json_compat'
+require "chef/knife"
+require "chef/json_compat"
 
 class Chef
   class Resource
     class ZenMaster < Chef::Resource
+      provides :zen_master
       allowed_actions :win, :score
 
       attr_reader :peace
-
 
       def peace(tf)
         @peace = tf
       end
 
-      def something(arg=nil)
+      def something(arg = nil)
         if !arg.nil?
           @something = arg
         end

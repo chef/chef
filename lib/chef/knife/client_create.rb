@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class ClientCreate < Knife
 
       deps do
-        require 'chef/api_client_v1'
-        require 'chef/json_compat'
+        require "chef/api_client_v1"
+        require "chef/json_compat"
       end
 
       option :file,
@@ -35,11 +35,11 @@ class Chef
       option :admin,
              :short => "-a",
              :long  => "--admin",
-             :description => "Open Source Chef 11 only. Create the client as an admin.",
+             :description => "Open Source Chef Server 11 only. Create the client as an admin.",
              :boolean => true
 
       option :validator,
-             :long  => "--validator",
+             :long => "--validator",
              :description => "Create the client as a validator.",
              :boolean => true
 
@@ -51,7 +51,7 @@ class Chef
       option :prevent_keygen,
              :short => "-k",
              :long  => "--prevent-keygen",
-             :description => "API V1 only. Prevent server from generating a default key pair for you. Cannot be passed with --public-key.",
+             :description => "API V1 (Chef Server 12.1+) only. Prevent server from generating a default key pair for you. Cannot be passed with --public-key.",
              :boolean => true
 
       banner "knife client create CLIENTNAME (options)"
@@ -91,7 +91,7 @@ class Chef
           client.public_key File.read(File.expand_path(config[:public_key]))
         end
 
-        output = edit_data(client)
+        output = edit_hash(client)
         final_client = create_client(output)
         ui.info("Created #{final_client}")
 

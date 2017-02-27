@@ -1,4 +1,4 @@
-require 'chef/chef_fs/parallelizer/flatten_enumerable'
+require "chef/chef_fs/parallelizer/flatten_enumerable"
 
 class Chef
   module ChefFS
@@ -92,7 +92,7 @@ class Chef
           end
         end
 
-        def first(n=nil)
+        def first(n = nil)
           if n
             restricted_copy(@input_enumerable.first(n)).to_a
           else
@@ -157,7 +157,7 @@ class Chef
                 @parent_task_queue.push(method(:process_one))
 
                 stop_processing_input = false
-                while !@unconsumed_output.empty?
+                until @unconsumed_output.empty?
                   output, index, input, type = @unconsumed_output.pop
                   yield output, index, input, type
                   if type == :exception && @options[:stop_on_exception]
@@ -178,15 +178,13 @@ class Chef
               end
             end
 
-            while !finished?
+            until finished?
               # yield thread to others (for 1.8.7)
               if @unconsumed_output.empty?
                 sleep(0.01)
               end
 
-              while !@unconsumed_output.empty?
-                yield @unconsumed_output.pop
-              end
+              yield @unconsumed_output.pop until @unconsumed_output.empty?
 
               # If no one is working on our tasks and we're allowed to
               # work on them in the main thread, process an input to
@@ -227,9 +225,7 @@ class Chef
 
         def stop
           @unconsumed_input.clear
-          while @in_process.size > 0
-            sleep(0.05)
-          end
+          sleep(0.05) while @in_process.size > 0
           @unconsumed_output.clear
         end
 
@@ -266,7 +262,7 @@ class Chef
           begin
             output = @block.call(input)
             @unconsumed_output.push([ output, index, input, :result ])
-          rescue
+          rescue StandardError, ScriptError
             if @options[:stop_on_exception]
               @unconsumed_input.clear
             end

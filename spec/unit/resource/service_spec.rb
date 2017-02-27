@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Service do
 
@@ -53,9 +53,9 @@ describe Chef::Resource::Service do
   end
 
   it "should not accept a regexp for the service pattern" do
-    expect {
+    expect do
       @resource.pattern /.*/
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should accept a string for the service start command" do
@@ -64,9 +64,9 @@ describe Chef::Resource::Service do
   end
 
   it "should not accept a regexp for the service start command" do
-    expect {
+    expect do
       @resource.start_command /.*/
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should accept a string for the service stop command" do
@@ -75,9 +75,9 @@ describe Chef::Resource::Service do
   end
 
   it "should not accept a regexp for the service stop command" do
-    expect {
+    expect do
       @resource.stop_command /.*/
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should accept a string for the service status command" do
@@ -86,9 +86,9 @@ describe Chef::Resource::Service do
   end
 
   it "should not accept a regexp for the service status command" do
-    expect {
+    expect do
       @resource.status_command /.*/
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should accept a string for the service restart command" do
@@ -97,9 +97,9 @@ describe Chef::Resource::Service do
   end
 
   it "should not accept a regexp for the service restart command" do
-    expect {
+    expect do
       @resource.restart_command /.*/
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should accept a string for the service reload command" do
@@ -108,9 +108,9 @@ describe Chef::Resource::Service do
   end
 
   it "should not accept a regexp for the service reload command" do
-    expect {
+    expect do
       @resource.reload_command /.*/
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should accept a string for the service init command" do
@@ -119,9 +119,9 @@ describe Chef::Resource::Service do
   end
 
   it "should not accept a regexp for the service init command" do
-    expect {
+    expect do
       @resource.init_command /.*/
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   %w{enabled running}.each do |attrib|
@@ -140,7 +140,7 @@ describe Chef::Resource::Service do
     end
 
     it "should default all the feature support to nil" do
-      support_hash = { :status => nil, :restart => nil, :reload=> nil }
+      support_hash = { :status => nil, :restart => nil, :reload => nil }
       expect(@resource.supports).to eq(support_hash)
     end
 
@@ -175,6 +175,5 @@ describe Chef::Resource::Service do
       expect(@resource.identity).to eq("superfriend")
     end
   end
-
 
 end

@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
 # be able to test only Chef::Application.
 # Regression test for CHEF-5169
 
-require 'chef/application'
+require "chef/application"
 
 describe "Chef::Application" do
   let(:app) { Chef::Application.new }

@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ class Chef
       def action_break
         if defined?(Shell) && Shell.running?
           run_context.resource_collection.iterator.pause
-          @new_resource.updated_by_last_action(true)
+          new_resource.updated_by_last_action(true)
           run_context.resource_collection.iterator
         end
       end

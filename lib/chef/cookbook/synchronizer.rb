@@ -1,6 +1,7 @@
-require 'chef/client'
-require 'chef/util/threaded_job_queue'
-require 'singleton'
+require "chef/client"
+require "chef/util/threaded_job_queue"
+require "chef/server_api"
+require "singleton"
 
 class Chef
 
@@ -42,7 +43,7 @@ class Chef
     end
 
     def cleanup_file_cache
-      unless Chef::Config[:solo] || skip_removal
+      unless Chef::Config[:solo_legacy_mode] || skip_removal
         # Delete each file in the cache that we didn't encounter in the
         # manifest.
         cache.find(File.join(%w{cookbooks ** {*,.*}})).each do |cache_filename|
@@ -140,7 +141,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def sync_cookbooks
-      Chef::Log.info("Loading cookbooks [#{cookbooks.map {|ckbk| ckbk.name + '@' + ckbk.version}.join(', ')}]")
+      Chef::Log.info("Loading cookbooks [#{cookbooks.map { |ckbk| ckbk.name + '@' + ckbk.version }.join(', ')}]")
       Chef::Log.debug("Cookbooks detail: #{cookbooks.inspect}")
 
       clear_obsoleted_cookbooks
@@ -151,11 +152,11 @@ class Chef
         queue << lambda do |lock|
           full_file_path = sync_file(file)
 
-          lock.synchronize {
+          lock.synchronize do
             # Save the full_path of the downloaded file to be restored in the manifest later
             save_full_file_path(file, full_file_path)
             mark_file_synced(file)
-          }
+          end
         end
       end
 
@@ -175,7 +176,7 @@ class Chef
     # Saves the full_path to the file of the cookbook to be updated
     # in the manifest later
     def save_full_file_path(file, full_path)
-      @cookbook_full_file_paths[file.cookbook] ||= { }
+      @cookbook_full_file_paths[file.cookbook] ||= {}
       @cookbook_full_file_paths[file.cookbook][file.segment] ||= [ ]
       @cookbook_full_file_paths[file.cookbook][file.segment] << full_path
     end
@@ -244,14 +245,14 @@ class Chef
     # === Returns
     # Full path to the cached file as a String
     def sync_file(file)
-      cache_filename = File.join("cookbooks", file.cookbook.name, file.manifest_record['path'])
+      cache_filename = File.join("cookbooks", file.cookbook.name, file.manifest_record["path"])
       mark_cached_file_valid(cache_filename)
 
       # If the checksums are different between on-disk (current) and on-server
       # (remote, per manifest), do the update. This will also execute if there
       # is no current checksum.
-      if !cached_copy_up_to_date?(cache_filename, file.manifest_record['checksum'])
-        download_file(file.manifest_record['url'], cache_filename)
+      if !cached_copy_up_to_date?(cache_filename, file.manifest_record["checksum"])
+        download_file(file.manifest_record["url"], cache_filename)
         @events.updated_cookbook_file(file.cookbook.name, cache_filename)
       else
         Chef::Log.debug("Not storing #{cache_filename}, as the cache is up to date.")
@@ -262,6 +263,10 @@ class Chef
     end
 
     def cached_copy_up_to_date?(local_path, expected_checksum)
+      if Chef::Config[:skip_cookbook_sync]
+        Chef::Log.warn "skipping cookbook synchronization!  DO NOT LEAVE THIS ENABLED IN PRODUCTION!!!"
+        return true
+      end
       if cache.has_key?(local_path)
         current_checksum = CookbookVersion.checksum_cookbook_file(cache.load(local_path, false))
         expected_checksum == current_checksum
@@ -274,7 +279,7 @@ class Chef
     # downloaded to the path +destination+ which is relative to the Chef file
     # cache root.
     def download_file(url, destination)
-      raw_file = server_api.get_rest(url, true)
+      raw_file = server_api.streaming_request(url)
 
       Chef::Log.info("Storing updated #{destination} in the cache.")
       cache.move_to(raw_file.path, destination)
@@ -286,7 +291,7 @@ class Chef
     end
 
     def server_api
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      Thread.current[:server_api] ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], keepalives: true)
     end
 
   end

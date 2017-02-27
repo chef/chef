@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/http/json_input'
+require "spec_helper"
+require "chef/http/json_input"
 
 describe Chef::HTTP::JSONInput do
 
@@ -66,7 +66,7 @@ describe Chef::HTTP::JSONInput do
   context "when the request should be serialized" do
 
     let(:http_method) { :put }
-    let(:data) { {foo: "bar"} }
+    let(:data) { { foo: "bar" } }
     let(:expected_data) { %q[{"foo":"bar"}] }
 
     context "and the request has a ruby object as the body and no explicit content-type" do
@@ -111,7 +111,7 @@ describe Chef::HTTP::JSONInput do
       expect(handle_request).to eq([http_method, url, headers, data])
 
       # not normalized
-      expect(headers).to eq({"content-type" => "application/x-binary"})
+      expect(headers).to eq({ "content-type" => "application/x-binary" })
     end
 
     it "does not serialize the body to json when content type is given in capitalized form" do
@@ -120,7 +120,7 @@ describe Chef::HTTP::JSONInput do
       expect(handle_request).to eq([http_method, url, headers, data])
 
       # not normalized
-      expect(headers).to eq({"Content-Type" => "application/x-binary"})
+      expect(headers).to eq({ "Content-Type" => "application/x-binary" })
     end
 
   end

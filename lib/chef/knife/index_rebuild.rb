@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
@@ -38,9 +38,8 @@ class Chef
         else
           deprecated_server_message
           nag
-          output rest.post_rest("/search/reindex", {})
+          output rest.post("/search/reindex", {})
         end
-
       end
 
       def grab_api_info
@@ -50,7 +49,7 @@ class Chef
         # for a node we know won't exist; the 404 response that comes
         # back will give us what we want
         dummy_node = "knife_index_rebuild_test_#{rand(1000000)}"
-        rest.get_rest("/nodes/#{dummy_node}")
+        rest.get("/nodes/#{dummy_node}")
       rescue Net::HTTPServerException => exception
         r = exception.response
         parse_api_info(r)
@@ -69,11 +68,11 @@ class Chef
       end
 
       def deprecated_server_message
-        ui.warn("'knife index rebuild' has been removed for Chef 11+ servers.  It will continue to work for prior versions, however.")
+        ui.warn("'knife index rebuild' has been removed for Chef 11+ servers. It will continue to work for prior versions, however.")
       end
 
       def nag
-        ui.info("This operation is destructive.  Rebuilding the index may take some time.")
+        ui.info("This operation is destructive. Rebuilding the index may take some time.")
         ui.confirm("Continue")
       end
 

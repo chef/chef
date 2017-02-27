@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::File do
 
@@ -67,11 +67,11 @@ describe Chef::Resource::File do
   end
 
   it "should accept a block, symbol, or string for verify" do
-    expect {@resource.verify {}}.not_to raise_error
-    expect {@resource.verify ""}.not_to raise_error
-    expect {@resource.verify :json}.not_to raise_error
-    expect {@resource.verify true}.to raise_error
-    expect {@resource.verify false}.to raise_error
+    expect { @resource.verify {} }.not_to raise_error
+    expect { @resource.verify "" }.not_to raise_error
+    expect { @resource.verify :json }.not_to raise_error
+    expect { @resource.verify true }.to raise_error(ArgumentError)
+    expect { @resource.verify false }.to raise_error(ArgumentError)
   end
 
   it "should accept multiple verify statements" do
@@ -122,8 +122,8 @@ describe Chef::Resource::File do
     end
     it "describes its state including windows ACL attributes" do
       state = @resource.state
-      expect(state[:rights]).to eq([ {:permissions => :read, :principals => "Everyone"},
-                               {:permissions => :full_control, :principals => "DOMAIN\User"} ])
+      expect(state[:rights]).to eq([ { :permissions => :read, :principals => "Everyone" },
+                               { :permissions => :full_control, :principals => "DOMAIN\User" } ])
     end
   end
 

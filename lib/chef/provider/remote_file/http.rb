@@ -1,7 +1,7 @@
 #
 # Author:: Jesse Campbell (<hikeit@gmail.com>)
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Jesse Campbell
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2013-2016, Jesse Campbell
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'chef/http/simple'
-require 'chef/digester'
-require 'chef/provider/remote_file'
-require 'chef/provider/remote_file/cache_control_data'
+require "chef/http/simple"
+require "chef/digester"
+require "chef/provider/remote_file"
+require "chef/provider/remote_file/cache_control_data"
 
 class Chef
   class Provider
@@ -39,16 +39,20 @@ class Chef
           @current_resource = current_resource
         end
 
+        def events
+          new_resource.events
+        end
+
         def headers
           conditional_get_headers.merge(new_resource.headers)
         end
 
         def conditional_get_headers
           cache_control_headers = {}
-          if last_modified = cache_control_data.mtime and want_mtime_cache_control?
+          if (last_modified = cache_control_data.mtime) && want_mtime_cache_control?
             cache_control_headers["if-modified-since"] = last_modified
           end
-          if etag = cache_control_data.etag and want_etag_cache_control?
+          if (etag = cache_control_data.etag) && want_etag_cache_control?
             cache_control_headers["if-none-match"] = etag
           end
           Chef::Log.debug("Cache control headers: #{cache_control_headers.inspect}")
@@ -57,7 +61,13 @@ class Chef
 
         def fetch
           http = Chef::HTTP::Simple.new(uri, http_client_opts)
-          tempfile = http.streaming_request(uri, headers)
+          if want_progress?
+            tempfile = http.streaming_request_with_progress(uri, headers) do |size, total|
+              events.resource_update_progress(new_resource, size, total, progress_interval)
+            end
+          else
+            tempfile = http.streaming_request(uri, headers)
+          end
           if tempfile
             update_cache_control_data(tempfile, http.last_response)
             tempfile.close
@@ -78,6 +88,14 @@ class Chef
           @cache_control_data ||= CacheControlData.load_and_validate(uri, current_resource.checksum)
         end
 
+        def want_progress?
+          events.formatter? && (Chef::Config[:show_download_progress] || !!new_resource.show_progress)
+        end
+
+        def progress_interval
+          Chef::Config[:download_progress_interval]
+        end
+
         def want_mtime_cache_control?
           new_resource.use_last_modified
         end
@@ -87,15 +105,15 @@ class Chef
         end
 
         def last_modified_time_from(response)
-          response['last_modified'] || response['date']
+          response["last_modified"] || response["date"]
         end
 
         def etag_from(response)
-          response['etag']
+          response["etag"]
         end
 
         def http_client_opts
-          opts={}
+          opts = {}
           # CHEF-3140
           # 1. If it's already compressed, trying to compress it more will
           # probably be counter-productive.

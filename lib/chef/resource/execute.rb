@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/provider/execute'
+require "chef/resource"
+require "chef/provider/execute"
 
 class Chef
   class Resource
@@ -34,7 +34,7 @@ class Chef
 
       default_action :run
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @command = name
         @backup = 5
@@ -49,9 +49,10 @@ class Chef
         @umask = nil
         @default_guard_interpreter = :execute
         @is_guard_interpreter = false
+        @live_stream = false
       end
 
-      def umask(arg=nil)
+      def umask(arg = nil)
         set_or_return(
           :umask,
           arg,
@@ -59,7 +60,7 @@ class Chef
         )
       end
 
-      def command(arg=nil)
+      def command(arg = nil)
         set_or_return(
           :command,
           arg,
@@ -67,7 +68,7 @@ class Chef
         )
       end
 
-      def creates(arg=nil)
+      def creates(arg = nil)
         set_or_return(
           :creates,
           arg,
@@ -75,7 +76,7 @@ class Chef
         )
       end
 
-      def cwd(arg=nil)
+      def cwd(arg = nil)
         set_or_return(
           :cwd,
           arg,
@@ -83,7 +84,7 @@ class Chef
         )
       end
 
-      def environment(arg=nil)
+      def environment(arg = nil)
         set_or_return(
           :environment,
           arg,
@@ -93,7 +94,7 @@ class Chef
 
       alias :env :environment
 
-      def group(arg=nil)
+      def group(arg = nil)
         set_or_return(
           :group,
           arg,
@@ -101,7 +102,14 @@ class Chef
         )
       end
 
-      def path(arg=nil)
+      def live_stream(arg = nil)
+        set_or_return(
+          :live_stream,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ])
+      end
+
+      def path(arg = nil)
         Chef::Log.warn "The 'path' attribute of 'execute' is not used by any provider in Chef 11 or Chef 12. Use 'environment' attribute to configure 'PATH'. This attribute will be removed in Chef 13."
 
         set_or_return(
@@ -111,7 +119,7 @@ class Chef
         )
       end
 
-      def returns(arg=nil)
+      def returns(arg = nil)
         set_or_return(
           :returns,
           arg,
@@ -119,7 +127,7 @@ class Chef
         )
       end
 
-      def timeout(arg=nil)
+      def timeout(arg = nil)
         set_or_return(
           :timeout,
           arg,
@@ -127,12 +135,18 @@ class Chef
         )
       end
 
-      def user(arg=nil)
-        set_or_return(
-          :user,
-          arg,
-          :kind_of => [ String, Integer ]
-        )
+      property :user, [ String, Integer ]
+
+      property :domain, String
+
+      property :password, String, sensitive: true
+
+      def sensitive(args = nil)
+        if password
+          true
+        else
+          super
+        end
       end
 
       def self.set_guard_inherited_attributes(*inherited_attributes)
@@ -149,6 +163,64 @@ class Chef
         end
 
         ancestor_attributes.concat(@class_inherited_attributes ? @class_inherited_attributes : []).uniq
+      end
+
+      def after_created
+        validate_identity_platform(user, password, domain)
+        identity = qualify_user(user, password, domain)
+        domain(identity[:domain])
+        user(identity[:user])
+      end
+
+      def validate_identity_platform(specified_user, password = nil, specified_domain = nil)
+        if node[:platform_family] == "windows"
+          if specified_user && password.nil?
+            raise ArgumentError, "A value for `password` must be specified when a value for `user` is specified on the Windows platform"
+          end
+        else
+          if password || specified_domain
+            raise Exceptions::UnsupportedPlatform, "Values for `domain` and `password` are only supported on the Windows platform"
+          end
+        end
+      end
+
+      def qualify_user(specified_user, password = nil, specified_domain = nil)
+        domain = specified_domain
+        user = specified_user
+
+        if specified_user.nil? && ! specified_domain.nil?
+          raise ArgumentError, "The domain `#{specified_domain}` was specified, but no user name was given"
+        end
+
+        # if domain is provided in both username and domain
+        if specified_user && ((specified_user.include? '\\') || (specified_user.include? "@")) && specified_domain
+          raise ArgumentError, "The domain is provided twice. Username: `#{specified_user}`, Domain: `#{specified_domain}`. Please specify domain only once."
+        end
+
+        if ! specified_user.nil? && specified_domain.nil?
+          # Splitting username of format: Domain\Username
+          domain_and_user = user.split('\\')
+
+          if domain_and_user.length == 2
+            domain = domain_and_user[0]
+            user = domain_and_user[1]
+          elsif domain_and_user.length == 1
+            # Splitting username of format: Username@Domain
+            domain_and_user = user.split("@")
+            if domain_and_user.length == 2
+              domain = domain_and_user[1]
+              user = domain_and_user[0]
+            elsif domain_and_user.length != 1
+              raise ArgumentError, "The specified user name `#{user}` is not a syntactically valid user name"
+            end
+          end
+        end
+
+        if ( password || domain ) && user.nil?
+          raise ArgumentError, "A value for `password` or `domain` was specified without specification of a value for `user`"
+        end
+
+        { domain: domain, user: user }
       end
 
       set_guard_inherited_attributes(

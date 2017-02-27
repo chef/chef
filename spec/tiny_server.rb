@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,97 +16,86 @@
 # limitations under the License.
 #
 
-require 'rubygems'
-require 'webrick'
-require 'webrick/https'
-require 'rack'
-#require 'thin'
-require 'singleton'
-require 'open-uri'
-require 'chef/config'
+require "rubygems"
+require "webrick"
+require "webrick/https"
+require "rack"
+require "thread"
+require "singleton"
+require "open-uri"
+require "chef/config"
 
 module TinyServer
-
-  class Server < Rack::Server
-
-    attr_writer :app
-
-    def self.setup(options=nil, &block)
-      tiny_app = new(options)
-      app_code = Rack::Builder.new(&block).to_app
-      tiny_app.app = app_code
-      tiny_app
-    end
-
-    def shutdown
-      server.shutdown
-    end
-  end
 
   class Manager
 
     # 5 == debug, 3 == warning
     LOGGER = WEBrick::Log.new(STDOUT, 3)
     DEFAULT_OPTIONS = {
-      :server => 'webrick',
-      :Port => 9000,
-      :Host => 'localhost',
-      :environment => :none,
-      :Logger => LOGGER,
-      :AccessLog => [] # Remove this option to enable the access log when debugging.
+      Port: 9000,
+      Host: "localhost",
+      Logger: LOGGER,
+      # SSLEnable: options[:ssl],
+      # SSLCertName: [ [ 'CN', WEBrick::Utils::getservername ] ],
+      AccessLog: [], # Remove this option to enable the access log when debugging.
     }
 
-    def initialize(options=nil)
-      @options = options ? DEFAULT_OPTIONS.merge(options) : DEFAULT_OPTIONS
+    def initialize(**options)
+      @options = DEFAULT_OPTIONS.merge(options)
       @creator = caller.first
     end
 
-    def start
+    attr_reader :options
+    attr_reader :creator
+    attr_reader :server
+
+    def start(timeout = 5)
+      raise "Server already started!" if server
+
+      # Create the server (but don't start yet)
+      start_queue = Queue.new
+      @server = create_server(StartCallback: proc { start_queue << true })
+
       @server_thread = Thread.new do
-        @server = Server.setup(@options) do
-          run API.instance
-        end
-        @server.start
+        # Ensure any exceptions will cause the main rspec thread to fail too
+        Thread.current.abort_on_exception = true
+        server.start
       end
-      block_until_started
-    end
 
-    def url
-      "http://localhost:#{@options[:Port]}"
-    end
-
-    def block_until_started
-      200.times do
-        if started? && !@server.nil?
-          return true
-        end
+      # Wait for the StartCallback to tell us we've started
+      Timeout.timeout(timeout) do
+        start_queue.pop
       end
-      raise "ivar weirdness" if started? && @server.nil?
-      raise "TinyServer failed to boot :/"
     end
 
-    def started?
-      open(url)
-      true
-    rescue OpenURI::HTTPError
-      true
-    rescue Errno::ECONNREFUSED, EOFError, Errno::ECONNRESET => e
-      sleep 0.1
-      # If the host has ":::1 localhost" in its hosts file and if IPv6
-      # is not enabled we can get NetworkUnreachable exception...
-    rescue Errno::ENETUNREACH => e
-      sleep 0.1
-      false
+    def stop(timeout = 5)
+      if server
+        server.shutdown
+        @server = nil
+      end
+
+      if server_thread
+        begin
+          # Wait for a normal shutdown
+          server_thread.join(timeout)
+        rescue
+          # If it wouldn't shut down normally, kill it.
+          server_thread.kill
+          server_thread.join(timeout)
+        end
+        @server_thread = nil
+      end
     end
 
-    def stop
-      # yes, this is terrible.
-      @server.shutdown
-      @server_thread.kill
-      @server_thread.join
-      @server_thread = nil
-    end
+    private
 
+    attr_reader :server_thread
+
+    def create_server(**extra_options)
+      server = WEBrick::HTTPServer.new(**options, **extra_options)
+      server.mount("/", Rack::Handler::WEBrick, API.instance)
+      server
+    end
   end
 
   class API
@@ -124,22 +113,22 @@ module TinyServer
     end
 
     def clear
-      @routes = {GET => [], PUT => [], POST => [], DELETE => []}
+      @routes = { GET => [], PUT => [], POST => [], DELETE => [] }
     end
 
-    def get(path, response_code, data=nil, headers=nil, &block)
+    def get(path, response_code, data = nil, headers = nil, &block)
       @routes[GET] << Route.new(path, Response.new(response_code, data, headers, &block))
     end
 
-    def put(path, response_code, data=nil, headers=nil, &block)
+    def put(path, response_code, data = nil, headers = nil, &block)
       @routes[PUT] << Route.new(path, Response.new(response_code, data, headers, &block))
     end
 
-    def post(path, response_code, data=nil, headers=nil, &block)
+    def post(path, response_code, data = nil, headers = nil, &block)
       @routes[POST] << Route.new(path, Response.new(response_code, data, headers, &block))
     end
 
-    def delete(path, response_code, data=nil, headers=nil, &block)
+    def delete(path, response_code, data = nil, headers = nil, &block)
       @routes[DELETE] << Route.new(path, Response.new(response_code, data, headers, &block))
     end
 
@@ -147,11 +136,11 @@ module TinyServer
       if response = response_for_request(env)
         response.call
       else
-        debug_info = {:message => "no data matches the request for #{env['REQUEST_URI']}",
-                      :available_routes => @routes, :request => env}
+        debug_info = { :message => "no data matches the request for #{env['REQUEST_URI']}",
+                       :available_routes => @routes, :request => env }
         # Uncomment me for glorious debugging
         # pp :not_found => debug_info
-        [404, {'Content-Type' => 'application/json'}, [ Chef::JSONCompat.to_json(debug_info) ]]
+        [404, { "Content-Type" => "application/json" }, [ Chef::JSONCompat.to_json(debug_info) ]]
       end
     end
 
@@ -181,9 +170,9 @@ module TinyServer
   end
 
   class Response
-    HEADERS = {'Content-Type' => 'application/json'}
+    HEADERS = { "Content-Type" => "application/json" }
 
-    def initialize(response_code=200, data=nil, headers=nil, &block)
+    def initialize(response_code = 200, data = nil, headers = nil, &block)
       @response_code, @data = response_code, data
       @response_headers = headers ? HEADERS.merge(headers) : HEADERS
       @block = block_given? ? block : nil
@@ -195,7 +184,7 @@ module TinyServer
     end
 
     def to_s
-      "#{@response_code} => #{(@data|| @block)}"
+      "#{@response_code} => #{(@data || @block)}"
     end
 
   end
