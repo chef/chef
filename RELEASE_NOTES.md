@@ -32,3 +32,8 @@ In order to for community cookbooks to behave consistently across all users this
 
 The remediation is to set the manage_home and non_unique properties directly.
 
+### Using relative paths in the `creates` property of an execute resource with specifying a `cwd` is now a hard error
+
+Without a declared cwd the relative path was (most likely?) relative to wherever chef-client happened to be invoked which is
+not deterministic or easy to intuit behavior.
+

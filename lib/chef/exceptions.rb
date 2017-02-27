@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,6 +47,7 @@ class Chef
     class Cron < RuntimeError; end
     class Env < RuntimeError; end
     class Exec < RuntimeError; end
+    class Execute < RuntimeError; end
     class ErlCall < RuntimeError; end
     class FileNotFound < RuntimeError; end
     class Package < RuntimeError; end
