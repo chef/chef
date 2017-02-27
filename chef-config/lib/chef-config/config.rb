@@ -830,7 +830,7 @@ module ChefConfig
     # true then the user will get backcompat behavior but with a single nag warning that cookbooks
     # may break with this setting in the future.  The false setting is the recommended setting and
     # will become the default.
-    default :chef_gem_compile_time, nil
+    default :chef_gem_compile_time, false
 
     # A whitelisted array of attributes you want sent over the wire when node
     # data is saved.
