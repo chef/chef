@@ -24,6 +24,7 @@ install:
   - ps: $env:BUNDLER_VERSION=$(findstr bundler omnibus_overrides.rb | %{ $_.split(" ")[3] })
   - echo %PATH%
   - ruby --version
+  - gem uninstall bundler -a -x
   - gem update --system %RUBYGEMS_VERSION% || gem update --system %RUBYGEMS_VERSION% || gem update --system %RUBYGEMS_VERSION%
   - gem install bundler -v %BUNDLER_VERSION% --quiet --no-ri --no-rdoc || gem install bundler -v %BUNDLER_VERSION% --quiet --no-ri --no-rdoc || gem install bundler -v %BUNDLER_VERSION% --quiet --no-ri --no-rdoc
   - gem --version
