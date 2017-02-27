@@ -102,27 +102,6 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
   end
 
-  context "deprecated #load_node method" do
-
-    let(:node) do
-      node = Chef::Node.new
-      node.name(node_name)
-      node.run_list(["recipe[a::default]", "recipe[b::server]"])
-      node
-    end
-
-    before do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-      policy_builder.load_node
-    end
-
-    it "loads the node" do
-      expect(policy_builder.node).to eq(node)
-    end
-
-  end
-
   context "once the node has been loaded" do
     let(:node) do
       node = Chef::Node.new
