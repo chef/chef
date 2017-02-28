@@ -143,6 +143,7 @@ To mention the team, use @chef/client-os-x
 ### Maintainers
 
 * [Tyler Ball](https://github.com/tyler-ball)
+* [Mike Dodge](https://github.com/mikedodge04)
 
 ## Debian
 
@@ -228,4 +229,3 @@ To mention the team, use @chef/client-archlinux
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Ryan Cragun](https://github.com/ryancragun)
-
