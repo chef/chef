@@ -3,16 +3,16 @@ GEM
   specs:
     addressable (2.5.0)
       public_suffix (~> 2.0, >= 2.0.2)
-    artifactory (2.6.0)
-    aws-sdk (2.7.5)
-      aws-sdk-resources (= 2.7.5)
-    aws-sdk-core (2.7.5)
+    artifactory (2.7.0)
+    aws-sdk (2.7.15)
+      aws-sdk-resources (= 2.7.15)
+    aws-sdk-core (2.7.15)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.7.5)
-      aws-sdk-core (= 2.7.5)
+    aws-sdk-resources (2.7.15)
+      aws-sdk-core (= 2.7.15)
     aws-sigv4 (1.0.0)
-    berkshelf (5.6.2)
+    berkshelf (5.6.3)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (>= 2.0.2, < 4.0)
       buff-config (~> 2.0)
@@ -46,7 +46,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.18.31)
+    chef-config (12.19.36)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -68,7 +68,7 @@ GEM
       ffi (>= 1.0.1)
     gyoku (1.3.1)
       builder (>= 2.1.2)
-    hashie (3.5.1)
+    hashie (3.5.5)
     hitimes (1.2.4)
     hitimes (1.2.4-x86-mingw32)
     httpclient (2.8.3)
@@ -90,11 +90,11 @@ GEM
       train (>= 0.22.0, < 1.0)
     jmespath (1.3.1)
     json (2.0.3)
-    kitchen-appbundle-updater (0.1.2)
+    kitchen-appbundle-updater (0.2.0)
     kitchen-dokken (1.1.0)
       docker-api (~> 1.33)
       test-kitchen (~> 1.13)
-    kitchen-ec2 (1.2.0)
+    kitchen-ec2 (1.3.2)
       aws-sdk (~> 2)
       excon
       multi_json
@@ -104,7 +104,7 @@ GEM
       hashie (~> 3.4)
       inspec (>= 0.34.0, < 2.0.0)
       test-kitchen (~> 1.6)
-    kitchen-vagrant (1.0.0)
+    kitchen-vagrant (1.0.2)
       test-kitchen (~> 1.4)
     little-plugger (1.1.4)
     logging (2.1.0)
@@ -133,7 +133,7 @@ GEM
     multipart-post (2.0.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
-    net-ssh (4.0.1)
+    net-ssh (4.1.0)
     net-ssh-gateway (1.3.0)
       net-ssh (>= 2.6.5)
     nio4r (2.0.0)
@@ -256,4 +256,4 @@ DEPENDENCIES
   vagrant-wrapper
 
 BUNDLED WITH
-   1.12.5
+   1.13.7

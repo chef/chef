@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -204,16 +204,6 @@ class Chef
 
       def check_lock
         raise NotImplementedError
-      end
-
-      def non_unique?
-        # XXX: THIS GOES AWAY IN CHEF-13 AND BECOMES JUST new_resource.non_unique
-        new_resource.non_unique || new_resource.supports[:non_unique]
-      end
-
-      def managing_home_dir?
-        # XXX: THIS GOES AWAY IN CHEF-13 AND BECOMES JUST new_resource.manage_home
-        new_resource.manage_home || new_resource.supports[:manage_home]
       end
     end
   end

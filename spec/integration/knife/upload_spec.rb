@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software, Inc.
+# Copyright:: Copyright 2013-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -178,16 +178,8 @@ EOM
             file "cookbooks/x/metadata.rb", "name 'x'; version '1.0.0'; depends 'x'"
           end
 
-          it "should warn", chef: "< 13" do
-            knife("upload /cookbooks").should_succeed(
-              stdout: "Updated /cookbooks/x\n",
-              stderr: "WARN: Ignoring self-dependency in cookbook x, please remove it (in the future this will be fatal).\n"
-            )
-            knife("diff --name-status /").should_succeed ""
-          end
-          it "should fail in Chef 13", chef: ">= 13" do
-            knife("upload /cookbooks").should_fail ""
-            # FIXME: include the error message here
+          it "should fail in Chef 13" do
+            expect { knife("upload /cookbooks") }.to raise_error RuntimeError, /Cookbook depends on itself/
           end
         end
 

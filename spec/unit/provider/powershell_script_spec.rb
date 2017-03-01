@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,10 +30,20 @@ describe Chef::Provider::PowershellScript, "action_run" do
     node
   end
 
-  let(:provider) do
-    empty_events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, empty_events)
+  # code block is mandatory for the powershell provider
+  let(:code) { "" }
+
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+
+  let(:run_context) { run_context = Chef::RunContext.new(node, {}, events) }
+
+  let(:new_resource) do
     new_resource = Chef::Resource::PowershellScript.new("run some powershell code", run_context)
+    new_resource.code code
+    new_resource
+  end
+
+  let(:provider) do
     Chef::Provider::PowershellScript.new(new_resource, run_context)
   end
 

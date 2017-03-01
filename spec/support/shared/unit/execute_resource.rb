@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,14 +76,8 @@ shared_examples_for "an execute resource" do
     expect(@resource.group).to eql(1)
   end
 
-  it "should accept an array for the execution path in Chef-12 and log deprecation message", chef: "< 13" do
-    expect(Chef::Log).to receive(:warn).at_least(:once)
-    @resource.path ["woot"]
-    expect(@resource.path).to eql(["woot"])
-  end
-
-  it "should raise an exception in chef-13", chef: ">= 13" do
-    expect(@resource.path [ "woot" ]).to raise_error
+  it "the old path property (that never worked) is not supported in chef >= 13" do
+    expect { @resource.path [ "woot" ] }.to raise_error
   end
 
   it "should accept an integer for the return code" do

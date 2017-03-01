@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,10 +42,6 @@ class Chef
         @manage_home = false
         @force = false
         @non_unique = false
-        @supports = {
-          manage_home: false,
-          non_unique: false,
-        }
         @iterations = 27855
         @salt = nil
       end
@@ -157,17 +153,7 @@ class Chef
       end
 
       def supports(args = {})
-        if args.key?(:manage_home)
-          Chef.deprecated(:supports_property, "supports { manage_home: #{args[:manage_home]} } on the user resource is deprecated and will be removed in Chef 13, set manage_home #{args[:manage_home]} instead")
-        end
-        if args.key?(:non_unique)
-          Chef.deprecated(:supports_property, "supports { non_unique: #{args[:non_unique]} } on the user resource is deprecated and will be removed in Chef 13, set non_unique #{args[:non_unique]} instead")
-        end
-        super
-      end
-
-      def supports=(args)
-        supports(args)
+        raise Chef::Exceptions::User, "calling supports on a user resource is no longer supported in Chef-13, you probably need to use the manage_home or non_unique properties directly"
       end
     end
   end

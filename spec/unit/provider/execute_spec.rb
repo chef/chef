@@ -1,6 +1,6 @@
 #
 # Author:: Prajakta Purohit (<prajakta@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -118,19 +118,9 @@ describe Chef::Provider::Execute do
         new_resource.creates "foo_resource"
       end
 
-      it "should warn in Chef-12", chef: "< 13" do
-        expect(Chef::Log).to receive(:warn).with(/relative path/)
-        expect(FileTest).to receive(:exist?).with(new_resource.creates).and_return(true)
+      it "should raise if user specified relative path without cwd for Chef-13" do
         expect(provider).not_to receive(:shell_out!)
-        provider.run_action(:run)
-        expect(new_resource).not_to be_updated
-      end
-
-      it "should raise if user specified relative path without cwd for Chef-13", chef: ">= 13" do
-        expect(Chef::Log).to receive(:warn).with(/relative path/)
-        expect(FileTest).to receive(:exist?).with(new_resource.creates).and_return(true)
-        expect(provider).not_to receive(:shell_out!)
-        expect { provider.run_action(:run) }.to raise_error # @todo: add a real error for Chef-13
+        expect { provider.run_action(:run) }.to raise_error(Chef::Exceptions::Execute)
       end
     end
 

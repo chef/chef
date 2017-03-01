@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,7 @@ class Chef
 
         def remove_user
           command = [ "userdel" ]
-          command << "-r" if managing_home_dir?
+          command << "-r" if new_resource.manage_home
           command << "-f" if new_resource.force
           command << new_resource.username
           shell_out_compact!(command)
@@ -117,14 +117,14 @@ class Chef
               end
               if updating_home?
                 opts << "-d" << new_resource.home
-                if managing_home_dir?
+                if new_resource.manage_home
                   Chef::Log.debug("#{new_resource} managing the users home directory")
                   opts << "-m"
                 else
                   Chef::Log.debug("#{new_resource} setting home to #{new_resource.home}")
                 end
               end
-              opts << "-o" if non_unique?
+              opts << "-o" if new_resource.non_unique
               opts
             end
         end
@@ -139,7 +139,7 @@ class Chef
         def useradd_options
           opts = []
           opts << "-r" if new_resource.system
-          opts << "-M" unless managing_home_dir?
+          opts << "-M" unless new_resource.manage_home
           opts
         end
 

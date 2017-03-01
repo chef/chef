@@ -14,6 +14,7 @@ provisioner:
   github_owner: "chef"
   github_repo: "chef"
   refname: <%= ENV['TRAVIS_COMMIT'] %>
+  ohai_refname: "master"
   github_access_token: <%= ENV['KITCHEN_GITHUB_TOKEN'] %>
   data_path: test/fixtures
 # disable file provider diffs so we don't overflow travis' line limit

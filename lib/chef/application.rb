@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (mmzyk@chef.io)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,7 +48,6 @@ class Chef
       configure_chef
       configure_logging
       configure_encoding
-      emit_warnings
     end
 
     # Get this party started
@@ -330,12 +329,6 @@ class Chef
     # This is a hook for testing
     def env
       ENV
-    end
-
-    def emit_warnings
-      if Chef::Config[:chef_gem_compile_time]
-        Chef.deprecated :chef_gem_compile_time, "setting chef_gem_compile_time to true is deprecated"
-      end
     end
 
     class << self

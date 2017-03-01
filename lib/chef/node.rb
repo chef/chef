@@ -2,7 +2,7 @@
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -599,11 +599,6 @@ class Chef
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
           chef_server_rest.post("nodes", data_for_save)
-        # Chef Server before 12.3 rejects node JSON with 'policy_name' or
-        # 'policy_group' keys, but 'policy_name' will be detected first.
-        # Backcompat can be removed in 13.0
-        elsif e.response.code == "400" && e.response.body.include?("Invalid key policy_name")
-          save_without_policyfile_attrs
         else
           raise
         end

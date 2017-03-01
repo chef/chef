@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,51 +23,25 @@ require "chef/provider/script"
 class Chef
   class Resource
     class Script < Chef::Resource::Execute
-      # Chef-13: go back to using :name as the identity attr
-      identity_attr :command
+      identity_attr :name
 
       def initialize(name, run_context = nil)
         super
-        # Chef-13: the command variable should be initialized to nil
-        @command = name
-        @code = nil
-        @interpreter = nil
-        @flags = nil
+        @command = nil
         @default_guard_interpreter = :default
       end
 
+      # FIXME: remove this and use an execute sub-resource instead of inheriting from Execute
       def command(arg = nil)
         unless arg.nil?
-          # Chef-13: change this to raise if the user is trying to set a value here
-          Chef::Log.warn "Specifying command attribute on a script resource is a coding error, use the 'code' attribute, or the execute resource"
-          Chef::Log.warn "This attribute is deprecated and must be fixed or this code will fail on Chef 13"
+          raise Chef::Exceptions::Script, "Do not use the command attribute on a #{resource_name} resource, use the 'code' attribute instead."
         end
         super
       end
 
-      def code(arg = nil)
-        set_or_return(
-          :code,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def interpreter(arg = nil)
-        set_or_return(
-          :interpreter,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def flags(arg = nil)
-        set_or_return(
-          :flags,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :code, String, required: true
+      property :interpreter, String
+      property :flags, String
 
     end
   end

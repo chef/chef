@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,17 +28,10 @@ class Chef
                             callbacks: {
                  "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments." => proc { |v| v == "#{RbConfig::CONFIG['bindir']}/gem" },
                }
-      property :compile_time, [ true, false, nil ], default: lazy { Chef::Config[:chef_gem_compile_time] }, desired_state: false
+      property :compile_time, [ true, false ], default: false, desired_state: false
 
       def after_created
-        # Chef::Resource.run_action: Caveat: this skips Chef::Runner.run_action, where notifications are handled
-        # Action could be an array of symbols, but probably won't (think install + enable for a package)
-        if compile_time.nil?
-          message = "#{self} chef_gem compile_time installation is deprecated. Please set `compile_time false` on the resource to use the new behavior, or set `compile_time true` on the resource if compile_time behavior is required."
-          Chef.deprecated :chef_gem_compile_time, message
-        end
-
-        if compile_time || compile_time.nil?
+        if compile_time
           Array(action).each do |action|
             run_action(action)
           end

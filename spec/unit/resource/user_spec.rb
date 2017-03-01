@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,12 +46,12 @@ describe Chef::Resource::User, "initialize" do
     expect(@resource.action).to eql([:create])
   end
 
-  it "should set supports[:manage_home] to false" do
-    expect(@resource.supports[:manage_home]).to eql(false)
+  it "should set manage_home to false" do
+    expect(@resource.manage_home).to eql(false)
   end
 
-  it "should set supports[:non_unique] to false" do
-    expect(@resource.supports[:non_unique]).to eql(false)
+  it "should set non_unique to false" do
+    expect(@resource.non_unique).to eql(false)
   end
 
   it "should set force to false" do

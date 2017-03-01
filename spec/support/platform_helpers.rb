@@ -1,5 +1,6 @@
 require "fcntl"
 require "chef/mixin/shell_out"
+require "ohai/mixin/http_helper"
 require "ohai/mixin/gce_metadata"
 
 class ShellHelpers
@@ -221,12 +222,12 @@ def fips?
   ENV["CHEF_FIPS"] == "1"
 end
 
-class GCEDetector
-  extend Ohai::Mixin::GCEMetadata
+class HttpHelper
+  extend Ohai::Mixin::HttpHelper
 end
 
 def gce?
-  GCEDetector.can_metadata_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR, 80)
+  HttpHelper.can_socket_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR, 80)
 rescue SocketError
   false
 end

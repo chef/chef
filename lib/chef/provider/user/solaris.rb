@@ -2,7 +2,7 @@
 # Author:: Stephen Nelson-Smith (<sns@chef.io>)
 # Author:: Jon Ramsey (<jonathon.ramsey@gmail.com>)
 # Author:: Dave Eddy (<dave@daveeddy.com>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # Copyright:: Copyright 2015-2016, Dave Eddy
 # License:: Apache License, Version 2.0
 #
@@ -77,7 +77,7 @@ class Chef
         # @return [Array<String>]
         def useradd_options
           opts = []
-          opts << "-m" if managing_home_dir?
+          opts << "-m" if new_resource.manage_home
           opts
         end
 
