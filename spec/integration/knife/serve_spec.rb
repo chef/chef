@@ -54,18 +54,28 @@ describe "knife serve", :workstation do
 
   when_the_repository "also has one of each thing" do
     before do
-      file "nodes/x.json", { "foo" => "bar" }
+      file "nodes/a_node_in_json.json", { "foo" => "bar" }
+      file "nodes/a_node_in_ruby.rb", "name 'a_node_in_ruby'"
       file "roles/a_role_in_json.json", { "foo" => "bar" }
       file "roles/a_role_in_ruby.rb", "name 'a_role_in_ruby'"
     end
 
-    it "knife serve serves up /nodes/x" do
-      with_knife_serve do |api|
-        expect(api.get("nodes/x")["name"]).to eq("x")
+    %w{a_node_in_json a_node_in_ruby}.each do |file_type|
+      context file_type do
+        it "knife serve serves up /nodes" do
+          with_knife_serve do |api|
+            expect(api.get("nodes")).to have_key(file_type)
+          end
+        end
+        it "knife serve serves up /nodes/#{file_type}" do
+          with_knife_serve do |api|
+            expect(api.get("nodes/#{file_type}")["name"]).to eq(file_type)
+          end
+        end
       end
     end
 
-    %w(a_role_in_json a_role_in_ruby).each do |file_type|
+    %w{a_role_in_json a_role_in_ruby}.each do |file_type|
       context file_type do
         it "knife serve serves up /roles" do
           with_knife_serve do |api|
@@ -74,7 +84,7 @@ describe "knife serve", :workstation do
         end
         it "knife serve serves up /roles/#{file_type}" do
           with_knife_serve do |api|
-            expect(api.get("roles/#{file_type}")['name']).to eq(file_type)
+            expect(api.get("roles/#{file_type}")["name"]).to eq(file_type)
           end
         end
       end
