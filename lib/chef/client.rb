@@ -372,7 +372,7 @@ class Chef
 
     # @api private
     def default_formatter
-      if (STDOUT.tty? && !Chef::Config[:force_logger]) || Chef::Config[:force_formatter]
+      if !Chef::Config[:force_logger] || Chef::Config[:force_formatter]
         [:doc]
       else
         [:null]

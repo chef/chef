@@ -269,3 +269,26 @@ use `recipe.rb` in the root of the cookbook.
 The `use_inline_resources` provider mode is always enabled when using the
 `action :name do ... end` syntax. You can remove the `use_inline_resources`
 line.
+
+### Magic removed from logger and formatter settings
+
+There is no more magic involved in the setting of the logger and the formatter, the default is now the formatter.
+
+Setting the `log_location` in the config.rb now applies to both daemonized and command-line invocation and there is
+no magic which dups the logger in order to log to STDOUT on the command line in that case.
+
+Setting logger settings in config.rb is most likely no longer appropriate and those settings should be changed to
+command line flags on the config script or cronjob that invokes chef-client daemonized.  In other words:
+
+```
+chef-client -d -L /var/log/client.rb --force-logger
+```
+
+If your logfiles switch to the formatter, you need to include `--force-logger` for your daemonized runs.
+
+If your command line invocations have no output, delete the config.rb setting for the log_location and move that
+to the command line that invokes your daemon process.
+
+Redirecting output to a file with `chef-client > /tmp/chef.out` now captures the same output as invoking it directly on the command
+line with no redirection.
+

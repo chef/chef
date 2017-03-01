@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,48 +71,40 @@ describe Chef::Client do
 
   describe "configuring output formatters" do
     context "when no formatter has been configured" do
-      context "and STDOUT is a TTY" do
-        before do
-          allow(STDOUT).to receive(:tty?).and_return(true)
-        end
-
-        it "configures the :doc formatter" do
-          expect(client.formatters_for_run).to eq([[:doc]])
-        end
-
-        context "and force_logger is set" do
-          before do
-            Chef::Config[:force_logger] = true
-          end
-
-          it "configures the :null formatter" do
-            expect(Chef::Config[:force_logger]).to be_truthy
-            expect(client.formatters_for_run).to eq([[:null]])
-          end
-
-        end
-
+      it "configures the :doc formatter" do
+        expect(client.formatters_for_run).to eq([[:doc]])
       end
 
-      context "and STDOUT is not a TTY" do
+      context "and force_logger is set" do
         before do
-          allow(STDOUT).to receive(:tty?).and_return(false)
+          Chef::Config[:force_logger] = true
         end
 
         it "configures the :null formatter" do
           expect(client.formatters_for_run).to eq([[:null]])
         end
+      end
 
-        context "and force_formatter is set" do
-          before do
-            Chef::Config[:force_formatter] = true
-          end
-          it "it configures the :doc formatter" do
-            expect(client.formatters_for_run).to eq([[:doc]])
-          end
+      context "and force_formatter is set" do
+        before do
+          Chef::Config[:force_formatter] = true
+        end
+
+        it "configures the :doc formatter" do
+          expect(client.formatters_for_run).to eq([[:doc]])
         end
       end
 
+      context "both are set" do
+        before do
+          Chef::Config[:force_formatter] = true
+          Chef::Config[:force_logger] = true
+        end
+
+        it "configures the :doc formatter" do
+          expect(client.formatters_for_run).to eq([[:doc]])
+        end
+      end
     end
 
     context "when a formatter is configured" do

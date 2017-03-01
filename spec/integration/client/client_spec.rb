@@ -294,10 +294,9 @@ chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z -l info", :cwd => chef_dir)
       expect(result.stdout).not_to include("Overridden Run List")
       expect(result.stdout).to include("Run List is [recipe[x::default]]")
-      #puts result.stdout
       result.error!
     end
 
@@ -445,7 +444,7 @@ control_group "control group without top level control" do
 end
       RECIPE
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::succeed'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::succeed' -l info", :cwd => chef_dir)
       expect(result.error?).to be_falsey
       expect(result.stdout).to include("Successfully executed all `control_group` blocks and contained examples")
     end

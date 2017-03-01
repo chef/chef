@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
 # Author:: Mark Mzyk (mmzyk@chef.io)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -192,48 +192,49 @@ describe Chef::Application do
       end
 
       shared_examples_for "log_level_is_auto" do
-        context "when STDOUT is to a tty" do
+        before do
+          allow(STDOUT).to receive(:tty?).and_return(true)
+        end
+
+        it "configures the log level to :warn" do
+          @app.configure_logging
+          expect(Chef::Log.level).to eq(:warn)
+        end
+
+        context "when force_formater is configured" do
           before do
-            allow(STDOUT).to receive(:tty?).and_return(true)
+            Chef::Config[:force_formatter] = true
           end
 
-          it "configures the log level to :warn" do
+          it "configures the log level to warn" do
             @app.configure_logging
             expect(Chef::Log.level).to eq(:warn)
           end
-
-          context "when force_logger is configured" do
-            before do
-              Chef::Config[:force_logger] = true
-            end
-
-            it "configures the log level to info" do
-              @app.configure_logging
-              expect(Chef::Log.level).to eq(:info)
-            end
-          end
         end
 
-        context "when STDOUT is not to a tty" do
+        context "when force_logger is configured" do
           before do
-            allow(STDOUT).to receive(:tty?).and_return(false)
+            Chef::Config[:force_logger] = true
           end
 
-          it "configures the log level to :info" do
+          it "configures the log level to info" do
             @app.configure_logging
             expect(Chef::Log.level).to eq(:info)
           end
+        end
 
-          context "when force_formatter is configured" do
-            before do
-              Chef::Config[:force_formatter] = true
-            end
-            it "sets the log level to :warn" do
-              @app.configure_logging
-              expect(Chef::Log.level).to eq(:warn)
-            end
+        context "when both are is configured" do
+          before do
+            Chef::Config[:force_logger] = true
+            Chef::Config[:force_formatter] = true
+          end
+
+          it "configures the log level to warn" do
+            @app.configure_logging
+            expect(Chef::Log.level).to eq(:warn)
           end
         end
+
       end
 
       context "when log_level is not set" do
