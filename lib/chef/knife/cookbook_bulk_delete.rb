@@ -44,9 +44,9 @@ class Chef
         cookbooks_names = all_cookbooks.keys.grep(regex)
         cookbooks_to_delete = cookbooks_names.inject({}) { |hash, name| hash[name] = all_cookbooks[name]; hash }
         ui.msg "All versions of the following cookbooks will be deleted:"
-        ui.msg ""
+        ui.msg "\n"
         ui.msg ui.list(cookbooks_to_delete.keys.sort, :columns_down)
-        ui.msg ""
+        ui.msg "\n"
 
         unless config[:yes]
           ui.confirm("Do you really want to delete these cookbooks")
@@ -55,7 +55,7 @@ class Chef
             ui.msg("Files that are common to multiple cookbooks are shared, so purging the files may break other cookbooks.")
             ui.confirm("Are you sure you want to purge files instead of just deleting the cookbooks")
           end
-          ui.msg ""
+          ui.msg "\n"
         end
 
         cookbooks_names.each do |cookbook_name|
