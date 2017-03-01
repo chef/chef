@@ -53,11 +53,19 @@ describe "knife serve", :workstation do
   end
 
   when_the_repository "also has one of each thing" do
-    before { file "nodes/x.json", { "foo" => "bar" } }
+    before do
+      file "nodes/x.json", { "foo" => "bar" }
+      file "roles/a_role_with_a_name.json", { "foo" => "bar" }
+    end
 
     it "knife serve serves up /nodes/x" do
       with_knife_serve do |api|
         expect(api.get("nodes/x")["name"]).to eq("x")
+      end
+    end
+    it "knife serve serves up /roles" do
+      with_knife_serve do |api|
+        expect(api.get("roles")).to have_key("a_role_with_a_name")
       end
     end
   end
