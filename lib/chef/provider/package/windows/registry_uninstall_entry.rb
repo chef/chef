@@ -41,7 +41,12 @@ class Chef
                       entry = reg.open(key, desired)
                       display_name = read_registry_property(entry, "DisplayName")
                       if display_name == package_name
-                        entries.push(RegistryUninstallEntry.new(hkey, key, entry))
+                        quiet_uninstall_string = RegistryUninstallEntry.read_registry_property(entry, 'QuietUninstallString')
+                        if quiet_uninstall_string.nil?
+                          entries.push(RegistryUninstallEntry.new(hkey, key, entry))
+                        else
+                          entries.push(RegistryUninstallEntry.new(hkey, key, entry, 'QuietUninstallString'))
+                        end
                       end
                     rescue ::Win32::Registry::Error => ex
                       Chef::Log.debug("Registry error opening key '#{key}' on node #{desired}: #{ex}")
@@ -62,14 +67,14 @@ class Chef
             nil
           end
 
-          def initialize(hive, key, registry_data)
+          def initialize(hive, key, registry_data, uninstall_key = 'UninstallString')
             Chef::Log.debug("Creating uninstall entry for #{hive}::#{key}")
             @hive = hive
             @key = key
             @data = registry_data
             @display_name = RegistryUninstallEntry.read_registry_property(registry_data, "DisplayName")
             @display_version = RegistryUninstallEntry.read_registry_property(registry_data, "DisplayVersion")
-            @uninstall_string = RegistryUninstallEntry.read_registry_property(registry_data, "UninstallString")
+            @uninstall_string = RegistryUninstallEntry.read_registry_property(registry_data, uninstall_key)
           end
 
           attr_reader :hive
