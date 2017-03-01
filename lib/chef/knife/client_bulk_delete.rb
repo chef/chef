@@ -95,9 +95,9 @@ class Chef
       end
 
       def print_clients(clients)
-        ui.msg("")
+        ui.msg("\n")
         ui.msg(ui.list(clients.keys.sort, :columns_down))
-        ui.msg("")
+        ui.msg("\n")
       end
     end
   end

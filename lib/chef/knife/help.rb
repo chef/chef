@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,12 +25,12 @@ class Chef
       def run
         if name_args.empty?
           ui.info "Usage: knife SUBCOMMAND (options)"
-          ui.msg ""
+          ui.msg "\n"
           # This command is atypical, the user is likely not interested in usage of
           # this command, but knife in general. So hack the banner.
           opt_parser.banner = "General Knife Options:"
           ui.msg opt_parser.to_s
-          ui.msg ""
+          ui.msg "\n"
           ui.info "For further help:"
           ui.info(<<-MOAR_HELP)
   knife help list             list help topics
@@ -76,7 +76,7 @@ MOAR_HELP
         end
         if possibilities.empty?
           ui.error "No help found for '#{query}'"
-          ui.msg ""
+          ui.msg "\n"
           print_help_topics
           exit 1
         elsif possibilities.size == 1
