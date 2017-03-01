@@ -24,33 +24,40 @@ describe "knife serve", :workstation do
   include KnifeSupport
   include AppServerSupport
 
+  def with_knife_serve
+    exception = nil
+    t = Thread.new do
+      begin
+        knife("serve --chef-zero-port=8890")
+      rescue
+        exception = $!
+      end
+    end
+    begin
+      Chef::Config.log_level = :debug
+      Chef::Config.chef_server_url = "http://localhost:8890"
+      Chef::Config.node_name = nil
+      Chef::Config.client_key = nil
+      api = Chef::ServerAPI.new
+      yield api
+    rescue
+      if exception
+        raise exception
+      else
+        raise
+      end
+    ensure
+      t.kill
+      sleep 0.5
+    end
+  end
+
   when_the_repository "also has one of each thing" do
     before { file "nodes/x.json", { "foo" => "bar" } }
 
     it "knife serve serves up /nodes/x" do
-      exception = nil
-      t = Thread.new do
-        begin
-          knife("serve --chef-zero-port=8890")
-        rescue
-          exception = $!
-        end
-      end
-      begin
-        Chef::Config.log_level = :debug
-        Chef::Config.chef_server_url = "http://localhost:8890"
-        Chef::Config.node_name = nil
-        Chef::Config.client_key = nil
-        api = Chef::ServerAPI.new
+      with_knife_serve do |api|
         expect(api.get("nodes/x")["name"]).to eq("x")
-      rescue
-        if exception
-          raise exception
-        else
-          raise
-        end
-      ensure
-        t.kill
       end
     end
   end
