@@ -136,7 +136,8 @@ The specific components of Chef related to a given platform - including (but not
         lieutenant = "jtimberman"
 
         maintainers = [
-          "tyler-ball"
+          "tyler-ball",
+          "mikedodge04"
         ]
 
       [Org.Components.Subsystems.Debian]
@@ -359,3 +360,9 @@ The specific components of Chef related to a given platform - including (but not
   [people.tduffield]
     Name = "Tom Duffield"
     GitHub = "tduffield"
+
+  [people.mikedodge04]
+    Name = "mikedodge04"
+    GitHub = "mikedodge04"
+    Twitter = "mikedodge04"
+    IRC = "mikedodge04"

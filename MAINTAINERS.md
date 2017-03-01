@@ -143,7 +143,6 @@ To mention the team, use @chef/client-os-x
 ### Maintainers
 
 * [Tyler Ball](https://github.com/tyler-ball)
-* [Mike Dodge](https://github.com/mikedodge04)
 
 ## Debian
 
