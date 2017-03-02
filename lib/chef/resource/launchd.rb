@@ -27,7 +27,7 @@ class Chef
       identity_attr :label
 
       default_action :create
-      allowed_actions :create, :create_if_missing, :delete, :enable, :disable
+      allowed_actions :create, :create_if_missing, :delete, :enable, :disable, :restart
 
       property :label, String, default: lazy { name }, identity: true
       property :backup, [Integer, FalseClass]

@@ -85,6 +85,10 @@ class Chef
         manage_service(:disable)
       end
 
+      def action_restart
+        manage_service(:restart)
+      end
+
       def manage_plist(action)
         if source
           res = cookbook_file_resource
