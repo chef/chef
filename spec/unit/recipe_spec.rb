@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -225,109 +225,6 @@ describe Chef::Recipe do
       end
     end
 
-    describe "when cloning resources" do
-      def expect_warning
-        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
-      end
-
-      it "should emit a 3694 warning when attributes change" do
-        recipe.zen_master "klopp" do
-          something "bvb"
-        end
-        expect_warning
-        recipe.zen_master "klopp" do
-          something "vbv"
-        end
-      end
-
-      it "should emit a 3694 warning when attributes change" do
-        recipe.zen_master "klopp" do
-          something "bvb"
-        end
-        expect_warning
-        recipe.zen_master "klopp" do
-          something "bvb"
-          peace true
-        end
-      end
-
-      it "should emit a 3694 warning when attributes change" do
-        recipe.zen_master "klopp" do
-          something "bvb"
-          peace true
-        end
-        expect_warning
-        recipe.zen_master "klopp" do
-          something "bvb"
-        end
-      end
-
-      it "should emit a 3694 warning for non-trivial attributes (unfortunately)" do
-        recipe.zen_master "klopp" do
-          something "bvb"
-        end
-        expect_warning
-        recipe.zen_master "klopp" do
-          something "bvb"
-        end
-      end
-
-      it "should not emit a 3694 warning for completely trivial resource cloning" do
-        recipe.zen_master "klopp"
-        expect(Chef).to_not receive(:deprecated)
-        recipe.zen_master "klopp"
-      end
-
-      it "should not emit a 3694 warning when attributes do not change and the first action is :nothing" do
-        recipe.zen_master "klopp" do
-          action :nothing
-        end
-        expect(Chef).to_not receive(:deprecated)
-        recipe.zen_master "klopp" do
-          action :score
-        end
-      end
-
-      it "should not emit a 3694 warning when attributes do not change and the second action is :nothing" do
-        recipe.zen_master "klopp" do
-          action :score
-        end
-        expect(Chef).to_not receive(:deprecated)
-        recipe.zen_master "klopp" do
-          action :nothing
-        end
-      end
-
-      class Coerced < Chef::Resource
-        resource_name :coerced
-        provides :coerced
-        default_action :whatever
-        property :package_name, [String, Array], coerce: proc { |x| [x].flatten }, name_property: true
-        def after_created
-          Array(action).each do |action|
-            run_action(action)
-          end
-        end
-        action :whatever do
-          package_name # unlazy the package_name
-        end
-      end
-
-      it "does not emit 3694 when the name_property is unlazied by running it at compile_time" do
-        recipe.coerced "string"
-        expect(Chef).to_not receive(:deprecated)
-        recipe.coerced "string"
-      end
-
-      it "validating resources via build_resource" do
-        expect do
-          recipe.build_resource(:remote_file, "klopp") do
-            source Chef::DelayedEvaluator.new { "http://chef.io" }
-          end end.to_not raise_error
-      end
-
-    end
-
     describe "creating resources via declare_resource" do
       let(:zm_resource) do
         recipe.declare_resource(:zen_master, "klopp") do
@@ -351,7 +248,6 @@ describe Chef::Recipe do
       end
 
       it "will insert another resource if create_if_missing is not set (cloned resource as of Chef-12)" do
-        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
         zm_resource
         recipe.declare_resource(:zen_master, "klopp")
         expect(run_context.resource_collection.count).to eql(2)
@@ -449,58 +345,6 @@ describe Chef::Recipe do
           end
         end.to raise_error(NoMethodError, "undefined method `this_method_doesnt_exist' for Chef::Resource::ZenMaster")
 
-      end
-
-    end
-
-    describe "resource cloning" do
-
-      let(:second_recipe) do
-        Chef::Recipe.new("second_cb", "second_recipe", run_context)
-      end
-
-      let(:original_resource) do
-        recipe.zen_master("klopp") do
-          something "bvb09"
-          action :score
-        end
-      end
-
-      let(:duplicated_resource) do
-        original_resource
-        second_recipe.zen_master("klopp") do
-          # attrs should be cloned
-        end
-      end
-
-      it "copies attributes from the first resource" do
-        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
-        expect(duplicated_resource.something).to eq("bvb09")
-      end
-
-      it "does not copy the action from the first resource" do
-        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
-        expect(original_resource.action).to eq([:score])
-        expect(duplicated_resource.action).to eq([:nothing])
-      end
-
-      it "does not copy the source location of the first resource" do
-        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
-        # sanity check source location:
-        expect(original_resource.source_line).to include(__FILE__)
-        expect(duplicated_resource.source_line).to include(__FILE__)
-        # actual test:
-        expect(original_resource.source_line).not_to eq(duplicated_resource.source_line)
-      end
-
-      it "sets the cookbook name on the cloned resource to that resource's cookbook" do
-        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
-        expect(duplicated_resource.cookbook_name).to eq("second_cb")
-      end
-
-      it "sets the recipe name on the cloned resource to that resoure's recipe" do
-        expect(Chef).to receive(:deprecated).with(:resource_cloning, /^Cloning resource attributes for zen_master\[klopp\]/)
-        expect(duplicated_resource.recipe_name).to eq("second_recipe")
       end
 
     end
