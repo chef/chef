@@ -18,6 +18,7 @@
 #
 
 require "win32/registry" if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+require "pry"
 
 class Chef
   class Provider
@@ -42,11 +43,7 @@ class Chef
                       display_name = read_registry_property(entry, "DisplayName")
                       if display_name == package_name
                         quiet_uninstall_string = RegistryUninstallEntry.read_registry_property(entry, "QuietUninstallString")
-                        if quiet_uninstall_string.nil?
-                          entries.push(RegistryUninstallEntry.new(hkey, key, entry))
-                        else
-                          entries.push(RegistryUninstallEntry.new(hkey, key, entry, "QuietUninstallString"))
-                        end
+                        entries.push(quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry))
                       end
                     rescue ::Win32::Registry::Error => ex
                       Chef::Log.debug("Registry error opening key '#{key}' on node #{desired}: #{ex}")
@@ -58,6 +55,11 @@ class Chef
               end
             end
             entries
+          end
+
+          def self.quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry)
+            return RegistryUninstallEntry.new(hkey, key, entry) if quiet_uninstall_string.nil?
+            RegistryUninstallEntry.new(hkey, key, entry, "QuietUninstallString")
           end
 
           def self.read_registry_property(data, property)
