@@ -41,11 +41,11 @@ class Chef
                       entry = reg.open(key, desired)
                       display_name = read_registry_property(entry, "DisplayName")
                       if display_name == package_name
-                        quiet_uninstall_string = RegistryUninstallEntry.read_registry_property(entry, 'QuietUninstallString')
+                        quiet_uninstall_string = RegistryUninstallEntry.read_registry_property(entry, "QuietUninstallString")
                         if quiet_uninstall_string.nil?
                           entries.push(RegistryUninstallEntry.new(hkey, key, entry))
                         else
-                          entries.push(RegistryUninstallEntry.new(hkey, key, entry, 'QuietUninstallString'))
+                          entries.push(RegistryUninstallEntry.new(hkey, key, entry, "QuietUninstallString"))
                         end
                       end
                     rescue ::Win32::Registry::Error => ex
@@ -67,7 +67,7 @@ class Chef
             nil
           end
 
-          def initialize(hive, key, registry_data, uninstall_key = 'UninstallString')
+          def initialize(hive, key, registry_data, uninstall_key = "UninstallString")
             Chef::Log.debug("Creating uninstall entry for #{hive}::#{key}")
             @hive = hive
             @key = key
