@@ -34,10 +34,6 @@ class Chef
         current_resource
       end
 
-      def whyrun_supported?
-        true
-      end
-
       def define_resource_requirements
         if creates && creates_relative? && !cwd
           # FIXME? move this onto the resource?

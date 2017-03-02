@@ -41,10 +41,6 @@ class Chef
           @current_resource
         end
 
-        def whyrun_supported?
-          true
-        end
-
         def shared_resource_requirements
           super
           requirements.assert(:all_actions) do |a|

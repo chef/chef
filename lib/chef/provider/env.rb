@@ -28,6 +28,10 @@ class Chef
 
       provides :env, os: "!windows"
 
+      def whyrun_supported?
+        false
+      end
+
       def initialize(new_resource, run_context)
         super
         @key_exists = true

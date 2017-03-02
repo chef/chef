@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) 2016-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,9 +34,8 @@ class Chef
         which "yum"
       end
 
-      def whyrun_supported?; true; end
-
-      def load_current_resource; end
+      def load_current_resource
+      end
 
       action :create do
         declare_resource(:template, "/etc/yum.repos.d/#{new_resource.repositoryid}.repo") do

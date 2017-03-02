@@ -43,10 +43,6 @@ class Chef
         @group_name_resolved = false
       end
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
         @current_resource = Chef::Resource::User.new(new_resource.name)
         current_resource.username(new_resource.username)

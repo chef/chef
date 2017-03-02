@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,10 +29,6 @@ class Chef
       provides :git
 
       def_delegator :new_resource, :destination, :cwd
-
-      def whyrun_supported?
-        true
-      end
 
       def load_current_resource
         @resolved_reference = nil

@@ -29,10 +29,6 @@ class Chef
       provides :osx_profile, os: "darwin"
       provides :osx_config_profile, os: "darwin"
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
         @current_resource = Chef::Resource::OsxProfile.new(new_resource.name)
         current_resource.profile_name(new_resource.profile_name)

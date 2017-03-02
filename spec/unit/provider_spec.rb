@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -91,8 +91,8 @@ describe Chef::Provider do
     expect(@provider.current_resource).to eql(nil)
   end
 
-  it "should not support whyrun by default" do
-    expect(@provider.send(:whyrun_supported?)).to eql(false)
+  it "should support whyrun by default" do
+    expect(@provider.send(:whyrun_supported?)).to eql(true)
   end
 
   it "should do nothing for check_resource_semantics! by default" do
