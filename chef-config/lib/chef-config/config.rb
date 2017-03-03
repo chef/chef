@@ -835,6 +835,15 @@ module ChefConfig
     default :normal_attribute_whitelist, nil
     default :override_attribute_whitelist, nil
 
+    # A blacklisted array of attributes you do not want to send over the
+    # wire when node data is saved
+    # The default setting is nil, which collects all data. Setting to [] will
+    # still collect all data for save
+    default :automatic_attribute_blacklist, nil
+    default :default_attribute_blacklist, nil
+    default :normal_attribute_blacklist, nil
+    default :override_attribute_blacklist, nil
+    
     # Pull down all the rubygems versions from rubygems and cache them the first time we do a gem_package or
     # chef_gem install.  This is memory-expensive and will grow without bounds, but will reduce network
     # round trips.

@@ -34,6 +34,7 @@ require "chef/mash"
 require "chef/json_compat"
 require "chef/search/query"
 require "chef/whitelist"
+require "chef/blacklist"
 
 class Chef
   class Node
@@ -663,6 +664,13 @@ class Chef
         unless whitelist.nil? # nil => save everything
           Chef::Log.info("Whitelisting #{level} node attributes for save.")
           data[level] = Chef::Whitelist.filter(data[level], whitelist)
+        end
+
+        blacklist_config_option = "#{level}_attribute_blacklist".to_sym
+        blacklist = Chef::Config[blacklist_config_option]
+        unless blacklist.nil? # nil => remove nothing
+          Chef::Log.info("Blacklisting #{level} node attributes for save")
+          data[level] = Chef::Blacklist.filter(data[level], blacklist)
         end
       end
       data

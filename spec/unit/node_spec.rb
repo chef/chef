@@ -1609,6 +1609,81 @@ describe Chef::Node do
         end
       end
 
+      context "with blacklisted attributes configured" do
+        it "should only save non-blacklisted attributes (and subattributes)" do
+          Chef::Config[:automatic_attribute_blacklist] = [
+            ["filesystem", "/dev/disk0s2"],
+            "network/interfaces/eth0",
+          ]
+
+          data = {
+            "automatic" => {
+              "filesystem" => {
+                "/dev/disk0s2"   => { "size" => "10mb" },
+                "map - autohome" => { "size" => "10mb" },
+              },
+              "network" => {
+                "interfaces" => {
+                  "eth0" => {},
+                  "eth1" => {},
+                },
+              },
+            },
+            "default" => {}, "normal" => {}, "override" => {}
+          }
+
+          selected_data = {
+            "automatic" => {
+              "filesystem" => {
+                "/dev/disk0s2"   => nil,
+                "map - autohome" => { "size" => "10mb" },
+              },
+              "network" => {
+                "interfaces" => {
+                  "eth0" => nil,
+                  "eth1" => {},
+                },
+              },
+            },
+            "default" => {}, "normal" => {}, "override" => {}
+          }
+          node.name("picky-monkey")
+          allow(node).to receive(:for_json).and_return(data)
+          expect(@rest).to receive(:put).with("nodes/picky-monkey", selected_data).and_return("foo")
+          node.save
+        end
+
+        it "should  save all attributes if the blacklist is empty" do
+          Chef::Config[:automatic_attribute_blacklist] = []
+
+          data = {
+            "automatic" => {
+              "filesystem" => {
+                "/dev/disk0s2"   => { "size" => "10mb" },
+                "map - autohome" => { "size" => "10mb" },
+              },
+            },
+            "default" => {}, "normal" => {}, "override" => {}
+          }
+
+          selected_data = {
+            "automatic" => {
+              "filesystem" => {
+                "/dev/disk0s2"   => { "size" => "10mb" },
+                "map - autohome" => { "size" => "10mb" },
+              },
+            },
+            "default" => {}, "normal" => {}, "override" => {}
+          }
+
+          node.name("picky-monkey")
+          allow(node).to receive(:for_json).and_return(data)
+          expect(@rest).to receive(:put).with("nodes/picky-monkey", selected_data).and_return("foo")
+          node.save
+        end
+      end
+
+
       context "when policyfile attributes are present" do
 
         before do
