@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 8944bea554c88a83696576463ca11354c5713170
+  revision: 56811d1726945c85b9d8c09a7954eb7e91bdcb10
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -37,7 +37,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: cd241b6cd73d2d103145c27bda1ca8700a777a4d
+  revision: ca3bdf456c80b68e48e6a380624640f8f85d7811
   specs:
     ohai (13.0.0)
       chef-config (>= 12.5.0.alpha.1, < 14)
@@ -54,7 +54,7 @@ GIT
 
 GIT
   remote: https://github.com/poise/halite.git
-  revision: b414e0995d12f8b563f6e881e2a9e25c4563c22e
+  revision: b0f1372ea7710e47b52c8c843597d21aaed5ebf6
   specs:
     halite (1.4.1.pre)
       bundler
@@ -64,7 +64,7 @@ GIT
 
 GIT
   remote: https://github.com/poise/poise-boiler.git
-  revision: 25dc08432ac88a3f017467f4ca3918503f761c0d
+  revision: 409326e84519cf1a212073aed2f5cd3a6963d347
   specs:
     poise-boiler (1.13.3.pre)
       bundler
@@ -97,7 +97,7 @@ GIT
 
 GIT
   remote: https://github.com/poise/poise.git
-  revision: 3da48ce71b4f7c70013fe455c3bf3643e8f94ead
+  revision: 62056469b3a19144f4bf4810abe14efa1c10463b
   specs:
     poise (2.7.3.pre)
       halite (~> 1.0)
@@ -195,7 +195,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (5.0.1)
+    activesupport (5.0.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (~> 0.7)
       minitest (~> 5.1)
@@ -547,7 +547,7 @@ GEM
       ffi-win32-extensions
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
-    winrm (2.1.2)
+    winrm (2.1.3)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)
