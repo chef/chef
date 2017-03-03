@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,14 +52,6 @@ class Chef
       resource.source_line = created_at
       resource.declared_type = type
 
-      # If we have a resource like this one, we want to steal its state
-      # This behavior is very counter-intuitive and should be removed.
-      # See CHEF-3694, https://tickets.opscode.com/browse/CHEF-3694
-      # Moved to this location to resolve CHEF-5052, https://tickets.opscode.com/browse/CHEF-5052
-      if prior_resource && Chef::Config[:resource_cloning]
-        resource.load_from(prior_resource)
-      end
-
       resource.cookbook_name = cookbook_name
       resource.recipe_name = recipe_name
       # Determine whether this resource is being created in the context of an enclosing Provider
@@ -79,15 +71,6 @@ class Chef
         end
       end
 
-      # emit a cloned resource warning if it is warranted
-      if prior_resource && Chef::Config[:resource_cloning]
-        if is_trivial_resource?(prior_resource) && identicalish_resources?(prior_resource, resource)
-          emit_harmless_cloning_debug
-        else
-          emit_cloned_resource_warning
-        end
-      end
-
       # Run optional resource hook
       resource.after_created
 
@@ -101,51 +84,6 @@ class Chef
       # then fall back to the older approach (Chef::Resource.const_get) for
       # backward compatibility
       @resource_class ||= Chef::Resource.resource_for_node(type, run_context.node)
-    end
-
-    def is_trivial_resource?(resource)
-      trivial_resource = resource_class.new(name, run_context)
-      # force un-lazy the name property on the created trivial resource
-      name_property = resource_class.properties.find { |sym, p| p.name_property? }
-      trivial_resource.send(name_property[0]) unless name_property.nil?
-      identicalish_resources?(trivial_resource, resource)
-    end
-
-    # this is an equality test specific to checking for 3694 cloning warnings
-    def identicalish_resources?(first, second)
-      skipped_ivars = [ :@source_line, :@cookbook_name, :@recipe_name, :@params, :@elapsed_time, :@declared_type ]
-      checked_ivars = ( first.instance_variables | second.instance_variables ) - skipped_ivars
-      non_matching_ivars = checked_ivars.reject do |iv|
-        if iv == :@action && ( [first.instance_variable_get(iv)].flatten == [:nothing] || [second.instance_variable_get(iv)].flatten == [:nothing] )
-          # :nothing action on either side of the comparison always matches
-          true
-        else
-          first.instance_variable_get(iv) == second.instance_variable_get(iv)
-        end
-      end
-      Chef::Log.debug("ivars which did not match with the prior resource: #{non_matching_ivars}")
-      non_matching_ivars.empty?
-    end
-
-    def emit_cloned_resource_warning
-      message = "Cloning resource attributes for #{resource} from prior resource"
-      message << "\nPrevious #{prior_resource}: #{prior_resource.source_line}" if prior_resource.source_line
-      message << "\nCurrent  #{resource}: #{resource.source_line}" if resource.source_line
-      Chef.deprecated(:resource_cloning, message)
-    end
-
-    def emit_harmless_cloning_debug
-      Chef::Log.debug("Harmless resource cloning from #{prior_resource}:#{prior_resource.source_line} to #{resource}:#{resource.source_line}")
-    end
-
-    def prior_resource
-      @prior_resource ||=
-        begin
-          key = "#{type}[#{name}]"
-          run_context.resource_collection.lookup_local(key)
-        rescue Chef::Exceptions::ResourceNotFound
-          nil
-        end
     end
 
   end

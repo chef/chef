@@ -66,6 +66,16 @@ class Chef
       end
     end
 
+    class InternalApi < Base
+      def id
+        0
+      end
+
+      def target
+        "internal_api.html"
+      end
+    end
+
     class JsonAutoInflate < Base
       def id
         1
@@ -148,6 +158,16 @@ class Chef
       end
     end
 
+    class DnfPackageAllowDowngrade < Base
+      def id
+        10
+      end
+
+      def target
+        "dnf_package_allow_downgrade.html"
+      end
+    end
+
     class PropertyNameCollision < Base
       def id
         11
@@ -198,35 +218,7 @@ class Chef
       end
     end
 
-    class ResourceCloning < Base
-      def id
-        3694
-      end
-
-      def target
-        "resource_cloning.html"
-      end
-    end
-
-    class InternalApi < Base
-      def id
-        0
-      end
-
-      def target
-        "internal_api.html"
-      end
-    end
-
-    class DnfPackageAllowDowngrade < Base
-      def id
-        10
-      end
-
-      def target
-        "dnf_package_allow_downgrade.html"
-      end
-    end
+    # id 3694 was deleted
 
     class Generic < Base
       def url
