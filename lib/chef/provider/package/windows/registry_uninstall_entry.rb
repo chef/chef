@@ -18,7 +18,6 @@
 #
 
 require "win32/registry" if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-require "pry"
 
 class Chef
   class Provider
