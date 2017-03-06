@@ -554,7 +554,6 @@ class Chef
       end
 
       def configure_ssh_gateway_identity
-        # config[:identity_file] is DEPRECATED in favor of :ssh_identity_file
         config[:ssh_gateway_identity] = get_stripped_unfrozen_value(config[:ssh_gateway_identity] || Chef::Config[:knife][:ssh_gateway_identity])
       end
 
