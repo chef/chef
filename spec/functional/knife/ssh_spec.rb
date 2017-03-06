@@ -246,6 +246,34 @@ describe Chef::Knife::Ssh do
       end
     end
 
+    context "when knife[:ssh_gateway_identity] is set" do
+      before do
+        setup_knife(["*:*", "uptime"])
+        Chef::Config[:knife][:ssh_gateway] = "user@ec2.public_hostname"
+        Chef::Config[:knife][:ssh_gateway_identity] = "~/.ssh/aws-gateway.rsa"
+      end
+
+      it "uses the ssh_gateway_identity file" do
+        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { :keys => "#{ENV['HOME']}/.ssh/aws-gateway.rsa", :keys_only => true })
+        @knife.run
+        expect(@knife.config[:ssh_gateway_identity]).to eq("~/.ssh/aws-gateway.rsa")
+      end
+    end
+
+    context "when -ssh-gateway-identity is provided and knife[:ssh_gateway] is set" do
+      before do
+        setup_knife(["--ssh-gateway-identity", "~/.ssh/aws-gateway.rsa", "*:*", "uptime"])
+        Chef::Config[:knife][:ssh_gateway] = "user@ec2.public_hostname"
+        Chef::Config[:knife][:ssh_gateway_identity] = nil
+      end
+
+      it "uses the ssh_gateway_identity file" do
+        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { :keys => "#{ENV['HOME']}/.ssh/aws-gateway.rsa", :keys_only => true })
+        @knife.run
+        expect(@knife.config[:ssh_gateway_identity]).to eq("~/.ssh/aws-gateway.rsa")
+      end
+    end
+
     context "when the gateway requires a password" do
       before do
         setup_knife(["-G user@ec2.public_hostname", "*:*", "uptime"])

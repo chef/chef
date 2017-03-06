@@ -92,6 +92,10 @@ class Chef
         :description => "The ssh gateway",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
 
+      option :ssh_gateway_identity,
+        :long => "--ssh-gateway-identity SSH_GATEWAY_IDENTITY",
+        :description => "The SSH identity file used for gateway authentication"
+
       option :forward_agent,
         :short => "-A",
         :long => "--forward-agent",
@@ -250,7 +254,10 @@ class Chef
         {}.tap do |opts|
           # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
           opts[:user] = user || config[:ssh_user] || ssh_config[:user]
-          if config[:ssh_identity_file]
+          if config[:ssh_gateway_identity]
+            opts[:keys] = File.expand_path(config[:ssh_gateway_identity])
+            opts[:keys_only] = true
+          elsif config[:ssh_identity_file]
             opts[:keys] = File.expand_path(config[:ssh_identity_file])
             opts[:keys_only] = true
           elsif config[:ssh_password]
@@ -546,6 +553,10 @@ class Chef
         config[:ssh_identity_file] = get_stripped_unfrozen_value(config[:ssh_identity_file] || config[:identity_file] || Chef::Config[:knife][:ssh_identity_file])
       end
 
+      def configure_ssh_gateway_identity
+        config[:ssh_gateway_identity] = get_stripped_unfrozen_value(config[:ssh_gateway_identity] || Chef::Config[:knife][:ssh_gateway_identity])
+      end
+
       def run
         @longest = 0
 
@@ -553,6 +564,7 @@ class Chef
         configure_password
         @password = config[:ssh_password] if config[:ssh_password]
         configure_ssh_identity_file
+        configure_ssh_gateway_identity
         configure_gateway
         configure_session
 
