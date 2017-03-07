@@ -19,7 +19,7 @@ task :ci_version_bump do
   begin
     require "rake"
 
-    Rake::Task["version:bump_minor"].invoke
+    Rake::Task["version:bump_patch"].invoke
     Rake::Task["version:update"].invoke
 
     # We want to log errors that occur in the following tasks, but we don't
