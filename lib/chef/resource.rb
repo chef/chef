@@ -138,9 +138,6 @@ class Chef
       @action = self.class.default_action
       @updated = false
       @updated_by_last_action = false
-      @ignore_failure = false
-      @retries = 0
-      @retry_delay = 2
       @not_if = []
       @only_if = []
       @source_line = nil
@@ -152,7 +149,6 @@ class Chef
       @guard_interpreter = nil
       @default_guard_interpreter = :default
       @elapsed_time = 0
-      @sensitive = false
     end
 
     #
@@ -436,10 +432,7 @@ class Chef
     # @param arg [Integer] The number of retries.
     # @return [Integer] The number of retries.
     #
-    def retries(arg = nil)
-      set_or_return(:retries, arg, kind_of: Integer)
-    end
-    attr_writer :retries
+    property :retries, Integer, default: 0, desired_state: false
 
     #
     # The number of seconds to wait between retries.  Default: 2.
@@ -447,10 +440,7 @@ class Chef
     # @param arg [Integer] The number of seconds to wait between retries.
     # @return [Integer] The number of seconds to wait between retries.
     #
-    def retry_delay(arg = nil)
-      set_or_return(:retry_delay, arg, kind_of: Integer)
-    end
-    attr_writer :retry_delay
+    property :retry_delay, Integer, default: 2, desired_state: false
 
     #
     # Whether to treat this resource's data as sensitive.  If set, no resource
@@ -459,10 +449,7 @@ class Chef
     # @param arg [Boolean] Whether this resource is sensitive or not.
     # @return [Boolean] Whether this resource is sensitive or not.
     #
-    def sensitive(arg = nil)
-      set_or_return(:sensitive, arg, :kind_of => [ TrueClass, FalseClass ])
-    end
-    attr_writer :sensitive
+    property :sensitive, [ TrueClass, FalseClass ], default: false, desired_state: false
 
     # ??? TODO unreferenced.  Delete?
     attr_reader :not_if_args
@@ -560,10 +547,7 @@ class Chef
     # @param arg [Boolean] Whether to ignore failures.
     # @return Whether this resource will ignore failures.
     #
-    def ignore_failure(arg = nil)
-      set_or_return(:ignore_failure, arg, kind_of: [ TrueClass, FalseClass ])
-    end
-    attr_writer :ignore_failure
+    property :ignore_failure, [ TrueClass, FalseClass ], default: false, desired_state: false
 
     #
     # Equivalent to #ignore_failure.

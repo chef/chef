@@ -132,15 +132,12 @@ shared_examples_for "an execute resource" do
     end
 
     it "should be true if the password is non-nil" do
-      expect(@resource.sensitive).to eq(false)
       @resource.password("we.funk!")
       expect(@resource.sensitive).to eq(true)
     end
 
     it "should be true if the password is non-nil but the value is explicitly set to false" do
-      expect(@resource.sensitive).to eq(false)
       @resource.password("we.funk!")
-      expect(@resource.sensitive).to eq(true)
       @resource.sensitive false
       expect(@resource.sensitive).to eq(true)
     end
