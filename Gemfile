@@ -34,7 +34,6 @@ end
 
 # These are used for external tests
 group(:integration) do
-  gem "chef-provisioning"
   gem "chef-sugar"
   gem "chefspec"
   gem "halite", git: "https://github.com/poise/halite.git"
