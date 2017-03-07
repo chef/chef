@@ -17,7 +17,7 @@
 #
 
 require "spec_helper"
-require "chef/chef_fs/file_system/operation_failed_error"
+require "chef/chef_fs/file_system/exceptions"
 
 describe Chef::ChefFS::FileSystem::OperationFailedError do
   context "message" do
