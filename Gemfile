@@ -53,7 +53,7 @@ group(:docgen) do
   gem "yard"
 end
 
-group(:maintenance) do
+group(:maintenance, :ci) do
   gem "tomlrb"
 
   # To sync maintainers with github
@@ -80,7 +80,7 @@ group(:development, :test) do
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 end
 
-group(:changelog) do
+group(:ci) do
   gem "github_changelog_generator", git: "https://github.com/chef/github-changelog-generator"
   gem "mixlib-install"
 end
