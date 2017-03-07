@@ -31,7 +31,7 @@ class Chef
       return data if blacklist.nil?
 
       blacklist.each do |item|
-	Chef::Log.warn("Removing item #{item}")
+        Chef::Log.warn("Removing item #{item}")
         remove_data(data, item)
       end
       data

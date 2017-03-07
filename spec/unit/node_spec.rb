@@ -1681,7 +1681,6 @@ describe Chef::Node do
         end
       end
 
-
       context "when policyfile attributes are present" do
 
         before do
