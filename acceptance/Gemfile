@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem "rake" # required to build some native extensions
-gem "chef-acceptance", github: "chef/chef-acceptance"
+gem "chef-acceptance", git: "https://github.com/chef/chef-acceptance.git"
 gem "kitchen-ec2"
 gem "inspec"
 gem "kitchen-vagrant"
