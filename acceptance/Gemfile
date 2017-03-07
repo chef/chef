@@ -14,3 +14,5 @@ gem "berkshelf"
 # Pin to 1.2.3 because current mixlib-install has a problem where unstable
 # packages are not always immediately available via the omnitruck API.
 gem "mixlib-install", "1.2.3"
+
+gem "chef-config", path: "../chef-config"
