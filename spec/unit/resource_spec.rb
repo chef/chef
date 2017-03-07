@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -192,7 +192,6 @@ describe Chef::Resource do
   describe "load_from" do
     let(:prior_resource) do
       prior_resource = Chef::Resource.new("funk")
-      prior_resource.supports(:funky => true)
       prior_resource.source_line
       prior_resource.allowed_actions << :funkytown
       prior_resource.action(:funkytown)
@@ -205,7 +204,6 @@ describe Chef::Resource do
 
     it "should load the attributes of a prior resource" do
       resource.load_from(prior_resource)
-      expect(resource.supports).to eq({ :funky => true })
     end
 
     it "should not inherit the action from the prior resource" do
@@ -481,7 +479,7 @@ describe Chef::Resource do
       let(:resource_class) { Class.new(Chef::Resource) { property :a, default: 1 } }
       it "should include the default in the hash" do
         expect(resource.to_hash.keys.sort).to eq([:a, :allowed_actions, :params, :provider, :updated,
-          :updated_by_last_action, :before, :supports,
+          :updated_by_last_action, :before,
           :noop, :ignore_failure, :name, :source_line,
           :action, :retries, :retry_delay, :elapsed_time,
           :default_guard_interpreter, :guard_interpreter, :sensitive].sort)
@@ -493,7 +491,7 @@ describe Chef::Resource do
     it "should convert to a hash" do
       hash = resource.to_hash
       expected_keys = [ :allowed_actions, :params, :provider, :updated,
-        :updated_by_last_action, :before, :supports,
+        :updated_by_last_action, :before,
         :noop, :ignore_failure, :name, :source_line,
         :action, :retries, :retry_delay, :elapsed_time,
         :default_guard_interpreter, :guard_interpreter, :sensitive ]
@@ -509,18 +507,6 @@ describe Chef::Resource do
       serialized_node = Chef::JSONCompat.from_json(json)
       expect(serialized_node).to be_a_kind_of(Chef::Resource)
       expect(serialized_node.name).to eql(resource.name)
-    end
-  end
-
-  describe "supports" do
-    it "should allow you to set what features this resource supports" do
-      support_hash = { :one => :two }
-      resource.supports(support_hash)
-      expect(resource.supports).to eql(support_hash)
-    end
-
-    it "should return the current value of supports" do
-      expect(resource.supports).to eq({})
     end
   end
 

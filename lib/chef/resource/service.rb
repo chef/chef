@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,8 @@ class Chef
       allowed_actions :enable, :disable, :start, :stop, :restart, :reload,
                       :mask, :unmask
 
+      property :supports, Hash, default: { restart: nil, reload: nil, status: nil }
+
       def initialize(name, run_context = nil)
         super
         @service_name = name
@@ -48,7 +50,6 @@ class Chef
         @timeout = nil
         @run_levels = nil
         @user = nil
-        @supports = { :restart => nil, :reload => nil, :status => nil }
       end
 
       def service_name(arg = nil)
@@ -201,17 +202,6 @@ class Chef
           :kind_of => [ String ]
         )
       end
-
-      def supports(args = {})
-        if args.is_a? Array
-          args.each { |arg| @supports[arg] = true }
-        elsif args.any?
-          @supports = args
-        else
-          @supports
-        end
-      end
-
     end
   end
 end

@@ -1,7 +1,7 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -87,11 +87,6 @@ describe Chef::Resource::Mount do
     expect(@resource.options).to be_a_kind_of(Array)
   end
 
-  it "should allow options attribute as an array" do
-    @resource.options %w{ro nosuid}
-    expect(@resource.options).to be_a_kind_of(Array)
-  end
-
   it "should allow options to be sent as a delayed evaluator" do
     @resource.options Chef::DelayedEvaluator.new { %w{rw noexec} }
     expect(@resource.options).to eql(%w{rw noexec})
@@ -141,13 +136,6 @@ describe Chef::Resource::Mount do
 
   it "should default all feature support to false" do
     support_hash = { :remount => false }
-    expect(@resource.supports).to eq(support_hash)
-  end
-
-  it "should allow you to set feature support as an array" do
-    support_array = [ :remount ]
-    support_hash = { :remount => true }
-    @resource.supports(support_array)
     expect(@resource.supports).to eq(support_hash)
   end
 

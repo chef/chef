@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -141,13 +141,6 @@ describe Chef::Resource::Service do
 
     it "should default all the feature support to nil" do
       support_hash = { :status => nil, :restart => nil, :reload => nil }
-      expect(@resource.supports).to eq(support_hash)
-    end
-
-    it "should allow you to set what features this resource supports as a array" do
-      support_array = [ :status, :restart ]
-      support_hash = { :status => true, :restart => true, :reload => nil }
-      @resource.supports(support_array)
       expect(@resource.supports).to eq(support_hash)
     end
 
