@@ -151,10 +151,6 @@ class Chef
           :kind_of => [ TrueClass, FalseClass ]
         )
       end
-
-      def supports(args = {})
-        raise Chef::Exceptions::User, "calling supports on a user resource is no longer supported in Chef-13, you probably need to use the manage_home or non_unique properties directly"
-      end
     end
   end
 end

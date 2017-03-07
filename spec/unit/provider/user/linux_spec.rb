@@ -46,11 +46,11 @@ describe Chef::Provider::User::Linux do
     end
 
     it "throws an error when trying to set supports manage_home: true" do
-      expect { @new_resource.supports( manage_home: true ) }.to raise_error(Chef::Exceptions::User)
+      expect { @new_resource.supports( manage_home: true ) }.to raise_error(NoMethodError)
     end
 
     it "throws an error when trying to set supports non_unique: true" do
-      expect { @new_resource.supports( non_unique: true ) }.to raise_error(Chef::Exceptions::User)
+      expect { @new_resource.supports( non_unique: true ) }.to raise_error(NoMethodError)
     end
 
     it "defaults manage_home to false" do

@@ -138,7 +138,6 @@ class Chef
       @action = self.class.default_action
       @updated = false
       @updated_by_last_action = false
-      @supports = {}
       @ignore_failure = false
       @retries = 0
       @retry_delay = 2
@@ -952,29 +951,6 @@ class Chef
     #
     def resource_name
       @resource_name || self.class.resource_name
-    end
-
-    #
-    # Sets a list of capabilities of the real resource.  For example, `:remount`
-    # (for filesystems) and `:restart` (for services).
-    #
-    # TODO Calling resource.supports({}) will not set this to empty; it will do
-    # a get instead.  That's wrong.
-    #
-    # @param args Hash{Symbol=>Boolean} If non-empty, sets the capabilities of
-    #   this resource. Default: {}
-    # @return Hash{Symbol=>Boolean} An array of things this resource supports.
-    #
-    def supports(args = {})
-      if args.any?
-        @supports = args
-      else
-        @supports
-      end
-    end
-
-    def supports=(args)
-      supports(args)
     end
 
     #

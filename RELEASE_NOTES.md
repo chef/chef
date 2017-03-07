@@ -49,3 +49,7 @@ PolicyFile users on Chef-13 should be using Chef Server 12.3 or higher.
 
 The remediation is removing the self-dependency `depends` line in the metadata.
 
+### Removed `supports` API from Chef::Resource
+
+Retained only for the service resource (where it makes some sense) and for the mount resource.
+
