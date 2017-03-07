@@ -1635,12 +1635,10 @@ describe Chef::Node do
           selected_data = {
             "automatic" => {
               "filesystem" => {
-                "/dev/disk0s2"   => nil,
                 "map - autohome" => { "size" => "10mb" },
               },
               "network" => {
                 "interfaces" => {
-                  "eth0" => nil,
                   "eth1" => {},
                 },
               },

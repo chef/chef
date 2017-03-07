@@ -57,7 +57,7 @@ class Chef
         return nil
       end
 
-      item_ref.del(parts[-1])
+      item_ref.delete(parts[-1])
       data
     end
 
