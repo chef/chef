@@ -30,7 +30,9 @@ class Chef
       allowed_actions :enable, :disable, :start, :stop, :restart, :reload,
                       :mask, :unmask
 
-      property :supports, Hash, default: { restart: nil, reload: nil, status: nil }
+      # this is a poor API please do not re-use this pattern
+      property :supports, Hash, default: { restart: nil, reload: nil, status: nil },
+                                coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
       def initialize(name, run_context = nil)
         super

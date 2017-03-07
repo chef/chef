@@ -31,7 +31,8 @@ class Chef
       allowed_actions :mount, :umount, :unmount, :remount, :enable, :disable
 
       # this is a poor API please do not re-use this pattern
-      property :supports, Hash, default: { remount: false }
+      property :supports, Hash, default: { remount: false },
+                                coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
       def initialize(name, run_context = nil)
         super
