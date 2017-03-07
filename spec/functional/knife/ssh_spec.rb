@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -254,7 +254,7 @@ describe Chef::Knife::Ssh do
       end
 
       it "uses the ssh_gateway_identity file" do
-        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { :keys => "#{ENV['HOME']}/.ssh/aws-gateway.rsa", :keys_only => true })
+        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { :keys => File.expand_path("#{ENV['HOME']}/.ssh/aws-gateway.rsa"), :keys_only => true })
         @knife.run
         expect(@knife.config[:ssh_gateway_identity]).to eq("~/.ssh/aws-gateway.rsa")
       end
@@ -268,7 +268,7 @@ describe Chef::Knife::Ssh do
       end
 
       it "uses the ssh_gateway_identity file" do
-        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { :keys => "#{ENV['HOME']}/.ssh/aws-gateway.rsa", :keys_only => true })
+        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { :keys => File.expand_path("#{ENV['HOME']}/.ssh/aws-gateway.rsa"), :keys_only => true })
         @knife.run
         expect(@knife.config[:ssh_gateway_identity]).to eq("~/.ssh/aws-gateway.rsa")
       end
