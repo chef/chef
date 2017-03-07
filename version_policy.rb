@@ -108,7 +108,7 @@ GEMS_ALLOWED_TO_FLOAT = [
 # our test phase a lot easier.
 #
 INSTALL_WITHOUT_GROUPS = %w{
-  changelog
+  ci
   development
   docgen
   guard

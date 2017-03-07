@@ -31,7 +31,7 @@ install:
   - bundler --version
   - SET BUNDLE_IGNORE_CONFIG=true
   - SET BUNDLE_FROZEN=1
-  - SET BUNDLE_WITHOUT=development:guard:maintenance:tools:integration:changelog:docgen:travis:style:omnibus_package:aix:bsd:linux:mac_os_x:solaris
+  - SET BUNDLE_WITHOUT=development:guard:maintenance:tools:integration:ci:docgen:travis:style:omnibus_package:aix:bsd:linux:mac_os_x:solaris
   - appveyor DownloadFile http://curl.haxx.se/ca/cacert.pem -FileName C:\cacert.pem
   - set SSL_CERT_FILE=C:\cacert.pem
 
