@@ -115,7 +115,7 @@ class Chef
         so = shell_out(cmd)
         so.run_command
         so.stdout.split(/\n/).map do |t|
-          if z = t.match(/^ +Key fingerprint = ([0-9A-F ]+)/)
+          if z = t.match(/^fpr:+([0-9A-F]+):/)
             z[1].split.join
           end
         end.compact
@@ -147,8 +147,10 @@ class Chef
       end
 
       def no_new_keys?(file)
-        installed_keys = extract_fingerprints_from_cmd("apt-key finger")
-        proposed_keys = extract_fingerprints_from_cmd("gpg --with-fingerprint #{file}")
+        # Now we are using the option --with-colons that works across old os versions
+        # as well as the latest (16.10). This for both `apt-key` and `gpg` commands
+        installed_keys = extract_fingerprints_from_cmd("apt-key adv --list-public-keys --with-fingerprint --with-colons")
+        proposed_keys = extract_fingerprints_from_cmd("gpg --with-fingerprint --with-colons #{file}")
         (installed_keys & proposed_keys).sort == proposed_keys.sort
       end
 
