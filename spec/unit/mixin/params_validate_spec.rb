@@ -369,7 +369,7 @@ describe Chef::Mixin::ParamsValidate do
   it "should set and return @name, then return @name for foo when argument is nil" do
     value = "meow"
     expect(@vo.set_or_return(:name, value, {}).object_id).to eq(value.object_id)
-    expect(@vo.set_or_return(:foo, nil, { :name_attribute => true }).object_id).to eq(value.object_id)
+    expect(@vo.set_or_return(:foo, nil, { :name_property => true }).object_id).to eq(value.object_id)
   end
 
   it "should allow DelayedEvaluator instance to be set for value regardless of restriction" do

@@ -95,28 +95,12 @@ class Chef
       options[:name] = options[:name].to_sym if options[:name]
       options[:instance_variable_name] = options[:instance_variable_name].to_sym if options[:instance_variable_name]
 
-      # Replace name_attribute with name_property
       if options.has_key?(:name_attribute)
-        # If we have both name_attribute and name_property and they differ, raise an error
-        if options.has_key?(:name_property)
-          raise ArgumentError, "Cannot specify both name_property and name_attribute together on property #{self}."
-        end
-        # replace name_property with name_attribute in place
-        options = Hash[options.map { |k, v| k == :name_attribute ? [ :name_property, v ] : [ k, v ] }]
-        @options = options
+        raise ArgumentError, "Please replace name_attribute with name_property on property #{self}"
       end
 
-      # Only pick the first of :default, :name_property and :name_attribute if
-      # more than one is specified.
-      if options.has_key?(:default) && options[:name_property]
-        if options[:default].nil? || options.keys.index(:name_property) < options.keys.index(:default)
-          options.delete(:default)
-          preferred_default = :name_property
-        else
-          options.delete(:name_property)
-          preferred_default = :default
-        end
-        Chef.deprecated(:custom_resource, "Cannot specify both default and name_property together on property #{self}. Only one (#{preferred_default}) will be obeyed. In Chef 13, this will become an error. Please remove one or the other from the property.")
+      if options.has_key?(:default) && options.has_key?(:name_property)
+        raise ArgumentError, "Cannot specify both default and name_property together on property #{self}"
       end
 
       # Validate the default early, so the user gets a good error message, and

@@ -134,29 +134,6 @@ describe "Chef::Resource.property" do
         end
       end
 
-      context "with property :x, name_attribute: false on the subclass" do
-        before do
-          subresource_class.class_eval do
-            property :x, name_attribute: false
-          end
-        end
-
-        it "x is no longer name_property" do
-          expect(subresource.x).to be_nil
-        end
-      end
-
-      context "with property :x, default: 10 on the subclass" do
-        before do
-          subresource_class.class_eval do
-            property :x, default: 10
-          end
-        end
-
-        it "x is no longer name_property" do
-          expect(subresource.x).to eq(10)
-        end
-      end
     end
   end
 
@@ -985,120 +962,67 @@ describe "Chef::Resource.property" do
     end
   end
 
-  %w{name_attribute name_property}.each do |name|
-    context "Chef::Resource::Property##{name}" do
-      with_property ":x, #{name}: true" do
-        it "defaults x to resource.name" do
-          expect(resource.x).to eq "blah"
-        end
-        it "does not pick up resource.name if set" do
-          expect(resource.x 10).to eq 10
-          expect(resource.x).to eq 10
-        end
-        it "binds to the latest resource.name when run" do
-          resource.name "foo"
-          expect(resource.x).to eq "foo"
-        end
-        it "caches resource.name" do
-          expect(resource.x).to eq "blah"
-          resource.name "foo"
-          expect(resource.x).to eq "blah"
-        end
+  context "Chef::Resource::Property#name_property" do
+    with_property ":x, name_property: true" do
+      it "defaults x to resource.name" do
+        expect(resource.x).to eq "blah"
       end
-
-      with_property ":x, #{name}: false" do
-        it "defaults to nil" do
-          expect(resource.x).to be_nil
-        end
+      it "does not pick up resource.name if set" do
+        expect(resource.x 10).to eq 10
+        expect(resource.x).to eq 10
       end
-
-      with_property ":x, #{name}: nil" do
-        it "defaults to nil" do
-          expect(resource.x).to be_nil
-        end
+      it "binds to the latest resource.name when run" do
+        resource.name "foo"
+        expect(resource.x).to eq "foo"
       end
-
-      context "default ordering deprecation warnings" do
-        it "emits a deprecation warning for property :x, default: 10, #{name}: true" do
-          expect { resource_class.property :x, :default => 10, name.to_sym => true }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Cannot specify both default and name_property together on property x of resource chef_resource_property_spec_(\d+). Only one \(default\) will be obeyed./
-        end
-        it "emits a deprecation warning for property :x, default: nil, #{name}: true" do
-          expect { resource_class.property :x, :default => nil, name.to_sym => true }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Cannot specify both default and name_property together on property x of resource chef_resource_property_spec_(\d+). Only one \(name_property\) will be obeyed./
-        end
-        it "emits a deprecation warning for property :x, #{name}: true, default: 10" do
-          expect { resource_class.property :x, name.to_sym => true, :default => 10 }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Cannot specify both default and name_property together on property x of resource chef_resource_property_spec_(\d+). Only one \(name_property\) will be obeyed./
-        end
-        it "emits a deprecation warning for property :x, #{name}: true, default: nil" do
-          expect { resource_class.property :x, name.to_sym => true, :default => nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Cannot specify both default and name_property together on property x of resource chef_resource_property_spec_(\d+). Only one \(name_property\) will be obeyed./
-        end
+      it "caches resource.name" do
+        expect(resource.x).to eq "blah"
+        resource.name "foo"
+        expect(resource.x).to eq "blah"
       end
+    end
 
-      context "default ordering" do
-        before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
-        with_property ":x, default: 10, #{name}: true" do
-          it "chooses default over #{name}" do
-            expect(resource.x).to eq 10
-          end
-        end
-        with_property ":x, default: nil, #{name}: true" do
-          it "chooses #{name} over default" do
-            expect(resource.x).to eq "blah"
-          end
-        end
-        with_property ":x, #{name}: true, default: 10" do
-          it "chooses #{name} over default" do
-            expect(resource.x).to eq "blah"
-          end
-        end
-        with_property ":x, #{name}: true, default: nil" do
-          it "chooses #{name} over default" do
-            expect(resource.x).to eq "blah"
-          end
-        end
+    with_property ":x, name_property: false" do
+      it "defaults to nil" do
+        expect(resource.x).to be_nil
       end
+    end
 
-      context "default ordering when #{name} is nil" do
-        with_property ":x, #{name}: nil, default: 10" do
-          it "chooses default" do
-            expect(resource.x).to eq 10
-          end
-        end
-        with_property ":x, default: 10, #{name}: nil" do
-          it "chooses default" do
-            expect(resource.x).to eq 10
-          end
-        end
+    with_property ":x, name_property: nil" do
+      it "defaults to nil" do
+        expect(resource.x).to be_nil
       end
+    end
 
-      context "default ordering when #{name} is false" do
-        with_property ":x, #{name}: false, default: 10" do
-          it "chooses default" do
-            expect(resource.x).to eq 10
-          end
-        end
-        with_property ":x, default: 10, #{name}: nil" do
-          it "chooses default" do
-            expect(resource.x).to eq 10
-          end
-        end
+    context "default ordering deprecation warnings" do
+      it "emits a deprecation warning for property :x, default: 10, name_property: true" do
+        expect { resource_class.property :x, :default => 10, :name_property => true }.to raise_error Chef::Exceptions::ArgumentError,
+          /Cannot specify both default and name_property together on property x of resource chef_resource_property_spec_(\d+)/
       end
-
+      it "emits a deprecation warning for property :x, default: nil, name_property: true" do
+        expect { resource_class.property :x, :default => nil, :name_property => true }.to raise_error Chef::Exceptions::ArgumentError,
+          /Cannot specify both default and name_property together on property x of resource chef_resource_property_spec_(\d+)/
+      end
+      it "emits a deprecation warning for property :x, name_property: true, default: 10" do
+        expect { resource_class.property :x, :name_property => true, :default => 10 }.to raise_error Chef::Exceptions::ArgumentError,
+          /Cannot specify both default and name_property together on property x of resource chef_resource_property_spec_(\d+)/
+      end
+      it "emits a deprecation warning for property :x, name_property: true, default: nil" do
+        expect { resource_class.property :x, :name_property => true, :default => nil }.to raise_error Chef::Exceptions::ArgumentError,
+          /Cannot specify both default and name_property together on property x of resource chef_resource_property_spec_(\d+)/
+      end
     end
   end
 
   it "raises an error if both name_property and name_attribute are specified" do
     expect { resource_class.property :x, :name_property => false, :name_attribute => 1 }.to raise_error ArgumentError,
-      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+      /Please replace name_attribute with name_property on property x of resource chef_resource_property_spec_(\d+)/
     expect { resource_class.property :x, :name_property => false, :name_attribute => nil }.to raise_error ArgumentError,
-      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+      /Please replace name_attribute with name_property on property x of resource chef_resource_property_spec_(\d+)/
     expect { resource_class.property :x, :name_property => false, :name_attribute => false }.to raise_error ArgumentError,
-      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+      /Please replace name_attribute with name_property on property x of resource chef_resource_property_spec_(\d+)/
     expect { resource_class.property :x, :name_property => true, :name_attribute => true }.to raise_error ArgumentError,
-      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+      /Please replace name_attribute with name_property on property x of resource chef_resource_property_spec_(\d+)/
   end
 
   context "property_type" do
