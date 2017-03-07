@@ -38,7 +38,7 @@ class Chef
     end
 
     # Walk the data according to the keys provided by the blacklisted item
-    # and add the data to the whitelisting result.
+    # to get a reference to the item that will be removed.
     def self.remove_data(data, item)
       parts = to_array(item)
 
@@ -57,7 +57,7 @@ class Chef
         return nil
       end
 
-      item_ref[parts[-1]] = nil
+      item_ref.del(parts[-1])
       data
     end
 
