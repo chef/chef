@@ -101,8 +101,9 @@ class Chef
           end
 
           def _read_json
-              # Minimize the value (get rid of defaults) so the results don't look terrible
-            root.get_json(api_path)
+            # Minimize the value (get rid of defaults) so the results don't look terrible
+            # For node objects, just assume they differ - too expensive to fetch and compare
+            parent.api_path == 'nodes' ? JSON.parse('{}') : root.get_json(api_path)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading: #{e}")
           rescue Net::HTTPServerException => e
