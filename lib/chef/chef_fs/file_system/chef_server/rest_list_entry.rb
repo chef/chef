@@ -30,6 +30,7 @@ class Chef
           def initialize(name, parent, exists = nil)
             super(name, parent)
             @exists = exists
+            @target_object = nil
           end
 
           def data_handler
@@ -69,7 +70,7 @@ class Chef
           def exists?
             if @exists.nil?
               begin
-                rest.get(api_path)
+                @target_object = rest.get(api_path)
                 @exists = true
               rescue Net::HTTPServerException => e
                 if e.response.code == "404"
@@ -102,8 +103,7 @@ class Chef
 
           def _read_json
             # Minimize the value (get rid of defaults) so the results don't look terrible
-            # For node objects, just assume they differ - too expensive to fetch and compare
-            parent.api_path == 'nodes' ? JSON.parse('{}') : root.get_json(api_path)
+            @target_object ? JSON.parse(@target_object) : root.get_json(api_path)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading: #{e}")
           rescue Net::HTTPServerException => e
@@ -151,6 +151,9 @@ class Chef
             end
             other_value = minimize_value(other_value)
             other_value_json = Chef::JSONCompat.to_json_pretty(other_value)
+
+            # free up cache - it will be hydrated on next check for exists?
+            @target_object = nil
 
             [ value == other_value, value_json, other_value_json ]
           end
