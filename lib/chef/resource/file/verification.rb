@@ -106,15 +106,10 @@ class Chef
         # We reuse Chef::GuardInterpreter in order to support
         # the same set of options that the not_if/only_if blocks do
         def verify_command(path, opts)
-          # First implementation interpolated `file`; docs & RFC claim `path`
-          # is interpolated. Until `file` can be deprecated, interpolate both.
           if @command.include?("%{file}")
-            Chef.deprecated(:verify_file,
-              "%{file} is deprecated in verify command and will not be "\
-              "supported in Chef 13. Please use %{path} instead."
-            )
+            raise ArgumentError, "The %{file} expansion for verify commands has been removed. Please use %{path} instead."
           end
-          command = @command % { :file => path, :path => path }
+          command = @command % { :path => path }
           interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)
           interpreter.evaluate
         end
