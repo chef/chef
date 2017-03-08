@@ -1,7 +1,18 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.24](https://github.com/chef/chef/tree/v13.0.24) (2017-03-08)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.24)
+## [v13.0.25](https://github.com/chef/chef/tree/v13.0.25) (2017-03-08)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.25...v13.0.25)
+
+**Closed issues:**
+
+- apt\_repository can't identify key fingerprints when gnupg 2.1.x is used [\#5831](https://github.com/chef/chef/issues/5831)
+
+**Merged pull requests:**
+
+- Fix apt\_repository for latest os version 16.10 [\#5874](https://github.com/chef/chef/pull/5874) ([afiune](https://github.com/afiune))
+
+## [v13.0.25](https://github.com/chef/chef/tree/v13.0.25) (2017-03-08)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.25)
 
 **Closed issues:**
 
