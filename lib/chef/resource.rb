@@ -1478,6 +1478,13 @@ class Chef
 
     # @api private
     def lookup_provider_constant(name, action = :nothing)
+      # XXX: "name" is probably a poor choice of name here, ideally this would be nil, but we need to
+      # fix resources so that nil or empty names work (also solving the apt_update "doesn't matter one bit"
+      # problem).  WARNING: this string is not a public API and should not be referenced (e.g. in provides blocks)
+      # and may change at any time.  If you've found this comment you're also probably very lost and should maybe
+      # consider using `declare_resource :whatever` instead of trying to set `provider :whatever` on a resource, or in some
+      # other way reconsider what you're trying to do, since you're likely trying to force a bad design that we
+      # can't/won't support.
       self.class.resource_for_node(name, node).new("name", run_context).provider_for_action(action).class
     end
 
