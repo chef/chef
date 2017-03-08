@@ -480,9 +480,9 @@ describe Chef::Resource do
       it "should include the default in the hash" do
         expect(resource.to_hash.keys.sort).to eq([:a, :allowed_actions, :params, :provider, :updated,
           :updated_by_last_action, :before,
-          :noop, :ignore_failure, :name, :source_line,
-          :action, :retries, :retry_delay, :elapsed_time,
-          :default_guard_interpreter, :guard_interpreter, :sensitive].sort)
+          :noop, :name, :source_line,
+          :action, :elapsed_time,
+          :default_guard_interpreter, :guard_interpreter].sort)
         expect(resource.to_hash[:name]).to eq "funk"
         expect(resource.to_hash[:a]).to eq 1
       end
@@ -492,9 +492,9 @@ describe Chef::Resource do
       hash = resource.to_hash
       expected_keys = [ :allowed_actions, :params, :provider, :updated,
         :updated_by_last_action, :before,
-        :noop, :ignore_failure, :name, :source_line,
-        :action, :retries, :retry_delay, :elapsed_time,
-        :default_guard_interpreter, :guard_interpreter, :sensitive ]
+        :noop, :name, :source_line,
+        :action, :elapsed_time,
+        :default_guard_interpreter, :guard_interpreter ]
       expect(hash.keys - expected_keys).to eq([])
       expect(expected_keys - hash.keys).to eq([])
       expect(hash[:name]).to eql("funk")
