@@ -81,24 +81,18 @@ describe Chef::Resource::File::Verification do
         end
       end
 
-      it "substitutes \%{file} with the path" do
+      it "raises an error when \%{file} is used" do
         test_command = platform_specific_verify_command("file")
-        v = Chef::Resource::File::Verification.new(parent_resource, test_command, {})
-        expect(v.verify(temp_path)).to eq(true)
+        expect do
+          Chef::Resource::File::Verification.new(parent_resource, test_command, {}).verify(temp_path)
+        end.to raise_error(ArgumentError)
       end
 
-      it "warns about deprecation when \%{file} is used" do
-        expect(Chef).to receive(:deprecated).with(:verify_file, /%{file} is deprecated/)
-        test_command = platform_specific_verify_command("file")
-        Chef::Resource::File::Verification.new(parent_resource, test_command, {})
-          .verify(temp_path)
-      end
-
-      it "does not warn about deprecation when \%{file} is not used" do
-        expect(Chef::Log).to_not receive(:deprecation)
+      it "does not raise an error when \%{file} is not used" do
         test_command = platform_specific_verify_command("path")
-        Chef::Resource::File::Verification.new(parent_resource, test_command, {})
-          .verify(temp_path)
+        expect do
+          Chef::Resource::File::Verification.new(parent_resource, test_command, {}).verify(temp_path)
+        end.to_not raise_error
       end
 
       it "substitutes \%{path} with the path" do
