@@ -45,20 +45,6 @@ describe Chef::Deprecation do
     add_deprecation_warnings_for(DeprecatedMethods.instance_methods)
   end
 
-  method_snapshot_file = File.join(CHEF_SPEC_DATA, "file-providers-method-snapshot-chef-11-4.json")
-  method_snapshot = Chef::JSONCompat.parse(File.open(method_snapshot_file).read())
-
-  method_snapshot.each do |class_name, old_methods|
-    class_object = class_from_string(class_name)
-    current_methods = class_object.public_instance_methods.map(&:to_sym)
-
-    it "defines all methods on #{class_object} that were available in 11.0" do
-      old_methods.each do |old_method|
-        expect(current_methods).to include(old_method.to_sym)
-      end
-    end
-  end
-
   context "when Chef::Config[:treat_deprecation_warnings_as_errors] is off" do
     before do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
