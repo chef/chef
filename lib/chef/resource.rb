@@ -130,7 +130,6 @@ class Chef
     def initialize(name, run_context = nil)
       name(name) unless name.nil?
       @run_context = run_context
-      @noop = nil
       @before = nil
       @params = Hash.new
       @provider = nil
@@ -450,11 +449,6 @@ class Chef
     # @return [Boolean] Whether this resource is sensitive or not.
     #
     property :sensitive, [ TrueClass, FalseClass ], default: false, desired_state: false
-
-    # ??? TODO unreferenced.  Delete?
-    attr_reader :not_if_args
-    # ??? TODO unreferenced.  Delete?
-    attr_reader :only_if_args
 
     #
     # The time it took (in seconds) to run the most recently-run action.  Not
@@ -946,21 +940,6 @@ class Chef
     end
 
     #
-    # The DSL name of this resource (e.g. `package` or `yum_package`)
-    #
-    # @return [String] The DSL name of this resource.
-    #
-    # @deprecated Use resource_name instead.
-    #
-    def self.dsl_name
-      Chef.deprecated(:custom_resource, "Resource.dsl_name is deprecated and will be removed in Chef 13.  Use resource_name instead.")
-      if name
-        name = self.name.split("::")[-1]
-        convert_to_snake_case(name)
-      end
-    end
-
-    #
     # The display name of this resource type, for printing purposes.
     #
     # This also automatically calls "provides" to provide DSL with the given
@@ -1011,29 +990,6 @@ class Chef
     def self.use_automatic_resource_name
       automatic_name = convert_to_snake_case(name.split("::")[-1])
       resource_name automatic_name
-    end
-
-    #
-    # The module where Chef should look for providers for this resource.
-    # The provider for `MyResource` will be looked up using
-    # `provider_base::MyResource`.  Defaults to `Chef::Provider`.
-    #
-    # @param arg [Module] The module containing providers for this resource
-    # @return [Module] The module containing providers for this resource
-    #
-    # @example
-    #   class MyResource < Chef::Resource
-    #     provider_base Chef::Provider::Deploy
-    #     # ...other stuff
-    #   end
-    #
-    # @deprecated Use `provides` on the provider, or `provider` on the resource, instead.
-    #
-    def self.provider_base(arg = nil)
-      if arg
-        Chef.deprecated(:custom_resource, "Resource.provider_base is deprecated and will be removed in Chef 13. Use provides on the provider, or provider on the resource, instead.")
-      end
-      @provider_base ||= arg || Chef::Provider
     end
 
     #
@@ -1445,24 +1401,6 @@ class Chef
       provider
     end
 
-    # ??? TODO Seems unused.  Delete?
-    def noop(tf = nil)
-      if !tf.nil?
-        raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
-        @noop = tf
-      end
-      @noop
-    end
-
-    # TODO Seems unused.  Delete?
-    def is(*args)
-      if args.size == 1
-        args.first
-      else
-        args
-      end
-    end
-
     #
     # Preface an exception message with generic Resource information.
     #
@@ -1540,13 +1478,7 @@ class Chef
 
     # @api private
     def lookup_provider_constant(name, action = :nothing)
-      self.class.provider_base.const_get(convert_to_class_name(name.to_s))
-    rescue NameError => e
-      if e.to_s =~ /#{Regexp.escape(self.class.provider_base.to_s)}/
-        raise ArgumentError, "No provider found to match '#{name}'"
-      else
-        raise e
-      end
+      self.class.resource_for_node(name, node).new("name", run_context).provider_for_action(action).class
     end
 
     module DeprecatedLWRPClass

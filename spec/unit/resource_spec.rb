@@ -231,14 +231,6 @@ describe Chef::Resource do
     end
   end
 
-  describe "noop" do
-    it "should accept true or false for noop" do
-      expect { resource.noop true }.not_to raise_error
-      expect { resource.noop false }.not_to raise_error
-      expect { resource.noop "eat it" }.to raise_error(ArgumentError)
-    end
-  end
-
   describe "notifies" do
     it "should make notified resources appear in the actions hash" do
       run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
@@ -450,18 +442,6 @@ describe Chef::Resource do
     end
   end
 
-  describe "is" do
-    it "should return the arguments passed with 'is'" do
-      zm = Chef::Resource::ZenMaster.new("coffee")
-      expect(zm.is("one", "two", "three")).to eq(%w{one two three})
-    end
-
-    it "should allow arguments preceded by is to methods" do
-      resource.noop(resource.is(true))
-      expect(resource.noop).to eql(true)
-    end
-  end
-
   describe "to_json" do
     it "should serialize to json" do
       json = resource.to_json
@@ -480,7 +460,7 @@ describe Chef::Resource do
       it "should include the default in the hash" do
         expect(resource.to_hash.keys.sort).to eq([:a, :allowed_actions, :params, :provider, :updated,
           :updated_by_last_action, :before,
-          :noop, :name, :source_line,
+          :name, :source_line,
           :action, :elapsed_time,
           :default_guard_interpreter, :guard_interpreter].sort)
         expect(resource.to_hash[:name]).to eq "funk"
@@ -492,7 +472,7 @@ describe Chef::Resource do
       hash = resource.to_hash
       expected_keys = [ :allowed_actions, :params, :provider, :updated,
         :updated_by_last_action, :before,
-        :noop, :name, :source_line,
+        :name, :source_line,
         :action, :elapsed_time,
         :default_guard_interpreter, :guard_interpreter ]
       expect(hash.keys - expected_keys).to eq([])
@@ -569,31 +549,6 @@ describe Chef::Resource do
       expect { retriable_resource.run_action(:purr) }.to raise_error(RuntimeError)
       expect(retriable_resource.retries).to eq(3)
     end
-  end
-
-  describe "setting the base provider class for the resource" do
-
-    it "defaults to Chef::Provider for the base class" do
-      expect(Chef::Resource.provider_base).to eq(Chef::Provider)
-    end
-
-    it "allows the base provider to be overridden" do
-      Chef::Config.treat_deprecation_warnings_as_errors(false)
-      class OverrideProviderBaseTest < Chef::Resource
-        provider_base Chef::Provider::Package
-      end
-
-      expect(OverrideProviderBaseTest.provider_base).to eq(Chef::Provider::Package)
-    end
-
-    it "warns when setting provider_base" do
-      expect do
-        class OverrideProviderBaseTest2 < Chef::Resource
-          provider_base Chef::Provider::Package
-        end
-      end.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
-    end
-
   end
 
   it "runs an action by finding its provider, loading the current resource and then running the action" do
