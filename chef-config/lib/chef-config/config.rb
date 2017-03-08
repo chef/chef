@@ -606,13 +606,10 @@ module ChefConfig
       end
     end
 
-    # As of Chef 11.0, version "1" is the default encrypted data bag item
-    # format. Version "2" is available which adds encrypt-then-mac protection.
-    # To maintain compatibility, versions other than 1 must be opt-in.
+    # As of Chef 13.0, version "3" is the default encrypted data bag item
+    # format.
     #
-    # Set this to `2` if you have chef-client 11.6.0+ in your infrastructure.
-    # Set this to `3` if you have chef-client 11.?.0+, ruby 2 and OpenSSL >= 1.0.1 in your infrastructure. (TODO)
-    default :data_bag_encrypt_version, 1
+    default :data_bag_encrypt_version, 3
 
     # When reading data bag items, any supported version is accepted. However,
     # if all encrypted data bags have been generated with the version 2 format,
