@@ -23,8 +23,6 @@ require "chef/resource/cookbook_file"
 require "chef/mixin/file_class"
 require "chef/platform/query_helpers"
 require "chef/util/path_helper"
-require "chef/deprecation/warnings"
-require "chef/deprecation/provider/remote_directory"
 
 require "forwardable"
 
@@ -267,16 +265,6 @@ class Chef
 
         res
       end
-
-      #
-      # Add back deprecated methods and aliases that are internally unused and should be removed in Chef-13
-      #
-      extend Chef::Deprecation::Warnings
-      include Chef::Deprecation::Provider::RemoteDirectory
-      add_deprecation_warnings_for(Chef::Deprecation::Provider::RemoteDirectory.instance_methods)
-
-      alias_method :resource_for_directory, :directory_resource
-      add_deprecation_warnings_for([:resource_for_directory])
 
     end
   end

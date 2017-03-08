@@ -17,18 +17,12 @@
 #
 
 require "chef/provider/file"
-require "chef/deprecation/provider/cookbook_file"
-require "chef/deprecation/warnings"
 
 class Chef
   class Provider
     class CookbookFile < Chef::Provider::File
 
       provides :cookbook_file
-
-      extend Chef::Deprecation::Warnings
-      include Chef::Deprecation::Provider::CookbookFile
-      add_deprecation_warnings_for(Chef::Deprecation::Provider::CookbookFile.instance_methods)
 
       def initialize(new_resource, run_context)
         @content_class = Chef::Provider::CookbookFile::Content
