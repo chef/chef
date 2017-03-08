@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 56811d1726945c85b9d8c09a7954eb7e91bdcb10
+  revision: 5cdb74dc17a96cac30a6a4dc1381d3d3c7b2fb4f
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -205,13 +205,13 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.7.0)
     ast (2.3.0)
-    aws-sdk (2.8.0)
-      aws-sdk-resources (= 2.8.0)
-    aws-sdk-core (2.8.0)
+    aws-sdk (2.8.1)
+      aws-sdk-resources (= 2.8.1)
+    aws-sdk-core (2.8.1)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.8.0)
-      aws-sdk-core (= 2.8.0)
+    aws-sdk-resources (2.8.1)
+      aws-sdk-core (= 2.8.1)
     aws-sigv4 (1.0.0)
     backports (3.6.8)
     binding_of_caller (0.7.2)
@@ -221,15 +221,6 @@ GEM
     chef-api (0.7.0)
       logify (~> 0.1)
       mime-types
-    chef-provisioning (2.1.1)
-      cheffish (~> 4.0)
-      inifile (>= 2.0.2)
-      mixlib-install (>= 1.0, < 3.0)
-      net-scp (~> 1.0)
-      net-ssh (>= 2.9, < 5.0)
-      net-ssh-gateway (~> 1.2)
-      winrm (~> 2.0)
-      winrm-fs (~> 1.0)
     chef-sugar (3.4.0)
     chef-zero (5.3.0)
       ffi-yajl (~> 2.2)
@@ -237,7 +228,7 @@ GEM
       mixlib-log (~> 1.3)
       rack (~> 2.0)
       uuidtools (~> 2.1)
-    cheffish (4.1.1)
+    cheffish (5.0.1)
       chef-zero (~> 5.0)
       net-ssh
     chefspec (5.4.0)
@@ -280,8 +271,8 @@ GEM
       faraday (>= 0.7.4, < 1.0)
     fauxhai (3.10.0)
       net-ssh
-    ffi (1.9.17)
-    ffi (1.9.17-x86-mingw32)
+    ffi (1.9.18)
+    ffi (1.9.18-x86-mingw32)
     ffi-win32-extensions (1.0.3)
       ffi
     ffi-yajl (2.3.0)
@@ -317,7 +308,6 @@ GEM
       domain_name (~> 0.5)
     httpclient (2.8.3)
     i18n (0.8.1)
-    inifile (3.0.0)
     iniparse (1.4.2)
     ipaddress (0.8.3)
     jmespath (1.3.1)
@@ -492,18 +482,18 @@ GEM
       logify (~> 0.2)
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    test-kitchen (1.15.0)
+    test-kitchen (1.16.0)
       mixlib-install (>= 1.2, < 3.0)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
       net-ssh (>= 2.9, < 5.0)
       net-ssh-gateway (~> 1.2)
       safe_yaml (~> 1.0)
-      thor (~> 0.18)
-    thor (0.19.4)
+      thor (~> 0.19, < 0.19.2)
+    thor (0.19.1)
     thread_safe (0.3.6)
     tomlrb (1.2.3)
-    travis (1.8.6)
+    travis (1.8.8)
       backports
       faraday (~> 0.9)
       faraday_middleware (~> 0.9, >= 0.9.1)
@@ -580,7 +570,6 @@ DEPENDENCIES
   bundler-audit!
   chef!
   chef-config!
-  chef-provisioning
   chef-sugar
   cheffish
   chefspec
