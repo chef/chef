@@ -39,28 +39,6 @@ class Chef
         @rest ||= Chef::ServerAPI.new(@url || @config[:chef_server_url])
       end
 
-      # Backwards compatability for cookbooks.
-      # This can be removed in Chef > 12.
-      def partial_search(type, query = "*:*", *args, &block)
-        Chef::Log.warn(<<-WARNDEP)
-DEPRECATED: The 'partial_search' API is deprecated and will be removed in
-future releases. Please use 'search' with a :filter_result argument to get
-partial search data.
-WARNDEP
-
-        if !args.empty? && args.first.is_a?(Hash)
-          # partial_search uses :keys instead of :filter_result for
-          # result filtering.
-          args_h = args.first.dup
-          args_h[:filter_result] = args_h[:keys]
-          args_h.delete(:keys)
-
-          search(type, query, args_h, &block)
-        else
-          search(type, query, *args, &block)
-        end
-      end
-
       #
       # New search input, designed to be backwards compatible with the old method signature
       # 'type' and 'query' are the same as before, args now will accept either a Hash of
