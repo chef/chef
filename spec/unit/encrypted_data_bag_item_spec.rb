@@ -39,7 +39,7 @@ describe Chef::EncryptedDataBagItem::Encryptor do
   let(:key) { "passwd" }
 
   it "encrypts to format version 1 by default" do
-    expect(encryptor).to be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor)
+    expect(encryptor).to be_a_instance_of(Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor)
   end
 
   describe "generating a random IV" do
@@ -66,8 +66,8 @@ describe Chef::EncryptedDataBagItem::Encryptor do
       final_data = encryptor.for_encrypted_item
       expect(final_data["encrypted_data"]).to eq encryptor.encrypted_data
       expect(final_data["iv"]).to eq Base64.encode64(encryptor.iv)
-      expect(final_data["version"]).to eq 1
-      expect(final_data["cipher"]).to eq "aes-256-cbc"
+      expect(final_data["version"]).to eq 3
+      expect(final_data["cipher"]).to eq "aes-256-gcm"
     end
   end
 
@@ -238,7 +238,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
   context "when decrypting a version 1 (JSON+aes-256-cbc+random iv) encrypted value" do
 
     let(:encrypted_value) do
-      Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
+      Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
     end
 
     it "selects the correct strategy for version 1" do
@@ -336,7 +336,7 @@ describe Chef::EncryptedDataBagItem do
     end
 
     it "encrypts non-collection objects" do
-      expect(encoded_data["greeting"]["version"]).to eq 1
+      expect(encoded_data["greeting"]["version"]).to eq 3
       expect(encoded_data["greeting"]).to have_key("iv")
 
       iv = encoded_data["greeting"]["iv"]
@@ -346,7 +346,7 @@ describe Chef::EncryptedDataBagItem do
     end
 
     it "encrypts nested values" do
-      expect(encoded_data["nested"]["version"]).to eq 1
+      expect(encoded_data["nested"]["version"]).to eq 3
       expect(encoded_data["nested"]).to have_key("iv")
 
       iv = encoded_data["nested"]["iv"]
