@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,8 +75,6 @@ class Chef
 
         ::File.open(config[:config_file], "w") do |f|
           f.puts <<-EOH
-log_level                :info
-log_location             STDOUT
 node_name                '#{new_client_name}'
 client_key               '#{new_client_key}'
 validation_client_name   '#{validation_client_name}'
