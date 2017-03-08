@@ -269,22 +269,4 @@ describe Chef::Search::Query do
     end
   end
 
-  describe "#partial_search" do
-    include_context "filtered search" do
-      let(:filter_key) { :keys }
-
-      it "emits a deprecation warning" do
-        # partial_search calls search, so we'll stub search to return empty
-        allow(query).to receive(:search).and_return( [ [], 0, 0 ] )
-        expect(Chef::Log).to receive(:warn).with(/DEPRECATED: The 'partial_search' API is deprecated/)
-        query.partial_search(:node, "platform:rhel", args)
-      end
-
-      it "returns an array of filtered hashes" do
-        expect(rest).to receive(:post).with(query_string, args[filter_key]).and_return(response)
-        results = query.partial_search(:node, "platform:rhel", args)
-        expect(results[0]).to match_array(response_rows)
-      end
-    end
-  end
 end
