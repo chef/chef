@@ -291,10 +291,11 @@ class Chef
                     end
                   end
                 else
-                  ui.output ("Not deleting extra entry #{dest_path} (purge is off)") if ui
+                  ui.output "Skipping #{dest_path}" if ui
                 end
+              else
+                ui.output "Skipping #{dest_path} (purge is off)" if ui
               end
-
             elsif !dest_entry.exists?
               if new_dest_parent.can_have_child?(src_entry.name, src_entry.dir?)
                 # If the entry can do a copy directly from filesystem, do that.
