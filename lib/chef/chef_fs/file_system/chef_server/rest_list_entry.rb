@@ -30,7 +30,7 @@ class Chef
           def initialize(name, parent, exists = nil)
             super(name, parent)
             @exists = exists
-            @target_object = nil
+            @this_object_cache = nil
           end
 
           def data_handler
@@ -70,7 +70,7 @@ class Chef
           def exists?
             if @exists.nil?
               begin
-                @target_object = rest.get(api_path)
+                @this_object_cache = rest.get(api_path)
                 @exists = true
               rescue Net::HTTPServerException => e
                 if e.response.code == "404"
@@ -87,7 +87,7 @@ class Chef
 
           def delete(recurse)
             # free up cache - it will be hydrated on next check for exists?
-            @target_object = nil
+            @this_object_cache = nil
             rest.delete(api_path)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
@@ -105,7 +105,7 @@ class Chef
           end
 
           def _read_json
-            @target_object ? JSON.parse(@target_object) : root.get_json(api_path)
+            @this_object_cache ? JSON.parse(@this_object_cache) : root.get_json(api_path)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading: #{e}")
           rescue Net::HTTPServerException => e
@@ -155,7 +155,7 @@ class Chef
             other_value_json = Chef::JSONCompat.to_json_pretty(other_value)
 
             # free up cache - it will be hydrated on next check for exists?
-            @target_object = nil
+            @this_object_cache = nil
 
             [ value == other_value, value_json, other_value_json ]
           end
