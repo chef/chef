@@ -98,11 +98,11 @@ class Chef
           end
 
           def read
+            # Minimize the value (get rid of defaults) so the results don't look terrible
             Chef::JSONCompat.to_json_pretty(minimize_value(_read_json))
           end
 
           def _read_json
-            # Minimize the value (get rid of defaults) so the results don't look terrible
             @target_object ? JSON.parse(@target_object) : root.get_json(api_path)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading: #{e}")
