@@ -53,6 +53,16 @@ dependency "chef-complete"
 
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
+
+  unless rhel? && platform_version.satisfies?("< 6")
+    compression_level 1
+    compression_type :xz
+  end
+end
+
+package :deb do
+  compression_level 1
+  compression_type :xz
 end
 
 proj_to_work_around_cleanroom = self
