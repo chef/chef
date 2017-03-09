@@ -18,6 +18,7 @@
 #
 
 require "chef/resource"
+require "shellwords"
 
 class Chef
   class Resource
@@ -156,7 +157,7 @@ class Chef
       def options(arg = nil)
         set_or_return(
           :options,
-          arg.respond_to?(:split) ? arg.split(/\s+/) : arg,
+          arg.respond_to?(:split) ? arg.shellsplit : arg,
           :kind_of => [ Array, String ]
         )
       end
