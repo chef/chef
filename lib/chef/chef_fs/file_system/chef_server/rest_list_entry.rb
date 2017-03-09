@@ -86,6 +86,8 @@ class Chef
           end
 
           def delete(recurse)
+            # free up cache - it will be hydrated on next check for exists?
+            @target_object = nil
             rest.delete(api_path)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
