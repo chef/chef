@@ -66,10 +66,6 @@ class Chef
         super
       end
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
         # true if there is a symlink and we need to manage what it points at
         @managing_symlink = file_class.symlink?(new_resource.path) && ( new_resource.manage_symlink_source || new_resource.manage_symlink_source.nil? )

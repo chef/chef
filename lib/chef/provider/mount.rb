@@ -1,7 +1,7 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software, Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,10 +27,6 @@ class Chef
       include Chef::Mixin::ShellOut
 
       attr_accessor :unmount_retries
-
-      def whyrun_supported?
-        true
-      end
 
       def load_current_resource
         true

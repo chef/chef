@@ -53,10 +53,6 @@ class Chef
         @config_path = nil
       end
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
         @current_resource = Chef::Resource::Ifconfig.new(new_resource.name)
 

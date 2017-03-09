@@ -35,10 +35,6 @@ class Chef
 
       include Chef::Mixin::Checksum
 
-      def whyrun_supported?
-        true
-      end
-
       def running_on_windows!
         unless Chef::Platform.windows?
           raise Chef::Exceptions::Win32NotWindows, "Attempt to manipulate the windows registry on a non-windows node"

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,10 +41,6 @@ class Chef
       end
 
       private :negative_complement
-
-      def whyrun_supported?
-        true
-      end
 
       def load_current_resource
         @current_resource = Chef::Resource::Link.new(new_resource.name)

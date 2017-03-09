@@ -61,10 +61,6 @@ class Chef
         end
       end
 
-      def whyrun_supported?
-        true
-      end
-
       def check_resource_semantics!
         # FIXME: this is not universally true and subclasses are needing to override this and no-ops it.  It should be turned into
         # another "subclass_directive" and the apt and yum providers should declare that they need this behavior.

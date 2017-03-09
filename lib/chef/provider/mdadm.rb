@@ -29,10 +29,6 @@ class Chef
         raise Exception, "deprecated"
       end
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
         @current_resource = Chef::Resource::Mdadm.new(new_resource.name)
         current_resource.raid_device(new_resource.raid_device)

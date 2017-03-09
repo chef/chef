@@ -1,6 +1,6 @@
 #
 # Author:: kaustubh (<kaustubh@clogeny.com>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,10 +41,6 @@ class Chef
           determine_current_status!
 
           @current_resource
-        end
-
-        def whyrun_supported?
-          true
         end
 
         def start_service
