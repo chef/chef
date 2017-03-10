@@ -48,6 +48,35 @@ describe Chef::Knife::Bootstrap do
     expect(File.basename(knife.bootstrap_template)).to eq("chef-full")
   end
 
+  context "when using the chef-full default template" do
+    let(:rendered_template) do
+      knife.merge_configs
+      knife.render_template
+    end
+
+    it "should render client.rb" do
+      expect(rendered_template).to match("cat > /etc/chef/client.rb <<'EOP'")
+      expect(rendered_template).to match("chef_server_url  \"https://localhost:443\"")
+      expect(rendered_template).to match("validation_client_name \"chef-validator\"")
+      expect(rendered_template).to match("log_location   STDOUT")
+    end
+
+    it "should render first-boot.json" do
+      expect(rendered_template).to match("cat > /etc/chef/first-boot.json <<'EOP'")
+      expect(rendered_template).to match('{"run_list":\[\]}')
+    end
+
+    context "and encrypted_data_bag_secret was provided" do
+      it "should render encrypted_data_bag_secret file" do
+        expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(true)
+        expect(knife).to receive(:read_secret).and_return("secrets")
+        expect(rendered_template).to match("cat > /etc/chef/encrypted_data_bag_secret <<'EOP'")
+        expect(rendered_template).to match('{"run_list":\[\]}')
+        expect(rendered_template).to match(%r{secrets})
+      end
+    end
+  end
+
   context "with --bootstrap-vault-item" do
     let(:bootstrap_cli_options) { [ "--bootstrap-vault-item", "vault1:item1", "--bootstrap-vault-item", "vault1:item2", "--bootstrap-vault-item", "vault2:item1" ] }
     it "sets the knife config cli option correctly" do
