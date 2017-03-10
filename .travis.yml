@@ -316,7 +316,8 @@ matrix:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
       - sudo apt-get update
-      - sudo apt-get -y install squid3 git curl
+      - sudo apt-get -y install squid3 git curl apache2-utils
+      - sudo htpasswd -b -c /etc/squid3/passwords proxy proxy
     bundler_args: --without ci development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     env:
       - PROXY_TESTS_DIR=proxy_tests/files/default/scripts
