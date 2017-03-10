@@ -1,7 +1,7 @@
 #
-# Author:: Joshua Timberman (<joshua@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc
+# Author:: Joshua Timberman (<joshua@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Mount do
   before(:each) do
@@ -41,9 +41,10 @@ describe Chef::Resource::Mount do
     expect(@resource.action).to eql([:mount])
   end
 
-  it "should accept mount, umount and remount as actions" do
+  it "should accept mount, umount, unmount and remount as actions" do
     expect { @resource.action :mount }.not_to raise_error
     expect { @resource.action :umount }.not_to raise_error
+    expect { @resource.action :unmount }.not_to raise_error
     expect { @resource.action :remount }.not_to raise_error
     expect { @resource.action :brooklyn }.to raise_error(ArgumentError)
   end
@@ -54,7 +55,7 @@ describe Chef::Resource::Mount do
   end
 
   it "should set fsck_device to '-' by default" do
-    expect(@resource.fsck_device).to eql('-')
+    expect(@resource.fsck_device).to eql("-")
   end
 
   it "should allow you to set the fsck_device attribute" do
@@ -87,19 +88,19 @@ describe Chef::Resource::Mount do
   end
 
   it "should allow options attribute as an array" do
-    @resource.options ["ro", "nosuid"]
+    @resource.options %w{ro nosuid}
     expect(@resource.options).to be_a_kind_of(Array)
   end
 
   it "should allow options to be sent as a delayed evaluator" do
-    @resource.options Chef::DelayedEvaluator.new {["rw", "noexec"]}
-    expect(@resource.options).to eql(["rw", "noexec"])
+    @resource.options Chef::DelayedEvaluator.new { %w{rw noexec} }
+    expect(@resource.options).to eql(%w{rw noexec})
   end
 
   it "should allow options to be sent as a delayed evaluator, and convert to array" do
-    @resource.options Chef::DelayedEvaluator.new {"rw,noexec"}
+    @resource.options Chef::DelayedEvaluator.new { "rw,noexec" }
     expect(@resource.options).to be_a_kind_of(Array)
-    expect(@resource.options).to eql(["rw", "noexec"])
+    expect(@resource.options).to eql(%w{rw noexec})
   end
 
   it "should accept true for mounted" do

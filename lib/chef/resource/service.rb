@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,23 +17,25 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
     class Service < Chef::Resource
       identity_attr :service_name
 
-      state_attrs :enabled, :running
+      state_attrs :enabled, :running, :masked
 
       default_action :nothing
-      allowed_actions :enable, :disable, :start, :stop, :restart, :reload
+      allowed_actions :enable, :disable, :start, :stop, :restart, :reload,
+                      :mask, :unmask
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @service_name = name
         @enabled = nil
         @running = nil
+        @masked = nil
         @parameters = nil
         @pattern = service_name
         @start_command = nil
@@ -45,10 +47,11 @@ class Chef
         @priority = nil
         @timeout = nil
         @run_levels = nil
+        @user = nil
         @supports = { :restart => nil, :reload => nil, :status => nil }
       end
 
-      def service_name(arg=nil)
+      def service_name(arg = nil)
         set_or_return(
           :service_name,
           arg,
@@ -57,7 +60,7 @@ class Chef
       end
 
       # regex for match against ps -ef when !supports[:has_status] && status == nil
-      def pattern(arg=nil)
+      def pattern(arg = nil)
         set_or_return(
           :pattern,
           arg,
@@ -66,7 +69,7 @@ class Chef
       end
 
       # command to call to start service
-      def start_command(arg=nil)
+      def start_command(arg = nil)
         set_or_return(
           :start_command,
           arg,
@@ -75,7 +78,7 @@ class Chef
       end
 
       # command to call to stop service
-      def stop_command(arg=nil)
+      def stop_command(arg = nil)
         set_or_return(
           :stop_command,
           arg,
@@ -84,7 +87,7 @@ class Chef
       end
 
       # command to call to get status of service
-      def status_command(arg=nil)
+      def status_command(arg = nil)
         set_or_return(
           :status_command,
           arg,
@@ -93,7 +96,7 @@ class Chef
       end
 
       # command to call to restart service
-      def restart_command(arg=nil)
+      def restart_command(arg = nil)
         set_or_return(
           :restart_command,
           arg,
@@ -101,7 +104,7 @@ class Chef
         )
       end
 
-      def reload_command(arg=nil)
+      def reload_command(arg = nil)
         set_or_return(
           :reload_command,
           arg,
@@ -114,7 +117,7 @@ class Chef
       # non-standard configurations setting this value will save having to
       # specify overrides for the start_command, stop_command and
       # restart_command attributes.
-      def init_command(arg=nil)
+      def init_command(arg = nil)
         set_or_return(
           :init_command,
           arg,
@@ -123,7 +126,7 @@ class Chef
       end
 
       # if the service is enabled or not
-      def enabled(arg=nil)
+      def enabled(arg = nil)
         set_or_return(
           :enabled,
           arg,
@@ -132,9 +135,18 @@ class Chef
       end
 
       # if the service is running or not
-      def running(arg=nil)
+      def running(arg = nil)
         set_or_return(
           :running,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      # if the service is masked or not
+      def masked(arg = nil)
+        set_or_return(
+          :masked,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )
@@ -150,7 +162,7 @@ class Chef
       #   runlevel 2, stopped in 3 with priority 55 and no symlinks or
       #   similar for other runlevels
       #
-      def priority(arg=nil)
+      def priority(arg = nil)
         set_or_return(
           :priority,
           arg,
@@ -159,7 +171,7 @@ class Chef
       end
 
       # timeout only applies to the windows service manager
-      def timeout(arg=nil)
+      def timeout(arg = nil)
         set_or_return(
           :timeout,
           arg,
@@ -167,7 +179,7 @@ class Chef
         )
       end
 
-      def parameters(arg=nil)
+      def parameters(arg = nil)
         set_or_return(
           :parameters,
           arg,
@@ -175,14 +187,22 @@ class Chef
         )
       end
 
-      def run_levels(arg=nil)
+      def run_levels(arg = nil)
         set_or_return(
           :run_levels,
           arg,
           :kind_of => [ Array ] )
       end
 
-      def supports(args={})
+      def user(arg = nil)
+        set_or_return(
+          :user,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def supports(args = {})
         if args.is_a? Array
           args.each { |arg| @supports[arg] = true }
         elsif args.any?

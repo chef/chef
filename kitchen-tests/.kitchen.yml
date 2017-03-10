@@ -5,8 +5,14 @@ driver:
     cpus: 4
     memory: 2048
 
+verifier:
+  name: inspec
+  format: progress
+
 provisioner:
   name: chef_github
+  chef_omnibus_url: "https://omnitruck.chef.io/install.sh"
+  chef_omnibus_install_options: "-c current"
   github_owner: "chef"
   github_repo: "chef"
   refname: <%= %x(git rev-parse HEAD) %>
@@ -15,24 +21,21 @@ provisioner:
     diff_disabled: true
 
 platforms:
-  # upstream community mysql cookbook broken on 10.04
-  #- name: ubuntu-10.04
-  #  run_list: apt::default
   - name: ubuntu-12.04
-    run_list: apt::default
   - name: ubuntu-14.04
-    run_list: apt::default
-  # upstream community mysql cookbook also broken on 14.10
-  #- name: ubuntu-14.10
-  #  run_list: apt::default
-  - name: centos-6.4
-    run_list: yum-epel::default
-  - name: centos-5.10
-    run_list: yum-epel::default
+  - name: ubuntu-16.04
+  - name: centos-7.2
+  - name: centos-6.7
+  # needs fixing for 5.11
+  # - name: centos-5.11
 
 suites:
   - name: webapp
     run_list:
-      - recipe[apt::default]
-      - recipe[webapp::default]
-    attributes:
+      - recipe[base::default]
+  - name: awesome_customers_ubuntu
+    run_list:
+      - recipe[awesome_customers_ubuntu_wrapper::default]
+  - name: awesome_customers_rhel
+    run_list:
+      - recipe[awesome_customers_rhel_wrapper::default]

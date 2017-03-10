@@ -1,9 +1,8 @@
-require 'chef/formatters/base'
+require "chef/formatters/base"
 
 class Chef
 
   module Formatters
-
 
     # == Formatters::Minimal
     # Shows the progress of the chef run by printing single characters, and
@@ -20,16 +19,16 @@ class Chef
       attr_reader :updated_resources
       attr_reader :updates_by_resource
 
-
       def initialize(out, err)
         super
         @updated_resources = []
-        @updates_by_resource = Hash.new {|h, k| h[k] = []}
+        @updates_by_resource = Hash.new { |h, k| h[k] = [] }
       end
 
       # Called at the very start of a Chef Run
       def run_start(version)
-        puts "Starting Chef Client, version #{version}"
+        puts_line "Starting Chef Client, version #{version}"
+        puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
       end
 
       # Called at the end of the Chef run.
@@ -130,7 +129,7 @@ class Chef
 
       # Called after a file in a cookbook is loaded.
       def file_loaded(path)
-        print '.'
+        print "."
       end
 
       def file_load_failed(path, exception)
@@ -157,7 +156,7 @@ class Chef
           puts "\n"
           puts "resources updated this run:"
           updated_resources.each do |resource|
-            puts "* #{resource.to_s}"
+            puts "* #{resource}"
             updates_by_resource[resource.name].flatten.each do |update|
               puts "  - #{update}"
             end
@@ -167,7 +166,7 @@ class Chef
       end
 
       # Called before action is executed on a resource.
-      def resource_action_start(resource, action, notification_type=nil, notifier=nil)
+      def resource_action_start(resource, action, notification_type = nil, notifier = nil)
       end
 
       # Called when a resource fails, but will retry.
@@ -232,4 +231,3 @@ class Chef
     end
   end
 end
-

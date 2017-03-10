@@ -1,6 +1,6 @@
 #
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::File::Content do
 
@@ -28,12 +28,12 @@ describe Chef::Provider::File::Content do
     double("Chef::Provider::File::Resource (current)")
   end
 
-  let(:enclosing_directory) {
+  let(:enclosing_directory) do
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
-  }
-  let(:resource_path) {
+  end
+  let(:resource_path) do
     canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
-  }
+  end
 
   let(:new_resource) do
     double("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path)
@@ -66,34 +66,34 @@ describe Chef::Provider::File::Content do
 
     it "returns a tempfile in the tempdir when :file_staging_uses_destdir is not set" do
       Chef::Config[:file_staging_uses_destdir] = false
-      expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be_truthy
+      expect(content.tempfile.path.start_with?(Dir.tmpdir)).to be_truthy
       expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be_falsey
     end
 
     it "returns a tempfile in the destdir when :file_deployment_uses_destdir is set" do
       Chef::Config[:file_staging_uses_destdir] = true
-      expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be_falsey
+      expect(content.tempfile.path.start_with?(Dir.tmpdir)).to be_falsey
       expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be_truthy
     end
 
     context "when creating a tempfiles in destdir fails" do
-      let(:enclosing_directory) {
+      let(:enclosing_directory) do
         canonicalize_path("/nonexisting/path")
-      }
+      end
 
       it "returns a tempfile in the tempdir when :file_deployment_uses_destdir is set to :auto" do
         Chef::Config[:file_staging_uses_destdir] = :auto
-        expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be_truthy
+        expect(content.tempfile.path.start_with?(Dir.tmpdir)).to be_truthy
         expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be_falsey
       end
 
       it "fails when :file_desployment_uses_destdir is set" do
         Chef::Config[:file_staging_uses_destdir] = true
-        expect{content.tempfile}.to raise_error
+        expect { content.tempfile }.to raise_error(Chef::Exceptions::FileContentStagingError)
       end
 
       it "returns a tempfile in the tempdir when :file_desployment_uses_destdir is not set" do
-        expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be_truthy
+        expect(content.tempfile.path.start_with?(Dir.tmpdir)).to be_truthy
         expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be_falsey
       end
     end

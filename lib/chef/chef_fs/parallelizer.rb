@@ -1,5 +1,5 @@
-require 'thread'
-require 'chef/chef_fs/parallelizer/parallel_enumerable'
+require "thread"
+require "chef/chef_fs/parallelizer/parallel_enumerable"
 
 class Chef
   module ChefFS
@@ -54,7 +54,7 @@ class Chef
 
       def resize(to_threads, wait = true, timeout = nil)
         if to_threads < num_threads
-          threads_to_stop = @threads[to_threads..num_threads-1]
+          threads_to_stop = @threads[to_threads..num_threads - 1]
           @threads = @threads.slice(0, to_threads)
           threads_to_stop.each do |thread|
             @stop_thread[thread] = true
@@ -86,19 +86,17 @@ class Chef
       private
 
       def worker_loop
-        begin
-          while !@stop_thread[Thread.current]
-            begin
-              task = @tasks.pop
-              task.call
-            rescue
-              puts "ERROR #{$!}"
-              puts $!.backtrace
-            end
+        until @stop_thread[Thread.current]
+          begin
+            task = @tasks.pop
+            task.call
+          rescue
+            puts "ERROR #{$!}"
+            puts $!.backtrace
           end
-        ensure
-          @stop_thread.delete(Thread.current)
         end
+      ensure
+        @stop_thread.delete(Thread.current)
       end
     end
   end

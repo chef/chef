@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +16,20 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/config'
+require "chef/knife"
+require "chef/config"
 
 class Chef
   class Knife
     class SslFetch < Chef::Knife
 
       deps do
-        require 'pp'
-        require 'socket'
-        require 'uri'
-        require 'openssl'
+        require "pp"
+        require "socket"
+        require "uri"
+        require "openssl"
+        require "chef/mixin/proxified_socket"
+        include Chef::Mixin::ProxifiedSocket
       end
 
       banner "knife ssl fetch [URL] (options)"
@@ -45,7 +47,7 @@ class Chef
       end
 
       def given_uri
-        (name_args[0] or Chef::Config.chef_server_url)
+        (name_args[0] || Chef::Config.chef_server_url)
       end
 
       def host
@@ -71,7 +73,7 @@ class Chef
       end
 
       def remote_cert_chain
-        tcp_connection = TCPSocket.new(host, port)
+        tcp_connection = proxified_socket(host, port)
         shady_ssl_connection = OpenSSL::SSL::SSLSocket.new(tcp_connection, noverify_peer_ssl_context)
         shady_ssl_connection.connect
         shady_ssl_connection.peer_cert_chain
@@ -85,11 +87,13 @@ class Chef
         end
       end
 
-
       def cn_of(certificate)
         subject = certificate.subject
-        cn_field_tuple = subject.to_a.find {|field| field[0] == "CN" }
-        cn_field_tuple[1]
+        if cn_field_tuple = subject.to_a.find { |field| field[0] == "CN" }
+          cn_field_tuple[1]
+        else
+          nil
+        end
       end
 
       # Convert the CN of a certificate into something that will work well as a
@@ -102,7 +106,7 @@ class Chef
       # practice.
       # https://tools.ietf.org/html/rfc6125#section-6.4.2
       def normalize_cn(cn)
-        cn.gsub("*", "wildcard").gsub(/[^[:alnum:]\-]/, '_')
+        cn.gsub("*", "wildcard").gsub(/[^[:alnum:]\-]/, "_")
       end
 
       def configuration
@@ -116,9 +120,10 @@ class Chef
       def write_cert(cert)
         FileUtils.mkdir_p(trusted_certs_dir)
         cn = cn_of(cert)
-        filename = File.join(trusted_certs_dir, "#{normalize_cn(cn)}.crt")
-        ui.msg("Adding certificate for #{cn} in #{filename}")
-        File.open(filename, File::CREAT|File::TRUNC|File::RDWR, 0644) do |f|
+        filename = cn.nil? ? "#{host}_#{Time.new.to_i}" : normalize_cn(cn)
+        full_path = File.join(trusted_certs_dir, "#{filename}.crt")
+        ui.msg("Adding certificate for #{filename} in #{full_path}")
+        File.open(full_path, File::CREAT | File::TRUNC | File::RDWR, 0644) do |f|
           f.print(cert.to_s)
         end
       end
@@ -145,14 +150,12 @@ TRUST_TRUST
         ui.error("The service at the given URI (#{uri}) does not accept SSL connections")
 
         if uri.scheme == "http"
-          https_uri = uri.to_s.sub(/^http/, 'https')
+          https_uri = uri.to_s.sub(/^http/, "https")
           ui.error("Perhaps you meant to connect to '#{https_uri}'?")
         end
         exit 1
       end
 
-
     end
   end
 end
-

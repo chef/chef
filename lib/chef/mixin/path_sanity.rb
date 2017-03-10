@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,10 +20,10 @@ class Chef
   module Mixin
     module PathSanity
 
-      def enforce_path_sanity(env=ENV)
+      def enforce_path_sanity(env = ENV)
         if Chef::Config[:enforce_path_sanity]
           env["PATH"] = "" if env["PATH"].nil?
-          path_separator = Chef::Platform.windows? ? ';' : ':'
+          path_separator = Chef::Platform.windows? ? ";" : ":"
           existing_paths = env["PATH"].split(path_separator)
           # ensure the Ruby and Gem bindirs are included
           # mainly for 'full-stack' Chef installs
@@ -37,7 +37,7 @@ class Chef
               env_path = env["PATH"].dup
               env_path << path_separator unless env["PATH"].empty?
               env_path << sane_path
-              env["PATH"] = env_path
+              env["PATH"] = env_path.encode("utf-8", invalid: :replace, undef: :replace)
             end
           end
         end
@@ -48,15 +48,15 @@ class Chef
       def sane_paths
         @sane_paths ||= begin
           if Chef::Platform.windows?
-            %w[]
+            %w{}
           else
-            %w[/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin]
+            %w{/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin}
           end
         end
       end
 
       def ruby_bindir
-        RbConfig::CONFIG['bindir']
+        RbConfig::CONFIG["bindir"]
       end
 
       def gem_bindir

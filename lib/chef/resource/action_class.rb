@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io)
-# Copyright:: Copyright (c) 2015 Opscode, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,22 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
+require "chef/exceptions"
+require "chef/dsl/recipe"
 
 class Chef
   class Resource
     module ActionClass
+      include Chef::DSL::Recipe
+
+      def to_s
+        "#{new_resource || "<no resource>"} action #{action ? action.inspect : "<no action>"}"
+      end
+
+      def whyrun_supported?
+        true
+      end
+
       #
       # If load_current_value! is defined on the resource, use that.
       #
@@ -32,7 +43,7 @@ class Chef
           # We clear desired state in the copy, because it is supposed to be actual state.
           # We keep identity properties and non-desired-state, which are assumed to be
           # "control" values like `recurse: true`
-          current_resource.class.properties.each do |name,property|
+          current_resource.class.properties.each do |name, property|
             if property.desired_state? && !property.identity? && !property.name_property?
               property.reset(current_resource)
             end

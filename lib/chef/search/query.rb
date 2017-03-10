@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/exceptions'
-require 'chef/rest'
+require "chef/config"
+require "chef/exceptions"
+require "chef/server_api"
 
-require 'uri'
+require "uri"
+require "addressable/uri"
 
 class Chef
   class Search
@@ -29,18 +30,18 @@ class Chef
       attr_accessor :rest
       attr_reader :config
 
-      def initialize(url=nil, config:Chef::Config)
+      def initialize(url = nil, config: Chef::Config)
         @config = config
         @url = url
       end
 
       def rest
-        @rest ||= Chef::REST.new(@url || @config[:chef_server_url])
+        @rest ||= Chef::ServerAPI.new(@url || @config[:chef_server_url])
       end
 
       # Backwards compatability for cookbooks.
       # This can be removed in Chef > 12.
-      def partial_search(type, query='*:*', *args, &block)
+      def partial_search(type, query = "*:*", *args, &block)
         Chef::Log.warn(<<-WARNDEP)
 DEPRECATED: The 'partial_search' API is deprecated and will be removed in
 future releases. Please use 'search' with a :filter_result argument to get
@@ -80,14 +81,14 @@ WARNDEP
       # an example of the returned json may be:
       # {"ip_address":"127.0.0.1", "ruby_version": "1.9.3"}
       #
-      def search(type, query='*:*', *args, &block)
+      def search(type, query = "*:*", *args, &block)
         validate_type(type)
 
         args_h = hashify_args(*args)
         response = call_rest_service(type, query: query, **args_h)
 
         if block
-          response["rows"].each { |row| block.call(row) if row }
+          response["rows"].each { |row| yield(row) if row }
           #
           # args_h[:rows] and args_h[:start] are the page size and
           # start position requested of the search index backing the
@@ -116,8 +117,8 @@ WARNDEP
       def validate_type(t)
         unless t.kind_of?(String) || t.kind_of?(Symbol)
           msg = "Invalid search object type #{t.inspect} (#{t.class}), must be a String or Symbol." +
-          "Usage: search(:node, QUERY[, OPTIONAL_ARGS])" +
-          "        `knife search environment QUERY (options)`"
+            "Usage: search(:node, QUERY[, OPTIONAL_ARGS])" +
+            "        `knife search environment QUERY (options)`"
           raise Chef::Exceptions::InvalidSearchQuery, msg
         end
       end
@@ -134,28 +135,44 @@ WARNDEP
         args_h
       end
 
-      def escape(s)
-        s && URI.escape(s.to_s)
+      QUERY_PARAM_VALUE = Addressable::URI::CharacterClasses::QUERY + "\\&\\;"
+
+      def escape_value(s)
+        s && Addressable::URI.encode_component(s.to_s, QUERY_PARAM_VALUE)
       end
 
       def create_query_string(type, query, rows, start, sort)
-        qstr = "search/#{type}?q=#{escape(query)}"
-        qstr += "&sort=#{escape(sort)}" if sort
-        qstr += "&start=#{escape(start)}" if start
-        qstr += "&rows=#{escape(rows)}" if rows
+        qstr = "search/#{type}?q=#{escape_value(query)}"
+        qstr += "&sort=#{escape_value(sort)}" if sort
+        qstr += "&start=#{escape_value(start)}" if start
+        qstr += "&rows=#{escape_value(rows)}" if rows
         qstr
       end
 
-      def call_rest_service(type, query:'*:*', rows:nil, start:0, sort:'X_CHEF_id_CHEF_X asc', filter_result:nil)
+      def call_rest_service(type, query: "*:*", rows: nil, start: 0, sort: "X_CHEF_id_CHEF_X asc", filter_result: nil)
         query_string = create_query_string(type, query, rows, start, sort)
 
         if filter_result
-          response = rest.post_rest(query_string, filter_result)
+          response = rest.post(query_string, filter_result)
           # response returns rows in the format of
           # { "url" => url_to_node, "data" => filter_result_hash }
-          response['rows'].map! { |row| row['data'] }
+          response["rows"].map! { |row| row["data"] }
         else
-          response = rest.get_rest(query_string)
+          response = rest.get(query_string)
+          response["rows"].map! do |row|
+            case type.to_s
+            when "node"
+              Chef::Node.from_hash(row)
+            when "role"
+              Chef::Role.from_hash(row)
+            when "environment"
+              Chef::Environment.from_hash(row)
+            when "client"
+              Chef::ApiClient.from_hash(row)
+            else
+              Chef::DataBagItem.from_hash(row)
+            end
+          end
         end
 
         response

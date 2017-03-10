@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright (c) 2010 Bryan McLellan
+# Copyright:: Copyright 2010-2016, Bryan McLellan
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,24 @@
 # limitations under the License.
 #
 
-require 'chef/resource/service'
-require 'chef/provider/service/simple'
-require 'chef/mixin/command'
-require 'chef/util/file_edit'
+require "chef/resource/service"
+require "chef/provider/service/simple"
+require "chef/mixin/command"
+require "chef/util/file_edit"
 
 class Chef
   class Provider
     class Service
       class Upstart < Chef::Provider::Service::Simple
 
-        provides :service, platform_family: 'debian', override: true do |node|
+        # to maintain a local state of service across restart's internal calls
+        attr_accessor :upstart_service_running
+
+        provides :service, platform_family: "debian", override: true do |node|
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
         end
 
-        UPSTART_STATE_FORMAT = /\w+ \(?(\w+)\)?[\/ ](\w+)/
+        UPSTART_STATE_FORMAT = /\S+ \(?(start|stop)?\)? ?[\/ ](\w+)/
 
         def self.supports?(resource, action)
           Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)
@@ -62,7 +65,7 @@ class Chef
           end
 
           platform, version = Chef::Platform.find_platform_and_version(run_context.node)
-          if platform == "ubuntu" && (8.04..9.04).include?(version.to_f)
+          if platform == "ubuntu" && (8.04..9.04).cover?(version.to_f)
             @upstart_job_dir = "/etc/event.d"
             @upstart_conf_suffix = ""
           else
@@ -80,8 +83,11 @@ class Chef
           shared_resource_requirements
           requirements.assert(:all_actions) do |a|
             if !@command_success
-              whyrun_msg = @new_resource.status_command ? "Provided status command #{@new_resource.status_command} failed." :
-                "Could not determine upstart state for service"
+              whyrun_msg = if @new_resource.status_command
+                             "Provided status command #{@new_resource.status_command} failed."
+                           else
+                             "Could not determine upstart state for service"
+                           end
             end
             a.assertion { @command_success }
             # no failure here, just document the assumptions made.
@@ -89,7 +95,7 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion  { @config_file_found }
+            a.assertion { @config_file_found }
             # no failure here, just document the assumptions made.
             a.whyrun "Could not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}. Assuming service is disabled."
           end
@@ -107,30 +113,30 @@ class Chef
 
             begin
               if shell_out!(@new_resource.status_command).exitstatus == 0
-                @current_resource.running true
+                @upstart_service_running = true
               end
             rescue
               @command_success = false
-              @current_resource.running false
+              @upstart_service_running = false
               nil
             end
           else
             begin
-              if upstart_state == "running"
-                @current_resource.running true
+              if upstart_goal_state == "start"
+                @upstart_service_running = true
               else
-                @current_resource.running false
+                @upstart_service_running = false
               end
             rescue Chef::Exceptions::Exec
               @command_success = false
-              @current_resource.running false
+              @upstart_service_running = false
               nil
             end
           end
           # Get enabled/disabled state by reading job configuration file
           if ::File.exists?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             Chef::Log.debug("#{@new_resource} found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}",'r') do |file|
+            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}", "r") do |file|
               while line = file.gets
                 case line
                 when /^start on/
@@ -150,13 +156,14 @@ class Chef
             @current_resource.enabled false
           end
 
+          @current_resource.running @upstart_service_running
           @current_resource
         end
 
         def start_service
           # Calling start on a service that is already started will return 1
           # Our 'goal' when we call start is to ensure the service is started
-          if @current_resource.running
+          if @upstart_service_running
             Chef::Log.debug("#{@new_resource} already running, not starting")
           else
             if @new_resource.start_command
@@ -165,12 +172,14 @@ class Chef
               shell_out_with_systems_locale!("/sbin/start #{@job}")
             end
           end
+
+          @upstart_service_running = true
         end
 
         def stop_service
           # Calling stop on a service that is already stopped will return 1
           # Our 'goal' when we call stop is to ensure the service is stopped
-          unless @current_resource.running
+          unless @upstart_service_running
             Chef::Log.debug("#{@new_resource} not running, not stopping")
           else
             if @new_resource.stop_command
@@ -179,6 +188,8 @@ class Chef
               shell_out_with_systems_locale!("/sbin/stop #{@job}")
             end
           end
+
+          @upstart_service_running = false
         end
 
         def restart_service
@@ -186,13 +197,19 @@ class Chef
             super
           # Upstart always provides restart functionality so we don't need to mimic it with stop/sleep/start.
           # Older versions of upstart would fail on restart if the service was currently stopped, check for that. LP:430883
+          # But for safe working of latest upstart job config being loaded, 'restart' can't be used as per link
+          # http://upstart.ubuntu.com/cookbook/#restart (it doesn't uses latest jon config from disk but retains old)
           else
-            if @current_resource.running
-              shell_out_with_systems_locale!("/sbin/restart #{@job}")
+            if @upstart_service_running
+              stop_service
+              sleep 1
+              start_service
             else
               start_service
             end
           end
+
+          @upstart_service_running = true
         end
 
         def reload_service
@@ -202,6 +219,8 @@ class Chef
             # upstart >= 0.6.3-4 supports reload (HUP)
             shell_out_with_systems_locale!("/sbin/reload #{@job}")
           end
+
+          @upstart_service_running = true
         end
 
         # https://bugs.launchpad.net/upstart/+bug/94065
@@ -220,18 +239,18 @@ class Chef
           conf.write_file
         end
 
-        def upstart_state
+        def upstart_goal_state
           command = "/sbin/status #{@job}"
           status = popen4(command) do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
-              # rsyslog stop/waiting
               # service goal/state
               # OR
-              # rsyslog (stop) waiting
+              # service (instance) goal/state
+              # OR
               # service (goal) state
               line =~ UPSTART_STATE_FORMAT
               data = Regexp.last_match
-              return data[2]
+              return data[1]
             end
           end
         end

@@ -1,4 +1,4 @@
-# Copyright:: Copyright (c) 2015 Chef Software, Inc
+# Copyright:: Copyright 2015-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-require 'chef/version'
+require "chef/version"
 class Chef
   class Knife
     class SubcommandLoader
@@ -61,7 +61,7 @@ class Chef
         end
 
         def subcommand_files
-          subcommand_files ||= (find_subcommands_via_manifest.values + site_subcommands).flatten.uniq
+          @subcommand_files ||= (find_subcommands_via_manifest.values + site_subcommands).flatten.uniq
         end
       end
     end

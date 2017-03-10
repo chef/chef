@@ -1,6 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,8 +20,8 @@
 #see also: WNetAddConnection2 and WNetAddConnection3
 #see also cmd.exe: net use /?
 
-require 'chef/util/windows'
-require 'chef/win32/net'
+require "chef/util/windows"
+require "chef/win32/net"
 
 class Chef::Util::Windows::NetUse < Chef::Util::Windows
   def initialize(localname)
@@ -29,7 +29,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   end
 
   def to_ui2_struct(use_info)
-    use_info.inject({}) do |memo, (k,v)|
+    use_info.inject({}) do |memo, (k, v)|
       memo["ui2_#{k}".to_sym] = v
       memo
     end
@@ -52,19 +52,17 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   end
 
   def from_use_info_struct(ui2_hash)
-    ui2_hash.inject({}) do |memo, (k,v)|
-      memo[k.to_s.sub('ui2_', '').to_sym] = v
+    ui2_hash.inject({}) do |memo, (k, v)|
+      memo[k.to_s.sub("ui2_", "").to_sym] = v
       memo
     end
   end
 
   def get_info
-    begin
-      ui2 = Chef::ReservedNames::Win32::Net.net_use_get_info_l2(nil, use_name)
-      from_use_info_struct(ui2)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    ui2 = Chef::ReservedNames::Win32::Net.net_use_get_info_l2(nil, use_name)
+    from_use_info_struct(ui2)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def device
@@ -72,11 +70,9 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   end
 
   def delete
-    begin
-      Chef::ReservedNames::Win32::Net.net_use_del(nil, use_name, :use_noforce)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    Chef::ReservedNames::Win32::Net.net_use_del(nil, use_name, :use_noforce)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def use_name

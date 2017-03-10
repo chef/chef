@@ -1,6 +1,6 @@
 #
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/shell_out'
-require 'tmpdir'
-require 'shellwords'
+require "spec_helper"
+require "chef/mixin/shell_out"
+require "tmpdir"
+require "shellwords"
 
 # Deploy relies heavily on symlinks, so it doesn't work on windows.
-describe Chef::Resource::Git do
+describe Chef::Resource::Git, :requires_git => true do
   include Chef::Mixin::ShellOut
   let(:file_cache_path) { Dir.mktmpdir }
   # Some versions of git complains when the deploy directory is
@@ -62,7 +62,7 @@ describe Chef::Resource::Git do
   let(:v1_tag) { "9b73fb5e316bfaff7b822b0ccb3e1e08f9885085" }
   let(:rev_foo) { "ed181b3419b6f489bedab282348162a110d6d3a1" }
   let(:rev_testing) { "972d153654503bccec29f630c5dd369854a561e8" }
-  let(:rev_head) { "d294fbfd05aa7709ad9a9b8ef6343b17d355bf5f"}
+  let(:rev_head) { "d294fbfd05aa7709ad9a9b8ef6343b17d355bf5f" }
 
   let(:git_user_config) do
     <<-E
@@ -76,23 +76,21 @@ E
     Chef::Log.level = :warn # silence git command live streams
     @old_file_cache_path = Chef::Config[:file_cache_path]
     shell_out!("git clone \"#{git_bundle_repo}\" example", :cwd => origin_repo_dir)
-    File.open("#{origin_repo}/.git/config", "a+") {|f| f.print(git_user_config) }
+    File.open("#{origin_repo}/.git/config", "a+") { |f| f.print(git_user_config) }
     Chef::Config[:file_cache_path] = file_cache_path
   end
 
   after(:each) do
     Chef::Config[:file_cache_path] = @old_file_cache_path
     FileUtils.remove_entry_secure deploy_directory if File.exist?(deploy_directory)
+    FileUtils.remove_entry_secure base_dir_path
     FileUtils.remove_entry_secure file_cache_path
-  end
-
-  after(:all) do
     FileUtils.remove_entry_secure origin_repo_dir
   end
 
   before(:all) do
     @ohai = Ohai::System.new
-    @ohai.all_plugins(["platform", "os"])
+    @ohai.all_plugins(%w{platform os})
   end
 
   context "working with pathes with special characters" do
@@ -129,10 +127,10 @@ E
 
     it "checks out the revision pointed to by the tag commit, not the tag commit itself" do
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
       expect(head_rev).to eq(v1_commit)
       # also verify the tag commit itself is what we expect as an extra sanity check
-      rev = shell_out!('git rev-parse v1.0.0', :cwd => deploy_directory, :returns => [0]).stdout.strip
+      rev = shell_out!("git rev-parse v1.0.0", :cwd => deploy_directory, :returns => [0]).stdout.strip
       expect(rev).to eq(v1_tag)
     end
 
@@ -140,7 +138,7 @@ E
       # this used to fail because we didn't resolve the annotated tag
       # properly to the pointed to commit.
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
       expect(head_rev).to eq(v1_commit)
 
       copy_git_resource.run_action(:sync)
@@ -166,14 +164,14 @@ E
     it "checks out the expected revision ed18" do
       basic_git_resource.revision rev_foo
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
       expect(head_rev).to eq(rev_foo)
     end
 
     it "doesn't update if up-to-date" do
       basic_git_resource.revision rev_foo
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
       expect(head_rev).to eq(rev_foo)
 
       copy_git_resource.revision rev_foo
@@ -184,7 +182,7 @@ E
     it "checks out the expected revision 972d" do
       basic_git_resource.revision rev_testing
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
       expect(head_rev).to eq(rev_testing)
     end
   end
@@ -193,13 +191,13 @@ E
     let(:basic_git_resource) do
       Chef::Resource::Git.new(deploy_directory, run_context).tap do |r|
         r.repository origin_repo
-        r.revision 'HEAD'
+        r.revision "HEAD"
       end
     end
 
     it "checks out the expected revision" do
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
       expect(head_rev).to eq(rev_head)
     end
   end
@@ -214,7 +212,7 @@ E
 
     it "checks out HEAD as the default revision" do
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!('git rev-parse HEAD', :cwd => deploy_directory, :returns => [0]).stdout.strip
+      head_rev = shell_out!("git rev-parse HEAD", :cwd => deploy_directory, :returns => [0]).stdout.strip
       expect(head_rev).to eq(rev_head)
     end
   end
@@ -228,7 +226,7 @@ E
     let(:basic_git_resource) do
       Chef::Resource::Git.new(deploy_directory, run_context).tap do |r|
         r.repository origin_repo
-        r.revision 'HEAD'
+        r.revision "HEAD"
       end
     end
 
@@ -241,7 +239,7 @@ E
 
     it "checks out the (master) HEAD revision and ignores the tag" do
       basic_git_resource.run_action(:sync)
-      head_rev = shell_out!('git rev-parse HEAD',
+      head_rev = shell_out!("git rev-parse HEAD",
                             :cwd => deploy_directory,
                             :returns => [0]).stdout.strip
       expect(head_rev).to eq(rev_head)
@@ -249,7 +247,7 @@ E
 
     it "checks out the (master) HEAD revision when no revision is specified (ignores tag)" do
       git_resource_default_rev.run_action(:sync)
-      head_rev = shell_out!('git rev-parse HEAD',
+      head_rev = shell_out!("git rev-parse HEAD",
                             :cwd => deploy_directory,
                             :returns => [0]).stdout.strip
       expect(head_rev).to eq(rev_head)

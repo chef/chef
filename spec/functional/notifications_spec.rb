@@ -1,6 +1,5 @@
-require 'spec_helper'
-require 'chef/recipe'
-
+require "spec_helper"
+require "chef/recipe"
 
 # The goal of these tests is to make sure that loading resources from a file creates the necessary notifications.
 # Then once converge has started, both immediate and delayed notifications are called as the resources are converged.
@@ -14,11 +13,11 @@ describe "Notifications" do
 
   # We always pretend we are on OSx because that has a specific provider (HomebrewProvider) so it
   # tests the translation from Provider => HomebrewProvider
-  let(:node) {
+  let(:node) do
     n = Chef::Node.new
     n.override[:os] = "darwin"
     n
-  }
+  end
   let(:cookbook_collection) { double("Chef::CookbookCollection").as_null_object }
   let(:events) { double("Chef::EventDispatch::Dispatcher").as_null_object }
   let(:run_context) { Chef::RunContext.new(node, cookbook_collection, events) }
@@ -74,6 +73,76 @@ describe "Notifications" do
     runner.converge
   end
 
+  it "should notify from one resource to another before" do
+    log_resource = recipe.declare_resource(:log, "log") do
+      message "This is a log message"
+      action :write
+      notifies :install, "package[vim]", :before
+    end
+    update_action(log_resource, 2)
+
+    package_resource = recipe.declare_resource(:package, "vim") do
+      action :nothing
+    end
+
+    actions = []
+    [ log_resource, package_resource ].each do |resource|
+      allow(resource).to receive(:run_action).and_wrap_original do |m, action, notification_type, notifying_resource|
+        actions << { resource: resource.to_s, action: action }
+        actions[-1][:why_run] = Chef::Config[:why_run] if Chef::Config[:why_run]
+        actions[-1][:notification_type] = notification_type if notification_type
+        actions[-1][:notifying_resource] = notifying_resource.to_s if notifying_resource
+        m.call(action, notification_type, notifying_resource)
+      end
+    end
+
+    runner.converge
+
+    expect(actions).to eq [
+      # First it runs why-run to check if the resource would update
+      { resource: log_resource.to_s,     action: :write,   why_run: true },
+      # Then it runs the before action
+      { resource: package_resource.to_s, action: :install, notification_type: :before, notifying_resource: log_resource.to_s },
+      # Then it runs the actual action
+      { resource: log_resource.to_s,     action: :write },
+      { resource: package_resource.to_s, action: :nothing },
+    ]
+  end
+
+  it "should not notify from one resource to another before if the resource is not updated" do
+    log_resource = recipe.declare_resource(:log, "log") do
+      message "This is a log message"
+      action :write
+      notifies :install, "package[vim]", :before
+    end
+
+    package_resource = recipe.declare_resource(:package, "vim") do
+      action :nothing
+    end
+
+    actions = []
+    [ log_resource, package_resource ].each do |resource|
+      allow(resource).to receive(:run_action).and_wrap_original do |m, action, notification_type, notifying_resource|
+        actions << { resource: resource.to_s, action: action }
+        actions[-1][:why_run] = Chef::Config[:why_run] if Chef::Config[:why_run]
+        actions[-1][:notification_type] = notification_type if notification_type
+        actions[-1][:notifying_resource] = notifying_resource.to_s if notifying_resource
+        m.call(action, notification_type, notifying_resource)
+      end
+    end
+
+    runner.converge
+
+    expect(actions).to eq [
+      # First it runs why-run to check if the resource would update
+      { resource: log_resource.to_s,     action: :write, why_run: true },
+      # Then it does NOT run the before action
+      # Then it runs the actual action
+      { resource: log_resource.to_s,     action: :write },
+      { resource: package_resource.to_s, action: :nothing },
+    ]
+  end
+
   it "should notify from one resource to another delayed" do
     log_resource = recipe.declare_resource(:log, "log") do
       message "This is a log message"
@@ -94,7 +163,7 @@ describe "Notifications" do
 
     runner.converge
   end
-  
+
   describe "when one resource is defined lazily" do
 
     it "subscribes to a resource defined in a ruby block" do
@@ -158,10 +227,10 @@ describe "Notifications" do
   end
 
   # Mocks having the provider run successfully and update the resource
-  def update_action(resource)
+  def update_action(resource, times = 1)
     p = Chef::Provider.new(resource, run_context)
-    expect(resource).to receive(:provider_for_action).and_return(p)
-    expect(p).to receive(:run_action) {
+    expect(resource).to receive(:provider_for_action).exactly(times).times.and_return(p)
+    expect(p).to receive(:run_action).exactly(times).times {
       resource.updated_by_last_action(true)
     }
   end

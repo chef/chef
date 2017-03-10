@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 require "chef/node/immutable_collections"
 
 describe Chef::Node::ImmutableMash do
   before do
-    @data_in = {:top => {:second_level => "some value"},
-                "top_level_2" => %w[array of values],
-                :top_level_3 => [{:hash_array => 1, :hash_array_b => 2}],
-                :top_level_4 => {:level2 => {:key => "value"}}
+    @data_in = { :top => { :second_level => "some value" },
+                 "top_level_2" => %w{array of values},
+                 :top_level_3 => [{ :hash_array => 1, :hash_array_b => 2 }],
+                 :top_level_4 => { :level2 => { :key => "value" } },
     }
     @immutable_mash = Chef::Node::ImmutableMash.new(@data_in)
   end
@@ -34,7 +34,7 @@ describe Chef::Node::ImmutableMash do
   end
 
   it "element references like a regular Mash" do
-    expect(@immutable_mash[:top_level_2]).to eq(%w[array of values])
+    expect(@immutable_mash[:top_level_2]).to eq(%w{array of values})
   end
 
   it "converts Hash-like inputs into ImmutableMash's" do
@@ -64,19 +64,19 @@ describe Chef::Node::ImmutableMash do
     end
 
     it "converts an immutable nested mash to a new mutable hash" do
-      expect(@copy['top_level_4']['level2']).to be_instance_of(Hash)
+      expect(@copy["top_level_4"]["level2"]).to be_instance_of(Hash)
     end
 
     it "converts an immutable nested array to a new mutable array" do
-      expect(@copy['top_level_2']).to be_instance_of(Array)
+      expect(@copy["top_level_2"]).to be_instance_of(Array)
     end
 
     it "should create a mash with the same content" do
       expect(@copy).to eq(@immutable_mash)
     end
 
-    it 'should allow mutation' do
-      expect { @copy['m'] = 'm' }.not_to raise_error
+    it "should allow mutation" do
+      expect { @copy["m"] = "m" }.not_to raise_error
     end
 
   end
@@ -94,10 +94,14 @@ describe Chef::Node::ImmutableMash do
     :reject!,
     :replace,
     :select!,
-    :shift
+    :shift,
+    :write,
+    :write!,
+    :unlink,
+    :unlink!,
   ].each do |mutator|
     it "doesn't allow mutation via `#{mutator}'" do
-      expect { @immutable_mash.send(mutator) }.to raise_error
+      expect { @immutable_mash.send(mutator) }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
   end
 
@@ -112,9 +116,9 @@ end
 describe Chef::Node::ImmutableArray do
 
   before do
-    @immutable_array = Chef::Node::ImmutableArray.new(%w[foo bar baz] + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ])
-    immutable_mash = Chef::Node::ImmutableMash.new({:m => 'm'})
-    @immutable_nested_array = Chef::Node::ImmutableArray.new(["level1",@immutable_array, immutable_mash])
+    @immutable_array = Chef::Node::ImmutableArray.new(%w{foo bar baz} + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ])
+    immutable_mash = Chef::Node::ImmutableMash.new({ :m => "m" })
+    @immutable_nested_array = Chef::Node::ImmutableArray.new(["level1", @immutable_array, immutable_mash])
   end
 
   ##
@@ -151,10 +155,10 @@ describe Chef::Node::ImmutableArray do
     :sort!,
     :sort_by!,
     :uniq!,
-    :unshift
+    :unshift,
   ].each do |mutator|
     it "does not allow mutation via `#{mutator}" do
-      expect { @immutable_array.send(mutator)}.to raise_error
+      expect { @immutable_array.send(mutator) }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
   end
 
@@ -189,10 +193,14 @@ describe Chef::Node::ImmutableArray do
       expect(@copy).to eq(@immutable_nested_array)
     end
 
-    it 'should allow mutation' do
-      expect { @copy << 'm' }.not_to raise_error
+    it "should allow mutation" do
+      expect { @copy << "m" }.not_to raise_error
     end
   end
 
+  describe "#[]" do
+    it "works with array slices" do
+      expect(@immutable_array[1, 2]).to eql(%w{bar baz})
+    end
+  end
 end
-

@@ -1,0 +1,9 @@
+suites:
+  - name: docker-default
+    attributes:
+      docker:
+        version: 1.10.0
+    run_list:
+      - recipe[apt]
+      - recipe[chef-apt-docker]
+    includes: [ubuntu-14.04]

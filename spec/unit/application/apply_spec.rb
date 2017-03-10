@@ -1,6 +1,6 @@
 #
 # Author:: Bryan W. Berry (<bryan.berry@gmail.com>)
-# Copyright:: Copyright (c) 2012 Bryan W. Berry
+# Copyright:: Copyright 2012-2016, Bryan W. Berry
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +15,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Application::Apply do
 
   before do
     @app = Chef::Application::Apply.new
     allow(@app).to receive(:configure_logging).and_return(true)
+    allow(Chef::Log).to receive(:debug).with("FIPS mode is enabled.")
     @recipe_text = "package 'nyancat'"
-    Chef::Config[:solo] = true
+    Chef::Config[:solo_legacy_mode] = true
   end
 
   describe "configuring the application" do
     it "should set solo mode to true" do
       @app.reconfigure
-      expect(Chef::Config[:solo]).to be_truthy
+      expect(Chef::Config[:solo_legacy_mode]).to be_truthy
     end
   end
   describe "read_recipe_file" do
@@ -51,7 +52,8 @@ describe Chef::Application::Apply do
 
     describe "when recipe is nil" do
       it "should raise a fatal with the missing filename message" do
-        expect(Chef::Application).to receive(:fatal!).with("No recipe file was provided", 1)
+        expect(Chef::Application).to receive(:fatal!).with("No recipe file was provided",
+          Chef::Exceptions::RecipeNotFound.new)
         @app.read_recipe_file(nil)
       end
     end
@@ -60,7 +62,8 @@ describe Chef::Application::Apply do
         allow(File).to receive(:exist?).with(@recipe_path).and_return(false)
       end
       it "should raise a fatal with the file doesn't exist message" do
-        expect(Chef::Application).to receive(:fatal!).with(/^No file exists at/, 1)
+        expect(Chef::Application).to receive(:fatal!).with(/^No file exists at/,
+          Chef::Exceptions::RecipeNotFound.new)
         @app.read_recipe_file(@recipe_file_name)
       end
     end
@@ -92,7 +95,7 @@ describe Chef::Application::Apply do
 
   end
   describe "when the json_attribs configuration option is specified" do
-    let(:json_attribs) { {"a" => "b"} }
+    let(:json_attribs) { { "a" => "b" } }
     let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
     let(:json_source) { "https://foo.com/foo.json" }
 

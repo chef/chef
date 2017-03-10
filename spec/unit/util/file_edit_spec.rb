@@ -1,6 +1,6 @@
 #
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tempfile'
+require "spec_helper"
+require "tempfile"
 
 describe Chef::Util::FileEdit do
 
@@ -93,7 +93,7 @@ twice
   end
 
   let(:target_file) do
-    f = Tempfile.open('file_edit_spec')
+    f = Tempfile.open("file_edit_spec")
     f.write(starting_content)
     f.close
     f
@@ -111,7 +111,7 @@ twice
     end
 
     it "should throw an exception if the input file does not exist" do
-      expect{Chef::Util::FileEdit.new("nonexistfile")}.to raise_error(ArgumentError)
+      expect { Chef::Util::FileEdit.new("nonexistfile") }.to raise_error(ArgumentError)
     end
 
     # CHEF-5018: people have monkey patched this and it has accidentally been broken
@@ -124,7 +124,7 @@ twice
     let(:hosts_content) { "" }
 
     it "should not throw an exception" do
-      expect{ fedit }.not_to raise_error
+      expect { fedit }.not_to raise_error
     end
   end
 

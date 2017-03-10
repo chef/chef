@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Author:: Jay Mundrawala (<jdm@getchef.com>)
+# Author:: Jay Mundrawala (<jdm@chef.io>)
 #
 # Copyright:: 2014, Chef Software, Inc.
 #
@@ -19,14 +19,14 @@
 
 # Note:
 # The file is used by appbundler to generate a ruby file that
-# we can execute using the correct gems. The batch file we 
+# we can execute using the correct gems. The batch file we
 # generate will call that file, and will be registered as
 # a windows service.
 
-require 'rubygems'
+require "rubygems"
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-require 'chef'
-require 'chef/application/windows_service'
+require "chef"
+require "chef/application/windows_service"
 
 if Chef::Platform.windows?
   Chef::Application::WindowsService.mainloop

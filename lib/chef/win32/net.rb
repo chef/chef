@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala(<jdm@chef.io>)
-# Copyright:: Copyright 2015 Chef Software
+# Copyright:: Copyright 2015-2016, Chef Software
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/net'
-require 'chef/win32/error'
-require 'chef/mixin/wide_string'
+require "chef/win32/api/net"
+require "chef/win32/error"
+require "chef/mixin/wide_string"
 
 class Chef
   module ReservedNames::Win32
@@ -40,7 +40,7 @@ class Chef
             usri3_priv: 0,
             usri3_home_dir: nil,
             usri3_comment: nil,
-            usri3_flags: UF_SCRIPT|UF_DONT_EXPIRE_PASSWD|UF_NORMAL_ACCOUNT,
+            usri3_flags: UF_SCRIPT | UF_DONT_EXPIRE_PASSWD | UF_NORMAL_ACCOUNT,
             usri3_script_path: nil,
             usri3_auth_flags: 0,
             usri3_full_name: nil,
@@ -62,44 +62,11 @@ class Chef
             usri3_primary_group_id: DOMAIN_GROUP_RID_USERS,
             usri3_profile: nil,
             usri3_home_dir_drive: nil,
-            usri3_password_expired: 0
-          }.each do |(k,v)|
+            usri3_password_expired: 0,
+          }.each do |(k, v)|
             s.set(k, v)
           end
         end
-      end
-
-      def self.net_api_error!(code)
-        msg = case code
-        when NERR_InvalidComputer
-          "The user does not have access to the requested information."
-        when NERR_NotPrimary
-          "The operation is allowed only on the primary domain controller of the domain."
-        when NERR_SpeGroupOp
-          "This operation is not allowed on this special group."
-        when NERR_LastAdmin
-          "This operation is not allowed on the last administrative account."
-        when NERR_BadUsername
-          "The user name or group name parameter is invalid."
-        when NERR_BadPassword
-          "The password parameter is invalid."
-        when NERR_UserNotFound
-          raise Chef::Exceptions::UserIDNotFound, code
-        when NERR_PasswordTooShort
-          <<END
-The password is shorter than required. (The password could also be too
-long, be too recent in its change history, not have enough unique characters,
-or not meet another password policy requirement.)
-END
-        when NERR_GroupNotFound
-          "The group name could not be found."
-        when ERROR_ACCESS_DENIED
-          "The user does not have access to the requested information."
-        else
-          "Received unknown error code (#{code})"
-        end
-
-        raise Chef::Exceptions::Win32NetAPIError.new(msg, code)
       end
 
       def self.net_local_group_add(server_name, group_name)
@@ -111,7 +78,7 @@ END
 
         rc = NetLocalGroupAdd(server_name, 0, buf, nil)
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
       end
 
@@ -121,7 +88,7 @@ END
 
         rc = NetLocalGroupDel(server_name, group_name)
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
       end
 
@@ -145,7 +112,7 @@ END
           nread = entries_read_ptr.read_long
           nread.times do |i|
             member = LOCALGROUP_MEMBERS_INFO_0.new(buf.read_pointer +
-                       (i * LOCALGROUP_MEMBERS_INFO_0.size))
+                                                   (i * LOCALGROUP_MEMBERS_INFO_0.size))
             member_sid = Chef::ReservedNames::Win32::Security::SID.new(member[:lgrmi0_sid])
             group_members << member_sid.to_s
           end
@@ -153,7 +120,7 @@ END
         end
 
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
 
         group_members
@@ -170,7 +137,7 @@ END
 
         rc = NetUserAdd(server_name, 3, buf, nil)
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
       end
 
@@ -183,7 +150,7 @@ END
         rc = NetUserGetInfo(server_name, user_name, 3, ui3_p)
 
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
 
         ui3 = USER_INFO_3.new(ui3_p.read_pointer).as_ruby
@@ -191,7 +158,7 @@ END
         rc = NetApiBufferFree(ui3_p.read_pointer)
 
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
 
         ui3
@@ -209,7 +176,7 @@ END
 
         rc = NetUserSetInfo(server_name, user_name, 3, buf, nil)
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
       end
 
@@ -219,7 +186,7 @@ END
 
         rc = NetUserDel(server_name, user_name)
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
       end
 
@@ -234,13 +201,13 @@ END
         rc = NetLocalGroupAddMembers(server_name, group_name, 3, buf, 1)
 
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
       end
 
       def self.members_to_lgrmi3(members)
         buf = FFI::MemoryPointer.new(LOCALGROUP_MEMBERS_INFO_3, members.size)
-        members.size.times.collect do |i|
+        Array.new(members.size) do |i|
           member_info = LOCALGROUP_MEMBERS_INFO_3.new(
             buf + i * LOCALGROUP_MEMBERS_INFO_3.size)
           member_info[:lgrmi3_domainandname] = FFI::MemoryPointer.from_string(wstring(members[i]))
@@ -257,7 +224,7 @@ END
           server_name, group_name, 3, lgrmi3s[0], members.size)
 
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
       end
 
@@ -270,7 +237,7 @@ END
           server_name, group_name, 3, lgrmi3s[0], members.size)
 
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
       end
 
@@ -283,11 +250,11 @@ END
           server_name, group_name, 3, lgrmi3s[0], members.size)
 
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
       end
 
-      def self.net_use_del(server_name, use_name, force=:use_noforce)
+      def self.net_use_del(server_name, use_name, force = :use_noforce)
         server_name = wstring(server_name)
         use_name = wstring(use_name)
         force_const = case force
@@ -303,7 +270,7 @@ END
 
         rc = NetUseDel(server_name, use_name, force_const)
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
       end
 
@@ -314,7 +281,7 @@ END
 
         rc = NetUseGetInfo(server_name, use_name, 2, ui2_p)
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
 
         ui2 = USE_INFO_2.new(ui2_p.read_pointer).as_ruby
@@ -329,13 +296,13 @@ END
 
         buf = USE_INFO_2.new
 
-        ui2_hash.each do |(k,v)|
-          buf.set(k,v)
+        ui2_hash.each do |(k, v)|
+          buf.set(k, v)
         end
 
         rc = NetUseAdd(server_name, 2, buf, nil)
         if rc != NERR_Success
-          net_api_error!(rc)
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
         end
       end
     end

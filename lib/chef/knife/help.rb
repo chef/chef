@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,17 +40,15 @@ class Chef
 MOAR_HELP
           exit 1
         else
-          @query = name_args.join('-')
+          @query = name_args.join("-")
         end
 
-
-
         case @query
-        when 'topics', 'list'
+        when "topics", "list"
           print_help_topics
           exit 1
-        when 'intro', 'knife'
-          @topic = 'knife'
+        when "intro", "knife"
+          @topic = "knife"
         else
           @topic = find_manpages_for_query(@query)
         end
@@ -67,7 +65,7 @@ MOAR_HELP
 
       def print_help_topics
         ui.info "Available help topics are: "
-        help_topics.collect {|t| t.gsub(/knife-/, '') }.sort.each do |topic|
+        help_topics.collect { |t| t.gsub(/knife-/, "") }.sort.each do |topic|
           ui.msg "  #{topic}"
         end
       end
@@ -92,7 +90,7 @@ MOAR_HELP
       def find_manpage_path(topic)
         if ::File.exists?(::File.expand_path("../distro/common/man/man1/#{topic}.1", CHEF_ROOT))
           # If we've provided the man page in the gem, give that
-          return ::File.expand_path("../distro/common/man/man1/#{topic}.1", CHEF_ROOT)
+          ::File.expand_path("../distro/common/man/man1/#{topic}.1", CHEF_ROOT)
         else
           # Otherwise, we'll just be using MANPATH
           topic

@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'singleton'
-require 'chef/platform/handler_map'
+require "singleton"
+require "chef/node_map"
 
 class Chef
   class Platform
     # @api private
-    class ProviderHandlerMap < Chef::Platform::HandlerMap
+    class ProviderHandlerMap < Chef::NodeMap
       include Singleton
     end
   end

@@ -1,7 +1,7 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software, Inc.
 #p License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,20 +17,20 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::CookbookFile do
   before do
-    @cookbook_file = Chef::Resource::CookbookFile.new('sourcecode_tarball.tgz')
+    @cookbook_file = Chef::Resource::CookbookFile.new("sourcecode_tarball.tgz")
   end
 
   it "uses the name parameter for the source parameter" do
-    expect(@cookbook_file.name).to eq('sourcecode_tarball.tgz')
+    expect(@cookbook_file.name).to eq("sourcecode_tarball.tgz")
   end
 
   it "has a source parameter" do
-    @cookbook_file.name('config_file.conf')
-    expect(@cookbook_file.name).to eq('config_file.conf')
+    @cookbook_file.name("config_file.conf")
+    expect(@cookbook_file.name).to eq("config_file.conf")
   end
 
   it "defaults to a nil cookbook parameter (current cookbook will be used)" do
@@ -39,7 +39,7 @@ describe Chef::Resource::CookbookFile do
 
   it "has a cookbook parameter" do
     @cookbook_file.cookbook("munin")
-    expect(@cookbook_file.cookbook).to eq('munin')
+    expect(@cookbook_file.cookbook).to eq("munin")
   end
 
   it "sets the provider to Chef::Provider::CookbookFile" do
@@ -48,28 +48,27 @@ describe Chef::Resource::CookbookFile do
 
   describe "when it has a backup number, group, mode, owner, source, checksum, and cookbook on nix or path, rights, deny_rights, checksum on windows" do
     before do
-       if Chef::Platform.windows?
-         @cookbook_file.path("C:/temp/origin/file.txt")
-         @cookbook_file.rights(:read, "Everyone")
-         @cookbook_file.deny_rights(:full_control, "Clumsy_Sam")
-       else
-         @cookbook_file.path("/tmp/origin/file.txt")
-         @cookbook_file.group("wheel")
-         @cookbook_file.mode("0664")
-         @cookbook_file.owner("root")
-         @cookbook_file.source("/tmp/foo.txt")
-         @cookbook_file.cookbook("/tmp/cookbooks/cooked.rb")
-       end
+      if Chef::Platform.windows?
+        @cookbook_file.path("C:/temp/origin/file.txt")
+        @cookbook_file.rights(:read, "Everyone")
+        @cookbook_file.deny_rights(:full_control, "Clumsy_Sam")
+      else
+        @cookbook_file.path("/tmp/origin/file.txt")
+        @cookbook_file.group("wheel")
+        @cookbook_file.mode("0664")
+        @cookbook_file.owner("root")
+        @cookbook_file.source("/tmp/foo.txt")
+        @cookbook_file.cookbook("/tmp/cookbooks/cooked.rb")
+      end
       @cookbook_file.checksum("1" * 64)
     end
-
 
     it "describes the state" do
       state = @cookbook_file.state
       if Chef::Platform.windows?
         puts state
-        expect(state[:rights]).to eq([{:permissions => :read, :principals => "Everyone"}])
-        expect(state[:deny_rights]).to eq([{:permissions => :full_control, :principals => "Clumsy_Sam"}])
+        expect(state[:rights]).to eq([{ :permissions => :read, :principals => "Everyone" }])
+        expect(state[:deny_rights]).to eq([{ :permissions => :full_control, :principals => "Clumsy_Sam" }])
       else
         expect(state[:group]).to eq("wheel")
         expect(state[:mode]).to eq("0664")

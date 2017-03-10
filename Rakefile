@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,47 +19,86 @@
 
 VERSION = IO.read(File.expand_path("../VERSION", __FILE__)).strip
 
-require 'rubygems'
-require 'chef-config/package_task'
-require 'rdoc/task'
-require_relative 'tasks/rspec'
-require_relative 'tasks/external_tests'
-require_relative 'tasks/maintainers'
+require "rubygems"
+require "chef/version"
+require "chef-config/package_task"
+require "rdoc/task"
+require_relative "tasks/rspec"
+require_relative "tasks/maintainers"
+require_relative "tasks/cbgb"
+require_relative "tasks/dependencies"
+require_relative "tasks/changelog"
+require_relative "tasks/announce"
 
-ChefConfig::PackageTask.new(File.expand_path('..', __FILE__), 'Chef') do |package|
-  package.component_paths = ['chef-config']
+ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef", "chef") do |package|
+  package.component_paths = ["chef-config"]
   package.generate_version_class = true
 end
+# Add conservative dependency update to version:bump (which was created by PackageTask)
+task "version:bump" => %w{version:bump_patch version:update}
+task "version:bump" => %w{version:bump_patch version:update}
 
-task :pedant do
-  require File.expand_path('spec/support/pedant/run_pedant')
+task "version:bump_minor" do
+  Rake::Task["changelog:archive"].invoke
+  maj, min, _build = Chef::VERSION.split(".")
+  File.open("VERSION", "w+") { |f| f.write("#{maj}.#{min.to_i + 1}.0") }
+  Rake::Task["version"].invoke
+  Rake::Task["bundle:install"].invoke
 end
 
+task "version:bump_major" do
+  Rake::Task["changelog:archive"].invoke
+  maj, _min, _build = Chef::VERSION.split(".")
+  File.open("VERSION", "w+") { |f| f.write("#{maj.to_i + 1}.0.0") }
+  Rake::Task["version"].invoke
+  Rake::Task["bundle:install"].invoke
+end
+
+task :pedant, :chef_zero_spec
+
 task :build_eventlog do
-  Dir.chdir 'ext/win32-eventlog/' do
-    system 'rake build'
+  Dir.chdir "ext/win32-eventlog/" do
+    system "rake build"
   end
 end
 
 task :register_eventlog do
-  Dir.chdir 'ext/win32-eventlog/' do
-    system 'rake register'
+  Dir.chdir "ext/win32-eventlog/" do
+    system "rake register"
   end
 end
 
+desc "Keep the Dockerfile up-to-date"
+task :update_dockerfile do
+  require "mixlib/install"
+  latest_stable_version = Mixlib::Install.available_versions("chef", "stable").last
+  text = File.read("Dockerfile")
+  new_text = text.gsub(/^ARG VERSION=[\d\.]+$/, "ARG VERSION=#{latest_stable_version}")
+  File.open("Dockerfile", "w+") { |f| f.write(new_text) }
+end
+
 begin
-  require 'yard'
+  require "chefstyle"
+  require "rubocop/rake_task"
+  RuboCop::RakeTask.new(:style) do |task|
+    task.options += ["--display-cop-names", "--no-color"]
+  end
+rescue LoadError
+  puts "chefstyle/rubocop is not available.  gem install chefstyle to do style checking."
+end
+
+begin
+  require "yard"
   DOC_FILES = [ "README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb" ]
   namespace :yard do
     desc "Create YARD documentation"
 
     YARD::Rake::YardocTask.new(:html) do |t|
       t.files = DOC_FILES
-      t.options = ['--format', 'html']
+      t.options = ["--format", "html"]
     end
   end
 
 rescue LoadError
   puts "yard is not available. (sudo) gem install yard to generate yard documentation."
 end
-

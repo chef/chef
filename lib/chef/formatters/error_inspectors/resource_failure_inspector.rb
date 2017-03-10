@@ -1,7 +1,7 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +52,7 @@ class Chef
           end
 
           if Chef::Platform.windows?
-            require 'chef/win32/security'
+            require "chef/win32/security"
 
             if !Chef::ReservedNames::Win32::Security.has_admin_privileges?
               error_description.section("Missing Windows Admin Privileges", "chef-client doesn't have administrator privileges. This can be a possible reason for the resource failure.")
@@ -63,12 +63,11 @@ class Chef
         def recipe_snippet
           return nil if dynamic_resource?
           @snippet ||= begin
-            if file = parse_source and line = parse_line(file)
+            if (file = parse_source) && (line = parse_line(file))
               return nil unless ::File.exists?(file)
               lines = IO.readlines(file)
 
               relevant_lines = ["# In #{file}\n\n"]
-
 
               current_line = line - 1
               current_line = 0 if current_line < 0
@@ -99,8 +98,8 @@ class Chef
         end
 
         def filtered_bt
-          filters = Array(Chef::Config.cookbook_path).map {|p| /^#{Regexp.escape(p)}/ }
-          exception.backtrace.select {|line| filters.any? {|filter| line =~ filter }}
+          filters = Array(Chef::Config.cookbook_path).map { |p| /^#{Regexp.escape(p)}/ }
+          exception.backtrace.select { |line| filters.any? { |filter| line =~ filter } }
         end
 
         private
@@ -112,14 +111,12 @@ class Chef
         end
 
         def parse_source
-          resource.source_line[/^(([\w]:)?[^:]+):([\d]+)/,1]
+          resource.source_line[/^(([\w]:)?[^:]+):([\d]+)/, 1]
         end
 
         def parse_line(source)
-          resource.source_line[/^#{Regexp.escape(source)}:([\d]+)/,1].to_i
+          resource.source_line[/^#{Regexp.escape(source)}:([\d]+)/, 1].to_i
         end
-
-
 
       end
     end

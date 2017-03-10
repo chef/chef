@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'rspec/core/sandbox'
-require 'chef/audit/runner'
-require 'chef/audit/audit_event_proxy'
-require 'chef/audit/rspec_formatter'
-require 'rspec/support/spec/in_sub_process'
-require 'rspec/support/spec/stderr_splitter'
-
+require "spec_helper"
+require "rspec/core/sandbox"
+require "chef/audit/runner"
+require "chef/audit/audit_event_proxy"
+require "chef/audit/rspec_formatter"
+require "rspec/support/spec/in_sub_process"
+require "rspec/support/spec/stderr_splitter"
 
 describe Chef::Audit::Runner do
   include RSpec::Support::InSubProcess
@@ -54,7 +53,7 @@ describe Chef::Audit::Runner do
   context "during #run" do
 
     describe "#setup" do
-      let(:log_location) { File.join(Dir.tmpdir, 'audit_log') }
+      let(:log_location) { File.join(Dir.tmpdir, "audit_log") }
       let(:color) { false }
 
       before do
@@ -100,8 +99,8 @@ describe Chef::Audit::Runner do
       end
 
       context "audits exist" do
-        let(:audits) { {"audit_name" => group} }
-        let(:group) {Struct.new(:args, :block).new(["group_name"], nil)}
+        let(:audits) { { "audit_name" => group } }
+        let(:group) { Struct.new(:args, :block).new(["group_name"], nil) }
 
         it "sends the audits to the world" do
           runner.send(:register_control_groups)

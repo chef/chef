@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class DataBagDelete < Knife
 
       deps do
-        require 'chef/data_bag'
+        require "chef/data_bag"
       end
 
       banner "knife data bag delete BAG [ITEM] (options)"
@@ -32,11 +32,11 @@ class Chef
       def run
         if @name_args.length == 2
           delete_object(Chef::DataBagItem, @name_args[1], "data_bag_item") do
-            rest.delete_rest("data/#{@name_args[0]}/#{@name_args[1]}")
+            rest.delete("data/#{@name_args[0]}/#{@name_args[1]}")
           end
         elsif @name_args.length == 1
           delete_object(Chef::DataBag, @name_args[0], "data_bag") do
-            rest.delete_rest("data/#{@name_args[0]}")
+            rest.delete("data/#{@name_args[0]}")
           end
         else
           show_usage
@@ -47,5 +47,3 @@ class Chef
     end
   end
 end
-
-

@@ -1,9 +1,50 @@
+# This buys us the ability to be included in other Gemfiles
+require_relative "tasks/gemfile_util"
+extend GemfileUtil
+
 source "https://rubygems.org"
-gemspec :name => "chef"
 
-gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
+# Note we do not use the gemspec DSL which restricts to the
+# gemspec for the current platform and filters out other platforms
+# during a bundle lock operation. We actually want dependencies from
+# both of our gemspecs. Also note this this mimics gemspec behavior
+# of bundler versions prior to 1.12.0 (https://github.com/bundler/bundler/commit/193a14fe5e0d56294c7b370a0e59f93b2c216eed)
+gem "chef", path: "."
 
-gem 'chef-config', path: "chef-config" if File.exists?(__FILE__ + '../chef-config')
+gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
+gem "rake"
+gem "bundler"
+gem "cheffish" # required for rspec tests
+
+group(:omnibus_package) do
+  gem "appbundler"
+  gem "rb-readline"
+  gem "nokogiri"
+end
+
+group(:omnibus_package, :pry) do
+  gem "pry"
+  gem "pry-byebug"
+  gem "pry-remote"
+  gem "pry-stack_explorer"
+end
+
+# These are used for external tests
+group(:integration) do
+  gem "chef-provisioning"
+  gem "chef-sugar"
+  gem "chefspec"
+  gem "halite"
+  gem "poise"
+  gem "poise-boiler"
+  gem "knife-windows"
+  gem "foodcritic"
+
+  # We pin this so nobody brings in a cucumber-core incompatible with cucumber latest
+  gem "cucumber", ">= 2.4.0"
+  # We pin oc-chef-pedant to prevent it from updating out of lockstep with chef-zero
+  gem "oc-chef-pedant", git: "https://github.com/chef/chef-server"
+end
 
 group(:docgen) do
   gem "yard"
@@ -17,32 +58,38 @@ group(:maintenance) do
   gem "netrc"
 end
 
-group(:development, :test) do
-  # for profiling
+# Everything except AIX
+group(:linux, :bsd, :mac_os_x, :solaris, :windows) do
+  # may need to disable this in insolation on fussy builds like AIX, RHEL4, etc
   gem "ruby-prof"
-
-  gem "simplecov"
-  gem 'rack', "~> 1.5.1"
-
-
-  gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(aix|cygwin)/)
-
-  # For external tests
-#  gem 'chef-zero', github: 'chef/chef-zero'
-#  gem 'cheffish', github: 'chef/cheffish'
-#  gem 'chef-provisioning'#, github: 'chef/chef-provisioning'
-#  gem 'chef-provisioning-aws', github: 'chef/chef-provisioning-aws'
-#  gem 'test-kitchen'
-#  gem 'chefspec'
-#  gem 'chef-sugar'
-#  gem 'poise', github: 'poise/poise', branch: 'deeecb890a6a0bc2037dfb09ce0fd0a8931519aa'
-#  gem 'halite', github: 'poise/halite'
-#  gem 'foodcritic', github: 'acrmp/foodcritic', branch: 'v5.0.0'
-#  gem 'chef-rewind'
 end
 
-instance_eval(ENV['GEMFILE_MOD']) if ENV['GEMFILE_MOD']
+# Everything except AIX and Windows
+group(:linux, :bsd, :mac_os_x, :solaris) do
+  gem "ruby-shadow", platforms: :ruby
+end
+
+group(:development, :test) do
+  gem "simplecov"
+
+  # for testing new chefstyle rules
+  # gem 'chefstyle', github: 'chef/chefstyle'
+  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
+end
+
+group(:changelog) do
+  gem "github_changelog_generator", git: "https://github.com/chef/github-changelog-generator"
+  gem "mixlib-install"
+end
+
+group(:travis) do
+  # See `bundler-audit` in .travis.yml
+  gem "bundler-audit", git: "https://github.com/rubysec/bundler-audit.git"
+  gem "travis"
+end
+
+instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
 # If you want to load debugging tools into the bundle exec sandbox,
 # add these additional dependencies into chef/Gemfile.local
-eval(IO.read(__FILE__ + '.local'), binding) if File.exists?(__FILE__ + '.local')
+eval(IO.read(__FILE__ + ".local"), binding) if File.exist?(__FILE__ + ".local")

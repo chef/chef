@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
-# Copyright:: Copyright (c) 2013-2015 Chef Software, Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ class Chef
       module RemoteDirectory
 
         def directory_root_in_cookbook_cache
-          Chef.log_deprecation "the Chef::Provider::RemoteDirectory#directory_root_in_cookbook_cache method is deprecated"
+          Chef.deprecated :internal_api, "the Chef::Provider::RemoteDirectory#directory_root_in_cookbook_cache method is deprecated"
 
           @directory_root_in_cookbook_cache ||=
             begin
@@ -33,17 +33,17 @@ class Chef
 
         # List all excluding . and ..
         def ls(path)
-          files = Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob(path), '**', '*'),
+          files = Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob_dir(path), "**", "*"),
                            ::File::FNM_DOTMATCH)
 
           # Remove current directory and previous directory
           files = files.reject do |name|
             basename = Pathname.new(name).basename().to_s
-            ['.', '..'].include?(basename)
+            [".", ".."].include?(basename)
           end
 
           # Clean all the paths... this is required because of the join
-          files.map {|f| Chef::Util::PathHelper.cleanpath(f)}
+          files.map { |f| Chef::Util::PathHelper.cleanpath(f) }
         end
 
       end

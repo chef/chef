@@ -1,7 +1,7 @@
 #
-# Author:: Jay Mundrawala (<jdm@getchef.com>)
+# Author:: Jay Mundrawala (<jdm@chef.io>)
 #
-# Copyright:: 2014, Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/util/dsc/resource_info'
-require 'chef/exceptions'
+require "chef/log"
+require "chef/util/dsc/resource_info"
+require "chef/exceptions"
 
 class Chef
   class Util
@@ -73,13 +73,13 @@ class Chef
                   if current_resource[:name]
                     resources.push(current_resource)
                   end
-                  current_resource = {:name => info}
+                  current_resource = { :name => info }
                 else
                   Chef::Log.debug("Ignoring op_action #{op_action}: Read line #{line}")
                 end
               when :end
                 # Make sure we log the last line
-                if current_resource[:context] == :logging and info.include? current_resource[:name]
+                if current_resource[:context] == :logging && info.include?(current_resource[:name])
                   current_resource[:logs].push(info)
                 end
                 current_resource[:context] = nil
@@ -108,8 +108,8 @@ class Chef
                 # If the line looks like
                 # What If: [machinename]: LCM: [op_action op_type] message
                 # extract op_action, op_type, and message
-                operation, info = match.captures
-                op_action, op_type = operation.strip.split(' ').map {|m| m.downcase.to_sym}
+              operation, info = match.captures
+              op_action, op_type = operation.strip.split(" ").map { |m| m.downcase.to_sym }
             else
               op_action = op_type = :info
               if match = line.match(/^.*?:.*?: \s+(.*)/)
@@ -119,7 +119,7 @@ class Chef
               end
             end
             info.strip! # Because this was formatted for humans
-            return [op_action, op_type, info]
+            [op_action, op_type, info]
           end
           private_class_method :parse_line
 

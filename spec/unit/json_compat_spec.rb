@@ -1,6 +1,6 @@
 #
 # Author:: Juanje Ojeda (<juanje.ojeda@gmail.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,20 @@
 # limitations under the License.
 #
 
-require File.expand_path('../../spec_helper', __FILE__)
-require 'chef/json_compat'
+require File.expand_path("../../spec_helper", __FILE__)
+require "chef/json_compat"
 
 describe Chef::JSONCompat do
+  before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
 
   describe "#from_json with JSON containing an existing class" do
     let(:json) { '{"json_class": "Chef::Role"}' }
+
+    it "emits a deprecation warning" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = true
+      expect { Chef::JSONCompat.from_json(json) }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
+        /Auto inflation of JSON data is deprecated. Please use Chef::Role#from_hash/
+    end
 
     it "returns an instance of the class instead of a Hash" do
       expect(Chef::JSONCompat.from_json(json).class).to eq Chef::Role
@@ -46,19 +53,19 @@ describe Chef::JSONCompat do
   end
 
   describe 'with JSON containing "Chef::Sandbox" as a json_class value' do
-    require 'chef/sandbox' # Only needed for this test
+    require "chef/sandbox" # Only needed for this test
 
     let(:json) { '{"json_class": "Chef::Sandbox", "arbitrary": "data"}' }
 
     it "returns a Hash, because Chef::Sandbox is a dummy class" do
-      expect(Chef::JSONCompat.from_json(json)).to eq({"json_class" => "Chef::Sandbox", "arbitrary" => "data"})
+      expect(Chef::JSONCompat.from_json(json)).to eq({ "json_class" => "Chef::Sandbox", "arbitrary" => "data" })
     end
   end
 
   describe "when pretty printing an object that defines #to_json" do
     class Foo
       def to_json(*a)
-        Chef::JSONCompat.to_json({'foo' => 1234, 'bar' => {'baz' => 5678}}, *a)
+        Chef::JSONCompat.to_json({ "foo" => 1234, "bar" => { "baz" => 5678 } }, *a)
       end
     end
 
@@ -73,7 +80,7 @@ describe Chef::JSONCompat do
   end
 
   describe "with the file with 252 or less nested entries" do
-    let(:json) { IO.read(File.join(CHEF_SPEC_DATA, 'nested.json')) }
+    let(:json) { IO.read(File.join(CHEF_SPEC_DATA, "nested.json")) }
     let(:hash) { Chef::JSONCompat.from_json(json) }
 
     describe "when the 252 json file is loaded" do
@@ -83,9 +90,9 @@ describe Chef::JSONCompat do
 
       it "should has 'test' as a 252 nested value" do
         v = 252.times.inject(hash) do |memo, _|
-          memo['key']
+          memo["key"]
         end
-        expect(v).to eq('test')
+        expect(v).to eq("test")
       end
     end
   end

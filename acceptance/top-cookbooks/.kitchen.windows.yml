@@ -1,0 +1,38 @@
+suites:
+  # Waiting on https://github.com/chef-cookbooks/windows/pull/350
+  # - name: tasks
+  #   run_list:
+  #     - recipe[windows::default]
+  #     - recipe[minimal::tasks]
+  #   includes: [windows-2012r2]
+  - name: path
+    run_list:
+      - recipe[windows::default]
+      - recipe[minimal::path]
+    includes: [windows-2012r2]
+  - name: certificate
+    run_list:
+      - recipe[windows::default]
+      - recipe[minimal::certificate]
+    includes: [windows-2012r2]
+  # Package is deprecated
+  # - name: package
+  #   run_list:
+  #     - recipe[windows::default]
+  #     - recipe[minimal::package]
+  #   includes: [windows-2012r2]
+  - name: feature
+    run_list:
+      - recipe[windows::default]
+      - recipe[minimal::feature]
+    includes: [windows-2012r2]
+  - name: http_acl
+    run_list:
+      - recipe[windows::default]
+      - recipe[minimal::http_acl]
+    includes: [windows-2012r2]
+  - name: font
+    run_list:
+      - recipe[windows::default]
+      - recipe[minimal::font]
+    includes: [windows-2012r2]

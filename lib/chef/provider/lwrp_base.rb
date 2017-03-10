@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2008-2012 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider'
-require 'chef/dsl/recipe'
-require 'chef/dsl/include_recipe'
+require "chef/provider"
+require "chef/dsl/recipe"
+require "chef/dsl/include_recipe"
 
 class Chef
   class Provider
@@ -34,7 +34,6 @@ class Chef
       # These were previously provided by Chef::Mixin::RecipeDefinitionDSLCore.
       # They are not included by its replacement, Chef::DSL::Recipe, but
       # they may be used in existing LWRPs.
-      include Chef::DSL::PlatformIntrospection
       include Chef::DSL::DataQuery
 
       # Allow include_recipe from within LWRP provider code
@@ -53,7 +52,7 @@ class Chef
 
         def build_from_file(cookbook_name, filename, run_context)
           if LWRPBase.loaded_lwrps[filename]
-            Chef::Log.info("LWRP provider #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
+            Chef::Log.debug("LWRP provider #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
             return loaded_lwrps[filename]
           end
 

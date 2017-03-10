@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 unless Chef::Platform.windows?
   class Chef
@@ -31,7 +31,7 @@ unless Chef::Platform.windows?
   end
 end
 
-require 'chef/file_content_management/deploy/mv_windows'
+require "chef/file_content_management/deploy/mv_windows"
 
 describe Chef::FileContentManagement::Deploy::MvWindows do
 
@@ -72,7 +72,7 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
       end
 
       it "errors out with a WindowsNotAdmin error" do
-        expect { content_deployer.deploy(staging_file_path, target_file_path)}.to raise_error(Chef::Exceptions::WindowsNotAdmin)
+        expect { content_deployer.deploy(staging_file_path, target_file_path) }.to raise_error(Chef::Exceptions::WindowsNotAdmin)
       end
 
     end
@@ -91,7 +91,6 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
       let(:updated_target_security_descriptor) do
         double "security descriptor for target file"
       end
-
 
       before do
         allow(target_file_security_object).to receive(:security_descriptor).and_return(target_file_security_descriptor)
@@ -130,7 +129,6 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
           expect(updated_target_security_object).to receive(:set_sacl).with(nil, false)
         end
 
-
         it "fixes up permissions and moves the file into place" do
           content_deployer.deploy(staging_file_path, target_file_path)
         end
@@ -154,7 +152,6 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
             with([]).
             and_return(empty_dacl)
 
-
           allow(target_file_security_descriptor).to receive(:sacl_present?).and_return(true)
           allow(target_file_security_descriptor).to receive(:sacl_inherits?).and_return(false)
 
@@ -164,11 +161,9 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
             with([]).
             and_return(empty_sacl)
 
-
           expect(updated_target_security_object).to receive(:set_dacl).with(empty_dacl, false)
           expect(updated_target_security_object).to receive(:set_sacl).with(empty_sacl, false)
         end
-
 
         it "fixes up permissions and moves the file into place" do
           content_deployer.deploy(staging_file_path, target_file_path)
@@ -235,5 +230,3 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
 
   end
 end
-
-

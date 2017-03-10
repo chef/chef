@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (<steve@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Steven Danna (<steve@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,21 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class UserDelete < Knife
 
       deps do
-        require 'chef/user_v1'
-        require 'chef/json_compat'
+        require "chef/user_v1"
+        require "chef/json_compat"
       end
 
       banner "knife user delete USER (options)"
 
       def osc_11_warning
-<<-EOF
+        <<-EOF
 The Chef Server you are using does not support the username field.
 This means it is an Open Source 11 Server.
 knife user delete for Open Source 11 Server is being deprecated.
@@ -60,7 +60,7 @@ EOF
         end
 
         output(format_for_display(object)) if config[:print_after]
-        self.msg("Deleted #{user_name}")
+        msg("Deleted #{user_name}")
       end
 
       def run
@@ -89,7 +89,6 @@ EOF
         else # proceed with EC / CS delete
           delete_object(@user_name)
         end
-
       end
     end
   end

@@ -1,6 +1,6 @@
 #
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,10 @@
 
 # Wrapper class for interacting with JSON.
 
-require 'ffi_yajl'
-require 'chef/exceptions'
+require "ffi_yajl"
+require "chef/exceptions"
 # We're requiring this to prevent breaking consumers using Hash.to_json
-require 'json'
+require "json"
 
 class Chef
   class JSONCompat
@@ -47,11 +47,9 @@ class Chef
 
       # API to use to avoid create_addtions
       def parse(source, opts = {})
-        begin
-          FFI_Yajl::Parser.parse(source, opts)
-        rescue FFI_Yajl::ParseError => e
-          raise Chef::Exceptions::JSON::ParseError, e.message
-        end
+        FFI_Yajl::Parser.parse(source, opts)
+      rescue FFI_Yajl::ParseError => e
+        raise Chef::Exceptions::JSON::ParseError, e.message
       end
 
       # Just call the JSON gem's parse method with a modified :max_nesting field
@@ -61,7 +59,7 @@ class Chef
         # JSON gem requires top level object to be a Hash or Array (otherwise
         # you get the "must contain two octets" error). Yajl doesn't impose the
         # same limitation. For compatibility, we re-impose this condition.
-        unless obj.kind_of?(Hash) or obj.kind_of?(Array)
+        unless obj.kind_of?(Hash) || obj.kind_of?(Array)
           raise Chef::Exceptions::JSON::ParseError, "Top level JSON object must be a Hash or Array. (actual: #{obj.class})"
         end
 
@@ -88,7 +86,7 @@ class Chef
             mapped_hash
           end
         when Array
-          json_obj.map {|e| map_to_rb_obj(e) }
+          json_obj.map { |e| map_to_rb_obj(e) }
         else
           json_obj
         end
@@ -102,11 +100,9 @@ class Chef
       end
 
       def to_json(obj, opts = nil)
-        begin
-          FFI_Yajl::Encoder.encode(obj, opts)
-        rescue FFI_Yajl::EncodeError => e
-          raise Chef::Exceptions::JSON::EncodeError, e.message
-        end
+        FFI_Yajl::Encoder.encode(obj, opts)
+      rescue FFI_Yajl::EncodeError => e
+        raise Chef::Exceptions::JSON::EncodeError, e.message
       end
 
       def to_json_pretty(obj, opts = nil)

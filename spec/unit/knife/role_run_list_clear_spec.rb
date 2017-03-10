@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Will Albenzi (<walbenzi@gmail.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,17 +17,17 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleRunListClear do
   before(:each) do
-    Chef::Config[:role_name]  = "will"
+    Chef::Config[:role_name] = "will"
     @setup = Chef::Knife::RoleRunListAdd.new
     @setup.name_args = [ "will", "role[monkey]", "role[person]" ]
 
     @knife = Chef::Knife::RoleRunListClear.new
     @knife.config = {
-      :print_after => nil
+      :print_after => nil,
     }
     @knife.name_args = [ "will" ]
     allow(@knife).to receive(:output).and_return(true)
@@ -41,10 +41,7 @@ describe Chef::Knife::RoleRunListClear do
 
   end
 
-
-
   describe "run" do
-
 
 #    it "should display all the things" do
 #      @knife.run
@@ -56,35 +53,32 @@ describe Chef::Knife::RoleRunListClear do
       @knife.run
     end
 
-     it "should remove the item from the run list" do
-       @setup.run
-       @knife.run
-       expect(@role.run_list[0]).to be_nil
-     end
+    it "should remove the item from the run list" do
+      @setup.run
+      @knife.run
+      expect(@role.run_list[0]).to be_nil
+    end
 
-     it "should save the node" do
-       expect(@role).to receive(:save).and_return(true)
-       @knife.run
-     end
+    it "should save the node" do
+      expect(@role).to receive(:save).and_return(true)
+      @knife.run
+    end
 
-     it "should print the run list" do
-       expect(@knife).to receive(:output).and_return(true)
-       @knife.config[:print_after] = true
-       @setup.run
-       @knife.run
-     end
+    it "should print the run list" do
+      expect(@knife).to receive(:output).and_return(true)
+      @knife.config[:print_after] = true
+      @setup.run
+      @knife.run
+    end
 
-     describe "should clear an environmental run list of roles and recipes" do
-       it "should remove the items from the run list" do
-         @setup.name_args = [ "will", "recipe[orange::chicken]", "role[monkey]", "recipe[duck::type]", "role[person]", "role[bird]", "role[town]" ]
-         @setup.run
-         @knife.name_args = [ 'will' ]
-         @knife.run
-         expect(@role.run_list[0]).to be_nil
-       end
-     end
+    describe "should clear an environmental run list of roles and recipes" do
+      it "should remove the items from the run list" do
+        @setup.name_args = [ "will", "recipe[orange::chicken]", "role[monkey]", "recipe[duck::type]", "role[person]", "role[bird]", "role[town]" ]
+        @setup.run
+        @knife.name_args = [ "will" ]
+        @knife.run
+        expect(@role.run_list[0]).to be_nil
+      end
+    end
   end
 end
-
-
-

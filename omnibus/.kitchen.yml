@@ -1,0 +1,137 @@
+#
+# NOTE: this runs the omnibus cookbook, but does not actually run Omnibus. Use
+# 'kichen converge' to setup the virtual machine and then `kitchen login` to
+# SSH into the machine and run Omnibus.
+#
+
+driver:
+  name: vagrant
+  forward_agent: yes
+  customize:
+    cpus: 4
+    memory: 4096
+  synced_folders:
+    - ['../..', '/vagrant/code']
+    - ['../../omnibus', '/home/vagrant/omnibus']
+    - ['../../omnibus-software', '/home/vagrant/omnibus-software']
+
+provisioner:
+  name: chef_zero
+  # Always install the latest version of Chef.
+  # This is not the version of chef that we're building - this is the version
+  # of chef that omnibus needs to build chef/chef.
+  require_chef_omnibus: true
+  attributes:
+    vagrant:
+      this_key_exists_so_we_have_a_vagrant_key: true
+    omnibus:
+      build_user: vagrant
+      build_user_group: vagrant
+      build_user_password: vagrant
+  product_name: angrychef
+  product_version: latest
+  chef_omnibus_root: /opt/angrychef
+
+platforms:
+  - name: centos-5.11
+    run_list: yum-epel::default
+  - name: centos-6.7
+    run_list: yum-epel::default
+  - name: centos-7.2
+    run_list: yum-epel::default
+  - name: debian-6.0.8
+    run_list: apt::default
+  - name: debian-7.9
+    run_list: apt::default
+  - name: debian-8.2
+    run_list: apt::default
+  - name: freebsd-9.3
+    run_list:
+      - freebsd::portsnap
+      - freebsd::pkgng
+  - name: freebsd-10.2
+    run_list: freebsd::portsnap
+  - name: ubuntu-10.04
+    run_list: apt::default
+  - name: ubuntu-12.04
+    run_list: apt::default
+  - name: ubuntu-14.04
+    run_list: apt::default
+  # The following (private) boxes are shared via Atlas and are only
+  # available to users working for Chef. Sorry, it's about software licensing.
+  #
+  # Chef-internal users, you will need to:
+  # 1.  Create an Atlas account:  https://atlas.hashicorp.com/
+  # 2.  Ping #eng-services-support with your Atlas account name
+  #     to be added to the relevant team in Atlas,
+  # 3.  Do `vagrant login` with your Atlas creds so that you can download
+  #     the private boxes.
+  #
+  # The Mac OS X boxes are VMware only also. You can enable VMware Fusion
+  # by activating the `.kitchen.vmware.yml` file with the `KITCHEN_LOCAL_YAML`
+  # environment variable:
+  #
+  #   KITCHEN_LOCAL_YAML=.kitchen.vmware.yml kitchen converge chefdk-macosx-109
+  #
+  <% %w(
+    10.9
+    10.10
+    10.11
+  ).each do |mac_version| %>
+  - name: macosx-<%= mac_version %>
+    driver:
+      box: chef/macosx-<%= mac_version %> # private
+      synced_folders:
+      - ['..', '/Users/vagrant/chef']
+      - ['../../omnibus', '/Users/vagrant/omnibus']
+      - ['../../omnibus-software', '/Users/vagrant/omnibus-software']
+  <% end %>
+  - name: windows-2012r2-standard
+    driver:
+      box: chef/windows-server-2012r2-standard # private
+      synced_folders:
+      # We have to mount this repos enclosing folder as the Omnibus build
+      # gets cranky if the mounted Chef source folder is a symlink. This
+      # mounts at `C:\vagrant\code` and the Chef source folder is available
+      # at `C:\vagrant\code\chef`
+      - ['../..', '/vagrant/code']
+    provisioner:
+      attributes:
+        omnibus:
+          build_user:          vagrant
+          build_user_group:    Administrators
+          build_user_password: vagrant
+      chef_omnibus_root: /opscode/angrychef
+  # By adding an `i386` to the name the Omnibus cookbook's `load-omnibus-toolchain.bat`
+  # will load the 32-bit version of the MinGW toolchain.
+  - name: windows-2012r2-standard-i386
+    driver:
+      box: chef/windows-server-2012r2-standard # private
+      synced_folders:
+      # We have to mount this repos enclosing folder as the Omnibus build
+      # gets cranky if the mounted ChefDK source folder is a symlink. This
+      # mounts at `C:\vagrant\code` and the ChefDK source folder is available
+      # at `C:\vagrant\code\chef-dk`
+      - ['../..', '/vagrant/code']
+    provisioner:
+      attributes:
+        omnibus:
+          build_user:          vagrant
+          build_user_group:    Administrators
+          build_user_password: vagrant
+      chef_omnibus_root: /opscode/angrychef
+
+suites:
+  # - name: angrychef
+  #   attributes:
+  #     omnibus:
+  #       <<: *attribute_defaults
+  #       install_dir: /opt/angrychef
+  #   run_list:
+  #     - omnibus::default
+  - name: chef
+    attributes:
+      omnibus:
+        install_dir: /opt/chef
+    run_list:
+      - omnibus::default

@@ -1,6 +1,6 @@
 #
 # Author:: Igor Afonov <afonov@gmail.com>
-# Copyright:: Copyright (c) 2011 Igor Afonov
+# Copyright:: Copyright 2011-2016, Igor Afonov
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Macosx do
   describe ".gather_plist_dirs" do
     context "when HOME directory is set" do
       before do
-        allow(Chef::Util::PathHelper).to receive(:home).with('Library', 'LaunchAgents').and_yield('/Users/someuser/Library/LaunchAgents')
+        allow(Chef::Util::PathHelper).to receive(:home).with("Library", "LaunchAgents").and_yield("/Users/someuser/Library/LaunchAgents")
       end
 
       it "includes users's LaunchAgents folder" do
@@ -32,7 +32,7 @@ describe Chef::Provider::Service::Macosx do
 
     context "when HOME directory is not set" do
       before do
-        allow(Chef::Util::PathHelper).to receive(:home).with('Library', 'LaunchAgents').and_return(nil)
+        allow(Chef::Util::PathHelper).to receive(:home).with("Library", "LaunchAgents").and_return(nil)
       end
 
       it "doesn't include user's LaunchAgents folder" do
@@ -43,7 +43,7 @@ describe Chef::Provider::Service::Macosx do
 
   context "when service name is given as" do
     let(:node) { Chef::Node.new }
-    let(:events) {Chef::EventDispatch::Dispatcher.new}
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
     let(:run_context) { Chef::RunContext.new(node, {}, events) }
     let(:provider) { described_class.new(new_resource, run_context) }
     let(:launchctl_stdout) { StringIO.new }
@@ -58,33 +58,33 @@ describe Chef::Provider::Service::Macosx do
 </plist>
 XML
 
-    ["Daemon", "Agent"].each do |service_type|
+    %w{Daemon Agent}.each do |service_type|
       ["redis-server", "io.redis.redis-server"].each do |service_name|
         ["10.9", "10.10", "10.11"].each do |platform_version|
-          let(:plist) {'/Library/LaunchDaemons/io.redis.redis-server.plist'}
+          let(:plist) { "/Library/LaunchDaemons/io.redis.redis-server.plist" }
           let(:session) { StringIO.new }
-          if service_type == 'Agent'
-            let(:plist) {'/Library/LaunchAgents/io.redis.redis-server.plist'}
-            let(:session) {'-S Aqua '}
-            let(:su_cmd) {'su -l igor -c'}
+          if service_type == "Agent"
+            let(:plist) { "/Library/LaunchAgents/io.redis.redis-server.plist" }
+            let(:session) { "-S Aqua " }
+            let(:su_cmd) { "su -l igor -c" }
             if platform_version == "10.9"
-              let(:su_cmd) {'su igor -c'}
+              let(:su_cmd) { "su igor -c" }
             end
           end
-          let(:service_label) {'io.redis.redis-server'}
+          let(:service_label) { "io.redis.redis-server" }
           before do
             allow(Dir).to receive(:glob).and_return([plist], [])
-            allow(Etc).to receive(:getlogin).and_return('igor')
+            allow(Etc).to receive(:getlogin).and_return("igor")
             allow(node).to receive(:[]).with("platform_version").and_return(platform_version)
             cmd = "launchctl list #{service_label}"
             allow(provider).to receive(:shell_out_with_systems_locale).
-                    with(/(#{su_cmd} '#{cmd}'|#{cmd})/).
-                    and_return(double("Status",
+              with(/(#{su_cmd} '#{cmd}'|#{cmd})/).
+              and_return(double("Status",
                                     :stdout => launchctl_stdout, :exitstatus => 0))
             allow(File).to receive(:exists?).and_return([true], [])
             allow(provider).to receive(:shell_out_with_systems_locale!).
-                    with(/plutil -convert xml1 -o/).
-                    and_return(double("Status", :stdout => plutil_stdout))
+              with(/plutil -convert xml1 -o/).
+              and_return(double("Status", :stdout => plutil_stdout))
           end
 
           context "#{service_name} that is a #{service_type} running Osx #{platform_version}" do
@@ -109,8 +109,8 @@ XML
                   allow(Dir).to receive(:glob).and_return([])
                   allow(File).to receive(:exists?).and_return([true], [])
                   allow(provider).to receive(:shell_out!).
-                          with(/plutil -convert xml1 -o/).
-                          and_raise(Mixlib::ShellOut::ShellCommandFailed)
+                    with(/plutil -convert xml1 -o/).
+                    and_raise(Mixlib::ShellOut::ShellCommandFailed)
                 end
 
                 it "works for action :nothing" do
@@ -166,7 +166,7 @@ SVC_LIST
                   allow(File).to receive(:exists?).and_return([true], [])
                 end
                 it "should throw an exception when reload action is attempted" do
-                  expect {provider.run_action(:reload)}.to raise_error(Chef::Exceptions::UnsupportedAction)
+                  expect { provider.run_action(:reload) }.to raise_error(Chef::Exceptions::UnsupportedAction)
                 end
               end
               context "when launchctl returns empty service pid" do
@@ -263,10 +263,10 @@ SVC_LIST
               end
 
               it "starts service via launchctl if service found" do
-                cmd = 'launchctl load -w ' + session + plist
+                cmd = "launchctl load -w " + session + plist
                 expect(provider).to receive(:shell_out_with_systems_locale).
-                        with(/(#{su_cmd} .#{cmd}.|#{cmd})/).
-                        and_return(0)
+                  with(/(#{su_cmd} .#{cmd}.|#{cmd})/).
+                  and_return(0)
 
                 provider.start_service
               end
@@ -295,10 +295,10 @@ SVC_LIST
               end
 
               it "stops the service via launchctl if service found" do
-                cmd = 'launchctl unload -w '+ plist
+                cmd = "launchctl unload -w " + plist
                 expect(provider).to receive(:shell_out_with_systems_locale).
-                        with(/(#{su_cmd} .#{cmd}.|#{cmd})/).
-                        and_return(0)
+                  with(/(#{su_cmd} .#{cmd}.|#{cmd})/).
+                  and_return(0)
 
                 provider.stop_service
               end
@@ -322,7 +322,7 @@ SVC_LIST
 
               it "stops and then starts service" do
                 expect(provider).to receive(:unload_service)
-                expect(provider).to receive(:load_service);
+                expect(provider).to receive(:load_service)
 
                 provider.restart_service
               end

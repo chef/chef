@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/cookbook_site_install'
+require "chef/knife"
+require "chef/knife/cookbook_site_install"
 
 class Chef::Knife::CookbookSiteVendor < Chef::Knife::CookbookSiteInstall
 
@@ -41,6 +41,6 @@ DEPRECATED: please use knife cookbook site install
 #{superclass.banner}
 B
 
-  category 'deprecated'
+  category "deprecated"
 
 end

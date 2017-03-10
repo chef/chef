@@ -1,6 +1,6 @@
 #
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2010-2011 Opscode, Inc.
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'yaml'
-require 'chef/json_compat'
-require 'openssl'
-require 'base64'
-require 'digest/sha2'
-require 'chef/encrypted_data_bag_item'
-require 'chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format'
-require 'chef/encrypted_data_bag_item/decryption_failure'
-require 'chef/encrypted_data_bag_item/assertions'
+require "yaml"
+require "chef/json_compat"
+require "openssl"
+require "base64"
+require "digest/sha2"
+require "chef/encrypted_data_bag_item"
+require "chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format"
+require "chef/encrypted_data_bag_item/decryption_failure"
+require "chef/encrypted_data_bag_item/assertions"
 
 class Chef::EncryptedDataBagItem
 
@@ -92,7 +92,8 @@ class Chef::EncryptedDataBagItem
           plaintext = openssl_decryptor.update(encrypted_bytes)
           plaintext << openssl_decryptor.final
         rescue OpenSSL::Cipher::CipherError => e
-          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect"
+          # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
+          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{(@key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : ''}"
         end
       end
 
@@ -142,7 +143,8 @@ class Chef::EncryptedDataBagItem
           plaintext = openssl_decryptor.update(encrypted_bytes)
           plaintext << openssl_decryptor.final
         rescue OpenSSL::Cipher::CipherError => e
-          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect"
+          # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
+          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{( @key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : ''}"
         end
       end
 
@@ -214,7 +216,7 @@ class Chef::EncryptedDataBagItem
         @openssl_decryptor ||= begin
           d = super
           d.auth_tag = auth_tag
-          d.auth_data = ''
+          d.auth_data = ""
           d
         end
       end

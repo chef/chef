@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/search/query'
-require 'chef/data_bag'
-require 'chef/data_bag_item'
-require 'chef/encrypted_data_bag_item'
-require 'chef/encrypted_data_bag_item/check_encrypted'
+require "chef/search/query"
+require "chef/data_bag"
+require "chef/data_bag_item"
+require "chef/encrypted_data_bag_item"
+require "chef/encrypted_data_bag_item/check_encrypted"
 
 class Chef
   module DSL
@@ -55,7 +55,7 @@ class Chef
         raise
       end
 
-      def data_bag_item(bag, item, secret=nil)
+      def data_bag_item(bag, item, secret = nil)
         DataBag.validate_name!(bag.to_s)
         DataBagItem.validate_id!(item)
 
@@ -73,7 +73,7 @@ class Chef
             raise
           end
         end
-        
+
         item
       rescue Exception
         Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")
@@ -86,4 +86,4 @@ end
 
 # **DEPRECATED**
 # This used to be part of chef/mixin/language. Load the file to activate the deprecation code.
-require 'chef/mixin/language'
+require "chef/mixin/language"

@@ -1,11 +1,11 @@
 #--
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Thom May (<thom@clearairturbulence.org>)
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010, 2013 Opscode, Inc.
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Author:: Christopher Brown (<cb@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,8 @@
 # limitations under the License.
 #
 
-require 'openssl'
-require 'chef/util/path_helper'
+require "openssl"
+require "chef/util/path_helper"
 
 class Chef
   class HTTP
@@ -77,7 +77,7 @@ class Chef
           http_client.cert_store.set_default_paths
         end
         if config.trusted_certs_dir
-          certs = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob(config.trusted_certs_dir), "*.{crt,pem}"))
+          certs = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(config.trusted_certs_dir), "*.{crt,pem}"))
           certs.each do |cert_file|
             cert = OpenSSL::X509::Certificate.new(File.read(cert_file))
             add_trusted_cert(cert)
@@ -86,8 +86,8 @@ class Chef
       end
 
       def set_client_credentials
-        if (config[:ssl_client_cert] || config[:ssl_client_key])
-          unless (config[:ssl_client_cert] && config[:ssl_client_key])
+        if config[:ssl_client_cert] || config[:ssl_client_key]
+          unless config[:ssl_client_cert] && config[:ssl_client_key]
             raise Chef::Exceptions::ConfigurationError, "You must configure ssl_client_cert and ssl_client_key together"
           end
           unless ::File.exists?(config[:ssl_client_cert])
@@ -110,7 +110,7 @@ class Chef
       def add_trusted_cert(cert)
         http_client.cert_store.add_cert(cert)
       rescue OpenSSL::X509::StoreError => e
-        raise e unless e.message == 'cert already in hash table'
+        raise e unless e.message == "cert already in hash table"
       end
 
     end
@@ -118,7 +118,7 @@ class Chef
     class APISSLPolicy < DefaultSSLPolicy
 
       def set_verify_mode
-        if config[:ssl_verify_mode] == :verify_peer or config[:verify_api_cert]
+        if config[:ssl_verify_mode] == :verify_peer || config[:verify_api_cert]
           http_client.verify_mode = OpenSSL::SSL::VERIFY_PEER
         elsif config[:ssl_verify_mode] == :verify_none
           http_client.verify_mode = OpenSSL::SSL::VERIFY_NONE

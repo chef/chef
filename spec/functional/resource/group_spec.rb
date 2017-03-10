@@ -1,7 +1,7 @@
 #
 # Author:: Chirag Jog (<chirag@clogeny.com>)
 # Author:: Siddheshwar More (<siddheshwar.more@clogeny.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'functional/resource/base'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "functional/resource/base"
+require "chef/mixin/shell_out"
 
 # Chef::Resource::Group are turned off on Mac OS X 10.6 due to caching
 # issues around Etc.getgrnam() not picking up the group membership
@@ -31,8 +31,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
   def group_should_exist(group)
     case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
-      expect { Etc::getgrnam(group) }.not_to raise_error
-      expect(group).to eq(Etc::getgrnam(group).name)
+      expect { Etc.getgrnam(group) }.not_to raise_error
+      expect(group).to eq(Etc.getgrnam(group).name)
     when "windows"
       expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.not_to raise_error
     end
@@ -49,21 +49,21 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
       members.shift # Get rid of GroupMembership: string
       members.include?(user)
     else
-      Etc::getgrnam(group_name).mem.include?(user)
+      Etc.getgrnam(group_name).mem.include?(user)
     end
   end
 
   def group_should_not_exist(group)
     case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
-      expect { Etc::getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
+      expect { Etc.getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
     when "windows"
-      expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to raise_error(ArgumentError, "The group name could not be found.")
+      expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to raise_error(ArgumentError, /The group name could not be found./)
     end
   end
 
   def compare_gid(resource, gid)
-    return resource.gid == Etc::getgrnam(resource.name).gid if unix?
+    return resource.gid == Etc.getgrnam(resource.name).gid if unix?
   end
 
   def sid_string_from_user(user)
@@ -79,27 +79,41 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
   def windows_domain_user?(user_name)
     domain, user = user_name.split('\\')
 
-    if user && domain != '.'
-      computer_name = ENV['computername']
-      domain.downcase != computer_name.downcase
+    if user && domain != "."
+      computer_name = ENV["computername"]
+      !domain.casecmp(computer_name.downcase).zero?
     end
   end
 
+  def node
+    node = Chef::Node.new
+    node.consume_external_attrs(ohai.data, {})
+    node
+  end
+
   def user(username)
-    usr = Chef::Resource::User.new("#{username}", run_context)
+    usr = Chef::Resource.resource_for_node(:user, node).new(username, run_context)
     if ohai[:platform_family] == "windows"
       usr.password("ComplexPass11!")
     end
     usr
   end
 
-  def create_user(username)
-    user(username).run_action(:create) if ! windows_domain_user?(username)
+  def create_user(username, uid = nil)
+    if ! windows_domain_user?(username)
+      user_to_create = user(username)
+      user_to_create.uid(uid) if uid
+      user_to_create.run_action(:create)
+    end
     # TODO: User should exist
   end
 
   def remove_user(username)
-    user(username).run_action(:remove) if ! windows_domain_user?(username)
+    if ! windows_domain_user?(username)
+      u = user(username)
+      u.manage_home false # jekins hosts throw mail spool file not owned by user if we use manage_home true
+      u.run_action(:remove)
+    end
     # TODO: User shouldn't exist
   end
 
@@ -159,8 +173,11 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
 
     describe "when the users exist" do
       before do
+        high_uid = 30000
         (spec_members).each do |member|
-          create_user(member)
+          remove_user(member)
+          create_user(member, high_uid)
+          high_uid += 1
         end
       end
 
@@ -267,14 +284,14 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     end
 
     describe "when removing members" do
-      it "raises an error for a non well-formed domain name" do
+      it "does not raise an error for a non well-formed domain name" do
         group_resource.excluded_members [invalid_domain_user_name]
-        expect { group_resource.run_action(tested_action) }.to raise_error Chef::Exceptions::Win32APIError
+        expect { group_resource.run_action(tested_action) }.to_not raise_error
       end
 
-      it "raises an error for a nonexistent domain" do
+      it "does not raise an error for a nonexistent domain" do
         group_resource.excluded_members [nonexistent_domain_user_name]
-        expect { group_resource.run_action(tested_action) }.to raise_error Chef::Exceptions::Win32APIError
+        expect { group_resource.run_action(tested_action) }.to_not raise_error
       end
     end
   end
@@ -282,12 +299,13 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
   let(:group_name) { "group#{SecureRandom.random_number(9999)}" }
   let(:included_members) { nil }
   let(:excluded_members) { nil }
-  let(:group_resource) {
+  let(:group_resource) do
     group = Chef::Resource::Group.new(group_name, run_context)
     group.members(included_members)
     group.excluded_members(excluded_members)
+    group.gid(30000) unless ohai[:platform_family] == "mac_os_x"
     group
-  }
+  end
 
   it "append should be false by default" do
     expect(group_resource.append).to eq(false)
@@ -305,10 +323,11 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     end
 
     describe "when group name is length 256", :windows_only do
-      let!(:group_name) { "theoldmanwalkingdownthestreetalwayshadagood\
+      let!(:group_name) do
+        "theoldmanwalkingdownthestreetalwayshadagood\
 smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
 theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
-downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree" }
+downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree" end
 
       it "should create a group" do
         group_resource.run_action(:create)
@@ -317,10 +336,11 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree" }
     end
 
     describe "when group name length is more than 256", :windows_only do
-      let!(:group_name) { "theoldmanwalkingdownthestreetalwayshadagood\
+      let!(:group_name) do
+        "theoldmanwalkingdownthestreetalwayshadagood\
 smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
 theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
-downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
+downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" end
 
       it "should not create a group" do
         expect { group_resource.run_action(:create) }.to raise_error(ArgumentError)
@@ -334,7 +354,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
         invalid_resource = group_resource.dup
         invalid_resource.members(["Jack"])
         invalid_resource.excluded_members(["Jack"])
-        expect { invalid_resource.run_action(:create)}.to raise_error(Chef::Exceptions::ConflictingMembersInGroup)
+        expect { invalid_resource.run_action(:create) }.to raise_error(Chef::Exceptions::ConflictingMembersInGroup)
       end
     end
   end
@@ -361,14 +381,14 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group modify action", :not_supported_on_solaris do
-    let(:spec_members){ ["Gordon", "Eric", "Anthony"] }
+    let(:spec_members) { %w{mnou5sdz htulrvwq x4c3g1lu} }
     let(:included_members) { [spec_members[0], spec_members[1]] }
     let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :modify }
 
     describe "when there is no group" do
       it "should raise an error" do
-        expect { group_resource.run_action(:modify) }.to raise_error
+        expect { group_resource.run_action(:modify) }.to raise_error(Chef::Exceptions::Group)
       end
     end
 
@@ -378,8 +398,8 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
     describe "when running on Windows", :windows_only do
       describe "when members are Active Directory domain identities", :windows_domain_joined_only do
-        let(:computer_domain) { ohai[:kernel]['cs_info']['domain'].split('.')[0] }
-        let(:spec_members){ ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
+        let(:computer_domain) { ohai[:kernel]["cs_info"]["domain"].split(".")[0] }
+        let(:spec_members) { ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
 
         include_examples "correct group management"
       end
@@ -389,7 +409,7 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
   end
 
   describe "group manage action", :not_supported_on_solaris do
-    let(:spec_members){ ["Gordon", "Eric", "Anthony"] }
+    let(:spec_members) { %w{mnou5sdz htulrvwq x4c3g1lu} }
     let(:included_members) { [spec_members[0], spec_members[1]] }
     let(:excluded_members) { [spec_members[2]] }
     let(:tested_action) { :manage }
@@ -401,10 +421,11 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
       end
 
       it "raises an error on modify" do
-        expect { group_resource.run_action(:modify) }.to raise_error
+        expect { group_resource.run_action(:modify) }.to raise_error(Chef::Exceptions::Group)
       end
 
       it "does not raise an error on manage" do
+        allow(Etc).to receive(:getpwnam).and_return(double("User"))
         expect { group_resource.run_action(:manage) }.not_to raise_error
       end
     end
@@ -415,8 +436,8 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
     describe "running on windows", :windows_only do
       describe "when members are Windows domain identities", :windows_domain_joined_only do
-        let(:computer_domain) { ohai[:kernel]['cs_info']['domain'].split('.')[0] }
-        let(:spec_members){ ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
+        let(:computer_domain) { ohai[:kernel]["cs_info"]["domain"].split(".")[0] }
+        let(:spec_members) { ["#{computer_domain}\\Domain Admins", "#{computer_domain}\\Domain Users", "#{computer_domain}\\Domain Computers"] }
 
         include_examples "correct group management"
       end
@@ -427,34 +448,34 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" }
 
   describe "group resource with Usermod provider", :solaris_only do
     describe "when excluded_members is set" do
-      let(:excluded_members) { ["Anthony"] }
+      let(:excluded_members) { ["x4c3g1lu"] }
 
       it ":manage should raise an error" do
-        expect {group_resource.run_action(:manage) }.to raise_error
+        expect { group_resource.run_action(:manage) }.to raise_error
       end
 
       it ":modify should raise an error" do
-        expect {group_resource.run_action(:modify) }.to raise_error
+        expect { group_resource.run_action(:modify) }.to raise_error
       end
 
       it ":create should raise an error" do
-        expect {group_resource.run_action(:create) }.to raise_error
+        expect { group_resource.run_action(:create) }.to raise_error
       end
     end
 
     describe "when append is not set" do
-      let(:included_members) { ["Gordon", "Eric"] }
+      let(:included_members) { %w{gordon eric} }
 
       before(:each) do
         group_resource.append(false)
       end
 
       it ":manage should raise an error" do
-        expect {group_resource.run_action(:manage) }.to raise_error
+        expect { group_resource.run_action(:manage) }.to raise_error
       end
 
       it ":modify should raise an error" do
-        expect {group_resource.run_action(:modify) }.to raise_error
+        expect { group_resource.run_action(:modify) }.to raise_error
       end
     end
   end

@@ -1,6 +1,6 @@
 #
 # Author:: David Balatero (<dbalatero@gmail.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
+require "chef/resource/package"
 
 class Chef
   class Resource
     class MacportsPackage < Chef::Resource::Package
+      resource_name :macports_package
     end
   end
 end

@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require 'chef/log'
+require "chef/log"
 
 class Chef
   class FileAccessControl
@@ -80,19 +80,19 @@ class Chef
         if target_uid.nil?
           # the user has not specified a permission on the new resource, so we never manage it with FAC
           Chef::Log.debug("Found target_uid == nil, so no owner was specified on resource, not managing owner")
-          return false
+          false
         elsif current_uid.nil?
           # the user has specified a permission, and we are creating a file, so always enforce permissions
           Chef::Log.debug("Found current_uid == nil, so we are creating a new file, updating owner")
-          return true
+          true
         elsif target_uid != current_uid
           # the user has specified a permission, and it does not match the file, so fix the permission
           Chef::Log.debug("Found target_uid != current_uid, updating owner")
-          return true
+          true
         else
           Chef::Log.debug("Found target_uid == current_uid, not updating owner")
           # the user has specified a permission, but it matches the file, so behave idempotently
-          return false
+          false
         end
       end
 
@@ -117,13 +117,13 @@ class Chef
       end
 
       def gid_from_resource(resource)
-        return nil if resource == nil or resource.group.nil?
+        return nil if resource.nil? || resource.group.nil?
         if resource.group.kind_of?(String)
           diminished_radix_complement( Etc.getgrnam(resource.group).gid )
         elsif resource.group.kind_of?(Integer)
           resource.group
         else
-          Chef::Log.error("The `group` parameter of the #@resource resource is set to an invalid value (#{resource.owner.inspect})")
+          Chef::Log.error("The `group` parameter of the #{@resource} resource is set to an invalid value (#{resource.owner.inspect})")
           raise ArgumentError, "cannot resolve #{resource.group.inspect} to gid, group must be a string or integer"
         end
       rescue ArgumentError
@@ -139,19 +139,19 @@ class Chef
         if target_gid.nil?
           # the user has not specified a permission on the new resource, so we never manage it with FAC
           Chef::Log.debug("Found target_gid == nil, so no group was specified on resource, not managing group")
-          return false
+          false
         elsif current_gid.nil?
           # the user has specified a permission, and we are creating a file, so always enforce permissions
           Chef::Log.debug("Found current_gid == nil, so we are creating a new file, updating group")
-          return true
+          true
         elsif target_gid != current_gid
           # the user has specified a permission, and it does not match the file, so fix the permission
           Chef::Log.debug("Found target_gid != current_gid, updating group")
-          return true
+          true
         else
           Chef::Log.debug("Found target_gid == current_gid, not updating group")
           # the user has specified a permission, but it matches the file, so behave idempotently
-          return false
+          false
         end
       end
 
@@ -168,7 +168,7 @@ class Chef
       end
 
       def mode_from_resource(res)
-        return nil if res == nil or res.mode.nil?
+        return nil if res.nil? || res.mode.nil?
         (res.mode.respond_to?(:oct) ? res.mode.oct : res.mode.to_i) & 007777
       end
 
@@ -188,21 +188,21 @@ class Chef
         if target_mode.nil?
           # the user has not specified a permission on the new resource, so we never manage it with FAC
           Chef::Log.debug("Found target_mode == nil, so no mode was specified on resource, not managing mode")
-          return false
+          false
         elsif current_mode.nil?
           # the user has specified a permission, and we are creating a file, so always enforce permissions
           Chef::Log.debug("Found current_mode == nil, so we are creating a new file, updating mode")
-          return true
+          true
         elsif target_mode != current_mode
           # the user has specified a permission, and it does not match the file, so fix the permission
           Chef::Log.debug("Found target_mode != current_mode, updating mode")
-          return true
-        elsif suid_bit_set? and (should_update_group? or should_update_owner?)
-          return true
+          true
+        elsif suid_bit_set? && (should_update_group? || should_update_owner?)
+          true
         else
           Chef::Log.debug("Found target_mode == current_mode, not updating mode")
           # the user has specified a permission, but it matches the file, so behave idempotently
-          return false
+          false
         end
       end
 
@@ -264,13 +264,13 @@ class Chef
       end
 
       def uid_from_resource(resource)
-        return nil if resource == nil or resource.owner.nil?
+        return nil if resource.nil? || resource.owner.nil?
         if resource.owner.kind_of?(String)
           diminished_radix_complement( Etc.getpwnam(resource.owner).uid )
         elsif resource.owner.kind_of?(Integer)
           resource.owner
         else
-          Chef::Log.error("The `owner` parameter of the #@resource resource is set to an invalid value (#{resource.owner.inspect})")
+          Chef::Log.error("The `owner` parameter of the #{@resource} resource is set to an invalid value (#{resource.owner.inspect})")
           raise ArgumentError, "cannot resolve #{resource.owner.inspect} to uid, owner must be a string or integer"
         end
       rescue ArgumentError
@@ -283,7 +283,7 @@ class Chef
       end
 
       def suid_bit_set?
-        return target_mode & 04000 > 0
+        target_mode & 04000 > 0
       end
     end
   end

@@ -1,5 +1,5 @@
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,14 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookSiteDownload < Knife
 
       deps do
-        require 'fileutils'
+        require "fileutils"
       end
 
       banner "knife cookbook site download COOKBOOK [VERSION] (options)"
@@ -37,14 +37,21 @@ class Chef
         :long => "--force",
         :description => "Force download deprecated version"
 
+      option :supermarket_site,
+        :short => "-m SUPERMARKET_SITE",
+        :long => "--supermarket-site SUPERMARKET_SITE",
+        :description => "Supermarket Site",
+        :default => "https://supermarket.chef.io",
+        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+
       def run
         if current_cookbook_deprecated?
-          message = 'DEPRECATION: This cookbook has been deprecated. '
+          message = "DEPRECATION: This cookbook has been deprecated. "
           message << "It has been replaced by #{replacement_cookbook}."
           ui.warn message
 
           unless config[:force]
-            ui.warn 'Use --force to force download deprecated cookbook.'
+            ui.warn "Use --force to force download deprecated cookbook."
             return
           end
         end
@@ -53,40 +60,40 @@ class Chef
       end
 
       def version
-        @version = desired_cookbook_data['version']
+        @version = desired_cookbook_data["version"]
       end
 
       private
+
       def cookbooks_api_url
-        'https://supermarket.chef.io/api/v1/cookbooks'
+        "#{config[:supermarket_site]}/api/v1/cookbooks"
       end
 
       def current_cookbook_data
         @current_cookbook_data ||= begin
-          noauth_rest.get_rest "#{cookbooks_api_url}/#{@name_args[0]}"
-        end
+                                     noauth_rest.get "#{cookbooks_api_url}/#{@name_args[0]}"
+                                   end
       end
 
       def current_cookbook_deprecated?
-        current_cookbook_data['deprecated'] == true
+        current_cookbook_data["deprecated"] == true
       end
 
       def desired_cookbook_data
         @desired_cookbook_data ||= begin
-          uri = if @name_args.length == 1
-            current_cookbook_data['latest_version']
-          else
-            specific_cookbook_version_url
-          end
+                                     uri = if @name_args.length == 1
+                                             current_cookbook_data["latest_version"]
+                                           else
+                                             specific_cookbook_version_url
+                                           end
 
-          noauth_rest.get_rest uri
-        end
+                                     noauth_rest.get uri
+                                   end
       end
 
       def download_cookbook
         ui.info "Downloading #{@name_args[0]} from Supermarket at version #{version} to #{download_location}"
-        noauth_rest.sign_on_redirect = false
-        tf = noauth_rest.get_rest desired_cookbook_data["file"], true
+        tf = noauth_rest.streaming_request(desired_cookbook_data["file"])
 
         ::FileUtils.cp tf.path, download_location
         ui.info "Cookbook saved: #{download_location}"
@@ -98,11 +105,11 @@ class Chef
       end
 
       def replacement_cookbook
-        replacement = File.basename(current_cookbook_data['replacement'])
+        File.basename(current_cookbook_data["replacement"])
       end
 
       def specific_cookbook_version_url
-        "#{cookbooks_api_url}/#{@name_args[0]}/versions/#{@name_args[1].gsub('.', '_')}"
+        "#{cookbooks_api_url}/#{@name_args[0]}/versions/#{@name_args[1].tr('.', '_')}"
       end
     end
   end

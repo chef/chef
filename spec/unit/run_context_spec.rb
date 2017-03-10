@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,21 +18,21 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/lib/library_load_order'
+require "spec_helper"
+require "support/lib/library_load_order"
 
 describe Chef::RunContext do
   let(:chef_repo_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")) }
-  let(:cookbook_collection) {
+  let(:cookbook_collection) do
     cl = Chef::CookbookLoader.new(chef_repo_path)
     cl.load_cookbooks
     Chef::CookbookCollection.new(cl)
-  }
-  let(:node) {
+  end
+  let(:node) do
     node = Chef::Node.new
     node.run_list << "test" << "test::one" << "test::two"
     node
-  }
+  end
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, cookbook_collection, events) }
 
@@ -104,7 +104,7 @@ describe Chef::RunContext do
       expect(node).to receive(:loaded_recipe).with(:test, "default")
       expect(node).to receive(:loaded_recipe).with(:test, "one")
       expect(node).to receive(:loaded_recipe).with(:test, "two")
-      run_context.load(node.run_list.expand('_default'))
+      run_context.load(node.run_list.expand("_default"))
     end
 
     it "should load all the definitions in the cookbooks for this node" do
@@ -151,13 +151,13 @@ describe Chef::RunContext do
 
   describe "querying the contents of cookbooks" do
     let(:chef_repo_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")) }
-    let(:node) {
+    let(:node) do
       node = Chef::Node.new
-      node.set[:platform] = "ubuntu"
-      node.set[:platform_version] = "13.04"
+      node.normal[:platform] = "ubuntu"
+      node.normal[:platform_version] = "13.04"
       node.name("testing")
       node
-    }
+    end
 
     it "queries whether a given cookbook has a specific template" do
       expect(run_context).to have_template_in_cookbook("openldap", "test.erb")
@@ -202,7 +202,7 @@ describe Chef::RunContext do
     let(:notification) { Chef::Resource::Notification.new(nil, nil, notifying_resource) }
 
     shared_context "notifying resource is a Chef::Resource" do
-      let(:notifying_resource)  { Chef::Resource.new("gerbil") }
+      let(:notifying_resource) { Chef::Resource.new("gerbil") }
 
       it "should be keyed off the resource name" do
         run_context.send(setter, notification)
@@ -212,11 +212,11 @@ describe Chef::RunContext do
 
     shared_context "notifying resource is a subclass of Chef::Resource" do
       let(:declared_type) { :alpaca }
-      let(:notifying_resource)  {
+      let(:notifying_resource) do
         r = Class.new(Chef::Resource).new("guinea pig")
         r.declared_type = declared_type
         r
-      }
+      end
 
       it "should be keyed off the resource declared key" do
         run_context.send(setter, notification)

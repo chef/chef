@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (steve@opscode.com)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Steven Danna (steve@chef.io)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/user_v1'
-require 'tempfile'
+require "chef/user_v1"
+require "tempfile"
 
 describe Chef::UserV1 do
   before(:each) do
@@ -89,7 +89,6 @@ describe Chef::UserV1 do
       # &
       expect { @user.username "foo&" }.to raise_error(ArgumentError)
     end
-
 
     it "should not accept spaces" do
       expect { @user.username "ops master" }.to raise_error(ArgumentError)
@@ -261,7 +260,7 @@ describe Chef::UserV1 do
         "password" => "password",
         "public_key" => "turtles",
         "private_key" => "pandas",
-        "create_key" => false
+        "create_key" => false,
       }
       @user = Chef::UserV1.from_json(Chef::JSONCompat.to_json(user))
     end
@@ -312,13 +311,13 @@ describe Chef::UserV1 do
   end
 
   describe "Versioned API Interactions" do
-    let(:response_406) { OpenStruct.new(:code => '406') }
+    let(:response_406) { OpenStruct.new(:code => "406") }
     let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
 
     before (:each) do
       @user = Chef::UserV1.new
-      allow(@user).to receive(:chef_root_rest_v0).and_return(double('chef rest root v0 object'))
-      allow(@user).to receive(:chef_root_rest_v1).and_return(double('chef rest root v1 object'))
+      allow(@user).to receive(:chef_root_rest_v0).and_return(double("chef rest root v0 object"))
+      allow(@user).to receive(:chef_root_rest_v1).and_return(double("chef rest root v1 object"))
     end
 
     describe "update" do
@@ -333,7 +332,7 @@ describe Chef::UserV1 do
         @user.password "some_password"
       end
 
-      let(:payload) {
+      let(:payload) do
         {
           :username => "some_username",
           :display_name => "some_display_name",
@@ -341,9 +340,9 @@ describe Chef::UserV1 do
           :middle_name => "some_middle_name",
           :last_name => "some_last_name",
           :email => "some_email",
-          :password => "some_password"
+          :password => "some_password",
         }
-      }
+      end
 
       context "when server API V1 is valid on the Chef Server receiving the request" do
         context "when the user submits valid data" do
@@ -355,7 +354,7 @@ describe Chef::UserV1 do
       end
 
       context "when server API V1 is not valid on the Chef Server receiving the request" do
-        let(:payload) {
+        let(:payload) do
           {
             :username => "some_username",
             :display_name => "some_display_name",
@@ -364,9 +363,9 @@ describe Chef::UserV1 do
             :last_name => "some_last_name",
             :email => "some_email",
             :password => "some_password",
-            :public_key => "some_public_key"
+            :public_key => "some_public_key",
           }
-        }
+        end
 
         before do
           @user.public_key "some_public_key"
@@ -374,7 +373,7 @@ describe Chef::UserV1 do
         end
 
         context "when the server returns a 400" do
-          let(:response_400) { OpenStruct.new(:code => '400') }
+          let(:response_400) { OpenStruct.new(:code => "400") }
           let(:exception_400) { Net::HTTPServerException.new("400 Bad Request", response_400) }
 
           context "when the 400 was due to public / private key fields no longer being supported" do
@@ -443,16 +442,16 @@ describe Chef::UserV1 do
     end # update
 
     describe "create" do
-      let(:payload) {
+      let(:payload) do
         {
           :username => "some_username",
           :display_name => "some_display_name",
           :first_name => "some_first_name",
           :last_name => "some_last_name",
           :email => "some_email",
-          :password => "some_password"
+          :password => "some_password",
         }
-      }
+      end
       before do
         @user.username "some_username"
         @user.display_name "some_display_name"
@@ -474,7 +473,7 @@ describe Chef::UserV1 do
       context "when handling API V1" do
         it "creates a new user via the API with a middle_name when it exists" do
           @user.middle_name "some_middle_name"
-          expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload.merge({:middle_name => "some_middle_name"})).and_return({})
+          expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload.merge({ :middle_name => "some_middle_name" })).and_return({})
           @user.create
         end
       end # when server API V1 is valid on the Chef Server receiving the request
@@ -497,7 +496,7 @@ describe Chef::UserV1 do
 
         it "creates a new user via the API with a middle_name when it exists" do
           @user.middle_name "some_middle_name"
-          expect(@user.chef_root_rest_v0).to receive(:post).with("users", payload.merge({:middle_name => "some_middle_name"})).and_return({})
+          expect(@user.chef_root_rest_v0).to receive(:post).with("users", payload.merge({ :middle_name => "some_middle_name" })).and_return({})
           @user.create
         end
       end # when server API V1 is not valid on the Chef Server receiving the request
@@ -507,11 +506,11 @@ describe Chef::UserV1 do
     # DEPRECATION
     # This can be removed after API V0 support is gone
     describe "reregister" do
-      let(:payload) {
+      let(:payload) do
         {
           "username" => "some_username",
         }
-      }
+      end
 
       before do
         @user.username "some_username"
@@ -519,7 +518,7 @@ describe Chef::UserV1 do
 
       context "when server API V0 is valid on the Chef Server receiving the request" do
         it "creates a new object via the API" do
-          expect(@user.chef_root_rest_v0).to receive(:put).with("users/#{@user.username}", payload.merge({"private_key" => true})).and_return({})
+          expect(@user.chef_root_rest_v0).to receive(:put).with("users/#{@user.username}", payload.merge({ "private_key" => true })).and_return({})
           @user.reregister
         end
       end # when server API V0 is valid on the Chef Server receiving the request
@@ -539,15 +538,15 @@ describe Chef::UserV1 do
     before (:each) do
       @user = Chef::UserV1.new
       @user.username "foobar"
-      @http_client = double("Chef::REST mock")
-      allow(Chef::REST).to receive(:new).and_return(@http_client)
+      @http_client = double("Chef::ServerAPI mock")
+      allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
     end
 
     describe "list" do
       before(:each) do
         Chef::Config[:chef_server_url] = "http://www.example.com"
-        @osc_response = { "admin" => "http://www.example.com/users/admin"}
-        @ohc_response = [ { "user" => { "username" => "admin" }} ]
+        @osc_response = { "admin" => "http://www.example.com/users/admin" }
+        @ohc_response = [ { "user" => { "username" => "admin" } } ]
         allow(Chef::UserV1).to receive(:load).with("admin").and_return(@user)
         @osc_inflated_response = { "admin" => @user }
       end
@@ -567,7 +566,7 @@ describe Chef::UserV1 do
 
     describe "read" do
       it "loads a named user from the API" do
-        expect(@http_client).to receive(:get).with("users/foobar").and_return({"username" => "foobar", "admin" => true, "public_key" => "pubkey"})
+        expect(@http_client).to receive(:get).with("users/foobar").and_return({ "username" => "foobar", "admin" => true, "public_key" => "pubkey" })
         user = Chef::UserV1.load("foobar")
         expect(user.username).to eq("foobar")
         expect(user.public_key).to eq("pubkey")

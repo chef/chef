@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/data_bag_secret_options'
-require 'erubis'
-require 'chef/knife/bootstrap/chef_vault_handler'
-require 'chef/knife/bootstrap/client_builder'
-require 'chef/util/path_helper'
+require "chef/knife"
+require "chef/knife/data_bag_secret_options"
+require "erubis"
+require "chef/knife/bootstrap/chef_vault_handler"
+require "chef/knife/bootstrap/client_builder"
+require "chef/util/path_helper"
 
 class Chef
   class Knife
@@ -32,13 +32,13 @@ class Chef
       attr_accessor :chef_vault_handler
 
       deps do
-        require 'chef/knife/core/bootstrap_context'
-        require 'chef/json_compat'
-        require 'tempfile'
-        require 'highline'
-        require 'net/ssh'
-        require 'net/ssh/multi'
-        require 'chef/knife/ssh'
+        require "chef/knife/core/bootstrap_context"
+        require "chef/json_compat"
+        require "tempfile"
+        require "highline"
+        require "net/ssh"
+        require "net/ssh/multi"
+        require "chef/knife/ssh"
         Chef::Knife::Ssh.load_deps
       end
 
@@ -74,8 +74,12 @@ class Chef
         :boolean => true
 
       option :identity_file,
-        :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication. [DEPRECATED] Use --ssh-identity-file instead."
+
+      option :ssh_identity_file,
+        :short => "-i IDENTITY_FILE",
+        :long => "--ssh-identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
       option :chef_node_name,
@@ -96,6 +100,14 @@ class Chef
         :long => "--bootstrap-proxy PROXY_URL",
         :description => "The proxy server for the node being bootstrapped",
         :proc => Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
+
+      option :bootstrap_proxy_user,
+        :long => "--bootstrap-proxy-user PROXY_USER",
+        :description => "The proxy authentication username for the node being bootstrapped"
+
+      option :bootstrap_proxy_pass,
+        :long => "--bootstrap-proxy-pass PROXY_PASS",
+        :description => "The proxy authentication password for the node being bootstrapped"
 
       option :bootstrap_no_proxy,
         :long => "--bootstrap-no-proxy [NO_PROXY_URL|NO_PROXY_IP]",
@@ -185,7 +197,7 @@ class Chef
 
       option :hint,
         :long => "--hint HINT_NAME[=HINT_FILE]",
-        :description => "Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.",
+        :description => "Specify Ohai Hint to be set on the bootstrap target. Use multiple --hint options to specify multiple hints.",
         :proc => Proc.new { |h|
           Chef::Config[:knife][:hints] ||= Hash.new
           name, path = h.split("=")
@@ -216,10 +228,11 @@ class Chef
         :long        => "--node-ssl-verify-mode [peer|none]",
         :description => "Whether or not to verify the SSL cert for all HTTPS requests.",
         :proc        => Proc.new { |v|
-          valid_values = ["none", "peer"]
+          valid_values = %w{none peer}
           unless valid_values.include?(v)
             raise "Invalid value '#{v}' for --node-ssl-verify-mode. Valid values are: #{valid_values.join(", ")}"
           end
+          v
         }
 
       option :node_verify_api_cert,
@@ -228,15 +241,15 @@ class Chef
         :boolean     => true
 
       option :bootstrap_vault_file,
-        :long        => '--bootstrap-vault-file VAULT_FILE',
-        :description => 'A JSON file with a list of vault(s) and item(s) to be updated'
+        :long        => "--bootstrap-vault-file VAULT_FILE",
+        :description => "A JSON file with a list of vault(s) and item(s) to be updated"
 
       option :bootstrap_vault_json,
-        :long        => '--bootstrap-vault-json VAULT_JSON',
-        :description => 'A JSON string with the vault(s) and item(s) to be updated'
+        :long        => "--bootstrap-vault-json VAULT_JSON",
+        :description => "A JSON string with the vault(s) and item(s) to be updated"
 
       option :bootstrap_vault_item,
-        :long        => '--bootstrap-vault-item VAULT_ITEM',
+        :long        => "--bootstrap-vault-item VAULT_ITEM",
         :description => 'A single vault and item to update as "vault:item"',
         :proc        => Proc.new { |i|
           (vault, item) = i.split(/:/)
@@ -246,12 +259,12 @@ class Chef
           Chef::Config[:knife][:bootstrap_vault_item]
         }
 
-      def initialize(argv=[])
+      def initialize(argv = [])
         super
         @client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(
           chef_config: Chef::Config,
           knife_config: config,
-          ui: ui,
+          ui: ui
         )
         @chef_vault_handler = Chef::Knife::Bootstrap::ChefVaultHandler.new(
           knife_config: config,
@@ -278,13 +291,13 @@ class Chef
       # @return [String] The DNS or IP that bootstrap will connect to
       def server_name
         if host_descriptor
-          @server_name ||= host_descriptor.split('@').reverse[0]
+          @server_name ||= host_descriptor.split("@").reverse[0]
         end
       end
 
       def user_name
         if host_descriptor
-          @user_name ||= host_descriptor.split('@').reverse[1]
+          @user_name ||= host_descriptor.split("@").reverse[1]
         end
       end
 
@@ -306,10 +319,10 @@ class Chef
 
         # Otherwise search the template directories until we find the right one
         bootstrap_files = []
-        bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap/templates', "#{template}.erb")
+        bootstrap_files << File.join(File.dirname(__FILE__), "bootstrap/templates", "#{template}.erb")
         bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{template}.erb") if Chef::Knife.chef_config_dir
-        Chef::Util::PathHelper.home('.chef', 'bootstrap', "#{template}.erb") {|p| bootstrap_files << p}
-        bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{template}.erb"))
+        Chef::Util::PathHelper.home(".chef", "bootstrap", "#{template}.erb") { |p| bootstrap_files << p }
+        bootstrap_files << Gem.find_files(File.join("chef", "knife", "bootstrap", "#{template}.erb"))
         bootstrap_files.flatten!
 
         template_file = Array(bootstrap_files).find do |bootstrap_template|
@@ -363,7 +376,7 @@ class Chef
 
         # chef-vault integration must use the new client-side hawtness, otherwise to use the
         # new client-side hawtness, just delete your validation key.
-        if chef_vault_handler.doing_chef_vault? || 
+        if chef_vault_handler.doing_chef_vault? ||
             (Chef::Config[:validation_key] && !File.exist?(File.expand_path(Chef::Config[:validation_key])))
 
           unless config[:chef_node_name]
@@ -373,7 +386,7 @@ class Chef
 
           client_builder.run
 
-          chef_vault_handler.run(node_name: config[:chef_node_name])
+          chef_vault_handler.run(client_builder.client)
 
           bootstrap_context.client_pem = client_builder.client_path
         else
@@ -426,7 +439,7 @@ class Chef
         ssh.config[:ssh_port] = config[:ssh_port]
         ssh.config[:ssh_gateway] = config[:ssh_gateway]
         ssh.config[:forward_agent] = config[:forward_agent]
-        ssh.config[:identity_file] = config[:identity_file]
+        ssh.config[:ssh_identity_file] = config[:ssh_identity_file] || config[:identity_file]
         ssh.config[:manual] = true
         ssh.config[:host_key_verify] = config[:host_key_verify]
         ssh.config[:on_error] = :raise
@@ -435,7 +448,7 @@ class Chef
 
       def knife_ssh_with_password_auth
         ssh = knife_ssh
-        ssh.config[:identity_file] = nil
+        ssh.config[:ssh_identity_file] = nil
         ssh.config[:ssh_password] = ssh.get_password
         ssh
       end
@@ -445,7 +458,7 @@ class Chef
 
         if config[:use_sudo]
           sudo_prefix = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -S " : "sudo "
-          command = config[:preserve_home] ? "#{sudo_prefix} #{command}" : "#{sudo_prefix} -H #{command}" 
+          command = config[:preserve_home] ? "#{sudo_prefix} #{command}" : "#{sudo_prefix} -H #{command}"
         end
 
         command
@@ -455,7 +468,15 @@ class Chef
 
       # True if policy_name and run_list are both given
       def policyfile_and_run_list_given?
-        !config[:run_list].empty? && !!config[:policy_name]
+        run_list_given? && policyfile_options_given?
+      end
+
+      def run_list_given?
+        !config[:run_list].nil? && !config[:run_list].empty?
+      end
+
+      def policyfile_options_given?
+        !!config[:policy_name]
       end
 
       # True if one of policy_name or policy_group was given, but not both

@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,18 +27,18 @@ class Chef
       def windows_server_2003?
         # WMI startup shouldn't be performed unless we're on Windows.
         return false unless windows?
-        require 'wmi-lite/wmi'
+        require "wmi-lite/wmi"
 
         wmi = WmiLite::Wmi.new
-        host = wmi.first_of('Win32_OperatingSystem')
-        is_server_2003 = (host['version'] && host['version'].start_with?("5.2"))
+        host = wmi.first_of("Win32_OperatingSystem")
+        is_server_2003 = (host["version"] && host["version"].start_with?("5.2"))
 
         is_server_2003
       end
 
       def windows_nano_server?
         return false unless windows?
-        require 'win32/registry'
+        require "win32/registry"
 
         # This method may be called before ohai runs (e.g., it may be used to
         # determine settings in config.rb). Chef::Win32::Registry.new uses
@@ -55,12 +55,12 @@ class Chef
           # If accessing the registry key failed, then we're probably not on
           # nano. Fail through.
         end
-        return nano == 1
+        nano == 1
       end
 
       def supports_msi?
         return false unless windows?
-        require 'win32/registry'
+        require "win32/registry"
 
         key = "System\\CurrentControlSet\\Services\\msiserver"
         access = ::Win32::Registry::KEY_QUERY_VALUE
@@ -85,18 +85,28 @@ class Chef
       end
 
       def supports_dsc_invoke_resource?(node)
-        require 'rubygems'
         supports_dsc?(node) &&
-          Gem::Version.new(node[:languages][:powershell][:version]) >=
-            Gem::Version.new("5.0.10018.0")
+          supported_powershell_version?(node, "5.0.10018.0")
+      end
+
+      def supports_refresh_mode_enabled?(node)
+        supported_powershell_version?(node, "5.0.10586.0")
       end
 
       def dsc_refresh_mode_disabled?(node)
-        require 'chef/util/powershell/cmdlet'
+        require "chef/util/powershell/cmdlet"
         cmdlet = Chef::Util::Powershell::Cmdlet.new(node, "Get-DscLocalConfigurationManager", :object)
         metadata = cmdlet.run!.return_value
-        metadata['RefreshMode'] == 'Disabled'
+        metadata["RefreshMode"] == "Disabled"
       end
+
+      def supported_powershell_version?(node, version_string)
+        return false unless node[:languages] && node[:languages][:powershell]
+        require "rubygems"
+        Gem::Version.new(node[:languages][:powershell][:version]) >=
+          Gem::Version.new(version_string)
+      end
+
     end
   end
 end

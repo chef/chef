@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Package do
 
@@ -50,8 +50,8 @@ describe Chef::Resource::Package do
   end
 
   it "should accept a hash for response file template variables" do
-    @resource.response_file_variables({:variables => true})
-    expect(@resource.response_file_variables).to eql({:variables => true})
+    @resource.response_file_variables({ :variables => true })
+    expect(@resource.response_file_variables).to eql({ :variables => true })
   end
 
   it "should accept a string for the source" do
@@ -79,6 +79,11 @@ describe Chef::Resource::Package do
 
     it "returns the file path as its identity" do
       expect(@resource.identity).to eq("tomcat")
+    end
+
+    it "takes options as an array" do
+      @resource.options [ "-a", "-l" ]
+      expect(@resource.options).to eq(["-a", "-l" ])
     end
   end
 

@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (<steve@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Steven Danna (<steve@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 # DEPRECATION NOTE
 # This code only remains to support users still operating with
@@ -28,8 +28,8 @@ class Chef
     class OscUserReregister < Knife
 
       deps do
-        require 'chef/user'
-        require 'chef/json_compat'
+        require "chef/user"
+        require "chef/json_compat"
       end
 
       banner "knife osc_user reregister USER (options)"

@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (<steve@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc
+# Author:: Steven Danna (<steve@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 # DEPRECATION NOTE
 # This code only remains to support users still operating with
@@ -27,15 +27,15 @@ describe Chef::Knife::OscUserDelete do
   before(:each) do
     Chef::Knife::OscUserDelete.load_deps
     @knife = Chef::Knife::OscUserDelete.new
-    @knife.name_args = [ 'my_user' ]
+    @knife.name_args = [ "my_user" ]
   end
 
-  it 'deletes the user' do
-    expect(@knife).to receive(:delete_object).with(Chef::User, 'my_user')
+  it "deletes the user" do
+    expect(@knife).to receive(:delete_object).with(Chef::User, "my_user")
     @knife.run
   end
 
-  it 'prints usage and exits when a user name is not provided' do
+  it "prints usage and exits when a user name is not provided" do
     @knife.name_args = []
     expect(@knife).to receive(:show_usage)
     expect(@knife.ui).to receive(:fatal)

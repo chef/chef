@@ -1,5 +1,5 @@
 # Author:: Xabier de Zuazo (<xabier@onddo.com>)
-# Copyright:: Copyright (c) 2013 Onddo Labs, SL.
+# Copyright:: Copyright 2013-2016, Onddo Labs, SL.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/version_class'
+require "chef/version_class"
 
 class Chef
   class Version
@@ -22,7 +22,7 @@ class Chef
 
       protected
 
-      def parse(str="")
+      def parse(str = "")
         @major, @minor, @patch =
           case str.to_s
           when /^(\d+)\.(\d+)\.(\d+)$/
@@ -31,10 +31,10 @@ class Chef
             [ $1.to_i, $2.to_i, 0 ]
           when /^(\d+)$/
             [ $1.to_i, 0, 0 ]
-          when /^(\d+).(\d+)-[a-z]+\d?(-p(\d+))?$/i   # Match FreeBSD
+          when /^(\d+).(\d+)-[a-z]+\d?(-p(\d+))?$/i # Match FreeBSD
             [ $1.to_i, $2.to_i, ($4 ? $4.to_i : 0)]
           else
-            msg = "'#{str.to_s}' does not match 'x.y.z', 'x.y' or 'x'"
+            msg = "'#{str}' does not match 'x.y.z', 'x.y' or 'x'"
             raise Chef::Exceptions::InvalidPlatformVersion.new( msg )
           end
       end

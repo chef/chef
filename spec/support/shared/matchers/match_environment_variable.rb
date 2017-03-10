@@ -1,6 +1,6 @@
 
-require 'rspec/expectations'
-require 'spec/support/platform_helpers'
+require "rspec/expectations"
+require "spec/support/platform_helpers"
 
 RSpec::Matchers.define :match_environment_variable do |varname|
   match do |actual|

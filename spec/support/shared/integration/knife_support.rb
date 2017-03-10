@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/config'
-require 'chef/knife'
-require 'chef/application/knife'
-require 'logger'
-require 'chef/log'
+require "chef/config"
+require "chef/knife"
+require "chef/application/knife"
+require "logger"
+require "chef/log"
+require "chef/chef_fs/file_system_cache"
 
 module KnifeSupport
-  DEBUG = ENV['DEBUG']
-  def knife(*args, &block)
+  DEBUG = ENV["DEBUG"]
+  def knife(*args, input: nil)
     # Allow knife('role from file roles/blah.json') rather than requiring the
     # arguments to be split like knife('role', 'from', 'file', 'roles/blah.json')
     # If any argument will have actual spaces in it, the long form is required.
@@ -37,16 +38,23 @@ module KnifeSupport
     Chef::Config[:concurrency] = 1
 
     # Work on machines where we can't access /var
-    checksums_cache_dir = Dir.mktmpdir('checksums') do |checksums_cache_dir|
+    Dir.mktmpdir("checksums") do |checksums_cache_dir|
       Chef::Config[:cache_options] = {
         :path => checksums_cache_dir,
-        :skip_expires => true
+        :skip_expires => true,
       }
 
       # This is Chef::Knife.run without load_commands--we'll load stuff
       # ourselves, thank you very much
       stdout = StringIO.new
       stderr = StringIO.new
+
+      stdin = if input
+                StringIO.new(input)
+              else
+                STDIN
+              end
+
       old_loggers = Chef::Log.loggers
       old_log_level = Chef::Log.level
       begin
@@ -56,12 +64,18 @@ module KnifeSupport
         subcommand_class.load_deps
         instance = subcommand_class.new(args)
 
+        # Load configs
+        instance.merge_configs
+
         # Capture stdout/stderr
-        instance.ui = Chef::Knife::UI.new(stdout, stderr, STDIN, {})
+        instance.ui = Chef::Knife::UI.new(stdout, stderr, stdin, instance.config.merge(disable_editing: true))
 
         # Don't print stuff
         Chef::Config[:verbosity] = ( DEBUG ? 2 : 0 )
         instance.config[:config_file] = File.join(CHEF_SPEC_DATA, "null_config.rb")
+
+        # Ensure the ChefFS cache is empty
+        Chef::ChefFS::FileSystemCache.instance.reset!
 
         # Configure chef with a (mostly) blank knife.rb
         # We set a global and then mutate it in our stub knife.rb so we can be
@@ -99,8 +113,6 @@ module KnifeSupport
       KnifeResult.new(stdout.string, stderr.string, exit_code)
     end
   end
-
-  private
 
   class KnifeResult
 
@@ -146,11 +158,11 @@ module KnifeSupport
     private
 
     def should_result_in(expected)
-      expected[:stdout] = '' if !expected[:stdout]
-      expected[:stderr] = '' if !expected[:stderr]
+      expected[:stdout] = "" if !expected[:stdout]
+      expected[:stderr] = "" if !expected[:stderr]
       expected[:exit_code] = 0 if !expected[:exit_code]
       # TODO make this go away
-      stderr_actual = @stderr.sub(/^WARNING: No knife configuration file found\n/, '')
+      stderr_actual = @stderr.sub(/^WARNING: No knife configuration file found\n/, "")
 
       if expected[:stderr].is_a?(Regexp)
         expect(stderr_actual).to match(expected[:stderr])

@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright 2008-2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,13 +18,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'spec/support/shared/context/client'
-require 'spec/support/shared/examples/client'
+require "spec_helper"
+require "spec/support/shared/context/client"
+require "spec/support/shared/examples/client"
 
-require 'chef/run_context'
-require 'chef/rest'
-require 'rbconfig'
+require "chef/run_context"
+require "chef/server_api"
+require "rbconfig"
 
 class FooError < RuntimeError
 end
@@ -38,32 +38,33 @@ describe Chef::Client do
     end
 
     it "runs ohai with only the minimum required plugins" do
-      expected_filter = %w[fqdn machinename hostname platform platform_version os os_version]
+      expected_filter = %w{fqdn machinename hostname platform platform_version os os_version}
       expect(ohai_system).to receive(:all_plugins).with(expected_filter)
       client.run_ohai
     end
   end
 
   describe "authentication protocol selection" do
-    after do
-      Chef::Config[:authentication_protocol_version] = "1.0"
-    end
+    context "when FIPS is disabled" do
+      before do
+        Chef::Config[:fips] = false
+      end
 
-    context "when the node name is <= 90 bytes" do
-      it "does not force the authentication protocol to 1.1" do
-        Chef::Config[:node_name] = ("f" * 90)
-        # ugly that this happens as a side effect of a getter :(
-        client.node_name
-        expect(Chef::Config[:authentication_protocol_version]).to eq("1.0")
+      it "defaults to 1.1" do
+        expect(Chef::Config[:authentication_protocol_version]).to eq("1.1")
       end
     end
+    context "when FIPS is enabled" do
+      before do
+        Chef::Config[:fips] = true
+      end
 
-    context "when the node name is > 90 bytes" do
-      it "sets the authentication protocol to version 1.1" do
-        Chef::Config[:node_name] = ("f" * 91)
-        # ugly that this happens as a side effect of a getter :(
-        client.node_name
-        expect(Chef::Config[:authentication_protocol_version]).to eq("1.1")
+      it "defaults to 1.3" do
+        expect(Chef::Config[:authentication_protocol_version]).to eq("1.3")
+      end
+
+      after do
+        Chef::Config[:fips] = false
       end
     end
   end
@@ -175,21 +176,21 @@ describe Chef::Client do
 
     context "when an override run list is given" do
       it "permits spaces in overriding run list" do
-        Chef::Client.new(nil, :override_runlist => 'role[a], role[b]')
+        Chef::Client.new(nil, :override_runlist => "role[a], role[b]")
       end
 
       describe "calling run" do
         include_examples "a successful client run" do
-          let(:client_opts) { {:override_runlist => "recipe[override_recipe]"} }
+          let(:client_opts) { { :override_runlist => "recipe[override_recipe]" } }
 
           def stub_for_sync_cookbooks
             # --Client#setup_run_context
             # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
             #
             expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-            expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
+            expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
             expect(http_cookbook_sync).to receive(:post).
-              with("environments/_default/cookbook_versions", {:run_list => ["override_recipe"]}).
+              with("environments/_default/cookbook_versions", { :run_list => ["override_recipe"] }).
               and_return({})
           end
 
@@ -214,16 +215,16 @@ describe Chef::Client do
 
       include_examples "a successful client run" do
         let(:new_runlist) { "recipe[new_run_list_recipe]" }
-        let(:client_opts) { {:runlist => new_runlist} }
+        let(:client_opts) { { :runlist => new_runlist } }
 
         def stub_for_sync_cookbooks
           # --Client#setup_run_context
           # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
           #
           expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-          expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
+          expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
           expect(http_cookbook_sync).to receive(:post).
-            with("environments/_default/cookbook_versions", {:run_list => ["new_run_list_recipe"]}).
+            with("environments/_default/cookbook_versions", { :run_list => ["new_run_list_recipe"] }).
             and_return({})
         end
 
@@ -238,7 +239,7 @@ describe Chef::Client do
     describe "when converge completes successfully" do
       include_context "a client run"
       include_context "converge completed"
-      context 'when audit mode is enabled' do
+      context "when audit mode is enabled" do
         describe "when audit phase errors" do
           include_context "audit phase failed with error"
           include_examples "a completed run with audit failure" do
@@ -354,9 +355,9 @@ describe Chef::Client do
 
       # build_node will call Node#expand! with server, which will
       # eventually hit the server to expand the included role.
-      mock_chef_rest = double("Chef::REST")
-      expect(mock_chef_rest).to receive(:get_rest).with("roles/role_containing_cookbook1").and_return(role_containing_cookbook1)
-      expect(Chef::REST).to receive(:new).and_return(mock_chef_rest)
+      mock_chef_rest = double("Chef::ServerAPI")
+      expect(mock_chef_rest).to receive(:get).with("roles/role_containing_cookbook1").and_return(role_containing_cookbook1.to_hash)
+      expect(Chef::ServerAPI).to receive(:new).and_return(mock_chef_rest)
 
       # check pre-conditions.
       expect(node[:roles]).to be_nil
@@ -387,12 +388,11 @@ describe Chef::Client do
       expect(node.chef_environment).to eq("_default")
       Chef::Config[:environment] = "A"
 
-      test_env = Chef::Environment.new
-      test_env.name("A")
+      test_env = { "name" => "A" }
 
-      mock_chef_rest = double("Chef::REST")
-      expect(mock_chef_rest).to receive(:get_rest).with("environments/A").and_return(test_env)
-      expect(Chef::REST).to receive(:new).and_return(mock_chef_rest)
+      mock_chef_rest = double("Chef::ServerAPI")
+      expect(mock_chef_rest).to receive(:get).with("environments/A").and_return(test_env)
+      expect(Chef::ServerAPI).to receive(:new).and_return(mock_chef_rest)
       allow(client.policy_builder).to receive(:node).and_return(node)
       client.policy_builder.select_implementation(node)
       allow(client.policy_builder.implementation).to receive(:node).and_return(node)
@@ -462,7 +462,7 @@ describe Chef::Client do
 
   describe "assert_cookbook_path_not_empty" do
     before do
-      Chef::Config[:solo] = true
+      Chef::Config[:solo_legacy_mode] = true
       Chef::Config[:cookbook_path] = ["/path/to/invalid/cookbook_path"]
     end
 
@@ -518,7 +518,7 @@ describe Chef::Client do
       allow_any_instance_of(Chef::RunLock).to receive(:save_pid).and_raise(NoMethodError)
     end
 
-    context 'when audit mode is enabled' do
+    context "when audit mode is enabled" do
       before do
         Chef::Config[:audit_mode] = :enabled
       end
@@ -531,7 +531,7 @@ describe Chef::Client do
       end
     end
 
-    context 'when audit mode is disabled' do
+    context "when audit mode is disabled" do
       before do
         Chef::Config[:audit_mode] = :disabled
       end

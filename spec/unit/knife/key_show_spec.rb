@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/user_key_show'
-require 'chef/knife/client_key_show'
-require 'chef/knife/key_show'
-require 'chef/key'
+require "spec_helper"
+require "chef/knife/user_key_show"
+require "chef/knife/client_key_show"
+require "chef/knife/key_show"
+require "chef/key"
 
 describe "key show commands that inherit knife" do
   shared_examples_for "a key show command" do
@@ -45,8 +45,8 @@ describe "key show commands that inherit knife" do
       context "when the service object is called" do
         it "creates a new instance of Chef::Knife::KeyShow with the correct args" do
           expect(Chef::Knife::KeyShow).to receive(:new).
-                                           with("charmander-key", "charmander", command.load_method, command.ui).
-                                           and_return(service_object)
+            with("charmander-key", "charmander", command.load_method, command.ui).
+            and_return(service_object)
           command.service_object
         end
       end # when the service object is called
@@ -78,19 +78,19 @@ describe Chef::Knife::KeyShow do
   let(:actor) { "charmander" }
   let(:keyname) { "charmander" }
   let(:ui) { instance_double("Chef::Knife::UI") }
-  let(:expected_hash) {
+  let(:expected_hash) do
     {
       actor_field_name => "charmander",
       "name" => "charmander-key",
       "public_key" => "some-public-key",
-      "expiration_date" => "infinity"
+      "expiration_date" => "infinity",
     }
-  }
+  end
 
   shared_examples_for "key show run command" do
-    let(:key_show_object) {
+    let(:key_show_object) do
       described_class.new(keyname, actor, load_method, ui)
-    }
+    end
 
     before do
       allow(key_show_object).to receive(:display_output)
@@ -113,14 +113,14 @@ describe Chef::Knife::KeyShow do
   context "when load_method is :load_by_user" do
     it_should_behave_like "key show run command" do
       let(:load_method) { :load_by_user }
-      let(:actor_field_name) { 'user' }
+      let(:actor_field_name) { "user" }
     end
   end
 
   context "when load_method is :load_by_client" do
     it_should_behave_like "key show run command" do
       let(:load_method) { :load_by_client }
-      let(:actor_field_name) { 'user' }
+      let(:actor_field_name) { "user" }
     end
   end
 end

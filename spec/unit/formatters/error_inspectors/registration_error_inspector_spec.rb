@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 # spec_helper loads the shared examples already.
 #require 'support/shared/unit/api_error_inspector_spec'
-
 
 describe Chef::Formatters::ErrorInspectors::RegistrationErrorInspector do
   it_behaves_like "an api error inspector"

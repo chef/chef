@@ -1,7 +1,7 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2009 Bryan McLellan
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2009-2016, Bryan McLellan
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Cron do
 
@@ -100,25 +100,25 @@ describe Chef::Resource::Cron do
   end
 
   it "should allow you to specify environment variables hash" do
-    env = {"TEST" => "LOL"}
+    env = { "TEST" => "LOL" }
     @resource.environment env
     expect(@resource.environment).to eql(env)
   end
 
   it "should allow * for all time and date values" do
-    [ "minute", "hour", "day", "month", "weekday" ].each do |x|
+    %w{minute hour day month weekday}.each do |x|
       expect(@resource.send(x, "*")).to eql("*")
     end
   end
 
   it "should allow ranges for all time and date values" do
-    [ "minute", "hour", "day", "month", "weekday" ].each do |x|
+    %w{minute hour day month weekday}.each do |x|
       expect(@resource.send(x, "1-2,5")).to eql("1-2,5")
     end
   end
 
   it "should have a default value of * for all time and date values" do
-    [ "minute", "hour", "day", "month", "weekday" ].each do |x|
+    %w{minute hour day month weekday}.each do |x|
       expect(@resource.send(x)).to eql("*")
     end
   end
@@ -153,7 +153,7 @@ describe Chef::Resource::Cron do
   end
 
   it "should convert integer schedule values to a string" do
-    [ "minute", "hour", "day", "month", "weekday" ].each do |x|
+    %w{minute hour day month weekday}.each do |x|
       expect(@resource.send(x, 5)).to eql("5")
     end
   end

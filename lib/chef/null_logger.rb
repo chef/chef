@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ class Chef
     def debug(message, &block)
     end
 
-    def add(severity, message=nil, progname=nil)
+    def add(severity, message = nil, progname = nil)
     end
 
     def <<(message)

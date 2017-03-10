@@ -1,8 +1,8 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Author:: Claire McQuin (<claire@getchef.com>)
+# Author:: Claire McQuin (<claire@chef.io>)
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/audit/rspec_formatter'
+require "spec_helper"
+require "chef/audit/rspec_formatter"
 
 describe Chef::Audit::RspecFormatter do
   let(:formatter) { Chef::Audit::RspecFormatter.new(nil) }

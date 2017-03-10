@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class XMLEscapingTestHarness
   include Chef::Mixin::XMLEscape
@@ -37,7 +37,7 @@ describe Chef::Mixin::XMLEscape do
   end
 
   it "does not modify ASCII strings" do
-    expect(@escaper.xml_escape('foobarbaz!@#$%^*()')).to eq('foobarbaz!@#$%^*()')
+    expect(@escaper.xml_escape("foobarbaz!@\#$%^*()")).to eq("foobarbaz!@\#$%^*()")
   end
 
   it "converts invalid bytes to asterisks" do
@@ -45,10 +45,10 @@ describe Chef::Mixin::XMLEscape do
   end
 
   it "converts UTF-8 correctly" do
-    expect(@escaper.xml_escape("\xC2\xA9")).to eq('&#169;')
+    expect(@escaper.xml_escape("\xC2\xA9")).to eq("&#169;")
   end
 
   it "converts win 1252 characters correctly" do
-    expect(@escaper.xml_escape("\x80")).to eq('&#8364;')
+    expect(@escaper.xml_escape("#{0x80.chr}")).to eq("&#8364;")
   end
 end

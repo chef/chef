@@ -1,0 +1,8 @@
+suites:
+  - name: fips-unit-functional
+    includes: [centos-6]
+    run_list:
+
+  - name: fips-integration
+    includes: [centos-6, windows-2012r2]
+    run_list:

@@ -1,6 +1,6 @@
 #
 # Author:: Chirag Jog (<chirag@clogeny.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 if Chef::Platform.windows?
-  require 'chef/win32/version'
+  require "chef/win32/version"
 end
 
 describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on_win2k3 do
   before do
 
     wmi = WmiLite::Wmi.new
-    host = wmi.first_of('Win32_OperatingSystem')
+    host = wmi.first_of("Win32_OperatingSystem")
 
     # Use WMI to determine current OS version.
     # On Win2k8R2 and later, we can dynamically obtain marketing
@@ -36,23 +36,23 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
     # from WMI contain extended characters such as registered
     # trademark on Win2k8 and Win2k3 that we're not using in our
     # library, so we have to set the expectation statically.
-    if Chef::Platform::windows_server_2003?
-      @current_os_version = 'Windows Server 2003 R2'
+    if Chef::Platform.windows_server_2003?
+      @current_os_version = "Windows Server 2003 R2"
     elsif is_windows_server_2008?(host)
-      @current_os_version = 'Windows Server 2008'
+      @current_os_version = "Windows Server 2008"
     else
       # The name from WMI is actually what we want in Win2k8R2+.
       # So this expectation sould continue to hold without modification
       # as new versions of Windows are released.
-      @current_os_version = host['caption']
+      @current_os_version = host["caption"]
     end
 
     @version = Chef::ReservedNames::Win32::Version.new
   end
 
-  def for_each_windows_version(&block)
+  def for_each_windows_version
     @version.methods.each do |method_name|
-      if Chef::ReservedNames::Win32::Version::WIN_VERSIONS.keys.find { | key | method_name.to_s == Chef::ReservedNames::Win32::Version.send(:method_name_from_marketing_name,key) }
+      if Chef::ReservedNames::Win32::Version::WIN_VERSIONS.keys.find { |key| method_name.to_s == Chef::ReservedNames::Win32::Version.send(:method_name_from_marketing_name, key) }
         yield method_name
       end
     end
@@ -98,20 +98,20 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on
   def is_windows_server_2008?(wmi_host)
     is_win2k8 = false
 
-    os_version = wmi_host['version']
+    os_version = wmi_host["version"]
 
     # The operating system version is a string in the following form
     # that can be split into components based on the '.' delimiter:
     # MajorVersionNumber.MinorVersionNumber.BuildNumber
-    os_version_components = os_version.split('.')
+    os_version_components = os_version.split(".")
 
     if os_version_components.length < 2
-      raise 'WMI returned a Windows version from Win32_OperatingSystem.Version ' +
-        'with an unexpected format. The Windows version could not be determined.'
+      raise "WMI returned a Windows version from Win32_OperatingSystem.Version " +
+        "with an unexpected format. The Windows version could not be determined."
     end
 
     # Windows 6.0 is Windows Server 2008, so test the major and
     # minor version components
-    is_win2k8 = os_version_components[0] == '6' && os_version_components[1] == '0'
+    is_win2k8 = os_version_components[0] == "6" && os_version_components[1] == "0"
   end
 end

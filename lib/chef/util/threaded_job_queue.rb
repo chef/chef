@@ -1,4 +1,4 @@
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'thread'
+require "thread"
 
 class Chef
   class Util

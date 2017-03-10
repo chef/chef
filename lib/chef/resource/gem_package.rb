@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,29 +16,17 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
+require "chef/resource/package"
 
 class Chef
   class Resource
     class GemPackage < Chef::Resource::Package
+      resource_name :gem_package
 
-      def initialize(name, run_context=nil)
-        super
-        @clear_sources = false
-      end
-
-      def source(arg=nil)
-        set_or_return(:source, arg, :kind_of => [ String, Array ])
-      end
-
-      def clear_sources(arg=nil)
-        set_or_return(:clear_sources, arg, :kind_of => [ TrueClass, FalseClass ])
-      end
-
+      property :source, [ String, Array ]
+      property :clear_sources, [ true, false ], default: false, desired_state: false
       # Sets a custom gem_binary to run for gem commands.
-      def gem_binary(gem_cmd=nil)
-        set_or_return(:gem_binary,gem_cmd,:kind_of => [ String ])
-      end
+      property :gem_binary, String, desired_state: false
 
       ##
       # Options for the gem install, either a Hash or a String. When a hash is
@@ -46,10 +34,7 @@ class Chef
       # gem will be installed via the gems API. When a String is given, the gem
       # will be installed by shelling out to the gem command. Using a Hash of
       # options with an explicit gem_binary will result in undefined behavior.
-      def options(opts=nil)
-        set_or_return(:options,opts,:kind_of => [String,Hash])
-      end
-
+      property :options, [ String, Hash, Array, nil ], desired_state: false
 
     end
   end

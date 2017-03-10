@@ -1,7 +1,7 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'securerandom'
+require "securerandom"
 
 class Chef
   class Audit
@@ -41,7 +41,7 @@ class Chef
             :run_id => run_id,
             :start_time => start_time,
             :end_time => end_time,
-            :control_groups => control_groups.collect { |c| c.to_hash }
+            :control_groups => control_groups.collect { |c| c.to_hash },
         }
       end
     end
@@ -49,7 +49,7 @@ class Chef
     class ControlGroupData
       attr_reader :name, :status, :number_succeeded, :number_failed, :controls, :metadata
 
-      def initialize(name, metadata={})
+      def initialize(name, metadata = {})
         @status = "success"
         @controls = []
         @number_succeeded = 0
@@ -57,7 +57,6 @@ class Chef
         @name = name
         @metadata = metadata
       end
-
 
       def example_success(control_data)
         @number_succeeded += 1
@@ -80,13 +79,13 @@ class Chef
       def to_hash
         # We sort it so the examples appear in the output in the same order
         # they appeared in the recipe
-        controls.sort! {|x,y| x.line_number <=> y.line_number}
+        controls.sort! { |x, y| x.line_number <=> y.line_number }
         h = {
               :name => name,
               :status => status,
               :number_succeeded => number_succeeded,
               :number_failed => number_failed,
-              :controls => controls.collect { |c| c.to_hash }
+              :controls => controls.collect { |c| c.to_hash },
         }
         # If there is a duplicate key, metadata will overwrite it
         add_display_only_data(h).merge(metadata)
@@ -105,7 +104,7 @@ class Chef
         group[:id] = SecureRandom.uuid
         group[:controls].collect!.with_index do |c, i|
           # i is zero-indexed, and we want the display one-indexed
-          c[:sequence_number] = i+1
+          c[:sequence_number] = i + 1
           c
         end
         group
@@ -117,9 +116,9 @@ class Chef
       attr_reader :name, :resource_type, :resource_name, :context, :line_number
       attr_accessor :status, :details
 
-      def initialize(control_data={})
+      def initialize(control_data = {})
         control_data.each do |k, v|
-          self.instance_variable_set("@#{k}", v)
+          instance_variable_set("@#{k}", v)
         end
       end
 
@@ -129,7 +128,7 @@ class Chef
             :status => status,
             :details => details,
             :resource_type => resource_type,
-            :resource_name => resource_name
+            :resource_name => resource_name,
         }
         h[:context] = context || []
         h

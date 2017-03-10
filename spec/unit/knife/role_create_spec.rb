@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleCreate do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::RoleCreate.new
     @knife.config = {
-      :description => nil
+      :description => nil,
     }
     @knife.name_args = [ "adam" ]
     allow(@knife).to receive(:output).and_return(true)
@@ -52,7 +52,7 @@ describe Chef::Knife::RoleCreate do
     end
 
     it "should allow you to edit the data" do
-      expect(@knife).to receive(:edit_data).with(@role)
+      expect(@knife).to receive(:edit_data).with(@role, object_class: Chef::Role)
       @knife.run
     end
 

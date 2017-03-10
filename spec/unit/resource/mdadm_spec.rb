@@ -1,7 +1,7 @@
 #
 # Author:: Joe Williams (<joe@joetify.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2009 Joe Williams
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2009-2016, Joe Williams
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Mdadm do
 
@@ -65,8 +65,13 @@ describe Chef::Resource::Mdadm do
   end
 
   it "should allow you to set the bitmap attribute" do
-    @resource.metadata "internal"
-    expect(@resource.metadata).to eql("internal")
+    @resource.bitmap "internal"
+    expect(@resource.bitmap).to eql("internal")
+  end
+
+  it "should allow you to set the layout attribute" do
+    @resource.layout "f2"
+    expect(@resource.layout).to eql("f2")
   end
 
   it "should allow you to set the devices attribute" do
@@ -82,14 +87,14 @@ describe Chef::Resource::Mdadm do
   describe "when it has devices, level, and chunk" do
     before do
       @resource.raid_device("raider")
-      @resource.devices(["device1", "device2"])
+      @resource.devices(%w{device1 device2})
       @resource.level(1)
       @resource.chunk(42)
     end
 
     it "describes its state" do
       state = @resource.state
-      expect(state[:devices]).to eql(["device1", "device2"])
+      expect(state[:devices]).to eql(%w{device1 device2})
       expect(state[:level]).to eq(1)
       expect(state[:chunk]).to eq(42)
     end

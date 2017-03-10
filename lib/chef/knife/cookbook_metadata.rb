@@ -1,7 +1,7 @@
 #
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,15 +17,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookMetadata < Knife
 
       deps do
-        require 'chef/cookbook_loader'
-        require 'chef/cookbook/metadata'
+        require "chef/cookbook_loader"
+        require "chef/cookbook/metadata"
       end
 
       banner "knife cookbook metadata COOKBOOK (options)"
@@ -61,8 +61,8 @@ class Chef
       end
 
       def generate_metadata(cookbook)
-        Array(config[:cookbook_path]).reverse.each do |path|
-          file = File.expand_path(File.join(path, cookbook, 'metadata.rb'))
+        Array(config[:cookbook_path]).reverse_each do |path|
+          file = File.expand_path(File.join(path, cookbook, "metadata.rb"))
           if File.exists?(file)
             generate_metadata_from_file(cookbook, file)
           else
@@ -76,11 +76,10 @@ class Chef
         md = Chef::Cookbook::Metadata.new
         md.name(cookbook)
         md.from_file(file)
-        json_file = File.join(File.dirname(file), 'metadata.json')
+        json_file = File.join(File.dirname(file), "metadata.json")
         File.open(json_file, "w") do |f|
           f.write(Chef::JSONCompat.to_json_pretty(md))
         end
-        generated = true
         Chef::Log.debug("Generated #{json_file}")
       rescue Exceptions::ObsoleteDependencySyntax, Exceptions::InvalidVersionConstraint => e
         ui.stderr.puts "ERROR: The cookbook '#{cookbook}' contains invalid or obsolete metadata syntax."
@@ -91,7 +90,7 @@ class Chef
       end
 
       def validate_metadata_json(path, cookbook)
-        json_file = File.join(path, cookbook, 'metadata.json')
+        json_file = File.join(path, cookbook, "metadata.json")
         if File.exist?(json_file)
           Chef::Cookbook::Metadata.validate_json(IO.read(json_file))
         end

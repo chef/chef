@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (tyler@chef.io)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc
+# Copyright:: Copyright 2015-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/key'
+require "chef/key"
 
 describe Chef::Key do
   # whether user or client irrelevent to these tests
   let(:key) { Chef::Key.new("original_actor", "user") }
   let(:public_key_string) do
-     <<EOS
+    <<EOS
 -----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvPo+oNPB7uuNkws0fC02
 KxSwdyqPLu0fhI1pOweNKAZeEIiEz2PkybathHWy8snSXGNxsITkf3eyvIIKa8OZ
@@ -70,7 +70,6 @@ EOS
       end
     end
   end
-
 
   describe "when a new Chef::Key object is initialized with invalid input" do
     it "should raise an InvalidKeyArgument" do
@@ -199,7 +198,7 @@ EOS
       end
 
       it "should include the actor value under the key relative to the actor_field_name passed" do
-        expect(json).to include(%Q("#{new_key.actor_field_name}":"original_actor"))
+        expect(json).to include(%Q{"#{new_key.actor_field_name}":"original_actor"})
       end
 
       it "should include the name field when present" do
@@ -213,7 +212,7 @@ EOS
 
       it "should include the public_key field when present" do
         new_key.public_key "this_public_key"
-        expect(new_key.to_json).to include(%q("public_key":"this_public_key"))
+        expect(new_key.to_json).to include(%q{"public_key":"this_public_key"})
       end
 
       it "should not include the public_key if not present" do
@@ -222,7 +221,7 @@ EOS
 
       it "should include the private_key field when present" do
         new_key.private_key "this_public_key"
-        expect(new_key.to_json).to include(%q("private_key":"this_public_key"))
+        expect(new_key.to_json).to include(%q{"private_key":"this_public_key"})
       end
 
       it "should not include the private_key if not present" do
@@ -231,7 +230,7 @@ EOS
 
       it "should include the expiration_date field when present" do
         new_key.expiration_date "2020-12-24T21:00:00Z"
-        expect(new_key.to_json).to include(%Q("expiration_date":"2020-12-24T21:00:00Z"))
+        expect(new_key.to_json).to include(%q{"expiration_date":"2020-12-24T21:00:00Z"})
       end
 
       it "should not include the expiration_date if not present" do
@@ -240,7 +239,7 @@ EOS
 
       it "should include the create_key field when present" do
         new_key.create_key true
-        expect(new_key.to_json).to include(%q("create_key":true))
+        expect(new_key.to_json).to include(%q{"create_key":true})
       end
 
       it "should not include the create_key if not present" do
@@ -306,7 +305,7 @@ EOS
                 "name" => "key_name",
                 "public_key" => public_key_string,
                 "private_key" => "some_private_key",
-                "expiration_date" => "infinity"}
+                "expiration_date" => "infinity" }
           Chef::Key.from_json(o.to_json)
         end
         let(:key_with_create_key_field) do
@@ -324,7 +323,7 @@ EOS
                 "name" => "key_name",
                 "public_key" => public_key_string,
                 "private_key" => "some_private_key",
-                "expiration_date" => "infinity"}
+                "expiration_date" => "infinity" }
           Chef::Key.from_json(o.to_json)
         end
         let(:key_with_create_key_field) do
@@ -336,13 +335,12 @@ EOS
     end
   end # when deserializing from JSON
 
-
   describe "API Interactions" do
     let(:rest) do
       Chef::Config[:chef_server_root] = "http://www.example.com"
       Chef::Config[:chef_server_url] = "http://www.example.com/organizations/test_org"
-      r = double('rest')
-      allow(Chef::REST).to receive(:new).and_return(r)
+      r = double("rest")
+      allow(Chef::ServerAPI).to receive(:new).and_return(r)
       r
     end
 
@@ -358,40 +356,39 @@ EOS
 
     describe "list" do
       context "when listing keys for a user" do
-        let(:response) { [{"uri" => "http://www.example.com/users/keys/foobar", "name"=>"foobar", "expired"=>false}] }
-        let(:inflated_response) { {"foobar" => user_key} }
+        let(:response) { [{ "uri" => "http://www.example.com/users/keys/foobar", "name" => "foobar", "expired" => false }] }
+        let(:inflated_response) { { "foobar" => user_key } }
 
         it "lists all keys" do
-          expect(rest).to receive(:get_rest).with("users/#{user_key.actor}/keys").and_return(response)
+          expect(rest).to receive(:get).with("users/#{user_key.actor}/keys").and_return(response)
           expect(Chef::Key.list_by_user("foobar")).to eq(response)
         end
 
         it "inflate all keys" do
           allow(Chef::Key).to receive(:load_by_user).with(user_key.actor, "foobar").and_return(user_key)
-          expect(rest).to receive(:get_rest).with("users/#{user_key.actor}/keys").and_return(response)
+          expect(rest).to receive(:get).with("users/#{user_key.actor}/keys").and_return(response)
           expect(Chef::Key.list_by_user("foobar", true)).to eq(inflated_response)
         end
 
       end
 
       context "when listing keys for a client" do
-        let(:response) { [{"uri" => "http://www.example.com/users/keys/foobar", "name"=>"foobar", "expired"=>false}] }
-        let(:inflated_response) { {"foobar" => client_key} }
+        let(:response) { [{ "uri" => "http://www.example.com/users/keys/foobar", "name" => "foobar", "expired" => false }] }
+        let(:inflated_response) { { "foobar" => client_key } }
 
         it "lists all keys" do
-          expect(rest).to receive(:get_rest).with("clients/#{client_key.actor}/keys").and_return(response)
+          expect(rest).to receive(:get).with("clients/#{client_key.actor}/keys").and_return(response)
           expect(Chef::Key.list_by_client("foobar")).to eq(response)
         end
 
         it "inflate all keys" do
           allow(Chef::Key).to receive(:load_by_client).with(client_key.actor, "foobar").and_return(client_key)
-          expect(rest).to receive(:get_rest).with("clients/#{user_key.actor}/keys").and_return(response)
+          expect(rest).to receive(:get).with("clients/#{user_key.actor}/keys").and_return(response)
           expect(Chef::Key.list_by_client("foobar", true)).to eq(inflated_response)
         end
 
       end
     end
-
 
     describe "create" do
       shared_examples_for "create key" do
@@ -408,10 +405,10 @@ EOS
           end
 
           it "creates a new key via the API with the fingerprint as the name" do
-            expect(rest).to receive(:post_rest).with(url,
-                                                     {"name" => "12:3e:33:73:0b:f4:ec:72:dc:f0:4c:51:62:27:08:76:96:24:f4:4a",
-                                                      "public_key" => key.public_key,
-                                                      "expiration_date" => key.expiration_date}).and_return({})
+            expect(rest).to receive(:post).with(url,
+                                                     { "name" => "12:3e:33:73:0b:f4:ec:72:dc:f0:4c:51:62:27:08:76:96:24:f4:4a",
+                                                       "public_key" => key.public_key,
+                                                       "expiration_date" => key.expiration_date }).and_return({})
             key.create
           end
         end
@@ -426,10 +423,10 @@ EOS
 
           context "when create_key is false" do
             it "creates a new key via the API" do
-              expect(rest).to receive(:post_rest).with(url,
-                                                       {"name" => key.name,
-                                                        "public_key" => key.public_key,
-                                                        "expiration_date" => key.expiration_date}).and_return({})
+              expect(rest).to receive(:post).with(url,
+                                                       { "name" => key.name,
+                                                         "public_key" => key.public_key,
+                                                         "expiration_date" => key.expiration_date }).and_return({})
               key.create
             end
           end
@@ -443,27 +440,27 @@ EOS
                 actor_type => "foobar",
                 "name" => key.name,
                 "create_key" => true,
-                "expiration_date" => key.expiration_date
+                "expiration_date" => key.expiration_date,
               }
               $expected_input = {
                 "name" => key.name,
                 "create_key" => true,
-                "expiration_date" => key.expiration_date
+                "expiration_date" => key.expiration_date,
               }
             end
 
             it "should create a new key via the API" do
-              expect(rest).to receive(:post_rest).with(url, $expected_input).and_return({})
+              expect(rest).to receive(:post).with(url, $expected_input).and_return({})
               key.create
             end
 
             context "when the server returns the private_key via key.create" do
               before do
-                allow(rest).to receive(:post_rest).with(url, $expected_input).and_return({"private_key" => "this_private_key"})
+                allow(rest).to receive(:post).with(url, $expected_input).and_return({ "private_key" => "this_private_key" })
               end
 
               it "key.create returns the original key plus the private_key" do
-                expect(key.create.to_hash).to eq($expected_output.merge({"private_key" => "this_private_key"}))
+                expect(key.create.to_hash).to eq($expected_output.merge({ "private_key" => "this_private_key" }))
               end
             end
           end
@@ -512,7 +509,7 @@ EOS
           end
 
           it "should update the key via the API" do
-            expect(rest).to receive(:put_rest).with(url, key.to_hash).and_return({})
+            expect(rest).to receive(:put).with(url, key.to_hash).and_return({})
             key.update
           end
         end
@@ -523,7 +520,7 @@ EOS
           end
 
           it "passes @name in the body and the arg in the PUT URL" do
-            expect(rest).to receive(:put_rest).with(update_name_url, key.to_hash).and_return({})
+            expect(rest).to receive(:put).with(update_name_url, key.to_hash).and_return({})
             key.update("old_name")
           end
         end
@@ -532,9 +529,9 @@ EOS
           before do
             key.name "key_name"
             key.create_key true
-            allow(rest).to receive(:put_rest).with(url, key.to_hash).and_return({
+            allow(rest).to receive(:put).with(url, key.to_hash).and_return({
                                                                                   "key" => "key_name",
-                                                                                  "public_key" => public_key_string
+                                                                                  "public_key" => public_key_string,
                                                                                 })
 
           end
@@ -572,7 +569,7 @@ EOS
     describe "load" do
       shared_examples_for "load" do
         it "should load a named key from the API" do
-          expect(rest).to receive(:get_rest).with(url).and_return({"user" => "foobar", "name" => "test_key_name", "public_key" => public_key_string, "expiration_date" => "infinity"})
+          expect(rest).to receive(:get).with(url).and_return({ "user" => "foobar", "name" => "test_key_name", "public_key" => public_key_string, "expiration_date" => "infinity" })
           key = Chef::Key.send(load_method, "foobar", "test_key_name")
           expect(key.actor).to eq("foobar")
           expect(key.name).to eq("test_key_name")
@@ -610,7 +607,7 @@ EOS
         end
         context "when name is not missing" do
           it "should delete the key via the API" do
-            expect(rest).to receive(:delete_rest).with(url).and_return({})
+            expect(rest).to receive(:delete).with(url).and_return({})
             key.destroy
           end
         end

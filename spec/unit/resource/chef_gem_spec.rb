@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright (c) 2008, 2012 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::ChefGem, "initialize" do
 
@@ -26,7 +26,7 @@ describe Chef::Resource::ChefGem, "initialize" do
     resource: Chef::Resource::ChefGem,
     provider: Chef::Provider::Package::Rubygems,
     name: :chef_gem,
-    action: :install,
+    action: :install
   )
 
 end
@@ -34,16 +34,12 @@ end
 describe Chef::Resource::ChefGem, "gem_binary" do
   let(:resource) { Chef::Resource::ChefGem.new("foo") }
 
-  before(:each) do
-    expect(RbConfig::CONFIG).to receive(:[]).with('bindir').and_return("/opt/chef/embedded/bin")
-  end
-
   it "should raise an exception when gem_binary is set" do
     expect { resource.gem_binary("/lol/cats/gem") }.to raise_error(ArgumentError)
   end
 
   it "should set the gem_binary based on computing it from RbConfig" do
-    expect(resource.gem_binary).to eql("/opt/chef/embedded/bin/gem")
+    expect(resource.gem_binary).to eql("#{RbConfig::CONFIG['bindir']}/gem")
   end
 
   it "should set the gem_binary based on computing it from RbConfig" do
@@ -52,7 +48,7 @@ describe Chef::Resource::ChefGem, "gem_binary" do
 
   context "when building the resource" do
     let(:node) do
-      Chef::Node.new.tap {|n| n.normal[:tags] = [] }
+      Chef::Node.new
     end
 
     let(:run_context) do
@@ -74,14 +70,14 @@ describe Chef::Resource::ChefGem, "gem_binary" do
       expect(Chef::Resource::ChefGem).to receive(:new).and_return(resource)
     end
 
-    it "runs the install at compile-time by default", :chef_lt_13_only do
+    it "runs the install at compile-time by default", chef: "< 13" do
       expect(resource).to receive(:run_action).with(:install)
       expect(Chef::Log).to receive(:deprecation).at_least(:once)
       recipe.chef_gem "foo"
     end
 
     # the default behavior will change in Chef-13
-    it "does not runs the install at compile-time by default", :chef_gte_13_only do
+    it "does not runs the install at compile-time by default", chef: ">= 13" do
       expect(resource).not_to receive(:run_action).with(:install)
       expect(Chef::Log).not_to receive(:deprecation)
       recipe.chef_gem "foo"

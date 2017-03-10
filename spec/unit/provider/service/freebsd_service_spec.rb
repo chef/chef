@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org)
-# Copyright:: Copyright (c) 2009 Bryan McLellan
+# Copyright:: Copyright 2009-2016, Bryan McLellan
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class Chef::Provider::Service::Freebsd
   public :service_enable_variable_name
@@ -27,14 +27,14 @@ end
 describe Chef::Provider::Service::Freebsd do
   let(:node) do
     node = Chef::Node.new
-    node.automatic_attrs[:command] = {:ps => "ps -ax"}
+    node.automatic_attrs[:command] = { :ps => "ps -ax" }
     node
   end
 
   let(:new_resource) do
     new_resource = Chef::Resource::Service.new("apache22")
     new_resource.pattern("httpd")
-    new_resource.supports({:status => false})
+    new_resource.supports({ :status => false })
     new_resource
   end
 
@@ -46,7 +46,7 @@ describe Chef::Provider::Service::Freebsd do
   let(:provider) do
     events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, {}, events)
-    provider = Chef::Provider::Service::Freebsd.new(new_resource,run_context)
+    provider = Chef::Provider::Service::Freebsd.new(new_resource, run_context)
     provider.action = :start
     provider
   end
@@ -115,7 +115,7 @@ describe Chef::Provider::Service::Freebsd do
       let(:status) { double(:stdout => "", :exitstatus => 0) }
 
       before do
-        new_resource.supports({:status => true})
+        new_resource.supports({ :status => true })
       end
 
       it "should run '/etc/init.d/service_name status'" do
@@ -147,7 +147,7 @@ PS_SAMPLE
       let(:status) { double(:stdout => stdout, :exitstatus => 0) }
 
       before do
-        node.automatic_attrs[:command] = {:ps => "ps -ax"}
+        node.automatic_attrs[:command] = { :ps => "ps -ax" }
       end
 
       it "should shell_out! the node's ps command" do
@@ -191,7 +191,7 @@ PS_SAMPLE
 
       context "when ps is empty string" do
         before do
-          node.automatic_attrs[:command] = {:ps => ""}
+          node.automatic_attrs[:command] = { :ps => "" }
         end
 
         it "should set running to nil" do
@@ -257,10 +257,11 @@ PS_SAMPLE
       end
 
       context "when the enable variable partial matches (left) some other service and we are disabled" do
-        let(:lines) { [
+        let(:lines) do
+          [
           %Q{thing_#{new_resource.service_name}_enable="YES"},
           %Q{#{new_resource.service_name}_enable="NO"},
-        ] }
+        ] end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -268,10 +269,11 @@ PS_SAMPLE
       end
 
       context "when the enable variable partial matches (right) some other service and we are disabled" do
-        let(:lines) { [
+        let(:lines) do
+          [
           %Q{#{new_resource.service_name}_thing_enable="YES"},
           %Q{#{new_resource.service_name}_enable="NO"},
-        ] }
+        ] end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -279,10 +281,11 @@ PS_SAMPLE
       end
 
       context "when the enable variable partial matches (left) some other disabled service and we are enabled" do
-        let(:lines) { [
+        let(:lines) do
+          [
           %Q{thing_#{new_resource.service_name}_enable="NO"},
           %Q{#{new_resource.service_name}_enable="YES"},
-        ] }
+        ] end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true
@@ -290,10 +293,11 @@ PS_SAMPLE
       end
 
       context "when the enable variable partial matches (right) some other disabled service and we are enabled" do
-        let(:lines) { [
+        let(:lines) do
+          [
           %Q{#{new_resource.service_name}_thing_enable="NO"},
           %Q{#{new_resource.service_name}_enable="YES"},
-        ] }
+        ] end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true
@@ -465,7 +469,7 @@ EOF
 
     describe Chef::Provider::Service::Freebsd, "restart_service" do
       it "should call 'restart' on the service_name if the resource supports it" do
-        new_resource.supports({:restart => true})
+        new_resource.supports({ :restart => true })
         expect(provider).to receive(:shell_out_with_systems_locale!).with("/usr/local/etc/rc.d/#{new_resource.service_name} fastrestart")
         provider.restart_service()
       end
@@ -495,7 +499,7 @@ EOF
         allow(provider).to receive(:service_enable_variable_name).and_return("#{new_resource.service_name}_enable")
       end
 
-      [ "start", "reload", "restart", "enable" ].each do |action|
+      %w{start reload restart enable}.each do |action|
         it "should raise an exception when the action is #{action}" do
           provider.define_resource_requirements
           provider.action = action
@@ -503,7 +507,7 @@ EOF
         end
       end
 
-      [ "stop", "disable" ].each do |action|
+      %w{stop disable}.each do |action|
         it "should not raise an error when the action is #{action}" do
           provider.define_resource_requirements
           provider.action = action
@@ -518,7 +522,7 @@ EOF
         allow(provider).to receive(:service_enable_variable_name).and_return(nil)
       end
 
-      [ "start", "reload", "restart", "enable" ].each do |action|
+      %w{start reload restart enable}.each do |action|
         it "should raise an exception when the action is #{action}" do
           provider.action = action
           provider.define_resource_requirements
@@ -526,7 +530,7 @@ EOF
         end
       end
 
-      [ "stop", "disable" ].each do |action|
+      %w{stop disable}.each do |action|
         it "should not raise an error when the action is #{action}" do
           provider.action = action
           provider.define_resource_requirements
@@ -558,7 +562,7 @@ EOF
 
     it "should enable the service if it is not enabled and not already specified in the rc.conf file" do
       allow(current_resource).to receive(:enabled).and_return(false)
-      expect(provider).to receive(:read_rc_conf).and_return([ "foo", "bar" ])
+      expect(provider).to receive(:read_rc_conf).and_return(%w{foo bar})
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"YES\""])
       provider.enable_service()
     end

@@ -1,6 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife/core/text_formatter'
+require "chef/knife/core/text_formatter"
 
 class Chef
   class Knife
@@ -28,12 +28,19 @@ class Chef
         # :nodoc:
         def self.included(includer)
           includer.class_eval do
-            @attrs_to_show = []
+            option :field_separator,
+              :short => "-S SEPARATOR",
+              :long => "--field-separator SEPARATOR",
+              :description => "Character separator used to delineate nesting in --attribute filters (default \".\")"
+
             option :attribute,
               :short => "-a ATTR1 [-a ATTR2]",
               :long => "--attribute ATTR1 [--attribute ATTR2] ",
-              :proc => lambda {|val| @attrs_to_show << val},
-              :description => "Show one or more attributes"
+              :description => "Show one or more attributes",
+              :proc => Proc.new { |a|
+                Chef::Config[:knife][:attribute] ||= []
+                Chef::Config[:knife][:attribute].push(a)
+              }
           end
         end
       end
@@ -80,13 +87,13 @@ class Chef
           when :json
             Chef::JSONCompat.to_json_pretty(data)
           when :yaml
-            require 'yaml'
-            YAML::dump(data)
+            require "yaml"
+            YAML.dump(data)
           when :pp
-            require 'stringio'
+            require "stringio"
             # If you were looking for some attribute and there is only one match
             # just dump the attribute value
-            if config[:attribute] and data.length == 1
+            if config[:attribute] && data.length == 1
               data.values[0]
             else
               out = StringIO.new
@@ -133,7 +140,7 @@ class Chef
         end
 
         def format_list_for_display(list)
-          config[:with_uri] ? list : list.keys.sort { |a,b| a <=> b }
+          config[:with_uri] ? list : list.keys.sort { |a, b| a <=> b }
         end
 
         def format_for_display(data)
@@ -142,7 +149,7 @@ class Chef
           elsif config[:id_only]
             name_or_id_for(data)
           elsif config[:environment] && data.respond_to?(:chef_environment)
-            {"chef_environment" => data.chef_environment}
+            { "chef_environment" => data.chef_environment }
           else
             data
           end
@@ -150,19 +157,19 @@ class Chef
 
         def format_data_subset_for_display(data)
           subset = if config[:attribute]
-            result = {}
-            Array(config[:attribute]).each do |nested_value_spec|
-              nested_value = extract_nested_value(data, nested_value_spec)
-              result[nested_value_spec] = nested_value
-            end
-            result
-          elsif config[:run_list]
-            run_list = data.run_list.run_list
-            { "run_list" => run_list }
-          else
-            raise ArgumentError, "format_data_subset_for_display requires attribute, run_list, or id_only config option to be set"
-          end
-          {name_or_id_for(data) => subset }
+                     result = {}
+                     Array(config[:attribute]).each do |nested_value_spec|
+                       nested_value = extract_nested_value(data, nested_value_spec)
+                       result[nested_value_spec] = nested_value
+                     end
+                     result
+                   elsif config[:run_list]
+                     run_list = data.run_list.run_list
+                     { "run_list" => run_list }
+                   else
+                     raise ArgumentError, "format_data_subset_for_display requires attribute, run_list, or id_only config option to be set"
+                   end
+          { name_or_id_for(data) => subset }
         end
 
         def name_or_id_for(data)
@@ -173,26 +180,28 @@ class Chef
           config[:attribute] || config[:run_list]
         end
 
+        # GenericPresenter is used in contexts where MultiAttributeReturnOption
+        # is not, so we need to set the default value here rather than as part
+        # of the CLI option.
+        def attribute_field_separator
+          config[:field_separator] || "."
+        end
 
         def extract_nested_value(data, nested_value_spec)
-          nested_value_spec.split(".").each do |attr|
-            if data.nil?
-              nil # don't get no method error on nil
-            # Must check :[] before attr because spec can include
-            #   `keys` - want the key named `keys`, not a list of
-            #   available keys.
-            elsif data.respond_to?(:[])  && data.has_key?(attr)
-              data = data[attr]
-            elsif data.respond_to?(attr.to_sym)
-              data = data.send(attr.to_sym)
-            else
-              data = begin
-                data.send(attr.to_sym)
-              rescue NoMethodError
+          nested_value_spec.split(attribute_field_separator).each do |attr|
+            data =
+              if data.is_a?(Array)
+                data[attr.to_i]
+              elsif data.respond_to?(:[], false) && data.key?(attr)
+                data[attr]
+              elsif data.respond_to?(attr.to_sym, false)
+                # handles -a chef_environment and other things that hang of the node and aren't really attributes
+                data.public_send(attr.to_sym)
+              else
                 nil
               end
-            end
           end
+          # necessary (?) for coercing objects (the run_list object?) to hashes
           ( !data.kind_of?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
         end
 
@@ -200,17 +209,17 @@ class Chef
           if config[:with_uri]
             item.inject({}) do |collected, (cookbook, versions)|
               collected[cookbook] = Hash.new
-              versions['versions'].each do |ver|
-                collected[cookbook][ver['version']] = ver['url']
+              versions["versions"].each do |ver|
+                collected[cookbook][ver["version"]] = ver["url"]
               end
               collected
             end
           else
             versions_by_cookbook = item.inject({}) do |collected, ( cookbook, versions )|
-              collected[cookbook] = versions["versions"].map {|v| v['version']}
+              collected[cookbook] = versions["versions"].map { |v| v["version"] }
               collected
             end
-            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map {|name| name.size }.max + 2
+            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map { |name| name.size }.max + 2
             versions_by_cookbook.sort.map do |cookbook, versions|
               "#{cookbook.ljust(key_length)} #{versions.join('  ')}"
             end

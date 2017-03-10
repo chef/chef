@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@ospcode.com>)
 # Author:: Seth Falcon (<seth@ospcode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 Chef::Knife::EnvironmentFromFile.load_deps
 
@@ -32,14 +32,14 @@ describe Chef::Knife::EnvironmentFromFile do
     @environment = Chef::Environment.new
     @environment.name("spec")
     @environment.description("runs the unit tests")
-    @environment.cookbook_versions({"apt" => "= 1.2.3"})
+    @environment.cookbook_versions({ "apt" => "= 1.2.3" })
     allow(@environment).to receive(:save).and_return true
     allow(@knife.loader).to receive(:load_from).and_return @environment
   end
 
   describe "run" do
     it "loads the environment data from a file and saves it" do
-      expect(@knife.loader).to receive(:load_from).with('environments', 'spec.rb').and_return(@environment)
+      expect(@knife.loader).to receive(:load_from).with("environments", "spec.rb").and_return(@environment)
       expect(@environment).to receive(:save)
       @knife.run
     end
@@ -61,7 +61,7 @@ describe Chef::Knife::EnvironmentFromFile do
         allow(File).to receive(:expand_path).with("./environments/").and_return("/tmp/environments")
         allow(Dir).to receive(:glob).with("/tmp/environments/*.{json,rb}").and_return(["spec.rb", "apple.rb"])
         @knife.name_args = []
-        allow(@knife).to receive(:config).and_return({:all => true})
+        allow(@knife).to receive(:config).and_return({ :all => true })
         expect(@environment).to receive(:save).twice
         @knife.run
       end

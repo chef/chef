@@ -2,7 +2,7 @@
 # Cookbook Name:: incomplete-metadata
 # Recipe:: default
 #
-# Copyright (C) 2014 
+# Copyright 2014-2016, 
 #
 # 
 #

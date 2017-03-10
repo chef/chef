@@ -1,6 +1,6 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright 2011 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'chef/win32/security'
-require 'chef/win32/api/security'
-require 'chef/win32/unicode'
-require 'ffi'
+require "chef/win32/security"
+require "chef/win32/api/security"
+require "chef/win32/unicode"
+require "ffi"
 
 class Chef
   module ReservedNames::Win32
@@ -55,7 +55,7 @@ class Chef
 
         def adjust_privileges(privileges_struct)
           if privileges_struct[:PrivilegeCount] > 0
-            Chef::ReservedNames::Win32::Security::adjust_token_privileges(self, privileges_struct)
+            Chef::ReservedNames::Win32::Security.adjust_token_privileges(self, privileges_struct)
           end
         end
 

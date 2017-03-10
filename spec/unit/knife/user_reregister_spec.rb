@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (<steve@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc
+# Author:: Steven Danna (<steve@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,20 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::UserReregister do
   let(:knife) { Chef::Knife::UserReregister.new }
-  let(:user_mock) { double('user_mock', :private_key => "private_key") }
+  let(:user_mock) { double("user_mock", :private_key => "private_key") }
   let(:stdout) { StringIO.new }
 
   before do
     Chef::Knife::UserReregister.load_deps
-    knife.name_args = [ 'a_user' ]
+    knife.name_args = [ "a_user" ]
     allow(Chef::UserV1).to receive(:load).and_return(user_mock)
     allow(knife.ui).to receive(:stdout).and_return(stdout)
     allow(knife.ui).to receive(:stderr).and_return(stdout)
-    allow(user_mock).to receive(:username).and_return('a_user')
+    allow(user_mock).to receive(:username).and_return("a_user")
   end
 
   # delete this once OSC11 support is gone
@@ -41,33 +41,33 @@ describe Chef::Knife::UserReregister do
 
     it "displays the osc warning" do
       expect(knife.ui).to receive(:warn).with(knife.osc_11_warning)
-      expect{ knife.run }.to raise_error(SystemExit)
+      expect { knife.run }.to raise_error(SystemExit)
     end
 
     it "forwards the command to knife osc_user edit" do
       expect(knife).to receive(:run_osc_11_user_reregister)
-      expect{ knife.run }.to raise_error(SystemExit)
+      expect { knife.run }.to raise_error(SystemExit)
     end
   end
 
-  it 'prints usage and exits when a user name is not provided' do
+  it "prints usage and exits when a user name is not provided" do
     knife.name_args = []
     expect(knife).to receive(:show_usage)
     expect(knife.ui).to receive(:fatal)
     expect { knife.run }.to raise_error(SystemExit)
   end
 
-  it 'reregisters the user and prints the key' do
+  it "reregisters the user and prints the key" do
     expect(user_mock).to receive(:reregister).and_return(user_mock)
     knife.run
     expect(stdout.string).to match( /private_key/ )
   end
 
-  it 'writes the private key to a file when --file is specified' do
+  it "writes the private key to a file when --file is specified" do
     expect(user_mock).to receive(:reregister).and_return(user_mock)
-    knife.config[:file] = '/tmp/a_file'
+    knife.config[:file] = "/tmp/a_file"
     filehandle = StringIO.new
-    expect(File).to receive(:open).with('/tmp/a_file', 'w').and_yield(filehandle)
+    expect(File).to receive(:open).with("/tmp/a_file", "w").and_yield(filehandle)
     knife.run
     expect(filehandle.string).to eq("private_key")
   end

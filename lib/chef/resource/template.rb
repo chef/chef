@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource/file'
-require 'chef/provider/template'
-require 'chef/mixin/securable'
+require "chef/resource/file"
+require "chef/provider/template"
+require "chef/mixin/securable"
 
 class Chef
   class Resource
@@ -30,7 +30,7 @@ class Chef
       attr_reader :inline_helper_blocks
       attr_reader :inline_helper_modules
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @source = "#{::File.basename(name)}.erb"
         @cookbook = nil
@@ -41,7 +41,7 @@ class Chef
         @helper_modules = []
       end
 
-      def source(file=nil)
+      def source(file = nil)
         set_or_return(
           :source,
           file,
@@ -49,7 +49,7 @@ class Chef
         )
       end
 
-      def variables(args=nil)
+      def variables(args = nil)
         set_or_return(
           :variables,
           args,
@@ -57,7 +57,7 @@ class Chef
         )
       end
 
-      def cookbook(args=nil)
+      def cookbook(args = nil)
         set_or_return(
           :cookbook,
           args,
@@ -65,7 +65,7 @@ class Chef
         )
       end
 
-      def local(args=nil)
+      def local(args = nil)
         set_or_return(
           :local,
           args,
@@ -160,8 +160,8 @@ class Chef
       # And in the template resource:
       #   helpers(MyTemplateHelper)
       # The template code in the above example will work unmodified.
-      def helpers(module_name=nil,&block)
-        if block_given? and !module_name.nil?
+      def helpers(module_name = nil, &block)
+        if block_given? && !module_name.nil?
           raise Exceptions::ValidationFailed,
             "Passing both a module and block to #helpers is not supported. Call #helpers multiple times instead"
         elsif block_given?

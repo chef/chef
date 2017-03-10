@@ -5,15 +5,15 @@
 #
 
 # Required chef files here:
-require 'chef/config'
+require "chef/config"
 
 # Required spec files here:
-require 'spec_helper'
+require "spec_helper"
 
 # Basic config. Nothing fancy.
 shared_context "default config options" do
   before do
-    Chef::Config[:cache_path] = windows? ? 'C:\chef' : '/var/chef'
+    Chef::Config[:cache_path] = windows? ? 'C:\chef' : "/var/chef"
   end
 
   # Don't need to have an after block to reset the config...

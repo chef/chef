@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Template do
 
@@ -127,7 +127,7 @@ describe Chef::Resource::Template do
       modules = @resource.helper_modules
       expect(modules.size).to eq(1)
       o = Object.new
-      modules.each {|m| o.extend(m)}
+      modules.each { |m| o.extend(m) }
       expect(o.example_1).to eq("example_1")
       expect(o.example_2).to eq("example_2")
     end
@@ -136,7 +136,7 @@ describe Chef::Resource::Template do
       @resource.helper(:shout) { |quiet| quiet.upcase }
       modules = @resource.helper_modules
       o = Object.new
-      modules.each {|m| o.extend(m)}
+      modules.each { |m| o.extend(m) }
       expect(o.shout("shout")).to eq("SHOUT")
     end
 
@@ -167,7 +167,7 @@ describe Chef::Resource::Template do
       modules = @resource.helper_modules
       expect(modules.size).to eq(1)
       o = Object.new
-      modules.each {|m| o.extend(m)}
+      modules.each { |m| o.extend(m) }
       expect(o.example_1).to eq("example_1")
     end
 
@@ -199,12 +199,11 @@ describe Chef::Resource::Template do
       expect(@resource.helper_modules.size).to eq(3)
 
       o = Object.new
-      @resource.helper_modules.each {|m| o.extend(m)}
+      @resource.helper_modules.each { |m| o.extend(m) }
       expect(o.static_example).to eq("static_example")
       expect(o.inline_module).to eq("inline_module")
       expect(o.inline_method).to eq("inline_method")
     end
-
 
   end
 

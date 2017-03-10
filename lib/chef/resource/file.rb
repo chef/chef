@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2008-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,17 +17,16 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/platform/query_helpers'
-require 'chef/mixin/securable'
-require 'chef/resource/file/verification'
+require "chef/resource"
+require "chef/platform/query_helpers"
+require "chef/mixin/securable"
+require "chef/resource/file/verification"
+require "pathname"
 
 class Chef
   class Resource
     class File < Chef::Resource
       include Chef::Mixin::Securable
-
-      identity_attr :path
 
       if Platform.windows?
         # Use Windows rights instead of standard *nix permissions
@@ -50,90 +49,25 @@ class Chef
       default_action :create
       allowed_actions :create, :delete, :touch, :create_if_missing
 
-      def initialize(name, run_context=nil)
-        super
-        @path = name
-        @backup = 5
-        @atomic_update = Chef::Config[:file_atomic_update]
-        @force_unlink = false
-        @manage_symlink_source = nil
-        @diff = nil
-        @verifications = []
-      end
+      property :path, String, name_property: true, identity: true
+      property :atomic_update, [ true, false ], desired_state: false, default: lazy { |r| r.docker? && r.special_docker_files?(r.path) ? false : Chef::Config[:file_atomic_update] }
+      property :backup, [ Integer, false ], desired_state: false, default: 5
+      property :checksum, [ /^[a-zA-Z0-9]{64}$/, nil ]
+      property :content, [ String, nil ], desired_state: false
+      property :diff, [ String, nil ], desired_state: false
+      property :force_unlink, [ true, false ], desired_state: false, default: false
+      property :manage_symlink_source, [ true, false ], desired_state: false
+      property :verifications, Array, default: lazy { [] }
 
-      def content(arg=nil)
-        set_or_return(
-          :content,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def backup(arg=nil)
-        set_or_return(
-          :backup,
-          arg,
-          :kind_of => [ Integer, FalseClass ]
-        )
-      end
-
-      def checksum(arg=nil)
-        set_or_return(
-          :checksum,
-          arg,
-          :regex => /^[a-zA-Z0-9]{64}$/
-        )
-      end
-
-      def path(arg=nil)
-        set_or_return(
-          :path,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def diff(arg=nil)
-        set_or_return(
-          :diff,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def atomic_update(arg=nil)
-        set_or_return(
-          :atomic_update,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def force_unlink(arg=nil)
-        set_or_return(
-          :force_unlink,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def manage_symlink_source(arg=nil)
-        set_or_return(
-          :manage_symlink_source,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def verify(command=nil, opts={}, &block)
+      def verify(command = nil, opts = {}, &block)
         if ! (command.nil? || [String, Symbol].include?(command.class))
           raise ArgumentError, "verify requires either a string, symbol, or a block"
         end
 
         if command || block_given?
-          @verifications << Verification.new(self, command, opts, &block)
+          verifications << Verification.new(self, command, opts, &block)
         else
-          @verifications
+          verifications
         end
       end
 
@@ -144,6 +78,10 @@ class Chef
           state_attrs[:checksum] = final_checksum
         end
         state_attrs
+      end
+
+      def special_docker_files?(file)
+        %w{/etc/hosts /etc/hostname /etc/resolv.conf}.include?(Pathname(file.scrub).cleanpath.to_path)
       end
     end
   end

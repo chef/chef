@@ -1,9 +1,9 @@
 #
 # Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright (c) 2010 Thomas Bishop
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright 2010-2016, Thomas Bishop
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Exceptions do
   exception_to_super_class = {
@@ -67,12 +67,14 @@ describe Chef::Exceptions do
     Chef::Exceptions::InvalidEnvironmentPath => ArgumentError,
     Chef::Exceptions::EnvironmentNotFound => RuntimeError,
     Chef::Exceptions::InvalidVersionConstraint => ArgumentError,
-    Chef::Exceptions::IllegalVersionConstraint => NotImplementedError
+    Chef::Exceptions::IllegalVersionConstraint => NotImplementedError,
+    Chef::Exceptions::RegKeyValuesTypeMissing => ArgumentError,
+    Chef::Exceptions::RegKeyValuesDataMissing => ArgumentError,
   }
 
   exception_to_super_class.each do |exception, expected_super_class|
     it "should have an exception class of #{exception} which inherits from #{expected_super_class}" do
-      expect{ raise exception }.to raise_error(expected_super_class)
+      expect { raise exception }.to raise_error(expected_super_class)
     end
 
     if exception.methods.include?(:to_json)
@@ -95,7 +97,7 @@ describe Chef::Exceptions do
     end
 
     context "initialized with nothing" do
-      let(:e) { Chef::Exceptions::RunFailedWrappingError.new  }
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new }
       let(:num_errors) { 0 }
       let(:backtrace) { [] }
 
@@ -103,7 +105,7 @@ describe Chef::Exceptions do
     end
 
     context "initialized with nil" do
-      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(nil, nil)  }
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(nil, nil) }
       let(:num_errors) { 0 }
       let(:backtrace) { [] }
 
@@ -111,7 +113,7 @@ describe Chef::Exceptions do
     end
 
     context "initialized with 1 error and nil" do
-      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), nil)  }
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), nil) }
       let(:num_errors) { 1 }
       let(:backtrace) { ["1) RuntimeError -  foo"] }
 
@@ -119,7 +121,7 @@ describe Chef::Exceptions do
     end
 
     context "initialized with 2 errors" do
-      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), RuntimeError.new("bar"))  }
+      let(:e) { Chef::Exceptions::RunFailedWrappingError.new(RuntimeError.new("foo"), RuntimeError.new("bar")) }
       let(:num_errors) { 2 }
       let(:backtrace) { ["1) RuntimeError -  foo", "", "2) RuntimeError -  bar"] }
 

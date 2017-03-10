@@ -1,6 +1,6 @@
 #
 # Author:: Hongli Lai (hongli@phusion.nl)
-# Copyright:: Copyright (c) 2009 Phusion
+# Copyright:: Copyright 2009-2016, Phusion
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Mixin::Command, :volatile do
 
@@ -43,28 +43,30 @@ describe Chef::Mixin::Command, :volatile do
       end
 
       it "should respect locale when specified explicitly" do
-        popen4("echo $LC_ALL", :environment => {"LC_ALL" => "es"}) do |pid, stdin, stdout, stderr|
+        popen4("echo $LC_ALL", :environment => { "LC_ALL" => "es" }) do |pid, stdin, stdout, stderr|
           expect(stdout.read.strip).to eq("es")
         end
       end
 
       it "should end when the child process reads from STDIN and a block is given" do
-        expect {Timeout.timeout(10) do
+        expect do
+          Timeout.timeout(10) do
             popen4("ruby -e 'while gets; end'", :waitlast => true) do |pid, stdin, stdout, stderr|
               (1..5).each { |i| stdin.puts "#{i}" }
             end
           end
-        }.not_to raise_error
+        end.not_to raise_error
       end
 
       describe "when a process detaches but doesn't close STDOUT and STDERR [CHEF-584]" do
 
         it "returns immediately after the first child process exits" do
-          expect {Timeout.timeout(10) do
-            evil_forker="exit if fork; 10.times { sleep 1}"
-            popen4("ruby -e '#{evil_forker}'") do |pid,stdin,stdout,stderr|
-            end
-          end}.not_to raise_error
+          expect do
+            Timeout.timeout(10) do
+              evil_forker = "exit if fork; 10.times { sleep 1}"
+              popen4("ruby -e '#{evil_forker}'") do |pid, stdin, stdout, stderr|
+              end
+            end end.not_to raise_error
         end
 
       end
@@ -92,10 +94,11 @@ describe Chef::Mixin::Command, :volatile do
           # btm
           # Serdar - During Solaris tests, we've seen that processes
           # are taking a long time to exit. Bumping timeout now to 10.
-          expect {Timeout.timeout(10) do
-            evil_forker="exit if fork; 10.times { sleep 1}"
-            run_command(:command => "ruby -e '#{evil_forker}'")
-          end}.not_to raise_error
+          expect do
+            Timeout.timeout(10) do
+              evil_forker = "exit if fork; 10.times { sleep 1}"
+              run_command(:command => "ruby -e '#{evil_forker}'")
+            end end.not_to raise_error
         end
 
       end

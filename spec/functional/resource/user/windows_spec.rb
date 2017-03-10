@@ -1,5 +1,5 @@
 # Author:: Jay Mundrawala (<jdm@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software
+# Copyright:: Copyright 2015-2016, Chef Software
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,13 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "chef/mixin/shell_out"
 
 describe Chef::Provider::User::Windows, :windows_only do
   include Chef::Mixin::ShellOut
 
-  let(:username) { 'ChefFunctionalTest' }
+  let(:username) { "ChefFunctionalTest" }
   let(:password) { SecureRandom.uuid }
 
   let(:node) do
@@ -47,84 +47,84 @@ describe Chef::Provider::User::Windows, :windows_only do
     delete_user(username)
   end
 
-  describe 'action :create' do
-    it 'creates a user when a username and password are given' do
+  describe "action :create" do
+    it "creates a user when a username and password are given" do
       new_resource.run_action(:create)
       expect(new_resource).to be_updated_by_last_action
       expect(shell_out("net user #{username}").exitstatus).to eq(0)
     end
 
-    it 'reports no changes if there are no changes needed' do
+    it "reports no changes if there are no changes needed" do
       new_resource.run_action(:create)
       new_resource.run_action(:create)
       expect(new_resource).not_to be_updated_by_last_action
     end
 
-    it 'allows chaning the password' do
+    it "allows chaning the password" do
       new_resource.run_action(:create)
       new_resource.password(SecureRandom.uuid)
       new_resource.run_action(:create)
       expect(new_resource).to be_updated_by_last_action
     end
 
-    context 'with a gid specified' do
-      it 'warns unsupported' do
+    context "with a gid specified" do
+      it "warns unsupported" do
         expect(Chef::Log).to receive(:warn).with(/not implemented/)
-        new_resource.gid('agroup')
+        new_resource.gid("agroup")
         new_resource.run_action(:create)
       end
     end
   end
 
-  describe 'action :remove' do
+  describe "action :remove" do
     before do
       new_resource.run_action(:create)
     end
 
-    it 'deletes the user' do
+    it "deletes the user" do
       new_resource.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
       expect(shell_out("net user #{username}").exitstatus).to eq(2)
     end
 
-    it 'is idempotent' do
+    it "is idempotent" do
       new_resource.run_action(:remove)
       new_resource.run_action(:remove)
       expect(new_resource).not_to be_updated_by_last_action
     end
   end
 
-  describe 'action :lock' do
+  describe "action :lock" do
     before do
       new_resource.run_action(:create)
     end
 
-    it 'locks the user account' do
+    it "locks the user account" do
       new_resource.run_action(:lock)
       expect(new_resource).to be_updated_by_last_action
       expect(shell_out("net user #{username}").stdout).to match(/Account active\s*No/)
     end
 
-    it 'is idempotent' do
+    it "is idempotent" do
       new_resource.run_action(:lock)
       new_resource.run_action(:lock)
       expect(new_resource).not_to be_updated_by_last_action
     end
   end
 
-  describe 'action :unlock' do
+  describe "action :unlock" do
     before do
       new_resource.run_action(:create)
       new_resource.run_action(:lock)
     end
 
-    it 'unlocks the user account' do
+    it "unlocks the user account" do
       new_resource.run_action(:unlock)
       expect(new_resource).to be_updated_by_last_action
       expect(shell_out("net user #{username}").stdout).to match(/Account active\s*Yes/)
     end
 
-    it 'is idempotent' do
+    it "is idempotent" do
       new_resource.run_action(:unlock)
       new_resource.run_action(:unlock)
       expect(new_resource).not_to be_updated_by_last_action

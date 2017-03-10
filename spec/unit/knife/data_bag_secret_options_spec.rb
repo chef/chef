@@ -1,6 +1,6 @@
 #
-# Author:: Tyler Ball (<tball@opscode.com>)
-# Copyright:: Copyright (c) 2009-2014 Opscode, Inc.
+# Author:: Tyler Ball (<tball@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife'
-require 'chef/config'
-require 'tempfile'
+require "spec_helper"
+require "chef/knife"
+require "chef/config"
+require "tempfile"
 
 class ExampleDataBagCommand < Chef::Knife
   include Chef::Knife::DataBagSecretOptions

@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -113,7 +113,7 @@ class Chef::RunStatus
       :updated_resources => updated_resources,
       :exception => formatted_exception,
       :backtrace => backtrace,
-      :run_id => run_id}
+      :run_id => run_id }
   end
 
   # Returns a string of the format "ExceptionClass: message" or +nil+ if no

@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2015 Chef Software, Inc
+# Copyright:: Copyright 2015-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::SubcommandLoader::CustomManifestLoader do
   let(:ec2_server_create_plugin) { "/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_server_create.rb" }
@@ -23,14 +23,14 @@ describe Chef::Knife::SubcommandLoader::CustomManifestLoader do
     { "plugins" => {
         "knife-ec2" => {
           "paths" => [
-                      ec2_server_create_plugin
-                     ]
-        }
-      }
+                      ec2_server_create_plugin,
+                     ],
+        },
+      },
     }
   end
   let(:loader) do
-    Chef::Knife::SubcommandLoader::CustomManifestLoader.new(File.join(CHEF_SPEC_DATA, 'knife-site-subcommands'),
+    Chef::Knife::SubcommandLoader::CustomManifestLoader.new(File.join(CHEF_SPEC_DATA, "knife-site-subcommands"),
                                                             manifest_content)
   end
 

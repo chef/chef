@@ -1,10 +1,10 @@
 #
 # Author:: Sean O'Meara
 # Author:: Kevin Keane
-# Author:: Lamont Granquist (<lamont@opscode.com>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
 #
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
-# Copyright:: Copyright (c) 2013, North County Tech Center, LLC
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2016, North County Tech Center, LLC
 #
 # License:: Apache License, Version 2.0
 #
@@ -20,8 +20,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/mixin/shell_out'
-require 'chef/mixin/which'
+require "chef/mixin/shell_out"
+require "chef/mixin/which"
 
 class Chef
   class Util
@@ -71,19 +71,19 @@ class Chef
 
       def check_selinux_enabled?
         if selinuxenabled_path
-          cmd = shell_out!(selinuxenabled_path, :returns => [0,1])
+          cmd = shell_out!(selinuxenabled_path, :returns => [0, 1])
           case cmd.exitstatus
           when 1
             return false
           when 0
             return true
           else
-            raise RuntimeError, "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
+            raise "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
           end
         else
           # We assume selinux is not enabled if selinux utils are not
           # installed.
-          return false
+          false
         end
       end
 

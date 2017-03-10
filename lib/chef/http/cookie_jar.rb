@@ -1,11 +1,11 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Thom May (<thom@clearairturbulence.org>)
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Author:: Christopher Brown (<cb@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'singleton'
+require "singleton"
 
 class Chef
   class HTTP

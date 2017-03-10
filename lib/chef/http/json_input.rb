@@ -1,7 +1,7 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/json_compat'
+require "chef/json_compat"
 
 class Chef
   class HTTP
@@ -27,14 +27,14 @@ class Chef
 
       attr_accessor :opts
 
-      def initialize(opts={})
+      def initialize(opts = {})
         @opts = opts
       end
 
-      def handle_request(method, url, headers={}, data=false)
+      def handle_request(method, url, headers = {}, data = false)
         if data && should_encode_as_json?(headers)
-          headers.delete_if { |key, _value| key.downcase == 'content-type' }
-          headers["Content-Type"] = 'application/json'
+          headers.delete_if { |key, _value| key.casecmp("content-type") == 0 }
+          headers["Content-Type"] = "application/json"
           json_opts = {}
           json_opts[:validate_utf8] = opts[:validate_utf8] if opts.has_key?(:validate_utf8)
           data = Chef::JSONCompat.to_json(data, json_opts)
@@ -64,7 +64,7 @@ class Chef
         # ruby/Net::HTTP don't enforce capitalized headers (it normalizes them
         # for you before sending the request), so we have to account for all
         # the variations we might find
-        requested_content_type = headers.find {|k, v| k.downcase == "content-type" }
+        requested_content_type = headers.find { |k, v| k.casecmp("content-type") == 0 }
         requested_content_type.nil? || requested_content_type.last.include?("json")
       end
 

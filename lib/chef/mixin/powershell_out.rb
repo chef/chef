@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/mixin/shell_out'
-require 'chef/mixin/windows_architecture_helper'
+require "chef/mixin/shell_out"
+require "chef/mixin/windows_architecture_helper"
 
 class Chef
   module Mixin
@@ -88,10 +88,10 @@ class Chef
           "-ExecutionPolicy Unrestricted",
           # Powershell will hang if STDIN is redirected
           # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
-          "-InputFormat None"
+          "-InputFormat None",
         ]
 
-        "powershell.exe #{flags.join(' ')} -Command \"#{script}\""
+        "powershell.exe #{flags.join(' ')} -Command \"#{script.gsub('"', '\"')}\""
       end
     end
   end

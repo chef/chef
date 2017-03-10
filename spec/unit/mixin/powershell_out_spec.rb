@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,16 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/powershell_out'
+require "spec_helper"
+require "chef/mixin/powershell_out"
 
-describe Chef::Mixin::PowershellOut do
+describe Chef::Mixin::PowershellOut, :windows_only do
   let(:shell_out_class) { Class.new { include Chef::Mixin::PowershellOut } }
   subject(:object) { shell_out_class.new }
-  let(:architecture) { "something"  }
-  let(:flags) {
-     "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy Unrestricted -InputFormat None"
-  }
+  let(:architecture) { "something" }
+  let(:flags) do
+    "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy Unrestricted -InputFormat None"
+  end
 
   describe "#powershell_out" do
     it "runs a command and returns the shell_out object" do
@@ -43,6 +43,18 @@ describe Chef::Mixin::PowershellOut do
         timeout: 600
       ).and_return(ret)
       expect(object.powershell_out("Get-Process", timeout: 600)).to eql(ret)
+    end
+
+    context "when double quote is passed in the powershell command" do
+      it "passes if double quote is appended with single escape" do
+        result = object.powershell_out("Write-Verbose \"Some String\" -Verbose")
+        expect(result.stderr).to be == ""
+        expect(result.stdout).to be == "VERBOSE: Some String\n"
+      end
+
+      it "suppresses error if double quote is passed with double escape characters" do
+        expect { object.powershell_out("Write-Verbose \\\"Some String\\\" -Verbose") }.not_to raise_error
+      end
     end
   end
 
@@ -65,6 +77,18 @@ describe Chef::Mixin::PowershellOut do
       ).and_return(mixlib_shellout)
       expect(mixlib_shellout).to receive(:error!)
       expect(object.powershell_out!("Get-Process", timeout: 600)).to eql(mixlib_shellout)
+    end
+
+    context "when double quote is passed in the powershell command" do
+      it "passes if double quote is appended with single escape" do
+        result = object.powershell_out!("Write-Verbose \"Some String\" -Verbose")
+        expect(result.stderr).to be == ""
+        expect(result.stdout).to be == "VERBOSE: Some String\n"
+      end
+
+      it "raises error if double quote is passed with double escape characters" do
+        expect { object.powershell_out!("Write-Verbose \\\"Some String\\\" -Verbose") }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
+      end
     end
   end
 end

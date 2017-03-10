@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
+require "spec_helper"
 require "#{CHEF_SPEC_DATA}/knife_subcommand/test_yourself"
 
 describe Chef::Application::Knife do
@@ -82,9 +82,61 @@ describe Chef::Application::Knife do
     end
   end
 
+  context "when given fips flags" do
+    context "when Chef::Config[:fips]=false" do
+      before do
+        # This is required because the chef-fips pipeline does
+        # has a default value of true for fips
+        Chef::Config[:fips] = false
+      end
+
+      it "does not initialize fips mode when no flags are passed" do
+        with_argv(*%w{noop knife command}) do
+          expect(@knife).to receive(:exit).with(0)
+          expect(Chef::Config).not_to receive(:enable_fips_mode)
+          @knife.run
+          expect(Chef::Config[:fips]).to eq(false)
+        end
+      end
+
+      it "overwrites the Chef::Config value when passed --fips" do
+        with_argv(*%w{noop knife command --fips}) do
+          expect(@knife).to receive(:exit).with(0)
+          expect(Chef::Config).to receive(:enable_fips_mode)
+          @knife.run
+          expect(Chef::Config[:fips]).to eq(true)
+        end
+      end
+    end
+
+    context "when Chef::Config[:fips]=true" do
+      before do
+        Chef::Config[:fips] = true
+      end
+
+      it "initializes fips mode when passed --fips" do
+        with_argv(*%w{noop knife command --fips}) do
+          expect(@knife).to receive(:exit).with(0)
+          expect(Chef::Config).to receive(:enable_fips_mode)
+          @knife.run
+          expect(Chef::Config[:fips]).to eq(true)
+        end
+      end
+
+      it "overwrites the Chef::Config value when passed --no-fips" do
+        with_argv(*%w{noop knife command --no-fips}) do
+          expect(@knife).to receive(:exit).with(0)
+          expect(Chef::Config).not_to receive(:enable_fips_mode)
+          @knife.run
+          expect(Chef::Config[:fips]).to eq(false)
+        end
+      end
+    end
+  end
+
   describe "when given a path to the client key" do
     it "expands a relative path relative to the CWD" do
-      relative_path = '.chef/client.pem'
+      relative_path = ".chef/client.pem"
       allow(Dir).to receive(:pwd).and_return(CHEF_SPEC_DATA)
       with_argv(*%W{noop knife command -k #{relative_path}}) do
         expect(@knife).to receive(:exit).with(0)
@@ -94,20 +146,20 @@ describe Chef::Application::Knife do
     end
 
     it "expands a ~/home/path to the correct full path" do
-      home_path = '~/.chef/client.pem'
+      home_path = "~/.chef/client.pem"
       with_argv(*%W{noop knife command -k #{home_path}}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      expect(Chef::Config[:client_key]).to eq(File.join(ENV['HOME'], '.chef/client.pem').gsub((File::ALT_SEPARATOR || '\\'), File::SEPARATOR))
+      expect(Chef::Config[:client_key]).to eq(File.join(ENV["HOME"], ".chef/client.pem").gsub((File::ALT_SEPARATOR || '\\'), File::SEPARATOR))
     end
 
     it "does not expand a full path" do
       full_path = if windows?
-        'C:/chef/client.pem'
-      else
-        '/etc/chef/client.pem'
-      end
+                    "C:/chef/client.pem"
+                  else
+                    "/etc/chef/client.pem"
+                  end
       with_argv(*%W{noop knife command -k #{full_path}}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
@@ -130,38 +182,38 @@ describe Chef::Application::Knife do
     end
 
     it "should load the environment from the config file" do
-      config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
+      config_file = File.join(CHEF_SPEC_DATA, "environment-config.rb")
       with_argv(*%W{noop knife command -c #{config_file}}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      expect(Chef::Config[:environment]).to eq('production')
+      expect(Chef::Config[:environment]).to eq("production")
     end
 
     it "should load the environment from the CLI options" do
-      with_argv(*%W{noop knife command -E development}) do
+      with_argv(*%w{noop knife command -E development}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      expect(Chef::Config[:environment]).to eq('development')
+      expect(Chef::Config[:environment]).to eq("development")
     end
 
     it "should override the config file environment with the CLI environment" do
-      config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
+      config_file = File.join(CHEF_SPEC_DATA, "environment-config.rb")
       with_argv(*%W{noop knife command -c #{config_file} -E override}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      expect(Chef::Config[:environment]).to eq('override')
+      expect(Chef::Config[:environment]).to eq("override")
     end
 
     it "should override the config file environment with the CLI environment regardless of order" do
-      config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
+      config_file = File.join(CHEF_SPEC_DATA, "environment-config.rb")
       with_argv(*%W{noop knife command -E override -c #{config_file}}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      expect(Chef::Config[:environment]).to eq('override')
+      expect(Chef::Config[:environment]).to eq("override")
     end
 
     it "should run a sub command with the applications command line option prototype" do

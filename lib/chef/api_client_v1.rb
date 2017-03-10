@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Nuo Yan (<nuo@chef.io>)
-# Copyright:: Copyright (c) 2008, 2015 Chef Software, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,16 +17,16 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
-require 'chef/mash'
-require 'chef/json_compat'
-require 'chef/search/query'
-require 'chef/exceptions'
-require 'chef/mixin/api_version_request_handling'
-require 'chef/server_api'
-require 'chef/api_client'
+require "chef/config"
+require "chef/mixin/params_validate"
+require "chef/mixin/from_file"
+require "chef/mash"
+require "chef/json_compat"
+require "chef/search/query"
+require "chef/exceptions"
+require "chef/mixin/api_version_request_handling"
+require "chef/server_api"
+require "chef/api_client"
 
 # COMPATIBILITY NOTE
 #
@@ -44,11 +44,11 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::ApiVersionRequestHandling
 
-    SUPPORTED_API_VERSIONS = [0,1]
+    SUPPORTED_API_VERSIONS = [0, 1]
 
     # Create a new Chef::ApiClientV1 object.
     def initialize
-      @name = ''
+      @name = ""
       @public_key = nil
       @private_key = nil
       @admin = false
@@ -57,22 +57,22 @@ class Chef
     end
 
     def chef_rest_v0
-      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "0", :inflate_json_class => false})
+      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "0", :inflate_json_class => false })
     end
 
     def chef_rest_v1
-      @chef_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "1", :inflate_json_class => false})
+      @chef_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "1", :inflate_json_class => false })
     end
 
     def self.http_api
-      Chef::ServerAPI.new(Chef::Config[:chef_server_url], {:api_version => "1", :inflate_json_class => false})
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url], { :api_version => "1", :inflate_json_class => false })
     end
 
     # Gets or sets the client name.
     #
     # @params [Optional String] The name must be alpha-numeric plus - and _.
     # @return [String] The current value of the name.
-    def name(arg=nil)
+    def name(arg = nil)
       set_or_return(
         :name,
         arg,
@@ -84,7 +84,7 @@ class Chef
     #
     # @params [Optional True/False] Should be true or false - default is false.
     # @return [True/False] The current value
-    def admin(arg=nil)
+    def admin(arg = nil)
       set_or_return(
         :admin,
         arg,
@@ -96,7 +96,7 @@ class Chef
     #
     # @params [Optional String] The string representation of the public key.
     # @return [String] The current value.
-    def public_key(arg=nil)
+    def public_key(arg = nil)
       set_or_return(
         :public_key,
         arg,
@@ -109,7 +109,7 @@ class Chef
     # @params [Boolean] whether or not the client is a validator.  If
     #   `nil`, retrieves the already-set value.
     # @return [Boolean] The current value
-    def validator(arg=nil)
+    def validator(arg = nil)
       set_or_return(
         :validator,
         arg,
@@ -122,7 +122,7 @@ class Chef
     #
     # @params [Optional String] The string representation of the private key.
     # @return [String] The current value.
-    def private_key(arg=nil)
+    def private_key(arg = nil)
       set_or_return(
         :private_key,
         arg,
@@ -134,7 +134,7 @@ class Chef
     #
     # @params [Optional True/False] Should be true or false - default is false.
     # @return [True/False] The current value
-    def create_key(arg=nil)
+    def create_key(arg = nil)
       set_or_return(
         :create_key,
         arg,
@@ -151,7 +151,7 @@ class Chef
         "name" => @name,
         "validator" => @validator,
         "admin" => @admin,
-        "chef_type" => "client"
+        "chef_type" => "client",
       }
       result["private_key"] = @private_key unless @private_key.nil?
       result["public_key"] = @public_key unless @public_key.nil?
@@ -186,11 +186,11 @@ class Chef
       api_client.reregister
     end
 
-    def self.list(inflate=false)
+    def self.list(inflate = false)
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:client) do |n|
-          n = self.from_hash(n) if n.instance_of?(Hash)
+          n = from_hash(n) if n.instance_of?(Hash)
           response[n.name] = n
         end
         response
@@ -212,15 +212,13 @@ class Chef
 
     # Save this client via the REST API, returns a hash including the private key
     def save
-      begin
-        update
-      rescue Net::HTTPServerException => e
-        # If that fails, go ahead and try and update it
-        if e.response.code == "404"
-          create
-        else
-          raise e
-        end
+      update
+    rescue Net::HTTPServerException => e
+      # If that fails, go ahead and try and update it
+      if e.response.code == "404"
+        create
+      else
+        raise e
       end
     end
 
@@ -282,7 +280,7 @@ class Chef
         :validator => validator,
         # this field is ignored in API V1, but left for backwards-compat,
         # can remove after OSC 11 support is finished?
-        :admin => admin
+        :admin => admin,
       }
       begin
         # try API V1
@@ -294,12 +292,12 @@ class Chef
         new_client = chef_rest_v1.post("clients", payload)
 
         # get the private_key out of the chef_key hash if it exists
-        if new_client['chef_key']
-          if new_client['chef_key']['private_key']
-            new_client['private_key'] = new_client['chef_key']['private_key']
+        if new_client["chef_key"]
+          if new_client["chef_key"]["private_key"]
+            new_client["private_key"] = new_client["chef_key"]["private_key"]
           end
-          new_client['public_key'] = new_client['chef_key']['public_key']
-          new_client.delete('chef_key')
+          new_client["public_key"] = new_client["chef_key"]["public_key"]
+          new_client.delete("chef_key")
         end
 
       rescue Net::HTTPServerException => e
@@ -313,7 +311,7 @@ class Chef
 
         new_client = chef_rest_v0.post("clients", payload)
       end
-      Chef::ApiClientV1.from_hash(self.to_hash.merge(new_client))
+      Chef::ApiClientV1.from_hash(to_hash.merge(new_client))
     end
 
     # As a string

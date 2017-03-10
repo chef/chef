@@ -1,5 +1,5 @@
-require 'chef/formatters/base'
-require 'chef/config'
+require "chef/formatters/base"
+require "chef/config"
 
 class Chef
   module Formatters
@@ -23,6 +23,7 @@ class Chef
         @start_time = Time.now
         @end_time = @start_time
         @skipped_resources = 0
+        @progress = {}
       end
 
       def elapsed_time
@@ -31,9 +32,9 @@ class Chef
 
       def pretty_elapsed_time
         time = elapsed_time
-        if time < 60 then
+        if time < 60
           message = Time.at(time).utc.strftime("%S seconds")
-        elsif time < 3600 then
+        elsif time < 3600
           message = Time.at(time).utc.strftime("%M minutes %S seconds")
         else
           message = Time.at(time).utc.strftime("%H hours %M minutes %S seconds")
@@ -43,6 +44,7 @@ class Chef
 
       def run_start(version)
         puts_line "Starting Chef Client, version #{version}"
+        puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
       end
 
       def total_resources
@@ -59,9 +61,10 @@ class Chef
         if !deprecations.empty?
           puts_line ""
           puts_line "Deprecated features used!"
-          deprecations.each do |message, locations|
+          deprecations.each do |message, details|
+            locations = details[:locations]
             if locations.size == 1
-              puts_line "  #{message} at #{locations.size} location:"
+              puts_line "  #{message} at 1 location:"
             else
               puts_line "  #{message} at #{locations.size} locations:"
             end
@@ -71,6 +74,9 @@ class Chef
                 puts_line "#{prefix}#{line}"
                 prefix = "      "
               end
+            end
+            unless details[:url].nil?
+              puts_line "   See #{details[:url]} for further details."
             end
           end
           puts_line ""
@@ -179,6 +185,32 @@ class Chef
         unindent
       end
 
+      # Called when starting to collect gems from the cookbooks
+      def cookbook_gem_start(gems)
+        puts_line "Installing Cookbook Gems:"
+        indent
+      end
+
+      # Called when the result of installing the bundle is to install the gem
+      def cookbook_gem_installing(gem, version)
+        puts_line "- Installing #{gem} #{version}", :green
+      end
+
+      # Called when the result of installing the bundle is to use the gem
+      def cookbook_gem_using(gem, version)
+        puts_line "- Using #{gem} #{version}"
+      end
+
+      # Called when finished installing cookbook gems
+      def cookbook_gem_finished
+        unindent
+      end
+
+      # Called when cookbook gem installation fails
+      def cookbook_gem_failed(exception)
+        unindent
+      end
+
       # Called when cookbook loading starts.
       def library_load_start(file_count)
         puts_line "Compiling Cookbooks..."
@@ -239,7 +271,7 @@ class Chef
       end
 
       # Called before action is executed on a resource.
-      def resource_action_start(resource, action, notification_type=nil, notifier=nil)
+      def resource_action_start(resource, action, notification_type = nil, notifier = nil)
         if resource.cookbook_name && resource.recipe_name
           resource_recipe = "#{resource.cookbook_name}::#{resource.recipe_name}"
         else
@@ -255,6 +287,21 @@ class Chef
         # TODO: info about notifies
         start_line "* #{resource} action #{action}", :stream => resource
         indent
+      end
+
+      def resource_update_progress(resource, current, total, interval)
+        @progress[resource] ||= 0
+
+        percent_complete = (current.to_f / total.to_f * 100).to_i
+
+        if percent_complete > @progress[resource]
+
+          @progress[resource] = percent_complete
+
+          if percent_complete % interval == 0
+            start_line " - Progress: #{percent_complete}%", :green
+          end
+        end
       end
 
       # Called when a resource fails, but will retry.
@@ -281,7 +328,7 @@ class Chef
 
       # Called when a resource has no converge actions, e.g., it was already correct.
       def resource_up_to_date(resource, action)
-        @up_to_date_resources+= 1
+        @up_to_date_resources += 1
         puts " (up to date)", :stream => resource
         unindent
       end
@@ -292,7 +339,6 @@ class Chef
       end
 
       def output_record(line)
-
       end
 
       # Called when a change has been made to a resource. May be called multiple
@@ -334,7 +380,7 @@ class Chef
 
       # Called before handlers run
       def handlers_start(handler_count)
-        puts ''
+        puts ""
         puts "Running handlers:"
         indent
       end
@@ -368,14 +414,19 @@ class Chef
         end
       end
 
-      def deprecation(message, location=caller(2..2)[0])
+      def deprecation(message, location = caller(2..2)[0])
         if Chef::Config[:treat_deprecation_warnings_as_errors]
           super
         end
 
         # Save deprecations to the screen until the end
-        deprecations[message] ||= Set.new
-        deprecations[message] << location
+        if is_structured_deprecation?(message)
+          url = message.url
+          message = message.message
+        end
+
+        deprecations[message] ||= { url: url, locations: Set.new }
+        deprecations[message][:locations] << location
       end
 
       def indent

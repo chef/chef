@@ -1,6 +1,6 @@
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright (c) 2013 OpsCode, Inc.
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Provider::Mount::Aix do
 
@@ -40,7 +40,7 @@ UNMOUNTED
          /dev/sdz3         /tmp/foo         jfs2   Jul 17 13:22 rw,log=/dev/hd8
 MOUNT
 
-  @enabled_output = <<-ENABLED
+    @enabled_output = <<-ENABLED
 #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
 /tmp/foo:/dev/sdz1:jfs2::bootfs:10485760:rw:yes:no
 ENABLED
@@ -114,7 +114,7 @@ ENABLED
     expect(@provider.current_resource.mounted).to be_truthy
     expect(@provider.current_resource.mount_point).to eql(@new_resource.mount_point)
     expect(@provider.current_resource.fstype).to eql("jfs2")
-    expect(@provider.current_resource.options).to eql(['rw'])
+    expect(@provider.current_resource.options).to eql(["rw"])
   end
 
   describe "mount_fs" do
@@ -126,10 +126,9 @@ ENABLED
       @provider.run_action(:mount)
     end
 
-    it "should not mount resource if it is already mounted and the options have not changed" do
+    it "should not mount resource if it is already mounted" do
       stub_mounted_enabled(@provider, @mounted_output, "")
 
-      allow(@provider).to receive(:mount_options_unchanged?).and_return(true)
       expect(@provider).not_to receive(:mount_fs)
 
       @provider.run_action(:mount)
@@ -156,7 +155,7 @@ ENABLED
 
   describe "remount_fs" do
     it "should remount resource if it is already mounted and it supports remounting" do
-      @new_resource.supports({:remount => true})
+      @new_resource.supports({ :remount => true })
       stub_mounted_enabled(@provider, @mounted_output, "")
 
       expect(@provider).to receive(:shell_out!).with("mount -o remount #{@new_resource.device} #{@new_resource.mount_point}")
@@ -165,7 +164,7 @@ ENABLED
     end
 
     it "should remount with new mount options if it is already mounted and it supports remounting" do
-      @new_resource.supports({:remount => true})
+      @new_resource.supports({ :remount => true })
       @new_resource.options("nodev,rw")
       stub_mounted_enabled(@provider, @mounted_output, "")
 

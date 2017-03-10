@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (<steve@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Steven Danna (<steve@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 # DEPRECATION NOTE
 # This code only remains to support users still operating with
@@ -27,8 +27,8 @@ class Chef
     class OscUserCreate < Knife
 
       deps do
-        require 'chef/user'
-        require 'chef/json_compat'
+        require "chef/user"
+        require "chef/json_compat"
       end
 
       option :file,
@@ -50,7 +50,7 @@ class Chef
 
       option :user_key,
         :long => "--user-key FILENAME",
-        :description => "Public key for newly created user.  By default a key will be created for you."
+        :description => "Public key for newly created user. By default a key will be created for you."
 
       banner "knife osc_user create USER (options)"
 
@@ -78,7 +78,7 @@ class Chef
           user.public_key File.read(File.expand_path(config[:user_key]))
         end
 
-        output = edit_data(user)
+        output = edit_hash(user)
         user = Chef::User.from_hash(output).create
 
         ui.info("Created #{user}")

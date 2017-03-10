@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/api_client_v1'
-require 'tempfile'
+require "chef/api_client_v1"
+require "tempfile"
 
 describe Chef::ApiClientV1 do
   before(:each) do
@@ -90,7 +90,6 @@ describe Chef::ApiClientV1 do
     expect { @client.public_key "" }.not_to raise_error
     expect { @client.public_key Hash.new }.to raise_error(ArgumentError)
   end
-
 
   it "has a private key attribute" do
     @client.private_key("super private")
@@ -199,7 +198,7 @@ describe Chef::ApiClientV1 do
         "private_key" => "monkeypants",
         "admin" => true,
         "validator" => true,
-        "create_key" => true
+        "create_key" => true,
       }
     end
 
@@ -248,13 +247,13 @@ describe Chef::ApiClientV1 do
         "private_key" => "monkeypants",
         "admin" => true,
         "create_key" => true,
-        "validator" => true
+        "validator" => true,
       }
 
       @http_client = double("Chef::ServerAPI mock")
       allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
       expect(@http_client).to receive(:get).with("clients/black").and_return(client)
-      @client = Chef::ApiClientV1.load(client['name'])
+      @client = Chef::ApiClientV1.load(client["name"])
     end
 
     it "should deserialize to a Chef::ApiClientV1 object" do
@@ -290,7 +289,7 @@ describe Chef::ApiClientV1 do
   describe "with correctly configured API credentials" do
     before do
       Chef::Config[:node_name] = "silent-bob"
-      Chef::Config[:client_key] = File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)
+      Chef::Config[:client_key] = File.expand_path("ssl/private_key.pem", CHEF_SPEC_DATA)
     end
 
     after do
@@ -299,11 +298,10 @@ describe Chef::ApiClientV1 do
     end
 
     let :private_key_data do
-      File.open(Chef::Config[:client_key], "r") {|f| f.read.chomp }
+      File.open(Chef::Config[:client_key], "r") { |f| f.read.chomp }
     end
 
   end
-
 
   describe "when requesting a new key" do
     before do
@@ -326,20 +324,20 @@ describe Chef::ApiClientV1 do
   end
 
   describe "Versioned API Interactions" do
-    let(:response_406) { OpenStruct.new(:code => '406') }
+    let(:response_406) { OpenStruct.new(:code => "406") }
     let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
-    let(:payload)  {
+    let(:payload) do
       {
         :name => "some_name",
         :validator => true,
-        :admin => true
+        :admin => true,
       }
-    }
+    end
 
     before do
       @client = Chef::ApiClientV1.new
-      allow(@client).to receive(:chef_rest_v0).and_return(double('chef rest root v0 object'))
-      allow(@client).to receive(:chef_rest_v1).and_return(double('chef rest root v1 object'))
+      allow(@client).to receive(:chef_rest_v0).and_return(double("chef rest root v0 object"))
+      allow(@client).to receive(:chef_rest_v1).and_return(double("chef rest root v1 object"))
       @client.name "some_name"
       @client.validator true
       @client.admin true
@@ -391,7 +389,7 @@ describe Chef::ApiClientV1 do
             end
 
             it "updates the client with only the name" do
-              expect(rest). to receive(:put).with("clients/some_name", {:name => "some_name"}).and_return({:name => "some_name"})
+              expect(rest). to receive(:put).with("clients/some_name", { :name => "some_name" }).and_return({ :name => "some_name" })
               @client.update
             end
           end
@@ -439,7 +437,7 @@ describe Chef::ApiClientV1 do
     describe "reregister" do
       context "when server API V0 is valid on the Chef Server receiving the request" do
         it "creates a new object via the API" do
-          expect(@client.chef_rest_v0).to receive(:put).with("clients/#{@client.name}", payload.merge({:private_key => true})).and_return({})
+          expect(@client.chef_rest_v0).to receive(:put).with("clients/#{@client.name}", payload.merge({ :private_key => true })).and_return({})
           @client.reregister
         end
       end # when server API V0 is valid on the Chef Server receiving the request

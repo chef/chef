@@ -1,6 +1,6 @@
 #
 # Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
-# Copyright:: Copyright (c) 2011 Thomas Bishop
+# Copyright:: Copyright 2011-2016, Thomas Bishop
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::ClientList do
   before(:each) do
     @knife = Chef::Knife::ClientList.new
-    @knife.name_args = [ 'adam' ]
+    @knife.name_args = [ "adam" ]
   end
 
-  describe 'run' do
-    it 'should list the clients' do
+  describe "run" do
+    it "should list the clients" do
       expect(Chef::ApiClientV1).to receive(:list)
       expect(@knife).to receive(:format_list_for_display)
       @knife.run

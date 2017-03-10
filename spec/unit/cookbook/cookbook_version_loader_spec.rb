@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Cookbook::CookbookVersionLoader do
   before do
@@ -58,8 +58,8 @@ describe Chef::Cookbook::CookbookVersionLoader do
     end
 
     it "loads libraries" do
-      expect(loaded_cookbook.library_filenames).to include(full_path('/libraries/openldap.rb'))
-      expect(loaded_cookbook.library_filenames).to include(full_path('/libraries/openldap/version.rb'))
+      expect(loaded_cookbook.library_filenames).to include(full_path("/libraries/openldap.rb"))
+      expect(loaded_cookbook.library_filenames).to include(full_path("/libraries/openldap/version.rb"))
     end
 
     it "loads static files in the files/ dir" do
@@ -71,6 +71,18 @@ describe Chef::Cookbook::CookbookVersionLoader do
       expect(loaded_cookbook.file_filenames).to include(full_path("/files/default/.dotfile"))
       expect(loaded_cookbook.file_filenames).to include(full_path("/files/default/.ssh/id_rsa"))
       expect(loaded_cookbook.file_filenames).to include(full_path("/files/default/remotedir/.a_dotdir/.a_dotfile_in_a_dotdir"))
+    end
+
+    it "loads root files that start with a ." do
+      expect(loaded_cookbook.all_files).to include(full_path(".root_dotfile"))
+      expect(loaded_cookbook.root_filenames).to include(full_path(".root_dotfile"))
+    end
+
+    it "loads all unignored files, even if they don't match a segment type" do
+      expect(loaded_cookbook.all_files).to include(full_path("/spec/spec_helper.rb"))
+
+      # Directories need to be filtered out, though:
+      expect(loaded_cookbook.all_files).to_not include(full_path("/spec"))
     end
 
     it "should load the metadata for the cookbook" do
@@ -90,6 +102,15 @@ describe Chef::Cookbook::CookbookVersionLoader do
         expect(loaded_cookbook.recipe_filenames).to_not include(full_path("recipes/ignoreme.rb"))
       end
 
+    end
+
+    context "when a cookbook's metadata.rb does not parse but the compiled metadata.json is present" do
+      let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "prefer_metadata_json") }
+
+      it "reads the cookbook" do
+        expect(loaded_cookbook.metadata.name.to_s).to eq("prefer_metadata_json")
+        expect(loaded_cookbook.metadata.version.to_s).to eq("1.2.3")
+      end
     end
 
     context "when the given path is not actually a cookbook" do
@@ -184,4 +205,3 @@ describe Chef::Cookbook::CookbookVersionLoader do
   end
 
 end
-

@@ -1,6 +1,6 @@
 #
 # Author:: Salim Alam (<salam@chef.io>)
-# Copyright:: Copyright 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api'
+require "chef/win32/api"
 
 class Chef
   module ReservedNames::Win32
@@ -28,7 +28,7 @@ class Chef
         # Win32 API Bindings
         ###############################################
 
-        ffi_lib 'advapi32'
+        ffi_lib "advapi32"
 
         # LONG WINAPI RegDeleteKeyEx(
         #   _In_       HKEY    hKey,

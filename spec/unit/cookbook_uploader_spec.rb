@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::CookbookUploader do
 
-  let(:http_client) { double("Chef::REST") }
+  let(:http_client) { double("Chef::ServerAPI") }
 
   let(:cookbook_loader) do
     loader = Chef::CookbookLoader.new(File.join(CHEF_SPEC_DATA, "cookbooks"))
@@ -64,8 +64,8 @@ describe Chef::CookbookUploader do
   end
 
   it "creates an HTTP client with default configuration when not initialized with one" do
-    default_http_client = double("Chef::REST")
-    expect(Chef::REST).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(default_http_client)
+    default_http_client = double("Chef::ServerAPI")
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(default_http_client)
     uploader = described_class.new(cookbooks_to_upload)
     expect(uploader.rest).to eq(default_http_client)
   end
@@ -78,7 +78,7 @@ describe Chef::CookbookUploader do
 
     let(:sandbox_response) do
       sandbox_checksums = cksums_not_on_remote.inject({}) do |cksum_map, cksum|
-        cksum_map[cksum] = { "needs_upload" => true, "url" => url_for(cksum)}
+        cksum_map[cksum] = { "needs_upload" => true, "url" => url_for(cksum) }
         cksum_map
       end
       { "checksums" => sandbox_checksums, "uri" => sandbox_commit_uri }
@@ -86,7 +86,7 @@ describe Chef::CookbookUploader do
 
     def expect_sandbox_create
       expect(http_client).to receive(:post).
-        with("sandboxes", {:checksums => checksums_set}).
+        with("sandboxes", { :checksums => checksums_set }).
         and_return(sandbox_response)
     end
 
@@ -97,7 +97,7 @@ describe Chef::CookbookUploader do
         upload_headers = {
           "content-type" => "application/x-binary",
           "content-md5"  => an_instance_of(String),
-          "accept"       => "application/json"
+          "accept"       => "application/json",
         }
 
         expect(http_client).to receive(:put).
@@ -111,7 +111,7 @@ describe Chef::CookbookUploader do
     end
 
     def expect_sandbox_commit
-      expect(http_client).to receive(:put).with(sandbox_commit_uri, {:is_completed => true})
+      expect(http_client).to receive(:put).with(sandbox_commit_uri, { :is_completed => true })
     end
 
     def expect_cookbook_create
@@ -192,7 +192,6 @@ describe Chef::CookbookUploader do
 
         uploader.upload_cookbooks
       end
-
 
     end
   end

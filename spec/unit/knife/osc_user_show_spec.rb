@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (<steve@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc
+# Author:: Steven Danna (<steve@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 # DEPRECATION NOTE
 # This code only remains to support users still	operating with
@@ -27,17 +27,17 @@ describe Chef::Knife::OscUserShow do
   before(:each) do
     Chef::Knife::OscUserShow.load_deps
     @knife = Chef::Knife::OscUserShow.new
-    @knife.name_args = [ 'my_user' ]
-    @user_mock = double('user_mock')
+    @knife.name_args = [ "my_user" ]
+    @user_mock = double("user_mock")
   end
 
-  it 'loads and displays the user' do
-    expect(Chef::User).to receive(:load).with('my_user').and_return(@user_mock)
+  it "loads and displays the user" do
+    expect(Chef::User).to receive(:load).with("my_user").and_return(@user_mock)
     expect(@knife).to receive(:format_for_display).with(@user_mock)
     @knife.run
   end
 
-  it 'prints usage and exits when a user name is not provided' do
+  it "prints usage and exits when a user name is not provided" do
     @knife.name_args = []
     expect(@knife).to receive(:show_usage)
     expect(@knife.ui).to receive(:fatal)

@@ -1,6 +1,6 @@
 #
 # Author:: Dan Crosta (<dcrosta@late.am>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,33 +21,31 @@ class Chef
     class Group
       class Groupmod < Chef::Provider::Group
 
-        provides :group, os: 'netbsd'
+        provides :group, os: "netbsd"
 
         def load_current_resource
           super
-          [ "group", "user" ].each do |binary|
-            raise Chef::Exceptions::Group, "Could not find binary /usr/sbin/#{binary} for #{@new_resource}" unless ::File.exists?("/usr/sbin/#{binary}")
+          %w{group user}.each do |binary|
+            raise Chef::Exceptions::Group, "Could not find binary /usr/sbin/#{binary} for #{new_resource}" unless ::File.exist?("/usr/sbin/#{binary}")
           end
         end
 
         # Create the group
         def create_group
-          command = "group add"
-          command << set_options
-          shell_out!(command)
+          shell_out_compact!("group", "add", set_options)
 
-          add_group_members(@new_resource.members)
+          add_group_members(new_resource.members)
         end
 
         # Manage the group when it already exists
         def manage_group
-          if @new_resource.append
+          if new_resource.append
             members_to_be_added = [ ]
-            if @new_resource.excluded_members && !@new_resource.excluded_members.empty?
+            if new_resource.excluded_members && !new_resource.excluded_members.empty?
               # First find out if any member needs to be removed
               members_to_be_removed = [ ]
-              @new_resource.excluded_members.each do |member|
-                members_to_be_removed << member if @current_resource.members.include?(member)
+              new_resource.excluded_members.each do |member|
+                members_to_be_removed << member if current_resource.members.include?(member)
               end
 
               unless members_to_be_removed.empty?
@@ -56,39 +54,39 @@ class Chef
 
                 # Capture the members we need to add in
                 # members_to_be_added to be added later on.
-                @current_resource.members.each do |member|
+                current_resource.members.each do |member|
                   members_to_be_added << member unless members_to_be_removed.include?(member)
                 end
               end
             end
 
-            if @new_resource.members && !@new_resource.members.empty?
-              @new_resource.members.each do |member|
-                members_to_be_added << member if !@current_resource.members.include?(member)
+            if new_resource.members && !new_resource.members.empty?
+              new_resource.members.each do |member|
+                members_to_be_added << member unless current_resource.members.include?(member)
               end
             end
 
-            Chef::Log.debug("#{@new_resource} not changing group members, the group has no members to add") if members_to_be_added.empty?
+            Chef::Log.debug("#{new_resource} not changing group members, the group has no members to add") if members_to_be_added.empty?
 
             add_group_members(members_to_be_added)
           else
             # We are resetting the members of a group so use the same trick
             reset_group_membership
-            Chef::Log.debug("#{@new_resource} setting group members to: none") if @new_resource.members.empty?
-            add_group_members(@new_resource.members)
+            Chef::Log.debug("#{new_resource} setting group members to: none") if new_resource.members.empty?
+            add_group_members(new_resource.members)
           end
         end
 
         # Remove the group
         def remove_group
-          shell_out!("group del #{@new_resource.group_name}")
+          shell_out_compact!("group", "del", new_resource.group_name)
         end
 
         # Adds a list of usernames to the group using `user mod`
         def add_group_members(members)
-          Chef::Log.debug("#{@new_resource} adding members #{members.join(', ')}") if !members.empty?
+          Chef::Log.debug("#{new_resource} adding members #{members.join(', ')}") unless members.empty?
           members.each do |user|
-            shell_out!("user mod -G #{@new_resource.group_name} #{user}")
+            shell_out_compact!("user", "mod", "-G", new_resource.group_name, user)
           end
         end
 
@@ -96,30 +94,27 @@ class Chef
         # "<name>_bak", create a new group with the same GID and
         # "<name>", then set correct members on that group
         def reset_group_membership
-          rename = "group mod -n #{@new_resource.group_name}_bak #{@new_resource.group_name}"
-          shell_out!(rename)
+          shell_out_compact!("group", "mod", "-n", "#{new_resource.group_name}_bak", new_resource.group_name)
 
-          create = "group add"
-          create << set_options(:overwrite_gid => true)
-          shell_out!(create)
+          shell_out_compact!("group", "add", set_options(overwrite_gid: true))
 
-          remove = "group del #{@new_resource.group_name}_bak"
-          shell_out!(remove)
+          shell_out_compact!("group", "del", "#{new_resource.group_name}_bak")
         end
 
         # Little bit of magic as per Adam's useradd provider to pull and assign the command line flags
         #
         # ==== Returns
         # <string>:: A string containing the option and then the quoted value
-        def set_options(overwrite_gid=false)
-          opts = ""
-          if overwrite_gid || @new_resource.gid && (@current_resource.gid != @new_resource.gid)
-            opts << " -g '#{@new_resource.gid}'"
+        def set_options(overwrite_gid = false)
+          opts = []
+          if overwrite_gid || new_resource.gid && (current_resource.gid != new_resource.gid)
+            opts << "-g"
+            opts << new_resource.gid
           end
           if overwrite_gid
-            opts << " -o"
+            opts << "-o"
           end
-          opts << " #{@new_resource.group_name}"
+          opts << new_resource.group_name
           opts
         end
       end

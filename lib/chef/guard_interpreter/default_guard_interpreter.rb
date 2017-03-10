@@ -1,6 +1,6 @@
 #
-# Author:: Adam Edwards (<adamed@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Adam Edwards (<adamed@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
+require "chef/mixin/shell_out"
 
 class Chef
   class GuardInterpreter
@@ -41,4 +41,3 @@ class Chef
     end
   end
 end
-      

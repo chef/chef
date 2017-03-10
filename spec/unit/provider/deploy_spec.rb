@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Deploy do
 
@@ -163,24 +163,24 @@ describe Chef::Provider::Deploy do
   end
 
   it "dont care by default if error happens on deploy" do
-    allow(@provider).to receive(:all_releases).and_return(['previous_release'])
-    allow(@provider).to receive(:deploy){ raise "Unexpected error" }
-    allow(@provider).to receive(:previous_release_path).and_return('previous_release')
+    allow(@provider).to receive(:all_releases).and_return(["previous_release"])
+    allow(@provider).to receive(:deploy) { raise "Unexpected error" }
+    allow(@provider).to receive(:previous_release_path).and_return("previous_release")
     expect(@provider).not_to receive(:rollback)
-    expect {
+    expect do
       @provider.run_action(:deploy)
-    }.to raise_exception(RuntimeError, "Unexpected error")
+    end.to raise_exception(RuntimeError, "Unexpected error")
   end
 
   it "rollbacks to previous release if error happens on deploy" do
     @resource.rollback_on_error true
-    allow(@provider).to receive(:all_releases).and_return(['previous_release'])
-    allow(@provider).to receive(:deploy){ raise "Unexpected error" }
-    allow(@provider).to receive(:previous_release_path).and_return('previous_release')
+    allow(@provider).to receive(:all_releases).and_return(["previous_release"])
+    allow(@provider).to receive(:deploy) { raise "Unexpected error" }
+    allow(@provider).to receive(:previous_release_path).and_return("previous_release")
     expect(@provider).to receive(:rollback)
-    expect {
+    expect do
       @provider.run_action(:deploy)
-    }.to raise_exception(RuntimeError, "Unexpected error")
+    end.to raise_exception(RuntimeError, "Unexpected error")
   end
 
   describe "on systems without broken Dir.glob results" do
@@ -232,17 +232,17 @@ describe Chef::Provider::Deploy do
         #FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
         #@provider.run_action(:rollback)
         #@provider.release_path.should eql(NIL) -- no check needed since assertions will fail
-        expect {
+        expect do
           @provider.run_action(:rollback)
-        }.to raise_exception(RuntimeError, "There is no release to rollback to!")
+        end.to raise_exception(RuntimeError, "There is no release to rollback to!")
       end
 
       it "an exception is raised when there are no releases" do
         all_releases = []
         allow(Dir).to receive(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
-        expect {
+        expect do
           @provider.run_action(:rollback)
-        }.to raise_exception(RuntimeError, "There is no release to rollback to!")
+        end.to raise_exception(RuntimeError, "There is no release to rollback to!")
       end
     end
   end
@@ -266,7 +266,7 @@ describe Chef::Provider::Deploy do
   it "raises a runtime error when there's no release to rollback to" do
     all_releases = []
     allow(Dir).to receive(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
-    expect {@provider.run_action(:rollback)}.to raise_error(RuntimeError)
+    expect { @provider.run_action(:rollback) }.to raise_error(RuntimeError)
   end
 
   it "runs the new resource collection in the runner during a callback" do
@@ -286,12 +286,12 @@ describe Chef::Provider::Deploy do
   end
 
   it "raises a runtime error if a callback file is explicitly specified but does not exist" do
-    baz_callback =   "/deploy/baz.rb"
+    baz_callback = "/deploy/baz.rb"
     expect(::File).to receive(:exist?).with("#{@expected_release_dir}/#{baz_callback}").and_return(false)
-    @resource.before_migrate  baz_callback
+    @resource.before_migrate baz_callback
     @provider.define_resource_requirements
     @provider.action = :deploy
-    expect {@provider.process_resource_requirements}.to raise_error(RuntimeError)
+    expect { @provider.process_resource_requirements }.to raise_error(RuntimeError)
   end
 
   it "runs a default callback if the callback code is nil" do
@@ -378,11 +378,11 @@ describe Chef::Provider::Deploy do
 
     allow(STDOUT).to receive(:tty?).and_return(true)
     allow(Chef::Log).to receive(:info?).and_return(true)
-    expect(@provider).to receive(:shell_out!).with("migration_foo",:cwd => @expected_release_dir,
-                                                :user => "deployNinja", :group => "deployNinjas",
-                                                :log_level => :info, :live_stream => STDOUT,
-                                                :log_tag => "deploy[/my/deploy/dir]",
-                                                :environment => {"RAILS_ENV"=>"production"})
+    expect(@provider).to receive(:shell_out!).with("migration_foo", :cwd => @expected_release_dir,
+                                                                    :user => "deployNinja", :group => "deployNinjas",
+                                                                    :log_level => :info, :live_stream => STDOUT,
+                                                                    :log_tag => "deploy[/my/deploy/dir]",
+                                                                    :environment => { "RAILS_ENV" => "production" })
     @provider.migrate
   end
 
@@ -518,7 +518,7 @@ describe Chef::Provider::Deploy do
 
     it "runs an inline recipe with the provided block for :callback_name == {:recipe => &block} " do
       snitch = nil
-      recipe_code = Proc.new {snitch = 42}
+      recipe_code = Proc.new { snitch = 42 }
       #@provider.should_receive(:instance_eval).with(&recipe_code)
       @provider.callback(:whateverz, recipe_code)
       expect(snitch).to eq(42)
@@ -533,7 +533,7 @@ describe Chef::Provider::Deploy do
 
     it "instance_evals a block/proc for restart command" do
       snitch = nil
-      restart_cmd = Proc.new {snitch = 42}
+      restart_cmd = Proc.new { snitch = 42 }
       @resource.restart(&restart_cmd)
       @provider.restart
       expect(snitch).to eq(42)
@@ -552,11 +552,11 @@ describe Chef::Provider::Deploy do
       expect(@provider).to receive(:execute).with("iGoToHell4this").and_return(mock_execution)
       @resource.user("notCoolMan")
       @resource.group("Ggroup")
-      @resource.environment("APP_ENV" => 'staging')
+      @resource.environment("APP_ENV" => "staging")
       @resource.deploy_to("/my/app")
       expect(mock_execution).to receive(:user).with("notCoolMan")
       expect(mock_execution).to receive(:group).with("Ggroup")
-      expect(mock_execution).to receive(:cwd){|*args|
+      expect(mock_execution).to receive(:cwd) { |*args|
         if args.empty?
           nil
         else
@@ -564,12 +564,12 @@ describe Chef::Provider::Deploy do
           expect(args.first).to eq(@provider.release_path)
         end
       }.twice
-      expect(mock_execution).to receive(:environment){ |*args|
+      expect(mock_execution).to receive(:environment) { |*args|
         if args.empty?
           nil
         else
           expect(args.size).to eq(1)
-          expect(args.first).to eq({"APP_ENV" => "staging"})
+          expect(args.first).to eq({ "APP_ENV" => "staging" })
         end
       }.twice
       @provider.run("iGoToHell4this")
@@ -586,7 +586,6 @@ describe Chef::Provider::Deploy do
       @provider.run("iGoToHell4this")
     end
 
-
     it "converts sudo and run to exec resources in hooks" do
       runner = double("tehRunner")
       allow(Chef::Runner).to receive(:new).and_return(runner)
@@ -596,7 +595,7 @@ describe Chef::Provider::Deploy do
 
       callback_code = Proc.new do
         snitch = 42
-        temp_collection = self.resource_collection
+        temp_collection = resource_collection
         run("tehMice")
         snitch = temp_collection.lookup("execute[tehMice]")
       end
@@ -613,7 +612,7 @@ describe Chef::Provider::Deploy do
 
     before do
       allow(::File).to receive(:exist?).with("#{@expected_release_dir}/gems.yml").and_return(true)
-      @gem_list = [{:name=>"eventmachine", :version=>"0.12.9"}]
+      @gem_list = [{ :name => "eventmachine", :version => "0.12.9" }]
     end
 
     it "reads a gems.yml file, creating gem providers for each with action :upgrade" do

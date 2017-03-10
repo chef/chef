@@ -1,7 +1,7 @@
 
-require 'spec_helper'
+require "spec_helper"
 
-require 'chef/config'
+require "chef/config"
 
 RSpec.describe Chef::Config do
 

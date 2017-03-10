@@ -1,6 +1,6 @@
 #
 # Author:: Mike Dodge (<mikedodge04@gmail.com>)
-# Copyright:: Copyright (c) 2015 Facebook, Inc.
+# Copyright:: Copyright 2015-2016, Facebook, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource/service'
+require "chef/resource/service"
 
 class Chef
   class Resource
@@ -29,7 +29,7 @@ class Chef
 
       state_attrs :enabled, :running
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @plist = nil
         @session_type = nil
@@ -37,7 +37,7 @@ class Chef
 
       # This will enable user to pass a plist in the case
       # that the filename and label for the service dont match
-      def plist(arg=nil)
+      def plist(arg = nil)
         set_or_return(
           :plist,
           arg,
@@ -45,7 +45,7 @@ class Chef
         )
       end
 
-      def session_type(arg=nil)
+      def session_type(arg = nil)
         set_or_return(
           :session_type,
           arg,

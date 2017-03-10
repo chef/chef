@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::ResourceDefinition do
   let(:defn) { Chef::ResourceDefinition.new() }
@@ -53,26 +53,26 @@ describe Chef::ResourceDefinition do
   end
 
   it "should accept a new definition with a symbol for a name" do
-    expect {
+    expect do
       defn.define :smoke do
       end
-    }.not_to raise_error
-    expect {
+    end.not_to raise_error
+    expect do
       defn.define "george washington" do
       end
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
     expect(defn.name).to eql(:smoke)
   end
 
   it "should accept a new definition with a hash" do
-    expect {
+    expect do
       defn.define :smoke, :cigar => "cuban", :cigarette => "marlboro" do
       end
-    }.not_to raise_error
+    end.not_to raise_error
   end
 
   it "should expose the prototype hash params in the params hash" do
-    defn.define :smoke, :cigar => "cuban", :cigarette => "marlboro" do; end
+    defn.define(:smoke, :cigar => "cuban", :cigarette => "marlboro") {}
     expect(defn.params[:cigar]).to eql("cuban")
     expect(defn.params[:cigarette]).to eql("marlboro")
   end
@@ -91,16 +91,16 @@ describe Chef::ResourceDefinition do
   end
 
   it "should raise an exception if prototype_params is not a hash" do
-    expect {
+    expect do
       defn.define :monkey, Array.new do
       end
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should raise an exception if define is called without a block" do
-    expect {
+    expect do
       defn.define :monkey
-    }.to raise_error(ArgumentError)
+    end.to raise_error(ArgumentError)
   end
 
   it "should load a description from a file" do

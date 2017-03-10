@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
 
 # == API Error Inspector Examples
 # These tests are work in progress. They exercise the code enough to ensure it
@@ -34,7 +32,7 @@ shared_examples_for "an api error inspector" do
       :validation_key => "/etc/chef/testorg-validator.pem",
       :chef_server_url => "https://chef-api.example.com",
       :node_name => "testnode-name",
-      :client_key => "/etc/chef/client.pem"
+      :client_key => "/etc/chef/client.pem",
     }
     @description = Chef::Formatters::ErrorDescription.new("Error registering the node:")
     @outputter = Chef::Formatters::IndentableOutputStream.new(StringIO.new, STDERR)

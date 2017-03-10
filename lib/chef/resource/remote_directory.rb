@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'chef/resource/directory'
-require 'chef/provider/remote_directory'
-require 'chef/mixin/securable'
+require "chef/resource/directory"
+require "chef/provider/remote_directory"
+require "chef/mixin/securable"
 
 class Chef
   class Resource
@@ -33,7 +33,7 @@ class Chef
       default_action :create
       allowed_actions :create, :create_if_missing, :delete
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @path = name
         @source = ::File.basename(name)
@@ -53,8 +53,7 @@ class Chef
         rights_attribute(:files_rights)
       end
 
-
-      def source(args=nil)
+      def source(args = nil)
         set_or_return(
           :source,
           args,
@@ -62,7 +61,7 @@ class Chef
         )
       end
 
-      def files_backup(arg=nil)
+      def files_backup(arg = nil)
         set_or_return(
           :files_backup,
           arg,
@@ -70,7 +69,7 @@ class Chef
         )
       end
 
-      def purge(arg=nil)
+      def purge(arg = nil)
         set_or_return(
           :purge,
           arg,
@@ -78,7 +77,7 @@ class Chef
         )
       end
 
-      def files_group(arg=nil)
+      def files_group(arg = nil)
         set_or_return(
           :files_group,
           arg,
@@ -86,7 +85,7 @@ class Chef
         )
       end
 
-      def files_mode(arg=nil)
+      def files_mode(arg = nil)
         set_or_return(
           :files_mode,
           arg,
@@ -94,7 +93,7 @@ class Chef
         )
       end
 
-      def files_owner(arg=nil)
+      def files_owner(arg = nil)
         set_or_return(
           :files_owner,
           arg,
@@ -102,7 +101,7 @@ class Chef
         )
       end
 
-      def overwrite(arg=nil)
+      def overwrite(arg = nil)
         set_or_return(
           :overwrite,
           arg,
@@ -110,7 +109,7 @@ class Chef
         )
       end
 
-      def cookbook(args=nil)
+      def cookbook(args = nil)
         set_or_return(
           :cookbook,
           args,

@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,14 +27,14 @@ class Chef
         def initialize(data, ui)
           @ui = ui
           @data = if data.respond_to?(:display_hash)
-            data.display_hash
-          elsif data.kind_of?(Array)
-            data
-          elsif data.respond_to?(:to_hash)
-            data.to_hash
-          else
-            data
-          end
+                    data.display_hash
+                  elsif data.kind_of?(Array)
+                    data
+                  elsif data.respond_to?(:to_hash)
+                    data.to_hash
+                  else
+                    data
+                  end
         end
 
         def formatted_data
@@ -42,10 +42,10 @@ class Chef
         end
 
         def text_format(data)
-          buffer = ''
+          buffer = ""
 
           if data.respond_to?(:keys)
-            justify_width = data.keys.map {|k| k.to_s.size }.max.to_i + 1
+            justify_width = data.keys.map { |k| k.to_s.size }.max.to_i + 1
             data.sort.each do |key, value|
               # key: ['value'] should be printed as key: value
               if value.kind_of?(Array) && value.size == 1 && is_singleton(value[0])
@@ -68,7 +68,7 @@ class Chef
               buffer << text_format(data[index])
               # Separate items with newlines if it's an array of hashes or an
               # array of arrays
-              buffer << "\n" if !is_singleton(data[index]) && index != data.size-1
+              buffer << "\n" if !is_singleton(data[index]) && index != data.size - 1
             end
           else
             buffer << "#{data}\n"
@@ -83,4 +83,3 @@ class Chef
     end
   end
 end
-

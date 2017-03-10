@@ -1,6 +1,6 @@
 #
 # Author:: Michael Leinartas (<mleinartas@gmail.com>)
-# Copyright:: Copyright (c) 2010 Michael Leinartas
+# Copyright:: Copyright 2010-2016, Michael Leinartas
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Ohai do
 
@@ -33,7 +33,7 @@ describe Chef::Resource::Ohai do
     expect(@resource.resource_name).to eql(:ohai)
   end
 
-  it "should have a default action of create" do
+  it "should have a default action of reload" do
     expect(@resource.action).to eql([:reload])
   end
 
@@ -57,6 +57,5 @@ describe Chef::Resource::Ohai do
       expect(@resource.identity).to eq("test")
     end
   end
-
 
 end

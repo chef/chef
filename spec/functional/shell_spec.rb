@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,11 @@
 # limitations under the License.
 #
 
-require 'functional/resource/base'
-require 'chef/version'
-require 'chef/shell'
-require 'chef/mixin/command/unix'
+require "spec_helper"
+require "functional/resource/base"
+require "chef/version"
+require "chef/shell"
+require "chef/mixin/command/unix"
 
 describe Shell do
 
@@ -29,7 +30,7 @@ describe Shell do
   describe "smoke tests", :unix_only => true do
     include Chef::Mixin::Command::Unix
 
-    TIMEOUT=300
+    TIMEOUT = 300
 
     def read_until(io, expected_value)
       start = Time.new
@@ -42,7 +43,7 @@ describe Shell do
         end
         if Time.new - start > TIMEOUT
           raise "did not read expected value `#{expected_value}' within #{TIMEOUT}s\n" +
-                "Buffer so far: `#{buffer}'"
+            "Buffer so far: `#{buffer}'"
         end
       end
       buffer
@@ -82,7 +83,7 @@ describe Shell do
       when "aix"
         config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
         path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
-        output = ''
+        output = ""
         status = popen4("#{path_to_chef_shell} -c #{config} #{options}", :waitlast => true) do |pid, stdin, stdout, stderr|
           read_until(stdout, "chef (#{Chef::VERSION})>")
           yield stdout, stdin if block_given?
@@ -97,7 +98,7 @@ describe Shell do
         # Windows ruby installs don't (always?) have PTY,
         # so hide the require here
         begin
-          require 'pty'
+          require "pty"
           config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
           path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
           reader, writer, pid = PTY.spawn("#{path_to_chef_shell} -c #{config} #{options}")
@@ -136,7 +137,7 @@ describe Shell do
 
     it "sets the override_runlist from the command line" do
       output, exitstatus = run_chef_shell_with("-o 'override::foo,override::bar'") do |out, keyboard|
-        show_recipes_code = %q[puts "#{node.recipes.inspect}"]
+        show_recipes_code = %q[puts "#{node["recipes"].inspect}"]
         keyboard.puts(show_recipes_code)
         read_until(out, show_recipes_code)
       end

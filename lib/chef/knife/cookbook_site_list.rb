@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
@@ -30,19 +30,26 @@ class Chef
         :long => "--with-uri",
         :description => "Show corresponding URIs"
 
+      option :supermarket_site,
+        :short => "-m SUPERMARKET_SITE",
+        :long => "--supermarket-site SUPERMARKET_SITE",
+        :description => "Supermarket Site",
+        :default => "https://supermarket.chef.io",
+        :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+
       def run
         if config[:with_uri]
           cookbooks = Hash.new
-          get_cookbook_list.each{ |k,v| cookbooks[k] = v['cookbook'] }
+          get_cookbook_list.each { |k, v| cookbooks[k] = v["cookbook"] }
           ui.output(format_for_display(cookbooks))
         else
           ui.msg(ui.list(get_cookbook_list.keys.sort, :columns_down))
         end
       end
 
-      def get_cookbook_list(items=10, start=0, cookbook_collection={})
-        cookbooks_url = "https://supermarket.chef.io/api/v1/cookbooks?items=#{items}&start=#{start}"
-        cr = noauth_rest.get_rest(cookbooks_url)
+      def get_cookbook_list(items = 10, start = 0, cookbook_collection = {})
+        cookbooks_url = "#{config[:supermarket_site]}/api/v1/cookbooks?items=#{items}&start=#{start}"
+        cr = noauth_rest.get(cookbooks_url)
         cr["items"].each do |cookbook|
           cookbook_collection[cookbook["cookbook_name"]] = cookbook
         end
@@ -56,7 +63,3 @@ class Chef
     end
   end
 end
-
-
-
-

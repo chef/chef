@@ -1,9 +1,9 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright 2008-2014 Chef Software, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2008-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,11 +19,11 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/rest'
-require 'chef/run_context'
-require 'chef/config'
-require 'chef/node'
+require "chef/log"
+require "chef/run_context"
+require "chef/config"
+require "chef/node"
+require "chef/server_api"
 
 class Chef
   module PolicyBuilder
@@ -68,7 +68,7 @@ class Chef
 
         @node = nil
 
-        if Chef::Config[:solo]
+        if Chef::Config[:solo_legacy_mode]
           raise UnsupportedFeature, "Policyfile does not support chef-solo. Use chef-client local mode instead."
         end
 
@@ -136,7 +136,6 @@ class Chef
         Chef::Log.info("Run List is [#{run_list}]")
         Chef::Log.info("Run List expands to [#{run_list_with_versions_for_display.join(', ')}]")
 
-
         events.node_load_completed(node, run_list_with_versions_for_display, Chef::Config)
 
         node
@@ -149,10 +148,13 @@ class Chef
       # run.
       #
       # @return [Chef::RunContext]
-      def setup_run_context(specific_recipes=nil)
+      def setup_run_context(specific_recipes = nil)
         Chef::Cookbook::FileVendor.fetch_from_remote(http_api)
         sync_cookbooks
         cookbook_collection = Chef::CookbookCollection.new(cookbooks_to_sync)
+        cookbook_collection.validate!
+        cookbook_collection.install_gems(events)
+
         run_context = Chef::RunContext.new(node, cookbook_collection, events)
 
         setup_chef_class(run_context)
@@ -171,6 +173,7 @@ class Chef
         CookbookCacheCleaner.instance.skip_removal = true if named_run_list_requested?
 
         node.run_list(run_list)
+        node.automatic_attrs[:policy_revision] = revision_id
         node.automatic_attrs[:roles] = []
         node.automatic_attrs[:recipes] = run_list_expansion_ish.recipes
         run_list_expansion_ish
@@ -254,10 +257,9 @@ class Chef
       # @api private
       def run_list
         if named_run_list_requested?
-          named_run_list or
-            raise ConfigurationError,
+          named_run_list || raise(ConfigurationError,
             "Policy '#{retrieved_policy_name}' revision '#{revision_id}' does not have named_run_list '#{named_run_list_name}'" +
-            "(available named_run_lists: [#{available_named_run_lists.join(', ')}])"
+            "(available named_run_lists: [#{available_named_run_lists.join(', ')}])")
         else
           policy["run_list"]
         end
@@ -319,17 +321,14 @@ class Chef
 
       # @api private
       def deployment_group
-        Chef::Config[:deployment_group] or
-          raise ConfigurationError, "Setting `deployment_group` is not configured."
+        Chef::Config[:deployment_group] || raise(ConfigurationError, "Setting `deployment_group` is not configured.")
       end
 
       # @api private
       def validate_policy_config!
-        policy_group or
-          raise ConfigurationError, "Setting `policy_group` is not configured."
+        raise ConfigurationError, "Setting `policy_group` is not configured." unless policy_group
 
-        policy_name or
-          raise ConfigurationError, "Setting `policy_name` is not configured."
+        raise ConfigurationError, "Setting `policy_name` is not configured." unless policy_name
       end
 
       # @api private
@@ -454,7 +453,7 @@ class Chef
 
       # @api private
       def http_api
-        @api_service ||= Chef::REST.new(config[:chef_server_url])
+        @api_service ||= Chef::ServerAPI.new(config[:chef_server_url])
       end
 
       # @api private
@@ -497,7 +496,7 @@ class Chef
       def compat_mode_manifest_for(cookbook_name, lock_data)
         xyz_version = lock_data["dotted_decimal_identifier"]
         rel_url = "cookbooks/#{cookbook_name}/#{xyz_version}"
-        http_api.get(rel_url)
+        inflate_cbv_object(http_api.get(rel_url))
       rescue Exception => e
         message = "Error loading cookbook #{cookbook_name} at version #{xyz_version} from #{rel_url}: #{e.class} - #{e.message}"
         err = Chef::Exceptions::CookbookNotFound.new(message)

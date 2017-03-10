@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,18 +17,18 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class CookbookBulkDelete < Knife
 
       deps do
-        require 'chef/knife/cookbook_delete'
-        require 'chef/cookbook_version'
+        require "chef/knife/cookbook_delete"
+        require "chef/cookbook_version"
       end
 
-      option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
+      option :purge, :short => "-p", :long => "--purge", :boolean => true, :description => "Permanently remove files from backing data store"
 
       banner "knife cookbook bulk delete REGEX (options)"
 
@@ -42,7 +42,7 @@ class Chef
 
         all_cookbooks = Chef::CookbookVersion.list
         cookbooks_names = all_cookbooks.keys.grep(regex)
-        cookbooks_to_delete = cookbooks_names.inject({}) { |hash, name| hash[name] = all_cookbooks[name];hash }
+        cookbooks_to_delete = cookbooks_names.inject({}) { |hash, name| hash[name] = all_cookbooks[name]; hash }
         ui.msg "All versions of the following cookbooks will be deleted:"
         ui.msg ""
         ui.msg ui.list(cookbooks_to_delete.keys.sort, :columns_down)
@@ -58,11 +58,10 @@ class Chef
           ui.msg ""
         end
 
-
         cookbooks_names.each do |cookbook_name|
-          versions = rest.get_rest("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map {|v| v["version"]}.flatten
+          versions = rest.get("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map { |v| v["version"] }.flatten
           versions.each do |version|
-            object = rest.delete_rest("cookbooks/#{cookbook_name}/#{version}#{config[:purge] ? "?purge=true" : ""}")
+            rest.delete("cookbooks/#{cookbook_name}/#{version}#{config[:purge] ? "?purge=true" : ""}")
             ui.info("Deleted cookbook  #{cookbook_name.ljust(25)} [#{version}]")
           end
         end

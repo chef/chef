@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
-require 'ostruct'
+require "spec_helper"
+require "ostruct"
 
 describe Chef::Daemon do
   before do
     if windows?
       mock_struct = #Struct::Passwd.new(nil, nil, 111, 111)
-      mock_struct = OpenStruct.new(:uid => 2342, :gid => 2342)
+        mock_struct = OpenStruct.new(:uid => 2342, :gid => 2342)
       allow(Etc).to receive(:getpwnam).and_return mock_struct
       allow(Etc).to receive(:getgrnam).and_return mock_struct
       # mock unimplemented methods
@@ -74,7 +74,7 @@ describe Chef::Daemon do
 
     before do
       allow(Chef::Application).to receive(:fatal!).and_return(true)
-      Chef::Config[:user] = 'aj'
+      Chef::Config[:user] = "aj"
       allow(Dir).to receive(:chdir)
     end
 
@@ -86,7 +86,7 @@ describe Chef::Daemon do
     describe "when the user and group options are supplied" do
 
       before do
-        Chef::Config[:group] = 'staff'
+        Chef::Config[:group] = "staff"
       end
 
       it "should log an appropriate info message" do

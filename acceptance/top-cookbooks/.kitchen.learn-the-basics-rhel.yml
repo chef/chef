@@ -1,0 +1,7 @@
+suites:
+  - name: learn-the-basics-rhel-default
+    run_list:
+      - recipe[learn-the-basics-rhel::setup]
+      - recipe[learn-the-basics-rhel::lesson1]
+      - recipe[learn-the-basics-rhel::lesson2]
+    includes: [el-6]

@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::CookbookVersion do
 #  COOKBOOK_PATH = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks", "openldap"))
@@ -39,7 +39,7 @@ describe Chef::CookbookVersion do
   it "should allow you to set the list of attribute files and create the mapping from short names to paths" do
     @cookbook.attribute_filenames = [ "attributes/one.rb", "attributes/two.rb" ]
     expect(@cookbook.attribute_filenames).to eq([ "attributes/one.rb", "attributes/two.rb" ])
-    expect(@cookbook.attribute_filenames_by_short_filename.keys.sort).to eql(["one", "two"])
+    expect(@cookbook.attribute_filenames_by_short_filename.keys.sort).to eql(%w{one two})
     expect(@cookbook.attribute_filenames_by_short_filename["one"]).to eq("attributes/one.rb")
     expect(@cookbook.attribute_filenames_by_short_filename["two"]).to eq("attributes/two.rb")
   end
@@ -47,7 +47,7 @@ describe Chef::CookbookVersion do
   it "should allow you to set the list of recipe files and create the mapping of recipe short name to filename" do
     @cookbook.recipe_filenames = [ "recipes/one.rb", "recipes/two.rb" ]
     expect(@cookbook.recipe_filenames).to eq([ "recipes/one.rb", "recipes/two.rb" ])
-    expect(@cookbook.recipe_filenames_by_name.keys.sort).to eql(["one", "two"])
+    expect(@cookbook.recipe_filenames_by_name.keys.sort).to eql(%w{one two})
     expect(@cookbook.recipe_filenames_by_name["one"]).to eq("recipes/one.rb")
     expect(@cookbook.recipe_filenames_by_name["two"]).to eq("recipes/two.rb")
   end

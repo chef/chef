@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser <jkeiser@chef.io>
-# Copyright:: Copyright (c) 2015 John Keiser.
+# Copyright:: Copyright 2015-2016, John Keiser.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,15 +31,18 @@ class MockShellout
     @properties = {
       stdout: "",
       stderr: "",
-      exitstatus: 0
+      exitstatus: 0,
     }.merge(properties)
   end
+
   def method_missing(name, *args)
     @properties[name.to_sym]
   end
+
   def error?
     exitstatus != 0
   end
+
   def error!
     raise Mixlib::ShellOut::ShellCommandFailed, "Expected process to exit with 0, but received #{exitstatus}" if error?
   end

@@ -1,7 +1,7 @@
 #
-# Author:: Joshua Timberman (<joshua@getchef.com>)
-# Author:: Lamont Granquist (<lamont@getchef.com>)
-# Copyright:: Copyright (c) 2009-2014 Chef Software, Inc.
+# Author:: Joshua Timberman (<joshua@chef.io>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/mixin/shell_out'
-require 'chef/provider'
+require "chef/log"
+require "chef/mixin/shell_out"
+require "chef/provider"
 
 class Chef
   class Provider
@@ -42,17 +42,13 @@ class Chef
       end
 
       def action_mount
-        if current_resource.mounted
-          if mount_options_unchanged?
-            Chef::Log.debug("#{new_resource} is already mounted")
-          else
-            action_remount
-          end
-        else
+        unless current_resource.mounted
           converge_by("mount #{current_resource.device} to #{current_resource.mount_point}") do
             mount_fs
             Chef::Log.info("#{new_resource} mounted")
           end
+        else
+          Chef::Log.debug("#{new_resource} is already mounted")
         end
       end
 
@@ -112,18 +108,20 @@ class Chef
         end
       end
 
+      alias :action_unmount :action_umount
+
       #
       # Abstract Methods to be implemented by subclasses
       #
 
       # should actually check if the filesystem is mounted (not just return current_resource) and return true/false
       def mounted?
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not implement #mounted?"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not implement #mounted?"
       end
 
       # should check new_resource against current_resource to see if mount options need updating, returns true/false
       def mount_options_unchanged?
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not implement #mount_options_unchanged?"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not implement #mount_options_unchanged?"
       end
 
       #
@@ -134,28 +132,28 @@ class Chef
 
       # should implement mounting of the filesystem, raises if action does not succeed
       def mount_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :mount"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :mount"
       end
 
       # should implement unmounting of the filesystem, raises if action does not succeed
       def umount_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :umount"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :umount"
       end
 
       # should implement remounting of the filesystem (via a -o remount or some other atomic-ish action that isn't
       # simply a umount/mount style remount), raises if action does not succeed
       def remount_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remount"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :remount"
       end
 
       # should implement enabling of the filesystem (e.g. in /etc/fstab), raises if action does not succeed
       def enable_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :enable"
       end
 
       # should implement disabling of the filesystem (e.g. in /etc/fstab), raises if action does not succeed
       def disable_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :disable"
       end
 
       private

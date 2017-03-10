@@ -5,11 +5,10 @@
 # You can use it to test various HTTP behaviors in chef, like chef-client's
 # `-j` and `-c` options and remote_file with https connections.
 #
-require 'pp'
-require 'openssl'
-require 'webrick'
-require 'webrick/https'
-
+require "pp"
+require "openssl"
+require "webrick"
+require "webrick/https"
 
 $ssl = true
 
@@ -21,23 +20,21 @@ key = OpenSSL::PKey::RSA.new(key_text)
 
 server_opts = {}
 if $ssl
-server_opts.merge!( { :SSLEnable => true,
-                :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE,
-                :SSLCertificate => cert,
-                :SSLPrivateKey => key })
+  server_opts.merge!( { :SSLEnable => true,
+                        :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE,
+                        :SSLCertificate => cert,
+                        :SSLPrivateKey => key })
 end
-
-
 
 # 5 == debug, 3 == warning
 LOGGER = WEBrick::Log.new(STDOUT, 5)
 DEFAULT_OPTIONS = {
-  :server => 'webrick',
+  :server => "webrick",
   :Port => 9000,
-  :Host => 'localhost',
+  :Host => "localhost",
   :environment => :none,
   :Logger => LOGGER,
-  :DocumentRoot => File.expand_path("/tmp/chef-118-sampledata")
+  :DocumentRoot => File.expand_path("#{Dir.tmpdir}/chef-118-sampledata")
   #:AccessLog => [] # Remove this option to enable the access log when debugging.
 }
 
@@ -45,8 +42,6 @@ webrick_opts = DEFAULT_OPTIONS.merge(server_opts)
 pp :webrick_opts => webrick_opts
 
 server = WEBrick::HTTPServer.new(webrick_opts)
-trap 'INT' do server.shutdown end
+trap("INT") { server.shutdown }
 
 server.start
-
-

@@ -1,0 +1,4 @@
+suites:
+  - name: powershell
+    run_list: ["recipe[powershell::powershell2]"]
+    includes: [windows-2012r2]

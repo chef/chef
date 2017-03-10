@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna <steve@chef.io>
-# Copyright:: Copyright (c) 2015 Chef Software, Inc
+# Copyright:: Copyright 2015-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/core/subcommand_loader'
+require "chef/knife"
+require "chef/knife/core/subcommand_loader"
 
 class Chef
   class Knife
-    class Rehash <  Chef::Knife
+    class Rehash < Chef::Knife
       banner "knife rehash"
 
       def run
@@ -35,24 +35,27 @@ class Chef
       end
 
       def reload_plugins
-        Chef::Knife::SubcommandLoader::GemGlobLoader.new(@@chef_config_dir).load_commands
+        # The subcommand_loader for this knife command should _always_ be the GemGlobLoader.  The GemGlobLoader loads
+        # plugins from disc and ensures the hash we write is always correct.  By this point it should also already have
+        # loaded plugins and `load_commands` shouldn't have an effect.
+        Chef::Knife.subcommand_loader.load_commands
       end
 
       def generate_hash
         output = if Chef::Knife::SubcommandLoader.plugin_manifest?
                    Chef::Knife::SubcommandLoader.plugin_manifest
                  else
-                   { Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY => {}}
+                   { Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY => {} }
                  end
-        output[Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY]['plugins_paths'] = Chef::Knife.subcommand_files
-        output[Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY]['plugins_by_category'] = Chef::Knife.subcommands_by_category
+        output[Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY]["plugins_paths"] = Chef::Knife.subcommand_files
+        output[Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY]["plugins_by_category"] = Chef::Knife.subcommands_by_category
         output
       end
 
       def write_hash(data)
-        plugin_manifest_dir = File.expand_path('..', Chef::Knife::SubcommandLoader.plugin_manifest_path)
+        plugin_manifest_dir = File.expand_path("..", Chef::Knife::SubcommandLoader.plugin_manifest_path)
         FileUtils.mkdir_p(plugin_manifest_dir) unless File.directory?(plugin_manifest_dir)
-        File.open(Chef::Knife::SubcommandLoader.plugin_manifest_path, 'w') do |f|
+        File.open(Chef::Knife::SubcommandLoader.plugin_manifest_path, "w") do |f|
           f.write(Chef::JSONCompat.to_json_pretty(data))
           ui.msg "Knife subcommands are cached in #{Chef::Knife::SubcommandLoader.plugin_manifest_path}. Delete this file to disable the caching."
         end

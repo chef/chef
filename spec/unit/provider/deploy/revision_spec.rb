@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Deploy::Revision do
 
@@ -41,7 +41,6 @@ describe Chef::Provider::Deploy::Revision do
     FileUtils.rm_rf @temp_dir if File.directory?( @temp_dir )
   end
 
-
   it "uses the resolved revision from the SCM as the release slug" do
     allow(@provider.scm_provider).to receive(:revision_slug).and_return("uglySlugly")
     expect(@provider.send(:release_slug)).to eq("uglySlugly")
@@ -60,7 +59,7 @@ describe Chef::Provider::Deploy::Revision do
     @provider.cleanup!
     second_release = "/my/deploy/dir/releases/73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2"
 
-    expect(@provider.all_releases).to eq([@expected_release_dir,second_release])
+    expect(@provider.all_releases).to eq([@expected_release_dir, second_release])
   end
 
   it "removes a release from the file cache when it's used again in another release and append it to the end" do
@@ -71,7 +70,7 @@ describe Chef::Provider::Deploy::Revision do
     @provider.load_current_resource
     @provider.cleanup!
     second_release = "/my/deploy/dir/releases/73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2"
-    expect(@provider.all_releases).to eq([@expected_release_dir,second_release])
+    expect(@provider.all_releases).to eq([@expected_release_dir, second_release])
     @provider.cleanup!
 
     allow(@provider).to receive(:release_slug).and_return("8a3195bf3efa246f743c5dfa83683201880f935c")
@@ -82,7 +81,7 @@ describe Chef::Provider::Deploy::Revision do
 
   it "removes a release from the file cache when it's deleted by :cleanup!" do
     release_paths = %w{first second third fourth fifth}.map do |release_name|
-       "/my/deploy/dir/releases/#{release_name}"
+      "/my/deploy/dir/releases/#{release_name}"
     end
     release_paths.each do |release_path|
       @provider.send(:release_created, release_path)
@@ -93,7 +92,7 @@ describe Chef::Provider::Deploy::Revision do
     @provider.cleanup!
 
     expected_release_paths = (%w{second third fourth fifth} << @resource.revision).map do |release_name|
-       "/my/deploy/dir/releases/#{release_name}"
+      "/my/deploy/dir/releases/#{release_name}"
     end
 
     expect(@provider.all_releases).to eq(expected_release_paths)

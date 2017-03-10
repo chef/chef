@@ -6,9 +6,8 @@ platform:
 
 environment:
   matrix:
-    - ruby_version: "200"
-    - ruby_version: "200-x64"
-    - ruby_version: "21"
+    - ruby_version: "23-x64"
+    - ruby_version: "23"
 
 clone_folder: c:\projects\chef
 clone_depth: 1
@@ -21,13 +20,20 @@ install:
   - systeminfo
   - winrm quickconfig -q
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
+  - ps: $env:RUBYGEMS_VERSION=$(findstr rubygems omnibus_overrides.rb | %{ $_.split(" ")[3] })
+  - ps: $env:BUNDLER_VERSION=$(findstr bundler omnibus_overrides.rb | %{ $_.split(" ")[3] })
   - echo %PATH%
   - ruby --version
-  - gem install bundler --quiet --no-ri --no-rdoc || gem install bundler --quiet --no-ri --no-rdoc || gem install bundler --quiet --no-ri --no-rdoc
-  - gem install rubygems-pkg/rubygems-update-2.4.6.gem
-  - update_rubygems
+  - gem uninstall bundler -a -x
+  - gem update --system %RUBYGEMS_VERSION% || gem update --system %RUBYGEMS_VERSION% || gem update --system %RUBYGEMS_VERSION%
+  - gem install bundler -v %BUNDLER_VERSION% --quiet --no-ri --no-rdoc || gem install bundler -v %BUNDLER_VERSION% --quiet --no-ri --no-rdoc || gem install bundler -v %BUNDLER_VERSION% --quiet --no-ri --no-rdoc
   - gem --version
   - bundler --version
+  - SET BUNDLE_IGNORE_CONFIG=true
+  - SET BUNDLE_FROZEN=1
+  - SET BUNDLE_WITHOUT=development:guard:maintenance:tools:integration:changelog:docgen:travis:style:omnibus_package:aix:bsd:linux:mac_os_x:solaris
+  - appveyor DownloadFile http://curl.haxx.se/ca/cacert.pem -FileName C:\cacert.pem
+  - set SSL_CERT_FILE=C:\cacert.pem
 
 build_script:
   - bundle install || bundle install || bundle install

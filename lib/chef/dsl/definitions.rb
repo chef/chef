@@ -9,7 +9,7 @@ class Chef
     #
     module Definitions
       def self.add_definition(dsl_name)
-        module_eval <<-EOM, __FILE__, __LINE__+1
+        module_eval <<-EOM, __FILE__, __LINE__ + 1
           def #{dsl_name}(*args, &block)
             evaluate_resource_definition(#{dsl_name.inspect}, *args, &block)
           end
@@ -25,7 +25,6 @@ class Chef
       #
       # @api private
       def evaluate_resource_definition(definition_name, *args, &block)
-
         # This dupes the high level object, but we still need to dup the params
         new_def = run_context.definitions[definition_name].dup
 

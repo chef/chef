@@ -1,4 +1,4 @@
-require 'chef/chef_fs/knife'
+require "chef/chef_fs/knife"
 
 class Chef
   class Knife
@@ -8,48 +8,48 @@ class Chef
       category "path-based"
 
       deps do
-        require 'chef/chef_fs/command_line'
+        require "chef/chef_fs/command_line"
       end
 
       option :recurse,
-        :long => '--[no-]recurse',
+        :long => "--[no-]recurse",
         :boolean => true,
         :default => true,
         :description => "List directories recursively."
 
       option :purge,
-        :long => '--[no-]purge',
+        :long => "--[no-]purge",
         :boolean => true,
         :default => false,
         :description => "Delete matching local files and directories that do not exist remotely."
 
       option :force,
-        :long => '--[no-]force',
+        :long => "--[no-]force",
         :boolean => true,
         :default => false,
         :description => "Force upload of files even if they match (quicker and harmless, but doesn't print out what it changed)"
 
       option :dry_run,
-        :long => '--dry-run',
-        :short => '-n',
+        :long => "--dry-run",
+        :short => "-n",
         :boolean => true,
         :default => false,
         :description => "Don't take action, only print what would happen"
 
       option :diff,
-        :long => '--[no-]diff',
+        :long => "--[no-]diff",
         :boolean => true,
         :default => true,
-        :description => 'Turn off to avoid uploading existing files; only new (and possibly deleted) files with --no-diff'
+        :description => "Turn off to avoid uploading existing files; only new (and possibly deleted) files with --no-diff"
 
       option :cookbook_version,
-        :long => '--cookbook-version VERSION',
-        :description => 'Version of cookbook to download (if there are multiple versions and cookbook_versions is false)'
+        :long => "--cookbook-version VERSION",
+        :description => "Version of cookbook to download (if there are multiple versions and cookbook_versions is false)"
 
       def run
         if name_args.length == 0
           show_usage
-          ui.fatal("Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"")
+          ui.fatal("You must specify at least one argument. If you want to download everything in this directory, run \"knife download .\"")
           exit 1
         end
 
@@ -66,4 +66,3 @@ class Chef
     end
   end
 end
-

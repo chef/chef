@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,24 +16,24 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'functional/resource/base'
+require "spec_helper"
+require "functional/resource/base"
 
 describe Chef::Resource::Bash, :unix_only do
   let(:code) { "echo hello" }
-  let(:resource) {
+  let(:resource) do
     resource = Chef::Resource::Bash.new("foo_resource", run_context)
     resource.code(code)
     resource
-  }
+  end
 
   describe "when setting the command attribute" do
-    let (:command) { 'wizard racket' }
+    let (:command) { "wizard racket" }
 
     # in Chef-12 the `command` attribute is largely useless, but does set the identity attribute
     # so that notifications need to target the value of the command.  it will not run the `command`
     # and if it is given without a code block then it does nothing and always succeeds.
-    describe "in Chef-12", :chef_lt_13_only do
+    describe "in Chef-12", chef: "< 13" do
       it "gets the commmand attribute from the name" do
         expect(resource.command).to eql("foo_resource")
       end
@@ -61,7 +61,7 @@ describe Chef::Resource::Bash, :unix_only do
     end
 
     # in Chef-13 the `command` attribute needs to be for internal use only
-    describe "in Chef-13", :chef_gte_13_only do
+    describe "in Chef-13", chef: ">= 13" do
       it "should raise an exception when trying to set the command" do
         expect { resource.command command }.to raise_error # FIXME: add a real error in Chef-13
       end
@@ -81,7 +81,7 @@ describe Chef::Resource::Bash, :unix_only do
   end
 
   it "times out when a timeout is set on the resource" do
-    resource.code 'sleep 600'
+    resource.code "sleep 600"
     resource.timeout 0.1
     expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::CommandTimeout)
   end

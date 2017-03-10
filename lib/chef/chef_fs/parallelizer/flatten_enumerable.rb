@@ -23,10 +23,10 @@ class Chef
         def flatten(value, levels, &block)
           if levels != 0 && value.respond_to?(:each) && !value.is_a?(String)
             value.each do |child|
-              flatten(child, levels.nil? ? levels : levels-1, &block)
+              flatten(child, levels.nil? ? levels : levels - 1, &block)
             end
           else
-            block.call(value)
+            yield(value)
           end
         end
       end

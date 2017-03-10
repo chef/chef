@@ -1,5 +1,5 @@
-require 'logger'
-require 'pp'
+require "logger"
+require "pp"
 
 #== MonoLogger
 # A subclass of Ruby's stdlib Logger with all the mutex and logrotation stuff
@@ -38,12 +38,11 @@ class MonoLogger < Logger
     end
   end
 
-
   class LocklessLogDevice < LogDevice
 
     def initialize(log = nil)
       @dev = @filename = @shift_age = @shift_size = nil
-      if log.respond_to?(:write) and log.respond_to?(:close)
+      if log.respond_to?(:write) && log.respond_to?(:close)
         @dev = log
       else
         @dev = open_logfile(log)
@@ -62,10 +61,10 @@ class MonoLogger < Logger
       @dev.close rescue nil
     end
 
-  private
+    private
 
     def open_logfile(filename)
-      if (FileTest.exist?(filename))
+      if FileTest.exist?(filename)
         open(filename, (File::WRONLY | File::APPEND))
       else
         create_logfile(filename)
@@ -85,6 +84,5 @@ class MonoLogger < Logger
     end
 
   end
-
 
 end

@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/util/path_helper'
+require "chef/util/path_helper"
 
 class Chef
   module Deprecation
@@ -52,14 +52,14 @@ class Chef
           suppress_resource_reporting = false
 
           return [ "(diff output suppressed by config)" ] if Chef::Config[:diff_disabled]
-          return [ "(no temp file with new content, diff output suppressed)" ] unless ::File.exists?(temp_path)  # should never happen?
+          return [ "(no temp file with new content, diff output suppressed)" ] unless ::File.exists?(temp_path) # should never happen?
 
           # solaris does not support diff -N, so create tempfile to diff against if we are creating a new file
           target_path = if ::File.exists?(@current_resource.path)
                           @current_resource.path
                         else
-                          suppress_resource_reporting = true  # suppress big diffs going to resource reporting service
-                          tempfile = Tempfile.new('chef-tempfile')
+                          suppress_resource_reporting = true # suppress big diffs going to resource reporting service
+                          tempfile = Tempfile.new("chef-tempfile")
                           tempfile.path
                         end
 
@@ -119,13 +119,13 @@ class Chef
             description << diff_current_from_content(@new_resource.content)
             converge_by(description) do
               backup @new_resource.path if ::File.exists?(@new_resource.path)
-              ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
+              ::File.open(@new_resource.path, "w") { |f| f.write @new_resource.content }
               Chef::Log.info("#{@new_resource} contents updated")
             end
           end
         end
 
-        def update_new_file_state(path=@new_resource.path)
+        def update_new_file_state(path = @new_resource.path)
           if !::File.directory?(path)
             @new_resource.checksum(checksum(path))
           end
@@ -163,7 +163,7 @@ class Chef
           end
         end
 
-        def backup(file=nil)
+        def backup(file = nil)
           file ||= @new_resource.path
           if @new_resource.backup != false && @new_resource.backup > 0 && ::File.exist?(file)
             time = Time.now
@@ -181,7 +181,7 @@ class Chef
 
             # Clean up after the number of backups
             slice_number = @new_resource.backup
-            backup_files = Dir[Chef::Util::PathHelper.escape_glob(prefix, ".#{@new_resource.path}") + ".chef-*"].sort { |a,b| b <=> a }
+            backup_files = Dir[Chef::Util::PathHelper.escape_glob_dir(prefix, ".#{@new_resource.path}") + ".chef-*"].sort { |a, b| b <=> a }
             if backup_files.length >= @new_resource.backup
               remainder = backup_files.slice(slice_number..-1)
               remainder.each do |backup_to_delete|

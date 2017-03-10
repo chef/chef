@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::Git do
 
@@ -25,7 +25,7 @@ describe Chef::Resource::Git do
     resource: Chef::Resource::Git,
     provider: Chef::Provider::Git,
     name: :git,
-    action: :sync,
+    action: :sync
   )
 
   before(:each) do

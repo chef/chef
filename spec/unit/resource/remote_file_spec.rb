@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::RemoteFile do
 
@@ -36,13 +36,13 @@ describe Chef::Resource::RemoteFile do
   it "says its provider is RemoteFile when the source is an absolute URI" do
     @resource.source("http://www.google.com/robots.txt")
     expect(@resource.provider).to eq(Chef::Provider::RemoteFile)
-    expect(Chef::Platform.find_provider(:noplatform, 'noversion', @resource)).to eq(Chef::Provider::RemoteFile)
+    expect(@resource.provider_for_action(:create)).to be_kind_of(Chef::Provider::RemoteFile)
   end
 
   it "says its provider is RemoteFile when the source is a network share" do
     @resource.source("\\\\fakey\\fakerton\\fake.txt")
     expect(@resource.provider).to eq(Chef::Provider::RemoteFile)
-    expect(Chef::Platform.find_provider(:noplatform, 'noversion', @resource)).to eq(Chef::Provider::RemoteFile)
+    expect(@resource.provider_for_action(:create)).to be_kind_of(Chef::Provider::RemoteFile)
   end
 
   describe "source" do
@@ -60,13 +60,13 @@ describe Chef::Resource::RemoteFile do
       expect(@resource.source).to eql([ "\\\\fakey\\fakerton\\fake.txt" ])
     end
 
-    it 'should accept file URIs with spaces' do
+    it "should accept file URIs with spaces" do
       @resource.source("file:///C:/foo bar")
       expect(@resource.source).to eql(["file:///C:/foo bar"])
     end
 
     it "should accept a delayed evalutator (string) for the remote file source" do
-      @resource.source Chef::DelayedEvaluator.new {"http://opscode.com/"}
+      @resource.source Chef::DelayedEvaluator.new { "http://opscode.com/" }
       expect(@resource.source).to eql([ "http://opscode.com/" ])
     end
 
@@ -86,15 +86,15 @@ describe Chef::Resource::RemoteFile do
     end
 
     it "should only accept a single argument if a delayed evalutor is used" do
-      expect {
-        @resource.source("http://opscode.com/", Chef::DelayedEvaluator.new {"http://opscode.com/"})
-      }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+      expect do
+        @resource.source("http://opscode.com/", Chef::DelayedEvaluator.new { "http://opscode.com/" })
+      end.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
     it "should only accept a single array item if a delayed evalutor is used" do
-      expect {
-        @resource.source(["http://opscode.com/", Chef::DelayedEvaluator.new {"http://opscode.com/"}])
-      }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+      expect do
+        @resource.source(["http://opscode.com/", Chef::DelayedEvaluator.new { "http://opscode.com/" }])
+      end.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
     it "does not accept a non-URI as the source" do
@@ -102,10 +102,10 @@ describe Chef::Resource::RemoteFile do
     end
 
     it "does not accept a non-URI as the source when read from a delayed evaluator" do
-      expect {
-        @resource.source(Chef::DelayedEvaluator.new {"not-a-uri"})
+      expect do
+        @resource.source(Chef::DelayedEvaluator.new { "not-a-uri" })
         @resource.source
-      }.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+      end.to raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
     it "should raise an exception when source is an empty array" do
@@ -179,20 +179,20 @@ describe Chef::Resource::RemoteFile do
         @resource.owner("root")
       end
       @resource.source("https://www.google.com/images/srpr/logo3w.png")
-      @resource.checksum("1"*26)
+      @resource.checksum("1" * 26)
     end
 
     it "describes its state" do
       state = @resource.state
       if Chef::Platform.windows?
         puts state
-        expect(state[:rights]).to eq([{:permissions => :read, :principals => "Everyone"}])
-        expect(state[:deny_rights]).to eq([{:permissions => :full_control, :principals => "Clumsy_Sam"}])
+        expect(state[:rights]).to eq([{ :permissions => :read, :principals => "Everyone" }])
+        expect(state[:deny_rights]).to eq([{ :permissions => :full_control, :principals => "Clumsy_Sam" }])
       else
         expect(state[:group]).to eq("pokemon")
         expect(state[:mode]).to eq("0664")
         expect(state[:owner]).to eq("root")
-        expect(state[:checksum]).to eq("1"*26)
+        expect(state[:checksum]).to eq("1" * 26)
       end
     end
 

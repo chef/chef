@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Nuo Yan (<yan.nuo@gmail.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/cookbook_uploader'
+require "chef/knife"
+require "chef/cookbook_uploader"
 
 class Chef
   class Knife
@@ -29,9 +29,9 @@ class Chef
       MATCH_CHECKSUM = /[0-9a-f]{32,}/
 
       deps do
-        require 'chef/exceptions'
-        require 'chef/cookbook_loader'
-        require 'chef/cookbook_uploader'
+        require "chef/exceptions"
+        require "chef/cookbook_loader"
+        require "chef/cookbook_uploader"
       end
 
       banner "knife cookbook upload [COOKBOOKS...] (options)"
@@ -43,8 +43,8 @@ class Chef
         :proc => lambda { |o| o.split(":") }
 
       option :freeze,
-        :long => '--freeze',
-        :description => 'Freeze this version of the cookbook so that it cannot be overwritten',
+        :long => "--freeze",
+        :description => "Freeze this version of the cookbook so that it cannot be overwritten",
         :boolean => true
 
       option :all,
@@ -53,19 +53,19 @@ class Chef
         :description => "Upload all cookbooks, rather than just a single cookbook"
 
       option :force,
-        :long => '--force',
+        :long => "--force",
         :boolean => true,
         :description => "Update cookbook versions even if they have been frozen"
 
       option :concurrency,
-        :long => '--concurrency NUMBER_OF_THREADS',
+        :long => "--concurrency NUMBER_OF_THREADS",
         :description => "How many concurrent threads will be used",
         :default => 10,
         :proc => lambda { |o| o.to_i }
 
       option :environment,
-        :short => '-E',
-        :long  => '--environment ENVIRONMENT',
+        :short => "-E",
+        :long  => "--environment ENVIRONMENT",
         :description => "Set ENVIRONMENT's version dependency match the version you're uploading.",
         :default => nil
 
@@ -86,7 +86,7 @@ class Chef
 
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
-        if @name_args.empty? and ! config[:all]
+        if @name_args.empty? && ! config[:all]
           show_usage
           ui.fatal("You must specify the --all flag or at least one cookbook name")
           exit 1
@@ -101,9 +101,9 @@ class Chef
         # Get a list of cookbooks and their versions from the server
         # to check for the existence of a cookbook's dependencies.
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
-        justify_width = @server_side_cookbooks.map {|name| name.size}.max.to_i + 2
+        justify_width = @server_side_cookbooks.map { |name| name.size }.max.to_i + 2
         if config[:all]
-          cookbook_repo.load_cookbooks
+          cookbook_repo.load_cookbooks_without_shadow_warning
           cookbooks_for_upload = []
           cookbook_repo.each do |cookbook_name, cookbook|
             cookbooks_for_upload << cookbook
@@ -118,7 +118,7 @@ class Chef
             end
             ui.info("Uploaded all cookbooks.")
           else
-            cookbook_path = config[:cookbook_path].respond_to?(:join) ? config[:cookbook_path].join(', ') : config[:cookbook_path]
+            cookbook_path = config[:cookbook_path].respond_to?(:join) ? config[:cookbook_path].join(", ") : config[:cookbook_path]
             ui.warn("Could not find any cookbooks in your cookbook path: #{cookbook_path}. Use --cookbook-path to specify the desired path.")
           end
         else
@@ -145,9 +145,6 @@ class Chef
             end
           end
 
-
-          upload_failures += @name_args.length - @cookbooks_to_upload.length
-
           if upload_failures == 0
             ui.info "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""}."
           elsif upload_failures > 0 && upload_ok > 0
@@ -167,7 +164,7 @@ class Chef
       def cookbooks_to_upload
         @cookbooks_to_upload ||=
           if config[:all]
-            cookbook_repo.load_cookbooks
+            cookbook_repo.load_cookbooks_without_shadow_warning
           else
             upload_set = {}
             @name_args.each do |cookbook_name|
@@ -259,7 +256,7 @@ WARNING
           info[CHECKSUM].nil? || info[CHECKSUM] !~ MATCH_CHECKSUM
         end
         unless broken_files.empty?
-          broken_filenames = Array(broken_files).map {|path, info| path}
+          broken_filenames = Array(broken_files).map { |path, info| path }
           ui.error "The cookbook #{cookbook.name} has one or more broken files"
           ui.error "This is probably caused by broken symlinks in the cookbook directory"
           ui.error "The broken file(s) are: #{broken_filenames.join(' ')}"
@@ -275,7 +272,7 @@ WARNING
         end
 
         unless missing_dependencies.empty?
-          missing_cookbook_names = missing_dependencies.map { |cookbook_name, version|  "'#{cookbook_name}' version '#{version}'"}
+          missing_cookbook_names = missing_dependencies.map { |cookbook_name, version| "'#{cookbook_name}' version '#{version}'" }
           ui.error "Cookbook #{cookbook.name} depends on cookbooks which are not currently"
           ui.error "being uploaded and cannot be found on the server."
           ui.error "The missing cookbook(s) are: #{missing_cookbook_names.join(', ')}"
@@ -287,7 +284,7 @@ WARNING
         if @server_side_cookbooks[cookbook_name].nil?
           false
         else
-          versions = @server_side_cookbooks[cookbook_name]['versions'].collect {|versions| versions["version"]}
+          versions = @server_side_cookbooks[cookbook_name]["versions"].collect { |versions| versions["version"] }
           Log.debug "Versions of cookbook '#{cookbook_name}' returned by the server: #{versions.join(", ")}"
           @server_side_cookbooks[cookbook_name]["versions"].each do |versions_hash|
             if Chef::VersionConstraint.new(version).include?(versions_hash["version"])

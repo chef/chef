@@ -1,6 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,17 @@
 # limitations under the License.
 #
 
-require 'chef/util/windows'
-require 'chef/exceptions'
-require 'chef/win32/net'
-require 'chef/win32/security'
+require "chef/util/windows"
+require "chef/exceptions"
+require "chef/win32/net"
+require "chef/win32/security"
 
 #wrapper around a subset of the NetUser* APIs.
 #nothing Chef specific, but not complete enough to be its own gem, so util for now.
 class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   private
+
   NetUser = Chef::ReservedNames::Win32::NetUser
   Security = Chef::ReservedNames::Win32::Security
 
@@ -62,7 +63,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   }
 
   def transform_usri3(args)
-    args.inject({}) do |memo, (k,v)|
+    args.inject({}) do |memo, (k, v)|
       memo[USER_INFO_3_TRANSFORM[k]] = v
       memo
     end
@@ -70,18 +71,16 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def usri3_to_hash(usri3)
     t = USER_INFO_3_TRANSFORM.invert
-    usri3.inject({}) do |memo, (k,v)|
+    usri3.inject({}) do |memo, (k, v)|
       memo[t[k]] = v
       memo
     end
   end
 
   def set_info(args)
-    begin
-      rc = NetUser::net_user_set_info_l3(nil, @username, transform_usri3(args))
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    rc = NetUser.net_user_set_info_l3(nil, @username, transform_usri3(args))
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   public
@@ -94,18 +93,16 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   LOGON32_LOGON_NETWORK = Security::LOGON32_LOGON_NETWORK
   #XXX for an extra painful alternative, see: http://support.microsoft.com/kb/180548
   def validate_credentials(passwd)
-    begin
-      token = Security::logon_user(@username, nil, passwd,
-                 LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
-      return true
-    rescue Chef::Exceptions::Win32APIError
-      return false
-    end
+    token = Security.logon_user(@username, nil, passwd,
+               LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
+    return true
+  rescue Chef::Exceptions::Win32APIError
+    return false
   end
 
   def get_info
     begin
-      ui3 = NetUser::net_user_get_info_l3(nil, @username)
+      ui3 = NetUser.net_user_get_info_l3(nil, @username)
     rescue Chef::Exceptions::Win32APIError => e
       raise ArgumentError, e
     end
@@ -114,32 +111,31 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
 
   def add(args)
     transformed_args = transform_usri3(args)
-    NetUser::net_user_add_l3(nil, transformed_args)
-    NetUser::net_local_group_add_member(nil, "Users", args[:name])
+    NetUser.net_user_add_l3(nil, transformed_args)
+    NetUser.net_local_group_add_member(nil, "Users", args[:name])
   end
 
-  def user_modify(&proc)
+  # FIXME: yard with @yield
+  def user_modify
     user = get_info
     user[:last_logon] = user[:units_per_week] = 0 #ignored as per USER_INFO_3 doc
     user[:logon_hours] = nil #PBYTE field; \0 == no changes
-    proc.call(user)
+    yield(user)
     set_info(user)
   end
 
   def update(args)
     user_modify do |user|
-      args.each do |key,val|
+      args.each do |key, val|
         user[key] = val
       end
     end
   end
 
   def delete
-    begin
-      NetUser::net_user_del(nil, @username)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    NetUser.net_user_del(nil, @username)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def disable_account

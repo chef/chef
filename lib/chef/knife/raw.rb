@@ -1,4 +1,5 @@
-require 'chef/knife'
+require "chef/knife"
+require "chef/http"
 
 class Chef
   class Knife
@@ -6,37 +7,37 @@ class Chef
       banner "knife raw REQUEST_PATH"
 
       deps do
-        require 'chef/json_compat'
-        require 'chef/config'
-        require 'chef/http'
-        require 'chef/http/authenticator'
-        require 'chef/http/cookie_manager'
-        require 'chef/http/decompressor'
-        require 'chef/http/json_output'
+        require "chef/json_compat"
+        require "chef/config"
+        require "chef/http"
+        require "chef/http/authenticator"
+        require "chef/http/cookie_manager"
+        require "chef/http/decompressor"
+        require "chef/http/json_output"
       end
 
       option :method,
-        :long => '--method METHOD',
-        :short => '-m METHOD',
+        :long => "--method METHOD",
+        :short => "-m METHOD",
         :default => "GET",
-        :description => "Request method (GET, POST, PUT or DELETE).  Default: GET"
+        :description => "Request method (GET, POST, PUT or DELETE). Default: GET"
 
       option :pretty,
-        :long => '--[no-]pretty',
+        :long => "--[no-]pretty",
         :boolean => true,
         :default => true,
-        :description => "Pretty-print JSON output.  Default: true"
+        :description => "Pretty-print JSON output. Default: true"
 
       option :input,
-        :long => '--input FILE',
-        :short => '-i FILE',
+        :long => "--input FILE",
+        :short => "-i FILE",
         :description => "Name of file to use for PUT or POST"
 
       option :proxy_auth,
-        :long => '--proxy-auth',
+        :long => "--proxy-auth",
         :boolean => true,
         :default => false,
-        :description => "Use webui proxy authentication.  Client key must be the webui key."
+        :description => "Use webui proxy authentication. Client key must be the webui key."
 
       class RawInputServerAPI < Chef::HTTP
         def initialize(options = {})
@@ -58,7 +59,7 @@ class Chef
           exit(1)
         elsif name_args.length > 1
           show_usage
-          ui.fatal("Only one path accepted for knife raw")
+          ui.fatal("You must specify only a single path")
           exit(1)
         end
 
@@ -70,10 +71,10 @@ class Chef
         begin
           method = config[:method].to_sym
 
-          headers = {'Content-Type' => 'application/json'}
+          headers = { "Content-Type" => "application/json" }
 
           if config[:proxy_auth]
-            headers['x-ops-request-source'] = 'web'
+            headers["x-ops-request-source"] = "web"
           end
 
           if config[:pretty]
@@ -92,7 +93,7 @@ class Chef
           exit 1
         rescue Net::HTTPServerException => e
           ui.error "Server responded with error #{e.response.code} \"#{e.response.message}\""
-          ui.error "Error Body: #{e.response.body}" if e.response.body && e.response.body != ''
+          ui.error "Error Body: #{e.response.body}" if e.response.body && e.response.body != ""
           exit 1
         end
       end

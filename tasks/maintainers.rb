@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require 'rake'
+require "rake"
 
 SOURCE = File.join(File.dirname(__FILE__), "..", "MAINTAINERS.toml")
 TARGET = File.join(File.dirname(__FILE__), "..", "MAINTAINERS.md")
@@ -28,26 +28,27 @@ REPOSITORIES = ["chef/chef", "chef/chef-census", "chef/chef-repo",
                 "chef/mixlib-shellout", "chef/ohai", "chef/omnibus-chef"]
 
 begin
-  require 'tomlrb'
-  require 'octokit'
-  require 'pp'
-  task :default => :generate
+  require "tomlrb"
+  require "octokit"
+  require "pp"
 
   namespace :maintainers do
+    task :default => :generate
+
     desc "Generate MarkDown version of MAINTAINERS file"
     task :generate do
       out = "<!-- This is a generated file. Please do not edit directly -->\n\n"
       out << "# " + source["Preamble"]["title"] + "\n\n"
-      out <<  source["Preamble"]["text"] + "\n"
+      out << source["Preamble"]["text"] + "\n"
 
       # The project lead is a special case
       out << "# " + source["Org"]["Lead"]["title"] + "\n\n"
       out << format_person(source["Org"]["Lead"]["person"]) + "\n\n"
 
       out << format_components(source["Org"]["Components"])
-      File.open(TARGET, "w") { |fn|
+      File.open(TARGET, "w") do |fn|
         fn.write out
-      }
+      end
     end
 
     desc "Synchronize GitHub teams"
@@ -70,7 +71,7 @@ begin
   end
 
   def teams
-    @teams ||= {"client-maintainers" => {"title" => "Client Maintainers"}}
+    @teams ||= { "client-maintainers" => { "title" => "Client Maintainers" } }
   end
 
   def add_members(team, name)
@@ -94,7 +95,7 @@ begin
   # setting, so we know whether we need to update it
   def get_github_teams
     github.org_teams("chef").each do |team|
-      gh_teams[team[:slug]] = {"id" => team[:id], "privacy" => team[:privacy]}
+      gh_teams[team[:slug]] = { "id" => team[:id], "privacy" => team[:privacy] }
     end
   end
 
@@ -109,8 +110,8 @@ begin
   def create_team(team)
     puts "creating new github team: #{team} with title: #{teams[team]["title"]} "
     t = github.create_team("chef", name: team, description: teams[team]["title"],
-                       privacy: "closed", repo_names: REPOSITORIES,
-                       accept: "application/vnd.github.ironman-preview+json")
+                                   privacy: "closed", repo_names: REPOSITORIES,
+                                   accept: "application/vnd.github.ironman-preview+json")
     gh_teams[team] = { "id" => t[:id], "privacy" => t[:privacy] }
   end
 
@@ -121,14 +122,14 @@ begin
   end
 
   def prepare_teams(cmp)
-    %w(text paths).each { |k| cmp.delete(k) }
+    %w{text paths}.each { |k| cmp.delete(k) }
     if cmp.key?("team")
       team = cmp.delete("team")
       add_members(team, cmp.delete("lieutenant")) if cmp.key?("lieutenant")
       add_members(team, cmp.delete("maintainers")) if cmp.key?("maintainers")
       set_team_title(team, cmp.delete("title"))
     else
-      %w(maintainers lieutenant title).each { |k| cmp.delete(k) }
+      %w{maintainers lieutenant title}.each { |k| cmp.delete(k) }
     end
     cmp.each { |_k, v| prepare_teams(v) }
   end
@@ -146,14 +147,14 @@ begin
     return if gh_teams[team]["privacy"] == "closed"
     puts "Setting #{team} privacy to closed from #{gh_teams[team]["privacy"]}"
     github.update_team(gh_teams[team]["id"], privacy: "closed",
-                       accept: "application/vnd.github.ironman-preview+json")
+                                             accept: "application/vnd.github.ironman-preview+json")
   end
 
   def add_team_members(team, additions)
     additions.each do |member|
       puts "Adding #{member} to #{team}"
       github.add_team_membership(gh_teams[team]["id"], member, role: "member",
-                                 accept: "application/vnd.github.ironman-preview+json")
+                                                               accept: "application/vnd.github.ironman-preview+json")
     end
   end
 
@@ -188,7 +189,7 @@ begin
     end
     out << format_maintainers(cmp.delete("maintainers")) + "\n" if cmp.has_key?("maintainers")
     cmp.delete("paths")
-    cmp.each {|k,v| out << format_components(v) }
+    cmp.each { |k, v| out << format_components(v) }
     out
   end
 

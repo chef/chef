@@ -1,6 +1,6 @@
 #
 # Author:: Noah Kantrowitz (<noah@coderanger.net>)
-# Copyright:: Copyright (c) 2015 Noah Kantrowitz
+# Copyright:: Copyright 2015-2016, Noah Kantrowitz
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/dsl/resources'
+require "spec_helper"
+require "chef/dsl/resources"
 
 describe Chef::DSL::Resources do
   let(:declared_resources) { [] }
@@ -25,7 +25,7 @@ describe Chef::DSL::Resources do
     r = declared_resources
     Class.new do
       include Chef::DSL::Resources
-      define_method(:declare_resource) do |dsl_name, name, _created_at, &_block|
+      define_method(:declare_resource) do |dsl_name, name, _created_at|
         r << [dsl_name, name]
       end
     end
@@ -36,21 +36,21 @@ describe Chef::DSL::Resources do
     described_class.remove_resource_dsl(:test_resource)
   end
 
-  context 'with a resource added' do
+  context "with a resource added" do
     before do
       Chef::DSL::Resources.add_resource_dsl(:test_resource)
       test_class.new.instance_eval do
-        test_resource 'test_name' do
+        test_resource "test_name" do
         end
       end
     end
-    it { is_expected.to eq [[:test_resource, 'test_name']]}
+    it { is_expected.to eq [[:test_resource, "test_name"]] }
   end
 
-  context 'with no resource added' do
+  context "with no resource added" do
     subject do
       test_class.new.instance_eval do
-        test_resource 'test_name' do
+        test_resource "test_name" do
         end
       end
     end
@@ -58,14 +58,14 @@ describe Chef::DSL::Resources do
     it { expect { subject }.to raise_error NoMethodError }
   end
 
-  context 'with a resource added and removed' do
+  context "with a resource added and removed" do
     before do
       Chef::DSL::Resources.add_resource_dsl(:test_resource)
       Chef::DSL::Resources.remove_resource_dsl(:test_resource)
     end
     subject do
       test_class.new.instance_eval do
-        test_resource 'test_name' do
+        test_resource "test_name" do
         end
       end
     end
@@ -73,13 +73,13 @@ describe Chef::DSL::Resources do
     it { expect { subject }.to raise_error NoMethodError }
   end
 
-  context 'with a nameless resource' do
+  context "with a nameless resource" do
     before do
       Chef::DSL::Resources.add_resource_dsl(:test_resource)
       test_class.new.instance_eval do
-        test_resource { }
+        test_resource {}
       end
     end
-    it { is_expected.to eq [[:test_resource, nil]]}
+    it { is_expected.to eq [[:test_resource, nil]] }
   end
 end

@@ -1,6 +1,6 @@
 #
 # Author:: SAWANOBORI Yukihiko (<sawanoboriyu@higanworks.com>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef'
+require "spec_helper"
+require "chef"
 
 describe "Chef::Log::Syslog", :unix_only => true do
   let(:syslog) { Chef::Log::Syslog.new }

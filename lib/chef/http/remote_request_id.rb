@@ -1,5 +1,5 @@
-# Author:: Prajakta Purohit (<prajakta@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010, 2013, 2014 Opscode, Inc.
+# Author:: Prajakta Purohit (<prajakta@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +15,17 @@
 # limitations under the License.
 #
 
-require 'chef/request_id'
+require "chef/request_id"
 
 class Chef
   class HTTP
     class RemoteRequestID
 
-      def initialize(opts={})
+      def initialize(opts = {})
       end
 
-      def handle_request(method, url, headers={}, data=false)
-        headers.merge!({'X-REMOTE-REQUEST-ID' => Chef::RequestID.instance.request_id})
+      def handle_request(method, url, headers = {}, data = false)
+        headers["X-REMOTE-REQUEST-ID"] = Chef::RequestID.instance.request_id
         [method, url, headers, data]
       end
 

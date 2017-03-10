@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright 2014 Chef Software, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/policy_builder'
+require "spec_helper"
+require "chef/policy_builder"
 
 describe Chef::PolicyBuilder::Policyfile do
 
   let(:node_name) { "joe_node" }
-  let(:ohai_data) { {"platform" => "ubuntu", "platform_version" => "13.04", "fqdn" => "joenode.example.com"} }
-  let(:json_attribs) { {"custom_attr" => "custom_attr_value"} }
+  let(:ohai_data) { { "platform" => "ubuntu", "platform_version" => "13.04", "fqdn" => "joenode.example.com" } }
+  let(:json_attribs) { { "custom_attr" => "custom_attr_value" } }
   let(:override_runlist) { nil }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:policy_builder) { Chef::PolicyBuilder::Policyfile.new(node_name, ohai_data, json_attribs, override_runlist, events) }
@@ -40,10 +40,9 @@ describe Chef::PolicyBuilder::Policyfile do
     major = sha1_id[0...14]
     minor = sha1_id[14...28]
     patch = sha1_id[28..40]
-    decimal_integers =[major, minor, patch].map {|hex| hex.to_i(16) }
+    decimal_integers = [major, minor, patch].map { |hex| hex.to_i(16) }
     decimal_integers.join(".")
   end
-
 
   let(:example1_lock_data) do
     # based on https://github.com/danielsdeleo/chef-workflow2-prototype/blob/master/skeletons/basic_policy/Policyfile.lock.json
@@ -53,11 +52,11 @@ describe Chef::PolicyBuilder::Policyfile do
       # NOTE: for compatibility mode we include the dotted id in the policyfile to enhance discoverability.
       "dotted_decimal_identifier" => id_to_dotted("168d2102fb11c9617cd8a981166c8adc30a6e915"),
       "source" => { "path" => "./cookbooks/demo" },
-      "scm_identifier"=> {
-        "vcs"=> "git",
-        "rev_id"=> "9d5b09026470c322c3cb5ca8a4157c4d2f16cef3",
-        "remote"=> nil
-      }
+      "scm_identifier" => {
+        "vcs" => "git",
+        "rev_id" => "9d5b09026470c322c3cb5ca8a4157c4d2f16cef3",
+        "remote" => nil,
+      },
     }
   end
 
@@ -67,12 +66,12 @@ describe Chef::PolicyBuilder::Policyfile do
       "version" => "4.2.0",
       # NOTE: for compatibility mode we include the dotted id in the policyfile to enhance discoverability.
       "dotted_decimal_identifier" => id_to_dotted("feab40e1fca77c7360ccca1481bb8ba5f919ce3a"),
-      "source" => { "api" => "https://community.getchef.com/api/v1/cookbooks/example2" }
+      "source" => { "api" => "https://community.getchef.com/api/v1/cookbooks/example2" },
     }
   end
 
-  let(:policyfile_default_attributes) { {"policyfile_default_attr" => "policyfile_default_value"} }
-  let(:policyfile_override_attributes) { {"policyfile_override_attr" => "policyfile_override_value"} }
+  let(:policyfile_default_attributes) { { "policyfile_default_attr" => "policyfile_default_value" } }
+  let(:policyfile_override_attributes) { { "policyfile_override_attr" => "policyfile_override_value" } }
 
   let(:policyfile_run_list) { ["recipe[example1::default]", "recipe[example2::server]"] }
 
@@ -85,11 +84,11 @@ describe Chef::PolicyBuilder::Policyfile do
 
       "cookbook_locks" => {
         "example1" => example1_lock_data,
-        "example2" => example2_lock_data
+        "example2" => example2_lock_data,
       },
 
       "default_attributes" => policyfile_default_attributes,
-      "override_attributes" => policyfile_override_attributes
+      "override_attributes" => policyfile_override_attributes,
     }
   end
 
@@ -98,10 +97,10 @@ describe Chef::PolicyBuilder::Policyfile do
   let(:err_namespace) { Chef::PolicyBuilder::Policyfile }
 
   it "configures a Chef HTTP API client" do
-    http = double("Chef::REST")
+    http = double("Chef::ServerAPI")
     server_url = "https://api.opscode.com/organizations/example"
     Chef::Config[:chef_server_url] = server_url
-    expect(Chef::REST).to receive(:new).with(server_url).and_return(http)
+    expect(Chef::ServerAPI).to receive(:new).with(server_url).and_return(http)
     expect(policy_builder.http_api).to eq(http)
   end
 
@@ -116,7 +115,7 @@ describe Chef::PolicyBuilder::Policyfile do
     end
 
     context "chef-solo" do
-      before { Chef::Config[:solo] = true }
+      before { Chef::Config[:solo_legacy_mode] = true }
 
       it "errors on create" do
         expect { initialize_pb }.to raise_error(err_namespace::UnsupportedFeature)
@@ -132,7 +131,7 @@ describe Chef::PolicyBuilder::Policyfile do
     end
 
     context "when json_attribs contains a run_list" do
-      let(:json_attribs) { {"run_list" => []} }
+      let(:json_attribs) { { "run_list" => [] } }
 
       it "errors on create" do
         expect { initialize_pb }.to raise_error(err_namespace::UnsupportedFeature)
@@ -151,15 +150,15 @@ describe Chef::PolicyBuilder::Policyfile do
 
   describe "loading policy data" do
 
-    let(:http_api) { double("Chef::REST") }
+    let(:http_api) { double("Chef::ServerAPI") }
 
     let(:configured_environment) { nil }
 
     let(:override_runlist) { nil }
     let(:primary_runlist) { nil }
 
-    let(:original_default_attrs) { {"default_key" => "default_value"} }
-    let(:original_override_attrs) { {"override_key" => "override_value"} }
+    let(:original_default_attrs) { { "default_key" => "default_value" } }
+    let(:original_override_attrs) { { "override_key" => "override_value" } }
 
     let(:node) do
       node = Chef::Node.new
@@ -268,7 +267,6 @@ describe Chef::PolicyBuilder::Policyfile do
 
     end
 
-
     describe "building policy from the policyfile" do
 
       before do
@@ -286,7 +284,7 @@ describe Chef::PolicyBuilder::Policyfile do
       it "extracts the cookbooks and versions for display from the policyfile" do
         expected = [
           "example1::default@2.3.5 (168d210)",
-          "example2::server@4.2.0 (feab40e)"
+          "example2::server@4.2.0 (feab40e)",
         ]
 
         expect(policy_builder.run_list_with_versions_for_display).to eq(expected)
@@ -303,7 +301,6 @@ describe Chef::PolicyBuilder::Policyfile do
         expect(policy_builder.expand_run_list.recipes).to eq(["example1::default", "example2::server"])
         expect(policy_builder.expand_run_list.roles).to eq([])
       end
-
 
       describe "validating the Policyfile.lock" do
 
@@ -357,7 +354,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:json_attribs) do
               {
                 "policy_name" => "policy_name_from_node_json",
-                "policy_group" => "policy_group_from_node_json"
+                "policy_group" => "policy_group_from_node_json",
               }
             end
 
@@ -378,7 +375,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:extra_chef_config) do
               {
                 policy_name: "policy_name_from_config",
-                policy_group: "policy_group_from_config"
+                policy_group: "policy_group_from_config",
               }
             end
 
@@ -419,7 +416,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:extra_chef_config) do
               {
                 policy_name: "policy_name_from_config",
-                policy_group: "policy_group_from_config"
+                policy_group: "policy_group_from_config",
               }
             end
 
@@ -435,7 +432,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:json_attribs) do
               {
                 "policy_name" => "policy_name_from_node_json",
-                "policy_group" => "policy_group_from_node_json"
+                "policy_group" => "policy_group_from_node_json",
               }
             end
 
@@ -446,7 +443,6 @@ describe Chef::PolicyBuilder::Policyfile do
               node.policy_group = "policy_group_from_node"
               node
             end
-
 
             it "prefers the policy_name and policy_group from the node json" do
               expect(policy_builder.policy_name).to eq("policy_name_from_node_json")
@@ -465,7 +461,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:json_attribs) do
               {
                 "policy_name" => "policy_name_from_node_json",
-                "policy_group" => "policy_group_from_node_json"
+                "policy_group" => "policy_group_from_node_json",
               }
             end
 
@@ -480,7 +476,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:extra_chef_config) do
               {
                 policy_name: "policy_name_from_config",
-                policy_group: "policy_group_from_config"
+                policy_group: "policy_group_from_config",
               }
             end
 
@@ -564,7 +560,7 @@ describe Chef::PolicyBuilder::Policyfile do
             let(:parsed_policyfile_json) do
               basic_valid_policy_data.dup.tap do |p|
                 p["named_run_lists"] = {
-                  "deploy-app" => [ "recipe[example1::default]" ]
+                  "deploy-app" => [ "recipe[example1::default]" ],
                 }
               end
             end
@@ -591,7 +587,6 @@ describe Chef::PolicyBuilder::Policyfile do
 
         end
       end
-
 
       describe "fetching the desired cookbook set" do
 
@@ -662,14 +657,18 @@ describe Chef::PolicyBuilder::Policyfile do
             it "builds a run context" do
               expect(cookbook_synchronizer).to receive(:sync_cookbooks)
               expect_any_instance_of(Chef::RunContext).to receive(:load).with(policy_builder.run_list_expansion_ish)
+              expect_any_instance_of(Chef::CookbookCollection).to receive(:validate!)
+              expect_any_instance_of(Chef::CookbookCollection).to receive(:install_gems)
               run_context = policy_builder.setup_run_context
               expect(run_context.node).to eq(node)
-              expect(run_context.cookbook_collection.keys).to match_array(["example1", "example2"])
+              expect(run_context.cookbook_collection.keys).to match_array(%w{example1 example2})
             end
 
             it "makes the run context available via static method on Chef" do
               expect(cookbook_synchronizer).to receive(:sync_cookbooks)
               expect_any_instance_of(Chef::RunContext).to receive(:load).with(policy_builder.run_list_expansion_ish)
+              expect_any_instance_of(Chef::CookbookCollection).to receive(:validate!)
+              expect_any_instance_of(Chef::CookbookCollection).to receive(:install_gems)
               run_context = policy_builder.setup_run_context
               expect(Chef.run_context).to eq(run_context)
             end
@@ -689,14 +688,18 @@ describe Chef::PolicyBuilder::Policyfile do
 
             before do
               expect(http_api).to receive(:get).with(cookbook1_url).
-                and_return(example1_cookbook_object)
+                and_return(example1_cookbook_data)
               expect(http_api).to receive(:get).with(cookbook2_url).
+                and_return(example2_cookbook_data)
+
+              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example1_cookbook_data).
+                and_return(example1_cookbook_object)
+              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example2_cookbook_data).
                 and_return(example2_cookbook_object)
             end
 
             include_examples "fetching cookbooks when they exist"
           end
-
         end
 
         context "when using native API mode (policy_document_native_api == true)" do
@@ -713,7 +716,6 @@ describe Chef::PolicyBuilder::Policyfile do
           context "when the cookbooks don't exist on the server" do
             include_examples "fetching cookbooks when they don't exist"
           end
-
 
           context "when the cookbooks exist on the server" do
 
@@ -732,7 +734,6 @@ describe Chef::PolicyBuilder::Policyfile do
             include_examples "fetching cookbooks when they exist"
 
           end
-
 
         end
 

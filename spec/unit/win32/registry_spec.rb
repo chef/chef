@@ -1,6 +1,6 @@
 #
-# Author:: Prajakta Purohit (prajakta@opscode.com)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Prajakta Purohit (prajakta@chef.io)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,19 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Win32::Registry do
   include_context "Win32"
 
   let(:value1) { { :name => "one", :type => :string, :data => "1" } }
-  let(:value1_upcase_name) { {:name => "ONE", :type => :string, :data => "1"} }
+  let(:value1_upcase_name) { { :name => "ONE", :type => :string, :data => "1" } }
   let(:key_path) { 'HKCU\Software\OpscodeNumbers' }
   let(:key) { 'Software\OpscodeNumbers' }
-  let(:key_parent) { 'Software' }
-  let(:key_to_delete) { 'OpscodeNumbers' }
-  let(:sub_key) {'OpscodePrimes'}
-  let(:missing_key_path) {'HKCU\Software'}
+  let(:key_parent) { "Software" }
+  let(:key_to_delete) { "OpscodeNumbers" }
+  let(:sub_key) { "OpscodePrimes" }
+  let(:missing_key_path) { 'HKCU\Software' }
   let(:registry) { Chef::Win32::Registry.new() }
   let(:hive_mock) { double("::Win32::Registry::KHKEY_CURRENT_USER") }
   let(:reg_mock) { double("reg") }
@@ -40,7 +40,7 @@ describe Chef::Win32::Registry do
 
   before(:each) do
     allow_any_instance_of(Chef::Win32::Registry).to receive(:machine_architecture).and_return(:x86_64)
-    
+
     #Making the values for registry constants available on unix
     Win32::Registry::KEY_SET_VALUE = 0x0002
     Win32::Registry::KEY_QUERY_VALUE = 0x0001
@@ -49,10 +49,10 @@ describe Chef::Win32::Registry do
   end
 
   after(:each) do
-    Win32::Registry.send(:remove_const, 'KEY_SET_VALUE') if defined?(Win32::Registry::KEY_SET_VALUE)
-    Win32::Registry.send(:remove_const, 'KEY_QUERY_VALUE') if defined?(Win32::Registry::KEY_QUERY_VALUE)
-    Win32::Registry.send(:remove_const, 'KEY_READ') if defined?(Win32::Registry::KEY_READ)
-    Win32::Registry.send(:remove_const, 'KEY_WRITE') if defined?(Win32::Registry::KEY_WRITE)
+    Win32::Registry.send(:remove_const, "KEY_SET_VALUE") if defined?(Win32::Registry::KEY_SET_VALUE)
+    Win32::Registry.send(:remove_const, "KEY_QUERY_VALUE") if defined?(Win32::Registry::KEY_QUERY_VALUE)
+    Win32::Registry.send(:remove_const, "KEY_READ") if defined?(Win32::Registry::KEY_READ)
+    Win32::Registry.send(:remove_const, "KEY_WRITE") if defined?(Win32::Registry::KEY_WRITE)
   end
 
   describe "get_values" do
@@ -67,7 +67,7 @@ describe Chef::Win32::Registry do
     it "throws an exception if key does not exist" do
       expect(registry).to receive(:get_hive_and_key).with(key_path).and_return([hive_mock, key])
       expect(registry).to receive(:key_exists!).with(key_path).and_raise(Chef::Exceptions::Win32RegKeyMissing)
-      expect{registry.get_values(key_path)}.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { registry.get_values(key_path) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
   end
 
@@ -116,7 +116,7 @@ describe Chef::Win32::Registry do
 
     it "should raise an exception if the key does not exist" do
       expect(registry).to receive(:key_exists!).with(key_path).and_raise(Chef::Exceptions::Win32RegKeyMissing)
-      expect {registry.set_value(key_path, value1)}.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { registry.set_value(key_path, value1) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
   end
 
@@ -153,7 +153,7 @@ describe Chef::Win32::Registry do
 
     it "raises an exception if intermediate keys are missing and recursive is set to false" do
       expect(registry).to receive(:keys_missing?).with(key_path).and_return(true)
-      expect{registry.create_key(key_path, false)}.to raise_error(Chef::Exceptions::Win32RegNoRecursive)
+      expect { registry.create_key(key_path, false) }.to raise_error(Chef::Exceptions::Win32RegNoRecursive)
     end
 
     it "does nothing if the key exists" do
@@ -193,7 +193,7 @@ describe Chef::Win32::Registry do
     it "raises an exception if it has subkeys but recursive is set to false" do
       expect(registry).to receive(:key_exists?).with(key_path).and_return(true)
       expect(registry).to receive(:has_subkeys?).with(key_path).and_return(true)
-      expect{registry.delete_key(key_path, false)}.to raise_error(Chef::Exceptions::Win32RegNoRecursive)
+      expect { registry.delete_key(key_path, false) }.to raise_error(Chef::Exceptions::Win32RegNoRecursive)
     end
 
     it "deletes key if the key exists and has no subkeys" do
@@ -223,7 +223,7 @@ describe Chef::Win32::Registry do
   describe "key_exists!" do
     it "throws an exception if the key_parent does not exist" do
       expect(registry).to receive(:key_exists?).with(key_path).and_return(false)
-      expect{registry.key_exists!(key_path)}.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { registry.key_exists!(key_path) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
   end
 
@@ -258,7 +258,7 @@ describe Chef::Win32::Registry do
 
     it "throws an exception if the key does not exist" do
       expect(registry).to receive(:key_exists!).with(key_path).and_raise(Chef::Exceptions::Win32RegKeyMissing)
-      expect {registry.set_value(key_path, value1)}.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { registry.set_value(key_path, value1) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
   end
 
@@ -275,7 +275,7 @@ describe Chef::Win32::Registry do
   describe "value_exists?" do
     it "throws an exception if the key does not exist" do
       expect(registry).to receive(:key_exists!).with(key_path).and_raise(Chef::Exceptions::Win32RegKeyMissing)
-      expect {registry.value_exists?(key_path, value1)}.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { registry.value_exists?(key_path, value1) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
 
     it "returns true if the value exists" do
@@ -298,7 +298,7 @@ describe Chef::Win32::Registry do
   describe "data_exists?" do
     it "throws an exception if the key does not exist" do
       expect(registry).to receive(:key_exists!).with(key_path).and_raise(Chef::Exceptions::Win32RegKeyMissing)
-      expect {registry.data_exists?(key_path, value1)}.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { registry.data_exists?(key_path, value1) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
 
     it "returns true if the data exists" do
@@ -328,7 +328,7 @@ describe Chef::Win32::Registry do
 
     it "throws an exception if the value does not exist" do
       expect(registry).to receive(:value_exists?).with(key_path, value1).and_return(false)
-      expect{registry.value_exists!(key_path, value1)}.to raise_error(Chef::Exceptions::Win32RegValueMissing)
+      expect { registry.value_exists!(key_path, value1) }.to raise_error(Chef::Exceptions::Win32RegValueMissing)
     end
   end
 
@@ -340,7 +340,7 @@ describe Chef::Win32::Registry do
 
     it "throws an exception if the data does not exist" do
       expect(registry).to receive(:data_exists?).with(key_path, value1).and_return(false)
-      expect{registry.data_exists!(key_path, value1)}.to raise_error(Chef::Exceptions::Win32RegDataMissing)
+      expect { registry.data_exists!(key_path, value1) }.to raise_error(Chef::Exceptions::Win32RegDataMissing)
     end
   end
 
@@ -364,7 +364,7 @@ describe Chef::Win32::Registry do
 
     it "throws an exception if value does not exist" do
       expect(registry).to receive(:value_exists?).with(key_path, value1).and_return(false)
-      expect{registry.type_matches?(key_path, value1)}.to raise_error(Chef::Exceptions::Win32RegValueMissing)
+      expect { registry.type_matches?(key_path, value1) }.to raise_error(Chef::Exceptions::Win32RegValueMissing)
     end
   end
 
@@ -376,7 +376,7 @@ describe Chef::Win32::Registry do
 
     it "throws an exception if the type does not match" do
       expect(registry).to receive(:type_matches?).with(key_path, value1).and_return(false)
-      expect{registry.type_matches!(key_path, value1)}.to raise_error(Chef::Exceptions::Win32RegTypesMismatch)
+      expect { registry.type_matches!(key_path, value1) }.to raise_error(Chef::Exceptions::Win32RegTypesMismatch)
     end
   end
 

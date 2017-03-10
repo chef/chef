@@ -1,8 +1,8 @@
 #
 # Author:: Ryan Davis (<ryand-ruby@zenspider.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Ryan Davis and Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Copyright:: Copyright 2011-2016, Ryan Davis and Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +18,14 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class TagList < Knife
 
       deps do
-        require 'chef/node'
+        require "chef/node"
       end
 
       banner "knife tag list NODE"

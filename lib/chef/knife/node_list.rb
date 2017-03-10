@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
     class NodeList < Knife
 
       deps do
-        require 'chef/node'
-        require 'chef/json_compat'
+        require "chef/node"
+        require "chef/json_compat"
       end
 
       banner "knife node list (options)"
@@ -42,5 +42,3 @@ class Chef
     end
   end
 end
-
-

@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (<steve@opscode.com>)
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Author:: Steven Danna (<steve@chef.io>)
+# Copyright:: Copyright 2012-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 # NOTE: only knife user command that is backwards compatible with OSC 11,
 # so no deprecation warnings are necessary.
@@ -25,8 +25,8 @@ class Chef
     class UserList < Knife
 
       deps do
-        require 'chef/user_v1'
-        require 'chef/json_compat'
+        require "chef/user_v1"
+        require "chef/json_compat"
       end
 
       banner "knife user list (options)"

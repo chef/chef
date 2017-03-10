@@ -1,0 +1,16 @@
+source "https://rubygems.org"
+
+gem "rake" # required to build some native extensions
+gem "chef-acceptance", github: "chef/chef-acceptance"
+gem "kitchen-ec2"
+gem "inspec"
+gem "kitchen-vagrant"
+gem "windows_chef_zero"
+gem "kitchen-inspec"
+gem "test-kitchen"
+gem "winrm-elevated"
+gem "berkshelf"
+
+# Pin to 1.2.3 because current mixlib-install has a problem where unstable
+# packages are not always immediately available via the omnitruck API.
+gem "mixlib-install", "1.2.3"

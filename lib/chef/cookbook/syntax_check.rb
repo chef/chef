@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'pathname'
-require 'stringio'
-require 'erubis'
-require 'chef/mixin/shell_out'
-require 'chef/mixin/checksum'
-require 'chef/util/path_helper'
+require "pathname"
+require "stringio"
+require "erubis"
+require "chef/mixin/shell_out"
+require "chef/mixin/checksum"
+require "chef/util/path_helper"
 
 class Chef
   class Cookbook
@@ -43,7 +43,7 @@ class Chef
 
         # Create a new PersistentSet. Values in the set are persisted by
         # creating a file in the +cache_path+ directory.
-        def initialize(cache_path=Chef::Config[:syntax_check_cache_path])
+        def initialize(cache_path = Chef::Config[:syntax_check_cache_path])
           @cache_path = cache_path
           @cache_path_created = false
         end
@@ -82,7 +82,7 @@ class Chef
 
       # Creates a new SyntaxCheck given the +cookbook_name+ and a +cookbook_path+.
       # If no +cookbook_path+ is given, +Chef::Config.cookbook_path+ is used.
-      def self.for_cookbook(cookbook_name, cookbook_path=nil)
+      def self.for_cookbook(cookbook_name, cookbook_path = nil)
         cookbook_path ||= Chef::Config.cookbook_path
         unless cookbook_path
           raise ArgumentError, "Cannot find cookbook #{cookbook_name} unless Chef::Config.cookbook_path is set or an explicit cookbook path is given"
@@ -110,12 +110,12 @@ class Chef
       end
 
       def remove_uninteresting_ruby_files(file_list)
-        file_list.reject { |f| f =~ %r{#{cookbook_path}/(files|templates)/} }
+        file_list.reject { |f| f =~ %r{#{Regexp.quote(cookbook_path)}/(files|templates)/} }
       end
 
       def ruby_files
-        path  = Chef::Util::PathHelper.escape_glob(cookbook_path)
-        files = Dir[File.join(path, '**', '*.rb')]
+        path  = Chef::Util::PathHelper.escape_glob_dir(cookbook_path)
+        files = Dir[File.join(path, "**", "*.rb")]
         files = remove_ignored_files(files)
         files = remove_uninteresting_ruby_files(files)
         files
@@ -133,7 +133,7 @@ class Chef
       end
 
       def template_files
-        remove_ignored_files Dir[File.join(Chef::Util::PathHelper.escape_glob(cookbook_path), '**/templates/**', '*.erb')]
+        remove_ignored_files Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(cookbook_path), "**/templates/**", "*.erb")]
       end
 
       def untested_template_files
@@ -209,7 +209,7 @@ class Chef
 
       # Debug a syntax error in a template.
       def invalid_erb_file(erb_file, error_message)
-        file_relative_path = erb_file[/^#{Regexp.escape(cookbook_path+File::Separator)}(.*)/, 1]
+        file_relative_path = erb_file[/^#{Regexp.escape(cookbook_path + File::Separator)}(.*)/, 1]
         Chef::Log.fatal("Erb template #{file_relative_path} has a syntax error:")
         error_message.each_line { |l| Chef::Log.fatal(l.chomp) }
         nil
@@ -244,7 +244,7 @@ class Chef
       # Debugs ruby syntax errors by printing the path to the file and any
       # diagnostic info given in +error_message+
       def invalid_ruby_file(ruby_file, error_message)
-        file_relative_path = ruby_file[/^#{Regexp.escape(cookbook_path+File::Separator)}(.*)/, 1]
+        file_relative_path = ruby_file[/^#{Regexp.escape(cookbook_path + File::Separator)}(.*)/, 1]
         Chef::Log.fatal("Cookbook file #{file_relative_path} has a ruby syntax error:")
         error_message.each_line { |l| Chef::Log.fatal(l.chomp) }
         false

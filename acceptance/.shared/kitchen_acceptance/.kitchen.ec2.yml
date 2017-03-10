@@ -1,0 +1,282 @@
+# Not quite ready yet
+
+<%
+def file_if_exists(path)
+  path = File.expand_path(path)
+  File.exist?(path) ? path : nil
+end
+%>
+
+driver:
+  name: ec2
+  tags:
+    X-Dept: Eng
+    X-Contact: product-team
+    X-Application: chef-ci-acceptance
+  aws_ssh_key_id: <%= ENV['AWS_SSH_KEY_ID'] || ENV['USER'] || ENV['USERNAME'] %>
+  # test-specific stuff
+  region: us-west-2
+  subnet_id: subnet-19ac017c
+  security_group_ids: ["sg-e401eb83", "sg-96274af3"]
+  instance_type: m3.large
+#  associate_public_ip: true  # Don't enable public IP, as subnet specified is behind VPN
+
+# busser installation relies on this
+<% if ENV["KITCHEN_CHEF_PRODUCT"] %>
+verifier:
+  chef_omnibus_root: "/opt/<%= ENV["KITCHEN_CHEF_PRODUCT"] %>"
+<% end %>
+
+transport:
+  ssh_key: <%= file_if_exists("~/.ssh/#{ENV['AWS_SSH_KEY_ID'] || ENV['USER'] || ENV['USERNAME']}.pem") ||
+               file_if_exists("~/.ssh/#{ENV['AWS_SSH_KEY_ID'] || ENV['USER'] || ENV['USERNAME']}") ||
+               file_if_exists("~/.ssh/id_rsa") %>
+
+provisioner:
+  name: chef_zero
+  product_name: <%= ENV["KITCHEN_CHEF_PRODUCT"] %>
+  product_version: <%= ENV["KITCHEN_CHEF_VERSION"] %>
+  channel: <%= ENV["KITCHEN_CHEF_CHANNEL"] %>
+  client_rb:
+    audit_mode: :enabled
+  attributes:
+    chef_acceptance: "true"
+    use_system_chef: "true"
+
+platforms:
+  #
+  # AIX
+  #
+  # - name: aix-6.1
+  # - name: aix-7.1
+  #
+  # Debian
+  #
+  - name: debian-8
+    driver:
+      image_search:
+        name: debian-jessie-*
+        owner-id: "379101102735"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+    transport:
+      username: admin
+  - name: debian-7
+    driver:
+      image_search:
+        name: debian-wheezy-*
+        owner-id: "379101102735"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: standard
+        image-type: machine
+    transport:
+      username: admin
+  #
+  # Ubuntu
+  #
+  - name: ubuntu-15.10
+    driver:
+      image_search:
+        name: ubuntu/images/*/ubuntu-*-15.10-amd64-server-*
+        owner-id: "099720109477"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+    transport:
+      username: ubuntu
+  - name: ubuntu-14.04
+    driver:
+      image_search:
+        name: ubuntu/images/*/ubuntu-*-14.04-*-server-*
+        owner-id: "099720109477"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+    transport:
+      username: ubuntu
+  - name: ubuntu-12.04
+    driver:
+      image_search:
+        name: ubuntu/images/*/ubuntu-*-12.04-*-server-*
+        owner-id: "099720109477"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+    transport:
+      username: ubuntu
+  #
+  # Red Hat Enterprise Linux
+  #
+  - name: el-7
+    driver:
+      image_search:
+        name: RHEL-7.*
+        owner-id: "309956199498"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+    transport:
+      username: ec2-user
+  - name: el-6
+    driver:
+      image_search:
+        name: RHEL-6.*
+        owner-id: "309956199498"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+    transport:
+      username: ec2-user
+  - name: el-5
+    driver:
+      image_search:
+        name: RHEL-5.*
+        owner-id: "309956199498"
+        architecture: x86_64
+        virtualization-type: paravirtual
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+    transport:
+      username: ec2-user
+  #
+  # FreeBSD
+  #
+  - name: freebsd-10
+    driver:
+      image_search:
+        name: FreeBSD/EC2 10.*-RELEASE*
+        owner-id: "118940168514"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+    transport:
+      username: ec2-user
+  - name: freebsd-9
+    driver:
+      image_search:
+        name: FreeBSD/EC2 9.*-RELEASE*
+        owner-id: "118940168514"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+    transport:
+      username: ec2-user
+  - name: freebsd-8
+    driver:
+      image_search:
+        name: FreeBSD/EC2 8.*-RELEASE*
+        owner-id: "118940168514"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: standard
+        image-type: machine
+    transport:
+      username: ec2-user
+  #
+  # OS/X
+  #
+  # - name: mac_os_x-10.11
+  # - name: mac_os_x-10.10
+  # - name: mac_os_x-10.9
+  # - name: mac_os_x-10.8
+  #
+  # Nexus???
+  #
+  # - name: nexus-7
+  #
+  # Solaris
+  #
+  # - name: solaris-11
+  # - name: solaris-10
+  #
+  # Windows
+  #
+  - name: windows-2012r2
+    provisioner:
+      architecture: <%= ENV["KITCHEN_CHEF_WIN_ARCHITECTURE"] %>
+    driver:
+      image_search:
+        name: Windows_Server-2012-R2*-English-*-Base-*
+        owner-alias: amazon
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+      user_data: |
+        <powershell>
+        & netsh advfirewall firewall set rule name="Windows Remote Management (HTTP-In)" profile=public protocol=tcp localport=5985 remoteip=localsubnet new remoteip=any
+        #Set script execution to unrestricted
+        & Set-ExecutionPolicy Unrestricted -Force
+        </powershell>
+    transport:
+      username: administrator
+
+  - name: windows-2012
+    driver:
+      image_search:
+        name: Windows_Server-2012-RTM*-English-*-Base-*
+        owner-alias: amazon
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+    transport:
+      username: administrator
+  - name: windows-2008r2
+    driver:
+      image_search:
+        name: Windows_Server-2008-R2*-English-*-Base-*
+        owner-alias: amazon
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
+    transport:
+      username: administrator
+  #
+  # Centos
+  #
+  - name: centos-7
+    driver:
+      image_search:
+        name: CentOS Linux 7 *
+        owner-alias: aws-marketplace
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: standard
+        image-type: machine
+    transport:
+      username: root
+  - name: centos-6
+    driver:
+      image_search:
+        name: CentOS-6.5-GA-*
+        owner-alias: aws-marketplace
+        architecture: x86_64
+        virtualization-type: paravirtual
+        block-device-mapping.volume-type: standard
+        image-type: machine
+    transport:
+      username: root
+  #
+  # Fedora
+  #
+  - name: fedora-21
+    driver:
+      image_search:
+        name: Fedora-Cloud-Base-21-*
+        owner-id: "125523088429"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine

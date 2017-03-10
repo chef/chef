@@ -1,9 +1,9 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +19,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider'
-require 'chef/provider/deploy'
-require 'chef/json_compat'
+require "chef/provider"
+require "chef/provider/deploy"
+require "chef/json_compat"
 
 class Chef
   class Provider
@@ -44,7 +44,7 @@ class Chef
 
           known_releases = sorted_releases
 
-          Dir["#{Chef::Util::PathHelper.escape_glob(new_resource.deploy_to)}/releases/*"].each do |release_dir|
+          Dir["#{Chef::Util::PathHelper.escape_glob_dir(new_resource.deploy_to)}/releases/*"].each do |release_dir|
             unless known_releases.include?(release_dir)
               converge_by("Remove unknown release in #{release_dir}") do
                 FileUtils.rm_rf(release_dir)
@@ -56,11 +56,11 @@ class Chef
         protected
 
         def release_created(release)
-          sorted_releases {|r| r.delete(release); r << release }
+          sorted_releases { |r| r.delete(release); r << release }
         end
 
         def release_deleted(release)
-          sorted_releases { |r| r.delete(release)}
+          sorted_releases { |r| r.delete(release) }
         end
 
         def release_slug
@@ -87,15 +87,13 @@ class Chef
         end
 
         def sorted_releases_from_filesystem
-          Dir.glob(Chef::Util::PathHelper.escape_glob(new_resource.deploy_to) + "/releases/*").sort_by { |d| ::File.ctime(d) }
+          Dir.glob(Chef::Util::PathHelper.escape_glob_dir(new_resource.deploy_to) + "/releases/*").sort_by { |d| ::File.ctime(d) }
         end
 
         def load_cache
-          begin
-            Chef::JSONCompat.parse(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
-          rescue Chef::Exceptions::FileNotFound
-            sorted_releases_from_filesystem
-          end
+          Chef::JSONCompat.parse(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
+        rescue Chef::Exceptions::FileNotFound
+          sorted_releases_from_filesystem
         end
 
         def save_cache(cache)

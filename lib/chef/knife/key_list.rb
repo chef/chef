@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/key'
-require 'chef/json_compat'
-require 'chef/exceptions'
+require "chef/key"
+require "chef/json_compat"
+require "chef/exceptions"
 
 class Chef
   class Knife
@@ -40,7 +40,7 @@ class Chef
       end
 
       def expired_and_non_expired_msg
-<<EOS
+        <<EOS
 You cannot pass both --only-expired and --only-non-expired.
 Please pass one or none.
 EOS
@@ -64,21 +64,21 @@ EOS
         if @config[:with_details]
           max_length = 0
           keys.each do |key|
-            key['name'] = key['name'] + ":"
-            max_length = key['name'].length if key['name'].length > max_length
+            key["name"] = key["name"] + ":"
+            max_length = key["name"].length if key["name"].length > max_length
           end
           keys.each do |key|
-            next if !key['expired'] && @config[:only_expired]
-            next if key['expired'] && @config[:only_non_expired]
+            next if !key["expired"] && @config[:only_expired]
+            next if key["expired"] && @config[:only_non_expired]
             display = "#{colorize(key['name'].ljust(max_length))} #{key['uri']}"
             display = "#{display} (expired)" if key["expired"]
             display_info(display)
           end
         else
           keys.each do |key|
-            next if !key['expired'] && @config[:only_expired]
-            next if key['expired'] && @config[:only_non_expired]
-            display_info(key['name'])
+            next if !key["expired"] && @config[:only_expired]
+            next if key["expired"] && @config[:only_non_expired]
+            display_info(key["name"])
           end
         end
       end

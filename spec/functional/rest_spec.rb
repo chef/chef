@@ -1,6 +1,6 @@
 #
-# Author:: Lamont Granquist (<lamont@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tiny_server'
-require 'support/shared/functional/http'
+require "spec_helper"
+require "tiny_server"
+require "support/shared/functional/http"
 
 describe Chef::REST do
   include ChefHTTPShared
@@ -80,13 +80,14 @@ describe Chef::REST do
   before do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
+    Chef::Config[:treat_deprecation_warnings_as_errors] = false
   end
 
-  before(:all) do
+  before(:each) do
     start_tiny_server
   end
 
-  after(:all) do
+  after(:each) do
     stop_tiny_server
   end
 

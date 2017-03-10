@@ -1,6 +1,6 @@
 #
 # Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
-# Copyright:: Copyright (c) 2011 Thomas Bishop
+# Copyright:: Copyright 2011-2016, Thomas Bishop
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,34 +16,34 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/api_client_v1'
+require "spec_helper"
+require "chef/api_client_v1"
 
 describe Chef::Knife::ClientEdit do
   before(:each) do
     @knife = Chef::Knife::ClientEdit.new
-    @knife.name_args = [ 'adam' ]
+    @knife.name_args = [ "adam" ]
     @knife.config[:disable_editing] = true
   end
 
-  describe 'run' do
-    let(:data) {
+  describe "run" do
+    let(:data) do
       {
         "name" => "adam",
         "validator" => false,
         "admin" => false,
         "chef_type" => "client",
-        "create_key" => true
+        "create_key" => true,
       }
-    }
+    end
 
-    it 'should edit the client' do
-      allow(Chef::ApiClientV1).to receive(:load).with('adam').and_return(data)
-      expect(@knife).to receive(:edit_data).with(data).and_return(data)
+    it "should edit the client" do
+      allow(Chef::ApiClientV1).to receive(:load).with("adam").and_return(data)
+      expect(@knife).to receive(:edit_hash).with(data).and_return(data)
       @knife.run
     end
 
-    it 'should print usage and exit when a client name is not provided' do
+    it "should print usage and exit when a client name is not provided" do
       @knife.name_args = []
       expect(@knife).to receive(:show_usage)
       expect(@knife.ui).to receive(:fatal)

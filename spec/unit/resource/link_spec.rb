@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Resource::Link do
 
@@ -39,8 +39,8 @@ describe Chef::Resource::Link do
     expect(@resource.action).to eql([:create])
   end
 
-  { :create => false, :delete => false, :blues => true }.each do |action,bad_value|
-    it "should #{bad_value ? 'not' : ''} accept #{action.to_s}" do
+  { :create => false, :delete => false, :blues => true }.each do |action, bad_value|
+    it "should #{bad_value ? 'not' : ''} accept #{action}" do
       if bad_value
         expect { @resource.action action }.to raise_error(ArgumentError)
       else

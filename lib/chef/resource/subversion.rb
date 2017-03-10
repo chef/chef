@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,10 +24,10 @@ class Chef
     class Subversion < Chef::Resource::Scm
       allowed_actions :force_export
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
-        @svn_arguments = '--no-auth-cache'
-        @svn_info_args = '--no-auth-cache'
+        @svn_arguments = "--no-auth-cache"
+        @svn_info_args = "--no-auth-cache"
         @svn_binary = nil
       end
 
@@ -36,7 +36,7 @@ class Chef
         "#{self} (#{defined_at}) had an error: #{e.class.name}: #{svn_password ? e.message.gsub(svn_password, "[hidden_password]") : e.message}"
       end
 
-      def svn_binary(arg=nil)
+      def svn_binary(arg = nil)
         set_or_return(:svn_binary, arg, :kind_of => [String])
       end
     end

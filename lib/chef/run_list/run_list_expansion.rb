@@ -1,7 +1,7 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2010, 2011 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/mash'
+require "chef/mash"
 
-require 'chef/mixin/deep_merge'
+require "chef/mixin/deep_merge"
 
-require 'chef/role'
-require 'chef/rest'
-require 'chef/json_compat'
+require "chef/role"
+require "chef/server_api"
+require "chef/json_compat"
 
 class Chef
   class RunList
@@ -45,7 +45,7 @@ class Chef
       attr_reader :missing_roles_with_including_role
 
       # The data source passed to the constructor. Not used in this class.
-      # In subclasses, this is a couchdb or Chef::REST object pre-configured
+      # In subclasses, this is a Chef::ServerAPI object pre-configured
       # to fetch roles from their correct location.
       attr_reader :source
 
@@ -62,7 +62,7 @@ class Chef
       attr_reader :all_missing_roles
       attr_reader :role_errors
 
-      def initialize(environment, run_list_items, source=nil)
+      def initialize(environment, run_list_items, source = nil)
         @environment = environment
         @missing_roles_with_including_role = Array.new
 
@@ -75,8 +75,8 @@ class Chef
         @recipes = Chef::RunList::VersionedRecipeList.new
 
         @applied_roles = {}
-        @run_list_trace = Hash.new {|h, key| h[key] = [] }
-        @better_run_list_trace = Hash.new {|h, key| h[key] = [] }
+        @run_list_trace = Hash.new { |h, key| h[key] = [] }
+        @better_run_list_trace = Hash.new { |h, key| h[key] = [] }
         @all_missing_roles = {}
         @role_errors = {}
       end
@@ -140,7 +140,7 @@ class Chef
       end
 
       def errors
-        @missing_roles_with_including_role.map {|item| item.first }
+        @missing_roles_with_including_role.map { |item| item.first }
       end
 
       def to_json(*a)
@@ -148,8 +148,8 @@ class Chef
       end
 
       def to_hash
-        seen_items = {:recipe => {}, :role => {}}
-        {:id => @environment, :run_list => convert_run_list_trace('top level', seen_items)}
+        seen_items = { :recipe => {}, :role => {} }
+        { :id => @environment, :run_list => convert_run_list_trace("top level", seen_items) }
       end
 
       private
@@ -160,11 +160,10 @@ class Chef
         @applied_roles[role_name] = true
       end
 
-      def expand_run_list_items(items, included_by="top level")
-
+      def expand_run_list_items(items, included_by = "top level")
         if entry = items.shift
           @run_list_trace[included_by.to_s] << entry.to_s
-          @better_run_list_trace[included_by.to_s] <<  entry
+          @better_run_list_trace[included_by.to_s] << entry
 
           case entry.type
           when :recipe
@@ -186,18 +185,17 @@ class Chef
           seen_items[item.type][item.name] = true
           case item.type
             when :recipe
-                {:type => 'recipe', :name => item.name, :version => item.version, :skipped => !!skipped}
+              { :type => "recipe", :name => item.name, :version => item.version, :skipped => !!skipped }
             when :role
               error = @role_errors[item.name]
               missing = @all_missing_roles[item.name]
-              {:type => :role, :name => item.name, :children => (missing || error || skipped) ? [] : convert_run_list_trace(item.to_s, seen_items),
-               :missing => missing, :error => error, :skipped => skipped}
+              { :type => :role, :name => item.name, :children => (missing || error || skipped) ? [] : convert_run_list_trace(item.to_s, seen_items),
+                :missing => missing, :error => error, :skipped => skipped }
           end
         end
       end
 
     end
-
 
     # Expand a run list from disk. Suitable for chef-solo
     class RunListExpansionFromDisk < RunListExpansion
@@ -214,11 +212,11 @@ class Chef
     class RunListExpansionFromAPI < RunListExpansion
 
       def rest
-        @rest ||= (source || Chef::REST.new(Chef::Config[:chef_server_url]))
+        @rest ||= (source || Chef::ServerAPI.new(Chef::Config[:chef_server_url]))
       end
 
       def fetch_role(name, included_by)
-        rest.get_rest("roles/#{name}")
+        Chef::Role.from_hash(rest.get("roles/#{name}"))
       rescue Net::HTTPServerException => e
         if e.message == '404 "Not Found"'
           role_not_found(name, included_by)
@@ -234,5 +232,3 @@ class Chef
 
   end
 end
-
-

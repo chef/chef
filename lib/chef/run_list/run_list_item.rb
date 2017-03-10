@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,16 +25,15 @@ class Chef
 
       attr_reader :name, :type, :version
 
-
       def initialize(item)
         @version = nil
         case item
         when Hash
           assert_hash_is_valid_run_list_item!(item)
-          @type = (item['type'] || item[:type]).to_sym
-          @name = item['name'] || item[:name]
-          if (item.has_key?('version') || item.has_key?(:version))
-            @version = item['version'] || item[:version]
+          @type = (item["type"] || item[:type]).to_sym
+          @name = item["name"] || item[:name]
+          if item.has_key?("version") || item.has_key?(:version)
+            @version = item["version"] || item[:version]
           end
         when String
           if match = QUALIFIED_RECIPE.match(item)
@@ -69,7 +68,7 @@ class Chef
       end
 
       def to_s
-        "#{@type}[#{@name}#{@version ? "@#{@version}" :""}]"
+        "#{@type}[#{@name}#{@version ? "@#{@version}" : ""}]"
       end
 
       def role?
@@ -82,14 +81,14 @@ class Chef
 
       def ==(other)
         if other.kind_of?(String)
-          self.to_s == other.to_s
+          to_s == other.to_s
         else
           other.respond_to?(:type) && other.respond_to?(:name) && other.respond_to?(:version) && other.type == @type && other.name == @name && other.version == @version
         end
       end
 
       def assert_hash_is_valid_run_list_item!(item)
-        unless (item.key?('type')|| item.key?(:type)) && (item.key?('name') || item.key?(:name))
+        unless (item.key?("type") || item.key?(:type)) && (item.key?("name") || item.key?(:name))
           raise ArgumentError, "Initializing a #{self.class} from a hash requires that it have a 'type' and 'name' key"
         end
       end

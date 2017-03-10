@@ -1,6 +1,6 @@
 #
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,8 @@
 # limitations under the License.
 #
 
-
-require 'spec_helper'
-require 'tmpdir'
+require "spec_helper"
+require "tmpdir"
 
 describe Chef::Util::Backup do
 
@@ -71,15 +70,15 @@ describe Chef::Util::Backup do
       end
 
       it "should not delete anything if this is the only backup" do
-        expect(@backup).to receive(:sorted_backup_files).and_return(['a'])
+        expect(@backup).to receive(:sorted_backup_files).and_return(["a"])
         expect(@backup).not_to receive(:delete_backup)
         @backup.backup!
       end
 
       it "should keep only 1 backup copy" do
-        expect(@backup).to receive(:sorted_backup_files).and_return(['a', 'b', 'c'])
-        expect(@backup).to receive(:delete_backup).with('b')
-        expect(@backup).to receive(:delete_backup).with('c')
+        expect(@backup).to receive(:sorted_backup_files).and_return(%w{a b c})
+        expect(@backup).to receive(:delete_backup).with("b")
+        expect(@backup).to receive(:delete_backup).with("c")
         @backup.backup!
       end
     end
@@ -90,15 +89,15 @@ describe Chef::Util::Backup do
       end
 
       it "should not delete anything if we only have one other backup" do
-        expect(@backup).to receive(:sorted_backup_files).and_return(['a', 'b'])
+        expect(@backup).to receive(:sorted_backup_files).and_return(%w{a b})
         expect(@backup).not_to receive(:delete_backup)
         @backup.backup!
       end
 
       it "should keep only 2 backup copies" do
-        expect(@backup).to receive(:sorted_backup_files).and_return(['a', 'b', 'c', 'd'])
-        expect(@backup).to receive(:delete_backup).with('c')
-        expect(@backup).to receive(:delete_backup).with('d')
+        expect(@backup).to receive(:sorted_backup_files).and_return(%w{a b c d})
+        expect(@backup).to receive(:delete_backup).with("c")
+        expect(@backup).to receive(:delete_backup).with("d")
         @backup.backup!
       end
     end
@@ -106,7 +105,7 @@ describe Chef::Util::Backup do
 
   describe "backup_filename" do
     it "should return a timestamped path" do
-      expect(@backup).to receive(:path).and_return('/a/b/c.txt')
+      expect(@backup).to receive(:path).and_return("/a/b/c.txt")
       expect(@backup.send(:backup_filename)).to match(%r|^/a/b/c.txt.chef-\d{14}.\d{6}$|)
     end
     it "should strip the drive letter off for windows" do
@@ -114,21 +113,21 @@ describe Chef::Util::Backup do
       expect(@backup.send(:backup_filename)).to match(%r|^\\a\\b\\c.txt.chef-\d{14}.\d{6}$|)
     end
     it "should strip the drive letter off for windows (with forwardslashes)" do
-      expect(@backup).to receive(:path).and_return('c:/a/b/c.txt')
+      expect(@backup).to receive(:path).and_return("c:/a/b/c.txt")
       expect(@backup.send(:backup_filename)).to match(%r|^/a/b/c.txt.chef-\d{14}.\d{6}$|)
     end
   end
 
   describe "backup_path" do
     it "uses the file's directory when Chef::Config[:file_backup_path] is nil" do
-      expect(@backup).to receive(:path).and_return('/a/b/c.txt')
+      expect(@backup).to receive(:path).and_return("/a/b/c.txt")
       Chef::Config[:file_backup_path] = nil
       expect(@backup.send(:backup_path)).to match(%r|^/a/b/c.txt.chef-\d{14}.\d{6}$|)
     end
 
     it "uses the configured Chef::Config[:file_backup_path]" do
-      expect(@backup).to receive(:path).and_return('/a/b/c.txt')
-      Chef::Config[:file_backup_path] = '/backupdir'
+      expect(@backup).to receive(:path).and_return("/a/b/c.txt")
+      Chef::Config[:file_backup_path] = "/backupdir"
       expect(@backup.send(:backup_path)).to match(%r|^/backupdir[\\/]+a/b/c.txt.chef-\d{14}.\d{6}$|)
     end
 

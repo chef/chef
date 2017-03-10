@@ -1,7 +1,7 @@
 # encoding: UTF-8
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,29 +17,35 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'functional/resource/base'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "functional/resource/base"
+require "chef/mixin/shell_out"
 
-def user_provider_for_platform
-  case ohai[:platform]
+def resource_for_platform(username, run_context)
+  Chef::Resource.resource_for_node(:user, node).new(username, run_context)
+end
+
+# ideally we could somehow pass an array of [ ...::Aix, ...::Linux ] to the
+# filter, but we have to pick the right one for the O/S.
+def user_provider_filter
+  case ohai[:os]
   when "aix"
     Chef::Provider::User::Aix
-  else
-    Chef::Provider::User::Useradd
+  when "linux"
+    Chef::Provider::User::Linux
   end
 end
 
-metadata = { :unix_only => true,
+metadata = {
+  :unix_only => true,
   :requires_root => true,
   :not_supported_on_mac_osx => true,
-  :provider => {:user => user_provider_for_platform}
+  :provider => { :user => user_provider_filter },
 }
 
 describe Chef::Provider::User::Useradd, metadata do
 
   include Chef::Mixin::ShellOut
-
 
   # Utility code for /etc/passwd interaction, avoid any caching of user records:
   PwEntry = Struct.new(:name, :passwd, :uid, :gid, :gecos, :home, :shell)
@@ -47,10 +53,10 @@ describe Chef::Provider::User::Useradd, metadata do
   class UserNotFound < StandardError; end
 
   def pw_entry
-    passwd_file = File.open("/etc/passwd", "rb") {|f| f.read}
+    passwd_file = File.open("/etc/passwd", "rb") { |f| f.read }
     matcher = /^#{Regexp.escape(username)}.+$/
     if passwd_entry = passwd_file.scan(matcher).first
-      PwEntry.new(*passwd_entry.split(':'))
+      PwEntry.new(*passwd_entry.split(":"))
     else
       raise UserNotFound, "no entry matching #{matcher.inspect} found in /etc/passwd"
     end
@@ -59,9 +65,9 @@ describe Chef::Provider::User::Useradd, metadata do
   def etc_shadow
     case ohai[:platform]
     when "aix"
-      File.open("/etc/security/passwd") {|f| f.read }
+      File.open("/etc/security/passwd") { |f| f.read }
     else
-      File.open("/etc/shadow") {|f| f.read }
+      File.open("/etc/shadow") { |f| f.read }
     end
   end
 
@@ -82,13 +88,14 @@ describe Chef::Provider::User::Useradd, metadata do
   end
 
   def try_cleanup
-    ['/home/cheftestfoo', '/home/cheftestbar'].each do |f|
+    ["/home/cheftestfoo", "/home/cheftestbar", "/home/cf-test"].each do |f|
       FileUtils.rm_rf(f) if File.exists? f
     end
 
-    ['cf-test'].each do |u|
-      r = Chef::Resource::User.new("DELETE USER", run_context)
-      r.username('cf-test')
+    ["cf-test"].each do |u|
+      r = resource_for_platform("DELETE USER", run_context)
+      r.manage_home true
+      r.username("cf-test")
       r.run_action(:remove)
     end
   end
@@ -104,7 +111,7 @@ describe Chef::Provider::User::Useradd, metadata do
     while max_retries > 0
       begin
         pw_entry # will raise if the user doesn't exist
-        status = shell_out!("userdel", "-r", username, :returns => [0,8,12])
+        status = shell_out!("userdel", "-r", username, :returns => [0, 8, 12])
 
         # Error code 8 during userdel indicates that the user is logged in.
         # This occurs randomly because the accounts daemon holds a lock due to which userdel fails.
@@ -112,7 +119,7 @@ describe Chef::Provider::User::Useradd, metadata do
         break if status.exitstatus != 8
 
         sleep 1
-        max_retries = max_retries - 1
+        max_retries -= 1
       rescue UserNotFound
         break
       end
@@ -135,10 +142,7 @@ describe Chef::Provider::User::Useradd, metadata do
     Chef::RunContext.new(node, {}, events)
   end
 
-  let(:username) do
-    "cf-test"
-  end
-
+  let(:username) { "cf-test" }
   let(:uid) { nil }
   let(:home) { nil }
   let(:manage_home) { false }
@@ -147,7 +151,7 @@ describe Chef::Provider::User::Useradd, metadata do
   let(:comment) { nil }
 
   let(:user_resource) do
-    r = Chef::Resource::User.new("TEST USER RESOURCE", run_context)
+    r = resource_for_platform("TEST USER RESOURCE", run_context)
     r.username(username)
     r.uid(uid)
     r.home(home)
@@ -160,7 +164,7 @@ describe Chef::Provider::User::Useradd, metadata do
 
   let(:expected_shadow) do
     if ohai[:platform] == "aix"
-      expected_shadow = "cf-test"  # For aix just check user entry in shadow file
+      expected_shadow = "cf-test" # For aix just check user entry in shadow file
     else
       expected_shadow = "cf-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
     end
@@ -173,7 +177,6 @@ describe Chef::Provider::User::Useradd, metadata do
         user_resource.run_action(:create)
         expect(user_resource).to be_updated_by_last_action
       end
-
 
       it "ensures the user exists" do
         expect(pw_entry.name).to eq(username)
@@ -193,7 +196,6 @@ describe Chef::Provider::User::Useradd, metadata do
           expect(pw_entry.name).to eq(username)
         end
       end
-
 
       context "when uid is set" do
         # Should verify uid not in use...
@@ -242,25 +244,26 @@ describe Chef::Provider::User::Useradd, metadata do
         let(:home) { "/home/#{username}" }
 
         it "ensures the user's home is set to the given path" do
-          expect(pw_entry.home).to eq("/home/#{username}")
+          expect(pw_entry.home).to eq(home)
         end
 
-        if %w{rhel fedora}.include?(OHAI_SYSTEM["platform_family"])
-          # Inconsistent behavior. See: CHEF-2205
-          it "creates the home dir when not explicitly asked to on RHEL (XXX)" do
-            expect(File).to exist("/home/#{username}")
-          end
-        else
-          it "does not create the home dir without `manage_home'" do
-            expect(File).not_to exist("/home/#{username}")
-          end
+        it "does not create the home dir without `manage_home'" do
+          expect(File).not_to exist(home)
         end
 
         context "and manage_home is enabled" do
           let(:manage_home) { true }
 
           it "ensures the user's home directory exists" do
-            expect(File).to exist("/home/#{username}")
+            expect(File).to exist(home)
+          end
+        end
+
+        context "and manage_home is the default" do
+          let(:manage_home) { nil }
+
+          it "does not create the home dir without `manage_home'" do
+            expect(File).not_to exist(home)
           end
         end
       end
@@ -282,24 +285,17 @@ describe Chef::Provider::User::Useradd, metadata do
         end
       end
 
-      context "when a system user is specified" do
+      context "when a system user is specified", skip: aix? do
         let(:system) { true }
         let(:uid_min) do
-          case ohai[:platform]
-          when "aix"
-            # UIDs and GIDs below 100 are typically reserved for system accounts and services
-            # http://www.ibm.com/developerworks/aix/library/au-satuidgid/
-            100
-          else
-            # from `man useradd`, login user means uid will be between
-            # UID_SYS_MIN and UID_SYS_MAX defined in /etc/login.defs. On my
-            # Ubuntu 13.04 system, these are commented out, so we'll look at
-            # UID_MIN to find the lower limit of the non-system-user range, and
-            # use that value in our assertions.
-            login_defs = File.open("/etc/login.defs", "rb") {|f| f.read }
-            uid_min_scan = /^UID_MIN\s+(\d+)/
-            login_defs.match(uid_min_scan)[1]
-          end
+          # from `man useradd`, login user means uid will be between
+          # UID_SYS_MIN and UID_SYS_MAX defined in /etc/login.defs. On my
+          # Ubuntu 13.04 system, these are commented out, so we'll look at
+          # UID_MIN to find the lower limit of the non-system-user range, and
+          # use that value in our assertions.
+          login_defs = File.open("/etc/login.defs", "rb") { |f| f.read }
+          uid_min_scan = /^UID_MIN\s+(\d+)/
+          login_defs.match(uid_min_scan)[1]
         end
 
         it "ensures the user has the properties of a system user" do
@@ -320,8 +316,8 @@ describe Chef::Provider::User::Useradd, metadata do
       let(:existing_comment) { nil }
 
       let(:existing_user) do
-        r = Chef::Resource::User.new("TEST USER RESOURCE", run_context)
-        # username is identity attr, must match.
+        r = resource_for_platform("TEST USER RESOURCE", run_context)
+          # username is identity attr, must match.
         r.username(username)
         r.uid(existing_uid)
         r.home(existing_home)
@@ -455,7 +451,6 @@ describe Chef::Provider::User::Useradd, metadata do
           end
         end
 
-
         it "ensures the password is set" do
           password_should_be_set
           expect(etc_shadow).to include(expected_shadow)
@@ -483,7 +478,6 @@ describe Chef::Provider::User::Useradd, metadata do
             "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
           end
         end
-
 
         it "ensures the password is set to the desired value" do
           password_should_be_set
@@ -518,11 +512,11 @@ describe Chef::Provider::User::Useradd, metadata do
     let(:user_locked_context?) { false }
 
     def shadow_entry
-      etc_shadow.lines.select {|l| l.include?(username) }.first
+      etc_shadow.lines.find { |l| l.include?(username) }
     end
 
     def shadow_password
-      shadow_entry.split(':')[1]
+      shadow_entry.split(":")[1]
     end
 
     def aix_user_lock_status
@@ -596,7 +590,6 @@ describe Chef::Provider::User::Useradd, metadata do
           end
         end
 
-
         it "locks the user's password" do
           user_account_should_be_locked
         end
@@ -644,11 +637,22 @@ describe Chef::Provider::User::Useradd, metadata do
       context "and has no password" do
 
         # TODO: platform_family should be setup in spec_helper w/ tags
-        if %w[suse opensuse].include?(OHAI_SYSTEM["platform_family"])
-          # suse gets this right:
+        if %w{opensuse}.include?(OHAI_SYSTEM["platform_family"]) ||
+            (%w{suse}.include?(OHAI_SYSTEM["platform_family"]) &&
+            OHAI_SYSTEM["platform_version"].to_f < 12.1)
+          # suse 11.x gets this right:
           it "errors out trying to unlock the user" do
             expect(@error).to be_a(Mixlib::ShellOut::ShellCommandFailed)
             expect(@error.message).to include("Cannot unlock the password")
+          end
+        elsif %w{rhel}.include?(OHAI_SYSTEM["platform_family"]) &&
+            OHAI_SYSTEM["platform_version"].to_f == 6.8
+          # usermod -U returns following message for rhel68 on s390x platforms
+          # usermod: unlocking the user's password would result in a passwordless account.
+          #You should set a password with usermod -p to unlock this user's password.
+          it "errors out trying to unlock the user" do
+            expect(@error).to be_a(Mixlib::ShellOut::ShellCommandFailed)
+            expect(@error.message).to include("You should set a password")
           end
         else
 
@@ -665,10 +669,10 @@ describe Chef::Provider::User::Useradd, metadata do
             # DEBUG: Ran usermod -U chef-functional-test returned 0
             expect(@error).to be_nil
             if ohai[:platform] == "aix"
-              expect(pw_entry.passwd).to eq('*')
+              expect(pw_entry.passwd).to eq("*")
               user_account_should_be_unlocked
             else
-              expect(pw_entry.passwd).to eq('x')
+              expect(pw_entry.passwd).to eq("x")
               expect(shadow_password).to include("!")
             end
           end

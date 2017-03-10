@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +18,14 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-require 'chef/resource_resolver'
-require 'chef/node'
-require 'chef/log'
-require 'chef/exceptions'
-require 'chef/mixin/convert_to_class_name'
-require 'chef/mixin/from_file'
-require 'chef/mixin/params_validate' # for DelayedEvaluator
+require "chef/resource"
+require "chef/resource_resolver"
+require "chef/node"
+require "chef/log"
+require "chef/exceptions"
+require "chef/mixin/convert_to_class_name"
+require "chef/mixin/from_file"
+require "chef/mixin/params_validate" # for DelayedEvaluator
 
 class Chef
   class Resource
@@ -45,7 +45,7 @@ class Chef
 
         def build_from_file(cookbook_name, filename, run_context)
           if LWRPBase.loaded_lwrps[filename]
-            Chef::Log.info("Custom resource #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
+            Chef::Log.debug("Custom resource #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
             return loaded_lwrps[filename]
           end
 
@@ -100,10 +100,6 @@ class Chef
 
         def node
           run_context ? run_context.node : nil
-        end
-
-        def lazy(&block)
-          DelayedEvaluator.new(&block)
         end
 
         protected

@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'support/shared/unit/resource/static_provider_resolution'
+require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::DeployRevision do
 
@@ -25,7 +25,7 @@ describe Chef::Resource::DeployRevision do
     resource: Chef::Resource::DeployRevision,
     provider: Chef::Provider::Deploy::Revision,
     name: :deploy_revision,
-    action: :deploy,
+    action: :deploy
   )
 
 end
@@ -36,7 +36,7 @@ describe Chef::Resource::DeployBranch do
     resource: Chef::Resource::DeployBranch,
     provider: Chef::Provider::Deploy::Revision,
     name: :deploy_branch,
-    action: :deploy,
+    action: :deploy
   )
 
 end

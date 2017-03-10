@@ -1,0 +1,33 @@
+# Not quite ready yet
+
+driver:
+  name: digitalocean
+  digitalocean_access_token: <%= ENV['DIGITALOCEAN_API_TOKEN'] %>
+  region: <%= ENV['DIGITALOCEAN_REGION'] %>
+  size: 2gb
+  ssh_key_ids: <%= ENV['DIGITALOCEAN_SSH_KEYS'] %>
+  transport:
+    ssh_key: <%= ENV['DIGITALOCEAN_SSH_KEY_PATH'] %>
+
+provisioner:
+  name: chef_zero
+  product_name: chef
+  product_version: latest
+  channel: current
+
+# busser installation relies on this
+<% if ENV["KITCHEN_CHEF_PRODUCT"] %>
+verifier:
+  chef_omnibus_root: "/opt/<%= ENV["KITCHEN_CHEF_PRODUCT"] %>"
+<% end %>
+
+platforms:
+<% %w(centos-6.5 centos-7.0
+      fedora-21
+      debian-8.1
+      ubuntu-12.04 ubuntu-14.04 ubuntu-15.10
+).each do |platform| %>
+  - name: #{platform}
+    driver_config:
+      image: <%= "#{platform.gsub('.', '-')}-x64" %>
+<% end %>

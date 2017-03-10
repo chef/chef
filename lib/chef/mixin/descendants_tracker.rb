@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2005-2012 David Heinemeier Hansson
+# Copyright 2005-2016, David Heinemeier Hansson
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -21,7 +21,6 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-
 # This is lifted from rails activesupport (note the copyright above):
 # https://github.com/rails/rails/blob/9f84e60ac9d7bf07d6ae1bc94f3941f5b8f1a228/activesupport/lib/active_support/descendants_tracker.rb
 
@@ -42,7 +41,7 @@ class Chef
         end
 
         def find_descendants_by_name(klass, name)
-          descendants(klass).first {|c| c.name == name }
+          descendants(klass).first { |c| c.name == name }
         end
 
         # This is the only method that is not thread safe, but is only ever called

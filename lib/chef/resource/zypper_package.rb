@@ -1,6 +1,6 @@
 #
 # Author:: Joe Williams (<joe@joetify.com>)
-# Copyright:: Copyright (c) 2009 Joe Williams
+# Copyright:: Copyright 2009-2016, Joe Williams
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
+require "chef/resource/package"
 
 class Chef
   class Resource
     class ZypperPackage < Chef::Resource::Package
+      resource_name :zypper_package
       provides :package, platform_family: "suse"
     end
   end

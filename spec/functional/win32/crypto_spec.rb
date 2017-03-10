@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala(<jdm@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,28 +16,25 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 if Chef::Platform.windows?
-  require 'chef/win32/crypto'
+  require "chef/win32/crypto"
 end
 
-describe 'Chef::ReservedNames::Win32::Crypto', :windows_only do
-  describe '#encrypt' do
+describe "Chef::ReservedNames::Win32::Crypto", :windows_only do
+  describe "#encrypt" do
     before(:all) do
-      ohai_reader = Ohai::System.new
-      ohai_reader.all_plugins("platform")
-
       new_node = Chef::Node.new
-      new_node.consume_external_attrs(ohai_reader.data,{})
+      new_node.consume_external_attrs(OHAI_SYSTEM.data, {})
 
       events = Chef::EventDispatch::Dispatcher.new
 
       @run_context = Chef::RunContext.new(new_node, {}, events)
     end
 
-    let (:plaintext) { 'p@assword' }
+    let (:plaintext) { "p@assword" }
 
-    it 'can be decrypted by powershell' do
+    it "can be decrypted by powershell" do
       encrypted = Chef::ReservedNames::Win32::Crypto.encrypt(plaintext)
       resource = Chef::Resource::WindowsScript::PowershellScript.new("Powershell resource functional test", @run_context)
       resource.code <<-EOF

@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/win32/file' if windows?
+require "spec_helper"
+require "chef/win32/file" if windows?
 
-describe 'Chef::ReservedNames::Win32::File', :windows_only do
+describe "Chef::ReservedNames::Win32::File", :windows_only do
   before(:each) do
     @path = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "old_home_dir", "my-dot-emacs"))
   end

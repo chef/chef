@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Serdar Sutay (<dan@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require File.expand_path('../../spec_helper', __FILE__)
-require 'chef/mixin/shell_out'
-require 'chef/version'
-require 'ohai/version'
+require File.expand_path("../../spec_helper", __FILE__)
+require "chef/mixin/shell_out"
+require "chef/version"
+require "ohai/version"
 
 describe "Chef Versions" do
   include Chef::Mixin::ShellOut

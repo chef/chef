@@ -1,7 +1,7 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2009 Bryan McLellan
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2009-2016, Bryan McLellan
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
@@ -29,7 +29,7 @@ class Chef
       default_action :add
       allowed_actions :add, :delete
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @target = name
         @netmask = nil
@@ -44,7 +44,7 @@ class Chef
         @domain = nil
       end
 
-      def networking(arg=nil)
+      def networking(arg = nil)
         set_or_return(
           :networking,
           arg,
@@ -52,7 +52,7 @@ class Chef
         )
       end
 
-      def networking_ipv6(arg=nil)
+      def networking_ipv6(arg = nil)
         set_or_return(
           :networking_ipv6,
           arg,
@@ -60,7 +60,7 @@ class Chef
         )
       end
 
-      def hostname(arg=nil)
+      def hostname(arg = nil)
         set_or_return(
           :hostname,
           arg,
@@ -68,7 +68,7 @@ class Chef
         )
       end
 
-      def domainname(arg=nil)
+      def domainname(arg = nil)
         set_or_return(
           :domainname,
           arg,
@@ -76,7 +76,7 @@ class Chef
         )
       end
 
-      def domain(arg=nil)
+      def domain(arg = nil)
         set_or_return(
           :domain,
           arg,
@@ -84,7 +84,7 @@ class Chef
         )
       end
 
-      def target(arg=nil)
+      def target(arg = nil)
         set_or_return(
           :target,
           arg,
@@ -92,7 +92,7 @@ class Chef
         )
       end
 
-      def netmask(arg=nil)
+      def netmask(arg = nil)
         set_or_return(
           :netmask,
           arg,
@@ -100,7 +100,7 @@ class Chef
         )
       end
 
-      def gateway(arg=nil)
+      def gateway(arg = nil)
         set_or_return(
           :gateway,
           arg,
@@ -108,7 +108,7 @@ class Chef
         )
       end
 
-      def metric(arg=nil)
+      def metric(arg = nil)
         set_or_return(
           :metric,
           arg,
@@ -116,7 +116,7 @@ class Chef
         )
       end
 
-      def device(arg=nil)
+      def device(arg = nil)
         set_or_return(
           :device,
           arg,
@@ -124,7 +124,7 @@ class Chef
         )
       end
 
-      def route_type(arg=nil)
+      def route_type(arg = nil)
         real_arg = arg.kind_of?(String) ? arg.to_sym : arg
         set_or_return(
           :route_type,

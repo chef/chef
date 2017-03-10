@@ -1,7 +1,7 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'chef/event_dispatch/base'
-require 'chef/audit/control_group_data'
-require 'time'
+require "chef/event_dispatch/base"
+require "chef/audit/control_group_data"
+require "time"
 
 class Chef
   class Audit
@@ -28,7 +28,7 @@ class Chef
       attr_reader :rest_client, :audit_data, :ordered_control_groups, :run_status
       private :rest_client, :audit_data, :ordered_control_groups, :run_status
 
-      PROTOCOL_VERSION = '0.1.1'
+      PROTOCOL_VERSION = "0.1.1"
 
       def initialize(rest_client)
         @rest_client = rest_client
@@ -127,10 +127,8 @@ class Chef
         end
 
         Chef::Log.debug "Audit Report:\n#{Chef::JSONCompat.to_json_pretty(run_data)}"
-        # Since we're posting compressed data we can not directly call post_rest which expects JSON
         begin
-          audit_url = rest_client.create_url(audit_history_url)
-          rest_client.post(audit_url, run_data, headers)
+          rest_client.post(audit_history_url, run_data, headers)
         rescue StandardError => e
           if e.respond_to? :response
             # 404 error code is OK. This means the version of server we're running against doesn't support
@@ -142,7 +140,11 @@ class Chef
               # Save the audit report to local disk
               error_file = "failed-audit-data.json"
               Chef::FileCache.store(error_file, Chef::JSONCompat.to_json_pretty(run_data), 0640)
-              Chef::Log.error("Failed to post audit report to server. Saving report to #{Chef::FileCache.load(error_file, false)}")
+              if Chef::Config.chef_zero.enabled
+                Chef::Log.debug("Saving audit report to #{Chef::FileCache.load(error_file, false)}")
+              else
+                Chef::Log.error("Failed to post audit report to server. Saving report to #{Chef::FileCache.load(error_file, false)}")
+              end
             end
           else
             Chef::Log.error("Failed to post audit report to server (#{e})")
@@ -156,13 +158,13 @@ class Chef
       end
 
       def headers(additional_headers = {})
-        options = {'X-Ops-Audit-Report-Protocol-Version' => PROTOCOL_VERSION}
+        options = { "X-Ops-Audit-Report-Protocol-Version" => PROTOCOL_VERSION }
         options.merge(additional_headers)
       end
 
       def encode_gzip(data)
         "".tap do |out|
-          Zlib::GzipWriter.wrap(StringIO.new(out)){|gz| gz << data }
+          Zlib::GzipWriter.wrap(StringIO.new(out)) { |gz| gz << data }
         end
       end
 

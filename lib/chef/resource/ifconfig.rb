@@ -1,7 +1,7 @@
 #
 # Author:: Jason K. Jackson (jasonjackson@gmail.com)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2009 Jason K. Jackson
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2009-2016, Jason K. Jackson
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
@@ -30,7 +30,7 @@ class Chef
       default_action :add
       allowed_actions :add, :delete, :enable, :disable
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @target = name
         @hwaddr = nil
@@ -46,7 +46,7 @@ class Chef
         @onparent = nil
       end
 
-      def target(arg=nil)
+      def target(arg = nil)
         set_or_return(
           :target,
           arg,
@@ -54,7 +54,7 @@ class Chef
         )
       end
 
-      def device(arg=nil)
+      def device(arg = nil)
         set_or_return(
           :device,
           arg,
@@ -62,7 +62,7 @@ class Chef
         )
       end
 
-      def hwaddr(arg=nil)
+      def hwaddr(arg = nil)
         set_or_return(
           :hwaddr,
           arg,
@@ -70,7 +70,7 @@ class Chef
         )
       end
 
-      def inet_addr(arg=nil)
+      def inet_addr(arg = nil)
         set_or_return(
           :inet_addr,
           arg,
@@ -78,7 +78,7 @@ class Chef
         )
       end
 
-      def bcast(arg=nil)
+      def bcast(arg = nil)
         set_or_return(
           :bcast,
           arg,
@@ -86,7 +86,7 @@ class Chef
         )
       end
 
-      def mask(arg=nil)
+      def mask(arg = nil)
         set_or_return(
           :mask,
           arg,
@@ -94,7 +94,7 @@ class Chef
         )
       end
 
-      def mtu(arg=nil)
+      def mtu(arg = nil)
         set_or_return(
           :mtu,
           arg,
@@ -102,7 +102,7 @@ class Chef
         )
       end
 
-      def metric(arg=nil)
+      def metric(arg = nil)
         set_or_return(
           :metric,
           arg,
@@ -110,7 +110,7 @@ class Chef
         )
       end
 
-      def onboot(arg=nil)
+      def onboot(arg = nil)
         set_or_return(
           :onboot,
           arg,
@@ -118,7 +118,7 @@ class Chef
         )
       end
 
-      def network(arg=nil)
+      def network(arg = nil)
         set_or_return(
           :network,
           arg,
@@ -126,7 +126,7 @@ class Chef
         )
       end
 
-      def bootproto(arg=nil)
+      def bootproto(arg = nil)
         set_or_return(
           :bootproto,
           arg,
@@ -134,7 +134,7 @@ class Chef
         )
       end
 
-      def onparent(arg=nil)
+      def onparent(arg = nil)
         set_or_return(
           :onparent,
           arg,

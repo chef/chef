@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 #
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/event_dispatch/dispatcher'
+require "spec_helper"
+require "chef/event_dispatch/dispatcher"
 
 describe Chef::EventDispatch::Dispatcher do
 
@@ -52,8 +52,8 @@ describe Chef::EventDispatch::Dispatcher do
       dispatcher.synchronized_cookbook("apache2", cookbook_version)
 
       exception = StandardError.new("foo")
-      expect(event_sink).to receive(:recipe_file_load_failed).with("/path/to/file.rb", exception)
-      dispatcher.recipe_file_load_failed("/path/to/file.rb", exception)
+      expect(event_sink).to receive(:recipe_file_load_failed).with("/path/to/file.rb", exception, "myrecipe")
+      dispatcher.recipe_file_load_failed("/path/to/file.rb", exception, "myrecipe")
     end
 
     context "when an event sink has fewer arguments for an event" do
@@ -74,7 +74,6 @@ describe Chef::EventDispatch::Dispatcher do
       end
     end
   end
-
 
   context "when two event sinks have different arguments for an event" do
     let(:event_sink_1) do

@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2009-2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/data_bag_secret_options'
+require "chef/knife"
+require "chef/knife/data_bag_secret_options"
 
 class Chef
   class Knife
@@ -26,8 +26,8 @@ class Chef
       include DataBagSecretOptions
 
       deps do
-        require 'chef/data_bag'
-        require 'chef/encrypted_data_bag_item'
+        require "chef/data_bag"
+        require "chef/encrypted_data_bag_item"
       end
 
       banner "knife data bag create BAG [ITEM] (options)"
@@ -51,7 +51,7 @@ class Chef
 
         # create the data bag
         begin
-          rest.post_rest("data", { "name" => @data_bag_name })
+          rest.post("data", { "name" => @data_bag_name })
           ui.info("Created data_bag[#{@data_bag_name}]")
         rescue Net::HTTPServerException => e
           raise unless e.to_s =~ /^409/
@@ -66,9 +66,10 @@ class Chef
                 Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
               else
                 output
-            end)
+              end
+            )
             item.data_bag(@data_bag_name)
-            rest.post_rest("data/#{@data_bag_name}", item)
+            rest.post("data/#{@data_bag_name}", item)
           end
         end
       end

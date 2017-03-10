@@ -1,6 +1,6 @@
 
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 class SnitchyProvider < Chef::Provider
   def self.all_actions_called
@@ -101,6 +101,7 @@ describe Chef::Runner do
   context "when we fall through to old Chef::Platform resolution" do
     let(:provider_resolver) { Chef::ProviderResolver.new(node, first_resource, nil) }
     before do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       # set up old Chef::Platform resolution instead of provider_resolver
       Chef::Platform.set(
         :resource => :cat,
@@ -239,7 +240,7 @@ describe Chef::Runner do
       second_resource.notifies(:fail, third_resource, :delayed)
       second_resource.notifies(:purr, first_resource, :delayed)
 
-      expect {runner.converge}.to raise_error(FailureProvider::ChefClientFail)
+      expect { runner.converge }.to raise_error(FailureProvider::ChefClientFail)
 
       expect(first_resource).to be_updated
     end
@@ -271,7 +272,7 @@ describe Chef::Runner do
       end
       expect(exception).to be_a(Chef::Exceptions::MultipleFailures)
 
-      expected_message =<<-E
+      expected_message = <<-E
 Multiple failures occurred:
 * FailureProvider::ChefClientFail occurred in delayed notification: [explode] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
 * FailureProvider::ChefClientFail occurred in delayed notification: [explode again] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
@@ -372,10 +373,10 @@ Multiple failures occurred:
       first_resource.action = :buy
 
       only_if_called_times = 0
-      first_resource.only_if {only_if_called_times += 1; true}
+      first_resource.only_if { only_if_called_times += 1; true }
 
       not_if_called_times = 0
-      first_resource.not_if {not_if_called_times += 1; false}
+      first_resource.not_if { not_if_called_times += 1; false }
 
       second_resource = Chef::Resource::Cat.new("carmel", run_context)
       run_context.resource_collection << second_resource
@@ -392,12 +393,12 @@ Multiple failures occurred:
     it "should resolve resource references in notifications when resources are defined lazily" do
       first_resource.action = :nothing
 
-      lazy_resources = lambda {
+      lazy_resources = lambda do
         last_resource = Chef::Resource::Cat.new("peanut", run_context)
         run_context.resource_collection << last_resource
         last_resource.notifies(:purr, first_resource.to_s, :delayed)
         last_resource.action = :purr
-      }
+      end
       second_resource = Chef::Resource::RubyBlock.new("myblock", run_context)
       run_context.resource_collection << second_resource
       second_resource.block { lazy_resources.call }

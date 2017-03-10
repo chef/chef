@@ -1,7 +1,7 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/log'
+require "chef/log"
 
 class Chef
 
@@ -27,10 +27,10 @@ class Chef
   class FileAccessControl
 
     if RUBY_PLATFORM =~ /mswin|mingw|windows/
-      require 'chef/file_access_control/windows'
+      require "chef/file_access_control/windows"
       include FileAccessControl::Windows
     else
-      require 'chef/file_access_control/unix'
+      require "chef/file_access_control/unix"
       include FileAccessControl::Unix
     end
 

@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
+require "chef/mixin/shell_out"
 
 class Chef
   class Knife
@@ -31,10 +31,10 @@ class Chef
       attr_reader :use_current_branch
       attr_reader :ui
 
-      def initialize(repo_path, ui, opts={})
+      def initialize(repo_path, ui, opts = {})
         @repo_path = repo_path
         @ui = ui
-        @default_branch = 'master'
+        @default_branch = "master"
         @use_current_branch = false
         apply_opts(opts)
       end
@@ -57,7 +57,7 @@ class Chef
           ui.info "If this is a new git repo, make sure you have at least one commit before installing cookbooks"
           exit 1
         end
-        cmd = git('status --porcelain')
+        cmd = git("status --porcelain")
         if cmd.stdout =~ DIRTY_REPO
           ui.error "You have uncommitted changes to your cookbook repo (#{repo_path}):"
           ui.msg cmd.stdout
@@ -119,21 +119,21 @@ class Chef
       end
 
       def branch_exists?(branch_name)
-        git("branch --no-color").stdout.lines.any? {|l| l =~ /\s#{Regexp.escape(branch_name)}(?:\s|$)/ }
+        git("branch --no-color").stdout.lines.any? { |l| l =~ /\s#{Regexp.escape(branch_name)}(?:\s|$)/ }
       end
 
-      def get_current_branch()
+      def get_current_branch
         ref = git("symbolic-ref HEAD").stdout
-        ref.chomp.split('/')[2]
+        ref.chomp.split("/")[2]
       end
 
       private
 
       def git_repo?(directory)
-        if File.directory?(File.join(directory, '.git'))
-          return true
+        if File.directory?(File.join(directory, ".git"))
+          true
         elsif File.dirname(directory) == directory
-          return false
+          false
         else
           git_repo?(File.dirname(directory))
         end
@@ -142,9 +142,9 @@ class Chef
       def apply_opts(opts)
         opts.each do |option, value|
           case option.to_s
-          when 'default_branch'
+          when "default_branch"
             @default_branch = value
-          when 'use_current_branch'
+          when "use_current_branch"
             @use_current_branch = value
           end
         end
@@ -157,4 +157,3 @@ class Chef
     end
   end
 end
-

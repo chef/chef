@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 #
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Formatters::Base do
 
@@ -28,15 +28,15 @@ describe Chef::Formatters::Base do
 
   it "prints a policyfile's name and revision ID" do
     minimal_policyfile = {
-      "revision_id"=> "613f803bdd035d574df7fa6da525b38df45a74ca82b38b79655efed8a189e073",
-      "name"=> "jenkins",
-      "run_list"=> [
+      "revision_id" => "613f803bdd035d574df7fa6da525b38df45a74ca82b38b79655efed8a189e073",
+      "name" => "jenkins",
+      "run_list" => [
         "recipe[apt::default]",
         "recipe[java::default]",
         "recipe[jenkins::master]",
-        "recipe[policyfile_demo::default]"
+        "recipe[policyfile_demo::default]",
       ],
-      "cookbook_locks"=> { }
+      "cookbook_locks" => {},
     }
 
     formatter.policyfile_loaded(minimal_policyfile)
@@ -74,5 +74,19 @@ describe Chef::Formatters::Base do
     formatter.run_completed(nil)
     expect(formatter.elapsed_time).to eql(36610.0)
     expect(formatter.pretty_elapsed_time).to include("10 hours 10 minutes 10 seconds")
+  end
+
+  it "shows the percentage completion of an action" do
+    res = Chef::Resource::RemoteFile.new("canteloupe")
+    formatter.resource_update_progress(res, 35, 50, 10)
+    expect(out.string).to include(" - Progress: 70%")
+  end
+
+  it "updates the percentage completion of an action" do
+    res = Chef::Resource::RemoteFile.new("canteloupe")
+    formatter.resource_update_progress(res, 70, 100, 10)
+    expect(out.string).to include(" - Progress: 70%")
+    formatter.resource_update_progress(res, 80, 100, 10)
+    expect(out.string).to include(" - Progress: 80%")
   end
 end

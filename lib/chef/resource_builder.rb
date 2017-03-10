@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright (c) 2015 Opscode, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,6 @@
 
 # NOTE: this was extracted from the Recipe DSL mixin, relevant specs are in spec/unit/recipe_spec.rb
 
-require 'chef/exceptions'
-require 'chef/resource'
-require 'chef/log'
-
 class Chef
   class ResourceBuilder
     attr_reader :type
@@ -35,7 +31,7 @@ class Chef
     attr_reader :resource
 
     # FIXME (ruby-2.1 syntax): most of these are mandatory
-    def initialize(type:nil, name:nil, created_at: nil, params: nil, run_context: nil, cookbook_name: nil, recipe_name: nil, enclosing_provider: nil)
+    def initialize(type: nil, name: nil, created_at: nil, params: nil, run_context: nil, cookbook_name: nil, recipe_name: nil, enclosing_provider: nil)
       @type               = type
       @name               = name
       @created_at         = created_at
@@ -60,7 +56,7 @@ class Chef
       # This behavior is very counter-intuitive and should be removed.
       # See CHEF-3694, https://tickets.opscode.com/browse/CHEF-3694
       # Moved to this location to resolve CHEF-5052, https://tickets.opscode.com/browse/CHEF-5052
-      if prior_resource
+      if prior_resource && Chef::Config[:resource_cloning]
         resource.load_from(prior_resource)
       end
 
@@ -74,10 +70,17 @@ class Chef
       resource.params = params
 
       # Evaluate resource attribute DSL
-      resource.instance_eval(&block) if block_given?
+      if block_given?
+        resource.resource_initializing = true
+        begin
+          resource.instance_eval(&block)
+        ensure
+          resource.resource_initializing = false
+        end
+      end
 
       # emit a cloned resource warning if it is warranted
-      if prior_resource
+      if prior_resource && Chef::Config[:resource_cloning]
         if is_trivial_resource?(prior_resource) && identicalish_resources?(prior_resource, resource)
           emit_harmless_cloning_debug
         else
@@ -101,7 +104,11 @@ class Chef
     end
 
     def is_trivial_resource?(resource)
-      identicalish_resources?(resource_class.new(name, run_context), resource)
+      trivial_resource = resource_class.new(name, run_context)
+      # force un-lazy the name property on the created trivial resource
+      name_property = resource_class.properties.find { |sym, p| p.name_property? }
+      trivial_resource.send(name_property[0]) unless name_property.nil?
+      identicalish_resources?(trivial_resource, resource)
     end
 
     # this is an equality test specific to checking for 3694 cloning warnings
@@ -121,9 +128,10 @@ class Chef
     end
 
     def emit_cloned_resource_warning
-      Chef::Log.warn("Cloning resource attributes for #{resource} from prior resource (CHEF-3694)")
-      Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
-      Chef::Log.warn("Current  #{resource}: #{resource.source_line}") if resource.source_line
+      message = "Cloning resource attributes for #{resource} from prior resource"
+      message << "\nPrevious #{prior_resource}: #{prior_resource.source_line}" if prior_resource.source_line
+      message << "\nCurrent  #{resource}: #{resource.source_line}" if resource.source_line
+      Chef.deprecated(:resource_cloning, message)
     end
 
     def emit_harmless_cloning_debug
@@ -134,7 +142,7 @@ class Chef
       @prior_resource ||=
         begin
           key = "#{type}[#{name}]"
-          prior_resource = run_context.resource_collection.lookup(key)
+          run_context.resource_collection.lookup_local(key)
         rescue Chef::Exceptions::ResourceNotFound
           nil
         end
@@ -142,3 +150,7 @@ class Chef
 
   end
 end
+
+require "chef/exceptions"
+require "chef/resource"
+require "chef/log"

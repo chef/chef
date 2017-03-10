@@ -1,5 +1,5 @@
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015 Opscode, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'forwardable'
-require 'chef/util/path_helper'
-require 'chef/log'
+require "forwardable"
+require "chef/util/path_helper"
+require "chef/log"
 
 class Chef
 
@@ -127,14 +127,14 @@ class Chef
 
     def to_hash
       result = manifest.dup
-      result['frozen?'] = frozen_version?
-      result['chef_type'] = 'cookbook_version'
+      result["frozen?"] = frozen_version?
+      result["chef_type"] = "cookbook_version"
       result.to_hash
     end
 
     def to_json(*a)
       result = to_hash
-      result['json_class'] = "Chef::CookbookVersion"
+      result["json_class"] = "Chef::CookbookVersion"
       Chef::JSONCompat.to_json(result, *a)
     end
 
@@ -152,6 +152,7 @@ class Chef
     def named_cookbook_url
       "#{cookbook_url_path}/#{name}"
     end
+
     # Adds the `force=true` parameter to the upload URL. This allows
     # the user to overwrite a frozen cookbook (a PUT against the
     # normal #save_url raises a 409 Conflict in this case).
@@ -169,7 +170,7 @@ class Chef
 
       COOKBOOK_SEGMENTS.each do |segment|
         next unless @manifest.has_key?(segment)
-        filenames = @manifest[segment].map{|manifest_record| manifest_record['name']}
+        filenames = @manifest[segment].map { |manifest_record| manifest_record["name"] }
 
         cookbook_version.replace_segment_filenames(segment, filenames)
       end
@@ -193,7 +194,7 @@ class Chef
         :templates => Array.new,
         :resources => Array.new,
         :providers => Array.new,
-        :root_files => Array.new
+        :root_files => Array.new,
       })
       @checksums = {}
 
@@ -215,7 +216,7 @@ class Chef
             :name => file_name,
             :path => path,
             :checksum => csum,
-            :specificity => specificity
+            :specificity => specificity,
           })
 
           manifest[segment] << rs
@@ -243,17 +244,17 @@ class Chef
 
         parts = pathname.each_filename.take(2)
         # Check if path is actually under root_path
-        next if parts[0] == '..'
+        next if parts[0] == ".."
         if segment == :templates || segment == :files
           # Check if pathname looks like files/foo or templates/foo (unscoped)
           if pathname.each_filename.to_a.length == 2
             # Use root_default in case the same path exists at root_default and default
-            return [ pathname.to_s, 'root_default' ]
+            return [ pathname.to_s, "root_default" ]
           else
             return [ pathname.to_s, parts[1] ]
           end
         else
-          return [ pathname.to_s, 'default' ]
+          return [ pathname.to_s, "default" ]
         end
       end
       Chef::Log.error("Cookbook file #{segment_file} not under cookbook root paths #{root_paths.inspect}.")

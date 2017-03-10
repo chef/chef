@@ -1,7 +1,7 @@
 #
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Author:: Ho-Sheng Hsiao (<hosh@opscode.com>)
-# Copyright:: Copyright (c) 2012, 2013 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Author:: Ho-Sheng Hsiao (<hosh@chef.io>)
+# Copyright:: Copyright 2012-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'rack'
-require 'stringio'
+require "rack"
+require "stringio"
 
 module AppServerSupport
   def start_app_server(app, port)
@@ -27,15 +27,13 @@ module AppServerSupport
       Rack::Handler::WEBrick.run(app,
         :Port => 9018,
         :AccessLog => [],
-        :Logger => WEBrick::Log::new(StringIO.new, 7)
+        :Logger => WEBrick::Log.new(StringIO.new, 7)
       ) do |found_server|
         server = found_server
       end
     end
-    Timeout::timeout(5) do
-      until server && server.status == :Running
-        sleep(0.01)
-      end
+    Timeout.timeout(30) do
+      sleep(0.01) until server && server.status == :Running
     end
     [server, thread]
   end

@@ -1,6 +1,6 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/process'
+require "chef/win32/process"
 
 module RSpec
   module Prof
@@ -43,4 +43,3 @@ module RSpec
     end
   end
 end
-

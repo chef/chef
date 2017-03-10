@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/shell_out'
+require "spec_helper"
+require "chef/mixin/shell_out"
 
 metadata = {
   :mac_osx_only => true,
@@ -28,11 +28,9 @@ describe "Chef::Resource::User with Chef::Provider::User::Dscl provider", metada
   include Chef::Mixin::ShellOut
 
   def clean_user
-    begin
-      shell_out!("/usr/bin/dscl . -delete '/Users/#{username}'")
-    rescue Mixlib::ShellOut::ShellCommandFailed
+    shell_out!("/usr/bin/dscl . -delete '/Users/#{username}'")
+  rescue Mixlib::ShellOut::ShellCommandFailed
       # Raised when the user is already cleaned
-    end
   end
 
   def user_should_exist
@@ -76,7 +74,7 @@ describe "Chef::Resource::User with Chef::Provider::User::Dscl provider", metada
   let(:iterations) { nil }
 
   let(:user_resource) do
-    r = Chef::Resource::User.new("TEST USER RESOURCE", run_context)
+    r = Chef::Resource::User::DsclUser.new("TEST USER RESOURCE", run_context)
     r.username(username)
     r.uid(uid)
     r.gid(gid)
@@ -123,7 +121,7 @@ describe "Chef::Resource::User with Chef::Provider::User::Dscl provider", metada
   end
 
   describe "when password is being set via shadow hash" do
-    let(:password) {
+    let(:password) do
       if node[:platform_version].start_with?("10.7.")
         # On Mac 10.7 we only need to set the password
         "c9b3bd1a0cde797eef0eff16c580dab996ba3a21961cccc\
@@ -139,7 +137,7 @@ b1d4880833aa7a190afc13e2bf0936b8\
 c5adbbac718b7eb99463a7b679571e0f\
 1c9fef2ef08d0b9e9c2bcf644eed2ffc"
       end
-    }
+    end
 
     let(:iterations) { 25000 }
     let(:salt) { "9e2e7d5ee473b496fd24cf0bbfcaedfcb291ee21740e570d1e917e874f8788ca" }
@@ -168,7 +166,7 @@ c5adbbac718b7eb99463a7b679571e0f\
   end
 
   describe "when a user is member of some groups" do
-    let(:groups) { ["staff", "operator"] }
+    let(:groups) { %w{staff operator} }
 
     before do
       existing_resource = user_resource.dup
@@ -186,7 +184,7 @@ c5adbbac718b7eb99463a7b679571e0f\
       end
     end
 
-    it ":remove action removes the user from the groups and deletes the user"do
+    it ":remove action removes the user from the groups and deletes the user" do
       user_resource.run_action(:remove)
       groups.each do |group|
         # Do not raise an error when group is empty

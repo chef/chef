@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
-require 'chef/platform/resource_priority_map'
-require 'chef/mixin/convert_to_class_name'
+require "chef/exceptions"
+require "chef/platform/resource_priority_map"
+require "chef/mixin/convert_to_class_name"
 
 class Chef
   class ResourceResolver
@@ -47,7 +47,6 @@ class Chef
       new(node, resource_name, canonical: canonical).list
     end
 
-
     include Chef::Mixin::ConvertToClassName
 
     # @api private
@@ -56,7 +55,7 @@ class Chef
     attr_reader :resource_name
     # @api private
     def resource
-      Chef.log_deprecation("Chef::ResourceResolver.resource deprecated.  Use resource_name instead.")
+      Chef.deprecated(:custom_resource, "Chef::ResourceResolver.resource deprecated.  Use resource_name instead.")
       resource_name
     end
     # @api private
@@ -174,8 +173,7 @@ class Chef
         if handlers.empty?
           handlers = resources.select { |handler| overrode_provides?(handler) && handler.provides?(node, resource_name) }
           handlers.each do |handler|
-            Chef.log_deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource_name}, but provides #{resource_name.inspect} was never called!")
-            Chef.log_deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
+            Chef.deprecated(:custom_resource, "#{handler}.provides? returned true when asked if it provides DSL #{resource_name}, but provides #{resource_name.inspect} was never called! In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
           end
         end
         handlers

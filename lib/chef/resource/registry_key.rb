@@ -1,7 +1,7 @@
-# Author:: Prajakta Purohit (<prajakta@opscode.com>)
-# Author:: Lamont Granquist (<lamont@opscode.com>)
+# Author:: Prajakta Purohit (<prajakta@chef.io>)
+# Author:: Lamont Granquist (<lamont@chef.io>)
 #
-# Copyright:: 2011, Opscode, Inc.
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/provider/registry_key'
-require 'chef/resource'
-require 'chef/digester'
+require "chef/provider/registry_key"
+require "chef/resource"
+require "chef/digester"
 
 class Chef
   class Resource
@@ -59,7 +59,7 @@ class Chef
       # See lib/chef/resource_reporter.rb for more information.
       attr_reader :unscrubbed_values
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @architecture = :machine
         @recursive = false
@@ -67,7 +67,7 @@ class Chef
         @values, @unscrubbed_values = [], []
       end
 
-      def key(arg=nil)
+      def key(arg = nil)
         set_or_return(
           :key,
           arg,
@@ -75,7 +75,7 @@ class Chef
         )
       end
 
-      def values(arg=nil)
+      def values(arg = nil)
         if not arg.nil?
           if arg.is_a?(Hash)
             @values = [ arg ]
@@ -87,21 +87,21 @@ class Chef
 
           @values.each do |v|
             raise ArgumentError, "Missing name key in RegistryKey values hash" unless v.has_key?(:name)
-            raise ArgumentError, "Missing type key in RegistryKey values hash" unless v.has_key?(:type)
-            raise ArgumentError, "Missing data key in RegistryKey values hash" unless v.has_key?(:data)
             v.each_key do |key|
-              raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless [:name,:type,:data].include?(key)
+              raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless [:name, :type, :data].include?(key)
             end
             raise ArgumentError, "Type of name => #{v[:name]} should be string" unless v[:name].is_a?(String)
-            raise ArgumentError, "Type of type => #{v[:type]} should be symbol" unless v[:type].is_a?(Symbol)
+            if v[:type]
+              raise ArgumentError, "Type of type => #{v[:type]} should be symbol" unless v[:type].is_a?(Symbol)
+            end
           end
           @unscrubbed_values = @values
-        elsif self.instance_variable_defined?(:@values)
+        elsif instance_variable_defined?(:@values)
           scrub_values(@values)
         end
       end
 
-      def recursive(arg=nil)
+      def recursive(arg = nil)
         set_or_return(
           :recursive,
           arg,
@@ -109,7 +109,7 @@ class Chef
         )
       end
 
-      def architecture(arg=nil)
+      def architecture(arg = nil)
         set_or_return(
           :architecture,
           arg,

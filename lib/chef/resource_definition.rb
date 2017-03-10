@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/from_file'
-require 'chef/mixin/params_validate'
+require "chef/mixin/from_file"
+require "chef/mixin/params_validate"
 
 class Chef
   class ResourceDefinition
@@ -27,14 +27,14 @@ class Chef
 
     attr_accessor :name, :params, :recipe, :node
 
-    def initialize(node=nil)
+    def initialize(node = nil)
       @name = nil
       @params = Hash.new
       @recipe = nil
       @node = node
     end
 
-    def define(resource_name, prototype_params=nil, &block)
+    def define(resource_name, prototype_params = nil, &block)
       unless resource_name.kind_of?(Symbol)
         raise ArgumentError, "You must use a symbol when defining a new resource!"
       end
@@ -62,7 +62,7 @@ class Chef
     end
 
     def to_s
-      "#{name.to_s}"
+      "#{name}"
     end
   end
 end

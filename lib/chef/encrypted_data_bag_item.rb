@@ -1,6 +1,6 @@
 #
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2010-2011 Opscode, Inc.
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/data_bag_item'
-require 'chef/encrypted_data_bag_item/decryptor'
-require 'chef/encrypted_data_bag_item/encryptor'
-require 'open-uri'
+require "chef/config"
+require "chef/data_bag_item"
+require "chef/encrypted_data_bag_item/decryptor"
+require "chef/encrypted_data_bag_item/encryptor"
+require "open-uri"
 
 # An EncryptedDataBagItem represents a read-only data bag item where
 # all values, except for the value associated with the id key, have
@@ -47,8 +47,8 @@ require 'open-uri'
 # such nodes in the infrastructure.
 #
 class Chef::EncryptedDataBagItem
-  ALGORITHM = 'aes-256-cbc'
-  AEAD_ALGORITHM = 'aes-256-gcm'
+  ALGORITHM = "aes-256-cbc"
+  AEAD_ALGORITHM = "aes-256-gcm"
 
   #
   # === Synopsis
@@ -121,11 +121,11 @@ class Chef::EncryptedDataBagItem
   #
   def self.load(data_bag, name, secret = nil)
     raw_hash = Chef::DataBagItem.load(data_bag, name)
-    secret = secret || self.load_secret
-    self.new(raw_hash, secret)
+    secret ||= load_secret
+    new(raw_hash, secret)
   end
 
-  def self.load_secret(path=nil)
+  def self.load_secret(path = nil)
     path ||= Chef::Config[:encrypted_data_bag_secret]
     if !path
       raise ArgumentError, "No secret specified and no secret found at #{Chef::Config.platform_specific_path('/etc/chef/encrypted_data_bag_secret')}"

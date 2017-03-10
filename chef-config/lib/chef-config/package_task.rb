@@ -1,6 +1,6 @@
 #
 # Author:: Kartik Null Cating-Subramanian (<ksubramanian@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef, Inc.
+# Copyright:: Copyright 2015-2016, Chef, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'rake'
-require 'rubygems'
-require 'rubygems/package_task'
+require "rake"
+require "rubygems"
+require "rubygems/package_task"
 
 module ChefConfig
   class PackageTask < Rake::TaskLib
@@ -30,6 +30,10 @@ module ChefConfig
     # Name of the top-level module/library build built.  This is used to define
     # the top level module which contains VERSION and MODULE_ROOT.
     attr_accessor :module_name
+
+    # Name of the gem being built. This is used to find the lines to fix in
+    # Gemfile.lock.
+    attr_accessor :gem_name
 
     # Should the generated version.rb be in a class or module?  Default is false (module).
     attr_accessor :generate_version_class
@@ -47,10 +51,6 @@ module ChefConfig
       @module_path || module_name.downcase
     end
 
-    # Path to a VERSION file with a single string that contains the package version.
-    # By default, this is root_path/VERSION
-    attr_accessor :version_file_path
-
     # Directory used to store package files and output that is generated.
     # This has the same meaning (or lack thereof) as package_dir in
     # rake/packagetask.
@@ -59,33 +59,45 @@ module ChefConfig
     # Name of git remote used to push tags during a release.  Default is origin.
     attr_accessor :git_remote
 
-    def initialize(root_path=nil, module_name=nil)
-      init(root_path, module_name)
+    def initialize(root_path = nil, module_name = nil, gem_name = nil)
+      init(root_path, module_name, gem_name)
       yield self if block_given?
       define unless root_path.nil? || module_name.nil?
     end
 
-    def init(root_path, module_name)
+    def init(root_path, module_name, gem_name)
       @root_path = root_path
       @module_name = module_name
+      @gem_name = gem_name
       @component_paths = []
       @module_path = nil
-      @version_file_path = 'VERSION'
-      @package_dir = 'pkg'
-      @git_remote = 'origin'
+      @package_dir = "pkg"
+      @git_remote = "origin"
       @generate_version_class = false
     end
 
     def component_full_paths
-      component_paths.map { |path| File.expand_path(path, root_path)}
+      component_paths.map { |path| File.expand_path(path, root_path) }
     end
 
     def version_rb_path
       File.expand_path("lib/#{module_path}/version.rb", root_path)
     end
 
+    def chef_root_path
+      module_name == "Chef" ? root_path : File.dirname(root_path)
+    end
+
+    def version_file_path
+      File.join(chef_root_path, "VERSION")
+    end
+
+    def gemfile_lock_path
+      File.join(root_path, "Gemfile.lock")
+    end
+
     def version
-      IO.read(File.expand_path(version_file_path, root_path)).strip
+      IO.read(version_file_path).strip
     end
 
     def full_package_dir
@@ -93,66 +105,87 @@ module ChefConfig
     end
 
     def class_or_module
-      generate_version_class ? 'class' : 'module'
+      generate_version_class ? "class" : "module"
     end
 
     def with_clean_env(&block)
       if defined?(Bundler)
         Bundler.with_clean_env(&block)
       else
-        block.call
+        yield
       end
     end
 
     def define
-      fail 'Need to provide package root and module name' if root_path.nil? || module_name.nil?
+      raise "Need to provide package root and module name" if root_path.nil? || module_name.nil?
 
-      desc 'Build Gems of component dependencies'
+      desc "Build Gems of component dependencies"
       task :package_components do
         component_full_paths.each do |component_path|
           Dir.chdir(component_path) do
-            sh 'rake package'
+            sh "rake package"
           end
         end
       end
 
       task :package => :package_components
 
-      desc 'Build and install component dependencies'
+      desc "Build and install component dependencies"
       task :install_components => :package_components do
         component_full_paths.each do |component_path|
           Dir.chdir(component_path) do
-            sh 'rake install'
+            sh "rake install"
           end
         end
       end
 
       task :install => :install_components
 
-      desc 'Clean up builds of component dependencies'
+      desc "Clean up builds of component dependencies"
       task :clobber_component_packages do
         component_full_paths.each do |component_path|
           Dir.chdir(component_path) do
-            sh 'rake clobber_package'
+            sh "rake clobber_package"
           end
         end
       end
 
       task :clobber_package => :clobber_component_packages
 
-      desc 'Update the version number for component dependencies'
+      desc "Update the version number for component dependencies"
       task :update_components_versions do
         component_full_paths.each do |component_path|
           Dir.chdir(component_path) do
-            sh 'rake version'
+            sh "rake version"
           end
         end
       end
 
-      desc 'Regenerate lib/#{@module_path}/version.rb from VERSION file'
-      task :version => :update_components_versions do
-        contents = <<-VERSION_RB
-# Copyright:: Copyright (c) 2010-2015 Chef Software, Inc.
+      namespace :version do
+        desc 'Regenerate lib/#{@module_path}/version.rb from VERSION file'
+        task :update => :update_components_versions do
+          update_version_rb
+          update_gemfile_lock
+        end
+
+        task :bump => %w{version:bump_patch version:update}
+
+        task :show do
+          puts version
+        end
+
+        # Add 1 to the current patch version in the VERSION file, and write it back out.
+        task :bump_patch do
+          current_version = version
+          new_version = current_version.sub(/^(\d+\.\d+\.)(\d+)/) { "#{$1}#{$2.to_i + 1}" }
+          puts "Updating version in #{version_rb_path} from #{current_version.chomp} to #{new_version.chomp}"
+          IO.write(version_file_path, new_version)
+        end
+
+        def update_version_rb # rubocop:disable Lint/NestedMethodDefinition
+          puts "Updating #{version_rb_path} to include version #{version} ..."
+          contents = <<-VERSION_RB
+# Copyright:: Copyright 2010-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -174,8 +207,8 @@ module ChefConfig
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #{class_or_module} #{module_name}
-  #{module_name.upcase}_ROOT = File.dirname(File.expand_path(File.dirname(__FILE__)))
-  VERSION = '#{version}'
+  #{module_name.upcase}_ROOT = File.expand_path("../..", __FILE__)
+  VERSION = "#{version}"
 end
 
 #
@@ -186,22 +219,38 @@ end
 #       pre-release versions like "10.14.0.rc.2".  Please use Rubygem's
 #       Gem::Version class instead.
 #
-        VERSION_RB
-        IO.write(version_rb_path, contents)
+          VERSION_RB
+          IO.write(version_rb_path, contents)
+        end
+
+        def update_gemfile_lock # rubocop:disable Lint/NestedMethodDefinition
+          if File.exist?(gemfile_lock_path)
+            puts "Updating #{gemfile_lock_path} to include version #{version} ..."
+            contents = IO.read(gemfile_lock_path)
+            contents.gsub!(/^\s*(chef|chef-config)\s*\((= )?\S+\)\s*$/) do |line|
+              line.gsub(/\((= )?\d+(\.\d+)+/) { "(#{$1}#{version}" }
+            end
+            IO.write(gemfile_lock_path, contents)
+          end
+        end
       end
 
-      Dir[File.expand_path("*gemspec", root_path)].reverse.each do |gemspec_path|
+      task :version => "version:update"
+
+      gemspec_platform_to_install = ""
+      Dir[File.expand_path("*.gemspec", root_path)].reverse_each do |gemspec_path|
         gemspec = eval(IO.read(gemspec_path))
         Gem::PackageTask.new(gemspec) do |task|
           task.package_dir = full_package_dir
         end
+        gemspec_platform_to_install = "-#{gemspec.platform}" if gemspec.platform != Gem::Platform::RUBY && Gem::Platform.match(gemspec.platform)
       end
 
       desc "Build and install a #{module_path} gem"
       task :install => [:package] do
         with_clean_env do
           full_module_path = File.join(full_package_dir, module_path)
-          sh %{gem install #{full_module_path}-#{version}.gem --no-rdoc --no-ri}
+          sh %{gem install #{full_module_path}-#{version}#{gemspec_platform_to_install}.gem --no-rdoc --no-ri}
         end
       end
 
@@ -209,11 +258,11 @@ end
         sh %{gem uninstall #{module_path} -x -v #{version} }
       end
 
-      desc 'Build it, tag it and ship it'
+      desc "Build it, tag it and ship it"
       task :ship => [:clobber_package, :gem] do
         sh("git tag #{version}")
         sh("git push #{git_remote} --tags")
-        Dir[File.expand_path('*.gem', full_package_dir)].reverse.each do |built_gem|
+        Dir[File.expand_path("*.gem", full_package_dir)].reverse_each do |built_gem|
           sh("gem push #{built_gem}")
         end
       end

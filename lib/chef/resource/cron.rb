@@ -1,7 +1,7 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2009 Bryan McLellan
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2009-2016, Bryan McLellan
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require "chef/resource"
 
 class Chef
   class Resource
@@ -30,7 +30,7 @@ class Chef
       default_action :create
       allowed_actions :create, :delete
 
-      def initialize(name, run_context=nil)
+      def initialize(name, run_context = nil)
         super
         @minute = "*"
         @hour = "*"
@@ -47,7 +47,7 @@ class Chef
         @environment = {}
       end
 
-      def minute(arg=nil)
+      def minute(arg = nil)
         if arg.is_a?(Integer)
           converted_arg = arg.to_s
         else
@@ -64,7 +64,7 @@ class Chef
         )
       end
 
-      def hour(arg=nil)
+      def hour(arg = nil)
         if arg.is_a?(Integer)
           converted_arg = arg.to_s
         else
@@ -81,7 +81,7 @@ class Chef
         )
       end
 
-      def day(arg=nil)
+      def day(arg = nil)
         if arg.is_a?(Integer)
           converted_arg = arg.to_s
         else
@@ -98,7 +98,7 @@ class Chef
         )
       end
 
-      def month(arg=nil)
+      def month(arg = nil)
         if arg.is_a?(Integer)
           converted_arg = arg.to_s
         else
@@ -115,7 +115,7 @@ class Chef
         )
       end
 
-      def weekday(arg=nil)
+      def weekday(arg = nil)
         if arg.is_a?(Integer)
           converted_arg = arg.to_s
         else
@@ -123,11 +123,11 @@ class Chef
         end
         begin
           error_message = "You provided '#{arg}' as a weekday, acceptable values are "
-          error_message << Provider::Cron::WEEKDAY_SYMBOLS.map {|sym| ":#{sym.to_s}"}.join(', ')
+          error_message << Provider::Cron::WEEKDAY_SYMBOLS.map { |sym| ":#{sym}" }.join(", ")
           error_message << " and a string in crontab format"
           if (arg.is_a?(Symbol) && !Provider::Cron::WEEKDAY_SYMBOLS.include?(arg)) ||
-            (!arg.is_a?(Symbol) && integerize(arg) > 7) ||
-            (!arg.is_a?(Symbol) && integerize(arg) < 0)
+              (!arg.is_a?(Symbol) && integerize(arg) > 7) ||
+              (!arg.is_a?(Symbol) && integerize(arg) < 0)
             raise RangeError, error_message
           end
         rescue ArgumentError
@@ -139,7 +139,7 @@ class Chef
         )
       end
 
-      def time(arg=nil)
+      def time(arg = nil)
         set_or_return(
           :time,
           arg,
@@ -147,7 +147,7 @@ class Chef
         )
       end
 
-      def mailto(arg=nil)
+      def mailto(arg = nil)
         set_or_return(
           :mailto,
           arg,
@@ -155,7 +155,7 @@ class Chef
         )
       end
 
-      def path(arg=nil)
+      def path(arg = nil)
         set_or_return(
           :path,
           arg,
@@ -163,7 +163,7 @@ class Chef
         )
       end
 
-      def home(arg=nil)
+      def home(arg = nil)
         set_or_return(
           :home,
           arg,
@@ -171,7 +171,7 @@ class Chef
         )
       end
 
-      def shell(arg=nil)
+      def shell(arg = nil)
         set_or_return(
           :shell,
           arg,
@@ -179,7 +179,7 @@ class Chef
         )
       end
 
-      def command(arg=nil)
+      def command(arg = nil)
         set_or_return(
           :command,
           arg,
@@ -187,7 +187,7 @@ class Chef
         )
       end
 
-      def user(arg=nil)
+      def user(arg = nil)
         set_or_return(
           :user,
           arg,
@@ -195,7 +195,7 @@ class Chef
         )
       end
 
-      def environment(arg=nil)
+      def environment(arg = nil)
         set_or_return(
           :environment,
           arg,

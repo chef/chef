@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/user_key_delete'
-require 'chef/knife/client_key_delete'
-require 'chef/knife/key_delete'
-require 'chef/key'
+require "spec_helper"
+require "chef/knife/user_key_delete"
+require "chef/knife/client_key_delete"
+require "chef/knife/key_delete"
+require "chef/key"
 
 describe "key delete commands that inherit knife" do
   shared_examples_for "a key delete command" do
@@ -45,8 +45,8 @@ describe "key delete commands that inherit knife" do
       context "when the service object is called" do
         it "creates a new instance of Chef::Knife::KeyDelete with the correct args" do
           expect(Chef::Knife::KeyDelete).to receive(:new).
-                                             with("charmander-key", "charmander", command.actor_field_name, command.ui).
-                                             and_return(service_object)
+            with("charmander-key", "charmander", command.actor_field_name, command.ui).
+            and_return(service_object)
           command.service_object
         end
       end # when the service object is called
@@ -80,9 +80,9 @@ describe Chef::Knife::KeyDelete do
   let(:ui) { instance_double("Chef::Knife::UI") }
 
   shared_examples_for "key delete run command" do
-    let(:key_delete_object) {
+    let(:key_delete_object) do
       described_class.new(keyname, actor, actor_field_name, ui)
-    }
+    end
 
     before do
       allow_any_instance_of(Chef::Key).to receive(:destroy)
@@ -117,7 +117,6 @@ describe Chef::Knife::KeyDelete do
       end
     end # when the command is run
 
-
   end # key delete run command
 
   context "when actor_field_name is 'user'" do
@@ -132,4 +131,3 @@ describe Chef::Knife::KeyDelete do
     end
   end
 end
-

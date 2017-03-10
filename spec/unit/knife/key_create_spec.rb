@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/user_key_create'
-require 'chef/knife/client_key_create'
-require 'chef/knife/key_create'
-require 'chef/key'
+require "spec_helper"
+require "chef/knife/user_key_create"
+require "chef/knife/client_key_create"
+require "chef/knife/key_create"
+require "chef/key"
 
 describe "key create commands that inherit knife" do
   shared_examples_for "a key create command" do
@@ -73,7 +73,7 @@ describe "key create commands that inherit knife" do
 end
 
 describe Chef::Knife::KeyCreate do
-  let(:public_key) {
+  let(:public_key) do
     "-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvPo+oNPB7uuNkws0fC02
 KxSwdyqPLu0fhI1pOweNKAZeEIiEz2PkybathHWy8snSXGNxsITkf3eyvIIKa8OZ
@@ -83,28 +83,28 @@ IjSmiN/ihHtlhV/VSnBJ5PzT/lRknlrJ4kACoz7Pq9jv+aAx5ft/xE9yDa2DYs0q
 Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
 0wIDAQAB
 -----END PUBLIC KEY-----"
-  }
+  end
   let(:config) { Hash.new }
   let(:actor) { "charmander" }
   let(:ui) { instance_double("Chef::Knife::UI") }
 
   shared_examples_for "key create run command" do
-    let(:key_create_object) {
+    let(:key_create_object) do
       described_class.new(actor, actor_field_name, ui, config)
-    }
+    end
 
     context "when public_key and key_name weren't passed" do
       it "raises a Chef::Exceptions::KeyCommandInputError with the proper error message" do
-        expect{ key_create_object.run }.to raise_error(Chef::Exceptions::KeyCommandInputError, key_create_object.public_key_or_key_name_error_msg)
+        expect { key_create_object.run }.to raise_error(Chef::Exceptions::KeyCommandInputError, key_create_object.public_key_or_key_name_error_msg)
       end
     end
 
     context "when the command is run" do
-      let(:expected_hash) {
+      let(:expected_hash) do
         {
-          actor_field_name => "charmander"
+          actor_field_name => "charmander",
         }
-      }
+      end
 
       before do
         allow(File).to receive(:read).and_return(public_key)
@@ -112,7 +112,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
 
         allow(key_create_object).to receive(:output_private_key_to_file)
         allow(key_create_object).to receive(:display_private_key)
-        allow(key_create_object).to receive(:edit_data).and_return(expected_hash)
+        allow(key_create_object).to receive(:edit_hash).and_return(expected_hash)
         allow(key_create_object).to receive(:create_key_from_hash).and_return(Chef::Key.from_hash(expected_hash))
         allow(key_create_object).to receive(:display_info)
       end
@@ -120,14 +120,14 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
       context "when a valid hash is passed" do
         let(:key_name) { "charmander-key" }
         let(:valid_expiration_date) { "2020-12-24T21:00:00Z" }
-        let(:expected_hash) {
+        let(:expected_hash) do
           {
             actor_field_name => "charmander",
             "public_key" => public_key,
             "expiration_date" => valid_expiration_date,
-            "key_name" => key_name
+            "key_name" => key_name,
           }
-        }
+        end
         before do
           key_create_object.config[:public_key] = "public_key_path"
           key_create_object.config[:expiration_Date] = valid_expiration_date,
@@ -141,12 +141,12 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
       end
 
       context "when public_key is passed" do
-        let(:expected_hash) {
+        let(:expected_hash) do
           {
             actor_field_name => "charmander",
-            "public_key" => public_key
+            "public_key" => public_key,
           }
-        }
+        end
         before do
           key_create_object.config[:public_key] = "public_key_path"
         end
@@ -158,13 +158,13 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
       end # when public_key is passed
 
       context "when public_key isn't passed and key_name is" do
-        let(:expected_hash) {
+        let(:expected_hash) do
           {
             actor_field_name => "charmander",
             "name" => "charmander-key",
-            "create_key" => true
+            "create_key" => true,
           }
-        }
+        end
         before do
           key_create_object.config[:key_name] = "charmander-key"
         end
@@ -176,13 +176,13 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
       end
 
       context "when the server returns a private key" do
-        let(:expected_hash) {
+        let(:expected_hash) do
           {
             actor_field_name => "charmander",
             "public_key" => public_key,
-            "private_key" => "super_private"
+            "private_key" => "super_private",
           }
-        }
+        end
 
         before do
           key_create_object.config[:public_key] = "public_key_path"
@@ -221,4 +221,3 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
     end
   end
 end
-

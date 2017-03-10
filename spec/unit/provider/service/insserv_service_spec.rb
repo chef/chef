@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Provider::Service::Insserv do
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @node.automatic_attrs[:command] = {:ps => "ps -ax"}
+    @node.automatic_attrs[:command] = { :ps => "ps -ax" }
 
     @new_resource = Chef::Resource::Service.new("initgrediant")
     @current_resource = Chef::Resource::Service.new("initgrediant")

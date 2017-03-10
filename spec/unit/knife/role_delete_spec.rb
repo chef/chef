@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::RoleDelete do
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::RoleDelete.new
     @knife.config = {
-      :print_after => nil
+      :print_after => nil,
     }
     @knife.name_args = [ "adam" ]
     allow(@knife).to receive(:output).and_return(true)

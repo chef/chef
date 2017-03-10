@@ -1,8 +1,8 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Author:: Claire McQuin (<claire@getchef.com>)
+# Author:: Claire McQuin (<claire@chef.io>)
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,12 +18,12 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'rspec/core/sandbox'
-require 'chef/audit/runner'
-require 'rspec/support/spec/in_sub_process'
-require 'rspec/support/spec/stderr_splitter'
-require 'chef/audit/rspec_formatter'
+require "spec_helper"
+require "rspec/core/sandbox"
+require "chef/audit/runner"
+require "rspec/support/spec/in_sub_process"
+require "rspec/support/spec/stderr_splitter"
+require "chef/audit/rspec_formatter"
 
 describe Chef::Audit::RspecFormatter do
   include RSpec::Support::InSubProcess

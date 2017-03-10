@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,7 +60,7 @@ class Chef
       def build_control_from(example)
         described_class = example.metadata[:described_class]
         if described_class
-          resource_type = described_class.class.name.split(':')[-1]
+          resource_type = described_class.class.name.split(":")[-1]
           resource_name = described_class.name
         end
 
@@ -70,7 +70,7 @@ class Chef
         # If the innermost block has a resource instead of a string, don't include it in context
         describe_groups.unshift(group[:description]) if described_class.nil?
         group = group[:parent_example_group]
-        while !group.nil?
+        until group.nil?
           describe_groups.unshift(group[:description])
           group = group[:parent_example_group]
         end
@@ -78,14 +78,14 @@ class Chef
         # We know all of our examples each live in a top-level `control_group` block - get this name now
         outermost_group_desc = describe_groups.shift
 
-        return outermost_group_desc, {
+        [outermost_group_desc, {
             :name => example.description,
             :desc => example.full_description,
             :resource_type => resource_type,
             :resource_name => resource_name,
             :context => describe_groups,
-            :line_number => example.metadata[:line_number]
-        }
+            :line_number => example.metadata[:line_number],
+        }]
       end
 
     end

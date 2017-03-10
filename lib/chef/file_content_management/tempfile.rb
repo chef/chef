@@ -1,6 +1,6 @@
 #
-# Author:: Lamont Granquist (<lamont@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,8 @@ class Chef
 
         tempfile_dirnames.each do |tempfile_dirname|
           begin
-            tf = ::Tempfile.open(tempfile_basename, tempfile_dirname)
+            # preserving the file extension of the target filename should be considered a public API
+            tf = ::Tempfile.open([tempfile_basename, tempfile_extension], tempfile_dirname)
             break
           rescue SystemCallError => e
             message = "Creating temp file under '#{tempfile_dirname}' failed with: '#{e.message}'"
@@ -63,9 +64,19 @@ class Chef
       # as the arguments to Tempfile.new() consistently.
       #
       def tempfile_basename
-        basename = ::File.basename(@new_resource.name)
-        basename.insert 0, "." unless Chef::Platform.windows?  # dotfile if we're not on windows
+        basename = ::File.basename(@new_resource.path, tempfile_extension)
+        # the leading "[.]chef-" here should be considered a public API and should not be changed
+        basename.insert 0, "chef-"
+        basename.insert 0, "." unless Chef::Platform.windows? # dotfile if we're not on windows
         basename
+      end
+
+      # this is similar to File.extname() but greedy about the extension (from the first dot, not the last dot)
+      def tempfile_extension
+        # complexity here is due to supporting mangling non-UTF8 strings (e.g. latin-1 filenames with characters that are illegal in UTF-8)
+        b = File.basename(@new_resource.path)
+        i = b.index(".")
+        i.nil? ? "" : b[i..-1]
       end
 
       # Returns the possible directories for the tempfile to be created in.

@@ -1,6 +1,6 @@
 #
 # Author:: Jason K. Jackson (jasonjackson@gmail.com)
-# Copyright:: Copyright (c) 2009 Jason K. Jackson
+# Copyright:: Copyright 2009-2016, Jason K. Jackson
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/mixin/command'
-require 'chef/mixin/shell_out'
-require 'chef/provider'
-require 'chef/resource/file'
-require 'chef/exceptions'
-require 'erb'
+require "chef/log"
+require "chef/mixin/command"
+require "chef/mixin/shell_out"
+require "chef/provider"
+require "chef/resource/file"
+require "chef/exceptions"
+require "erb"
 
 #  Recipe example:
 #
@@ -58,7 +58,7 @@ class Chef
       end
 
       def load_current_resource
-        @current_resource = Chef::Resource::Ifconfig.new(@new_resource.name)
+        @current_resource = Chef::Resource::Ifconfig.new(new_resource.name)
 
         @ifconfig_success = true
         @interfaces = {}
@@ -67,29 +67,28 @@ class Chef
         @status.stdout.each_line do |line|
           if !line[0..9].strip.empty?
             @int_name = line[0..9].strip
-            @interfaces[@int_name] = {"hwaddr" => (line =~ /(HWaddr)/ ? ($') : "nil").strip.chomp }
+            @interfaces[@int_name] = { "hwaddr" => (line =~ /(HWaddr)/ ? ($') : "nil").strip.chomp }
           else
-            @interfaces[@int_name]["inet_addr"] = (line =~ /inet addr:(\S+)/ ? ($1) : "nil") if line =~ /inet addr:/
-            @interfaces[@int_name]["bcast"] = (line =~ /Bcast:(\S+)/ ? ($1) : "nil") if line =~ /Bcast:/
-            @interfaces[@int_name]["mask"] = (line =~ /Mask:(\S+)/ ? ($1) : "nil") if line =~ /Mask:/
-            @interfaces[@int_name]["mtu"] = (line =~ /MTU:(\S+)/ ? ($1) : "nil") if line =~ /MTU:/
-            @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? ($1) : "nil") if line =~ /Metric:/
+            @interfaces[@int_name]["inet_addr"] = (line =~ /inet addr:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /inet addr:/
+            @interfaces[@int_name]["bcast"] = (line =~ /Bcast:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Bcast:/
+            @interfaces[@int_name]["mask"] = (line =~ /Mask:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Mask:/
+            @interfaces[@int_name]["mtu"] = (line =~ /MTU:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /MTU:/
+            @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Metric:/
           end
 
-          if @interfaces.has_key?(@new_resource.device)
-            @interface = @interfaces.fetch(@new_resource.device)
+          next unless @interfaces.key?(new_resource.device)
+          @interface = @interfaces.fetch(new_resource.device)
 
-            @current_resource.target(@new_resource.target)
-            @current_resource.device(@new_resource.device)
-            @current_resource.inet_addr(@interface["inet_addr"])
-            @current_resource.hwaddr(@interface["hwaddr"])
-            @current_resource.bcast(@interface["bcast"])
-            @current_resource.mask(@interface["mask"])
-            @current_resource.mtu(@interface["mtu"])
-            @current_resource.metric(@interface["metric"])
-          end
+          current_resource.target(new_resource.target)
+          current_resource.device(new_resource.device)
+          current_resource.inet_addr(@interface["inet_addr"])
+          current_resource.hwaddr(@interface["hwaddr"])
+          current_resource.bcast(@interface["bcast"])
+          current_resource.mask(@interface["mask"])
+          current_resource.mtu(@interface["mtu"])
+          current_resource.metric(@interface["metric"])
         end
-        @current_resource
+        current_resource
       end
 
       def define_resource_requirements
@@ -104,14 +103,12 @@ class Chef
 
       def action_add
         # check to see if load_current_resource found interface in ifconfig
-        unless @current_resource.inet_addr
-          unless @new_resource.device == loopback_device
+        unless current_resource.inet_addr
+          unless new_resource.device == loopback_device
             command = add_command
-            converge_by ("run #{command} to add #{@new_resource}") do
-              run_command(
-                :command => command
-              )
-              Chef::Log.info("#{@new_resource} added")
+            converge_by("run #{command.join(' ')} to add #{new_resource}") do
+              shell_out_compact!(command)
+              Chef::Log.info("#{new_resource} added")
             end
           end
         end
@@ -122,31 +119,25 @@ class Chef
       def action_enable
         # check to see if load_current_resource found ifconfig
         # enables, but does not manage config files
-        unless @current_resource.inet_addr
-          unless @new_resource.device == loopback_device
-            command = enable_command
-            converge_by ("run #{command} to enable #{@new_resource}") do
-              run_command(
-                :command => command
-              )
-              Chef::Log.info("#{@new_resource} enabled")
-            end
-          end
+        return if current_resource.inet_addr
+        return if new_resource.device == loopback_device
+        command = enable_command
+        converge_by("run #{command.join(' ')} to enable #{new_resource}") do
+          shell_out_compact!(command)
+          Chef::Log.info("#{new_resource} enabled")
         end
       end
 
       def action_delete
         # check to see if load_current_resource found the interface
-        if @current_resource.device
+        if current_resource.device
           command = delete_command
-          converge_by ("run #{command} to delete #{@new_resource}") do
-            run_command(
-              :command => command
-            )
-            Chef::Log.info("#{@new_resource} deleted")
+          converge_by("run #{command.join(' ')} to delete #{new_resource}") do
+            shell_out_compact!(command)
+            Chef::Log.info("#{new_resource} deleted")
           end
         else
-          Chef::Log.debug("#{@new_resource} does not exist - nothing to do")
+          Chef::Log.debug("#{new_resource} does not exist - nothing to do")
         end
         delete_config
       end
@@ -154,21 +145,19 @@ class Chef
       def action_disable
         # check to see if load_current_resource found the interface
         # disables, but leaves config files in place.
-        if @current_resource.device
+        if current_resource.device
           command = disable_command
-          converge_by ("run #{command} to disable #{@new_resource}") do
-            run_command(
-              :command => command
-            )
-            Chef::Log.info("#{@new_resource} disabled")
+          converge_by("run #{command.join(' ')} to disable #{new_resource}") do
+            shell_out_compact!(command)
+            Chef::Log.info("#{new_resource} disabled")
           end
         else
-          Chef::Log.debug("#{@new_resource} does not exist - nothing to do")
+          Chef::Log.debug("#{new_resource} does not exist - nothing to do")
         end
       end
 
       def can_generate_config?
-        ! @config_template.nil? and ! @config_path.nil?
+        !@config_template.nil? && !@config_path.nil?
       end
 
       def resource_for_config(path)
@@ -182,43 +171,44 @@ class Chef
         config = resource_for_config(@config_path)
         config.content(template.result(b))
         config.run_action(:create)
-        @new_resource.updated_by_last_action(true) if config.updated?
+        new_resource.updated_by_last_action(true) if config.updated?
       end
 
       def delete_config
         return unless can_generate_config?
         config = resource_for_config(@config_path)
         config.run_action(:delete)
-        @new_resource.updated_by_last_action(true) if config.updated?
+        new_resource.updated_by_last_action(true) if config.updated?
       end
 
       private
+
       def add_command
-        command = "ifconfig #{@new_resource.device} #{@new_resource.target}"
-        command << " netmask #{@new_resource.mask}" if @new_resource.mask
-        command << " metric #{@new_resource.metric}" if @new_resource.metric
-        command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+        command = [ "ifconfig", new_resource.device, new_resource.target ]
+        command += [ "netmask", new_resource.mask ] if new_resource.mask
+        command += [ "metric", new_resource.metric ] if new_resource.metric
+        command += [ "mtu", new_resource.mtu ] if new_resource.mtu
         command
       end
 
       def enable_command
-        command = "ifconfig #{@new_resource.device} #{@new_resource.target}"
-        command << " netmask #{@new_resource.mask}" if @new_resource.mask
-        command << " metric #{@new_resource.metric}" if @new_resource.metric
-        command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+        command = [ "ifconfig", new_resource.device, new_resource.target ]
+        command += [ "netmask", new_resource.mask ] if new_resource.mask
+        command += [ "metric", new_resource.metric ] if new_resource.metric
+        command += [ "mtu", new_resource.mtu ] if new_resource.mtu
         command
       end
 
       def disable_command
-        "ifconfig #{@new_resource.device} down"
+        [ "ifconfig", new_resource.device, "down" ]
       end
 
       def delete_command
-        "ifconfig #{@new_resource.device} down"
+        [ "ifconfig", new_resource.device, "down" ]
       end
 
       def loopback_device
-        'lo'
+        "lo"
       end
     end
   end

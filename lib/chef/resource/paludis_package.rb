@@ -1,6 +1,6 @@
 #
 # Author:: Vasiliy Tolstov (<v.tolstov@selfip.ru>)
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,18 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/paludis'
+require "chef/resource/package"
+require "chef/provider/package/paludis"
 
 class Chef
   class Resource
     class PaludisPackage < Chef::Resource::Package
+      resource_name :paludis_package
       provides :paludis_package, os: "linux"
 
       allowed_actions :install, :remove, :upgrade
 
-      def initialize(name, run_context=nil)
-        super(name, run_context)
-        @timeout = 3600
-      end
+      property :timeout, default: 3600
     end
   end
 end

@@ -1,6 +1,6 @@
 #
-# Author:: Daniel DeLeo (<dan@getchef.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,21 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/config'
+require "chef/knife"
+require "chef/config"
 
 class Chef
   class Knife
     class SslCheck < Chef::Knife
 
       deps do
-        require 'pp'
-        require 'socket'
-        require 'uri'
-        require 'chef/http/ssl_policies'
-        require 'openssl'
+        require "pp"
+        require "socket"
+        require "uri"
+        require "chef/http/ssl_policies"
+        require "openssl"
+        require "chef/mixin/proxified_socket"
+        include Chef::Mixin::ProxifiedSocket
       end
 
       banner "knife ssl check [URL] (options)"
@@ -48,7 +50,7 @@ class Chef
       end
 
       def given_uri
-        (name_args[0] or Chef::Config.chef_server_url)
+        (name_args[0] || Chef::Config.chef_server_url)
       end
 
       def host
@@ -75,7 +77,7 @@ class Chef
 
       def verify_peer_socket
         @verify_peer_socket ||= begin
-          tcp_connection = TCPSocket.new(host, port)
+          tcp_connection = proxified_socket(host, port)
           ssl_client = OpenSSL::SSL::SSLSocket.new(tcp_connection, verify_peer_ssl_context)
           ssl_client.hostname = host
           ssl_client
@@ -93,7 +95,7 @@ class Chef
 
       def noverify_socket
         @noverify_socket ||= begin
-          tcp_connection = TCPSocket.new(host, port)
+          tcp_connection = proxified_socket(host, port)
           OpenSSL::SSL::SSLSocket.new(tcp_connection, noverify_peer_ssl_context)
         end
       end
@@ -204,7 +206,7 @@ ADVICE
       def debug_invalid_host
         noverify_socket.connect
         subject = noverify_socket.peer_cert.subject
-        cn_field_tuple = subject.to_a.find {|field| field[0] == "CN" }
+        cn_field_tuple = subject.to_a.find { |field| field[0] == "CN" }
         cn = cn_field_tuple[1]
 
         ui.error("You are attempting to connect to:   '#{host}'")
@@ -243,6 +245,7 @@ ADVICE
 
       def run
         validate_uri
+
         if verify_X509 && verify_cert && verify_cert_host
           ui.msg "Successfully verified certificates from `#{host}'"
         else
@@ -251,9 +254,11 @@ ADVICE
       end
 
       private
+
       def trusted_certificates
         if configuration.trusted_certs_dir && Dir.exist?(configuration.trusted_certs_dir)
-          Dir.glob(File.join(configuration.trusted_certs_dir, "*.{crt,pem}"))
+          glob_dir = ChefConfig::PathHelper.escape_glob_dir(configuration.trusted_certs_dir)
+          Dir.glob(File.join(glob_dir, "*.{crt,pem}"))
         else
           []
         end
@@ -271,7 +276,7 @@ ADVICE
         rescue OpenSSL::X509::StoreError => e
           return e.message
         end
-        return nil
+        nil
       end
     end
   end

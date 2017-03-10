@@ -1,7 +1,7 @@
 # encoding: UTF-8
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2013-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'webrick'
+require "spec_helper"
+require "webrick"
 
 module AptServer
   def enable_testing_apt_source
@@ -66,7 +66,7 @@ module AptServer
     @apt_server_thread = Thread.new do
       run_apt_server
     end
-    until tcp_test_port("localhost", 9000) do
+    until tcp_test_port("localhost", 9000)
       if @apt_server_thread.alive?
         sleep 1
       else
@@ -87,9 +87,9 @@ module AptServer
 end
 
 metadata = { :unix_only => true,
-  :requires_root => true,
-  :provider => {:package => Chef::Provider::Package::Apt},
-  :arch => "x86_64" # test packages are 64bit
+             :requires_root => true,
+             :provider => { :package => Chef::Provider::Package::Apt },
+             :arch => "x86_64" # test packages are 64bit
 }
 
 describe Chef::Resource::Package, metadata do
@@ -111,7 +111,6 @@ describe Chef::Resource::Package, metadata do
       disable_testing_apt_source
       shell_out!("apt-get clean")
     end
-
 
     after do
       shell_out!("dpkg -r chef-integration-test")
@@ -239,7 +238,7 @@ describe Chef::Resource::Package, metadata do
             it "does not update the package configuration" do
               package_resource.run_action(:install)
               cmd = shell_out!("debconf-show chef-integration-test")
-              expect(cmd.stdout).to include('chef-integration-test/sample-var: INVALID')
+              expect(cmd.stdout).to include("chef-integration-test/sample-var: INVALID")
               expect(package_resource).to be_updated_by_last_action
             end
 
@@ -261,7 +260,7 @@ describe Chef::Resource::Package, metadata do
           end
 
           before do
-            node.set[:preseed_value] = "FROM TEMPLATE"
+            node.normal[:preseed_value] = "FROM TEMPLATE"
           end
 
           it "preseeds the package, then installs it" do
@@ -276,7 +275,7 @@ describe Chef::Resource::Package, metadata do
               r = base_resource
               r.cookbook_name = "preseed"
               r.response_file("preseed-template-variables.seed")
-              r.response_file_variables({ :template_variable => 'SUPPORTS VARIABLES' })
+              r.response_file_variables({ :template_variable => "SUPPORTS VARIABLES" })
               r
             end
 
@@ -325,13 +324,12 @@ describe Chef::Resource::Package, metadata do
       # un  chef-integration-test             <none>                                    (no description available)
       def pkg_should_be_removed
         # will raise if exit code != 0,1
-        pkg_check = shell_out!("dpkg -l chef-integration-test", :returns => [0,1])
+        pkg_check = shell_out!("dpkg -l chef-integration-test", :returns => [0, 1])
 
         if pkg_check.exitstatus == 0
           expect(pkg_check.stdout).to match(/un[\s]+chef-integration-test/)
         end
       end
-
 
       it "removes the package for action :remove" do
         package_resource.run_action(:remove)

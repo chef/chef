@@ -1,24 +1,22 @@
 .autotest
 coverage
 .DS_Store
-pkg
+pkg/*
 tags
 */tags
 *~
+.chef
+results
 
-# you should check in your Gemfile.lock in applications, and not in gems
+# You should check in your Gemfile.lock in applications, and not in gems
 external_tests/*.lock
-Gemfile.lock
-Gemfile.local
-
-# Do not check in the .bundle directory, or any of the files inside it. Those files are specific to each particular machine, and are used to persist installation options between runs of the bundle install command.
-.bundle
+/Gemfile.local
 
 # ignore some common Bundler 'binstubs' directory names
 # http://gembundler.com/man/bundle-exec.1.html
 b/
 binstubs/
-
+**/.bundle
 # RVM and RBENV ruby version files
 .rbenv-version
 .rvmrc
@@ -35,7 +33,6 @@ doc/
 
 # Test Kitchen
 .kitchen/
-Berksfile.lock
 
 # Vagrant
 Vagrantfile
@@ -46,3 +43,11 @@ kitchen-tests/nodes/*
 
 # Temporary files present during spec runs
 spec/data/test-dir
+/config/
+
+# acceptance binstubs
+acceptance/bin/*
+
+vendor/
+acceptance/vendor
+kitchen-tests/vendor

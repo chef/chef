@@ -1,6 +1,6 @@
 #
-# Author:: Serdar Sutay (<serdar@opscode.com>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Author:: Serdar Sutay (<serdar@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'stringio'
+require "spec_helper"
+require "stringio"
 
 describe Chef::HTTP::ValidateContentLength do
   class TestClient < Chef::HTTP
@@ -29,7 +29,7 @@ describe Chef::HTTP::ValidateContentLength do
   let(:headers) { {} }
   let(:data) { false }
 
-  let(:request) { }
+  let(:request) {}
   let(:return_value) { "200" }
 
   # Test Variables
@@ -37,25 +37,25 @@ describe Chef::HTTP::ValidateContentLength do
   let(:content_length_value) { 23 }
   let(:streaming_length) { 23 }
   let(:response_body) { "Thanks for checking in." }
-  let(:response_headers) {
+  let(:response_headers) do
     {
-      "content-length" => content_length_value
+      "content-length" => content_length_value,
     }
-  }
+  end
 
-  let(:response) {
-    m = double('HttpResponse', :body => response_body)
+  let(:response) do
+    m = double("HttpResponse", :body => response_body)
     allow(m).to receive(:[]) do |key|
       response_headers[key]
     end
 
     m
-  }
+  end
 
-  let(:middleware) {
+  let(:middleware) do
     client = TestClient.new(url)
     client.middlewares[0]
-  }
+  end
 
   def run_content_length_validation
     stream_handler = middleware.stream_response_handler(response)
@@ -105,9 +105,9 @@ describe Chef::HTTP::ValidateContentLength do
   end
 
   describe "without Content-Length header" do
-    let(:response_headers) { { } }
+    let(:response_headers) { {} }
 
-    [ "direct", "streaming" ].each do |req_type|
+    %w{direct streaming}.each do |req_type|
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
@@ -119,8 +119,23 @@ describe Chef::HTTP::ValidateContentLength do
     end
   end
 
+  describe "with negative Content-Length header" do
+    let(:content_length_value) { "-1" }
+
+    %w{direct streaming}.each do |req_type|
+      describe "when running #{req_type} request" do
+        let(:request_type) { req_type.to_sym }
+
+        it "should skip validation and log for debug" do
+          run_content_length_validation
+          expect(debug_output).to include("HTTP server responded with a negative Content-Length header (-1), cannot identify truncated downloads.")
+        end
+      end
+    end
+  end
+
   describe "with correct Content-Length header" do
-    [ "direct", "streaming" ].each do |req_type|
+    %w{direct streaming}.each do |req_type|
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
@@ -134,7 +149,7 @@ describe Chef::HTTP::ValidateContentLength do
 
   describe "with wrong Content-Length header" do
     let(:content_length_value) { 25 }
-    [ "direct", "streaming" ].each do |req_type|
+    %w{direct streaming}.each do |req_type|
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
@@ -154,14 +169,14 @@ describe Chef::HTTP::ValidateContentLength do
   end
 
   describe "when Transfer-Encoding & Content-Length is set" do
-    let(:response_headers) {
+    let(:response_headers) do
       {
         "content-length" => content_length_value,
-        "transfer-encoding" => "chunked"
+        "transfer-encoding" => "chunked",
       }
-    }
+    end
 
-    [ "direct", "streaming" ].each do |req_type|
+    %w{direct streaming}.each do |req_type|
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
@@ -180,7 +195,7 @@ describe Chef::HTTP::ValidateContentLength do
     end
 
     it "should reset internal counter" do
-        expect(middleware.instance_variable_get(:@content_length_counter)).to be_nil
+      expect(middleware.instance_variable_get(:@content_length_counter)).to be_nil
     end
 
     it "should validate correctly second time" do

@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Delano (<stephen@ospcode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Knife::EnvironmentList do
   before(:each) do
@@ -28,7 +28,7 @@ describe Chef::Knife::EnvironmentList do
     @environments = {
       "production" => "http://localhost:4000/environments/production",
       "development" => "http://localhost:4000/environments/development",
-      "testing" => "http://localhost:4000/environments/testing"
+      "testing" => "http://localhost:4000/environments/testing",
     }
     allow(Chef::Environment).to receive(:list).and_return @environments
   end
@@ -39,7 +39,7 @@ describe Chef::Knife::EnvironmentList do
   end
 
   it "should print the environment names in a sorted list" do
-    names = @environments.keys.sort { |a,b| a <=> b }
+    names = @environments.keys.sort { |a, b| a <=> b }
     expect(@knife).to receive(:output).with(names)
     @knife.run
   end

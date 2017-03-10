@@ -1,5 +1,5 @@
 
-require 'chef/exceptions'
+require "chef/exceptions"
 
 class Chef
   class Whitelist
@@ -27,7 +27,7 @@ class Chef
     #   },
     #   ["network/interfaces/eth0", ["filesystem", "/dev/disk"]])
     # will capture the eth0 and /dev/disk subtrees.
-    def self.filter(data, whitelist=nil)
+    def self.filter(data, whitelist = nil)
       return data if whitelist.nil?
 
       new_data = {}

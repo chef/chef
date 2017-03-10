@@ -1,0 +1,91 @@
+ dpkg-buildpackage -rfakeroot -D -us -uc
+dpkg-buildpackage: warning: using a gain-root-command while being root
+dpkg-buildpackage: set CFLAGS to default value: -g -O2
+dpkg-buildpackage: set CPPFLAGS to default value: 
+dpkg-buildpackage: set LDFLAGS to default value: -Wl,-Bsymbolic-functions
+dpkg-buildpackage: set FFLAGS to default value: -g -O2
+dpkg-buildpackage: set CXXFLAGS to default value: -g -O2
+dpkg-buildpackage: source package chef-integration-test2
+dpkg-buildpackage: source version 1.0-1
+dpkg-buildpackage: source changed by Joshua Timberman <joshua@opscode.com>
+dpkg-buildpackage: host architecture amd64
+ fakeroot debian/rules clean
+dh clean 
+   dh_testdir
+   dh_auto_clean
+   dh_clean
+ dpkg-source -b chef-integration-test2-1.0
+dpkg-source: info: using source format `3.0 (quilt)'
+dpkg-source: info: building chef-integration-test2 using existing ./chef-integration-test2_1.0.orig.tar.gz
+dpkg-source: warning: ignoring deletion of directory cache
+dpkg-source: warning: ignoring deletion of directory cache/chef-integration-test2
+dpkg-source: warning: ignoring deletion of file cache/chef-integration-test2/contents
+dpkg-source: info: building chef-integration-test2 in chef-integration-test2_1.0-1.debian.tar.gz
+dpkg-source: info: building chef-integration-test2 in chef-integration-test2_1.0-1.dsc
+ debian/rules build
+dh build 
+   dh_testdir
+   dh_auto_configure
+   dh_auto_build
+   dh_auto_test
+ fakeroot debian/rules binary
+dh binary 
+   dh_testroot
+   dh_prep
+   dh_installdirs
+   dh_auto_install
+   dh_install
+   dh_installdocs
+   dh_installchangelogs
+   dh_installexamples
+   dh_installman
+   dh_installcatalogs
+   dh_installcron
+   dh_installdebconf
+   dh_installemacsen
+   dh_installifupdown
+   dh_installinfo
+   dh_pysupport
+   dh_installinit
+   dh_installmenu
+   dh_installmime
+   dh_installmodules
+   dh_installlogcheck
+   dh_installlogrotate
+   dh_installpam
+   dh_installppp
+   dh_installudev
+   dh_installwm
+   dh_installxfonts
+   dh_bugfiles
+   dh_lintian
+   dh_gconf
+   dh_icons
+   dh_perl
+   dh_usrlocal
+   dh_link
+   dh_compress
+   dh_fixperms
+   dh_strip
+   dh_makeshlibs
+   dh_shlibdeps
+   dh_installdeb
+   dh_gencontrol
+dpkg-gencontrol: warning: unknown substitution variable ${shlibs:Depends}
+   dh_md5sums
+   dh_builddeb
+dpkg-deb: building package `chef-integration-test2' in `../chef-integration-test2_1.0-1_amd64.deb'.
+ dpkg-genchanges  >../chef-integration-test2_1.0-1_amd64.changes
+dpkg-genchanges: including full source code in upload
+dpkg-buildpackage: full upload (original source is included)
+Now running lintian...
+warning: lintian's authors do not recommend running it with root privileges!
+E: chef-integration-test2 source: maintainer-address-malformed Joshua Timberman <Joshua Timberman <joshua@opscode.com>>
+W: chef-integration-test2 source: changelog-should-mention-nmu
+W: chef-integration-test2 source: source-nmu-has-incorrect-version-number 1.0-1
+W: chef-integration-test2: new-package-should-close-itp-bug
+W: chef-integration-test2: wrong-bug-number-in-closes l3:#CHEF
+E: chef-integration-test2: file-in-usr-marked-as-conffile /usr/share/doc/chef-integration-test2/copyright
+E: chef-integration-test2: maintainer-address-malformed Joshua Timberman <Joshua Timberman <joshua@opscode.com>>
+W: chef-integration-test2: empty-binary-package
+Finished running lintian.

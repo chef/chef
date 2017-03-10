@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright (c) 2015 Opscode, Inc.
+# Copyright:: Copyright 2015-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/knife/bootstrap'
+require "chef/knife/bootstrap"
 
 class Chef
   class Knife
@@ -28,8 +28,8 @@ class Chef
         # @return [Chef::Knife::UI] ui object for output
         attr_accessor :ui
 
-        # @return [String] name of the node (technically name of the client)
-        attr_reader :node_name
+        # @return [Chef::ApiClient] vault client
+        attr_reader :client
 
         # @param knife_config [Hash] knife merged config, typically @config
         # @param ui [Chef::Knife::UI] ui object for output
@@ -38,18 +38,15 @@ class Chef
           @ui           = ui
         end
 
-        # Updates the chef vault items for the newly created node.
+        # Updates the chef vault items for the newly created client.
         #
-        # @param node_name [String] name of the node (technically name of the client)
-        # @todo: node_name should be mandatory (ruby 2.0 compat)
-        def run(node_name: nil)
+        # @param client [Chef::ApiClient] vault client
+        def run(client)
           return unless doing_chef_vault?
 
           sanity_check
 
-          @node_name = node_name
-
-          ui.info("Updating Chef Vault, waiting for client to be searchable..") while wait_for_client
+          @client = client
 
           update_bootstrap_vault_json!
         end
@@ -126,7 +123,7 @@ class Chef
         def update_vault(vault, item)
           require_chef_vault!
           bootstrap_vault_item = load_chef_bootstrap_vault_item(vault, item)
-          bootstrap_vault_item.clients("name:#{node_name}")
+          bootstrap_vault_item.clients(client)
           bootstrap_vault_item.save
         end
 
@@ -139,24 +136,20 @@ class Chef
           ChefVault::Item.load(vault, item)
         end
 
-        public :load_chef_bootstrap_vault_item  # for stubbing
-
-        # Helper used to spin waiting for the client to appear in search.
-        #
-        # @return [Boolean] true if the client is searchable
-        def wait_for_client
-          sleep 1
-          !Chef::Search::Query.new.search(:client, "name:#{node_name}")[0]
-        end
+        public :load_chef_bootstrap_vault_item # for stubbing
 
         # Helper to very lazily require the chef-vault gem
         def require_chef_vault!
           @require_chef_vault ||=
             begin
-              require 'chef-vault'
+              error_message = "Knife bootstrap requires version 2.6.0 or higher of the chef-vault gem to configure chef vault items"
+              require "chef-vault"
+              if Gem::Version.new(ChefVault::VERSION) < Gem::Version.new("2.6.0")
+                raise error_message
+              end
               true
             rescue LoadError
-              raise "Knife bootstrap cannot configure chef vault items when the chef-vault gem is not installed"
+              raise error_message
             end
         end
 

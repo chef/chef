@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Steve Midgley (http://www.misuse.org/science)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
-# Copyright:: Copyright (c) 2008 Steve Midgley
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2016, Steve Midgley
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,7 +75,7 @@ class Chef
           end
         when Array
           if dest.kind_of?(Array)
-            dest = dest | source
+            dest |= source
           else
             dest = source
           end

@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-
-
 #
 # This is for typical "static" provider resolution which maps resources onto
 # providers based only on the node data.  Its not really 'static' because it
@@ -25,7 +23,7 @@
 # a static mapping for the node (unlike the service resource which is
 # complicated).
 #
-def static_provider_resolution(opts={})
+def static_provider_resolution(opts = {})
   action           = opts[:action]
   provider_class   = opts[:provider]
   resource_class   = opts[:resource]
@@ -35,13 +33,13 @@ def static_provider_resolution(opts={})
   platform_version = opts[:platform_version]
 
   describe resource_class, "static provider initialization" do
-    let(:node) {
+    let(:node) do
       node = Chef::Node.new
       node.automatic_attrs[:os] = os
       node.automatic_attrs[:platform_family] = platform_family
       node.automatic_attrs[:platform_version] = platform_version
       node
-    }
+    end
     let(:events) { Chef::EventDispatch::Dispatcher.new }
     let(:run_context) { Chef::RunContext.new(node, {}, events) }
     let(:resource) { resource_class.new("foo", run_context) }
@@ -63,4 +61,3 @@ def static_provider_resolution(opts={})
     end
   end
 end
-

@@ -1,6 +1,6 @@
 #
 # Author:: Toomas Pelberg (<toomasp@gmx.net>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Copyright:: Copyright 2010-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/provider/service'
-require 'chef/resource/service'
-require 'chef/mixin/command'
+require "chef/provider/service"
+require "chef/resource/service"
+require "chef/mixin/command"
 
 class Chef
   class Provider
@@ -28,7 +28,7 @@ class Chef
 
         provides :service, os: "solaris2"
 
-        def initialize(new_resource, run_context=nil)
+        def initialize(new_resource, run_context = nil)
           super
           @init_command   = "/usr/sbin/svcadm"
           @status_command = "/bin/svcs"
@@ -40,13 +40,18 @@ class Chef
           @current_resource.service_name(@new_resource.service_name)
 
           [@init_command, @status_command].each do |cmd|
-            unless ::File.executable? cmd then
+            unless ::File.executable? cmd
               raise Chef::Exceptions::Service, "#{cmd} not executable!"
             end
           end
           @status = service_status.enabled
 
           @current_resource
+        end
+
+        def define_resource_requirements
+          # FIXME? need reload from service.rb
+          shared_resource_requirements
         end
 
         def enable_service
@@ -68,7 +73,7 @@ class Chef
         def restart_service
           ## svcadm restart doesn't supports sync(-s) option
           disable_service
-          return enable_service
+          enable_service
         end
 
         def service_status
@@ -96,11 +101,11 @@ class Chef
 
           # check service state
           @maintenance = false
-          case status['state']
-          when 'online'
+          case status["state"]
+          when "online"
             @current_resource.enabled(true)
             @current_resource.running(true)
-          when 'maintenance'
+          when "maintenance"
             @maintenance = true
           end
 

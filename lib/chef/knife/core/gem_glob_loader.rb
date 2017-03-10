@@ -1,6 +1,6 @@
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009-2015 Chef Software, Inc
+# Author:: Christopher Brown (<cb@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/version'
-require 'chef/util/path_helper'
+require "chef/version"
+require "chef/util/path_helper"
 class Chef
   class Knife
     class SubcommandLoader
       class GemGlobLoader < Chef::Knife::SubcommandLoader
-        MATCHES_CHEF_GEM = %r{/chef-[\d]+\.[\d]+\.[\d]+}.freeze
-        MATCHES_THIS_CHEF_GEM = %r{/chef-#{Chef::VERSION}(-\w+)?(-\w+)?/}.freeze
+        MATCHES_CHEF_GEM = %r{/chef-[\d]+\.[\d]+\.[\d]+}
+        MATCHES_THIS_CHEF_GEM = %r{/chef-#{Chef::VERSION}(-\w+)?(-\w+)?/}
 
         def subcommand_files
           @subcommand_files ||= (gem_and_builtin_subcommands.values + site_subcommands).flatten.uniq
@@ -39,7 +39,7 @@ class Chef
         # subcommand loader has been modified to load the plugins by using Kernel.load
         # with the absolute path.
         def gem_and_builtin_subcommands
-          require 'rubygems'
+          require "rubygems"
           find_subcommands_via_rubygems
         rescue LoadError
           find_subcommands_via_dirglob
@@ -47,17 +47,17 @@ class Chef
 
         def find_subcommands_via_dirglob
           # The "require paths" of the core knife subcommands bundled with chef
-          files = Dir[File.join(Chef::Util::PathHelper.escape_glob(File.expand_path('../../../knife', __FILE__)), '*.rb')]
+          files = Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(File.expand_path("../../../knife", __FILE__)), "*.rb")]
           subcommand_files = {}
           files.each do |knife_file|
-            rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1]
+            rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/, 1]
             subcommand_files[rel_path] = knife_file
           end
           subcommand_files
         end
 
         def find_subcommands_via_rubygems
-          files = find_files_latest_gems 'chef/knife/*.rb'
+          files = find_files_latest_gems "chef/knife/*.rb"
           subcommand_files = {}
           files.each do |file|
             rel_path = file[/(#{Regexp.escape File.join('chef', 'knife', '')}.*)\.rb/, 1]
@@ -77,13 +77,13 @@ class Chef
 
         private
 
-        def find_files_latest_gems(glob, check_load_path=true)
+        def find_files_latest_gems(glob, check_load_path = true)
           files = []
 
           if check_load_path
-            files = $LOAD_PATH.map { |load_path|
-              Dir["#{File.expand_path glob, Chef::Util::PathHelper.escape_glob(load_path)}#{Gem.suffix_pattern}"]
-            }.flatten.select { |file| File.file? file.untaint }
+            files = $LOAD_PATH.map do |load_path|
+              Dir["#{File.expand_path glob, Chef::Util::PathHelper.escape_glob_dir(load_path)}#{Gem.suffix_pattern}"]
+            end.flatten.select { |file| File.file? file.untaint }
           end
 
           gem_files = latest_gem_specs.map do |spec|
@@ -98,25 +98,25 @@ class Chef
           files.concat gem_files
           files.uniq! if check_load_path
 
-          return files
+          files
         end
 
         def latest_gem_specs
           @latest_gem_specs ||= if Gem::Specification.respond_to? :latest_specs
-                                  Gem::Specification.latest_specs(true)  # find prerelease gems
+                                  Gem::Specification.latest_specs(true) # find prerelease gems
                                 else
                                   Gem.source_index.latest_specs(true)
                                 end
         end
 
         def check_spec_for_glob(spec, glob)
-          dirs = if spec.require_paths.size > 1 then
+          dirs = if spec.require_paths.size > 1
                    "{#{spec.require_paths.join(',')}}"
                  else
                    spec.require_paths.first
                  end
 
-          glob = File.join(Chef::Util::PathHelper.escape_glob(spec.full_gem_path, dirs), glob)
+          glob = File.join(Chef::Util::PathHelper.escape_glob_dir(spec.full_gem_path, dirs), glob)
 
           Dir[glob].map { |f| f.untaint }
         end

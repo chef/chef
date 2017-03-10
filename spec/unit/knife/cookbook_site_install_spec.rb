@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (<steve@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Author:: Steven Danna (<steve@chef.io>)
+# Copyright:: Copyright 2011-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,17 +23,21 @@ describe Chef::Knife::CookbookSiteInstall do
   let(:stdout) { StringIO.new }
   let(:stderr) { StringIO.new }
   let(:downloader) { Hash.new }
-  let(:repo) { double(:sanity_check => true, :reset_to_default_state => true,
-                      :prepare_to_import => true, :finalize_updates_to => true,
-                      :merge_updates_from => true) }
-  let(:install_path) { if Chef::Platform.windows?
-                        'C:/tmp/chef'
-                      else
-                        '/var/tmp/chef'
-                      end }
+  let(:archive) { double(Mixlib::Archive, extract: true) }
+  let(:repo) do
+    double(:sanity_check => true, :reset_to_default_state => true,
+           :prepare_to_import => true, :finalize_updates_to => true,
+           :merge_updates_from => true) end
+  let(:install_path) do
+    if Chef::Platform.windows?
+      "C:/tmp/chef"
+    else
+      "/var/tmp/chef"
+    end
+  end
 
   before(:each) do
-    require 'chef/knife/core/cookbook_scm_repo'
+    require "chef/knife/core/cookbook_scm_repo"
 
     allow(knife.ui).to receive(:stdout).and_return(stdout)
     knife.config = {}
@@ -46,6 +50,7 @@ describe Chef::Knife::CookbookSiteInstall do
     allow(File).to receive(:unlink)
     allow(File).to receive(:rmtree)
     allow(knife).to receive(:shell_out!).and_return(true)
+    allow(Mixlib::Archive).to receive(:new).and_return(archive)
 
     # CookbookSiteDownload Stup
     allow(knife).to receive(:download_cookbook_to).and_return(downloader)
@@ -69,7 +74,7 @@ describe Chef::Knife::CookbookSiteInstall do
     end
 
     it "raises an error if more than two arguments are given" do
-      knife.name_args = ["foo", "bar", "baz"]
+      knife.name_args = %w{foo bar baz}
       expect(knife.ui).to receive(:error).with("Installing multiple cookbooks at once is not supported.")
       expect { knife.run }.to raise_error(SystemExit)
     end

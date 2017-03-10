@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require "spec_helper"
 Chef::Knife::NodeEdit.load_deps
 
 describe Chef::Knife::NodeEdit do
@@ -27,12 +27,12 @@ describe Chef::Knife::NodeEdit do
   end
 
   before(:each) do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeEdit.new
     @knife.config = {
-      :editor => 'cat',
+      :editor => "cat",
       :attribute => nil,
-      :print_after => nil
+      :print_after => nil,
     }
     @knife.name_args = [ "adam" ]
     @node = Chef::Node.new()
@@ -46,10 +46,10 @@ describe Chef::Knife::NodeEdit do
   describe "after loading the node" do
     before do
       allow(@knife).to receive(:node).and_return(@node)
-      @node.automatic_attrs = {:go => :away}
-      @node.default_attrs = {:hide => :me}
-      @node.override_attrs = {:dont => :show}
-      @node.normal_attrs = {:do_show => :these}
+      @node.automatic_attrs = { :go => :away }
+      @node.default_attrs = { :hide => :me }
+      @node.override_attrs = { :dont => :show }
+      @node.normal_attrs = { :do_show => :these }
       @node.chef_environment("prod")
       @node.run_list("recipe[foo]")
     end
@@ -59,7 +59,7 @@ describe Chef::Knife::NodeEdit do
       expect(actual).not_to have_key("automatic")
       expect(actual).not_to have_key("override")
       expect(actual).not_to have_key("default")
-      expect(actual["normal"]).to eq({"do_show" => "these"})
+      expect(actual["normal"]).to eq({ "do_show" => "these" })
       expect(actual["run_list"]).to eq(["recipe[foo]"])
       expect(actual["chef_environment"]).to eq("prod")
     end
@@ -68,10 +68,10 @@ describe Chef::Knife::NodeEdit do
       @knife.config[:all_attributes] = true
 
       actual = deserialized_json_view
-      expect(actual["automatic"]).to eq({"go" => "away"})
-      expect(actual["override"]).to eq({"dont" => "show"})
-      expect(actual["default"]).to eq({"hide" => "me"})
-      expect(actual["normal"]).to eq({"do_show" => "these"})
+      expect(actual["automatic"]).to eq({ "go" => "away" })
+      expect(actual["override"]).to eq({ "dont" => "show" })
+      expect(actual["default"]).to eq({ "hide" => "me" })
+      expect(actual["normal"]).to eq({ "do_show" => "these" })
       expect(actual["run_list"]).to eq(["recipe[foo]"])
       expect(actual["chef_environment"]).to eq("prod")
     end
@@ -101,15 +101,14 @@ describe Chef::Knife::NodeEdit do
 
     it "raises an exception when editing is disabled" do
       @knife.config[:disable_editing] = true
-      expect{ subject }.to raise_error(SystemExit)
+      expect { subject }.to raise_error(SystemExit)
     end
 
     it "raises an exception when the editor is not set" do
       @knife.config[:editor] = nil
-      expect{ subject }.to raise_error(SystemExit)
+      expect { subject }.to raise_error(SystemExit)
     end
 
   end
 
 end
-

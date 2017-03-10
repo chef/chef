@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Copyright:: Copyright 2008-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,11 @@
 # limitations under the License.
 #
 
-
 class Chef
   class Resource
     class OpenldapIncluder < Chef::Resource::LWRPBase
+      provides :openldap_includer
+
       allowed_actions :run
       default_action :run
     end

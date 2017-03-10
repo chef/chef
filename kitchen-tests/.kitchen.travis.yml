@@ -1,16 +1,16 @@
 ---
 driver:
-  name: ec2
-  aws_access_key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
-  aws_secret_access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
-  aws_ssh_key_id: <%= ENV['AWS_KEYPAIR_NAME'] %>
-  region: "us-west-2"
-  availability_zone: "us-west-2a"
-  security_group_ids: ["travis-ci"]
-  instance_type: "m3.medium"
+  name: dokken
+  privileged: true
+  chef_image: chef/chef
+  chef_version: current
+
+transport:
+  name: dokken
 
 provisioner:
   name: chef_github
+  root_path: /opt/kitchen
   github_owner: "chef"
   github_repo: "chef"
   refname: <%= ENV['TRAVIS_COMMIT'] %>
@@ -20,23 +20,115 @@ provisioner:
   client_rb:
     diff_disabled: true
 
-transport:
-  ssh_key: <%= ENV['EC2_SSH_KEY_PATH'] %>
+verifier:
+  name: inspec
+  format: progress
 
 platforms:
-  - name: ubuntu-12.04
-    driver:
-      # http://cloud-images.ubuntu.com/locator/ec2/
-      # 12.04 amd64 us-west-2 hvm:ssd
-      image_id: ami-f3635fc3
-  - name: rhel-6
-    driver:
-      # https://github.com/chef/releng-chef-repo/blob/master/script/ci#L93-L96
-      image_id: ami-7df0bd4d
+- name: debian-7
+  driver:
+    image: debian:7
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
+      - RUN /bin/mkdir /var/run/sshd
+
+- name: debian-8
+  driver:
+    image: debian:8
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
+
+- name: centos-5
+  driver:
+    image: centos:5
+    platform: rhel
+    run_command: /sbin/init
+    intermediate_instructions:
+      - RUN yum clean all
+      - RUN yum install -y which initscripts net-tools sudo wget
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: centos-6
+  driver:
+    image: centos:6
+    run_command: /sbin/init
+    intermediate_instructions:
+      - RUN yum clean all
+      - RUN yum -y install which initscripts net-tools sudo wget
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  attributes:
+    chef_client:
+      init_style: init
+
+- name: centos-7
+  driver:
+    image: centos:7
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum clean all
+      - RUN yum -y install which initscripts net-tools sudo wget
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: fedora-latest
+  driver:
+    image: fedora:latest
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN dnf -y install yum which initscripts rpm-build zlib-devel net-tools sudo wget
+      - RUN yum makecache
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: ubuntu-12.04
+  driver:
+    image: ubuntu-upstart:12.04
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
+
+- name: ubuntu-14.04
+  driver:
+    image: ubuntu-upstart:14.04
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
+
+- name: ubuntu-16.04
+  driver:
+    image: ubuntu:16.04
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
+
+- name: opensuse-13.2
+  driver:
+    image: opensuse:13.2
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN zypper refresh
+
+- name: amazonlinux
+  driver:
+    image: amazonlinux:latest
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN yum clean all
+      - RUN yum -y install which initscripts net-tools sudo wget
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 suites:
   - name: webapp
     run_list:
-      - recipe[apt::default]
-      - recipe[webapp::default]
-    attributes:
+      - recipe[base::default]
+  - name: awesome_customers_ubuntu
+    run_list:
+      - recipe[awesome_customers_ubuntu_wrapper::default]
+  - name: awesome_customers_rhel
+    run_list:
+      - recipe[awesome_customers_rhel_wrapper::default]

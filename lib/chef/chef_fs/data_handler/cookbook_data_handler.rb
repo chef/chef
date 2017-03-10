@@ -1,5 +1,5 @@
-require 'chef/chef_fs/data_handler/data_handler_base'
-require 'chef/cookbook/metadata'
+require "chef/chef_fs/data_handler/data_handler_base"
+require "chef/cookbook/metadata"
 
 class Chef
   module ChefFS
@@ -9,22 +9,22 @@ class Chef
           version = entry.name
           name = entry.parent.name
           result = normalize_hash(cookbook, {
-            'name' => "#{name}-#{version}",
-            'version' => version,
-            'cookbook_name' => name,
-            'json_class' => 'Chef::CookbookVersion',
-            'chef_type' => 'cookbook_version',
-            'frozen?' => false,
-            'metadata' => {}
+            "name" => "#{name}-#{version}",
+            "version" => version,
+            "cookbook_name" => name,
+            "json_class" => "Chef::CookbookVersion",
+            "chef_type" => "cookbook_version",
+            "frozen?" => false,
+            "metadata" => {},
           })
-          result['metadata'] = normalize_hash(result['metadata'], {
-            'version' => version,
-            'name' => name
+          result["metadata"] = normalize_hash(result["metadata"], {
+            "version" => version,
+            "name" => name,
           })
         end
 
         def preserve_key?(key)
-          return key == 'cookbook_name' || key == 'version'
+          key == "cookbook_name" || key == "version"
         end
 
         def chef_class

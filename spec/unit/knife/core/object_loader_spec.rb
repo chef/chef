@@ -1,7 +1,7 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Juanje Ojeda (<juanje.ojeda@gmail.com>)
-# Copyright:: Copyright (c) 2011-2012 Opscode, Inc.
+# Copyright:: Copyright 2011-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,15 +17,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/core/object_loader'
+require "spec_helper"
+require "chef/knife/core/object_loader"
 
 describe Chef::Knife::Core::ObjectLoader do
   before(:each) do
     @knife = Chef::Knife.new
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
-    Dir.chdir(File.join(CHEF_SPEC_DATA, 'object_loader'))
+    Dir.chdir(File.join(CHEF_SPEC_DATA, "object_loader"))
   end
 
   shared_examples_for "Chef object" do |chef_class|
@@ -34,14 +34,14 @@ describe Chef::Knife::Core::ObjectLoader do
     end
 
     it "should has a attribute 'name'" do
-      expect(@object.name).to eql('test')
+      expect(@object.name).to eql("test")
     end
   end
 
   {
-    'nodes' => Chef::Node,
-    'roles' => Chef::Role,
-    'environments' => Chef::Environment
+    "nodes" => Chef::Node,
+    "roles" => Chef::Role,
+    "environments" => Chef::Environment,
   }.each do |repo_location, chef_class|
 
     describe "when the file is a #{chef_class}" do
@@ -51,7 +51,7 @@ describe Chef::Knife::Core::ObjectLoader do
 
       describe "when the file is a Ruby" do
         before do
-          @object = @loader.load_from(repo_location, 'test.rb')
+          @object = @loader.load_from(repo_location, "test.rb")
         end
 
         it_behaves_like "Chef object", chef_class
@@ -61,7 +61,7 @@ describe Chef::Knife::Core::ObjectLoader do
       describe "when the file is a JSON" do
         describe "and it has defined 'json_class'" do
           before do
-            @object = @loader.load_from(repo_location, 'test_json_class.json')
+            @object = @loader.load_from(repo_location, "test_json_class.json")
           end
 
           it_behaves_like "Chef object", chef_class
@@ -69,7 +69,7 @@ describe Chef::Knife::Core::ObjectLoader do
 
         describe "and it has not defined 'json_class'" do
           before do
-            @object = @loader.load_from(repo_location, 'test.json')
+            @object = @loader.load_from(repo_location, "test.json")
           end
 
           it_behaves_like "Chef object", chef_class

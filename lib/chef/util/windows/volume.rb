@@ -1,6 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright (c) 2010 VMware, Inc.
+# Copyright:: Copyright 2010-2016, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 
 #simple wrapper around Volume APIs. might be possible with WMI, but possibly more complex.
 
-require 'chef/win32/api/file'
-require 'chef/util/windows'
+require "chef/win32/api/file"
+require "chef/util/windows"
 
 class Chef::Util::Windows::Volume < Chef::Util::Windows
   attr_reader :mount_point
@@ -30,27 +30,21 @@ class Chef::Util::Windows::Volume < Chef::Util::Windows
   end
 
   def device
-    begin
-      Chef::ReservedNames::Win32::File.get_volume_name_for_volume_mount_point(mount_point)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    Chef::ReservedNames::Win32::File.get_volume_name_for_volume_mount_point(mount_point)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def delete
-    begin
-      Chef::ReservedNames::Win32::File.delete_volume_mount_point(mount_point)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    Chef::ReservedNames::Win32::File.delete_volume_mount_point(mount_point)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def add(args)
-    begin
-      Chef::ReservedNames::Win32::File.set_volume_mount_point(mount_point, args[:remote])
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    Chef::ReservedNames::Win32::File.set_volume_mount_point(mount_point, args[:remote])
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def mount_point

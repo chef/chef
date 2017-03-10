@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright 2014-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +15,15 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/mixin/powershell_out'
+require "spec_helper"
+require "chef/mixin/powershell_out"
 
 describe Chef::Mixin::PowershellOut, windows_only: true do
   include Chef::Mixin::PowershellOut
 
   describe "#powershell_out" do
     it "runs a powershell command and collects stdout" do
-      expect(powershell_out("get-process").run_command.stdout).to match /Handles\s+NPM\(K\)\s+PM\(K\)\s+WS\(K\)\s+VM\(M\)\s+CPU\(s\)\s+Id\s+ProcessName/
+      expect(powershell_out("get-process").run_command.stdout).to match /Handles\s+NPM\(K\)\s+PM\(K\)\s+WS\(K\)\s+VM\(M\)\s+CPU\(s\)\s+Id\s+/
     end
 
     it "does not raise exceptions when the command is invalid" do
@@ -33,7 +33,7 @@ describe Chef::Mixin::PowershellOut, windows_only: true do
 
   describe "#powershell_out!" do
     it "runs a powershell command and collects stdout" do
-      expect(powershell_out!("get-process").run_command.stdout).to match /Handles\s+NPM\(K\)\s+PM\(K\)\s+WS\(K\)\s+VM\(M\)\s+CPU\(s\)\s+Id\s+ProcessName/
+      expect(powershell_out!("get-process").run_command.stdout).to match /Handles\s+NPM\(K\)\s+PM\(K\)\s+WS\(K\)\s+VM\(M\)\s+CPU\(s\)\s+Id\s+/
     end
 
     it "raises exceptions when the command is invalid" do

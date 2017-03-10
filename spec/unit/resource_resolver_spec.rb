@@ -1,6 +1,6 @@
 #
 # Author:: Ranjib Dey
-# Copyright:: Copyright (c) 2015 Ranjib Dey <ranjib@linux.com>.
+# Copyright:: Copyright 2015-2016, Ranjib Dey <ranjib@linux.com>.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,37 +16,36 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/resource_resolver'
-
+require "spec_helper"
+require "chef/resource_resolver"
 
 describe Chef::ResourceResolver do
-  it '#resolve' do
+  it "#resolve" do
     expect(described_class.resolve(:execute)).to eq(Chef::Resource::Execute)
   end
 
-  it '#list' do
+  it "#list" do
     expect(described_class.list(:package)).to_not be_empty
   end
 
-  context 'instance methods' do
+  context "instance methods" do
     let(:resolver) do
-      described_class.new(Chef::Node.new, 'execute')
+      described_class.new(Chef::Node.new, "execute")
     end
 
-    it '#resolve' do
+    it "#resolve" do
       expect(resolver.resolve).to eq Chef::Resource::Execute
     end
 
-    it '#list' do
+    it "#list" do
       expect(resolver.list).to eq [ Chef::Resource::Execute ]
     end
 
-    it '#provided_by? returns true when resource class is in the list' do
+    it "#provided_by? returns true when resource class is in the list" do
       expect(resolver.provided_by?(Chef::Resource::Execute)).to be_truthy
     end
 
-    it '#provided_by? returns false when resource class is not in the list' do
+    it "#provided_by? returns false when resource class is not in the list" do
       expect(resolver.provided_by?(Chef::Resource::File)).to be_falsey
     end
   end

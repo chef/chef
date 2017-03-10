@@ -1,6 +1,6 @@
 #
-# Author:: Steven Danna (<steve@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Steven Danna (<steve@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
+require "chef/knife"
 
 class Chef
   class Knife
@@ -25,14 +25,14 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require 'chef/user_v1'
-        require 'chef/json_compat'
+        require "chef/user_v1"
+        require "chef/json_compat"
       end
 
       banner "knife user show USER (options)"
 
       def osc_11_warning
-<<-EOF
+        <<-EOF
 The Chef Server you are using does not support the username field.
 This means it is an Open Source 11 Server.
 knife user show for Open Source 11 Server is being deprecated.

@@ -1,5 +1,5 @@
 
-shared_context "diff disabled"  do
+shared_context "diff disabled" do
   before do
     Chef::Config[:diff_disabled] = true
   end

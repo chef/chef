@@ -1,0 +1,96 @@
+#
+# This file is structured to be consumed by both humans and computers.
+# It is a TOML document containing Markdown
+#
+[Preamble]
+  title = "Chef Board of Governance (CBGB)"
+  text = """
+  Chef was designed from the outset to have a very open structure, including open design, open contribution, and consistent use of tools across the project. Given the large numbers of contributors, users, and companies with a stake in the future of the project, Chef leadership has established an advisory board, as part of its long term commitment to open governance.
+
+  The Chef Board of Governance (CBGB) shall advise the Leadership on matters related to supporting the long-term governance, structure, and roadmap of the Project.
+
+More information can be found in the [Chef Board of Governance RFC](Chef Board of Governance).
+"""
+
+[Org]
+  [Org.Lead]
+    title = "Project Lead"
+    person = "adamhjk"
+
+  [Org.Contributors]
+    title = "Users/Contributors (4)"
+    governers = [
+      "ranjibdey",
+      "dougireton",
+      "coderanger",
+      "charitymajors"
+    ]
+
+  [Org.Corporate-Contributors]
+    title = "Corporate Contributors (4)"
+    governers = [
+      "etsy",
+      "facebook",
+      "nordstrom",
+      "pagerduty"
+    ]
+
+  [Org.Lieutenants]
+    title = "Lieutenants (3)"
+    governers = [
+      "jonlives",
+      "jtimberman",
+      "sethvargo"
+    ]
+
+[people]
+  [people.adamhjk]
+    Name = "Adam Jacob"
+    GitHub = "adamhjk"
+    IRC = "holoway"
+
+  [people.jonlives]
+    Name = "Jon Cowie"
+    GitHub = "jonlives"
+    IRC = "jonlives"
+
+  [people.coderanger]
+    Name = "Noah Kantrowitz"
+    GitHub = "coderanger"
+
+  [people.jtimberman]
+    Name = "Joshua Timberman"
+    GitHub = "jtimberman"
+
+  [people.ranjibdey]
+    Name = "Ranjib Dey"
+    GitHub = "ranjib"
+
+  [people.sethvargo]
+    Name = "Seth Vargo"
+    GitHub = "sethvargo"
+
+  [people.dougireton]
+    Name = "Doug Ireton"
+    GitHub = "dougireton"
+
+  [people.charitymajors]
+    Name = "Charity Majors"
+    GitHub = "charity"
+
+[corporations]
+  [corporations.etsy]
+    Name = "Etsy"
+    Person = "Katherine Daniels"
+
+  [corporations.facebook]
+    Name = "Facebook"
+    Person = "Phil Dibowitz"
+
+  [corporations.nordstrom]
+    Name = "Nordstrom"
+    Person = "Mark Ayers"
+
+  [corporations.pagerduty]
+    Name = "PagerDuty"
+    Person = "Evan Gilman"

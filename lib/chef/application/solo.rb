@@ -1,7 +1,7 @@
 #
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Author:: Mark Mzyk (mmzyk@opscode.com)
-# Copyright:: Copyright (c) 2008-2015 Chef Software, Inc.
+# Author:: AJ Christensen (<aj@chef.io>)
+# Author:: Mark Mzyk (mmzyk@chef.io)
+# Copyright:: Copyright 2008-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,23 +16,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef'
-require 'chef/application'
-require 'chef/client'
-require 'chef/config'
-require 'chef/daemon'
-require 'chef/log'
-require 'chef/rest'
-require 'chef/config_fetcher'
-require 'fileutils'
+require "chef"
+require "chef/application"
+require "chef/application/client"
+require "chef/client"
+require "chef/config"
+require "chef/daemon"
+require "chef/log"
+require "chef/rest"
+require "chef/config_fetcher"
+require "fileutils"
+require "chef/mixin/shell_out"
+require "pathname"
+require "chef-config/mixin/dot_d"
+require "mixlib/archive"
 
 class Chef::Application::Solo < Chef::Application
+  include Chef::Mixin::ShellOut
+  include ChefConfig::Mixin::DotD
 
   option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => Chef::Config.platform_specific_path('/etc/chef/solo.rb'),
+    :default => Chef::Config.platform_specific_path("/etc/chef/solo.rb"),
     :description => "The configuration file to use"
+
+  option :config_option,
+    :long         => "--config-option OPTION=VALUE",
+    :description  => "Override a single configuration option",
+    :proc         => lambda { |option, existing|
+      (existing ||= []) << option
+      existing
+    }
 
   option :formatter,
     :short        => "-F FORMATTER",
@@ -59,7 +74,7 @@ class Chef::Application::Solo < Chef::Application
     :default      => false
 
   option :color,
-    :long         => '--[no-]color',
+    :long         => "--[no-]color",
     :boolean      => true,
     :default      => !Chef::Platform.windows?,
     :description  => "Use colored output, defaults to enabled"
@@ -135,28 +150,27 @@ class Chef::Application::Solo < Chef::Application
     :proc => lambda { |s| s.to_i }
 
   option :recipe_url,
-      :short => "-r RECIPE_URL",
-      :long => "--recipe-url RECIPE_URL",
-      :description => "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache.",
-      :proc => nil
+    :short        => "-r RECIPE_URL",
+    :long         => "--recipe-url RECIPE_URL",
+    :description  => "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache."
 
   option :version,
     :short        => "-v",
     :long         => "--version",
     :description  => "Show chef version",
     :boolean      => true,
-    :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+    :proc         => lambda { |v| puts "Chef: #{::Chef::VERSION}" },
     :exit         => 0
 
   option :override_runlist,
     :short        => "-o RunlistItem,RunlistItem...",
     :long         => "--override-runlist RunlistItem,RunlistItem...",
     :description  => "Replace current run list with specified items",
-    :proc         => lambda{|items|
-      items = items.split(',')
-      items.compact.map{|item|
+    :proc         => lambda { |items|
+      items = items.split(",")
+      items.compact.map do |item|
         Chef::RunList::RunListItem.new(item)
-      }
+      end
     }
 
   option :client_fork,
@@ -166,20 +180,20 @@ class Chef::Application::Solo < Chef::Application
     :boolean      => true
 
   option :why_run,
-    :short        => '-W',
-    :long         => '--why-run',
-    :description  => 'Enable whyrun mode',
+    :short        => "-W",
+    :long         => "--why-run",
+    :description  => "Enable whyrun mode",
     :boolean      => true
 
   option :ez,
-    :long         => '--ez',
-    :description  => 'A memorial for Ezra Zygmuntowicz',
+    :long         => "--ez",
+    :description  => "A memorial for Ezra Zygmuntowicz",
     :boolean      => true
 
   option :environment,
-    :short        => '-E ENVIRONMENT',
-    :long         => '--environment ENVIRONMENT',
-    :description  => 'Set the Chef Environment on the node'
+    :short        => "-E ENVIRONMENT",
+    :long         => "--environment ENVIRONMENT",
+    :description  => "Set the Chef Environment on the node"
 
   option :run_lock_timeout,
     :long         => "--run-lock-timeout SECONDS",
@@ -191,19 +205,65 @@ class Chef::Application::Solo < Chef::Application
     :description    => "Only run the bare minimum ohai plugins chef needs to function",
     :boolean        => true
 
+  option :delete_entire_chef_repo,
+    :long           => "--delete-entire-chef-repo",
+    :description    => "DANGEROUS: does what it says, only useful with --recipe-url",
+    :boolean        => true
+
+  option :solo_legacy_mode,
+    :long           => "--legacy-mode",
+    :description    => "Run chef-solo in legacy mode",
+    :boolean        => true
+
   attr_reader :chef_client_json
 
-  def initialize
-    super
+  # Get this party started
+  def run
+    setup_signal_handlers
+    reconfigure
+    for_ezra if Chef::Config[:ez]
+    if !Chef::Config[:solo_legacy_mode]
+      Chef::Application::Client.new.run
+    else
+      setup_application
+      run_application
+    end
   end
 
   def reconfigure
     super
 
+    load_dot_d(Chef::Config[:solo_d_dir]) if Chef::Config[:solo_d_dir]
+
     set_specific_recipes
 
     Chef::Config[:solo] = true
 
+    Chef::Log.deprecation("-r MUST be changed to --recipe-url, the -r option will be changed in Chef 13.0") if ARGV.include?("-r")
+
+    if !Chef::Config[:solo_legacy_mode]
+      # Because we re-parse ARGV when we move to chef-client, we need to tidy up some options first.
+      ARGV.delete("--ez")
+
+      # -r means something entirely different in chef-client land, so let's replace it with a "safe" value
+      if dash_r = ARGV.index("-r")
+        ARGV[dash_r] = "--recipe-url"
+      end
+
+      # For back compat reasons, we need to ensure that we try and use the cache_path as a repo first
+      Chef::Log.debug "Current chef_repo_path is #{Chef::Config.chef_repo_path}"
+
+      if !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+        Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Chef::Config[:cache_path])
+      end
+
+      Chef::Config[:local_mode] = true
+    else
+      configure_legacy_mode!
+    end
+  end
+
+  def configure_legacy_mode!
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
     end
@@ -211,16 +271,18 @@ class Chef::Application::Solo < Chef::Application
     Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
 
     if Chef::Config[:recipe_url]
-      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
-      recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
+      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| Pathname.new(e).cleanpath.to_s =~ /\/cookbooks\/*$/ }
+      recipes_path = File.expand_path(File.join(cookbooks_path, ".."))
 
-      Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
-      FileUtils.rm_rf(recipes_path, :secure => true)
+      if Chef::Config[:delete_entire_chef_repo]
+        Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
+        FileUtils.rm_rf(recipes_path, :secure => true)
+      end
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p(recipes_path)
-      tarball_path = File.join(recipes_path, 'recipes.tgz')
+      tarball_path = File.join(recipes_path, "recipes.tgz")
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
-      Mixlib::ShellOut.new("tar zxvf #{tarball_path} -C #{recipes_path}").run_command
+      Mixlib::Archive.new(tarball_path).extract(Chef::Config.chef_repo_path, perms: false, ignore: /^\.$/)
     end
 
     # json_attribs shuld be fetched after recipe_url tarball is unpacked.
@@ -239,7 +301,6 @@ class Chef::Application::Solo < Chef::Application
   end
 
   def run_application
-    for_ezra if Chef::Config[:ez]
     if !Chef::Config[:client_fork] || Chef::Config[:once]
       # Run immediately without interval sleep or splay
       begin
@@ -247,13 +308,12 @@ class Chef::Application::Solo < Chef::Application
       rescue SystemExit
         raise
       rescue Exception => e
-        Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
+        Chef::Application.fatal!("#{e.class}: #{e.message}", e)
       end
     else
       interval_run_chef_client
     end
   end
-
 
   private
 
@@ -295,7 +355,7 @@ EOH
           Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
           retry
         else
-          Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
+          Chef::Application.fatal!("#{e.class}: #{e.message}", e)
         end
       end
     end
@@ -303,7 +363,7 @@ EOH
 
   def fetch_recipe_tarball(url, path)
     Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
-    File.open(path, 'wb') do |f|
+    File.open(path, "wb") do |f|
       open(url) do |r|
         f.write(r.read)
       end
@@ -312,8 +372,8 @@ EOH
 
   def unforked_interval_error_message
     "Unforked chef-client interval runs are disabled in Chef 12." +
-    "\nConfiguration settings:" +
-    "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
-    "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+      "\nConfiguration settings:" +
+      "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
+      "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 end

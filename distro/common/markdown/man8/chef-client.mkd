@@ -40,6 +40,8 @@ __chef-client__ _(options)_
     Set the PID file location, defaults to /tmp/chef-client.pid
   * `--once`:
     Cancel any interval or splay options, run chef once and exit
+  * `--skip-cookbook-sync`:
+    Skip cookbook synchronization
   * `-v`, `--version`:
     Show chef version
   * `-h`, `--help`:

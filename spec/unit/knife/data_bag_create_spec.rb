@@ -1,7 +1,7 @@
 #
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2009-2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Seth Falcon (<seth@chef.io>)
+# Copyright:: Copyright 2009-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'tempfile'
+require "spec_helper"
+require "tempfile"
 
 describe Chef::Knife::DataBagCreate do
   let(:knife) do
@@ -28,7 +28,7 @@ describe Chef::Knife::DataBagCreate do
     k
   end
 
-  let(:rest) { double("Chef::REST") }
+  let(:rest) { double("Chef::ServerAPI") }
   let(:stdout) { StringIO.new }
 
   let(:bag_name) { "sudoing_admins" }
@@ -36,7 +36,7 @@ describe Chef::Knife::DataBagCreate do
 
   let(:secret) { "abc123SECRET" }
 
-  let(:raw_hash)  {{ "login_name" => "alphaomega", "id" => item_name }}
+  let(:raw_hash) { { "login_name" => "alphaomega", "id" => item_name } }
 
   let(:config) { {} }
 
@@ -47,9 +47,9 @@ describe Chef::Knife::DataBagCreate do
   end
 
   it "tries to create a data bag with an invalid name when given one argument" do
-    knife.name_args = ['invalid&char']
+    knife.name_args = ["invalid&char"]
     expect(Chef::DataBag).to receive(:validate_name!).with(knife.name_args[0]).and_raise(Chef::Exceptions::InvalidDataBagName)
-    expect {knife.run}.to exit_with_code(1)
+    expect { knife.run }.to exit_with_code(1)
   end
 
   context "when given one argument" do
@@ -58,7 +58,7 @@ describe Chef::Knife::DataBagCreate do
     end
 
     it "creates a data bag" do
-      expect(rest).to receive(:post_rest).with("data", {"name" => bag_name})
+      expect(rest).to receive(:post).with("data", { "name" => bag_name })
       expect(knife.ui).to receive(:info).with("Created data_bag[#{bag_name}]")
 
       knife.run
@@ -75,8 +75,8 @@ describe Chef::Knife::DataBagCreate do
     it "creates a data bag item" do
       expect(knife).to receive(:create_object).and_yield(raw_hash)
       expect(knife).to receive(:encryption_secret_provided?).and_return(false)
-      expect(rest).to receive(:post_rest).with("data", {'name' => bag_name}).ordered
-      expect(rest).to receive(:post_rest).with("data/#{bag_name}", item).ordered
+      expect(rest).to receive(:post).with("data", { "name" => bag_name }).ordered
+      expect(rest).to receive(:post).with("data/#{bag_name}", item).ordered
 
       knife.run
     end
@@ -99,8 +99,8 @@ describe Chef::Knife::DataBagCreate do
         .to receive(:encrypt_data_bag_item)
         .with(raw_hash, secret)
         .and_return(encoded_data)
-      expect(rest).to receive(:post_rest).with("data", {"name" => bag_name}).ordered
-      expect(rest).to receive(:post_rest).with("data/#{bag_name}", item).ordered
+      expect(rest).to receive(:post).with("data", { "name" => bag_name }).ordered
+      expect(rest).to receive(:post).with("data/#{bag_name}", item).ordered
 
       knife.run
     end

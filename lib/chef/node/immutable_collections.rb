@@ -1,3 +1,24 @@
+#--
+# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require "chef/node/common_api"
+require "chef/node/mixin/state_tracking"
+require "chef/node/mixin/immutablize_array"
+require "chef/node/mixin/immutablize_hash"
 
 class Chef
   class Node
@@ -6,9 +27,9 @@ class Chef
       def immutablize(value)
         case value
         when Hash
-          ImmutableMash.new(value)
+          ImmutableMash.new(value, __root__, __node__, __precedence__)
         when Array
-          ImmutableArray.new(value)
+          ImmutableArray.new(value, __root__, __node__, __precedence__)
         else
           value
         end
@@ -31,52 +52,9 @@ class Chef
       alias :internal_push :<<
       private :internal_push
 
-      # A list of methods that mutate Array. Each of these is overridden to
-      # raise an error, making this instances of this class more or less
-      # immutable.
-      DISALLOWED_MUTATOR_METHODS = [
-        :<<,
-        :[]=,
-        :clear,
-        :collect!,
-        :compact!,
-        :default=,
-        :default_proc=,
-        :delete,
-        :delete_at,
-        :delete_if,
-        :fill,
-        :flatten!,
-        :insert,
-        :keep_if,
-        :map!,
-        :merge!,
-        :pop,
-        :push,
-        :update,
-        :reject!,
-        :reverse!,
-        :replace,
-        :select!,
-        :shift,
-        :slice!,
-        :sort!,
-        :sort_by!,
-        :uniq!,
-        :unshift
-      ]
-
-      def initialize(array_data)
+      def initialize(array_data = [])
         array_data.each do |value|
           internal_push(immutablize(value))
-        end
-      end
-
-      # Redefine all of the methods that mutate a Hash to raise an error when called.
-      # This is the magic that makes this object "Immutable"
-      DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
-        define_method(mutator_method_name) do |*args, &block|
-          raise Exceptions::ImmutableAttributeModification
         end
       end
 
@@ -88,7 +66,7 @@ class Chef
       end
 
       def dup
-        Array.new(map {|e| safe_dup(e)})
+        Array.new(map { |e| safe_dup(e) })
       end
 
       def to_a
@@ -107,6 +85,13 @@ class Chef
         a
       end
 
+      # for consistency's sake -- integers 'converted' to integers
+      def convert_key(key)
+        key
+      end
+
+      prepend Chef::Node::Mixin::StateTracking
+      prepend Chef::Node::Mixin::ImmutablizeArray
     end
 
     # == ImmutableMash
@@ -122,31 +107,13 @@ class Chef
     #   it is stale.
     # * Values can be accessed in attr_reader-like fashion via method_missing.
     class ImmutableMash < Mash
-
       include Immutablize
+      include CommonAPI
 
       alias :internal_set :[]=
       private :internal_set
 
-      DISALLOWED_MUTATOR_METHODS = [
-        :[]=,
-        :clear,
-        :collect!,
-        :default=,
-        :default_proc=,
-        :delete,
-        :delete_if,
-        :keep_if,
-        :map!,
-        :merge!,
-        :update,
-        :reject!,
-        :replace,
-        :select!,
-        :shift
-      ]
-
-      def initialize(mash_data)
+      def initialize(mash_data = {})
         mash_data.each do |key, value|
           internal_set(key, immutablize(value))
         end
@@ -158,22 +125,16 @@ class Chef
 
       alias :attribute? :has_key?
 
-      # Redefine all of the methods that mutate a Hash to raise an error when called.
-      # This is the magic that makes this object "Immutable"
-      DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
-        define_method(mutator_method_name) do |*args, &block|
-          raise Exceptions::ImmutableAttributeModification
-        end
-      end
-
       def method_missing(symbol, *args)
-        if args.empty?
+        if symbol == :to_ary
+          super
+        elsif args.empty?
           if key?(symbol)
             self[symbol]
           else
             raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
           end
-        # This will raise a ImmutableAttributeModification error:
+          # This will raise a ImmutableAttributeModification error:
         elsif symbol.to_s =~ /=$/
           key_to_set = symbol.to_s[/^(.+)=$/, 1]
           self[key_to_set] = (args.length == 1 ? args[0] : args)
@@ -213,7 +174,8 @@ class Chef
         h
       end
 
+      prepend Chef::Node::Mixin::StateTracking
+      prepend Chef::Node::Mixin::ImmutablizeHash
     end
-
   end
 end

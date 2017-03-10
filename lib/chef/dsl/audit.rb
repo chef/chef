@@ -1,6 +1,6 @@
 #
-# Author:: Tyler Ball (<tball@getchef.com>)
-# Copyright:: Copyright (c) 2014 Opscode, Inc.
+# Author:: Tyler Ball (<tball@chef.io>)
+# Copyright:: Copyright 2014-2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
+require "chef/exceptions"
 
 class Chef
   module DSL
@@ -38,9 +38,9 @@ class Chef
         cookbook_name = self.cookbook_name
         metadata = {
             cookbook_name: cookbook_name,
-            cookbook_version: self.run_context.cookbook_collection[cookbook_name].version,
-            recipe_name: self.recipe_name,
-            line_number: block.source_location[1]
+            cookbook_version: run_context.cookbook_collection[cookbook_name].version,
+            recipe_name: recipe_name,
+            line_number: block.source_location[1],
         }
 
         run_context.audits[name] = Struct.new(:args, :block, :metadata).new(args, block, metadata)
