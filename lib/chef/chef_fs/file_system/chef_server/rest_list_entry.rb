@@ -165,6 +165,9 @@ class Chef
           end
 
           def write(file_contents)
+            # free up cache - it will be hydrated on next check for exists?
+            @this_object_cache = nil
+
             begin
               object = Chef::JSONCompat.parse(file_contents)
             rescue Chef::Exceptions::JSON::ParseError => e
