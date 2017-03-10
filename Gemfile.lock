@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 5cdb74dc17a96cac30a6a4dc1381d3d3c7b2fb4f
+  revision: 4ec1d014c9a4945398c6baa550c71f7e3a7e69e0
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -97,7 +97,7 @@ GIT
 
 GIT
   remote: https://github.com/poise/poise.git
-  revision: 62056469b3a19144f4bf4810abe14efa1c10463b
+  revision: 1aa3a6b7c5b3fe0c357e2f3fcc50080790772ccb
   specs:
     poise (2.7.3.pre)
       halite (~> 1.0)
@@ -205,13 +205,13 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.7.0)
     ast (2.3.0)
-    aws-sdk (2.8.1)
-      aws-sdk-resources (= 2.8.1)
-    aws-sdk-core (2.8.1)
+    aws-sdk (2.8.3)
+      aws-sdk-resources (= 2.8.3)
+    aws-sdk-core (2.8.3)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.8.1)
-      aws-sdk-core (= 2.8.1)
+    aws-sdk-resources (2.8.3)
+      aws-sdk-core (= 2.8.3)
     aws-sigv4 (1.0.0)
     backports (3.6.8)
     binding_of_caller (0.7.2)
