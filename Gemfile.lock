@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 4ec1d014c9a4945398c6baa550c71f7e3a7e69e0
+  revision: 847eaefa52e105a8e3c94a530f63b74bcbab6931
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -37,7 +37,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 78cd084d9fe65e044a8d2f1f2f055151b20ac9d1
+  revision: cab56af9f8e096f8ce0053e24d8f488c79708824
   specs:
     ohai (13.0.0)
       chef-config (>= 12.5.0.alpha.1, < 14)
@@ -205,13 +205,13 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.7.0)
     ast (2.3.0)
-    aws-sdk (2.8.3)
-      aws-sdk-resources (= 2.8.3)
-    aws-sdk-core (2.8.3)
+    aws-sdk (2.8.5)
+      aws-sdk-resources (= 2.8.5)
+    aws-sdk-core (2.8.5)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.8.3)
-      aws-sdk-core (= 2.8.3)
+    aws-sdk-resources (2.8.5)
+      aws-sdk-core (= 2.8.5)
     aws-sigv4 (1.0.0)
     backports (3.6.8)
     binding_of_caller (0.7.2)
@@ -332,7 +332,7 @@ GEM
       addressable (~> 2.3)
     libyajl2 (1.2.0)
     little-plugger (1.1.4)
-    logging (2.1.0)
+    logging (2.2.0)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     logify (0.2.0)
@@ -601,4 +601,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.13.7
+   1.14.6
