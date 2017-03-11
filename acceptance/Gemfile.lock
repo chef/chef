@@ -12,13 +12,13 @@ GEM
     addressable (2.5.0)
       public_suffix (~> 2.0, >= 2.0.2)
     artifactory (2.7.0)
-    aws-sdk (2.8.5)
-      aws-sdk-resources (= 2.8.5)
-    aws-sdk-core (2.8.5)
+    aws-sdk (2.8.1)
+      aws-sdk-resources (= 2.8.1)
+    aws-sdk-core (2.8.1)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.8.5)
-      aws-sdk-core (= 2.8.5)
+    aws-sdk-resources (2.8.1)
+      aws-sdk-core (= 2.8.1)
     aws-sigv4 (1.0.0)
     berkshelf (5.6.3)
       addressable (~> 2.3, >= 2.3.4)
@@ -111,7 +111,7 @@ GEM
     kitchen-vagrant (1.0.2)
       test-kitchen (~> 1.4)
     little-plugger (1.1.4)
-    logging (2.2.0)
+    logging (2.1.0)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     method_source (0.8.2)
@@ -140,7 +140,7 @@ GEM
     nori (2.6.0)
     octokit (4.6.2)
       sawyer (~> 0.8.0, >= 0.5.3)
-    parallel (1.11.0)
+    parallel (1.10.0)
     parslet (1.5.0)
       blankslate (~> 2.0)
     pry (0.10.4)
@@ -262,4 +262,4 @@ DEPENDENCIES
   winrm-elevated
 
 BUNDLED WITH
-   1.14.6
+   1.13.4
