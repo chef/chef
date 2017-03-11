@@ -47,7 +47,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (13.0.1)
+    chef-config (12.19.36)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -251,6 +251,7 @@ PLATFORMS
 
 DEPENDENCIES
   berkshelf
+  chef-config (< 13)
   kitchen-appbundle-updater
   kitchen-dokken (< 2.0)
   kitchen-ec2
