@@ -238,43 +238,25 @@ describe Chef::Node do
       expect(node["battles"]["people"].attribute?("snozzberry")).to eq(false)
     end
 
-    it "does not allow you to set an attribute via method_missing" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect { node.sunshine = "is bright" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
-    end
-
     it "does not allow modification of node attributes via hash methods" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       node.default["h4sh"] = { foo: "bar" }
       expect { node["h4sh"].delete("foo") }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
-      expect { node.h4sh.delete("foo") }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
     it "does not allow modification of node attributes via array methods" do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
       node.default["array"] = []
       expect { node["array"] << "boom" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
-      expect { node.array << "boom" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
     it "returns merged immutable attributes for arrays" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       node.default["array"] = []
       expect( node["array"].class ).to eql(Chef::Node::ImmutableArray)
-      expect( node.array.class ).to eql(Chef::Node::ImmutableArray)
     end
 
     it "returns merged immutable attributes for hashes" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       node.default["h4sh"] = {}
       expect( node["h4sh"].class ).to eql(Chef::Node::ImmutableMash)
-      expect( node.h4sh.class ).to eql(Chef::Node::ImmutableMash)
-    end
-
-    it "should allow you get get an attribute via method_missing" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      node.default.sunshine = "is bright"
-      expect(node.sunshine).to eql("is bright")
     end
 
     describe "normal attributes" do
@@ -319,12 +301,6 @@ describe Chef::Node do
         node.normal_unless[:snoopy][:is_a_puppy]
         node.normal[:snoopy][:is_a_puppy] = true
         expect(node[:snoopy][:is_a_puppy]).to eq(true)
-      end
-
-      it "auto-vivifies attributes created via method syntax" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        node.normal.fuu.bahrr.baz = "qux"
-        expect(node.fuu.bahrr.baz).to eq("qux")
       end
 
       it "should let you use tag as a convience method for the tags attribute" do
@@ -407,12 +383,6 @@ describe Chef::Node do
         expect(node["a"]["r1"]["g"]["u"]).to eql("u1")
       end
 
-      it "auto-vivifies attributes created via method syntax" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        node.default.fuu.bahrr.baz = "qux"
-        expect(node.fuu.bahrr.baz).to eq("qux")
-      end
-
       it "default_unless correctly resets the deep merge cache" do
         node.normal["tags"] = []  # this sets our top-level breadcrumb
         node.default_unless["foo"]["bar"] = "NK-19V"
@@ -468,12 +438,6 @@ describe Chef::Node do
         node.override_unless[:snoopy][:is_a_puppy]
         node.override[:snoopy][:is_a_puppy] = true
         expect(node[:snoopy][:is_a_puppy]).to eq(true)
-      end
-
-      it "auto-vivifies attributes created via method syntax" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        node.override.fuu.bahrr.baz = "qux"
-        expect(node.fuu.bahrr.baz).to eq("qux")
       end
     end
 
@@ -811,10 +775,9 @@ describe Chef::Node do
     #
     describe "deep merge attribute cache edge conditions" do
       it "does not error with complicated attribute substitution" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
         node.default["chef_attribute_hell"]["attr1"] = "attribute1"
-        node.default["chef_attribute_hell"]["attr2"] = "#{node.chef_attribute_hell.attr1}/attr2"
-        expect { node.default["chef_attribute_hell"]["attr3"] = "#{node.chef_attribute_hell.attr2}/attr3" }.not_to raise_error
+        node.default["chef_attribute_hell"]["attr2"] = "#{node[:chef_attribute_hell][:attr1]}/attr2"
+        expect { node.default["chef_attribute_hell"]["attr3"] = "#{node[:chef_attribute_hell][:attr2]}/attr3" }.not_to raise_error
       end
 
       it "caches both strings and symbols correctly" do
@@ -829,7 +792,7 @@ describe Chef::Node do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
         node.default["passenger"]["version"]     = "4.0.57"
         node.default["passenger"]["root_path"]   = "passenger-#{node['passenger']['version']}"
-        node.default["passenger"]["root_path_2"] = "passenger-#{node.passenger['version']}"
+        node.default["passenger"]["root_path_2"] = "passenger-#{node[:passenger]['version']}"
         expect(node["passenger"]["root_path_2"]).to eql("passenger-4.0.57")
         expect(node[:passenger]["root_path_2"]).to eql("passenger-4.0.57")
       end
@@ -841,8 +804,8 @@ describe Chef::Node do
     end
 
     it "should allow you to iterate over attributes with each_attribute" do
-      node.default.sunshine = "is bright"
-      node.default.canada = "is a nice place"
+      node.default["sunshine"] = "is bright"
+      node.default["canada"] = "is a nice place"
       seen_attributes = Hash.new
       node.each_attribute do |a, v|
         seen_attributes[a] = v

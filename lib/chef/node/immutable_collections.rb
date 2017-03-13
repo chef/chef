@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -124,24 +124,6 @@ class Chef
       end
 
       alias :attribute? :has_key?
-
-      def method_missing(symbol, *args)
-        if symbol == :to_ary
-          super
-        elsif args.empty?
-          if key?(symbol)
-            self[symbol]
-          else
-            raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
-          end
-          # This will raise a ImmutableAttributeModification error:
-        elsif symbol.to_s =~ /=$/
-          key_to_set = symbol.to_s[/^(.+)=$/, 1]
-          self[key_to_set] = (args.length == 1 ? args[0] : args)
-        else
-          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
-        end
-      end
 
       # Mash uses #convert_value to mashify values on input.
       # Since we're handling this ourselves, override it to be a no-op
