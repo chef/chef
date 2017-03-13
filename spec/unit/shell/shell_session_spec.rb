@@ -77,6 +77,37 @@ describe Shell::ClientSession do
 
 end
 
+describe Shell::SoloSession do
+  before do
+    Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
+    @chef_rest = double("Chef::ServerAPI")
+    @session = Shell::SoloSession.instance
+    @node = Chef::Node.build("foo")
+    @session.node = @node
+    @client = double("Chef::Client.new",
+                     :run_ohai => true,
+                     :load_node => true,
+                     :build_node => true,
+                     :register => true,
+                     :sync_cookbooks => {})
+  end
+
+  it "builds the node's run_context with the proper environment" do
+    @session.instance_variable_set(:@client, @client)
+    @expansion = Chef::RunList::RunListExpansion.new(@node.chef_environment, [])
+
+    expect(@node.run_list).to receive(:expand).with(@node.chef_environment).and_return(@expansion)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(@chef_rest)
+    @session.rebuild_context
+  end
+
+  it "passes the shell CLI args to the client" do
+    expect(Chef::Client).to receive(:new).with(nil, Chef::Config[:shell_config]).and_return(@client)
+    @session.send(:rebuild_node)
+  end
+
+end
+
 describe Shell::StandAloneSession do
   before do
     Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
@@ -128,11 +159,11 @@ describe Shell::StandAloneSession do
 
 end
 
-describe Shell::SoloSession do
+describe Shell::SoloLegacySession do
   before do
     Chef::Config[:shell_config] = { :override_runlist => [Chef::RunList::RunListItem.new("shell::override")] }
     Chef::Config[:shell_solo] = true
-    @session = Shell::SoloSession.instance
+    @session = Shell::SoloLegacySession.instance
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = @session.run_context = Chef::RunContext.new(@node, {}, @events)
