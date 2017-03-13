@@ -290,11 +290,9 @@ class Chef
                       ui.output "Entry #{dest_path} does not exist. Nothing to do. (purge is on)" if ui
                     end
                   end
-                else
-                  ui.output "Skipping #{dest_path}" if ui
                 end
               else
-                ui.output "Skipping #{dest_path} (purge is off)" if ui
+                ui.output "Not deleting extra entry #{dest_path} (purge is off)" if ui
               end
             elsif !dest_entry.exists?
               if new_dest_parent.can_have_child?(src_entry.name, src_entry.dir?)
