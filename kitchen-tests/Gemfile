@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
+gem "chef-config", "< 13"
 gem "rake" # required to build some native extensions
 gem "berkshelf"
 gem "kitchen-appbundle-updater"
