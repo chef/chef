@@ -17,7 +17,7 @@
 #
 
 require "chef/provider/mount"
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+if Chef::Platform.windows?
   require "chef/util/windows/net_use"
   require "chef/util/windows/volume"
 end

@@ -22,9 +22,7 @@
 #
 
 require "chef/platform/query_helpers"
-if Chef::Platform.windows?
-  require "chef/win32/security"
-end
+require "chef/win32/security" if Chef::Platform.windows?
 
 class Chef
   class FileContentManagement

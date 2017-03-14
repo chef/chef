@@ -17,9 +17,7 @@
 #
 
 require "spec_helper"
-if Chef::Platform.windows?
-  require "chef/win32/file/version_info"
-end
+require "chef/win32/file/version_info" if Chef::Platform.windows?
 
 describe "Chef::ReservedNames::Win32::File::VersionInfo", :windows_only do
   require "wmi-lite/wmi"

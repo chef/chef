@@ -19,6 +19,7 @@
 
 require "chef/resource"
 require "chef/mixin/securable"
+require "chef/win32/file" if Chef::Platform.windows?
 
 class Chef
   class Resource
@@ -93,7 +94,6 @@ class Chef
         # sure we are not on such a platform.
 
         if Chef::Platform.windows?
-          require "chef/win32/file"
           begin
             Chef::ReservedNames::Win32::File.verify_links_supported!
           rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e

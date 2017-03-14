@@ -18,9 +18,7 @@
 
 require "chef/provider/user"
 require "chef/exceptions"
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require "chef/util/windows/net_user"
-end
+require "chef/util/windows/net_user" if Chef::Platform.windows?
 
 class Chef
   class Provider

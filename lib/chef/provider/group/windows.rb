@@ -17,9 +17,7 @@
 #
 
 require "chef/provider/user"
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require "chef/util/windows/net_group"
-end
+require "chef/util/windows/net_group" if Chef::Platform.windows?
 
 class Chef
   class Provider

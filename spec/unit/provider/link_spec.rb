@@ -18,12 +18,8 @@
 #
 
 require "ostruct"
-
 require "spec_helper"
-
-if Chef::Platform.windows?
-  require "chef/win32/file" #probably need this in spec_helper
-end
+require "chef/win32/file" if Chef::Platform.windows? #probably need this in spec_helper
 
 describe Chef::Resource::Link, :not_supported_on_win2k3 do
   let(:provider) do

@@ -19,9 +19,11 @@
 require "chef/exceptions"
 require "chef/mixin/wide_string"
 require "chef/platform/query_helpers"
-require "chef/win32/error" if Chef::Platform.windows?
-require "chef/win32/api/system" if Chef::Platform.windows?
-require "chef/win32/api/unicode" if Chef::Platform.windows?
+if Chef::Platform.windows?
+  require "chef/win32/error"
+  require "chef/win32/api/system"
+  require "chef/win32/api/unicode"
+end
 
 class Chef
   module Mixin

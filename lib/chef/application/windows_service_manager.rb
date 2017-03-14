@@ -16,9 +16,7 @@
 # limitations under the License.
 #
 
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require "win32/service"
-end
+require "win32/service" if Chef::Platform.windows?
 require "chef/config"
 require "mixlib/cli"
 

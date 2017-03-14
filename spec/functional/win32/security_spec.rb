@@ -17,9 +17,7 @@
 #
 
 require "spec_helper"
-if Chef::Platform.windows?
-  require "chef/win32/security"
-end
+require "chef/win32/security" if Chef::Platform.windows?
 
 describe "Chef::Win32::Security", :windows_only do
   it "has_admin_privileges? returns true when running as admin" do

@@ -16,9 +16,7 @@
 # limitations under the License.
 #
 require "spec_helper"
-if Chef::Platform.windows?
-  require "chef/application/windows_service"
-end
+require "chef/application/windows_service" if Chef::Platform.windows?
 
 describe "Chef::Application::WindowsService", :windows_only do
   let(:shell_out_result) { double("shellout", stdout: nil, stderr: nil) }

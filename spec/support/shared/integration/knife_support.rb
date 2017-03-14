@@ -171,8 +171,8 @@ module KnifeSupport
       end
       stdout_actual = @stdout
       if Chef::Platform.windows?
-        stderr_actual = stderr_actual.gsub("\r\n", "\n")
-        stdout_actual = stdout_actual.gsub("\r\n", "\n")
+        stderr_actual.gsub!("\r\n", "\n")
+        stdout_actual.gsub!("\r\n", "\n")
       end
       expect(@exit_code).to eq(expected[:exit_code])
       if expected[:stdout].is_a?(Regexp)

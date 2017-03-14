@@ -17,9 +17,7 @@
 #
 
 require "spec_helper"
-if Chef::Platform.windows?
-  require "chef/win32/crypto"
-end
+require "chef/win32/crypto" if Chef::Platform.windows?
 
 describe "Chef::ReservedNames::Win32::Crypto", :windows_only do
   describe "#encrypt" do
