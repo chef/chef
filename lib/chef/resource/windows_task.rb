@@ -57,6 +57,7 @@ class Chef
       property :day, [String, Integer]
       property :months, String
       property :idle_time, Integer
+      property :random_delay, String
 
       attr_accessor :exists, :status, :enabled
     end
