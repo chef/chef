@@ -77,13 +77,15 @@ class Chef
             when ImmutableArray
               v.to_a
             when ImmutableMash
-              v.to_hash
+              v.to_h
             else
-              v
+              safe_dup(v)
             end
         end
         a
       end
+
+      alias_method :to_array, :to_a
 
       # for consistency's sake -- integers 'converted' to integers
       def convert_key(key)
@@ -140,20 +142,29 @@ class Chef
         Mash.new(self)
       end
 
-      def to_hash
+      def to_h
         h = Hash.new
         each_pair do |k, v|
           h[k] =
             case v
             when ImmutableMash
-              v.to_hash
+              v.to_h
             when ImmutableArray
               v.to_a
             else
-              v
+              safe_dup(v)
             end
         end
         h
+      end
+
+      alias_method :to_hash, :to_h
+
+      # For elements like Fixnums, true, nil...
+      def safe_dup(e)
+        e.dup
+      rescue TypeError
+        e
       end
 
       prepend Chef::Node::Mixin::StateTracking
