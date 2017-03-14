@@ -23,6 +23,7 @@ require "chef/dsl/data_query"
 require "chef/dsl/registry_helper"
 require "chef/dsl/reboot_pending"
 require "chef/dsl/resources"
+require "chef/json_compat"
 require "chef/mixin/convert_to_class_name"
 require "chef/guard_interpreter/resource_guard_interpreter"
 require "chef/resource/conditional"
@@ -715,12 +716,20 @@ class Chef
       result
     end
 
-    def self.json_create(o)
+    def self.from_hash(o)
       resource = new(o["instance_vars"]["@name"])
       o["instance_vars"].each do |k, v|
         resource.instance_variable_set("@#{k}".to_sym, v)
       end
       resource
+    end
+
+    def self.json_create(o)
+      from_hash(o)
+    end
+
+    def self.from_json(j)
+      from_hash(Chef::JSONCompat.parse(j))
     end
 
     #

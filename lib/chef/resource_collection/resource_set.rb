@@ -132,6 +132,14 @@ class Chef
         end
       end
 
+      def self.from_hash(o)
+        collection = new()
+        rl = o["instance_vars"]["@resources_by_key"]
+        resources = rl.merge(rl) { |k, r| Chef::Resource.from_hash(r) }
+        collection.instance_variable_set(:@resources_by_key, resources)
+        collection
+      end
+
       private
 
       def create_key(resource_type, instance_name)

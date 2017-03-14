@@ -222,11 +222,6 @@ class Chef
         Chef::Key.from_hash(Chef::JSONCompat.from_json(json))
       end
 
-      def json_create(json)
-        Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::Key#from_json or one of the load_by methods.")
-        Chef::Key.from_json(json)
-      end
-
       def list_by_user(actor, inflate = false)
         keys = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("users/#{actor}/keys")
         list(keys, actor, :load_by_user, inflate)

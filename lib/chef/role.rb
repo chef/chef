@@ -168,12 +168,6 @@ class Chef
       self
     end
 
-    # Create a Chef::Role from JSON
-    def self.json_create(o)
-      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::Role#from_hash")
-      from_hash(o)
-    end
-
     def self.from_hash(o)
       role = new
       role.name(o["name"])

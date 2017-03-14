@@ -216,11 +216,6 @@ class Chef
       end
     end
 
-    def self.json_create(o)
-      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::Environment#from_hash")
-      from_hash(o)
-    end
-
     def self.from_hash(o)
       environment = new
       environment.name(o["name"])

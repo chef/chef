@@ -140,11 +140,6 @@ class Chef
       client
     end
 
-    def self.json_create(data)
-      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::ApiClient#from_hash")
-      from_hash(data)
-    end
-
     def self.from_json(j)
       from_hash(Chef::JSONCompat.parse(j))
     end
