@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters
-# Copyright:: Copyright 2008-2016 Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -117,7 +117,7 @@ class Chef
       #     cookbook_name: cookbook_name
       #   end
       #
-      def edit_resource!(type, name, created_at = nil, run_context: self.run_context, &resource_attrs_block)
+      def edit_resource!(type, name, created_at: nil, run_context: self.run_context, &resource_attrs_block)
         resource = find_resource!(type, name, run_context: run_context)
         if resource_attrs_block
           if defined?(new_resource)
@@ -152,10 +152,10 @@ class Chef
       #   end
       #   resource.variables.merge!({ home: "/home/klowns"  })
       #
-      def edit_resource(type, name, created_at = nil, run_context: self.run_context, &resource_attrs_block)
-        edit_resource!(type, name, created_at, run_context: run_context, &resource_attrs_block)
+      def edit_resource(type, name, created_at: nil, run_context: self.run_context, &resource_attrs_block)
+        edit_resource!(type, name, created_at: created_at, run_context: run_context, &resource_attrs_block)
       rescue Chef::Exceptions::ResourceNotFound
-        declare_resource(type, name, created_at, run_context: run_context, &resource_attrs_block)
+        declare_resource(type, name, created_at: created_at, run_context: run_context, &resource_attrs_block)
       end
 
       # Lookup a resource in the resource collection by name.  If the resource is not
@@ -207,7 +207,7 @@ class Chef
         find_resource!(type, name, run_context: run_context)
       rescue Chef::Exceptions::ResourceNotFound
         if resource_attrs_block
-          declare_resource(type, name, created_at, run_context: run_context, &resource_attrs_block)
+          declare_resource(type, name, created_at: created_at, run_context: run_context, &resource_attrs_block)
         end # returns nil otherwise
       end
 
@@ -236,16 +236,10 @@ class Chef
       #     action :delete
       #   end
       #
-      def declare_resource(type, name, created_at = nil, run_context: self.run_context, create_if_missing: false, &resource_attrs_block)
+      def declare_resource(type, name, created_at: nil, run_context: self.run_context, &resource_attrs_block)
         created_at ||= caller[0]
 
-        if create_if_missing
-          Chef::Log.deprecation "build_resource with a create_if_missing flag is deprecated, use edit_resource instead"
-          # midly goofy since we call edit_resource only to re-call ourselves, but that's why its deprecated...
-          return edit_resource(type, name, created_at, run_context: run_context, &resource_attrs_block)
-        end
-
-        resource = build_resource(type, name, created_at, &resource_attrs_block)
+        resource = build_resource(type, name, created_at: created_at, &resource_attrs_block)
 
         run_context.resource_collection.insert(resource, resource_type: type, instance_name: name)
         resource
@@ -272,7 +266,7 @@ class Chef
       #     action :delete
       #   end
       #
-      def build_resource(type, name, created_at = nil, run_context: self.run_context, &resource_attrs_block)
+      def build_resource(type, name, created_at: nil, run_context: self.run_context, &resource_attrs_block)
         created_at ||= caller[0]
 
         # this needs to be lazy in order to avoid circular dependencies since ResourceBuilder

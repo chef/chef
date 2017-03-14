@@ -59,3 +59,9 @@ Previously, the syntax `node.foo.bar` could be used to mean `node["foo"]["bar"]`
 with the core ruby Object class (e.g. `node.class`) and where it collided with our own ability to extend the `Chef::Node` API.  This
 method access has been deprecated for some time, and has been removed in Chef-13.
 
+### Changed `declare_resource` API
+
+Dropped the `create_if_missing` parameter that was immediately supplanted by the `edit_resource` API (most likely nobody ever used
+this) and converted the `created_at` parameter from an optional positional parameter to a named parameter.  These changes are unlikely
+to affect any cookbook code.
+
