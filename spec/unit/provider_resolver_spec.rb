@@ -561,7 +561,6 @@ describe Chef::ProviderResolver do
         deploy:                 [ Chef::Resource::Deploy, Chef::Provider::Deploy::Timestamped ],
         deploy_revision:        [ Chef::Resource::DeployRevision, Chef::Provider::Deploy::Revision ],
         directory:              [ Chef::Resource::Directory, Chef::Provider::Directory ],
-        easy_install_package:   [ Chef::Resource::EasyInstallPackage, Chef::Provider::Package::EasyInstall ],
         erl_call:               [ Chef::Resource::ErlCall, Chef::Provider::ErlCall ],
         execute:                [ Chef::Resource::Execute, Chef::Provider::Execute ],
         file:                   [ Chef::Resource::File, Chef::Provider::File ],
