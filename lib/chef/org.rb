@@ -122,11 +122,6 @@ class Chef
       Chef::Org.from_hash(Chef::JSONCompat.from_json(json))
     end
 
-    def self.json_create(json)
-      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::Org#from_json or Chef::Org#load.")
-      Chef::Org.from_json(json)
-    end
-
     def self.load(org_name)
       response = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("organizations/#{org_name}")
       Chef::Org.from_hash(response)

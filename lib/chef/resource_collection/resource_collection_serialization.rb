@@ -15,6 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require "chef/json_compat"
+
 class Chef
   class ResourceCollection
     module ResourceCollectionSerialization
@@ -39,12 +42,16 @@ class Chef
       end
 
       module ClassMethods
-        def json_create(o)
+        def from_hash(o)
           collection = new()
           o["instance_vars"].each do |k, v|
             collection.instance_variable_set(k.to_sym, v)
           end
           collection
+        end
+
+        def from_json(j)
+          from_hash(Chef::JSONCompat.parse(j))
         end
       end
 

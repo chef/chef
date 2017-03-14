@@ -484,11 +484,6 @@ class Chef
       cookbook_version
     end
 
-    def self.json_create(o)
-      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::CookbookVersion#from_hash")
-      from_hash(o)
-    end
-
     def self.from_cb_artifact_data(o)
       from_hash(o)
     end

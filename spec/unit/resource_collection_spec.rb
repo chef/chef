@@ -291,10 +291,10 @@ describe Chef::ResourceCollection do
       expect(rc.respond_to?(:from_json)).to eq(false)
     end
 
-    it "should convert from json using the CHEF::JSONCompat library" do
+    it "should convert from json using the Chef::JSONCompat library" do
       rc << resource
       json = Chef::JSONCompat.to_json(rc)
-      s_rc = Chef::JSONCompat.from_json(json)
+      s_rc = Chef::ResourceCollection.from_json(json)
       expect(s_rc).to be_a_kind_of(Chef::ResourceCollection)
       expect(s_rc[0].name).to eql(resource.name)
     end

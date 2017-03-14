@@ -117,6 +117,16 @@ class Chef
       end
     end
 
+    def self.from_hash(o)
+      collection = new()
+      { "@resource_list" => "ResourceList", "@resource_set" => "ResourceSet" }.each_pair do |name, klass|
+        obj = Chef::ResourceCollection.const_get(klass).from_hash(o["instance_vars"].delete(name))
+        collection.instance_variable_set(name.to_sym, obj)
+      end
+      collection.instance_variable_set(:@run_context, o["instance_vars"].delete("@run_context"))
+      collection
+    end
+
     private
 
     def lookup_recursive(rc, key)

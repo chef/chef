@@ -22,43 +22,11 @@ require "chef/json_compat"
 describe Chef::JSONCompat do
   before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
 
-  describe "#from_json with JSON containing an existing class" do
-    let(:json) { '{"json_class": "Chef::Role"}' }
-
-    it "emits a deprecation warning" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = true
-      expect { Chef::JSONCompat.from_json(json) }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-        /Auto inflation of JSON data is deprecated. Please use Chef::Role#from_hash/
-    end
-
-    it "returns an instance of the class instead of a Hash" do
-      expect(Chef::JSONCompat.from_json(json).class).to eq Chef::Role
-    end
-  end
-
-  describe "#from_json with JSON containing comments" do
-    let(:json) { %Q{{\n/* comment */\n// comment 2\n"json_class": "Chef::Role"}} }
-
-    it "returns an instance of the class instead of a Hash" do
-      expect(Chef::JSONCompat.from_json(json).class).to eq Chef::Role
-    end
-  end
-
   describe "#parse with JSON containing comments" do
     let(:json) { %Q{{\n/* comment */\n// comment 2\n"json_class": "Chef::Role"}} }
 
     it "returns a Hash" do
       expect(Chef::JSONCompat.parse(json).class).to eq Hash
-    end
-  end
-
-  describe 'with JSON containing "Chef::Sandbox" as a json_class value' do
-    require "chef/sandbox" # Only needed for this test
-
-    let(:json) { '{"json_class": "Chef::Sandbox", "arbitrary": "data"}' }
-
-    it "returns a Hash, because Chef::Sandbox is a dummy class" do
-      expect(Chef::JSONCompat.from_json(json)).to eq({ "json_class" => "Chef::Sandbox", "arbitrary" => "data" })
     end
   end
 
