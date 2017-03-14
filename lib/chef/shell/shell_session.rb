@@ -227,6 +227,12 @@ module Shell
 
   end
 
+  class SoloSession < ClientSession
+
+    session_type :solo
+
+  end
+
   class DoppelGangerClient < Chef::Client
 
     attr_reader :node_name
