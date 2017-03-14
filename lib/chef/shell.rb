@@ -239,6 +239,12 @@ FOOTER
       :description  => "chef-client session",
       :boolean      => true
 
+    option :solo_legacy_mode,
+      :long         => "--solo-legacy-mode",
+      :description  => "chef-solo legacy session",
+      :boolean      => true,
+      :proc         => proc { Chef::Config[:solo_legacy_mode] = true }
+
     option :json_attribs,
       :short => "-j JSON_ATTRIBS",
       :long => "--json-attributes JSON_ATTRIBS",
@@ -313,7 +319,7 @@ FOOTER
         config_file_to_try
       elsif dot_chef_dir && ::File.exist?(File.join(dot_chef_dir, "chef_shell.rb"))
         File.join(dot_chef_dir, "chef_shell.rb")
-      elsif config[:solo]
+      elsif config[:solo_legacy_mode]
         Chef::Config.platform_specific_path("/etc/chef/solo.rb")
       elsif config[:client]
         Chef::Config.platform_specific_path("/etc/chef/client.rb")

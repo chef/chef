@@ -159,9 +159,9 @@ module Shell
 
   end
 
-  class SoloSession < ShellSession
+  class SoloLegacySession < ShellSession
 
-    session_type :solo
+    session_type :solo_legacy_mode
 
     def definitions
       @run_context.definitions
@@ -191,9 +191,13 @@ module Shell
 
   end
 
-  class ClientSession < SoloSession
+  class ClientSession < ShellSession
 
     session_type :client
+
+    def definitions
+      @run_context.definitions
+    end
 
     def save_node
       @client.save_node
