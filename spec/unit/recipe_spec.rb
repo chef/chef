@@ -253,13 +253,6 @@ describe Chef::Recipe do
         expect(run_context.resource_collection.count).to eql(2)
       end
 
-      it "does not insert two resources if create_if_missing is used" do
-        zm_resource
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        recipe.declare_resource(:zen_master, "klopp", create_if_missing: true)
-        expect(run_context.resource_collection.count).to eql(1)
-      end
-
       context "injecting a different run_context" do
         let(:run_context2) do
           events = Chef::EventDispatch::Dispatcher.new
