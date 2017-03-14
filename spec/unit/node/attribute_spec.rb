@@ -483,6 +483,24 @@ describe Chef::Node::Attribute do
       @attributes.default[:foo] = %w{foo bar baz} + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ]
       @attributes.default[:foo].dup
     end
+
+    it "mutating strings should not mutate the attributes in a hash" do
+      @attributes.default["foo"]["bar"]["baz"] = "fizz"
+      hash = @attributes["foo"].dup
+      expect(hash).to eql({ "bar" => { "baz" => "fizz" } })
+      hash["bar"]["baz"] << "buzz"
+      expect(hash).to eql({ "bar" => { "baz" => "fizzbuzz" } })
+      expect(@attributes.default["foo"]).to eql({ "bar" => { "baz" => "fizz" } })
+    end
+
+    it "mutating array elements should not mutate the attributes" do
+      @attributes.default["foo"]["bar"] = [ "fizz" ]
+      hash = @attributes["foo"].dup
+      expect(hash).to eql({ "bar" => [ "fizz" ] })
+      hash["bar"][0] << "buzz"
+      expect(hash).to eql({ "bar" => [ "fizzbuzz" ] })
+      expect(@attributes.default["foo"]).to eql({ "bar" => [ "fizz" ] })
+    end
   end
 
   describe "has_key?" do

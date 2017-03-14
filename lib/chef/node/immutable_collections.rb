@@ -70,19 +70,16 @@ class Chef
       end
 
       def to_a
-        a = Array.new
-        each do |v|
-          a <<
-            case v
-            when ImmutableArray
-              v.to_a
-            when ImmutableMash
-              v.to_h
-            else
-              safe_dup(v)
-            end
-        end
-        a
+        Array.new(map do |v|
+          case v
+          when ImmutableArray
+            v.to_a
+          when ImmutableMash
+            v.to_h
+          else
+            safe_dup(v)
+          end
+        end)
       end
 
       alias_method :to_array, :to_a
@@ -129,6 +126,10 @@ class Chef
 
       # Mash uses #convert_value to mashify values on input.
       # Since we're handling this ourselves, override it to be a no-op
+      #
+      # FIXME?  this seems wrong to do and i think is responsible for
+      # #dup needing to be more complicated than Mash.new(self)?
+      #
       def convert_value(value)
         value
       end
@@ -139,7 +140,11 @@ class Chef
       # Of course, 'default' has a specific meaning in Chef-land
 
       def dup
-        Mash.new(self)
+        h = Mash.new
+        each_pair do |k, v|
+          h[k] = safe_dup(v)
+        end
+        h
       end
 
       def to_h
