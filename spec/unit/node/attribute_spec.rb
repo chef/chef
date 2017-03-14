@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -490,11 +490,6 @@ describe Chef::Node::Attribute do
       expect(@attributes.has_key?("does_not_exist_at_all")).to eq(false)
     end
 
-    it "should return true if an attribute exists but is set to nil using dot notation" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect(@attributes.music.deeper.has_key?("gates_of_ishtar")).to eq(true)
-    end
-
     it "should return true if an attribute exists but is set to false" do
       @attributes.has_key?("music")
       expect(@attributes["music"].has_key?("apophis")).to eq(true)
@@ -528,19 +523,6 @@ describe Chef::Node::Attribute do
       expect(@attributes.attribute?("ninja")).to eq(false)
     end
 
-  end
-
-  describe "method_missing" do
-    it "should behave like a [] lookup" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect(@attributes.music.mastodon).to eq("rocks")
-    end
-
-    it "should allow the last method to set a value if it has an = sign on the end" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      @attributes.normal.music.mastodon = %w{dream still shining}
-      expect(@attributes.normal.music.mastodon).to eq(%w{dream still shining})
-    end
   end
 
   describe "keys" do
@@ -1109,25 +1091,25 @@ describe Chef::Node::Attribute do
   describe "when setting a component attribute to a new value" do
     it "converts the input in to a VividMash tree (default)" do
       @attributes.default = {}
-      @attributes.default.foo = "bar"
+      @attributes.default["foo"] = "bar"
       expect(@attributes.merged_attributes[:foo]).to eq("bar")
     end
 
     it "converts the input in to a VividMash tree (normal)" do
       @attributes.normal = {}
-      @attributes.normal.foo = "bar"
+      @attributes.normal["foo"] = "bar"
       expect(@attributes.merged_attributes[:foo]).to eq("bar")
     end
 
     it "converts the input in to a VividMash tree (override)" do
       @attributes.override = {}
-      @attributes.override.foo = "bar"
+      @attributes.override["foo"] = "bar"
       expect(@attributes.merged_attributes[:foo]).to eq("bar")
     end
 
     it "converts the input in to a VividMash tree (automatic)" do
       @attributes.automatic = {}
-      @attributes.automatic.foo = "bar"
+      @attributes.automatic["foo"] = "bar"
       expect(@attributes.merged_attributes[:foo]).to eq("bar")
     end
   end
@@ -1169,11 +1151,6 @@ describe Chef::Node::Attribute do
   describe "when attemping to write without specifying precedence" do
     it "raises an error when using []=" do
       expect { @attributes[:new_key] = "new value" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
-    end
-
-    it "raises an error when using `attr=value`" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect { @attributes.new_key = "new value" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
   end
 

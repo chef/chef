@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -179,24 +179,6 @@ class Chef
       end
 
       alias :attribute? :has_key?
-
-      def method_missing(symbol, *args)
-        # Calling `puts arg` implicitly calls #to_ary on `arg`. If `arg` does
-        # not implement #to_ary, ruby recognizes it as a single argument, and
-        # if it returns an Array, then ruby prints each element. If we don't
-        # account for that here, we'll auto-vivify a VividMash for the key
-        # :to_ary which creates an unwanted key and raises a TypeError.
-        if symbol == :to_ary
-          super
-        elsif args.empty?
-          self[symbol]
-        elsif symbol.to_s =~ /=$/
-          key_to_set = symbol.to_s[/^(.+)=$/, 1]
-          self[key_to_set] = (args.length == 1 ? args[0] : args)
-        else
-          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'. To set an attribute, use `#{symbol}=value' instead."
-        end
-      end
 
       def convert_key(key)
         super
