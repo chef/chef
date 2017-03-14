@@ -73,7 +73,11 @@ class Chef
           options['M'] = @new_resource.months unless @new_resource.months.nil?
 
           run_schtasks 'CREATE', options
-          set_cwd(new_resource.cwd) if new_resource.cwd
+          xml_options = []
+          xml_options << "cwd" if new_resource.cwd
+          xml_options << "random_delay" if new_resource.random_delay
+          update_task_xml(xml_options) unless xml_options.empty?
+
           new_resource.updated_by_last_action true
           Chef::Log.info "#{@new_resource} task created"
         end
@@ -107,7 +111,9 @@ class Chef
           options['IT'] = '' if @new_resource.interactive_enabled
 
           run_schtasks 'CHANGE', options
-          set_cwd(new_resource.cwd) if new_resource.cwd != @current_resource.cwd
+          xml_options = ["cwd", "random_delay"]
+
+          update_task_xml(xml_options)
           new_resource.updated_by_last_action true
           Chef::Log.info "Change #{@new_resource} task ran"
         else
@@ -191,7 +197,12 @@ class Chef
           @current_resource.user != @new_resource.user
       end
 
-      def set_cwd(folder)
+      def update_task_xml(options = [])
+        xml_element_mapping = {
+          "cwd" => "Actions/Exec/WorkingDirectory",
+          "random_delay" => "Triggers/TimeTrigger/RandomDelay"
+        }
+
         Chef::Log.debug 'looking for existing tasks'
 
         # we use shell_out here instead of shell_out! because a failure implies that the task does not exist
@@ -201,15 +212,21 @@ class Chef
 
         doc = REXML::Document.new(xml_cmd.stdout)
 
-        Chef::Log.debug 'Removing former CWD if any'
-        doc.root.elements.delete('Actions/Exec/WorkingDirectory')
+        options.each do |option|
+          Chef::Log.debug 'Removing former #{option} if any'
+          doc.root.elements.delete(xml_element_mapping[option])
+          option_value = @new_resource.send("#{option}")
 
-        unless folder.nil?
-          Chef::Log.debug 'Setting CWD as #folder'
-          cwd_element = REXML::Element.new('WorkingDirectory')
-          cwd_element.add_text(folder)
-          exec_element = doc.root.elements['Actions/Exec']
-          exec_element.add_element(cwd_element)
+          if option_value
+            Chef::Log.debug 'Setting #option as #option_value'
+            split_xml_path = xml_element_mapping[option].split("/")  # eg. if xml_element_mapping[option] = "Actions/Exec/WorkingDirectory"
+            element_name = split_xml_path.last   # element_name = "WorkingDirectory"
+            cwd_element = REXML::Element.new(element_name)
+            cwd_element.add_text(option_value)
+            element_root = (split_xml_path - [element_name]).join("/") # element_root = 'Actions/Exec'
+            exec_element = doc.root.elements[element_root]
+            exec_element.add_element(cwd_element)
+          end
         end
 
         temp_task_file = ::File.join(ENV['TEMP'], 'windows_task.xml')
