@@ -70,20 +70,19 @@ class Chef
       end
 
       def to_a
-        a = Array.new
-        each do |v|
-          a <<
-            case v
-            when ImmutableArray
-              v.to_a
-            when ImmutableMash
-              v.to_hash
-            else
-              v
-            end
-        end
-        a
+        Array.new(map do |v|
+          case v
+          when ImmutableArray
+            v.to_a
+          when ImmutableMash
+            v.to_h
+          else
+            safe_dup(v)
+          end
+        end)
       end
+
+      alias_method :to_array, :to_a
 
       # for consistency's sake -- integers 'converted' to integers
       def convert_key(key)
@@ -127,6 +126,10 @@ class Chef
 
       # Mash uses #convert_value to mashify values on input.
       # Since we're handling this ourselves, override it to be a no-op
+      #
+      # FIXME?  this seems wrong to do and i think is responsible for
+      # #dup needing to be more complicated than Mash.new(self)?
+      #
       def convert_value(value)
         value
       end
@@ -137,23 +140,36 @@ class Chef
       # Of course, 'default' has a specific meaning in Chef-land
 
       def dup
-        Mash.new(self)
+        h = Mash.new
+        each_pair do |k, v|
+          h[k] = safe_dup(v)
+        end
+        h
       end
 
-      def to_hash
+      def to_h
         h = Hash.new
         each_pair do |k, v|
           h[k] =
             case v
             when ImmutableMash
-              v.to_hash
+              v.to_h
             when ImmutableArray
               v.to_a
             else
-              v
+              safe_dup(v)
             end
         end
         h
+      end
+
+      alias_method :to_hash, :to_h
+
+      # For elements like Fixnums, true, nil...
+      def safe_dup(e)
+        e.dup
+      rescue TypeError
+        e
       end
 
       prepend Chef::Node::Mixin::StateTracking

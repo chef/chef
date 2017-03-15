@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,7 +78,58 @@ describe Chef::Node::ImmutableMash do
     it "should allow mutation" do
       expect { @copy["m"] = "m" }.not_to raise_error
     end
+  end
 
+  describe "dup" do
+    before do
+      @copy = @immutable_mash.dup
+    end
+
+    it "converts an immutable mash to a new mutable hash" do
+      expect(@copy).to be_instance_of(Mash)
+    end
+
+    it "converts an immutable nested mash to a new mutable hash" do
+      expect(@copy["top_level_4"]["level2"]).to be_instance_of(Mash)
+    end
+
+    it "converts an immutable nested array to a new mutable array" do
+      expect(@copy["top_level_2"]).to be_instance_of(Array)
+    end
+
+    it "should create a mash with the same content" do
+      expect(@copy).to eq(@immutable_mash)
+    end
+
+    it "should allow mutation" do
+      expect { @copy["m"] = "m" }.not_to raise_error
+    end
+  end
+
+  describe "to_h" do
+    before do
+      @copy = @immutable_mash.to_h
+    end
+
+    it "converts an immutable mash to a new mutable hash" do
+      expect(@copy).to be_instance_of(Hash)
+    end
+
+    it "converts an immutable nested mash to a new mutable hash" do
+      expect(@copy["top_level_4"]["level2"]).to be_instance_of(Hash)
+    end
+
+    it "converts an immutable nested array to a new mutable array" do
+      expect(@copy["top_level_2"]).to be_instance_of(Array)
+    end
+
+    it "should create a mash with the same content" do
+      expect(@copy).to eq(@immutable_mash)
+    end
+
+    it "should allow mutation" do
+      expect { @copy["m"] = "m" }.not_to raise_error
+    end
   end
 
   [
@@ -175,6 +226,58 @@ describe Chef::Node::ImmutableArray do
   describe "to_a" do
     before do
       @copy = @immutable_nested_array.to_a
+    end
+
+    it "converts an immutable array to a new mutable array" do
+      expect(@copy).to be_instance_of(Array)
+    end
+
+    it "converts an immutable nested array to a new mutable array" do
+      expect(@copy[1]).to be_instance_of(Array)
+    end
+
+    it "converts an immutable nested mash to a new mutable hash" do
+      expect(@copy[2]).to be_instance_of(Hash)
+    end
+
+    it "should create an array with the same content" do
+      expect(@copy).to eq(@immutable_nested_array)
+    end
+
+    it "should allow mutation" do
+      expect { @copy << "m" }.not_to raise_error
+    end
+  end
+
+  describe "dup" do
+    before do
+      @copy = @immutable_nested_array.dup
+    end
+
+    it "converts an immutable array to a new mutable array" do
+      expect(@copy).to be_instance_of(Array)
+    end
+
+    it "converts an immutable nested array to a new mutable array" do
+      expect(@copy[1]).to be_instance_of(Array)
+    end
+
+    it "converts an immutable nested mash to a new mutable hash" do
+      expect(@copy[2]).to be_instance_of(Mash)
+    end
+
+    it "should create an array with the same content" do
+      expect(@copy).to eq(@immutable_nested_array)
+    end
+
+    it "should allow mutation" do
+      expect { @copy << "m" }.not_to raise_error
+    end
+  end
+
+  describe "to_array" do
+    before do
+      @copy = @immutable_nested_array.to_array
     end
 
     it "converts an immutable array to a new mutable array" do
