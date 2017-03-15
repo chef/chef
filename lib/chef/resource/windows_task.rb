@@ -58,8 +58,18 @@ class Chef
       property :months, String
       property :idle_time, Integer
       property :random_delay, String
+      property :execution_time_limit, String
 
       attr_accessor :exists, :status, :enabled
+
+      def after_created
+        if random_delay
+          if [:on_logon, :onstart, :on_idle].include? frequency
+            raise ArgumentError, "`random_delay` property is not supported with frequency: #{frequency}"
+          end
+        end
+      end
+
     end
   end
 end
