@@ -100,3 +100,8 @@ confusion.  A simple example is `property :hash` which overrides the Object#hash
 is placed into the Chef::ResourceCollection which uses a Hash internally which expects to call Object#hash to get a unique id for the
 object.  Attempting to create `property :action` would also override the Chef::Resource#action method which is unlikely to end well for
 the user.  Overriding inherited properties is still supported.
+
+### `chef-shell` now supports solo and legacy solo modes
+
+Running `chef-shell -s` or `chef-shell --solo` will give you an experience consistent with `chef-solo`. `chef-shell --solo-legacy-mode`
+will give you an experience consistent with `chef-solo --legacy-mode`.
