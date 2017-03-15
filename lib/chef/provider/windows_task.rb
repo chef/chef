@@ -76,6 +76,7 @@ class Chef
           xml_options = []
           xml_options << "cwd" if new_resource.cwd
           xml_options << "random_delay" if new_resource.random_delay
+          xml_options << "execution_time_limit" if new_resource.execution_time_limit
           update_task_xml(xml_options) unless xml_options.empty?
 
           new_resource.updated_by_last_action true
@@ -93,7 +94,7 @@ class Chef
             Chef::Log.info "#{@new_resource} task ran"
           end
         else
-          Chef::Log.debug "#{@new_resource} task doesn't exists - nothing to do"
+          Chef::Log.warn "#{@new_resource} task doesn't exists - nothing to do"
         end
       end
 
@@ -111,13 +112,13 @@ class Chef
           options['IT'] = '' if @new_resource.interactive_enabled
 
           run_schtasks 'CHANGE', options
-          xml_options = ["cwd", "random_delay"]
+          xml_options = ["cwd", "random_delay", "execution_time_limit"]
 
           update_task_xml(xml_options)
           new_resource.updated_by_last_action true
           Chef::Log.info "Change #{@new_resource} task ran"
         else
-          Chef::Log.debug "#{@new_resource} task doesn't exists - nothing to do"
+          Chef::Log.warn "#{@new_resource} task doesn't exists - nothing to do"
         end
       end
 
@@ -128,7 +129,7 @@ class Chef
           new_resource.updated_by_last_action true
           Chef::Log.info "#{@new_resource} task deleted"
         else
-          Chef::Log.debug "#{@new_resource} task doesn't exists - nothing to do"
+          Chef::Log.warn "#{@new_resource} task doesn't exists - nothing to do"
         end
       end
 
@@ -142,8 +143,7 @@ class Chef
             Chef::Log.info "#{@new_resource} task ended"
           end
         else
-          Chef::Log.fatal "#{@new_resource} task doesn't exist - nothing to do"
-          raise Errno::ENOENT, "#{@new_resource}: task does not exist, cannot end"
+          Chef::Log.warn "#{@new_resource} task doesn't exist - nothing to do"
         end
       end
 
@@ -169,10 +169,10 @@ class Chef
             @new_resource.updated_by_last_action true
             Chef::Log.info "#{@new_resource} task disabled"
           else
-            Chef::Log.debug "#{@new_resource} already disabled - nothing to do"
+            Chef::Log.warn "#{@new_resource} already disabled - nothing to do"
           end
         else
-          Chef::Log.debug "#{@new_resource} task doesn't exist - nothing to do"
+          Chef::Log.warn "#{@new_resource} task doesn't exist - nothing to do"
         end
       end
 
@@ -198,9 +198,20 @@ class Chef
       end
 
       def update_task_xml(options = [])
+        # random_delay xml element is different for different frequencies
+        random_delay_xml_element = {
+          :minute => "Triggers/TimeTrigger/RandomDelay",
+          :hourly => "Triggers/TimeTrigger/RandomDelay",
+          :once => "Triggers/TimeTrigger/RandomDelay",
+          :daily => "Triggers/CalendarTrigger/RandomDelay",
+          :weekly => "Triggers/CalendarTrigger/RandomDelay",
+          :monthly => "Triggers/CalendarTrigger/RandomDelay",
+        }
+
         xml_element_mapping = {
           "cwd" => "Actions/Exec/WorkingDirectory",
-          "random_delay" => "Triggers/TimeTrigger/RandomDelay"
+          "random_delay" => random_delay_xml_element[@new_resource.frequency],
+          "execution_time_limit" => "Settings/ExecutionTimeLimit"
         }
 
         Chef::Log.debug 'looking for existing tasks'
