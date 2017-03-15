@@ -65,3 +65,20 @@ Dropped the `create_if_missing` parameter that was immediately supplanted by the
 this) and converted the `created_at` parameter from an optional positional parameter to a named parameter.  These changes are unlikely
 to affect any cookbook code.
 
+### Node deep-duping fixes
+
+The `node.to_hash`/`node.to_h` and `node.dup` APIs have been fixed so that they correctly deep-dup the node data structure including every
+string value.  This results in a mutable copy of the immutable merged node structure.  This is correct behavior, but is now more expensive
+and may break some poor code (which would have been buggy and difficult to follow code with odd side effects before).
+
+For example:
+
+```
+node.default["foo"] = "fizz"
+n = node.to_hash   # or node.dup
+n["foo"] << "buzz"
+```
+
+before this would have mutated the original string in-place so that `node["foo"]` and `node.default["foo"]` would have changed to "fizzbuzz"
+while now they remain "fizz" and only the mutable `n["foo"]` copy is changed to "fizzbuzz".
+
