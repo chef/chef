@@ -82,3 +82,9 @@ n["foo"] << "buzz"
 before this would have mutated the original string in-place so that `node["foo"]` and `node.default["foo"]` would have changed to "fizzbuzz"
 while now they remain "fizz" and only the mutable `n["foo"]` copy is changed to "fizzbuzz".
 
+### `easy_install` resource has been removed
+
+The Python `easy_install` package installer has been deprecated for many years,
+so we have removed support for it. No specific replacement for `pip` is being
+included with Chef at this time, but a `pip`-based `python_package` resource is
+available in the [`poise-python`](https://github.com/poise/poise-python) cookbooks.
