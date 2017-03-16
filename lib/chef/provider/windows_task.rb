@@ -34,54 +34,43 @@ class Chef
         @current_resource.task_name(pathed_task_name)
         task_hash = load_task_hash(pathed_task_name)
 
-        if task_hash.respond_to?(:[]) && task_hash[:TaskName] == pathed_task_name
-          @current_resource.exists = true
-          @current_resource.status = :running if task_hash[:Status] == 'Running'
-          if task_hash[:ScheduledTaskState] == 'Enabled'
-            @current_resource.enabled = true
-          end
-          @current_resource.cwd(task_hash[:StartIn]) unless task_hash[:StartIn] == 'N/A'
-          @current_resource.command(task_hash[:TaskToRun])
-          @current_resource.user(task_hash[:RunAsUser])
-        end
+        set_current_resource(task_hash) if task_hash.respond_to?(:[]) && task_hash[:TaskName] == pathed_task_name
+      end
+
+      def set_current_resource task_hash
+        @current_resource.exists = true
+        @current_resource.command(task_hash[:TaskToRun])
+        @current_resource.cwd(task_hash[:StartIn]) unless task_hash[:StartIn] == 'N/A'
+        @current_resource.user(task_hash[:RunAsUser])
+        @current_resource.status = :running if task_hash[:Status] == 'Running'
+        @current_resource.enabled = true if task_hash[:ScheduledTaskState] == 'Enabled'
       end
 
       def action_create
-        if @current_resource.exists && !(task_need_update? || @new_resource.force)
-          Chef::Log.info "#{@new_resource} task already exists - nothing to do"
-        else
-          validate_user_and_password
-          validate_interactive_setting
-          validate_create_frequency_modifier
-          validate_create_day
-          validate_create_months
-          validate_idle_time
+        options = {}
+        options['F'] = '' if @new_resource.force || task_need_update?
+        options['SC'] = schedule
+        options['MO'] = @new_resource.frequency_modifier if frequency_modifier_allowed
+        options['I']  = @new_resource.idle_time unless @new_resource.idle_time.nil?
+        options['SD'] = @new_resource.start_day unless @new_resource.start_day.nil?
+        options['ST'] = @new_resource.start_time unless @new_resource.start_time.nil?
+        options['TR'] = @new_resource.command
+        options['RU'] = @new_resource.user
+        options['RP'] = @new_resource.password if use_password?
+        options['RL'] = 'HIGHEST' if @new_resource.run_level == :highest
+        options['IT'] = '' if @new_resource.interactive_enabled
+        options['D'] = @new_resource.day if @new_resource.day
+        options['M'] = @new_resource.months unless @new_resource.months.nil?
 
-          options = {}
-          options['F'] = '' if @new_resource.force || task_need_update?
-          options['SC'] = schedule
-          options['MO'] = @new_resource.frequency_modifier if frequency_modifier_allowed
-          options['I']  = @new_resource.idle_time unless @new_resource.idle_time.nil?
-          options['SD'] = @new_resource.start_day unless @new_resource.start_day.nil?
-          options['ST'] = @new_resource.start_time unless @new_resource.start_time.nil?
-          options['TR'] = @new_resource.command
-          options['RU'] = @new_resource.user
-          options['RP'] = @new_resource.password if use_password?
-          options['RL'] = 'HIGHEST' if @new_resource.run_level == :highest
-          options['IT'] = '' if @new_resource.interactive_enabled
-          options['D'] = @new_resource.day if @new_resource.day
-          options['M'] = @new_resource.months unless @new_resource.months.nil?
+        run_schtasks 'CREATE', options
+        xml_options = []
+        xml_options << "cwd" if new_resource.cwd
+        xml_options << "random_delay" if new_resource.random_delay
+        xml_options << "execution_time_limit" if new_resource.execution_time_limit
+        update_task_xml(xml_options) unless xml_options.empty?
 
-          run_schtasks 'CREATE', options
-          xml_options = []
-          xml_options << "cwd" if new_resource.cwd
-          xml_options << "random_delay" if new_resource.random_delay
-          xml_options << "execution_time_limit" if new_resource.execution_time_limit
-          update_task_xml(xml_options) unless xml_options.empty?
-
-          new_resource.updated_by_last_action true
-          Chef::Log.info "#{@new_resource} task created"
-        end
+        new_resource.updated_by_last_action true
+        Chef::Log.info "#{@new_resource} task created"
       end
 
       def action_run
@@ -93,30 +82,6 @@ class Chef
             new_resource.updated_by_last_action true
             Chef::Log.info "#{@new_resource} task ran"
           end
-        else
-          Chef::Log.warn "#{@new_resource} task doesn't exists - nothing to do"
-        end
-      end
-
-      def action_change
-        if @current_resource.exists
-          validate_user_and_password
-          validate_interactive_setting
-
-          options = {}
-          options['TR'] = @new_resource.command if @new_resource.command
-          options['RU'] = @new_resource.user if @new_resource.user
-          options['RP'] = @new_resource.password if @new_resource.password
-          options['SD'] = @new_resource.start_day unless @new_resource.start_day.nil?
-          options['ST'] = @new_resource.start_time unless @new_resource.start_time.nil?
-          options['IT'] = '' if @new_resource.interactive_enabled
-
-          run_schtasks 'CHANGE', options
-          xml_options = ["cwd", "random_delay", "execution_time_limit"]
-
-          update_task_xml(xml_options)
-          new_resource.updated_by_last_action true
-          Chef::Log.info "Change #{@new_resource} task ran"
         else
           Chef::Log.warn "#{@new_resource} task doesn't exists - nothing to do"
         end
@@ -194,7 +159,8 @@ class Chef
       def task_need_update?
         # gsub needed as schtasks converts single quotes to double quotes on creation
         @current_resource.command != @new_resource.command.tr("'", '"') ||
-          @current_resource.user != @new_resource.user
+        @current_resource.user != @new_resource.user ||
+        @new_resource.start_day || @new_resource.start_time
       end
 
       def update_task_xml(options = [])
@@ -270,10 +236,11 @@ class Chef
           task = {}
 
           output.split("\n").map! do |line|
-            line.split(':', 2).map!(&:strip)
+            line.split(': ').map!(&:strip)
           end.each do |field|
             if field.is_a?(Array) && field[0].respond_to?(:to_sym)
-              task[field[0].gsub(/\s+/, '').to_sym] = field[1]
+              key = (field - [field.last]).join(": ")
+              task[key.gsub(/\s+/, '').to_sym] = field.last
             end
           end
         end
@@ -282,86 +249,6 @@ class Chef
       end
 
       SYSTEM_USERS = ['NT AUTHORITY\SYSTEM', 'SYSTEM', 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE'].freeze
-
-      def validate_user_and_password
-        if @new_resource.user && use_password?
-          if @new_resource.password.nil?
-            Chef::Log.fatal "#{@new_resource.task_name}: Can't specify a non-system user without a password!"
-          end
-        end
-      end
-
-      def validate_interactive_setting
-        if @new_resource.interactive_enabled && @new_resource.password.nil?
-          Chef::Log.fatal "#{new_resource} did not provide a password when attempting to set interactive/non-interactive."
-        end
-      end
-
-      def validate_create_day
-        return unless @new_resource.day
-        unless [:weekly, :monthly].include?(@new_resource.frequency)
-          raise 'day attribute is only valid for tasks that run weekly or monthly'
-        end
-        if @new_resource.day.is_a?(String) && @new_resource.day.to_i.to_s != @new_resource.day
-          days = @new_resource.day.split(',')
-          days.each do |day|
-            unless ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun', '*'].include?(day.strip.downcase)
-              raise 'day attribute invalid.  Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *.  Multiple values must be separated by a comma.'
-            end
-          end
-        end
-      end
-
-      def validate_create_months
-        return unless @new_resource.months
-        unless [:monthly].include?(@new_resource.frequency)
-          raise 'months attribute is only valid for tasks that run monthly'
-        end
-        if @new_resource.months.is_a? String
-          months = @new_resource.months.split(',')
-          months.each do |month|
-            unless ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC', '*'].include?(month.strip.upcase)
-              raise 'months attribute invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma.'
-            end
-          end
-        end
-      end
-
-      def validate_idle_time
-        return unless @new_resource.frequency == :on_idle
-        unless @new_resource.idle_time.to_i > 0 && @new_resource.idle_time.to_i <= 999
-          raise "idle_time value #{@new_resource.idle_time} is invalid.  Valid values for :on_idle frequency are 1 - 999."
-        end
-      end
-
-      def validate_create_frequency_modifier
-        # Currently is handled in create action 'frequency_modifier_allowed' line. Does not allow for frequency_modifier for once,onstart,onlogon,onidle
-        # Note that 'OnEvent' is not a supported frequency.
-        unless @new_resource.frequency.nil? || @new_resource.frequency_modifier.nil?
-          case @new_resource.frequency
-          when :minute
-            unless @new_resource.frequency_modifier.to_i > 0 && @new_resource.frequency_modifier.to_i <= 1439
-              raise "frequency_modifier value #{@new_resource.frequency_modifier} is invalid.  Valid values for :minute frequency are 1 - 1439."
-            end
-          when :hourly
-            unless @new_resource.frequency_modifier.to_i > 0 && @new_resource.frequency_modifier.to_i <= 23
-              raise "frequency_modifier value #{@new_resource.frequency_modifier} is invalid.  Valid values for :hourly frequency are 1 - 23."
-            end
-          when :daily
-            unless @new_resource.frequency_modifier.to_i > 0 && @new_resource.frequency_modifier.to_i <= 365
-              raise "frequency_modifier value #{@new_resource.frequency_modifier} is invalid.  Valid values for :daily frequency are 1 - 365."
-            end
-          when :weekly
-            unless @new_resource.frequency_modifier.to_i > 0 && @new_resource.frequency_modifier.to_i <= 52
-              raise "frequency_modifier value #{@new_resource.frequency_modifier} is invalid.  Valid values for :weekly frequency are 1 - 52."
-            end
-          when :monthly
-            unless ('1'..'12').to_a.push('FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST', 'LASTDAY').include?(@new_resource.frequency_modifier.to_s.upcase)
-              raise "frequency_modifier value #{@new_resource.frequency_modifier} is invalid.  Valid values for :monthly frequency are 1 - 12, 'FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST', 'LASTDAY'."
-            end
-          end
-        end
-      end
 
       def use_password?
         @use_password ||= !SYSTEM_USERS.include?(@new_resource.user.upcase)
@@ -388,7 +275,6 @@ class Chef
           false
         end
       end
-
     end
   end
 end
