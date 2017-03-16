@@ -92,3 +92,11 @@ now correctly use the `node.dup` or `node.to_hash` methods, or you should mutate
 ### The Chef::REST API has been removed
 
 It has been fully replaced with `Chef::ServerAPI` in chef-client code.
+
+### Properties overriding methods now raise an error
+
+Defining a property that overrides methods defined on the base ruby `Object` or on `Chef::Resource` itself can cause large amounts of
+confusion.  A simple example is `property :hash` which overrides the Object#hash method which will confuse ruby when the Custom Resource
+is placed into the Chef::ResourceCollection which uses a Hash internally which expects to call Object#hash to get a unique id for the
+object.  Attempting to create `property :action` would also override the Chef::Resource#action method which is unlikely to end well for
+the user.  Overriding inherited properties is still supported.
