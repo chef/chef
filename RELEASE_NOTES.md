@@ -82,3 +82,10 @@ n["foo"] << "buzz"
 before this would have mutated the original string in-place so that `node["foo"]` and `node.default["foo"]` would have changed to "fizzbuzz"
 while now they remain "fizz" and only the mutable `n["foo"]` copy is changed to "fizzbuzz".
 
+### Freezing immutable merged attributes
+
+Since Chef 11 merged node attributes have been intended to be immutable but the merged strings have not been frozen.  In Chef 13, in the
+process of merging the node attributes strings and other simple objects are dup'd and frozen.  In order to get a mutable copy, you can
+now correctly use the `node.dup` or `node.to_hash` methods, or you should mutate the object correctly through its precedence level like
+`node.default["some_string"] << "appending_this"`.
+

@@ -1244,4 +1244,16 @@ describe Chef::Node::Attribute do
       @attributes.default["foo"]["bar"]["baz"] = "quux"
     end
   end
+
+  describe "frozen immutable strings" do
+    it "strings in hashes should be frozen" do
+      @attributes.default["foo"]["bar"]["baz"] = "fizz"
+      expect { @attributes["foo"]["bar"]["baz"] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
+    end
+
+    it "strings in arrays should be frozen" do
+      @attributes.default["foo"]["bar"] = [ "fizz" ]
+      expect { @attributes["foo"]["bar"][0] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
+    end
+  end
 end
