@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 require "chef/constants"
 require "chef/property"
 require "chef/delayed_evaluator"
+require "chef/exceptions"
 
 class Chef
   module Mixin
@@ -332,7 +333,7 @@ class Chef
       def _pv_name_property(opts, key, is_name_property = true)
         if is_name_property
           if opts[key].nil?
-            raise CannotValidateStaticallyError, "name_property cannot be evaluated without a resource." if self == Chef::Mixin::ParamsValidate
+            raise Exceptions::CannotValidateStaticallyError, "name_property cannot be evaluated without a resource." if self == Chef::Mixin::ParamsValidate
             opts[key] = instance_variable_get(:"@name")
           end
         end
@@ -404,7 +405,7 @@ class Chef
         passed = to_be.any? do |tb|
           case tb
           when Proc
-            raise CannotValidateStaticallyError, "is: proc { } must be evaluated once for each resource" if self == Chef::Mixin::ParamsValidate
+            raise Exceptions::CannotValidateStaticallyError, "is: proc { } must be evaluated once for each resource" if self == Chef::Mixin::ParamsValidate
             instance_exec(value, &tb)
           when Property
             begin
@@ -448,10 +449,10 @@ class Chef
       #
       def _pv_coerce(opts, key, coercer)
         if opts.has_key?(key.to_s)
-          raise CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
+          raise Exceptions::CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
           opts[key.to_s] = instance_exec(opts[key], &coercer)
         elsif opts.has_key?(key.to_sym)
-          raise CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
+          raise Exceptions::CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
           opts[key.to_sym] = instance_exec(opts[key], &coercer)
         end
       end

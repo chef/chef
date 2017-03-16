@@ -74,7 +74,7 @@ class Chef
     #     return `true` if the property is set *or* if `name` is set.
     #   @option options [Boolean] :nillable `true` opt-in to Chef-13 style behavior where
     #     attempting to set a nil value will really set a nil value instead of issuing
-    #     a warning and operating like a getter
+    #     a warning and operating like a getter [DEPRECATED]
     #   @option options [Object] :default The value this property
     #     will return if the user does not set one. If this is `lazy`, it will
     #     be run in the context of the instance (and able to access other
@@ -264,32 +264,8 @@ class Chef
     #
     def call(resource, value = NOT_PASSED)
       if value == NOT_PASSED
-        return get(resource)
-      end
-
-      if value.nil? && !nillable?
-        # In Chef 12, value(nil) does a *get* instead of a set, so we
-        # warn if the value would have been changed. In Chef 13, it will be
-        # equivalent to value = nil.
-        result = get(resource, nil_set: true)
-
-        # Warn about this becoming a set in Chef 13.
-        begin
-          input_to_stored_value(resource, value)
-          # If nil is valid, and it would change the value, warn that this will change to a set.
-          if !result.nil?
-            Chef.deprecated(:custom_resource, "An attempt was made to change #{name} from #{result.inspect} to nil by calling #{name}(nil). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil.")
-          end
-        rescue Chef::Exceptions::DeprecatedFeatureError
-          raise
-        rescue
-          # If nil is invalid, warn that this will become an error.
-          Chef.deprecated(:custom_resource, "nil is an invalid value for #{self}. In Chef 13, this warning will change to an error. Error: #{$!}")
-        end
-
-        result
+        get(resource)
       else
-        # Anything else, such as myprop(value) is a set
         set(resource, value)
       end
     end
@@ -318,10 +294,11 @@ class Chef
     #
     def get(resource, nil_set: false)
       # If it's set, return it (and evaluate any lazy values)
+      value = nil
+
       if is_set?(resource)
         value = get_value(resource)
         value = stored_value_to_output(resource, value)
-
       else
         # We are getting the default value.
 
@@ -366,12 +343,13 @@ class Chef
           if !value.frozen? && !value.nil?
             set_value(resource, value)
           end
-
-          value
-
-        elsif required?
-          raise Chef::Exceptions::ValidationFailed, "#{name} is required"
         end
+      end
+
+      if value.nil? && required?
+        raise Chef::Exceptions::ValidationFailed, "#{name} is required"
+      else
+        value
       end
     end
 
@@ -391,7 +369,13 @@ class Chef
     #   this property.
     #
     def set(resource, value)
-      set_value(resource, input_to_stored_value(resource, value))
+      value = set_value(resource, input_to_stored_value(resource, value))
+
+      if value.nil? && required?
+        raise Chef::Exceptions::ValidationFailed, "#{name} is required"
+      else
+        value
+      end
     end
 
     #
@@ -444,8 +428,8 @@ class Chef
     #
     def coerce(resource, value)
       if options.has_key?(:coerce)
-        # If we have no default value, `nil` is never coerced or validated
-        unless !has_default? && value.nil?
+        # nil is never coerced
+        unless value.nil?
           value = exec_in_resource(resource, options[:coerce], value)
         end
       end
@@ -466,8 +450,8 @@ class Chef
     #   this property.
     #
     def validate(resource, value)
-      # If we have no default value, `nil` is never coerced or validated
-      unless value.nil? && !has_default?
+      # nils are not validated unless we have an explicit default value
+      if !value.nil? || has_default?
         if resource
           resource.validate({ name => value }, { name => validation_options })
         else
@@ -651,7 +635,7 @@ class Chef
       # Emit the deprecation.
       resource_name = declared_in.respond_to?(:resource_name) ? declared_in.resource_name : declared_in
       Chef.deprecated(:property_name_collision, "Property `#{name}` of resource `#{resource_name}` overwrites an existing method. " \
-        "Please use a different property name. This will raise an exception in Chef 13.")
+                      "Please use a different property name. This will raise an exception in Chef 13.")
     end
 
     def exec_in_resource(resource, proc, *args)
@@ -688,31 +672,9 @@ class Chef
     # valid.
     def coerce_and_validate(resource, value, is_default: false)
       result = coerce(resource, value)
-      begin
-        # If the input is from a default, we need to emit an invalid default warning on validate.
-        validate(resource, result)
-      rescue Chef::Exceptions::CannotValidateStaticallyError
-        # This one gets re-raised
-        raise
-      rescue
-        # Anything else is just an invalid default: in those cases, we just
-        # warn and return the (possibly coerced) value to the user.
-        if is_default
-          if value.nil?
-            Chef.deprecated(:custom_resource, "Default value nil is invalid for property #{self}. Possible fixes: 1. Remove 'default: nil' if nil means 'undefined'. 2. Set a valid default value if there is a reasonable one. 3. Allow nil as a valid value of your property (for example, 'property #{name.inspect}, [ String, nil ], default: nil'). Error: #{$!}")
-          else
-            Chef.deprecated(:custom_resource, "Default value #{value.inspect} is invalid for property #{self}. In Chef 13 this will become an error: #{$!}.")
-          end
-        else
-          raise
-        end
-      end
+      validate(resource, result)
 
       result
-    end
-
-    def nillable?
-      !!options[:nillable]
     end
   end
 end
