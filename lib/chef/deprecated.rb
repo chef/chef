@@ -220,6 +220,16 @@ class Chef
 
     # id 3694 was deleted
 
+    class ChefSoloLegacyMode < Base
+      def id
+        16
+      end
+
+      def target
+        "chef_solo_legacy_mode.html"
+      end
+    end
+
     class Generic < Base
       def url
         "https://docs.chef.io/chef_deprecations_client.html"

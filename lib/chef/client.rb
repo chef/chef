@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -661,6 +661,7 @@ class Chef
     # @api private
     #
     def converge(run_context)
+      Chef.deprecated(:chef_solo_legacy_mode, "The legacy-mode of chef-solo will be removed in Chef 14.0") if Chef::Config[:solo_legacy_mode]
       converge_exception = nil
       catch(:end_client_run_early) do
         begin

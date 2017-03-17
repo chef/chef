@@ -18,6 +18,10 @@ describe "chef-solo" do
 
   let(:chef_solo) { "ruby bin/chef-solo --legacy-mode --minimal-ohai" }
 
+  before do
+    Chef::Config[:treat_deprecation_warnings_as_errors] = false
+  end
+
   when_the_repository "creates nodes" do
     let(:nodes_dir) { File.join(@repository_dir, "nodes") }
     let(:node_file) { Dir[File.join(nodes_dir, "*.json")][0] }
@@ -25,6 +29,7 @@ describe "chef-solo" do
     before do
       file "config/solo.rb", <<EOM
 chef_repo_path "#{@repository_dir}"
+treat_deprecation_warnings_as_errors false
 EOM
       result = shell_out("ruby bin/chef-solo -c \"#{path_to('config/solo.rb')}\" -l debug", :cwd => chef_dir)
       result.error!
@@ -77,6 +82,7 @@ EOM
       file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
+treat_deprecation_warnings_as_errors false
 EOM
       result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
       result.error!
@@ -87,6 +93,7 @@ EOM
       file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
+treat_deprecation_warnings_as_errors false
 EOM
 
       file "config/node.json", <<-E
@@ -113,6 +120,7 @@ E
       file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
+treat_deprecation_warnings_as_errors false
 EOM
       result = shell_out("#{chef_solo} -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
       expect(result.exitstatus).to eq(0) # For CHEF-5120 this becomes 1
@@ -127,6 +135,7 @@ EOM
       file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
+treat_deprecation_warnings_as_errors false
 EOM
     end
 
@@ -144,6 +153,7 @@ EOM
       file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
+treat_deprecation_warnings_as_errors false
 EOM
     end
 
@@ -176,6 +186,7 @@ EOM
       file "config/solo.rb", <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
+treat_deprecation_warnings_as_errors false
 EOM
       # We have a timeout protection here so that if due to some bug
       # run_lock gets stuck we can discover it.
