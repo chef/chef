@@ -1,14 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.47](https://github.com/chef/chef/tree/v13.0.47) (2017-03-17)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.47...v13.0.47)
-
-**Merged pull requests:**
-
-- Jeremymv2/cheffs optimizations [\#5890](https://github.com/chef/chef/pull/5890) ([jeremymv2](https://github.com/jeremymv2))
-
-## [v13.0.47](https://github.com/chef/chef/tree/v13.0.47) (2017-03-17)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.47)
+## [v13.0.48](https://github.com/chef/chef/tree/v13.0.48) (2017-03-17)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.48)
 
 **Closed issues:**
 
@@ -17,6 +10,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- Jeremymv2/cheffs optimizations [\#5890](https://github.com/chef/chef/pull/5890) ([jeremymv2](https://github.com/jeremymv2))
 - Changed EOP to 'EOP' to avoid content expansion [\#5888](https://github.com/chef/chef/pull/5888) ([afiune](https://github.com/afiune))
 - Compress debs and rpms with xz [\#5884](https://github.com/chef/chef/pull/5884) ([thommay](https://github.com/thommay))
 - Fix apt\_repository for latest os version 16.10 [\#5874](https://github.com/chef/chef/pull/5874) ([afiune](https://github.com/afiune))
