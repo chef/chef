@@ -1,14 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.49](https://github.com/chef/chef/tree/v13.0.49) (2017-03-17)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.49...v13.0.49)
-
-**Merged pull requests:**
-
-- Properly use chef-shell in SoloSession by deprecating old behavior into SoloLegacySession [\#5898](https://github.com/chef/chef/pull/5898) ([afiune](https://github.com/afiune))
-
-## [v13.0.49](https://github.com/chef/chef/tree/v13.0.49) (2017-03-17)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.49)
+## [v13.0.50](https://github.com/chef/chef/tree/v13.0.50) (2017-03-17)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.50)
 
 **Closed issues:**
 
@@ -17,6 +10,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- Properly use chef-shell in SoloSession by deprecating old behavior into SoloLegacySession [\#5898](https://github.com/chef/chef/pull/5898) ([afiune](https://github.com/afiune))
 - Jeremymv2/cheffs optimizations [\#5890](https://github.com/chef/chef/pull/5890) ([jeremymv2](https://github.com/jeremymv2))
 - Changed EOP to 'EOP' to avoid content expansion [\#5888](https://github.com/chef/chef/pull/5888) ([afiune](https://github.com/afiune))
 - Compress debs and rpms with xz [\#5884](https://github.com/chef/chef/pull/5884) ([thommay](https://github.com/thommay))
