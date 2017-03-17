@@ -37,7 +37,7 @@ describe Chef::Resource::Ifconfig do
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:inet_addr]).to eq("434.2343.23")
       expect(state[:mask]).to eq("255.255.545")
     end

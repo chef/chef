@@ -119,7 +119,7 @@ end
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:uid]).to eq(123)
       expect(state[:gid]).to eq(456)
       expect(state[:home]).to eq("/usr/local/root/")

@@ -73,7 +73,7 @@ describe Chef::Resource::Env do
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:value]).to eq("level7")
     end
 

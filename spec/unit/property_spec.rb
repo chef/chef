@@ -1099,6 +1099,20 @@ describe "Chef::Resource.property" do
 
   end
 
+  context "redefining Object methods" do
+    it "disallows redefining Object methods" do
+      expect { resource_class.class_eval { property :hash } }.to raise_error(ArgumentError)
+    end
+
+    it "disallows redefining Chef::Resource methods" do
+      expect { resource_class.class_eval { property :action } }.to raise_error(ArgumentError)
+    end
+
+    it "allows redefining properties on Chef::Resource" do
+      expect { resource_class.class_eval { property :sensitive } }.not_to raise_error
+    end
+  end
+
   context "with a custom property type" do
     class CustomPropertyType < Chef::Property
     end

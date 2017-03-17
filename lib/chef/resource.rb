@@ -504,15 +504,6 @@ class Chef
     end
 
     #
-    # Since there are collisions with LWRP parameters named 'state' this
-    # method is not used by the resource_reporter and is most likely unused.
-    # It certainly cannot be relied upon and cannot be fixed.
-    #
-    # @deprecated
-    #
-    alias_method :state, :state_for_resource_reporter
-
-    #
     # The value of the identity of this resource.
     #
     # - If there are no identity properties on the resource, `name` is returned.

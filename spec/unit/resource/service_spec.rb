@@ -166,7 +166,7 @@ describe Chef::Resource::Service do
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:enabled]).to eql(true)
       expect(state[:running]).to eql(false)
     end

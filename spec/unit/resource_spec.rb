@@ -160,7 +160,7 @@ describe Chef::Resource do
     end
 
     it "describes its state" do
-      resource_state = file_resource.state
+      resource_state = file_resource.state_for_resource_reporter
       expect(resource_state.keys).to match_array([:checksum, :owner, :group, :mode])
       expect(resource_state[:checksum]).to eq("abc123")
       expect(resource_state[:owner]).to eq("root")

@@ -493,12 +493,15 @@ class Chef
       # be using the existing getter/setter to manipulate it instead.
       return if !instance_variable_name
 
-      # We deprecate any attempt to create a property that already exists as a
-      # method in some Classes that we know would cause our users problems.
-      # For example, creating a `hash` property could cause issues when adding
-      # a Chef::Resource instance to an data structure that expects to be able
-      # to call the `#hash` method and get back an appropriate Fixnum.
-      emit_property_redefinition_deprecations
+      # Properties may override existing properties up the inheritance heirarchy, but
+      # properties must not override inherited methods like Object#hash.  When the Resource is
+      # placed into the resource collection the ruby Hash object will call the
+      # Object#hash method on the resource, and overriding that with a property will cause
+      # very confusing results.
+      if property_redefines_method?
+        resource_name = declared_in.respond_to?(:resource_name) ? declared_in.resource_name : declared_in
+        raise ArgumentError, "Property `#{name}` of resource `#{resource_name}` overwrites an existing method."
+      end
 
       # We prefer this form because the property name won't show up in the
       # stack trace if you use `define_method`.
@@ -614,28 +617,23 @@ class Chef
 
     private
 
-    def emit_property_redefinition_deprecations
+    def property_redefines_method?
       # We only emit deprecations if this property already exists as an instance method.
       # Weeding out class methods avoids unnecessary deprecations such Chef::Resource
       # defining a `name` property when there's an already-existing `name` method
       # for a Module.
-      return unless declared_in.instance_methods.include?(name)
+      return false unless declared_in.instance_methods.include?(name)
 
       # Only emit deprecations for some well-known classes. This will still
       # allow more advanced users to subclass their own custom resources and
       # override their own properties.
-      return unless [ Object, BasicObject, Kernel, Chef::Resource ].include?(declared_in.instance_method(name).owner)
+      return false unless [ Object, BasicObject, Kernel, Chef::Resource ].include?(declared_in.instance_method(name).owner)
 
       # Allow top-level Chef::Resource proprties, such as `name`, to be overridden.
       # As of this writing, `name` is the only Chef::Resource property created with the
       # `property` definition, but this will allow for future properties to be extended
       # as needed.
-      return if Chef::Resource.properties.keys.include?(name)
-
-      # Emit the deprecation.
-      resource_name = declared_in.respond_to?(:resource_name) ? declared_in.resource_name : declared_in
-      Chef.deprecated(:property_name_collision, "Property `#{name}` of resource `#{resource_name}` overwrites an existing method. " \
-                      "Please use a different property name. This will raise an exception in Chef 13.")
+      !Chef::Resource.properties.keys.include?(name)
     end
 
     def exec_in_resource(resource, proc, *args)

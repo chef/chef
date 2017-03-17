@@ -1,7 +1,7 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -181,7 +181,7 @@ describe Chef::Resource::Mount do
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:mount_point]).to eq("123.456")
       expect(state[:device_type]).to eql(:device)
       expect(state[:fstype]).to eq("ranked")
@@ -202,7 +202,7 @@ describe Chef::Resource::Mount do
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:mount_point]).to eq("T:")
       expect(state[:username]).to eq("Administrator")
       expect(state[:password]).to eq("Jetstream123!")
