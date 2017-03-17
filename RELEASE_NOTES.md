@@ -89,3 +89,6 @@ process of merging the node attributes strings and other simple objects are dup'
 now correctly use the `node.dup` or `node.to_hash` methods, or you should mutate the object correctly through its precedence level like
 `node.default["some_string"] << "appending_this"`.
 
+### The Chef::REST API has been removed
+
+It has been fully replaced with `Chef::ServerAPI` in chef-client code.
