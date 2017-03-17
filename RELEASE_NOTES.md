@@ -105,3 +105,8 @@ the user.  Overriding inherited properties is still supported.
 
 Running `chef-shell -s` or `chef-shell --solo` will give you an experience consistent with `chef-solo`. `chef-shell --solo-legacy-mode`
 will give you an experience consistent with `chef-solo --legacy-mode`.
+
+### Chef::Platform.set and related methods have been removed
+
+The deprecated code has been removed.  All providers and resources should now be using Chef >= 12.0 `provides` syntax.
+
