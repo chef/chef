@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software, Inc.
+# Copyright:: Copyright 2010-2017, Chef Software Inc.
 #p License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,7 +64,7 @@ describe Chef::Resource::CookbookFile do
     end
 
     it "describes the state" do
-      state = @cookbook_file.state
+      state = @cookbook_file.state_for_resource_reporter
       if Chef::Platform.windows?
         puts state
         expect(state[:rights]).to eq([{ :permissions => :read, :principals => "Everyone" }])

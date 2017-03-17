@@ -270,7 +270,7 @@ describe Chef::Resource::Deploy do
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:deploy_to]).to eq("/")
       expect(state[:revision]).to eq("1.2.3")
     end

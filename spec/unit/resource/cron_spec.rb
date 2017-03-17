@@ -170,7 +170,7 @@ describe Chef::Resource::Cron do
     end
 
     it "describes the state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:minute]).to eq("1")
       expect(state[:hour]).to eq("2")
       expect(state[:day]).to eq("3")
