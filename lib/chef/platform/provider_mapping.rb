@@ -26,8 +26,6 @@ class Chef
   class Platform
 
     class << self
-      include Chef::Mixin::ParamsValidate
-
       def find_platform_and_version(node)
         platform = nil
         version = nil
@@ -52,7 +50,6 @@ class Chef
 
         [platform, version]
       end
-
     end
   end
 end
