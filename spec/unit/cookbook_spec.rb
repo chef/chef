@@ -62,10 +62,11 @@ describe Chef::CookbookVersion do
   end
 
   it "should generate a list of recipes by fully-qualified name" do
-    @cookbook.recipe_filenames = [ "recipes/one.rb", "/recipes/two.rb", "three.rb" ]
+    @cookbook.recipe_filenames = [ "recipes/one.rb", "/recipes/two.rb", "three.rb", "recipes/two/four.rb" ]
     expect(@cookbook.fully_qualified_recipe_names.include?("openldap::one")).to eq(true)
     expect(@cookbook.fully_qualified_recipe_names.include?("openldap::two")).to eq(true)
     expect(@cookbook.fully_qualified_recipe_names.include?("openldap::three")).to eq(true)
+    expect(@cookbook.fully_qualified_recipe_names.include?("openldap::two::four")).to eq(true)
   end
 
   it "should raise an ArgumentException if you try to load a bad recipe name" do

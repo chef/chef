@@ -201,7 +201,7 @@ class Chef
     def fully_qualified_recipe_names
       results = Array.new
       recipe_filenames_by_name.each_key do |rname|
-        results << "#{name}::#{rname}"
+        results << "#{name}::#{rname.gsub(/[\\\/]/, '::')}"
       end
       results
     end
