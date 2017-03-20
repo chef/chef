@@ -211,8 +211,10 @@ module Shell
 When no CONFIG is specified, chef-shell attempts to load a default configuration file:
 * If a NAMED_CONF is given, chef-shell will load ~/.chef/NAMED_CONF/chef_shell.rb
 * If no NAMED_CONF is given chef-shell will load ~/.chef/chef_shell.rb if it exists
-* chef-shell falls back to loading /etc/chef/client.rb or /etc/chef/solo.rb if -z or
-  -s options are given and no chef_shell.rb can be found.
+* If no chef_shell.rb can be found, chef-shell falls back to load:
+      /etc/chef/client.rb if -z option is given.
+      /etc/chef/solo.rb   if --solo-legacy-mode option is given.
+      .chef/knife.rb      if -s option is given.
 FOOTER
 
     option :config_file,
