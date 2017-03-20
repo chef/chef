@@ -208,7 +208,11 @@ class Chef
 
     def recipe_filenames=(*filenames)
       @recipe_filenames = filenames.flatten
-      @recipe_filenames_by_name = filenames_by_name(recipe_filenames)
+      recipes_dir = Pathname(@root_paths[0]).join('recipes')
+      @recipe_filenames_by_name = recipe_filenames.select { |filename| filename =~ /\.rb$/ }.inject({}) { |memo, filename|
+        memo[Pathname(filename).dirname.relative_path_from(recipes_dir).join(File.basename(filename, ".rb")).to_s] = filename
+        next memo
+      }
       recipe_filenames
     end
 

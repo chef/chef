@@ -52,6 +52,15 @@ describe Chef::CookbookVersion do
     expect(@cookbook.recipe_filenames_by_name["two"]).to eq("recipes/two.rb")
   end
 
+  it "should be able to understand nested recipe paths" do
+    @cookbook.recipe_filenames = [ "recipes/one.rb", "recipes/group/two.rb", "recipes/one/three.rb" ]
+    expect(@cookbook.recipe_filenames).to.eq([ "recipes/one.rb", "recipes/group/two.rb", "recipes/one/three.rb" ])
+    expect(@cookbook.recipe_filenames_by_name.keys.sort).to eql(%w{group/two one one/three})
+    expect(@cookbook.recipe_filenames_by_name["one"]).to eq("recipes/one.rb")
+    expect(@cookbook.recipe_filenames_by_name["group/two"]).to eq("recipes/group/two.rb")
+    expect(@cookbook.recipe_filenames_by_name["one/three"]).to eq("recipes/one/three.rb")
+  end
+
   it "should generate a list of recipes by fully-qualified name" do
     @cookbook.recipe_filenames = [ "recipes/one.rb", "/recipes/two.rb", "three.rb" ]
     expect(@cookbook.fully_qualified_recipe_names.include?("openldap::one")).to eq(true)
