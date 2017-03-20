@@ -338,7 +338,7 @@ FOOTER
         Chef::Config.platform_specific_path("/etc/chef/solo.rb")
       elsif config[:client]
         Chef::Config.platform_specific_path("/etc/chef/client.rb")
-      elsif config[:solo]
+      elsif config[:solo_shell]
         Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
         nil
