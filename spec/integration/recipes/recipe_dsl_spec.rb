@@ -1190,17 +1190,6 @@ describe "Recipe DSL methods" do
             end.to raise_error(Chef::Exceptions::NoSuchResourceType)
             expect(resource_class.called_provides).to be_truthy
           end
-
-          it "blarghle_blarghle_little_star 'foo' returns the resource and emits a warning" do
-            Chef::Config[:treat_deprecation_warnings_as_errors] = false
-            dsl_name = blarghle_blarghle_little_star
-            recipe = converge do
-              instance_eval("#{dsl_name} 'foo'")
-            end
-            expect(recipe.logged_warnings).to include "WARN: #{resource_class}.provides? returned true when asked if it provides DSL #{dsl_name}, but provides :#{dsl_name} was never called!"
-            expect(BaseThingy.created_resource).to eq resource_class
-            expect(resource_class.called_provides).to be_truthy
-          end
         end
 
         context "and a provider" do
@@ -1321,81 +1310,6 @@ describe "Recipe DSL methods" do
                   expect(recipe.logged_warnings).to eq ""
                   expect(BaseThingy.created_provider).to eq provider_class2
                 end
-              end
-            end
-          end
-
-          context "with provides? returning true" do
-            before do
-              temp_my_resource = my_resource
-              provider_class.define_singleton_method(:provides?) do |node, resource|
-                @called_provides = true
-                resource.declared_type == temp_my_resource
-              end
-            end
-
-            context "that provides :my_resource" do
-              before do
-                provider_class.provides my_resource
-              end
-
-              it "my_resource calls the provider (and calls provides?), but does not emit a warning" do
-                temp_my_resource = my_resource
-                recipe = converge do
-                  instance_eval("#{temp_my_resource} 'foo'")
-                end
-                expect(recipe.logged_warnings).to eq ""
-                expect(BaseThingy.created_provider).to eq provider_class
-                expect(provider_class.called_provides).to be_truthy
-              end
-            end
-
-            context "that does not call provides :my_resource" do
-              it "my_resource calls the provider (and calls provides?), and emits a warning" do
-                Chef::Config[:treat_deprecation_warnings_as_errors] = false
-                temp_my_resource = my_resource
-                recipe = converge do
-                  instance_eval("#{temp_my_resource} 'foo'")
-                end
-                expect(recipe.logged_warnings).to include("WARN: #{provider_class}.provides? returned true when asked if it provides DSL #{my_resource}, but provides :#{my_resource} was never called!")
-                expect(BaseThingy.created_provider).to eq provider_class
-                expect(provider_class.called_provides).to be_truthy
-              end
-            end
-          end
-
-          context "with provides? returning false to my_resource" do
-            before do
-              temp_my_resource = my_resource
-              provider_class.define_singleton_method(:provides?) do |node, resource|
-                @called_provides = true
-                false
-              end
-            end
-
-            context "that provides :my_resource" do
-              before do
-                provider_class.provides my_resource
-              end
-
-              it "my_resource fails to find a provider (and calls provides)" do
-                Chef::Config[:treat_deprecation_warnings_as_errors] = false
-                temp_my_resource = my_resource
-                expect_converge do
-                  instance_eval("#{temp_my_resource} 'foo'")
-                end.to raise_error(Chef::Exceptions::ProviderNotFound)
-                expect(provider_class.called_provides).to be_truthy
-              end
-            end
-
-            context "that does not provide :my_resource" do
-              it "my_resource fails to find a provider (and calls provides)" do
-                Chef::Config[:treat_deprecation_warnings_as_errors] = false
-                temp_my_resource = my_resource
-                expect_converge do
-                  instance_eval("#{temp_my_resource} 'foo'")
-                end.to raise_error(Chef::Exceptions::ProviderNotFound)
-                expect(provider_class.called_provides).to be_truthy
               end
             end
           end
