@@ -18,6 +18,7 @@
 
 require 'chef/mixin/shell_out'
 require 'rexml/document'
+require 'iso8601'
 
 class Chef
   class Provider
@@ -42,35 +43,47 @@ class Chef
         @current_resource.command(task_hash[:TaskToRun])
         @current_resource.cwd(task_hash[:StartIn]) unless task_hash[:StartIn] == 'N/A'
         @current_resource.user(task_hash[:RunAsUser])
+        set_current_run_level task_hash[:run_level]
+        set_current_frequency task_hash
+        @current_resource.day(task_hash[:day]) if task_hash[:day]
+        @current_resource.months(task_hash[:months]) if task_hash[:months]
+        set_idle_time(task_hash[:idle_time]) if task_hash[:idle_time]
+        @current_resource.random_delay(task_hash[:random_delay]) if task_hash[:random_delay]
+        @current_resource.execution_time_limit(task_hash[:execution_time_limit]) if task_hash[:execution_time_limit]
+
         @current_resource.status = :running if task_hash[:Status] == 'Running'
         @current_resource.enabled = true if task_hash[:ScheduledTaskState] == 'Enabled'
       end
 
       def action_create
-        options = {}
-        options['F'] = '' if @new_resource.force || task_need_update?
-        options['SC'] = schedule
-        options['MO'] = @new_resource.frequency_modifier if frequency_modifier_allowed
-        options['I']  = @new_resource.idle_time unless @new_resource.idle_time.nil?
-        options['SD'] = @new_resource.start_day unless @new_resource.start_day.nil?
-        options['ST'] = @new_resource.start_time unless @new_resource.start_time.nil?
-        options['TR'] = @new_resource.command
-        options['RU'] = @new_resource.user
-        options['RP'] = @new_resource.password if use_password?
-        options['RL'] = 'HIGHEST' if @new_resource.run_level == :highest
-        options['IT'] = '' if @new_resource.interactive_enabled
-        options['D'] = @new_resource.day if @new_resource.day
-        options['M'] = @new_resource.months unless @new_resource.months.nil?
+        if @current_resource.exists && !(task_need_update? || @new_resource.force)
+          Chef::Log.info "#{@new_resource} task already exists - nothing to do"
+        else
+          options = {}
+          options['F'] = '' if @new_resource.force || task_need_update?
+          options['SC'] = schedule
+          options['MO'] = @new_resource.frequency_modifier if frequency_modifier_allowed
+          options['I']  = @new_resource.idle_time unless @new_resource.idle_time.nil?
+          options['SD'] = @new_resource.start_day unless @new_resource.start_day.nil?
+          options['ST'] = @new_resource.start_time unless @new_resource.start_time.nil?
+          options['TR'] = @new_resource.command
+          options['RU'] = @new_resource.user
+          options['RP'] = @new_resource.password if use_password?
+          options['RL'] = 'HIGHEST' if @new_resource.run_level == :highest
+          options['IT'] = '' if @new_resource.interactive_enabled
+          options['D'] = @new_resource.day if @new_resource.day
+          options['M'] = @new_resource.months unless @new_resource.months.nil?
 
-        run_schtasks 'CREATE', options
-        xml_options = []
-        xml_options << "cwd" if new_resource.cwd
-        xml_options << "random_delay" if new_resource.random_delay
-        xml_options << "execution_time_limit" if new_resource.execution_time_limit
-        update_task_xml(xml_options) unless xml_options.empty?
+          run_schtasks 'CREATE', options
+          xml_options = []
+          xml_options << "cwd" if new_resource.cwd
+          xml_options << "random_delay" if new_resource.random_delay
+          xml_options << "execution_time_limit" if new_resource.execution_time_limit
+          update_task_xml(xml_options) unless xml_options.empty?
 
-        new_resource.updated_by_last_action true
-        Chef::Log.info "#{@new_resource} task created"
+          new_resource.updated_by_last_action true
+          Chef::Log.info "#{@new_resource} task created"
+        end
       end
 
       def action_run
@@ -160,7 +173,16 @@ class Chef
         # gsub needed as schtasks converts single quotes to double quotes on creation
         @current_resource.command != @new_resource.command.tr("'", '"') ||
         @current_resource.user != @new_resource.user ||
-        @new_resource.start_day || @new_resource.start_time
+        @current_resource.run_level != @new_resource.run_level ||
+        @current_resource.cwd != @new_resource.cwd ||
+        @current_resource.frequency_modifier != @new_resource.frequency_modifier ||
+        @current_resource.frequency != @new_resource.frequency ||
+        @new_resource.day.casecmp(@current_resource.day) != 0 rescue false ||
+        @new_resource.months.casecmp(@current_resource.months) != 0 rescue false ||
+        @current_resource.idle_time != @new_resource.idle_time ||
+        @current_resource.random_delay != @new_resource.random_delay ||
+        @current_resource.execution_time_limit != @new_resource.execution_time_limit ||
+        !@new_resource.start_day.nil? || !@new_resource.start_time.nil?
       end
 
       def update_task_xml(options = [])
@@ -244,7 +266,57 @@ class Chef
             end
           end
         end
+        task.merge!(load_task_xml task_name) if task
 
+        task
+      end
+
+      def load_task_xml task_name
+        xml_cmd = shell_out("schtasks /Query /TN \"#{task_name}\" /XML")
+        return if xml_cmd.exitstatus != 0
+
+        doc = REXML::Document.new(xml_cmd.stdout)
+        root = doc.root
+
+        task = {}
+        task[:run_level] = root.elements["Principals/Principal/RunLevel"].text if root.elements["Principals/Principal/RunLevel"]
+
+        # for frequency = :minutes, :hourly
+        task[:repetition_interval] = root.elements["Triggers/TimeTrigger/Repetition/Interval"].text if root.elements["Triggers/TimeTrigger/Repetition/Interval"]
+
+        # for frequency = :daily
+        task[:schedule_by_day] = root.elements["Triggers/CalendarTrigger/ScheduleByDay/DaysInterval"].text if root.elements["Triggers/CalendarTrigger/ScheduleByDay/DaysInterval"]
+
+        # for frequency = :weekly
+        task[:schedule_by_week] = root.elements["Triggers/CalendarTrigger/ScheduleByWeek/WeeksInterval"].text if root.elements["Triggers/CalendarTrigger/ScheduleByWeek/WeeksInterval"]
+        if root.elements["Triggers/CalendarTrigger/ScheduleByWeek/DaysOfWeek"]
+          task[:day] = []
+          root.elements["Triggers/CalendarTrigger/ScheduleByWeek/DaysOfWeek"].elements.each do |e|
+            task[:day] << e.to_s[0..3].delete("<").delete("/>")
+          end
+          task[:day] = task[:day].join(", ")
+        end
+
+        # for frequency = :monthly
+        task[:schedule_by_month] = root.elements["Triggers/CalendarTrigger/ScheduleByMonth/DaysOfMonth/Day"].text if root.elements["Triggers/CalendarTrigger/ScheduleByMonth/DaysOfMonth/Day"]
+        if root.elements["Triggers/CalendarTrigger/ScheduleByMonth/Months"]
+          task[:months] = []
+          root.elements["Triggers/CalendarTrigger/ScheduleByMonth/Months"].elements.each do |e|
+            task[:months] << e.to_s[0..3].delete("<").delete("/>")
+          end
+          task[:months] = task[:months].join(", ")
+        end
+
+        task[:on_logon] = true if root.elements["Triggers/LogonTrigger"]
+        task[:onstart] = true if root.elements["Triggers/BootTrigger"]
+        task[:on_idle] = true if root.elements["Triggers/IdleTrigger"]
+
+        task[:idle_time] = root.elements["Settings/IdleSettings/Duration"].text if root.elements["Settings/IdleSettings/Duration"] if task[:on_idle]
+
+        task[:once] = true if !(task[:repetition_interval] || task[:schedule_by_day] || task[:schedule_by_week] || task[:schedule_by_month] || task[:on_logon] || task[:onstart] || task[:on_idle])
+        task[:execution_time_limit] = root.elements["Settings/ExecutionTimeLimit"].text if root.elements["Settings/ExecutionTimeLimit"]  #by default PT72H
+        task[:random_delay] = root.elements["Triggers/TimeTrigger/RandomDelay"].text if root.elements["Triggers/TimeTrigger/RandomDelay"]
+        task[:random_delay] = root.elements["Triggers/CalendarTrigger/RandomDelay"].text if root.elements["Triggers/CalendarTrigger/RandomDelay"]
         task
       end
 
@@ -275,6 +347,50 @@ class Chef
           false
         end
       end
+
+      def set_current_run_level run_level
+        case run_level
+        when "HighestAvailable"
+          @current_resource.run_level(:highest)
+        when "LeastPrivilege"
+          @current_resource.run_level(:limited)
+        end
+      end
+
+      def set_current_frequency(task_hash)
+        if task_hash[:repetition_interval]
+          duration = ISO8601::Duration.new(task_hash[:repetition_interval])
+          if task_hash[:repetition_interval].include?("M")
+            @current_resource.frequency(:minute)
+            @current_resource.frequency_modifier(duration.minutes.atom.to_i)
+          elsif task_hash[:repetition_interval].include?("H")
+            @current_resource.frequency(:hourly)
+            @current_resource.frequency_modifier(duration.hours.atom.to_i)
+          end
+        end
+
+        if task_hash[:schedule_by_day]
+          @current_resource.frequency(:daily)
+          @current_resource.frequency_modifier(task_hash[:schedule_by_day].to_i)
+        end
+
+        if task_hash[:schedule_by_week]
+          @current_resource.frequency(:weekly)
+          @current_resource.frequency_modifier(task_hash[:schedule_by_week].to_i)
+        end
+
+        @current_resource.frequency(:monthly) if task_hash[:schedule_by_month]
+        @current_resource.frequency(:on_logon) if task_hash[:on_logon]
+        @current_resource.frequency(:onstart) if task_hash[:onstart]
+        @current_resource.frequency(:on_idle) if task_hash[:on_idle]
+        @current_resource.frequency(:once) if task_hash[:once]
+      end
+
+      def set_idle_time(idle_time)
+        duration = ISO8601::Duration.new(idle_time)
+        @current_resource.idle_time(duration.minutes.atom.to_i)
+      end
+
     end
   end
 end
