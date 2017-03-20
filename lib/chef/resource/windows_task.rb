@@ -58,12 +58,13 @@ class Chef
       property :months, String
       property :idle_time, Integer
       property :random_delay, String
-      property :execution_time_limit, String
+      property :execution_time_limit, String, default: "PT72H"
 
       attr_accessor :exists, :status, :enabled
 
       def after_created
         validate_random_delay(random_delay, frequency) if random_delay
+        validate_start_time(start_time) if frequency == :once
         validate_start_day(start_day, frequency) if start_day
         validate_user_and_password(user,password)
         validate_interactive_setting(interactive_enabled, password)
@@ -77,7 +78,7 @@ class Chef
 
       def validate_random_delay(random_delay, frequency)
         if [:once, :on_logon, :onstart, :on_idle].include? frequency
-          raise ArgumentError, "`start_day` property is not supported with frequency: #{frequency}"
+          raise ArgumentError, "`random_delay` property is not supported with frequency: #{frequency}"
         end
       end
 
@@ -85,6 +86,10 @@ class Chef
         if [:once, :on_logon, :onstart, :on_idle].include? frequency
           raise ArgumentError, "`start_day` property is not supported with frequency: #{frequency}"
         end
+      end
+
+      def validate_start_time(start_time)
+        raise ArgumentError,"`start_time` needs to be provided with `frequency :once`" unless start_time
       end
 
       SYSTEM_USERS = ['NT AUTHORITY\SYSTEM', 'SYSTEM', 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE'].freeze
@@ -137,8 +142,8 @@ class Chef
       end
 
       def validate_create_day(day, frequency)
-        unless [:weekly, :monthly].include?(frequency)
-          raise 'day attribute is only valid for tasks that run weekly or monthly'
+        unless [:weekly].include?(frequency)
+          raise 'day attribute is only valid for tasks that run weekly'
         end
         if day.is_a?(String) && day.to_i.to_s != day
           days = day.split(',')
