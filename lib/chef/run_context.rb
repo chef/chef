@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -575,27 +575,6 @@ ERROR_MESSAGE
     attr_reader :cookbook_compiler
     attr_reader :loaded_attributes_hash
     attr_reader :loaded_recipes_hash
-
-    module Deprecated
-      ###
-      # These need to be settable so deploy can run a resource_collection
-      # independent of any cookbooks via +recipe_eval+
-      def audits=(value)
-        Chef.deprecated(:internal_api, "Setting run_context.audits will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
-        @audits = value
-      end
-
-      def immediate_notification_collection=(value)
-        Chef.deprecated(:internal_api, "Setting run_context.immediate_notification_collection will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
-        @immediate_notification_collection = value
-      end
-
-      def delayed_notification_collection=(value)
-        Chef.deprecated(:internal_api, "Setting run_context.delayed_notification_collection will be removed in a future Chef.  Use run_context.create_child to create a new RunContext instead.")
-        @delayed_notification_collection = value
-      end
-    end
-    prepend Deprecated
 
     #
     # A child run context.  Delegates all root context calls to its parent.
