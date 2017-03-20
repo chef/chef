@@ -1,12 +1,14 @@
 DEPENDENCIES
   awesome_customers_rhel
-    git: https://github.com/learn-chef/awesome_customers_rhel.git
-    revision: b576fcf2988e2cdf156e7ba6ff59a94d556e16f1
+    git: https://github.com/lamont-granquist/awesome_customers_rhel.git
+    revision: ed730957b1b75c8701c708e2deb0740ca8325322
+    branch: lcg/bump-mysql-version
   awesome_customers_rhel_wrapper
     path: cookbooks/awesome_customers_rhel_wrapper
   awesome_customers_ubuntu
-    git: https://github.com/learn-chef/awesome_customers_ubuntu.git
-    revision: fea174c5855266f28218f76f00f6eff69e850244
+    git: https://github.com/lamont-granquist/awesome_customers_ubuntu.git
+    revision: 9d40958413d0ed1ef1e68c74d41895158c724964
+    branch: lcg/bump-mysql-version
   awesome_customers_ubuntu_wrapper
     path: cookbooks/awesome_customers_ubuntu_wrapper
   base
@@ -23,7 +25,7 @@ GRAPH
     database (~> 6.0)
     firewall (~> 2.5)
     httpd (~> 0.4)
-    mysql (~> 7.0)
+    mysql (~> 8.0)
     mysql2_chef_gem (~> 1.1)
     selinux (~> 0.9)
   awesome_customers_rhel_wrapper (0.1.0)
@@ -33,7 +35,7 @@ GRAPH
     database (~> 6.0)
     firewall (~> 2.5)
     httpd (~> 0.4)
-    mysql (~> 7.0)
+    mysql (~> 8.0)
     mysql2_chef_gem (~> 1.1)
   awesome_customers_ubuntu_wrapper (0.1.0)
     awesome_customers_ubuntu (>= 0.0.0)
@@ -86,9 +88,7 @@ GRAPH
     seven_zip (>= 0.0.0)
   multipackage (4.0.0)
     compat_resource (>= 0.0.0)
-  mysql (7.2.0)
-    smf (>= 0.0.0)
-    yum-mysql-community (>= 0.0.0)
+  mysql (8.2.0)
   mysql2_chef_gem (1.1.0)
     build-essential (>= 0.0.0)
     mariadb (>= 0.0.0)
@@ -110,13 +110,10 @@ GRAPH
     build-essential (>= 2.0.0)
     compat_resource (>= 12.16.3)
     openssl (>= 4.0)
-  rbac (1.0.3)
   resolver (2.0.1)
   selinux (0.9.0)
   seven_zip (2.0.2)
     windows (>= 1.2.2)
-  smf (2.2.8)
-    rbac (>= 1.0.1)
   sudo (3.3.1)
   ubuntu (2.0.1)
     apt (>= 0.0.0)
@@ -127,8 +124,6 @@ GRAPH
     build-essential (>= 0.0.0)
   yum (5.0.0)
   yum-epel (2.1.1)
-    compat_resource (>= 12.16.3)
-  yum-mysql-community (2.0.3)
     compat_resource (>= 12.16.3)
   yum-scl (0.2.0)
     inifile_chef_gem (>= 0.0.0)

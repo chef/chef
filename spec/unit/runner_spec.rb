@@ -1,6 +1,6 @@
 
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,25 +96,6 @@ describe Chef::Runner do
 
   before do
     run_context.resource_collection << first_resource
-  end
-
-  context "when we fall through to old Chef::Platform resolution" do
-    let(:provider_resolver) { Chef::ProviderResolver.new(node, first_resource, nil) }
-    before do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      # set up old Chef::Platform resolution instead of provider_resolver
-      Chef::Platform.set(
-        :resource => :cat,
-        :provider => Chef::Provider::SnakeOil
-      )
-      allow(Chef::ProviderResolver).to receive(:new).and_return(provider_resolver)
-      allow(provider_resolver).to receive(:maybe_dynamic_provider_resolution).with(first_resource, anything()).and_return(nil)
-    end
-
-    it "should use the platform provider if it has one" do
-      expect(Chef::Platform).to receive(:find_provider_for_node).with(node, first_resource).and_call_original
-      runner.converge
-    end
   end
 
   context "when we are doing dynamic provider resolution" do

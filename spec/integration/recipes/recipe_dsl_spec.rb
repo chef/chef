@@ -81,52 +81,6 @@ describe "Recipe DSL methods" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
       end
 
-      context "with a resource 'backcompat_thingy' declared in Chef::Resource and Chef::Provider" do
-        before(:context) do
-
-          class Chef::Resource::BackcompatThingy < Chef::Resource
-            default_action :create
-          end
-          class Chef::Provider::BackcompatThingy < Chef::Provider
-            def load_current_resource
-            end
-
-            def action_create
-              BaseThingy.created_resource = new_resource.class
-              BaseThingy.created_provider = self.class
-            end
-          end
-
-        end
-
-        it "backcompat_thingy creates a Chef::Resource::BackcompatThingy" do
-          recipe = converge do
-            backcompat_thingy("blah") {}
-          end
-          expect(BaseThingy.created_resource).to eq Chef::Resource::BackcompatThingy
-          expect(BaseThingy.created_provider).to eq Chef::Provider::BackcompatThingy
-        end
-
-        context "and another resource 'backcompat_thingy' in BackcompatThingy with 'provides'" do
-          before(:context) do
-
-            class RecipeDSLSpecNamespace::BackcompatThingy < BaseThingy
-              provides :backcompat_thingy
-              resource_name :backcompat_thingy
-            end
-
-          end
-
-          it "backcompat_thingy creates a BackcompatThingy" do
-            recipe = converge do
-              backcompat_thingy("blah") {}
-            end
-            expect(recipe.logged_warnings).to match(/Class Chef::Provider::BackcompatThingy does not declare 'provides :backcompat_thingy'./)
-            expect(BaseThingy.created_resource).not_to be_nil
-          end
-        end
-      end
-
       context "with a resource named RecipeDSLSpecNamespace::Bar::BarThingy" do
         before(:context) do
 
@@ -1491,33 +1445,6 @@ describe "Recipe DSL methods" do
         expect(resource_class.actions).to eq [ :nothing, :create ]
         expect(resource.allowed_actions).to eq [ :nothing, :create ]
       end
-    end
-  end
-
-  context "with a dynamically defined resource and regular provider" do
-    before(:context) do
-      Class.new(Chef::Resource) do
-        resource_name :lw_resource_with_hw_provider_test_case
-        default_action :create
-        attr_accessor :created_provider
-      end
-      class Chef::Provider::LwResourceWithHwProviderTestCase < Chef::Provider
-        def load_current_resource
-        end
-
-        def action_create
-          new_resource.created_provider = self.class
-        end
-      end
-    end
-
-    it "looks up the provider in Chef::Provider converting the resource name from snake case to camel case" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      resource = nil
-      recipe = converge do
-        resource = lw_resource_with_hw_provider_test_case("blah") {}
-      end
-      expect(resource.created_provider).to eq(Chef::Provider::LwResourceWithHwProviderTestCase)
     end
   end
 end
