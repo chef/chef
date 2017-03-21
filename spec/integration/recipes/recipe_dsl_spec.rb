@@ -1373,6 +1373,23 @@ describe "Recipe DSL methods" do
         end
       end
     end
+
+    context "with UTF-8 provides" do
+      before(:context) do
+        class UTF8Thingy < BaseThingy
+          resource_name :Straße
+          provides :Straße
+        end
+      end
+
+      it "utf-8 dsl names work" do
+        recipe = converge do
+          Straße("blah") {}
+        end
+        expect(recipe.logged_warnings).to eq ""
+        expect(BaseThingy.created_resource).to eq(UTF8Thingy)
+      end
+    end
   end
 
   before(:all) { Namer.current_index = 0 }
@@ -1418,4 +1435,5 @@ describe "Recipe DSL methods" do
       end
     end
   end
+
 end

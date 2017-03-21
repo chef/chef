@@ -379,16 +379,11 @@ class Chef
         def action(name, &block)
           # We need the block directly in a method so that `super` works
           define_method("compile_action_#{name}", &block)
-          # We try hard to use `def` because define_method doesn't show the method name in the stack.
-          begin
-            class_eval <<-EOM
-              def action_#{name}
-                compile_and_converge_action { compile_action_#{name} }
-              end
-            EOM
-          rescue SyntaxError
-            define_method("action_#{name}") { send("compile_action_#{name}") }
-          end
+          class_eval <<-EOM
+            def action_#{name}
+              compile_and_converge_action { compile_action_#{name} }
+            end
+          EOM
         end
       end
     end

@@ -108,6 +108,16 @@ describe "Chef::Resource.property" do
     end
   end
 
+  with_property ":Straße" do
+    it "properties with UTF-8 in their name work" do
+      expect(resource.Straße).to eql(nil)
+      expect(resource.Straße "foo").to eql("foo")
+      expect(resource.Straße).to eql("foo")
+      expect(resource.Straße = "bar").to eql("bar")
+      expect(resource.Straße).to eql("bar")
+    end
+  end
+
   with_property ":x, name_property: true" do
     context "and subclass" do
       let(:subresource_class) do
