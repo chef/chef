@@ -122,3 +122,8 @@ This was deprecated and replaced a long time ago with mixlib-shellout and the sh
 
 The core of chef hasn't used this to implement the Recipe DSL since 12.5.1 and its unlikely that any external code depended upon it.
 
+### Simplify Recipe DSL wiring
+
+Support for actions with spaces and hyphens in the action name has been dropped.  Resources and property names with spaces and hyphens
+most likely never worked in Chef-12.  UTF-8 characters have always been supported and still are.
+
