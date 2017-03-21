@@ -1174,35 +1174,6 @@ describe "Recipe DSL methods" do
           end
         end
 
-        context "with provides? returning true to blarghle_blarghle_little_star and not resource_name" do
-          before do
-            temp_blarghle_blarghle_little_star = blarghle_blarghle_little_star
-            resource_class.define_singleton_method(:provides?) do |node, resource_name|
-              @called_provides = true
-              resource_name == temp_blarghle_blarghle_little_star
-            end
-          end
-
-          it "my_resource does not return the resource" do
-            dsl_name = my_resource
-            expect_converge do
-              instance_eval("#{dsl_name} 'foo'")
-            end.to raise_error(Chef::Exceptions::NoSuchResourceType)
-            expect(resource_class.called_provides).to be_truthy
-          end
-
-          it "blarghle_blarghle_little_star 'foo' returns the resource and emits a warning" do
-            Chef::Config[:treat_deprecation_warnings_as_errors] = false
-            dsl_name = blarghle_blarghle_little_star
-            recipe = converge do
-              instance_eval("#{dsl_name} 'foo'")
-            end
-            expect(recipe.logged_warnings).to include "WARN: #{resource_class}.provides? returned true when asked if it provides DSL #{dsl_name}, but provides :#{dsl_name} was never called!"
-            expect(BaseThingy.created_resource).to eq resource_class
-            expect(resource_class.called_provides).to be_truthy
-          end
-        end
-
         context "and a provider" do
           let(:provider_class) do
             Class.new(BaseThingy::Provider) do

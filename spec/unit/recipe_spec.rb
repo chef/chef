@@ -307,7 +307,7 @@ describe Chef::Recipe do
       it "gives a sane error message when using method_missing" do
         expect do
           recipe.no_such_resource("foo")
-        end.to raise_error(NoMethodError, %q{No resource or method named `no_such_resource' for `Chef::Recipe "test"'})
+        end.to raise_error(NoMethodError, /undefined method `no_such_resource' for #<Chef::Recipe:.*>/)
       end
 
       it "gives a sane error message when using method_missing 'bare'" do
@@ -316,7 +316,7 @@ describe Chef::Recipe do
             # Giving an argument will change this from NameError to NoMethodError
             no_such_resource
           end
-        end.to raise_error(NameError, %q{No resource, method, or local variable named `no_such_resource' for `Chef::Recipe "test"'})
+        end.to raise_error(NameError, /undefined local variable or method `no_such_resource' for #<Chef::Recipe:.*>/)
       end
 
       it "gives a sane error message when using build_resource" do
