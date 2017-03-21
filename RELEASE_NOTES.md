@@ -117,3 +117,8 @@ This option has been unimplemented on the server side for years, so any use of i
 ### Remove Chef::ShellOut
 
 This was deprecated and replaced a long time ago with mixlib-shellout and the shell_out mixin.
+
+### Remove `method_missing` from the Recipe DSL
+
+The core of chef hasn't used this to implement the Recipe DSL since 12.5.1 and its unlikely that any external code depended upon it.
+
