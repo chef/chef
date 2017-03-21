@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -142,28 +142,6 @@ describe Chef::NodeMap do
         allow(node).to receive(:[]).with(:platform_version).and_return("7.0")
         expect(node_map.get(node, :thing)).to eql(:foo)
       end
-    end
-  end
-
-  describe "resource back-compat testing" do
-    before :each do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-    end
-
-    it "should handle :on_platforms => :all" do
-      node_map.set(:chef_gem, :foo, :on_platforms => :all)
-      allow(node).to receive(:[]).with(:platform).and_return("windows")
-      expect(node_map.get(node, :chef_gem)).to eql(:foo)
-    end
-    it "should handle :on_platforms => [ 'windows' ]" do
-      node_map.set(:dsc_script, :foo, :on_platforms => [ "windows" ])
-      allow(node).to receive(:[]).with(:platform).and_return("windows")
-      expect(node_map.get(node, :dsc_script)).to eql(:foo)
-    end
-    it "should handle :on_platform => :all" do
-      node_map.set(:link, :foo, :on_platform => :all)
-      allow(node).to receive(:[]).with(:platform).and_return("windows")
-      expect(node_map.get(node, :link)).to eql(:foo)
     end
   end
 

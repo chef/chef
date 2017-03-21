@@ -113,3 +113,7 @@ The deprecated code has been removed.  All providers and resources should now be
 ### Remove `sort` option for the Search API
 
 This option has been unimplemented on the server side for years, so any use of it has been pointless.
+
+### Remove Chef::ShellOut
+
+This was deprecated and replaced a long time ago with mixlib-shellout and the shell_out mixin.
