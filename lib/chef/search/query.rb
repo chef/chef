@@ -106,10 +106,12 @@ class Chef
         return args.first if args.first.is_a?(Hash)
 
         args_h = Hash.new
-        args_h[:sort] = args[0] if args[0]
-        args_h[:start] = args[1] if args[1]
-        args_h[:rows] = args[2]
-        args_h[:filter_result] = args[3]
+        # If we have 4 arguments, the first is the now-removed sort option, so
+        # just ignore it.
+        args.pop(0) if args.length == 4
+        args_h[:start] = args[0] if args[0]
+        args_h[:rows] = args[1]
+        args_h[:filter_result] = args[2]
         args_h
       end
 
@@ -119,16 +121,15 @@ class Chef
         s && Addressable::URI.encode_component(s.to_s, QUERY_PARAM_VALUE)
       end
 
-      def create_query_string(type, query, rows, start, sort)
+      def create_query_string(type, query, rows, start)
         qstr = "search/#{type}?q=#{escape_value(query)}"
-        qstr += "&sort=#{escape_value(sort)}" if sort
         qstr += "&start=#{escape_value(start)}" if start
         qstr += "&rows=#{escape_value(rows)}" if rows
         qstr
       end
 
-      def call_rest_service(type, query: "*:*", rows: nil, start: 0, sort: "X_CHEF_id_CHEF_X asc", filter_result: nil)
-        query_string = create_query_string(type, query, rows, start, sort)
+      def call_rest_service(type, query: "*:*", rows: nil, start: 0, filter_result: nil)
+        query_string = create_query_string(type, query, rows, start)
 
         if filter_result
           response = rest.post(query_string, filter_result)
