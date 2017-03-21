@@ -765,7 +765,10 @@ describe Chef::Cookbook::Metadata do
   describe "recipes" do
     let(:cookbook) do
       c = Chef::CookbookVersion.new("test_cookbook")
-      c.recipe_files = [ "default.rb", "enlighten.rb" ]
+      c.manifest = { all_files: [
+        { name: "recipes/default.rb", path: "recipes/default.rb", checksum: "my_only_friend" },
+        { name: "recipes/enlighten.rb", path: "recipes/enlighten.rb", checksum: "my_only_friend" },
+      ] }
       c
     end
 

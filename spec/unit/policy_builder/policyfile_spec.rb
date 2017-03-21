@@ -100,8 +100,8 @@ describe Chef::PolicyBuilder::Policyfile do
     http = double("Chef::ServerAPI")
     server_url = "https://api.opscode.com/organizations/example"
     Chef::Config[:chef_server_url] = server_url
-    expect(Chef::ServerAPI).to receive(:new).with(server_url).and_return(http)
-    expect(policy_builder.http_api).to eq(http)
+    expect(Chef::ServerAPI).to receive(:new).with(server_url, version_class: Chef::CookbookManifestVersions).and_return(http)
+    expect(policy_builder.api_service).to eq(http)
   end
 
   describe "reporting unsupported features" do
@@ -150,7 +150,7 @@ describe Chef::PolicyBuilder::Policyfile do
 
   describe "loading policy data" do
 
-    let(:http_api) { double("Chef::ServerAPI") }
+    let(:api_service) { double("Chef::ServerAPI") }
 
     let(:configured_environment) { nil }
 
@@ -172,7 +172,7 @@ describe Chef::PolicyBuilder::Policyfile do
     before do
       Chef::Config[:policy_document_native_api] = false
       Chef::Config[:deployment_group] = "example-policy-stage"
-      allow(policy_builder).to receive(:http_api).and_return(http_api)
+      allow(policy_builder).to receive(:api_service).and_return(api_service)
     end
 
     describe "when using compatibility mode (policy_document_native_api == false)" do
@@ -185,7 +185,7 @@ describe Chef::PolicyBuilder::Policyfile do
         let(:error404) { Net::HTTPServerException.new("404 message", :body) }
 
         before do
-          expect(http_api).to receive(:get).
+          expect(api_service).to receive(:get).
             with("data/policyfiles/example-policy-stage").
             and_raise(error404)
         end
@@ -212,7 +212,7 @@ describe Chef::PolicyBuilder::Policyfile do
         let(:policy_relative_url) { "data/policyfiles/example-policy-stage" }
 
         before do
-          expect(http_api).to receive(:get).with(policy_relative_url).and_return(parsed_policyfile_json)
+          expect(api_service).to receive(:get).with(policy_relative_url).and_return(parsed_policyfile_json)
         end
 
         it "fetches the policy file from a data bag item" do
@@ -253,7 +253,7 @@ describe Chef::PolicyBuilder::Policyfile do
         let(:policy_relative_url) { "policy_groups/policy-stage/policies/example" }
 
         before do
-          expect(http_api).to receive(:get).with(policy_relative_url).and_return(parsed_policyfile_json)
+          expect(api_service).to receive(:get).with(policy_relative_url).and_return(parsed_policyfile_json)
         end
 
         it "fetches the policy file from a data bag item" do
@@ -617,7 +617,7 @@ describe Chef::PolicyBuilder::Policyfile do
               policy_builder.finish_load_node(node)
               policy_builder.build_node
 
-              expect(http_api).to receive(:get).with(cookbook1_url).
+              expect(api_service).to receive(:get).with(cookbook1_url).
                 and_raise(error404)
             end
 
@@ -687,9 +687,9 @@ describe Chef::PolicyBuilder::Policyfile do
           context "when the cookbooks exist on the server" do
 
             before do
-              expect(http_api).to receive(:get).with(cookbook1_url).
+              expect(api_service).to receive(:get).with(cookbook1_url).
                 and_return(example1_cookbook_data)
-              expect(http_api).to receive(:get).with(cookbook2_url).
+              expect(api_service).to receive(:get).with(cookbook2_url).
                 and_return(example2_cookbook_data)
 
               expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example1_cookbook_data).
@@ -720,9 +720,9 @@ describe Chef::PolicyBuilder::Policyfile do
           context "when the cookbooks exist on the server" do
 
             before do
-              expect(http_api).to receive(:get).with(cookbook1_url).
+              expect(api_service).to receive(:get).with(cookbook1_url).
                 and_return(example1_cookbook_data)
-              expect(http_api).to receive(:get).with(cookbook2_url).
+              expect(api_service).to receive(:get).with(cookbook2_url).
                 and_return(example2_cookbook_data)
 
               expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example1_cookbook_data).

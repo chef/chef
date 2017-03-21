@@ -25,38 +25,6 @@ describe Chef::CookbookVersion do
       expect(cookbook_version.name).to eq("tatft")
     end
 
-    it "has no attribute files" do
-      expect(cookbook_version.attribute_filenames).to be_empty
-    end
-
-    it "has no resource definition files" do
-      expect(cookbook_version.definition_filenames).to be_empty
-    end
-
-    it "has no cookbook files" do
-      expect(cookbook_version.file_filenames).to be_empty
-    end
-
-    it "has no recipe files" do
-      expect(cookbook_version.recipe_filenames).to be_empty
-    end
-
-    it "has no library files" do
-      expect(cookbook_version.library_filenames).to be_empty
-    end
-
-    it "has no LWRP resource files" do
-      expect(cookbook_version.resource_filenames).to be_empty
-    end
-
-    it "has no LWRP provider files" do
-      expect(cookbook_version.provider_filenames).to be_empty
-    end
-
-    it "has no metadata files" do
-      expect(cookbook_version.metadata_filenames).to be_empty
-    end
-
     it "has an empty set of all_files" do
       expect(cookbook_version.all_files).to be_empty
     end
@@ -82,17 +50,7 @@ describe Chef::CookbookVersion do
     let(:cookbook_paths_by_type) do
       {
         # Dunno if the paths here are representitive of what is set by CookbookLoader...
-        all_files:  Dir[File.join(cookbook_root, "**", "*.rb")],
-        attribute_filenames:  Dir[File.join(cookbook_root, "attributes", "**", "*.rb")],
-        definition_filenames: Dir[File.join(cookbook_root, "definitions", "**", "*.rb")],
-        file_filenames:       Dir[File.join(cookbook_root, "files", "**", "*.tgz")],
-        recipe_filenames:     Dir[File.join(cookbook_root, "recipes", "**", "*.rb")],
-        template_filenames:   Dir[File.join(cookbook_root, "templates", "**", "*.erb")],
-        library_filenames:    Dir[File.join(cookbook_root, "libraries", "**", "*.rb")],
-        resource_filenames:   Dir[File.join(cookbook_root, "resources", "**", "*.rb")],
-        provider_filenames:   Dir[File.join(cookbook_root, "providers", "**", "*.rb")],
-        root_filenames:       Array(File.join(cookbook_root, "README.rdoc")),
-        metadata_filenames:   Array(File.join(cookbook_root, "metadata.json")),
+        all_files:  Dir[File.join(cookbook_root, "**", "**")],
       }
     end
 
@@ -102,18 +60,9 @@ describe Chef::CookbookVersion do
 
       let(:cookbook_version) do
         Chef::CookbookVersion.new("tatft", cookbook_root).tap do |c|
-        # Currently the cookbook loader finds all the files then tells CookbookVersion
-        # where they are.
-          c.attribute_filenames  = cookbook_paths_by_type[:attribute_filenames]
-          c.definition_filenames = cookbook_paths_by_type[:definition_filenames]
-          c.recipe_filenames     = cookbook_paths_by_type[:recipe_filenames]
-          c.template_filenames   = cookbook_paths_by_type[:template_filenames]
-          c.file_filenames       = cookbook_paths_by_type[:file_filenames]
-          c.library_filenames    = cookbook_paths_by_type[:library_filenames]
-          c.resource_filenames   = cookbook_paths_by_type[:resource_filenames]
-          c.provider_filenames   = cookbook_paths_by_type[:provider_filenames]
-          c.root_filenames       = cookbook_paths_by_type[:root_filenames]
-          c.metadata_filenames   = cookbook_paths_by_type[:metadata_filenames]
+          # Currently the cookbook loader finds all the files then tells CookbookVersion
+          # where they are.
+          c.all_files = cookbook_paths_by_type[:all_files]
         end
       end
 
@@ -168,18 +117,7 @@ describe Chef::CookbookVersion do
 
     let(:cookbook_paths_by_type) do
       {
-        # Dunno if the paths here are representitive of what is set by CookbookLoader...
-        all_files:            Dir[File.join(cookbook_root, "**", "*.rb")],
-        attribute_filenames:  Dir[File.join(cookbook_root, "attributes", "**", "*.rb")],
-        definition_filenames: Dir[File.join(cookbook_root, "definitions", "**", "*.rb")],
-        file_filenames:       Dir[File.join(cookbook_root, "files", "**", "*.*")],
-        recipe_filenames:     Dir[File.join(cookbook_root, "recipes", "**", "*.rb")],
-        template_filenames:   Dir[File.join(cookbook_root, "templates", "**", "*.*")],
-        library_filenames:    Dir[File.join(cookbook_root, "libraries", "**", "*.rb")],
-        resource_filenames:   Dir[File.join(cookbook_root, "resources", "**", "*.rb")],
-        provider_filenames:   Dir[File.join(cookbook_root, "providers", "**", "*.rb")],
-        root_filenames:       Array(File.join(cookbook_root, "README.rdoc")),
-        metadata_filenames:   Array(File.join(cookbook_root, "metadata.json")),
+        all_files:  Dir[File.join(cookbook_root, "**", "**")],
       }
     end
 
@@ -187,16 +125,7 @@ describe Chef::CookbookVersion do
 
     let(:cookbook_version) do
       Chef::CookbookVersion.new("cookbook2", cookbook_root).tap do |c|
-        c.attribute_filenames  = cookbook_paths_by_type[:attribute_filenames]
-        c.definition_filenames = cookbook_paths_by_type[:definition_filenames]
-        c.recipe_filenames     = cookbook_paths_by_type[:recipe_filenames]
-        c.template_filenames   = cookbook_paths_by_type[:template_filenames]
-        c.file_filenames       = cookbook_paths_by_type[:file_filenames]
-        c.library_filenames    = cookbook_paths_by_type[:library_filenames]
-        c.resource_filenames   = cookbook_paths_by_type[:resource_filenames]
-        c.provider_filenames   = cookbook_paths_by_type[:provider_filenames]
-        c.root_filenames       = cookbook_paths_by_type[:root_filenames]
-        c.metadata_filenames   = cookbook_paths_by_type[:metadata_filenames]
+        c.all_files = cookbook_paths_by_type[:all_files]
       end
     end
 
@@ -255,19 +184,19 @@ describe Chef::CookbookVersion do
 
     it "should sort based on the version number" do
       examples = [
-                  # smaller, larger
-                  ["1.0", "2.0"],
-                  ["1.2.3", "1.2.4"],
-                  ["1.2.3", "1.3.0"],
-                  ["1.2.3", "1.3"],
-                  ["1.2.3", "2.1.1"],
-                  ["1.2.3", "2.1"],
-                  ["1.2", "1.2.4"],
-                  ["1.2", "1.3.0"],
-                  ["1.2", "1.3"],
-                  ["1.2", "2.1.1"],
-                  ["1.2", "2.1"],
-                 ]
+        # smaller, larger
+        ["1.0", "2.0"],
+        ["1.2.3", "1.2.4"],
+        ["1.2.3", "1.3.0"],
+        ["1.2.3", "1.3"],
+        ["1.2.3", "2.1.1"],
+        ["1.2.3", "2.1"],
+        ["1.2", "1.2.4"],
+        ["1.2", "1.3.0"],
+        ["1.2", "1.3"],
+        ["1.2", "2.1.1"],
+        ["1.2", "2.1"],
+      ]
       examples.each do |smaller, larger|
         sm = Chef::CookbookVersion.new("foo", "/tmp/blah")
         lg = Chef::CookbookVersion.new("foo", "/tmp/blah")
@@ -318,42 +247,4 @@ describe Chef::CookbookVersion do
 
   end
 
-  describe "when deprecation warnings are errors" do
-
-    subject(:cbv) { Chef::CookbookVersion.new("version validation", "/tmp/blah") }
-
-    it "errors on #status and #status=" do
-      expect { cbv.status = :wat }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
-      expect { cbv.status }.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
-    end
-
-  end
-
-  describe "deprecated features" do
-
-    subject(:cbv) { Chef::CookbookVersion.new("tatft", "/tmp/blah").tap { |c| c.version = "1.2.3" } }
-
-    before do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-    end
-
-    it "gives a save URL for the standard cookbook API" do
-      expect(cbv.save_url).to eq("cookbooks/tatft/1.2.3")
-    end
-
-    it "gives a force save URL for the standard cookbook API" do
-      expect(cbv.force_save_url).to eq("cookbooks/tatft/1.2.3?force=true")
-    end
-
-    it "is \"ready\"" do
-      # WTF is this? what are the valid states? and why aren't they set with encapsulating methods?
-      # [Dan 15-Jul-2010]
-      expect(cbv.status).to eq(:ready)
-    end
-
-    include_examples "to_json equivalent to Chef::JSONCompat.to_json" do
-      let(:jsonable) { Chef::CookbookVersion.new("tatft", "/tmp/blah") }
-    end
-
-  end
 end
