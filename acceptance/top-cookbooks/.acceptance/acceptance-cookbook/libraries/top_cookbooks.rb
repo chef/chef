@@ -12,15 +12,16 @@ class TopCookbooks < Chef::Resource
     cookbook_kitchen "#{command} git" do
     end
 
-    cookbook_kitchen "#{command} learn-the-basics-ubuntu" do
-      repository "learn-chef/learn-chef-acceptance"
-      cookbook_relative_dir "cookbooks/learn-the-basics-ubuntu"
-    end
+    # FIXME: waiting for https://github.com/learn-chef/learn-chef-acceptance/pull/23
+    # cookbook_kitchen "#{command} learn-the-basics-ubuntu" do
+    #   repository "learn-chef/learn-chef-acceptance"
+    #   cookbook_relative_dir "cookbooks/learn-the-basics-ubuntu"
+    # end
 
-    cookbook_kitchen "#{command} learn-the-basics-windows" do
-      repository "learn-chef/learn-chef-acceptance"
-      cookbook_relative_dir "cookbooks/learn-the-basics-windows"
-    end
+    # cookbook_kitchen "#{command} learn-the-basics-windows" do
+    #   repository "learn-chef/learn-chef-acceptance"
+    #   cookbook_relative_dir "cookbooks/learn-the-basics-windows"
+    # end
 
     cookbook_kitchen "#{command} powershell" do
     end
