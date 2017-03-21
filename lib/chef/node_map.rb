@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,10 +31,7 @@ class Chef
     #
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, value, platform: nil, platform_version: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, canonical: nil, override: nil, &block)
-      Chef.deprecated(:internal_api, "The on_platform option to node_map has been deprecated") if on_platform
-      Chef.deprecated(:internal_api, "The on_platforms option to node_map has been deprecated") if on_platforms
-      platform ||= on_platform || on_platforms
+    def set(key, value, platform: nil, platform_version: nil, platform_family: nil, os: nil, canonical: nil, override: nil, &block)
       filters = {}
       filters[:platform] = platform if platform
       filters[:platform_version] = platform_version if platform_version
