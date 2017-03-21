@@ -1,14 +1,14 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.61](https://github.com/chef/chef/tree/v13.0.61) (2017-03-21)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.61...v13.0.61)
+## [v13.0.62](https://github.com/chef/chef/tree/v13.0.62) (2017-03-21)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.62...v13.0.62)
 
 **Merged pull requests:**
 
-- Chef-13: Remove deprecated Chef::Client attrs [\#5932](https://github.com/chef/chef/pull/5932) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: Simplify DSL creation [\#5934](https://github.com/chef/chef/pull/5934) ([lamont-granquist](https://github.com/lamont-granquist))
 
-## [v13.0.61](https://github.com/chef/chef/tree/v13.0.61) (2017-03-21)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.61)
+## [v13.0.62](https://github.com/chef/chef/tree/v13.0.62) (2017-03-21)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.62)
 
 **Closed issues:**
 
@@ -20,6 +20,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- Chef-13: Remove deprecated Chef::Client attrs [\#5932](https://github.com/chef/chef/pull/5932) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove method\_missing from the DSL [\#5930](https://github.com/chef/chef/pull/5930) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove node\_map back-compat [\#5926](https://github.com/chef/chef/pull/5926) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove deprecated run\_context methods [\#5925](https://github.com/chef/chef/pull/5925) ([lamont-granquist](https://github.com/lamont-granquist))
@@ -40,12 +41,12 @@ This changelog reflects the current state of chef's master branch on github and 
 - Compress debs and rpms with xz [\#5884](https://github.com/chef/chef/pull/5884) ([thommay](https://github.com/thommay))
 - Chef-13:  Chef::Resource cleanup [\#5882](https://github.com/chef/chef/pull/5882) ([lamont-granquist](https://github.com/lamont-granquist))
 - Fix apt\_repository for latest os version 16.10 [\#5874](https://github.com/chef/chef/pull/5874) ([afiune](https://github.com/afiune))
-- convert additional resource methods to properties [\#5871](https://github.com/chef/chef/pull/5871) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: convert additional resource methods to properties [\#5871](https://github.com/chef/chef/pull/5871) ([lamont-granquist](https://github.com/lamont-granquist))
 - Add the ability to blacklist attributes from being saved to the chef server [\#5868](https://github.com/chef/chef/pull/5868) ([robmul](https://github.com/robmul))
-- CHEF-13:  remove supports API from Chef::Resource [\#5863](https://github.com/chef/chef/pull/5863) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13:  remove supports API from Chef::Resource [\#5863](https://github.com/chef/chef/pull/5863) ([lamont-granquist](https://github.com/lamont-granquist))
 - HTTP: add debug long for non-JSON response [\#5858](https://github.com/chef/chef/pull/5858) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13 remove resource cloning and 3694 warnings [\#5856](https://github.com/chef/chef/pull/5856) ([lamont-granquist](https://github.com/lamont-granquist))
-- support why-run by default [\#5853](https://github.com/chef/chef/pull/5853) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: support why-run by default [\#5853](https://github.com/chef/chef/pull/5853) ([lamont-granquist](https://github.com/lamont-granquist))
 - bump major to chef-13 [\#5833](https://github.com/chef/chef/pull/5833) ([lamont-granquist](https://github.com/lamont-granquist))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
