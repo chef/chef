@@ -110,3 +110,7 @@ will give you an experience consistent with `chef-solo --legacy-mode`.
 
 The deprecated code has been removed.  All providers and resources should now be using Chef >= 12.0 `provides` syntax.
 
+### Remove Chef::ShellOut
+
+This was deprecated and replaced a long time ago with mixlib-shellout and the shell_out mixin.
+
