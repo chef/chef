@@ -16,7 +16,7 @@ Larger product enhancement and feedback should go through either the feedback si
 * [Chef RFCs](https://github.com/chef/chef-rfc)
 * [Chef Community Slack Meetings](https://github.com/chef/chef-rfc/blob/master/rfc001-slack-meetings.md)
 
-Bugs in other products should go to their specific repos, this is not a catch-all repo for all products:
+Bugs in other products should go to their specific repos, this is not a catch-all or default repo for all products, examples:
 
 * [Chef Server issues](https://github.com/chef/chef-server/issues/new)
 * [ChefDK issues](https://github.com/chef/chef-dk/issues/new)
