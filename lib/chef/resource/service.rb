@@ -18,6 +18,7 @@
 #
 
 require "chef/resource"
+require "shellwords"
 
 class Chef
   class Resource
@@ -40,6 +41,7 @@ class Chef
         @enabled = nil
         @running = nil
         @masked = nil
+        @options = nil
         @parameters = nil
         @pattern = service_name
         @start_command = nil
@@ -152,6 +154,14 @@ class Chef
           :masked,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def options(arg = nil)
+        set_or_return(
+          :options,
+          arg.respond_to?(:split) ? arg.shellsplit : arg,
+          :kind_of => [ Array, String ]
         )
       end
 
