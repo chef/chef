@@ -81,52 +81,6 @@ describe "Recipe DSL methods" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
       end
 
-      context "with a resource 'backcompat_thingy' declared in Chef::Resource and Chef::Provider" do
-        before(:context) do
-
-          class Chef::Resource::BackcompatThingy < Chef::Resource
-            default_action :create
-          end
-          class Chef::Provider::BackcompatThingy < Chef::Provider
-            def load_current_resource
-            end
-
-            def action_create
-              BaseThingy.created_resource = new_resource.class
-              BaseThingy.created_provider = self.class
-            end
-          end
-
-        end
-
-        it "backcompat_thingy creates a Chef::Resource::BackcompatThingy" do
-          recipe = converge do
-            backcompat_thingy("blah") {}
-          end
-          expect(BaseThingy.created_resource).to eq Chef::Resource::BackcompatThingy
-          expect(BaseThingy.created_provider).to eq Chef::Provider::BackcompatThingy
-        end
-
-        context "and another resource 'backcompat_thingy' in BackcompatThingy with 'provides'" do
-          before(:context) do
-
-            class RecipeDSLSpecNamespace::BackcompatThingy < BaseThingy
-              provides :backcompat_thingy
-              resource_name :backcompat_thingy
-            end
-
-          end
-
-          it "backcompat_thingy creates a BackcompatThingy" do
-            recipe = converge do
-              backcompat_thingy("blah") {}
-            end
-            expect(recipe.logged_warnings).to match(/Class Chef::Provider::BackcompatThingy does not declare 'provides :backcompat_thingy'./)
-            expect(BaseThingy.created_resource).not_to be_nil
-          end
-        end
-      end
-
       context "with a resource named RecipeDSLSpecNamespace::Bar::BarThingy" do
         before(:context) do
 
@@ -1220,35 +1174,6 @@ describe "Recipe DSL methods" do
           end
         end
 
-        context "with provides? returning true to blarghle_blarghle_little_star and not resource_name" do
-          before do
-            temp_blarghle_blarghle_little_star = blarghle_blarghle_little_star
-            resource_class.define_singleton_method(:provides?) do |node, resource_name|
-              @called_provides = true
-              resource_name == temp_blarghle_blarghle_little_star
-            end
-          end
-
-          it "my_resource does not return the resource" do
-            dsl_name = my_resource
-            expect_converge do
-              instance_eval("#{dsl_name} 'foo'")
-            end.to raise_error(Chef::Exceptions::NoSuchResourceType)
-            expect(resource_class.called_provides).to be_truthy
-          end
-
-          it "blarghle_blarghle_little_star 'foo' returns the resource and emits a warning" do
-            Chef::Config[:treat_deprecation_warnings_as_errors] = false
-            dsl_name = blarghle_blarghle_little_star
-            recipe = converge do
-              instance_eval("#{dsl_name} 'foo'")
-            end
-            expect(recipe.logged_warnings).to include "WARN: #{resource_class}.provides? returned true when asked if it provides DSL #{dsl_name}, but provides :#{dsl_name} was never called!"
-            expect(BaseThingy.created_resource).to eq resource_class
-            expect(resource_class.called_provides).to be_truthy
-          end
-        end
-
         context "and a provider" do
           let(:provider_class) do
             Class.new(BaseThingy::Provider) do
@@ -1448,6 +1373,23 @@ describe "Recipe DSL methods" do
         end
       end
     end
+
+    context "with UTF-8 provides" do
+      before(:context) do
+        class UTF8Thingy < BaseThingy
+          resource_name :Straße
+          provides :Straße
+        end
+      end
+
+      it "utf-8 dsl names work" do
+        recipe = converge do
+          Straße("blah") {}
+        end
+        expect(recipe.logged_warnings).to eq ""
+        expect(BaseThingy.created_resource).to eq(UTF8Thingy)
+      end
+    end
   end
 
   before(:all) { Namer.current_index = 0 }
@@ -1494,30 +1436,4 @@ describe "Recipe DSL methods" do
     end
   end
 
-  context "with a dynamically defined resource and regular provider" do
-    before(:context) do
-      Class.new(Chef::Resource) do
-        resource_name :lw_resource_with_hw_provider_test_case
-        default_action :create
-        attr_accessor :created_provider
-      end
-      class Chef::Provider::LwResourceWithHwProviderTestCase < Chef::Provider
-        def load_current_resource
-        end
-
-        def action_create
-          new_resource.created_provider = self.class
-        end
-      end
-    end
-
-    it "looks up the provider in Chef::Provider converting the resource name from snake case to camel case" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      resource = nil
-      recipe = converge do
-        resource = lw_resource_with_hw_provider_test_case("blah") {}
-      end
-      expect(resource.created_provider).to eq(Chef::Provider::LwResourceWithHwProviderTestCase)
-    end
-  end
 end

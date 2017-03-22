@@ -82,6 +82,51 @@ n["foo"] << "buzz"
 before this would have mutated the original string in-place so that `node["foo"]` and `node.default["foo"]` would have changed to "fizzbuzz"
 while now they remain "fizz" and only the mutable `n["foo"]` copy is changed to "fizzbuzz".
 
+### Freezing immutable merged attributes
+
+Since Chef 11 merged node attributes have been intended to be immutable but the merged strings have not been frozen.  In Chef 13, in the
+process of merging the node attributes strings and other simple objects are dup'd and frozen.  In order to get a mutable copy, you can
+now correctly use the `node.dup` or `node.to_hash` methods, or you should mutate the object correctly through its precedence level like
+`node.default["some_string"] << "appending_this"`.
+
+### The Chef::REST API has been removed
+
+It has been fully replaced with `Chef::ServerAPI` in chef-client code.
+
+### Properties overriding methods now raise an error
+
+Defining a property that overrides methods defined on the base ruby `Object` or on `Chef::Resource` itself can cause large amounts of
+confusion.  A simple example is `property :hash` which overrides the Object#hash method which will confuse ruby when the Custom Resource
+is placed into the Chef::ResourceCollection which uses a Hash internally which expects to call Object#hash to get a unique id for the
+object.  Attempting to create `property :action` would also override the Chef::Resource#action method which is unlikely to end well for
+the user.  Overriding inherited properties is still supported.
+
+### `chef-shell` now supports solo and legacy solo modes
+
+Running `chef-shell -s` or `chef-shell --solo` will give you an experience consistent with `chef-solo`. `chef-shell --solo-legacy-mode`
+will give you an experience consistent with `chef-solo --legacy-mode`.
+
+### Chef::Platform.set and related methods have been removed
+
+The deprecated code has been removed.  All providers and resources should now be using Chef >= 12.0 `provides` syntax.
+
+### Remove `sort` option for the Search API
+
+This option has been unimplemented on the server side for years, so any use of it has been pointless.
+
+### Remove Chef::ShellOut
+
+This was deprecated and replaced a long time ago with mixlib-shellout and the shell_out mixin.
+
+### Remove `method_missing` from the Recipe DSL
+
+The core of chef hasn't used this to implement the Recipe DSL since 12.5.1 and its unlikely that any external code depended upon it.
+
+### Simplify Recipe DSL wiring
+
+Support for actions with spaces and hyphens in the action name has been dropped.  Resources and property names with spaces and hyphens
+most likely never worked in Chef-12.  UTF-8 characters have always been supported and still are.
+
 ### `easy_install` resource has been removed
 
 The Python `easy_install` package installer has been deprecated for many years,

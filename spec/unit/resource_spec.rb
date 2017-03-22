@@ -160,7 +160,7 @@ describe Chef::Resource do
     end
 
     it "describes its state" do
-      resource_state = file_resource.state
+      resource_state = file_resource.state_for_resource_reporter
       expect(resource_state.keys).to match_array([:checksum, :owner, :group, :mode])
       expect(resource_state[:checksum]).to eq("abc123")
       expect(resource_state[:owner]).to eq("root")
@@ -798,11 +798,7 @@ describe Chef::Resource do
       snitch_var1 = snitch_var2 = 0
       runner = Chef::Runner.new(run_context)
 
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      Chef::Platform.set(
-        :resource => :cat,
-        :provider => Chef::Provider::SnakeOil
-      )
+      Chef::Provider::SnakeOil.provides :cat
 
       resource1.only_if { snitch_var1 = 1 }
       resource1.not_if { snitch_var2 = 2 }

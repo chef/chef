@@ -357,7 +357,7 @@ module ResourceActionSpec
       end
     end
 
-    context "With a resource with action a-b-c d" do
+    context "With a resource with a UTF-8 action" do
       class WeirdActionJackson < Chef::Resource
         use_automatic_resource_name
 
@@ -365,7 +365,7 @@ module ResourceActionSpec
           attr_accessor :action_was
         end
 
-        action "a-b-c d" do
+        action :Straße do
           WeirdActionJackson.action_was = action
         end
       end
@@ -374,7 +374,7 @@ module ResourceActionSpec
         expect_recipe do
           weird_action_jackson "hi"
         end.to be_up_to_date
-        expect(WeirdActionJackson.action_was).to eq :"a-b-c d"
+        expect(WeirdActionJackson.action_was).to eq :Straße
       end
     end
 

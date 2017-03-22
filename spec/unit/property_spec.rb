@@ -82,12 +82,10 @@ describe "Chef::Resource.property" do
       expect(resource.bare_property 10).to eq 10
       expect(resource.bare_property).to eq 10
     end
-    it "emits a deprecation warning and does a get, if set to nil" do
+    it "nil does a set" do
       expect(resource.bare_property 10).to eq 10
-      expect { resource.bare_property nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect(resource.bare_property nil).to eq 10
-      expect(resource.bare_property).to eq 10
+      expect(resource.bare_property nil).to eq nil
+      expect(resource.bare_property).to eq nil
     end
     it "can be updated" do
       expect(resource.bare_property 10).to eq 10
@@ -107,6 +105,16 @@ describe "Chef::Resource.property" do
       expect(resource.bare_property 10).to eq 10
       expect(resource.bare_property = 20).to eq 20
       expect(resource.bare_property).to eq 20
+    end
+  end
+
+  with_property ":Straße" do
+    it "properties with UTF-8 in their name work" do
+      expect(resource.Straße).to eql(nil)
+      expect(resource.Straße "foo").to eql("foo")
+      expect(resource.Straße).to eql("foo")
+      expect(resource.Straße = "bar").to eql("bar")
+      expect(resource.Straße).to eql("bar")
     end
   end
 
@@ -585,24 +593,8 @@ describe "Chef::Resource.property" do
     end
 
     context "validation of defaults" do
-      it "When a class is declared with property :x, String, default: 10, a warning is emitted" do
-        expect { resource_class.class_eval { property :x, String, default: 10 } }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-          /Default value 10 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Property x must be one of: String!  You passed 10./
-      end
-      context "With property :x, String, default: 10" do
-        before do
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          resource_class.class_eval { property :x, String, default: 10 }
-          Chef::Config[:treat_deprecation_warnings_as_errors] = true
-        end
-
-        it "when x is set, no error is raised" do
-          expect(resource.x "hi").to eq "hi"
-          expect(resource.x).to eq "hi"
-        end
-        it "when x is retrieved, no validation error is raised" do
-          expect(resource.x).to eq 10
-        end
+      it "When a class is declared with property :x, String, default: 10, it immediately fails validation" do
+        expect { resource_class.class_eval { property :x, String, default: 10 } }.to raise_error Chef::Exceptions::ValidationFailed
       end
 
       with_property ":x, String, default: lazy { Namer.next_index }" do
@@ -613,12 +605,9 @@ describe "Chef::Resource.property" do
           expect(resource.x "hi").to eq "hi"
           expect(resource.x).to eq "hi"
         end
-        it "when x is retrieved, an invalid default warning is emitted and the value is returned" do
-          expect { resource.x }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Default value 1 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Property x must be one of: String!  You passed 1./
+        it "when x is retrieved, it fails validation" do
+          expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
           expect(Namer.current_index).to eq 1
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          expect(resource.x).to eq 2
         end
       end
 
@@ -731,11 +720,8 @@ describe "Chef::Resource.property" do
           end
         end
         with_property ':x, Integer, coerce: proc { |v| "#{v}#{next_index}" }, default: 10' do
-          it "when x is retrieved, it is coerced and emits an invalid default warning, but still returns the value" do
-            expect { resource.x }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-              /Default value 10 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Property x must be one of: Integer!  You passed "101"./
-            Chef::Config[:treat_deprecation_warnings_as_errors] = false
-            expect(resource.x).to eq "102"
+          it "when x is retrieved, it is coerced and fails validation" do
+            expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
           end
         end
         with_property ':x, String, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
@@ -744,11 +730,8 @@ describe "Chef::Resource.property" do
           end
         end
         with_property ':x, Integer, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
-          it "when x is retrieved, it is coerced and emits an invalid default warning; the value is still returned." do
-            expect { resource.x }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-              /Default value 10 is invalid for property x of resource chef_resource_property_spec_(\d+). In Chef 13 this will become an error: Property x must be one of: Integer!  You passed "101"./
-            Chef::Config[:treat_deprecation_warnings_as_errors] = false
-            expect(resource.x).to eq "102"
+          it "when x is retrieved, it is coerced and fails validation" do
+            expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
           end
         end
         with_property ':x, proc { |v| Namer.next_index; true }, coerce: proc { |v| "#{v}#{next_index}" }, default: lazy { 10 }' do
@@ -1057,7 +1040,7 @@ describe "Chef::Resource.property" do
           include Chef::Mixin::Properties
           property_type(is: [:a, :b], default: :c)
         end
-      end.to raise_error(Chef::Exceptions::DeprecatedFeatureError, /Default value :c is invalid for property <property type>./)
+      end.to raise_error(Chef::Exceptions::ValidationFailed)
       expect do
         module ::PropertySpecPropertyTypes
           include Chef::Mixin::Properties
@@ -1124,6 +1107,20 @@ describe "Chef::Resource.property" do
       end
     end
 
+  end
+
+  context "redefining Object methods" do
+    it "disallows redefining Object methods" do
+      expect { resource_class.class_eval { property :hash } }.to raise_error(ArgumentError)
+    end
+
+    it "disallows redefining Chef::Resource methods" do
+      expect { resource_class.class_eval { property :action } }.to raise_error(ArgumentError)
+    end
+
+    it "allows redefining properties on Chef::Resource" do
+      expect { resource_class.class_eval { property :sensitive } }.not_to raise_error
+    end
   end
 
   context "with a custom property type" do

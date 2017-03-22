@@ -216,16 +216,12 @@ class Chef
        # that precedence level, +value+ will be the symbol +:not_present+.
       def debug_value(*args)
         COMPONENTS.map do |component|
-          ivar = instance_variable_get(component)
-          value = args.inject(ivar) do |so_far, key|
-            if so_far == :not_present
-              :not_present
-            elsif so_far.has_key?(key)
-              so_far[key]
-            else
+          value =
+            begin
+              instance_variable_get(component).read!(*args)
+            rescue
               :not_present
             end
-          end
           [component.to_s.sub(/^@/, ""), value]
         end
       end

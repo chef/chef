@@ -3,7 +3,7 @@
 # Author:: Prajakta Purohit (<prajakta@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
 #
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -399,11 +399,11 @@ describe Chef::ResourceReporter do
       end
 
       it "includes an updated resource's initial state" do
-        expect(@first_update_report["before"]).to eq(current_resource.state)
+        expect(@first_update_report["before"]).to eq(current_resource.state_for_resource_reporter)
       end
 
       it "includes an updated resource's final state" do
-        expect(@first_update_report["after"]).to eq(new_resource.state)
+        expect(@first_update_report["after"]).to eq(new_resource.state_for_resource_reporter)
       end
 
       it "includes the resource's name" do
@@ -540,11 +540,11 @@ describe Chef::ResourceReporter do
       end
 
       it "includes an updated resource's initial state" do
-        expect(@first_update_report["before"]).to eq(@current_resource.state)
+        expect(@first_update_report["before"]).to eq(@current_resource.state_for_resource_reporter)
       end
 
       it "includes an updated resource's final state" do
-        expect(@first_update_report["after"]).to eq(@new_resource.state)
+        expect(@first_update_report["after"]).to eq(@new_resource.state_for_resource_reporter)
       end
 
       it "includes the resource's name" do

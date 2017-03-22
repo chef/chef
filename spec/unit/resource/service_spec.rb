@@ -124,6 +124,27 @@ describe Chef::Resource::Service do
     end.to raise_error(ArgumentError)
   end
 
+  it "should accept an array for options" do
+    @resource.options ["-r", "-s"]
+    expect(@resource.options).to eql(["-r", "-s"])
+  end
+
+  it "should accept a string for options" do
+    @resource.options "-r"
+    expect(@resource.options).to eql(["-r"])
+  end
+
+  it "should accept a string with multiple flags for options" do
+    @resource.options "-r -s"
+    expect(@resource.options).to eql(["-r", "-s"])
+  end
+
+  it "should not accept a boolean for options" do
+    expect do
+      @resource.options true
+    end.to raise_error(ArgumentError)
+  end
+
   %w{enabled running}.each do |attrib|
     it "should accept true for #{attrib}" do
       @resource.send(attrib, true)
@@ -166,7 +187,7 @@ describe Chef::Resource::Service do
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:enabled]).to eql(true)
       expect(state[:running]).to eql(false)
     end
@@ -175,5 +196,4 @@ describe Chef::Resource::Service do
       expect(@resource.identity).to eq("superfriend")
     end
   end
-
 end

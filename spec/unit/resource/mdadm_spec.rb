@@ -93,7 +93,7 @@ describe Chef::Resource::Mdadm do
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:devices]).to eql(%w{device1 device2})
       expect(state[:level]).to eq(1)
       expect(state[:chunk]).to eq(42)

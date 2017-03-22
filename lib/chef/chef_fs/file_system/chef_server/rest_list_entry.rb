@@ -30,6 +30,7 @@ class Chef
           def initialize(name, parent, exists = nil)
             super(name, parent)
             @exists = exists
+            @this_object_cache = nil
           end
 
           def data_handler
@@ -69,7 +70,7 @@ class Chef
           def exists?
             if @exists.nil?
               begin
-                rest.get(api_path)
+                @this_object_cache = rest.get(api_path)
                 @exists = true
               rescue Net::HTTPServerException => e
                 if e.response.code == "404"
@@ -85,6 +86,8 @@ class Chef
           end
 
           def delete(recurse)
+            # free up cache - it will be hydrated on next check for exists?
+            @this_object_cache = nil
             rest.delete(api_path)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
@@ -97,12 +100,12 @@ class Chef
           end
 
           def read
+            # Minimize the value (get rid of defaults) so the results don't look terrible
             Chef::JSONCompat.to_json_pretty(minimize_value(_read_json))
           end
 
           def _read_json
-              # Minimize the value (get rid of defaults) so the results don't look terrible
-            root.get_json(api_path)
+            @this_object_cache ? JSON.parse(@this_object_cache) : root.get_json(api_path)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading: #{e}")
           rescue Net::HTTPServerException => e
@@ -151,6 +154,9 @@ class Chef
             other_value = minimize_value(other_value)
             other_value_json = Chef::JSONCompat.to_json_pretty(other_value)
 
+            # free up cache - it will be hydrated on next check for exists?
+            @this_object_cache = nil
+
             [ value == other_value, value_json, other_value_json ]
           end
 
@@ -159,6 +165,9 @@ class Chef
           end
 
           def write(file_contents)
+            # free up cache - it will be hydrated on next check for exists?
+            @this_object_cache = nil
+
             begin
               object = Chef::JSONCompat.parse(file_contents)
             rescue Chef::Exceptions::JSON::ParseError => e

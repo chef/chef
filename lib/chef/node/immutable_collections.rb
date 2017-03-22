@@ -22,8 +22,14 @@ require "chef/node/mixin/immutablize_hash"
 
 class Chef
   class Node
-
     module Immutablize
+      # For elements like Fixnums, true, nil...
+      def safe_dup(e)
+        e.dup
+      rescue TypeError
+        e
+      end
+
       def immutablize(value)
         case value
         when Hash
@@ -31,7 +37,7 @@ class Chef
         when Array
           ImmutableArray.new(value, __root__, __node__, __precedence__)
         else
-          value
+          safe_dup(value).freeze
         end
       end
     end

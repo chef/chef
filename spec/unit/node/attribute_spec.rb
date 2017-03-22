@@ -208,7 +208,7 @@ describe Chef::Node::Attribute do
   end
 
   describe "when debugging attributes" do
-    before do
+    it "gives the value at each level of precedence for a path spec" do
       @attributes.default[:foo][:bar] = "default"
       @attributes.env_default[:foo][:bar] = "env_default"
       @attributes.role_default[:foo][:bar] = "role_default"
@@ -219,9 +219,7 @@ describe Chef::Node::Attribute do
       @attributes.env_override[:foo][:bar] = "env_override"
       @attributes.force_override[:foo][:bar] = "force_override"
       @attributes.automatic[:foo][:bar] = "automatic"
-    end
 
-    it "gives the value at each level of precedence for a path spec" do
       expected = [
         %w{default default},
         %w{env_default env_default},
@@ -235,6 +233,25 @@ describe Chef::Node::Attribute do
         %w{automatic automatic},
       ]
       expect(@attributes.debug_value(:foo, :bar)).to eq(expected)
+    end
+
+    it "works through arrays" do
+      @attributes.default["foo"] = [ { "bar" => "baz" } ]
+
+      expect(@attributes.debug_value(:foo, 0)).to eq(
+        [
+          ["default", { "bar" => "baz" }],
+          ["env_default", :not_present],
+          ["role_default", :not_present],
+          ["force_default", :not_present],
+          ["normal", :not_present],
+          ["override", :not_present],
+          ["role_override", :not_present],
+          ["env_override", :not_present],
+          ["force_override", :not_present],
+          ["automatic", :not_present],
+        ]
+      )
     end
   end
 
@@ -1242,6 +1259,18 @@ describe Chef::Node::Attribute do
       expect(events).to receive(:attribute_changed).with(:default, %w{foo bar}, {})
       expect(events).to receive(:attribute_changed).with(:default, %w{foo bar baz}, "quux")
       @attributes.default["foo"]["bar"]["baz"] = "quux"
+    end
+  end
+
+  describe "frozen immutable strings" do
+    it "strings in hashes should be frozen" do
+      @attributes.default["foo"]["bar"]["baz"] = "fizz"
+      expect { @attributes["foo"]["bar"]["baz"] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
+    end
+
+    it "strings in arrays should be frozen" do
+      @attributes.default["foo"]["bar"] = [ "fizz" ]
+      expect { @attributes["foo"]["bar"][0] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
     end
   end
 end

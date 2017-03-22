@@ -95,7 +95,7 @@ describe Chef::Resource::Route do
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:netmask]).to eq("lemask")
       expect(state[:gateway]).to eq("111.111.111")
     end

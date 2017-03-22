@@ -37,12 +37,6 @@ class Chef
 
       banner "knife search INDEX QUERY (options)"
 
-      option :sort,
-        :short => "-o SORT",
-        :long => "--sort SORT",
-        :description => "The order to sort the results in",
-        :default => nil
-
       option :start,
         :short => "-b ROW",
         :long => "--start ROW",
@@ -92,7 +86,6 @@ class Chef
         result_count = 0
 
         search_args = Hash.new
-        search_args[:sort] = config[:sort] if config[:sort]
         search_args[:start] = config[:start] if config[:start]
         search_args[:rows] = config[:rows] if config[:rows]
         if config[:filter_result]

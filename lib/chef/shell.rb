@@ -27,6 +27,7 @@ require "chef/config"
 require "chef/config_fetcher"
 
 require "chef/shell/shell_session"
+require "chef/workstation_config_loader"
 require "chef/shell/ext"
 require "chef/json_compat"
 require "chef/util/path_helper"
@@ -62,6 +63,12 @@ module Shell
 
     irb = IRB::Irb.new
 
+    if solo_mode?
+      # Setup the mocked ChefServer
+      Chef::Config.local_mode = true
+      Chef::LocalMode.setup_server_connectivity
+    end
+
     init(irb.context.main)
 
     irb_conf[:IRB_RC].call(irb.context) if irb_conf[:IRB_RC]
@@ -74,6 +81,13 @@ module Shell
     catch(:IRB_EXIT) do
       irb.eval_input
     end
+  ensure
+    # We destroy the mocked ChefServer
+    Chef::LocalMode.destroy_server_connectivity if solo_mode?
+  end
+
+  def self.solo_mode?
+    Chef::Config[:solo]
   end
 
   def self.setup_logger
@@ -167,8 +181,9 @@ module Shell
 
   def self.client_type
     type = Shell::StandAloneSession
-    type = Shell::SoloSession   if Chef::Config[:shell_solo]
-    type = Shell::ClientSession if Chef::Config[:client]
+    type = Shell::SoloSession         if solo_mode?
+    type = Shell::SoloLegacySession   if Chef::Config[:solo_legacy_shell]
+    type = Shell::ClientSession       if Chef::Config[:client]
     type = Shell::DoppelGangerSession if Chef::Config[:doppelganger]
     type
   end
@@ -196,8 +211,10 @@ module Shell
 When no CONFIG is specified, chef-shell attempts to load a default configuration file:
 * If a NAMED_CONF is given, chef-shell will load ~/.chef/NAMED_CONF/chef_shell.rb
 * If no NAMED_CONF is given chef-shell will load ~/.chef/chef_shell.rb if it exists
-* chef-shell falls back to loading /etc/chef/client.rb or /etc/chef/solo.rb if -z or
-  -s options are given and no chef_shell.rb can be found.
+* If no chef_shell.rb can be found, chef-shell falls back to load:
+      /etc/chef/client.rb if -z option is given.
+      /etc/chef/solo.rb   if --solo-legacy-mode option is given.
+      .chef/knife.rb      if -s option is given.
 FOOTER
 
     option :config_file,
@@ -226,7 +243,7 @@ FOOTER
       :default      => true,
       :boolean      => true
 
-    option :shell_solo,
+    option :solo_shell,
       :short        => "-s",
       :long         => "--solo",
       :description  => "chef-solo session",
@@ -238,6 +255,12 @@ FOOTER
       :long         => "--client",
       :description  => "chef-client session",
       :boolean      => true
+
+    option :solo_legacy_shell,
+      :long         => "--solo-legacy-mode",
+      :description  => "chef-solo legacy session",
+      :boolean      => true,
+      :proc         => proc { Chef::Config[:solo_legacy_mode] = true }
 
     option :json_attribs,
       :short => "-j JSON_ATTRIBS",
@@ -313,10 +336,12 @@ FOOTER
         config_file_to_try
       elsif dot_chef_dir && ::File.exist?(File.join(dot_chef_dir, "chef_shell.rb"))
         File.join(dot_chef_dir, "chef_shell.rb")
-      elsif config[:solo]
+      elsif config[:solo_legacy_shell]
         Chef::Config.platform_specific_path("/etc/chef/solo.rb")
       elsif config[:client]
         Chef::Config.platform_specific_path("/etc/chef/client.rb")
+      elsif config[:solo_shell]
+        Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
         nil
       end

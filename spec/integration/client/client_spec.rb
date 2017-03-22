@@ -388,18 +388,8 @@ EOM
   when_the_repository "has a cookbook that generates deprecation warnings" do
     before do
       file "cookbooks/x/recipes/default.rb", <<-EOM
-        class ::MyResource < Chef::Resource
-          use_automatic_resource_name
-          property :x, default: []
-          property :y, default: {}
-        end
-
-        my_resource 'blah' do
-          1.upto(10) do
-            x nil
-          end
-          x nil
-        end
+        Chef.deprecated(:internal_api, "Test deprecation")
+        Chef.deprecated(:internal_api, "Test deprecation")
       EOM
     end
 
@@ -432,7 +422,7 @@ EOM
       expect(run_complete).to be >= 0
 
       # Make sure there is exactly one result for each, and that it occurs *after* the complete message.
-      expect(match_indices(/An attempt was made to change x from \[\] to nil by calling x\(nil\). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil./, result.stdout)).to match([ be > run_complete ])
+      expect(match_indices(/Test deprecation/, result.stdout)).to match([ be > run_complete ])
     end
   end
 
