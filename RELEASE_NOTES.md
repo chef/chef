@@ -127,3 +127,9 @@ The core of chef hasn't used this to implement the Recipe DSL since 12.5.1 and i
 Support for actions with spaces and hyphens in the action name has been dropped.  Resources and property names with spaces and hyphens
 most likely never worked in Chef-12.  UTF-8 characters have always been supported and still are.
 
+### `easy_install` resource has been removed
+
+The Python `easy_install` package installer has been deprecated for many years,
+so we have removed support for it. No specific replacement for `pip` is being
+included with Chef at this time, but a `pip`-based `python_package` resource is
+available in the [`poise-python`](https://github.com/poise/poise-python) cookbooks.
