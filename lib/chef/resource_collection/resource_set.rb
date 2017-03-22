@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,10 @@ class Chef
 
       # Matches a single resource lookup specification,
       # e.g., "service[nginx]"
-      SINGLE_RESOURCE_MATCH = /^(.+)\[(.+)\]$/
+      SINGLE_RESOURCE_MATCH = /^(.+)\[(.*)\]$/
+
+      # Matches e.g. "apt_update" with no name
+      NAMELESS_RESOURCE_MATCH = /^([^\[\]\s]+)$/
 
       def initialize
         @resources_by_key = Hash.new
@@ -43,7 +46,7 @@ class Chef
       def insert_as(resource, resource_type = nil, instance_name = nil)
         is_chef_resource!(resource)
         resource_type ||= resource.resource_name
-        instance_name ||= resource.name
+        instance_name ||= resource.name || ""
         key = create_key(resource_type, instance_name)
         @resources_by_key[key] = resource
       end
@@ -118,7 +121,7 @@ class Chef
         case query_object
           when Chef::Resource
             true
-          when SINGLE_RESOURCE_MATCH, MULTIPLE_RESOURCE_MATCH
+          when SINGLE_RESOURCE_MATCH, MULTIPLE_RESOURCE_MATCH, NAMELESS_RESOURCE_MATCH
             true
           when Hash
             true
@@ -142,7 +145,7 @@ class Chef
 
       private
 
-      def create_key(resource_type, instance_name)
+      def create_key(resource_type, instance_name = "")
         "#{resource_type}[#{instance_name}]"
       end
 
@@ -170,6 +173,10 @@ class Chef
           when SINGLE_RESOURCE_MATCH
             resource_type = $1
             name = $2
+            results << lookup(create_key(resource_type, name))
+          when NAMELESS_RESOURCE_MATCH
+            resource_type = $1
+            name = ""
             results << lookup(create_key(resource_type, name))
           else
             raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"

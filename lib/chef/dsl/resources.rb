@@ -34,11 +34,10 @@ class Chef
 
       def self.add_resource_dsl(dsl_name)
         module_eval(<<-EOM, __FILE__, __LINE__ + 1)
-            def #{dsl_name}(*args, &block)
-              Chef.deprecated(:internal_api, "Cannot create resource #{dsl_name} with more than one argument. All arguments except the name (\#{args[0].inspect}) will be ignored. This will cause an error in Chef 13. Arguments: \#{args}") if args.size > 1
-              declare_resource(#{dsl_name.inspect}, args[0], created_at: caller[0], &block)
-            end
-          EOM
+          def #{dsl_name}(arg = "", &block)
+            declare_resource(#{dsl_name.inspect}, arg, created_at: caller[0], &block)
+          end
+        EOM
       end
 
       def self.remove_resource_dsl(dsl_name)

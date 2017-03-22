@@ -80,6 +80,6 @@ describe Chef::DSL::Resources do
         test_resource {}
       end
     end
-    it { is_expected.to eq [[:test_resource, nil]] }
+    it { is_expected.to eq [[:test_resource, ""]] }
   end
 end
