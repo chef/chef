@@ -58,12 +58,29 @@ class Chef
       property :months, String
       property :idle_time, Integer
       property :random_delay, String
-      property :execution_time_limit, String, default: "PT72H"
+      property :execution_time_limit
 
       attr_accessor :exists, :status, :enabled
 
       def after_created
-        validate_random_delay(random_delay, frequency) if random_delay
+        if random_delay
+          validate_random_delay(random_delay, frequency)
+          duration = sec_to_dur(random_delay)
+          random_delay(duration)
+        end
+
+        if execution_time_limit
+          raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as a String e.g. '60'." if execution_time_limit.to_i == 0
+          duration = sec_to_dur(execution_time_limit)
+          execution_time_limit(duration)
+        else
+          # schtask sets execution_time_limit as PT72H by default
+          # We are setting the default value here so that we can do idempotency check later
+          # Note: We can't use `default` in the property
+          # because it will raise error for Invalid values passed as "PT72H" is not in seconds
+          execution_time_limit("PT72H")
+        end
+
         validate_start_time(start_time) if frequency == :once
         validate_start_day(start_day, frequency) if start_day
         validate_user_and_password(user,password)
@@ -80,6 +97,8 @@ class Chef
         if [:once, :on_logon, :onstart, :on_idle].include? frequency
           raise ArgumentError, "`random_delay` property is not supported with frequency: #{frequency}"
         end
+
+        raise ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as a String e.g. '60'." if random_delay.to_i == 0
       end
 
       def validate_start_day(start_day, frequency)
@@ -172,6 +191,41 @@ class Chef
         unless idle_time.to_i > 0 && idle_time.to_i <= 999
           raise "idle_time value #{idle_time} is invalid.  Valid values for :on_idle frequency are 1 - 999."
         end
+      end
+
+      # Convert the number of seconds to an ISO8601 duration format
+      # @see http://tools.ietf.org/html/rfc2445#section-4.3.6
+      # @param [Integer] seconds The amount of seconds for this duration
+      def sec_to_dur(seconds)
+        seconds = seconds.to_i
+        return if seconds == 0
+        iso_str = 'P'
+        if seconds > 604_800 # more than a week
+          weeks = seconds / 604_800
+          seconds -= (604_800 * weeks)
+          iso_str << "#{weeks}W"
+        end
+        if seconds > 86_400 # more than a day
+          days = seconds / 86_400
+          seconds -= (86_400 * days)
+          iso_str << "#{days}D"
+        end
+        if seconds > 0
+          iso_str << 'T'
+          if seconds > 3600 # more than an hour
+            hours = seconds / 3600
+            seconds -= (3600 * hours)
+            iso_str << "#{hours}H"
+          end
+          if seconds > 60 # more than a minute
+            minutes = seconds / 60
+            seconds -= (60 * minutes)
+            iso_str << "#{minutes}M"
+          end
+          iso_str << "#{seconds}S"
+        end
+
+        iso_str
       end
 
     end
