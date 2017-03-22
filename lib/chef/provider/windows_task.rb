@@ -47,7 +47,7 @@ class Chef
         set_current_frequency task_hash
         @current_resource.day(task_hash[:day]) if task_hash[:day]
         @current_resource.months(task_hash[:months]) if task_hash[:months]
-        set_idle_time(task_hash[:idle_time]) if task_hash[:idle_time]
+        set_current_idle_time(task_hash[:idle_time]) if task_hash[:idle_time]
         @current_resource.random_delay(task_hash[:random_delay]) if task_hash[:random_delay]
         @current_resource.execution_time_limit(task_hash[:execution_time_limit]) if task_hash[:execution_time_limit]
 
