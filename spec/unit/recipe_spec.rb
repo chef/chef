@@ -79,11 +79,6 @@ describe Chef::Recipe do
         expect(run_context.resource_collection.lookup("zen_master[]").name).to eql("")
       end
 
-      it "does not require a name argument and looks up with bare word" do
-        recipe.zen_master
-        expect(run_context.resource_collection.lookup("zen_master").name).to eql("")
-      end
-
       it "should allow regular errors (not NameErrors) to pass unchanged" do
         expect do
           recipe.cat("felix") { raise ArgumentError, "You Suck" }
