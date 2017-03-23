@@ -18,7 +18,6 @@ gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.ex
 gem "rake"
 gem "bundler"
 gem "cheffish" # required for rspec tests
-gem "iso8601"
 
 group(:omnibus_package) do
   gem "appbundler"

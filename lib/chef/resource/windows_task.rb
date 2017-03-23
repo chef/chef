@@ -88,14 +88,14 @@ class Chef
         validate_create_frequency_modifier(frequency, frequency_modifier)
         validate_create_day(day, frequency) if day
         validate_create_months(months, frequency) if months
-        validate_idle_time(idle_time) if frequency == :on_idle
+        validate_idle_time(idle_time, frequency) if idle_time
       end
 
       private
 
       def validate_random_delay(random_delay, frequency)
         if [:once, :on_logon, :onstart, :on_idle].include? frequency
-          raise ArgumentError, "`random_delay` property is not supported with frequency: #{frequency}"
+          raise ArgumentError, "`random_delay` property is supported only for frequency :minute, :hourly, :daily, :weekly and :monthly"
         end
 
         raise ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as a String e.g. '60'." if random_delay.to_i == 0
@@ -187,7 +187,11 @@ class Chef
         end
       end
 
-      def validate_idle_time(idle_time)
+      def validate_idle_time(idle_time, frequency)
+        unless [:on_idle].include?(frequency)
+          raise 'idle_time attribute is only valid for tasks that run on_idle'
+        end
+
         unless idle_time.to_i > 0 && idle_time.to_i <= 999
           raise "idle_time value #{idle_time} is invalid.  Valid values for :on_idle frequency are 1 - 999."
         end
