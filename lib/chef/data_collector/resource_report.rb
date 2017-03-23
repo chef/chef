@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+require "chef/exceptions"
+
 class Chef
   class DataCollector
     class ResourceReport
@@ -67,9 +69,9 @@ class Chef
         hash = {
           "type"           => new_resource.resource_name.to_sym,
           "name"           => new_resource.name.to_s,
-          "id"             => new_resource.identity.to_s,
-          "after"          => new_resource.state_for_resource_reporter,
-          "before"         => current_resource ? current_resource.state_for_resource_reporter : {},
+          "id"             => resource_identity,
+          "after"          => new_resource_state_reporter,
+          "before"         => current_resource_state_reporter,
           "duration"       => elapsed_time_in_milliseconds.to_s,
           "delta"          => new_resource.respond_to?(:diff) && potentially_changed? ? new_resource.diff : "",
           "ignore_failure" => new_resource.ignore_failure,
@@ -83,13 +85,39 @@ class Chef
           hash["recipe_name"]      = new_resource.recipe_name
         end
 
-        hash["conditional"]   = conditional.to_text if status == "skipped"
+        hash["conditional"] = conditional.to_text if status == "skipped"
         hash["error_message"] = exception.message unless exception.nil?
 
         hash
       end
       alias :to_h :to_hash
       alias :for_json :to_hash
+
+      # We should be able to call the identity of a resource safely, but there
+      # is an edge case where resources that have a lazy property that is both
+      # the name_property and the identity property, it will thow a validation
+      # exception causing the chef-client run to fail. We are not fixing this
+      # case since Chef is actually doing the right thing but we are making the
+      # ResourceReporter smarter so that it detects the failure and sends a
+      # message to the data collector containing a static resource identity
+      # since we were unable to generate a proper one.
+      def resource_identity
+        new_resource.identity.to_s
+      rescue => e
+        "unknown identity (due to #{e.class})"
+      end
+
+      def new_resource_state_reporter
+        new_resource.state_for_resource_reporter
+      rescue
+        {}
+      end
+
+      def current_resource_state_reporter
+        current_resource ? current_resource.state_for_resource_reporter : {}
+      rescue
+        {}
+      end
     end
   end
 end
