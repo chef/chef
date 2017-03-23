@@ -172,7 +172,7 @@ class Chef
       def task_need_update?
         # gsub needed as schtasks converts single quotes to double quotes on creation
         @current_resource.command != @new_resource.command.tr("'", '"') ||
-        @current_resource.user != @new_resource.user ||
+        @current_resource.user.encode('external') != @new_resource.user ||
         @current_resource.run_level != @new_resource.run_level ||
         @current_resource.cwd != @new_resource.cwd ||
         @current_resource.frequency_modifier != @new_resource.frequency_modifier ||
@@ -251,7 +251,7 @@ class Chef
         Chef::Log.debug 'Looking for existing tasks'
 
         # we use shell_out here instead of shell_out! because a failure implies that the task does not exist
-        output = shell_out("schtasks /Query /FO LIST /V /TN \"#{task_name}\"").stdout
+        output = shell_out("chcp 65001 >nul 2>&1 && schtasks /Query /FO LIST /V /TN \"#{task_name}\"").stdout.force_encoding('UTF-8')
         if output.empty?
           task = false
         else
@@ -266,13 +266,15 @@ class Chef
             end
           end
         end
-        task.merge!(load_task_xml task_name) if task
+
+        task_xml = load_task_xml task_name
+        task.merge!(task_xml) if task && task_xml
 
         task
       end
 
       def load_task_xml task_name
-        xml_cmd = shell_out("schtasks /Query /TN \"#{task_name}\" /XML")
+        xml_cmd = shell_out("chcp 65001 >nul 2>&1 && schtasks /Query /TN \"#{task_name}\" /XML")
         return if xml_cmd.exitstatus != 0
 
         doc = REXML::Document.new(xml_cmd.stdout)
@@ -386,7 +388,7 @@ class Chef
         @current_resource.frequency(:once) if task_hash[:once]
       end
 
-      def set_idle_time(idle_time)
+      def set_current_idle_time(idle_time)
         duration = ISO8601::Duration.new(idle_time)
         @current_resource.idle_time(duration.minutes.atom.to_i)
       end
