@@ -549,6 +549,18 @@ describe Chef::Resource do
       expect { retriable_resource.run_action(:purr) }.to raise_error(RuntimeError)
       expect(retriable_resource.retries).to eq(3)
     end
+
+    it "should not rescue from non-StandardError exceptions" do
+      retriable_resource.retries(3)
+      retriable_resource.retry_delay(0) # No need to wait.
+
+      provider = Chef::Provider::SnakeOil.new(retriable_resource, run_context)
+      allow(Chef::Provider::SnakeOil).to receive(:new).and_return(provider)
+      allow(provider).to receive(:action_purr).and_raise(LoadError)
+
+      expect(retriable_resource).not_to receive(:sleep)
+      expect { retriable_resource.run_action(:purr) }.to raise_error(LoadError)
+    end
   end
 
   it "runs an action by finding its provider, loading the current resource and then running the action" do

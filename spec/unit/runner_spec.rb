@@ -122,25 +122,26 @@ describe Chef::Runner do
 
     it "should raise exceptions as thrown by a provider" do
       provider = Chef::Provider::SnakeOil.new(run_context.resource_collection[0], run_context)
-      allow(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
-      allow(provider).to receive(:action_sell).once.and_raise(ArgumentError)
+      expect(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
+      expect(provider).to receive(:action_sell).once.and_raise(ArgumentError)
       expect { runner.converge }.to raise_error(ArgumentError)
     end
 
     it "should not raise exceptions thrown by providers if the resource has ignore_failure set to true" do
       allow(run_context.resource_collection[0]).to receive(:ignore_failure).and_return(true)
       provider = Chef::Provider::SnakeOil.new(run_context.resource_collection[0], run_context)
-      allow(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
-      allow(provider).to receive(:action_sell).once.and_raise(ArgumentError)
+      expect(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
+      expect(provider).to receive(:action_sell).once.and_raise(ArgumentError)
       expect { runner.converge }.not_to raise_error
     end
 
     it "should retry with the specified delay if retries are specified" do
-      first_resource.retries 3
+      num_retries = 3
+      allow(run_context.resource_collection[0]).to receive(:retries).and_return(num_retries)
       provider = Chef::Provider::SnakeOil.new(run_context.resource_collection[0], run_context)
-      allow(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
-      allow(provider).to receive(:action_sell).and_raise(ArgumentError)
-      expect(first_resource).to receive(:sleep).with(2).exactly(3).times
+      expect(Chef::Provider::SnakeOil).to receive(:new).exactly(num_retries + 1).times.and_return(provider)
+      expect(provider).to receive(:action_sell).exactly(num_retries + 1).times.and_raise(ArgumentError)
+      expect(run_context.resource_collection[0]).to receive(:sleep).with(2).exactly(num_retries).times
       expect { runner.converge }.to raise_error(ArgumentError)
     end
 
