@@ -53,6 +53,10 @@ The remediation is removing the self-dependency `depends` line in the metadata.
 
 Retained only for the service resource (where it makes some sense) and for the mount resource.
 
+### Removed retrying of non-StandardError exceptions for Chef::Resource
+
+Exceptions not decending from StandardError (e.g. LoadError, SecurityError, SystemExit) will no longer trigger a retry if they are raised during the executiong of a resources with a non-zero retries setting.
+
 ### Removed deprecated `method_missing` access from the Chef::Node object
 
 Previously, the syntax `node.foo.bar` could be used to mean `node["foo"]["bar"]`, but this API had sharp edges where methods collided
