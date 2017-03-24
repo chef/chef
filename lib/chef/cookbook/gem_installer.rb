@@ -36,10 +36,12 @@ class Chef
       # Installs the gems into the omnibus gemset.
       #
       def install
-        cookbook_gems = []
+        cookbook_gems = Hash.new { |h, k| h[k] = [] }
 
         cookbook_collection.each do |cookbook_name, cookbook_version|
-          cookbook_gems += cookbook_version.metadata.gems
+          cookbook_version.metadata.gems.each do |args|
+            cookbook_gems[args.first] += args[1..-1]
+          end
         end
 
         events.cookbook_gem_start(cookbook_gems)
@@ -49,8 +51,8 @@ class Chef
             Dir.mktmpdir("chef-gem-bundle") do |dir|
               File.open("#{dir}/Gemfile", "w+") do |tf|
                 tf.puts "source '#{Chef::Config[:rubygems_url]}'"
-                cookbook_gems.each do |args|
-                  tf.puts "gem(*#{args.inspect})"
+                cookbook_gems.each do |gem_name, args|
+                  tf.puts "gem(*#{([gem_name] + args).inspect})"
                 end
                 tf.close
                 Chef::Log.debug("generated Gemfile contents:")
