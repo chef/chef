@@ -193,7 +193,6 @@ matrix:
       - cd kitchen-tests
     script:
       - bundle exec kitchen test webapp-debian-8
-    bundler_args: --without ci development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     after_failure:
       - cat .kitchen/logs/kitchen.log
     env:
