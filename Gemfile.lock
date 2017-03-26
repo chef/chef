@@ -377,9 +377,9 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     net-telnet (0.1.1)
     netrc (0.11.0)
-    nokogiri (1.7.0.1)
+    nokogiri (1.7.1)
       mini_portile2 (~> 2.1.0)
-    nokogiri (1.7.0.1-x86-mingw32)
+    nokogiri (1.7.1-x86-mingw32)
       mini_portile2 (~> 2.1.0)
     nori (2.6.0)
     octokit (4.6.2)
@@ -581,7 +581,7 @@ DEPENDENCIES
   knife-windows
   mixlib-install
   netrc
-  nokogiri
+  nokogiri (>= 1.7.1)
   oc-chef-pedant!
   octokit
   ohai!
