@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.64](https://github.com/chef/chef/tree/v13.0.64) (2017-03-22)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.64)
+## [v13.0.65](https://github.com/chef/chef/tree/v13.0.65) (2017-03-26)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.65)
 
 **Closed issues:**
 
