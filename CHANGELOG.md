@@ -1,7 +1,18 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.65](https://github.com/chef/chef/tree/v13.0.65) (2017-03-26)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.65)
+## [v13.0.66](https://github.com/chef/chef/tree/v13.0.66) (2017-03-27)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.66...v13.0.66)
+
+**Closed issues:**
+
+- powershell\_out stdout contains '\r\n' at the end of the output [\#5947](https://github.com/chef/chef/issues/5947)
+
+**Merged pull requests:**
+
+- Make ResourceReporter smarter to get resource identity and state [\#5941](https://github.com/chef/chef/pull/5941) ([afiune](https://github.com/afiune))
+
+## [v13.0.66](https://github.com/chef/chef/tree/v13.0.66) (2017-03-27)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.66)
 
 **Closed issues:**
 
