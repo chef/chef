@@ -58,6 +58,7 @@ class Chef
 
     def resolve
       maybe_explicit_provider(resource) ||
+        maybe_custom_resource(resource) ||
         maybe_dynamic_provider_resolution(resource, action) ||
         raise(Chef::Exceptions::ProviderNotFound, "Cannot find a provider for #{resource} on #{node["platform"]} version #{node["platform_version"]}")
     end
@@ -105,10 +106,14 @@ class Chef
       end
     end
 
+    # if its a custom resource, just grab the action class
+    def maybe_custom_resource(resource)
+      resource.class.action_class if resource.class.custom_resource?
+    end
+
     # if resource.provider is set, just return one of those objects
     def maybe_explicit_provider(resource)
-      return nil unless resource.provider
-      resource.provider
+      resource.provider if resource.provider
     end
 
     # try dynamically finding a provider based on querying the providers to see what they support

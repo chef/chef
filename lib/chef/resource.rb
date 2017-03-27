@@ -752,8 +752,7 @@ class Chef
               else
                 arg
               end
-      set_or_return(:provider, klass, kind_of: [ Class ]) ||
-        self.class.action_class
+      set_or_return(:provider, klass, kind_of: [ Class ])
     end
 
     def provider=(arg)
@@ -1122,53 +1121,66 @@ class Chef
     end
 
     #
-    # The action class is an automatic `Provider` created to handle
-    # actions declared by `action :x do ... end`.
+    # The action class is a `Chef::Provider` which is created at Resource
+    # class evaluation time when the Custom Resource is being constructed.
     #
-    # This class will be returned by `resource.provider` if `resource.provider`
-    # is not set. `provider_for_action` will also use this instead of calling
-    # out to `Chef::ProviderResolver`.
-    #
-    # If the user has not declared actions on this class or its superclasses
-    # using `action :x do ... end`, then there is no need for this class and
-    # `action_class` will be `nil`.
+    # This happens the first time the ruby parser hits an `action` or an
+    # `action_class` method, the presence of either indiates that this is
+    # going to be a Chef-12.5 custom resource.  If we never see one of these
+    # directives then we are constructing an old-style Resource+Provider or
+    # LWRP or whatevs.
     #
     # If a block is passed, the action_class is always created and the block is
     # run inside it.
     #
-    # @api private
-    #
     def self.action_class(&block)
-      return @action_class if @action_class && !block
-      # If the superclass needed one, then we need one as well.
-      if block || (superclass.respond_to?(:action_class) && superclass.action_class)
-        @action_class = declare_action_class(&block)
-      end
+      @action_class ||= declare_action_class
+      @action_class.class_eval(&block) if block
       @action_class
+    end
+
+    # Returns true or false based on if the resource is a custom resource.  The
+    # top-level Chef::Resource is not a chef resource.  This value is inherited.
+    #
+    # @return [Boolean] if the resource is a custom_resource
+    def self.custom_resource?
+      false
+    end
+
+    # This sets the resource to being a custom resource, and does so in a way
+    # that automatically inherits to all subclasses via defining a method on
+    # the class (class variables and class instance variables don't have the
+    # correct semantics here, this is a poor man's activesupport class_attribute)
+    #
+    # @api private
+    def self.is_custom_resource!
+      define_singleton_method :custom_resource? do
+        true
+      end
     end
 
     #
     # Ensure the action class actually gets created. This is called
     # when the user does `action :x do ... end`.
     #
-    # If a block is passed, it is run inside the action_class.
-    #
     # @api private
-    def self.declare_action_class(&block)
-      @action_class ||= begin
-                          if superclass.respond_to?(:action_class)
-                            base_provider = superclass.action_class
-                          end
-                          base_provider ||= Chef::Provider
+    def self.declare_action_class
+      @action_class ||=
+        begin
+          is_custom_resource!
+          base_provider =
+            if superclass.custom_resource?
+              superclass.action_class
+            else
+              Chef::Provider
+            end
 
-                          resource_class = self
-                          Class.new(base_provider) do
-                            include ActionClass
-                            self.resource_class = resource_class
-                          end
-                        end
-      @action_class.class_eval(&block) if block
-      @action_class
+          resource_class = self
+          Class.new(base_provider) do
+            include ActionClass
+            self.resource_class = resource_class
+          end
+        end
     end
 
     #
