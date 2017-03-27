@@ -589,7 +589,7 @@ class Chef
       begin
         return if should_skip?(action)
         provider_for_action(action).run_action
-      rescue Exception => e
+      rescue StandardError => e
         if ignore_failure
           Chef::Log.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
           events.resource_failed(self, action, e)
