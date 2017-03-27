@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 53b28425d56005a92b0e3bb153f95b505168354a
+  revision: 847eaefa52e105a8e3c94a530f63b74bcbab6931
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -16,7 +16,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 7e47afd6141d3c44a11322916e3fc85c89aa9b59
+  revision: b2bf89dd11270e169fd2315495c98095d4a19090
   branch: master
   specs:
     chefstyle (0.5.0)
@@ -36,6 +36,73 @@ GIT
       retriable (>= 1.4)
 
 GIT
+  remote: https://github.com/chef/ohai.git
+  revision: cab56af9f8e096f8ce0053e24d8f488c79708824
+  specs:
+    ohai (13.0.0)
+      chef-config (>= 12.5.0.alpha.1, < 14)
+      ffi (~> 1.9)
+      ffi-yajl (~> 2.2)
+      ipaddress
+      mixlib-cli
+      mixlib-config (~> 2.0)
+      mixlib-log (>= 1.7.1, < 2.0)
+      mixlib-shellout (~> 2.0)
+      plist (~> 3.1)
+      systemu (~> 2.6.4)
+      wmi-lite (~> 1.0)
+
+GIT
+  remote: https://github.com/poise/halite.git
+  revision: b0f1372ea7710e47b52c8c843597d21aaed5ebf6
+  specs:
+    halite (1.4.1.pre)
+      bundler
+      chef (>= 12.0, < 14.0)
+      stove (~> 4.0)
+      thor
+
+GIT
+  remote: https://github.com/poise/poise-boiler.git
+  revision: 409326e84519cf1a212073aed2f5cd3a6963d347
+  specs:
+    poise-boiler (1.13.3.pre)
+      bundler
+      chefspec (~> 5.0)
+      codeclimate-test-reporter (~> 0.4)
+      codecov (~> 0.0, >= 0.0.2)
+      foodcritic (>= 7, < 9)
+      fuubar (~> 2.0)
+      git (~> 1.2)
+      halite (~> 1.2)
+      kitchen-docker (>= 2.6.0.rc.0)
+      kitchen-ec2 (~> 1.0)
+      kitchen-sync (~> 2.1)
+      kitchen-vagrant
+      mixlib-shellout (>= 1.4, < 3.0)
+      poise-profiler (~> 1.0)
+      pry
+      pry-byebug
+      rake (>= 10.4, < 12.0)
+      rspec (~> 3.2)
+      rspec-its (~> 1.2)
+      simplecov (~> 0.9)
+      test-kitchen (~> 1.7, >= 1.7.1)
+      travis (~> 1.8, >= 1.8.1)
+      vagrant-wrapper
+      winrm (>= 1.6, < 3)
+      winrm-fs (>= 0.4, < 2)
+      yard (~> 0.8)
+      yard-classmethods (~> 1.0)
+
+GIT
+  remote: https://github.com/poise/poise.git
+  revision: 1aa3a6b7c5b3fe0c357e2f3fcc50080790772ccb
+  specs:
+    poise (2.7.3.pre)
+      halite (~> 1.0)
+
+GIT
   remote: https://github.com/rubysec/bundler-audit.git
   revision: 6eb5a81e9b184fbb8db03f3e57dc758c65dd7383
   specs:
@@ -46,10 +113,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.19.39)
+    chef (13.0.67)
       addressable
       bundler (>= 1.10)
-      chef-config (= 12.19.39)
+      chef-config (= 13.0.67)
       chef-zero (>= 4.8)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -64,7 +131,7 @@ PATH
       net-sftp (~> 2.1, >= 2.1.2)
       net-ssh (>= 2.9, < 5.0)
       net-ssh-multi (~> 1.2, >= 1.2.1)
-      ohai (>= 8.6.0.alpha.1, < 13)
+      ohai (~> 13.0)
       plist (~> 3.2)
       proxifier (~> 1.0)
       rspec-core (~> 3.5)
@@ -75,10 +142,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (12.19.39-universal-mingw32)
+    chef (13.0.67-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 12.19.39)
+      chef-config (= 13.0.67)
       chef-zero (>= 4.8)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -94,7 +161,7 @@ PATH
       net-sftp (~> 2.1, >= 2.1.2)
       net-ssh (>= 2.9, < 5.0)
       net-ssh-multi (~> 1.2, >= 1.2.1)
-      ohai (>= 8.6.0.alpha.1, < 13)
+      ohai (~> 13.0)
       plist (~> 3.2)
       proxifier (~> 1.0)
       rspec-core (~> 3.5)
@@ -119,7 +186,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.19.39)
+    chef-config (13.0.67)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -128,7 +195,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (5.0.1)
+    activesupport (5.0.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (~> 0.7)
       minitest (~> 5.1)
@@ -136,15 +203,15 @@ GEM
     addressable (2.4.0)
     appbundler (0.10.0)
       mixlib-cli (~> 1.4)
-    artifactory (2.6.0)
+    artifactory (2.7.0)
     ast (2.3.0)
-    aws-sdk (2.7.7)
-      aws-sdk-resources (= 2.7.7)
-    aws-sdk-core (2.7.7)
+    aws-sdk (2.8.5)
+      aws-sdk-resources (= 2.8.5)
+    aws-sdk-core (2.8.5)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.7.7)
-      aws-sdk-core (= 2.7.7)
+    aws-sdk-resources (2.8.5)
+      aws-sdk-core (= 2.8.5)
     aws-sigv4 (1.0.0)
     backports (3.6.8)
     binding_of_caller (0.7.2)
@@ -154,22 +221,14 @@ GEM
     chef-api (0.7.0)
       logify (~> 0.1)
       mime-types
-    chef-provisioning (2.1.0)
-      cheffish (~> 4.0)
-      inifile (>= 2.0.2)
-      mixlib-install (>= 1.0, < 3.0)
-      net-scp (~> 1.0)
-      net-ssh (>= 2.9, < 5.0)
-      net-ssh-gateway (~> 1.2)
-      winrm-fs (~> 1.0)
     chef-sugar (3.4.0)
-    chef-zero (5.3.0)
+    chef-zero (5.3.1)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
       mixlib-log (~> 1.3)
       rack (~> 2.0)
       uuidtools (~> 2.1)
-    cheffish (4.1.1)
+    cheffish (5.0.1)
       chef-zero (~> 5.0)
       net-ssh
     chefspec (5.4.0)
@@ -178,12 +237,12 @@ GEM
       rspec (~> 3.0)
     codeclimate-test-reporter (0.6.0)
       simplecov (>= 0.7.1, < 1.0.0)
-    codecov (0.1.9)
+    codecov (0.1.10)
       json
       simplecov
       url
     coderay (1.1.1)
-    concurrent-ruby (1.0.4)
+    concurrent-ruby (1.0.5)
     cucumber (2.4.0)
       builder (>= 2.1.2)
       cucumber-core (~> 1.5.0)
@@ -198,7 +257,7 @@ GEM
     debug_inspector (0.0.2)
     diff-lcs (1.3)
     docile (1.1.5)
-    domain_name (0.5.20161129)
+    domain_name (0.5.20170223)
       unf (>= 0.0.5, < 1.0.0)
     erubis (2.7.0)
     ethon (0.10.1)
@@ -212,8 +271,8 @@ GEM
       faraday (>= 0.7.4, < 1.0)
     fauxhai (3.10.0)
       net-ssh
-    ffi (1.9.17)
-    ffi (1.9.17-x86-mingw32)
+    ffi (1.9.18)
+    ffi (1.9.18-x86-mingw32)
     ffi-win32-extensions (1.0.3)
       ffi
     ffi-yajl (2.3.0)
@@ -243,25 +302,19 @@ GEM
       ffi (>= 1.0.1)
     gyoku (1.3.1)
       builder (>= 2.1.2)
-    halite (1.4.0)
-      bundler
-      chef (~> 12.0)
-      stove (~> 4.0)
-      thor
-    hashie (3.5.3)
+    hashie (3.5.5)
     highline (1.7.8)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     httpclient (2.8.3)
-    i18n (0.8.0)
-    inifile (3.0.0)
+    i18n (0.8.1)
     iniparse (1.4.2)
     ipaddress (0.8.3)
     jmespath (1.3.1)
     json (2.0.3)
     kitchen-docker (2.6.0)
       test-kitchen (>= 1.0.0)
-    kitchen-ec2 (1.3.0)
+    kitchen-ec2 (1.3.2)
       aws-sdk (~> 2)
       excon
       multi_json
@@ -270,7 +323,7 @@ GEM
     kitchen-sync (2.1.2)
       net-sftp
       test-kitchen (>= 1.0.0)
-    kitchen-vagrant (1.0.1)
+    kitchen-vagrant (1.0.2)
       test-kitchen (~> 1.4)
     knife-windows (1.9.0)
       winrm (~> 2.1)
@@ -279,7 +332,7 @@ GEM
       addressable (~> 2.3)
     libyajl2 (1.2.0)
     little-plugger (1.1.4)
-    logging (2.1.0)
+    logging (2.2.0)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     logify (0.2.0)
@@ -316,7 +369,7 @@ GEM
       net-ssh (>= 2.6.5)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
-    net-ssh (4.0.1)
+    net-ssh (4.1.0)
     net-ssh-gateway (1.3.0)
       net-ssh (>= 2.6.5)
     net-ssh-multi (1.2.1)
@@ -324,58 +377,16 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     net-telnet (0.1.1)
     netrc (0.11.0)
-    nokogiri (1.7.0.1)
+    nokogiri (1.7.1)
       mini_portile2 (~> 2.1.0)
-    nokogiri (1.7.0.1-x86-mingw32)
+    nokogiri (1.7.1-x86-mingw32)
       mini_portile2 (~> 2.1.0)
     nori (2.6.0)
     octokit (4.6.2)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (8.23.0)
-      chef-config (>= 12.5.0.alpha.1, < 13)
-      ffi (~> 1.9)
-      ffi-yajl (~> 2.2)
-      ipaddress
-      mixlib-cli
-      mixlib-config (~> 2.0)
-      mixlib-log (>= 1.7.1, < 2.0)
-      mixlib-shellout (~> 2.0)
-      plist (~> 3.1)
-      systemu (~> 2.6.4)
-      wmi-lite (~> 1.0)
     parser (2.4.0.0)
       ast (~> 2.2)
     plist (3.2.0)
-    poise (2.7.2)
-      halite (~> 1.0)
-    poise-boiler (1.13.2)
-      bundler
-      chefspec (~> 5.0)
-      codeclimate-test-reporter (~> 0.4)
-      codecov (~> 0.0, >= 0.0.2)
-      foodcritic (>= 7, < 9)
-      fuubar (~> 2.0)
-      git (~> 1.2)
-      halite (~> 1.2)
-      kitchen-docker (>= 2.6.0.rc.0)
-      kitchen-ec2 (~> 1.0)
-      kitchen-sync (~> 2.1)
-      kitchen-vagrant
-      mixlib-shellout (>= 1.4, < 3.0)
-      poise-profiler (~> 1.0)
-      pry
-      pry-byebug
-      rake (>= 10.4, < 12.0)
-      rspec (~> 3.2)
-      rspec-its (~> 1.2)
-      simplecov (~> 0.9)
-      test-kitchen (~> 1.7, >= 1.7.1)
-      travis (~> 1.8, >= 1.8.1)
-      vagrant-wrapper
-      winrm (>= 1.6, < 3)
-      winrm-fs (>= 0.4, < 2)
-      yard (~> 0.8)
-      yard-classmethods (~> 1.0)
     poise-profiler (1.0.1)
       halite (~> 1.0)
     polyglot (0.3.5)
@@ -401,16 +412,16 @@ GEM
     rainbow (2.2.1)
     rake (11.3.0)
     rb-readline (0.5.4)
-    rest-client (2.0.0)
+    rest-client (2.0.1)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rest-client (2.0.0-x86-mingw32)
+    rest-client (2.0.1-x86-mingw32)
       ffi (~> 1.9)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    retriable (3.0.0)
+    retriable (3.0.1)
     retryable (2.0.4)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
@@ -461,7 +472,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.66.9)
+    specinfra (2.67.2)
       net-scp
       net-ssh (>= 2.7, < 5.0)
       net-telnet
@@ -471,18 +482,18 @@ GEM
       logify (~> 0.2)
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    test-kitchen (1.15.0)
+    test-kitchen (1.16.0)
       mixlib-install (>= 1.2, < 3.0)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
       net-ssh (>= 2.9, < 5.0)
       net-ssh-gateway (~> 1.2)
       safe_yaml (~> 1.0)
-      thor (~> 0.18)
-    thor (0.19.4)
-    thread_safe (0.3.5)
+      thor (~> 0.19, < 0.19.2)
+    thor (0.19.1)
+    thread_safe (0.3.6)
     tomlrb (1.2.3)
-    travis (1.8.6)
+    travis (1.8.8)
       backports
       faraday (~> 0.9)
       faraday_middleware (~> 0.9, >= 0.9.1)
@@ -526,7 +537,7 @@ GEM
       ffi-win32-extensions
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
-    winrm (2.1.2)
+    winrm (2.1.3)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)
@@ -559,7 +570,6 @@ DEPENDENCIES
   bundler-audit!
   chef!
   chef-config!
-  chef-provisioning
   chef-sugar
   cheffish
   chefspec
@@ -567,15 +577,16 @@ DEPENDENCIES
   cucumber (>= 2.4.0)
   foodcritic
   github_changelog_generator!
-  halite
+  halite!
   knife-windows
   mixlib-install
   netrc
-  nokogiri
+  nokogiri (>= 1.7.1)
   oc-chef-pedant!
   octokit
-  poise
-  poise-boiler
+  ohai!
+  poise!
+  poise-boiler!
   pry
   pry-byebug
   pry-remote
@@ -590,4 +601,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.12.5
+   1.14.6

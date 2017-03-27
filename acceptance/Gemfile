@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem "rake" # required to build some native extensions
-gem "chef-acceptance", github: "chef/chef-acceptance"
+gem "chef-acceptance", git: "https://github.com/chef/chef-acceptance.git"
 gem "kitchen-ec2"
 gem "inspec"
 gem "kitchen-vagrant"
@@ -14,3 +14,6 @@ gem "berkshelf"
 # Pin to 1.2.3 because current mixlib-install has a problem where unstable
 # packages are not always immediately available via the omnitruck API.
 gem "mixlib-install", "1.2.3"
+
+# for chef-13 development - pin to the released rubygems version
+gem "chef-config", "< 13.0"

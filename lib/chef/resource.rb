@@ -23,6 +23,7 @@ require "chef/dsl/data_query"
 require "chef/dsl/registry_helper"
 require "chef/dsl/reboot_pending"
 require "chef/dsl/resources"
+require "chef/json_compat"
 require "chef/mixin/convert_to_class_name"
 require "chef/guard_interpreter/resource_guard_interpreter"
 require "chef/resource/conditional"
@@ -130,7 +131,6 @@ class Chef
     def initialize(name, run_context = nil)
       name(name) unless name.nil?
       @run_context = run_context
-      @noop = nil
       @before = nil
       @params = Hash.new
       @provider = nil
@@ -138,10 +138,6 @@ class Chef
       @action = self.class.default_action
       @updated = false
       @updated_by_last_action = false
-      @supports = {}
-      @ignore_failure = false
-      @retries = 0
-      @retry_delay = 2
       @not_if = []
       @only_if = []
       @source_line = nil
@@ -153,7 +149,6 @@ class Chef
       @guard_interpreter = nil
       @default_guard_interpreter = :default
       @elapsed_time = 0
-      @sensitive = false
     end
 
     #
@@ -437,10 +432,7 @@ class Chef
     # @param arg [Integer] The number of retries.
     # @return [Integer] The number of retries.
     #
-    def retries(arg = nil)
-      set_or_return(:retries, arg, kind_of: Integer)
-    end
-    attr_writer :retries
+    property :retries, Integer, default: 0, desired_state: false
 
     #
     # The number of seconds to wait between retries.  Default: 2.
@@ -448,10 +440,7 @@ class Chef
     # @param arg [Integer] The number of seconds to wait between retries.
     # @return [Integer] The number of seconds to wait between retries.
     #
-    def retry_delay(arg = nil)
-      set_or_return(:retry_delay, arg, kind_of: Integer)
-    end
-    attr_writer :retry_delay
+    property :retry_delay, Integer, default: 2, desired_state: false
 
     #
     # Whether to treat this resource's data as sensitive.  If set, no resource
@@ -460,15 +449,7 @@ class Chef
     # @param arg [Boolean] Whether this resource is sensitive or not.
     # @return [Boolean] Whether this resource is sensitive or not.
     #
-    def sensitive(arg = nil)
-      set_or_return(:sensitive, arg, :kind_of => [ TrueClass, FalseClass ])
-    end
-    attr_writer :sensitive
-
-    # ??? TODO unreferenced.  Delete?
-    attr_reader :not_if_args
-    # ??? TODO unreferenced.  Delete?
-    attr_reader :only_if_args
+    property :sensitive, [ TrueClass, FalseClass ], default: false, desired_state: false
 
     #
     # The time it took (in seconds) to run the most recently-run action.  Not
@@ -523,15 +504,6 @@ class Chef
     end
 
     #
-    # Since there are collisions with LWRP parameters named 'state' this
-    # method is not used by the resource_reporter and is most likely unused.
-    # It certainly cannot be relied upon and cannot be fixed.
-    #
-    # @deprecated
-    #
-    alias_method :state, :state_for_resource_reporter
-
-    #
     # The value of the identity of this resource.
     #
     # - If there are no identity properties on the resource, `name` is returned.
@@ -561,10 +533,7 @@ class Chef
     # @param arg [Boolean] Whether to ignore failures.
     # @return Whether this resource will ignore failures.
     #
-    def ignore_failure(arg = nil)
-      set_or_return(:ignore_failure, arg, kind_of: [ TrueClass, FalseClass ])
-    end
-    attr_writer :ignore_failure
+    property :ignore_failure, [ TrueClass, FalseClass ], default: false, desired_state: false
 
     #
     # Equivalent to #ignore_failure.
@@ -620,7 +589,7 @@ class Chef
       begin
         return if should_skip?(action)
         provider_for_action(action).run_action
-      rescue Exception => e
+      rescue StandardError => e
         if ignore_failure
           Chef::Log.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
           events.resource_failed(self, action, e)
@@ -738,12 +707,20 @@ class Chef
       result
     end
 
-    def self.json_create(o)
+    def self.from_hash(o)
       resource = new(o["instance_vars"]["@name"])
       o["instance_vars"].each do |k, v|
         resource.instance_variable_set("@#{k}".to_sym, v)
       end
       resource
+    end
+
+    def self.json_create(o)
+      from_hash(o)
+    end
+
+    def self.from_json(j)
+      from_hash(Chef::JSONCompat.parse(j))
     end
 
     #
@@ -955,49 +932,11 @@ class Chef
     end
 
     #
-    # Sets a list of capabilities of the real resource.  For example, `:remount`
-    # (for filesystems) and `:restart` (for services).
-    #
-    # TODO Calling resource.supports({}) will not set this to empty; it will do
-    # a get instead.  That's wrong.
-    #
-    # @param args Hash{Symbol=>Boolean} If non-empty, sets the capabilities of
-    #   this resource. Default: {}
-    # @return Hash{Symbol=>Boolean} An array of things this resource supports.
-    #
-    def supports(args = {})
-      if args.any?
-        @supports = args
-      else
-        @supports
-      end
-    end
-
-    def supports=(args)
-      supports(args)
-    end
-
-    #
     # A hook called after a resource is created.  Meant to be overriden by
     # subclasses.
     #
     def after_created
       nil
-    end
-
-    #
-    # The DSL name of this resource (e.g. `package` or `yum_package`)
-    #
-    # @return [String] The DSL name of this resource.
-    #
-    # @deprecated Use resource_name instead.
-    #
-    def self.dsl_name
-      Chef.deprecated(:custom_resource, "Resource.dsl_name is deprecated and will be removed in Chef 13.  Use resource_name instead.")
-      if name
-        name = self.name.split("::")[-1]
-        convert_to_snake_case(name)
-      end
     end
 
     #
@@ -1051,29 +990,6 @@ class Chef
     def self.use_automatic_resource_name
       automatic_name = convert_to_snake_case(name.split("::")[-1])
       resource_name automatic_name
-    end
-
-    #
-    # The module where Chef should look for providers for this resource.
-    # The provider for `MyResource` will be looked up using
-    # `provider_base::MyResource`.  Defaults to `Chef::Provider`.
-    #
-    # @param arg [Module] The module containing providers for this resource
-    # @return [Module] The module containing providers for this resource
-    #
-    # @example
-    #   class MyResource < Chef::Resource
-    #     provider_base Chef::Provider::Deploy
-    #     # ...other stuff
-    #   end
-    #
-    # @deprecated Use `provides` on the provider, or `provider` on the resource, instead.
-    #
-    def self.provider_base(arg = nil)
-      if arg
-        Chef.deprecated(:custom_resource, "Resource.provider_base is deprecated and will be removed in Chef 13. Use provides on the provider, or provider on the resource, instead.")
-      end
-      @provider_base ||= arg || Chef::Provider
     end
 
     #
@@ -1485,24 +1401,6 @@ class Chef
       provider
     end
 
-    # ??? TODO Seems unused.  Delete?
-    def noop(tf = nil)
-      if !tf.nil?
-        raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
-        @noop = tf
-      end
-      @noop
-    end
-
-    # TODO Seems unused.  Delete?
-    def is(*args)
-      if args.size == 1
-        args.first
-      else
-        args
-      end
-    end
-
     #
     # Preface an exception message with generic Resource information.
     #
@@ -1580,13 +1478,14 @@ class Chef
 
     # @api private
     def lookup_provider_constant(name, action = :nothing)
-      self.class.provider_base.const_get(convert_to_class_name(name.to_s))
-    rescue NameError => e
-      if e.to_s =~ /#{Regexp.escape(self.class.provider_base.to_s)}/
-        raise ArgumentError, "No provider found to match '#{name}'"
-      else
-        raise e
-      end
+      # XXX: "name" is probably a poor choice of name here, ideally this would be nil, but we need to
+      # fix resources so that nil or empty names work (also solving the apt_update "doesn't matter one bit"
+      # problem).  WARNING: this string is not a public API and should not be referenced (e.g. in provides blocks)
+      # and may change at any time.  If you've found this comment you're also probably very lost and should maybe
+      # consider using `declare_resource :whatever` instead of trying to set `provider :whatever` on a resource, or in some
+      # other way reconsider what you're trying to do, since you're likely trying to force a bad design that we
+      # can't/won't support.
+      self.class.resource_for_node(name, node).new("name", run_context).provider_for_action(action).class
     end
 
     module DeprecatedLWRPClass

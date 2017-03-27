@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -216,16 +216,12 @@ class Chef
        # that precedence level, +value+ will be the symbol +:not_present+.
       def debug_value(*args)
         COMPONENTS.map do |component|
-          ivar = instance_variable_get(component)
-          value = args.inject(ivar) do |so_far, key|
-            if so_far == :not_present
-              :not_present
-            elsif so_far.has_key?(key)
-              so_far[key]
-            else
+          value =
+            begin
+              instance_variable_get(component).read!(*args)
+            rescue
               :not_present
             end
-          end
           [component.to_s.sub(/^@/, ""), value]
         end
       end
@@ -475,25 +471,6 @@ class Chef
       alias :key? :has_key?
 
       alias :each_attribute :each
-
-      def method_missing(symbol, *args)
-        if symbol == :to_ary
-          merged_attributes.send(symbol, *args)
-        elsif args.empty?
-          Chef.deprecated(:attributes, %q{method access to node attributes (node.foo.bar) is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]["bar"])})
-          if key?(symbol)
-            self[symbol]
-          else
-            raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
-          end
-        elsif symbol.to_s =~ /=$/
-          Chef.deprecated(:attributes, %q{method setting of node attributes (node.foo="bar") is deprecated and will be removed in Chef 13, please use bracket syntax (node["foo"]="bar")})
-          key_to_set = symbol.to_s[/^(.+)=$/, 1]
-          self[key_to_set] = (args.length == 1 ? args[0] : args)
-        else
-          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
-        end
-      end
 
       def to_s
         merged_attributes.to_s

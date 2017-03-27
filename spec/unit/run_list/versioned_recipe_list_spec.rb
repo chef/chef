@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Delano (<stephen@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -186,9 +186,12 @@ describe Chef::RunList::VersionedRecipeList do
     end
   end
 
-  context "with duplicated names", chef: ">= 13" do
-    it "should fail in Chef 13" do
-      expect(list).to_not respond_to(:with_duplicate_names)
+  context "with duplicate names" do
+    let(:fq_names) { list.with_duplicate_names }
+    let(:recipes) { %w{ foo bar::default } }
+
+    it "expands default recipes" do
+      expect(fq_names).to eq(%w{foo foo::default bar bar::default})
     end
   end
 end

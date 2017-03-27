@@ -1,150 +1,139 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
-# Chef Client Release Notes 12.19:
+# Chef Client Release Notes 13.0:
 
-## Highlighted enhancements for this release:
+## Back Compat Breaks
 
-- Systemd unit files are now verified before being installed.
-- Added support for windows alternate user identity in execute resources.
-- Added ed25519 key support for for ssh connections.
+### The path property of the execute resource has been removed
 
-### Windows alternate user identity execute support
+It was never implemented in the provider, so it was always a no-op to use it, the remediation is
+to simply delete it.
 
-The `execute` resource and similar resources such as `script`, `batch`, and `powershell_script` now support the specification of credentials on Windows so that the resulting process is created with the security identity that corresponds to those credentials.
+### Using the command property on any script resource (including bash, etc) is now a hard error
 
-**Note**: When Chef is running as a service, this feature requires that the user that Chef runs as has 'SeAssignPrimaryTokenPrivilege' (aka 'SE_ASSIGNPRIMARYTOKEN_NAME') user right. By default only LocalSystem and NetworkService have this right when running as a service. This is necessary even if the user is an Administrator.
+This was always a usage mistake.  The command property was used internally by the script resource and was not intended to be exposed
+to users.  Users should use the code property instead (or use the command property on an execute resource to execute a single command).
 
-This right bacn be added and checked in a recipe using this example:
+### Omitting the code property on any script resource (including bash, etc) is now a hard error
 
-```ruby
-# Add 'SeAssignPrimaryTokenPrivilege' for the user
-Chef::ReservedNames::Win32::Security.add_account_right('<user>', 'SeAssignPrimaryTokenPrivilege')
+It is possible that this was being used as a no-op resource, but the log resource is a better choice for that until we get a null
+resource added.  Omitting the code property or mixing up the code property with the command property are also common usage mistakes
+that we need to catch and error on.
 
-# Check if the user has 'SeAssignPrimaryTokenPrivilege' rights
-Chef::ReservedNames::Win32::Security.get_account_right('<user>').include?('SeAssignPrimaryTokenPrivilege')
+### The chef_gem resource defaults to not run at compile time
+
+The `compile_time true` flag may still be used to force compile time.
+
+### The Chef::Config[:chef_gem_compile_time] config option has been removed
+
+In order to for community cookbooks to behave consistently across all users this optional flag has been removed.
+
+### The `supports[:manage_home]` and `supports[:non_unique]` API has been removed from all user providers
+
+The remediation is to set the manage_home and non_unique properties directly.
+
+### Using relative paths in the `creates` property of an execute resource with specifying a `cwd` is now a hard error
+
+Without a declared cwd the relative path was (most likely?) relative to wherever chef-client happened to be invoked which is
+not deterministic or easy to intuit behavior.
+
+### Chef::PolicyBuilder::ExpandNodeObject#load_node has been removed
+
+This change is most likely to only affect internals of tooling like chefspec if it affects anything at all.
+
+### PolicyFile failback to create non-policyfile nodes on Chef Server < 12.3 has been removed
+
+PolicyFile users on Chef-13 should be using Chef Server 12.3 or higher.
+
+### Cookbooks with self dependencies are no longer allowed
+
+The remediation is removing the self-dependency `depends` line in the metadata.
+
+### Removed `supports` API from Chef::Resource
+
+Retained only for the service resource (where it makes some sense) and for the mount resource.
+
+### Removed retrying of non-StandardError exceptions for Chef::Resource
+
+Exceptions not decending from StandardError (e.g. LoadError, SecurityError, SystemExit) will no longer trigger a retry if they are raised during the executiong of a resources with a non-zero retries setting.
+
+### Removed deprecated `method_missing` access from the Chef::Node object
+
+Previously, the syntax `node.foo.bar` could be used to mean `node["foo"]["bar"]`, but this API had sharp edges where methods collided
+with the core ruby Object class (e.g. `node.class`) and where it collided with our own ability to extend the `Chef::Node` API.  This
+method access has been deprecated for some time, and has been removed in Chef-13.
+
+### Changed `declare_resource` API
+
+Dropped the `create_if_missing` parameter that was immediately supplanted by the `edit_resource` API (most likely nobody ever used
+this) and converted the `created_at` parameter from an optional positional parameter to a named parameter.  These changes are unlikely
+to affect any cookbook code.
+
+### Node deep-duping fixes
+
+The `node.to_hash`/`node.to_h` and `node.dup` APIs have been fixed so that they correctly deep-dup the node data structure including every
+string value.  This results in a mutable copy of the immutable merged node structure.  This is correct behavior, but is now more expensive
+and may break some poor code (which would have been buggy and difficult to follow code with odd side effects before).
+
+For example:
+
+```
+node.default["foo"] = "fizz"
+n = node.to_hash   # or node.dup
+n["foo"] << "buzz"
 ```
 
-#### Properties
+before this would have mutated the original string in-place so that `node["foo"]` and `node.default["foo"]` would have changed to "fizzbuzz"
+while now they remain "fizz" and only the mutable `n["foo"]` copy is changed to "fizzbuzz".
 
-The following properties are new or updated for the `execute`, `script`, `batch`, and `powershell_script` resources and any resources derived from them:
+### Freezing immutable merged attributes
 
-- `user`<br>
-  **Ruby types:** String<br>
-  The user name of the user identity with which to launch the new process. Default value: `nil`. The user name may optionally be specified with a domain, i.e. `domain\user` or `user@my.dns.domain.com` via Universal Principal Name (UPN) format. It can also be specified without a domain simply as `user` if the domain is instead specified using the `domain` attribute. On Windows only, if this property is specified, the `password` property **must** be specified.
+Since Chef 11 merged node attributes have been intended to be immutable but the merged strings have not been frozen.  In Chef 13, in the
+process of merging the node attributes strings and other simple objects are dup'd and frozen.  In order to get a mutable copy, you can
+now correctly use the `node.dup` or `node.to_hash` methods, or you should mutate the object correctly through its precedence level like
+`node.default["some_string"] << "appending_this"`.
 
-- `password`<br>
-  **Ruby types** String<br>
-  _Windows only:_ The password of the user specified by the `user` property. Default value: `nil`. This property is mandatory if `user` is specified on Windows and may only be specified if `user` is specified. The `sensitive` property for this resource will automatically be set to `true` if `password` is specified.
+### The Chef::REST API has been removed
 
-- `domain`<br>
-  **Ruby types** String<br>
-  _Windows only:_ The domain of the user user specified by the `user` property. Default value: `nil`. If not specified, the user name and password specified by the `user` and `password` properties will be used to resolve that user against the domain in which the system running Chef client is joined, or if that system is not joined to a domain it will resolve the user as a local account on that system. An alternative way to specify the domain is to leave this property unspecified and specify the domain as part of the `user` property.
+It has been fully replaced with `Chef::ServerAPI` in chef-client code.
 
-#### Usage
+### Properties overriding methods now raise an error
 
-The following examples explain how alternate user identity properties can be used in the execute resources:
+Defining a property that overrides methods defined on the base ruby `Object` or on `Chef::Resource` itself can cause large amounts of
+confusion.  A simple example is `property :hash` which overrides the Object#hash method which will confuse ruby when the Custom Resource
+is placed into the Chef::ResourceCollection which uses a Hash internally which expects to call Object#hash to get a unique id for the
+object.  Attempting to create `property :action` would also override the Chef::Resource#action method which is unlikely to end well for
+the user.  Overriding inherited properties is still supported.
 
-```ruby
-powershell_script 'create powershell-test file' do
-  code <<-EOH
-  $stream = [System.IO.StreamWriter] "#{Chef::Config[:file_cache_path]}/powershell-test.txt"
-  $stream.WriteLine("In #{Chef::Config[:file_cache_path]}...word.")
-  $stream.close()
-  EOH
-  user 'username'
-  password 'password'
-end
+### `chef-shell` now supports solo and legacy solo modes
 
-execute 'mkdir test_dir' do
-  cwd Chef::Config[:file_cache_path]
-  domain "domain-name"
-  user "user"
-  password "password"
-end
+Running `chef-shell -s` or `chef-shell --solo` will give you an experience consistent with `chef-solo`. `chef-shell --solo-legacy-mode`
+will give you an experience consistent with `chef-solo --legacy-mode`.
 
-script 'create test_dir' do
-  interpreter "bash"
-  code  "mkdir test_dir"
-  cwd Chef::Config[:file_cache_path]
-  user "domain-name\\username"
-  password "password"
-end
+### Chef::Platform.set and related methods have been removed
 
-batch 'create test_dir' do
-  code "mkdir test_dir"
-  cwd Chef::Config[:file_cache_path]
-  user "username@domain-name"
-  password "password"
-end
-```
+The deprecated code has been removed.  All providers and resources should now be using Chef >= 12.0 `provides` syntax.
 
-## Highlighted bug fixes for this release:
+### Remove `sort` option for the Search API
 
-- Ensure that the Windows Administrator group can access the chef-solo nodes directory
-- When loading a cookbook in Chef Solo, use `metadata.json` in preference to `metadata.rb`
+This option has been unimplemented on the server side for years, so any use of it has been pointless.
 
-## Deprecation Notice
+### Remove Chef::ShellOut
 
-- As of version 12.19, chef client will no longer be build or tested on the Cisco NX-OS and IOS XR platforms.
+This was deprecated and replaced a long time ago with mixlib-shellout and the shell_out mixin.
 
-# Ohai Release Notes 8.23:
+### Remove `method_missing` from the Recipe DSL
 
-## Cumulus Linux Platform
+The core of chef hasn't used this to implement the Recipe DSL since 12.5.1 and its unlikely that any external code depended upon it.
 
-Cumulus Linux will now be detected as platform `cumulus` instead of `debian` and the `platform_version` will be properly set to the Cumulus Linux release.
+### Simplify Recipe DSL wiring
 
-## Virtualization Detection
+Support for actions with spaces and hyphens in the action name has been dropped.  Resources and property names with spaces and hyphens
+most likely never worked in Chef-12.  UTF-8 characters have always been supported and still are.
 
-Windows / Linux / BSD guests running on the Veertu hypervisors will now be detected
+### `easy_install` resource has been removed
 
-Windows guests running on Xen and Hyper-V hypervisors will now be detected
-
-## New Sysconf Plugin
-
-A new plugin parses the output of the sysconf command to provide information on the underlying system.
-
-## AWS Account ID
-
-The EC2 plugin now fetches the AWS Account ID in addition to previous instance metadata
-
-## GCC Detection
-
-GCC detection has been improved to collect additional information, and to not prompt for the installation of Xcode on macOS systems
-
-## New deprecations introduced in this release:
-
-### Ohai::Config removed
-
-- **Deprecation ID**: OHAI-1
-- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_legacy_config.html>
-- **Expected Removal**: Ohai 13 (April 2017)
-
-### sigar gem based plugins removed
-
-- **Deprecation ID**: OHAI-2
-- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_sigar_plugins.html>
-- **Expected Removal**: Ohai 13 (April 2017)
-
-### run_command and popen4 helper methods removed
-
-- **Deprecation ID**: OHAI-3
-- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_run_command_helpers.html>
-- **Expected Removal**: Ohai 13 (April 2017)
-
-### libvirt plugin attributes moved
-
-- **Deprecation ID**: OHAI-4
-- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_libvirt_plugin.html>
-- **Expected Removal**: Ohai 13 (April 2017)
-
-### Windows CPU plugin attribute changes
-
-- **Deprecation ID**: OHAI-5
-- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_windows_cpu.html>
-- **Expected Removal**: Ohai 13 (April 2017)
-
-### DigitalOcean plugin attribute changes
-
-- **Deprecation ID**: OHAI-6
-- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_digitalocean.html>
-- **Expected Removal**: Ohai 13 (April 2017)
+The Python `easy_install` package installer has been deprecated for many years,
+so we have removed support for it. No specific replacement for `pip` is being
+included with Chef at this time, but a `pip`-based `python_package` resource is
+available in the [`poise-python`](https://github.com/poise/poise-python) cookbooks.

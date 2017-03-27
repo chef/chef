@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,8 +22,14 @@ require "chef/node/mixin/immutablize_hash"
 
 class Chef
   class Node
-
     module Immutablize
+      # For elements like Fixnums, true, nil...
+      def safe_dup(e)
+        e.dup
+      rescue TypeError
+        e
+      end
+
       def immutablize(value)
         case value
         when Hash
@@ -31,7 +37,7 @@ class Chef
         when Array
           ImmutableArray.new(value, __root__, __node__, __precedence__)
         else
-          value
+          safe_dup(value).freeze
         end
       end
     end
@@ -70,20 +76,19 @@ class Chef
       end
 
       def to_a
-        a = Array.new
-        each do |v|
-          a <<
-            case v
-            when ImmutableArray
-              v.to_a
-            when ImmutableMash
-              v.to_hash
-            else
-              v
-            end
-        end
-        a
+        Array.new(map do |v|
+          case v
+          when ImmutableArray
+            v.to_a
+          when ImmutableMash
+            v.to_h
+          else
+            safe_dup(v)
+          end
+        end)
       end
+
+      alias_method :to_array, :to_a
 
       # for consistency's sake -- integers 'converted' to integers
       def convert_key(key)
@@ -125,26 +130,12 @@ class Chef
 
       alias :attribute? :has_key?
 
-      def method_missing(symbol, *args)
-        if symbol == :to_ary
-          super
-        elsif args.empty?
-          if key?(symbol)
-            self[symbol]
-          else
-            raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
-          end
-          # This will raise a ImmutableAttributeModification error:
-        elsif symbol.to_s =~ /=$/
-          key_to_set = symbol.to_s[/^(.+)=$/, 1]
-          self[key_to_set] = (args.length == 1 ? args[0] : args)
-        else
-          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
-        end
-      end
-
       # Mash uses #convert_value to mashify values on input.
       # Since we're handling this ourselves, override it to be a no-op
+      #
+      # FIXME?  this seems wrong to do and i think is responsible for
+      # #dup needing to be more complicated than Mash.new(self)?
+      #
       def convert_value(value)
         value
       end
@@ -155,23 +146,36 @@ class Chef
       # Of course, 'default' has a specific meaning in Chef-land
 
       def dup
-        Mash.new(self)
+        h = Mash.new
+        each_pair do |k, v|
+          h[k] = safe_dup(v)
+        end
+        h
       end
 
-      def to_hash
+      def to_h
         h = Hash.new
         each_pair do |k, v|
           h[k] =
             case v
             when ImmutableMash
-              v.to_hash
+              v.to_h
             when ImmutableArray
               v.to_a
             else
-              v
+              safe_dup(v)
             end
         end
         h
+      end
+
+      alias_method :to_hash, :to_h
+
+      # For elements like Fixnums, true, nil...
+      def safe_dup(e)
+        e.dup
+      rescue TypeError
+        e
       end
 
       prepend Chef::Node::Mixin::StateTracking

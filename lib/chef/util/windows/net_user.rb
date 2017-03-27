@@ -112,7 +112,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   def add(args)
     transformed_args = transform_usri3(args)
     NetUser.net_user_add_l3(nil, transformed_args)
-    NetUser.net_local_group_add_member(nil, "Users", args[:name])
+    NetUser.net_local_group_add_member(nil, Chef::ReservedNames::Win32::Security::SID.BuiltinUsers.account_simple_name, args[:name])
   end
 
   # FIXME: yard with @yield

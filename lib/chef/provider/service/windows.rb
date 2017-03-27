@@ -2,7 +2,7 @@
 # Author:: Nuo Yan <nuo@chef.io>
 # Author:: Bryan McLellan <btm@loftninjas.org>
 # Author:: Seth Chisamore <schisamo@chef.io>
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,10 +48,6 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   TIMEOUT = 60
 
   SERVICE_RIGHT = "SeServiceLogonRight"
-
-  def whyrun_supported?
-    false
-  end
 
   def load_current_resource
     @current_resource = Chef::Resource::WindowsService.new(@new_resource.name)

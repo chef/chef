@@ -26,6 +26,10 @@ class Chef
 
         provides :env, os: "windows"
 
+        def whyrun_supported?
+          false
+        end
+
         def create_env
           obj = env_obj(@new_resource.key_name)
           unless obj

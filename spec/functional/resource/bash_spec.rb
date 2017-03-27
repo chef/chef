@@ -1,6 +1,6 @@
 #
 # Author:: Serdar Sutay (<serdar@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,59 +23,25 @@ describe Chef::Resource::Bash, :unix_only do
   let(:code) { "echo hello" }
   let(:resource) do
     resource = Chef::Resource::Bash.new("foo_resource", run_context)
-    resource.code(code)
+    resource.code(code) unless code.nil?
     resource
   end
 
   describe "when setting the command attribute" do
     let (:command) { "wizard racket" }
 
-    # in Chef-12 the `command` attribute is largely useless, but does set the identity attribute
-    # so that notifications need to target the value of the command.  it will not run the `command`
-    # and if it is given without a code block then it does nothing and always succeeds.
-    describe "in Chef-12", chef: "< 13" do
-      it "gets the commmand attribute from the name" do
-        expect(resource.command).to eql("foo_resource")
-      end
-
-      it "sets the resource identity to the command name" do
-        resource.command command
-        expect(resource.identity).to eql(command)
-      end
-
-      it "warns when the code is not present and a useless `command` is present" do
-        expect(Chef::Log).to receive(:warn).with(/coding error/)
-        expect(Chef::Log).to receive(:warn).with(/deprecated/)
-        resource.code nil
-        resource.command command
-        expect { resource.run_action(:run) }.not_to raise_error
-      end
-
-      describe "when the code is not present" do
-        let(:code) { nil }
-        it "warns" do
-          expect(Chef::Log).to receive(:warn)
-          expect { resource.run_action(:run) }.not_to raise_error
-        end
-      end
+    it "should raise an exception when trying to set the command" do
+      expect { resource.command command }.to raise_error(Chef::Exceptions::Script)
     end
 
-    # in Chef-13 the `command` attribute needs to be for internal use only
-    describe "in Chef-13", chef: ">= 13" do
-      it "should raise an exception when trying to set the command" do
-        expect { resource.command command }.to raise_error # FIXME: add a real error in Chef-13
-      end
+    it "should initialize the command to nil" do
+      expect(resource.command).to be_nil
+    end
 
-      it "should initialize the command to nil" do
-        expect(resource.command).to be_nil
-      end
-
-      describe "when the code is not present" do
-        let(:code) { nil }
-        it "raises an exception" do
-          expect { resource.run_action(:run) }.to raise_error # FIXME: add a real error in Chef-13
-          expect { resource.run_action(:run) }.not_to raise_error
-        end
+    describe "when the code is not present" do
+      let(:code) { nil }
+      it "raises an exception" do
+        expect { resource.run_action(:run) }.to raise_error(Chef::Exceptions::ValidationFailed)
       end
     end
   end

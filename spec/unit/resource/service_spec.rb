@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -124,6 +124,27 @@ describe Chef::Resource::Service do
     end.to raise_error(ArgumentError)
   end
 
+  it "should accept an array for options" do
+    @resource.options ["-r", "-s"]
+    expect(@resource.options).to eql(["-r", "-s"])
+  end
+
+  it "should accept a string for options" do
+    @resource.options "-r"
+    expect(@resource.options).to eql(["-r"])
+  end
+
+  it "should accept a string with multiple flags for options" do
+    @resource.options "-r -s"
+    expect(@resource.options).to eql(["-r", "-s"])
+  end
+
+  it "should not accept a boolean for options" do
+    expect do
+      @resource.options true
+    end.to raise_error(ArgumentError)
+  end
+
   %w{enabled running}.each do |attrib|
     it "should accept true for #{attrib}" do
       @resource.send(attrib, true)
@@ -146,13 +167,13 @@ describe Chef::Resource::Service do
 
     it "should allow you to set what features this resource supports as a array" do
       support_array = [ :status, :restart ]
-      support_hash = { :status => true, :restart => true, :reload => nil }
+      support_hash = { :status => true, :restart => true }
       @resource.supports(support_array)
       expect(@resource.supports).to eq(support_hash)
     end
 
     it "should allow you to set what features this resource supports as a hash" do
-      support_hash = { :status => true, :restart => true, :reload => false }
+      support_hash = { :status => true, :restart => true }
       @resource.supports(support_hash)
       expect(@resource.supports).to eq(support_hash)
     end
@@ -166,7 +187,7 @@ describe Chef::Resource::Service do
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:enabled]).to eql(true)
       expect(state[:running]).to eql(false)
     end
@@ -175,5 +196,4 @@ describe Chef::Resource::Service do
       expect(@resource.identity).to eq("superfriend")
     end
   end
-
 end

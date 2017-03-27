@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -246,6 +246,34 @@ describe Chef::Knife::Ssh do
       end
     end
 
+    context "when knife[:ssh_gateway_identity] is set" do
+      before do
+        setup_knife(["*:*", "uptime"])
+        Chef::Config[:knife][:ssh_gateway] = "user@ec2.public_hostname"
+        Chef::Config[:knife][:ssh_gateway_identity] = "~/.ssh/aws-gateway.rsa"
+      end
+
+      it "uses the ssh_gateway_identity file" do
+        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { :keys => File.expand_path("#{ENV['HOME']}/.ssh/aws-gateway.rsa").squeeze("/"), :keys_only => true })
+        @knife.run
+        expect(@knife.config[:ssh_gateway_identity]).to eq("~/.ssh/aws-gateway.rsa")
+      end
+    end
+
+    context "when -ssh-gateway-identity is provided and knife[:ssh_gateway] is set" do
+      before do
+        setup_knife(["--ssh-gateway-identity", "~/.ssh/aws-gateway.rsa", "*:*", "uptime"])
+        Chef::Config[:knife][:ssh_gateway] = "user@ec2.public_hostname"
+        Chef::Config[:knife][:ssh_gateway_identity] = nil
+      end
+
+      it "uses the ssh_gateway_identity file" do
+        expect(@knife.session).to receive(:via).with("ec2.public_hostname", "user", { :keys => File.expand_path("#{ENV['HOME']}/.ssh/aws-gateway.rsa").squeeze("/"), :keys_only => true })
+        @knife.run
+        expect(@knife.config[:ssh_gateway_identity]).to eq("~/.ssh/aws-gateway.rsa")
+      end
+    end
+
     context "when the gateway requires a password" do
       before do
         setup_knife(["-G user@ec2.public_hostname", "*:*", "uptime"])
@@ -276,7 +304,7 @@ describe Chef::Knife::Ssh do
     Chef::Config[:client_key] = nil
     Chef::Config[:chef_server_url] = "http://localhost:9000"
 
-    @api.post("/search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0", 200) do
+    @api.post("/search/node?q=*:*&start=0", 200) do
       %({"total":1, "start":0, "rows":[{"data": {"fqdn":"the.fqdn", "config": "the_public_hostname", "knife_config": "the_public_hostname" }}]})
     end
   end

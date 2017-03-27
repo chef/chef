@@ -59,7 +59,7 @@ class Chef
     def resolve
       maybe_explicit_provider(resource) ||
         maybe_dynamic_provider_resolution(resource, action) ||
-        maybe_chef_platform_lookup(resource)
+        raise(Chef::Exceptions::ProviderNotFound, "Cannot find a provider for #{resource} on #{node["platform"]} version #{node["platform_version"]}")
     end
 
     # Does NOT call provides? on the resource (it is assumed this is being
@@ -124,11 +124,6 @@ class Chef
       end
 
       handler
-    end
-
-    # try the old static lookup of providers by platform
-    def maybe_chef_platform_lookup(resource)
-      Chef::Platform.find_provider_for_node(node, resource)
     end
 
     def priority_map

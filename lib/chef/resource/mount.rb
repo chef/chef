@@ -1,7 +1,7 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,10 @@ class Chef
       default_action :mount
       allowed_actions :mount, :umount, :unmount, :remount, :enable, :disable
 
+      # this is a poor API please do not re-use this pattern
+      property :supports, Hash, default: { remount: false },
+                                coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
+
       def initialize(name, run_context = nil)
         super
         @mount_point = name
@@ -42,7 +46,6 @@ class Chef
         @pass = 2
         @mounted = false
         @enabled = false
-        @supports = { :remount => false }
         @username = nil
         @password = nil
         @domain = nil
@@ -138,16 +141,6 @@ class Chef
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )
-      end
-
-      def supports(args = {})
-        if args.is_a? Array
-          args.each { |arg| @supports[arg] = true }
-        elsif args.any?
-          @supports = args
-        else
-          @supports
-        end
       end
 
       def username(arg = nil)

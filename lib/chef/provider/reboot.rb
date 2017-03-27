@@ -24,10 +24,6 @@ class Chef
     class Reboot < Chef::Provider
       provides :reboot
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
         @current_resource ||= Chef::Resource::Reboot.new(new_resource.name)
         current_resource.reason(new_resource.reason)

@@ -11,6 +11,9 @@ source "https://rubygems.org"
 # of bundler versions prior to 1.12.0 (https://github.com/bundler/bundler/commit/193a14fe5e0d56294c7b370a0e59f93b2c216eed)
 gem "chef", path: "."
 
+# tracking master of ohai for chef-13.0 development, this should be able to be deleted after release
+gem "ohai", git: "https://github.com/chef/ohai.git"
+
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
 gem "rake"
 gem "bundler"
@@ -19,7 +22,8 @@ gem "cheffish" # required for rspec tests
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "nokogiri"
+  # CVE-2016-4658 https://github.com/sparklemotion/nokogiri/issues/1615
+  gem "nokogiri", ">= 1.7.1"
 end
 
 group(:omnibus_package, :pry) do
@@ -31,12 +35,11 @@ end
 
 # These are used for external tests
 group(:integration) do
-  gem "chef-provisioning"
   gem "chef-sugar"
   gem "chefspec"
-  gem "halite"
-  gem "poise"
-  gem "poise-boiler"
+  gem "halite", git: "https://github.com/poise/halite.git"
+  gem "poise", git: "https://github.com/poise/poise.git"
+  gem "poise-boiler", git: "https://github.com/poise/poise-boiler.git"
   gem "knife-windows"
   gem "foodcritic"
 
@@ -50,7 +53,7 @@ group(:docgen) do
   gem "yard"
 end
 
-group(:maintenance) do
+group(:maintenance, :ci) do
   gem "tomlrb"
 
   # To sync maintainers with github
@@ -77,7 +80,7 @@ group(:development, :test) do
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 end
 
-group(:changelog) do
+group(:ci) do
   gem "github_changelog_generator", git: "https://github.com/chef/github-changelog-generator"
   gem "mixlib-install"
 end

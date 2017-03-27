@@ -21,8 +21,40 @@ module BuildChefGem
 
     attr_reader :software, :software_filename
 
+    # XXX: why are we programmatically defining config that is already expressed as code-as-configuration?
+
     def define
+      # this has to come first because gem_metadata depends on it
       software.name "#{File.basename(software_filename)[0..-4]}"
+      if installing_from_git?
+        define_git
+      else
+        define_gem
+      end
+    end
+
+    def define_git
+      software.default_version gem_metadata[:ref]
+
+      # If the source directory for building stuff changes, tell omnibus to de-cache us
+      software.source git: gem_metadata[:git]
+
+      # ruby and bundler and friends
+      software.dependency "ruby"
+      software.dependency "rubygems"
+
+      software.relative_path gem_name
+
+      gem_name = self.gem_name
+
+      software.build do
+        extend BuildChefGem
+        gem "build #{gem_name}.gemspec", env: env
+        gem "install #{gem_name}*.gem --no-ri --no-rdoc", env: env
+      end
+    end
+
+    def define_gem
       software.default_version gem_version
 
       # If the source directory for building stuff changes, tell omnibus to
@@ -44,7 +76,8 @@ module BuildChefGem
         if gem_version == "<skip>"
           if gem_metadata
             block do
-              log.info(log_key) { "#{gem_name} has source #{gem_metadata} in #{lockfile_path}. We only cache rubygems.org installs in omnibus to keep things simple. The chef step will build #{gem_name} ..." }
+              raise "can we just remove this use case?  what is it for?"
+              #log.info(log_key) { "#{gem_name} has source #{gem_metadata} in #{lockfile_path}. We only cache rubygems.org installs in omnibus to keep things simple. The chef step will build #{gem_name} ..." }
             end
           else
             block do
@@ -103,6 +136,10 @@ module BuildChefGem
           nil
         end
       end
+    end
+
+    def installing_from_git?
+      gem_metadata && gem_metadata[:git] && gem_metadata[:ref]
     end
 
     def gem_version

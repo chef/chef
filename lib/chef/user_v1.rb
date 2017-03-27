@@ -274,11 +274,6 @@ class Chef
       Chef::UserV1.from_hash(Chef::JSONCompat.from_json(json))
     end
 
-    def self.json_create(json)
-      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::UserV1#from_json or Chef::UserV1#load.")
-      Chef::UserV1.from_json(json)
-    end
-
     def self.list(inflate = false)
       response = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("users")
       users = if response.is_a?(Array)

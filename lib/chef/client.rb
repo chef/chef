@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -893,15 +893,6 @@ class Chef
     # @api private
     #
     STDERR_FD = STDERR
-
-    #
-    # Deprecated writers
-    #
-
-    include Chef::Mixin::Deprecation
-    deprecated_attr_writer :ohai, "There is no alternative. Leave ohai alone!"
-    deprecated_attr_writer :rest, "There is no alternative. Leave rest alone!"
-    deprecated_attr :runner, "There is no alternative. Leave runner alone!"
 
     private
 

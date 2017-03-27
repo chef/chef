@@ -41,7 +41,8 @@ class Chef
                       entry = reg.open(key, desired)
                       display_name = read_registry_property(entry, "DisplayName")
                       if display_name == package_name
-                        entries.push(RegistryUninstallEntry.new(hkey, key, entry))
+                        quiet_uninstall_string = RegistryUninstallEntry.read_registry_property(entry, "QuietUninstallString")
+                        entries.push(quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry))
                       end
                     rescue ::Win32::Registry::Error => ex
                       Chef::Log.debug("Registry error opening key '#{key}' on node #{desired}: #{ex}")
@@ -55,6 +56,11 @@ class Chef
             entries
           end
 
+          def self.quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry)
+            return RegistryUninstallEntry.new(hkey, key, entry) if quiet_uninstall_string.nil?
+            RegistryUninstallEntry.new(hkey, key, entry, "QuietUninstallString")
+          end
+
           def self.read_registry_property(data, property)
             data[property]
           rescue ::Win32::Registry::Error => ex
@@ -62,14 +68,14 @@ class Chef
             nil
           end
 
-          def initialize(hive, key, registry_data)
+          def initialize(hive, key, registry_data, uninstall_key = "UninstallString")
             Chef::Log.debug("Creating uninstall entry for #{hive}::#{key}")
             @hive = hive
             @key = key
             @data = registry_data
             @display_name = RegistryUninstallEntry.read_registry_property(registry_data, "DisplayName")
             @display_version = RegistryUninstallEntry.read_registry_property(registry_data, "DisplayVersion")
-            @uninstall_string = RegistryUninstallEntry.read_registry_property(registry_data, "UninstallString")
+            @uninstall_string = RegistryUninstallEntry.read_registry_property(registry_data, uninstall_key)
           end
 
           attr_reader :hive

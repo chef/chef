@@ -139,12 +139,6 @@ class Chef
       item
     end
 
-    # Create a Chef::DataBagItem from JSON
-    def self.json_create(o)
-      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::DataBagItem#from_hash")
-      from_hash(o)
-    end
-
     # Load a Data Bag Item by name via either the RESTful API or local data_bag_path if run in solo mode
     def self.load(data_bag, name)
       if Chef::Config[:solo_legacy_mode]

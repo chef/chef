@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -216,12 +216,12 @@ describe Chef::Resource::Deploy do
   end
 
   it "allows deploy providers to be set via symbol" do
-    @resource.provider :revision
+    @resource.provider :deploy_revision
     expect(@resource.provider).to eq(Chef::Provider::Deploy::Revision)
   end
 
   it "allows deploy providers to be set via string" do
-    @resource.provider "revision"
+    @resource.provider "deploy_revision"
     expect(@resource.provider).to eq(Chef::Provider::Deploy::Revision)
   end
 
@@ -270,7 +270,7 @@ describe Chef::Resource::Deploy do
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:deploy_to]).to eq("/")
       expect(state[:revision]).to eq("1.2.3")
     end

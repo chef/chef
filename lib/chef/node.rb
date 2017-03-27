@@ -2,7 +2,7 @@
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,6 +34,7 @@ require "chef/mash"
 require "chef/json_compat"
 require "chef/search/query"
 require "chef/whitelist"
+require "chef/blacklist"
 
 class Chef
   class Node
@@ -507,12 +508,6 @@ class Chef
       self
     end
 
-    # Create a Chef::Node from JSON
-    def self.json_create(o)
-      Chef.deprecated(:json_auto_inflate, "Auto inflation of JSON data is deprecated. Please use Chef::Node#from_hash")
-      from_hash(o)
-    end
-
     def self.from_hash(o)
       return o if o.kind_of? Chef::Node
       node = new
@@ -599,11 +594,6 @@ class Chef
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
           chef_server_rest.post("nodes", data_for_save)
-        # Chef Server before 12.3 rejects node JSON with 'policy_name' or
-        # 'policy_group' keys, but 'policy_name' will be detected first.
-        # Backcompat can be removed in 13.0
-        elsif e.response.code == "400" && e.response.body.include?("Invalid key policy_name")
-          save_without_policyfile_attrs
         else
           raise
         end
@@ -668,6 +658,13 @@ class Chef
         unless whitelist.nil? # nil => save everything
           Chef::Log.info("Whitelisting #{level} node attributes for save.")
           data[level] = Chef::Whitelist.filter(data[level], whitelist)
+        end
+
+        blacklist_config_option = "#{level}_attribute_blacklist".to_sym
+        blacklist = Chef::Config[blacklist_config_option]
+        unless blacklist.nil? # nil => remove nothing
+          Chef::Log.info("Blacklisting #{level} node attributes for save")
+          data[level] = Chef::Blacklist.filter(data[level], blacklist)
         end
       end
       data

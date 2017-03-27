@@ -1,6 +1,6 @@
 #
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,14 +41,11 @@ describe "LWRP" do
     Chef::ResourceResolver.resolve(name)
   end
 
-  def get_lwrp_provider(name)
-    old_treat_deprecation_warnings_as_errors = Chef::Config[:treat_deprecation_warnings_as_errors]
-    Chef::Config[:treat_deprecation_warnings_as_errors] = false
-    begin
-      Chef::Provider.const_get(convert_to_class_name(name.to_s))
-    ensure
-      Chef::Config[:treat_deprecation_warnings_as_errors] = old_treat_deprecation_warnings_as_errors
-    end
+  def get_dynamic_lwrp_provider(name)
+    # need a node to do dynamic lookup, so also need a run_context and a resource instance
+    node = Chef::Node.new
+    run_context = Chef::RunContext.new(node, {}, nil)
+    Chef::Resource.new("name", run_context).lookup_provider_constant(name)
   end
 
   describe "when overriding an existing class" do
@@ -324,14 +321,7 @@ describe "LWRP" do
           end
         end
 
-        def raise_if_deprecated!
-          if Chef::VERSION.split(".").first.to_i > 12
-            raise "This test should be removed and the associated code should be removed!"
-          end
-        end
-
         it "amends actions when they are already defined" do
-          raise_if_deprecated!
           expect(child.actions).to eq([:nothing, :eat, :sleep, :drink])
         end
       end
@@ -393,7 +383,7 @@ describe "LWRP" do
 
     let(:runner) { Chef::Runner.new(run_context) }
 
-    let(:lwrp_cookbok_name) { "lwrp" }
+    let(:lwrp_cookbook_name) { "lwrp" }
 
     before do
       Chef::Provider::LWRPBase.class_eval { @loaded_lwrps = {} }
@@ -401,18 +391,18 @@ describe "LWRP" do
 
     before(:each) do
       Dir[File.expand_path(File.expand_path("../../data/lwrp/resources/*", __FILE__))].each do |file|
-        Chef::Resource::LWRPBase.build_from_file(lwrp_cookbok_name, file, run_context)
+        Chef::Resource::LWRPBase.build_from_file(lwrp_cookbook_name, file, run_context)
       end
 
       Dir[File.expand_path(File.expand_path("../../data/lwrp/providers/*", __FILE__))].each do |file|
-        Chef::Provider::LWRPBase.build_from_file(lwrp_cookbok_name, file, run_context)
+        Chef::Provider::LWRPBase.build_from_file(lwrp_cookbook_name, file, run_context)
       end
     end
 
     it "should properly handle a new_resource reference" do
       resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       resource.monkey("bob")
-      resource.provider(get_lwrp_provider(:lwrp_monkey_name_printer))
+      resource.provider(get_dynamic_lwrp_provider(:lwrp_monkey_name_printer))
       provider = resource.provider_for_action(:twiddle_thumbs)
       provider.action_twiddle_thumbs
     end
@@ -433,8 +423,8 @@ describe "LWRP" do
       end
 
       it "should create a method for each action" do
-        expect(get_lwrp_provider(:lwrp_buck_passer).instance_methods).to include(:action_pass_buck)
-        expect(get_lwrp_provider(:lwrp_thumb_twiddler).instance_methods).to include(:action_twiddle_thumbs)
+        expect(get_dynamic_lwrp_provider(:lwrp_buck_passer).instance_methods).to include(:action_pass_buck)
+        expect(get_dynamic_lwrp_provider(:lwrp_thumb_twiddler).instance_methods).to include(:action_twiddle_thumbs)
       end
 
       it "sets itself as a provider for a resource of the same name" do
@@ -442,30 +432,30 @@ describe "LWRP" do
         # we bypass the per-file loading to get the file to load each time,
         # which creates the LWRP class repeatedly. New things get prepended to
         # the list of providers.
-        expect(found_providers.first).to eq(get_lwrp_provider(:lwrp_buck_passer))
+        expect(found_providers.first).to eq(get_dynamic_lwrp_provider(:lwrp_buck_passer))
       end
 
       context "with a cookbook with an underscore in the name" do
 
-        let(:lwrp_cookbok_name) { "l_w_r_p" }
+        let(:lwrp_cookbook_name) { "l_w_r_p" }
 
         it "sets itself as a provider for a resource of the same name" do
           found_providers = Chef::Platform::ProviderHandlerMap.instance.list(node, :l_w_r_p_buck_passer)
           expect(found_providers.size).to eq(1)
-          expect(found_providers.last).to eq(get_lwrp_provider(:l_w_r_p_buck_passer))
+          expect(found_providers.last).to eq(get_dynamic_lwrp_provider(:l_w_r_p_buck_passer))
         end
       end
 
       context "with a cookbook with a hypen in the name" do
 
-        let(:lwrp_cookbok_name) { "l-w-r-p" }
+        let(:lwrp_cookbook_name) { "l-w-r-p" }
 
         it "sets itself as a provider for a resource of the same name" do
           incorrect_providers = Chef::Platform::ProviderHandlerMap.instance.list(node, :'l-w-r-p_buck_passer')
           expect(incorrect_providers).to eq([])
 
           found_providers = Chef::Platform::ProviderHandlerMap.instance.list(node, :l_w_r_p_buck_passer)
-          expect(found_providers.first).to eq(get_lwrp_provider(:l_w_r_p_buck_passer))
+          expect(found_providers.first).to eq(get_dynamic_lwrp_provider(:l_w_r_p_buck_passer))
         end
       end
     end
@@ -473,7 +463,7 @@ describe "LWRP" do
     it "should insert resources embedded in the provider into the middle of the resource collection" do
       injector = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       injector.action(:pass_buck)
-      injector.provider(get_lwrp_provider(:lwrp_buck_passer))
+      injector.provider(get_dynamic_lwrp_provider(:lwrp_buck_passer))
       dummy = Chef::Resource::ZenMaster.new("keanu reeves", run_context)
       dummy.provider(Chef::Provider::Easy)
       run_context.resource_collection.insert(injector)
@@ -490,11 +480,11 @@ describe "LWRP" do
     it "should insert embedded resources from multiple providers, including from the last position, properly into the resource collection" do
       injector = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       injector.action(:pass_buck)
-      injector.provider(get_lwrp_provider(:lwrp_buck_passer))
+      injector.provider(get_dynamic_lwrp_provider(:lwrp_buck_passer))
 
       injector2 = get_lwrp(:lwrp_bar).new("tank", run_context)
       injector2.action(:pass_buck)
-      injector2.provider(get_lwrp_provider(:lwrp_buck_passer_2))
+      injector2.provider(get_dynamic_lwrp_provider(:lwrp_buck_passer_2))
 
       dummy = Chef::Resource::ZenMaster.new("keanu reeves", run_context)
       dummy.provider(Chef::Provider::Easy)
@@ -517,7 +507,7 @@ describe "LWRP" do
     it "should properly handle a new_resource reference" do
       resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       resource.monkey("bob")
-      resource.provider(get_lwrp_provider(:lwrp_monkey_name_printer))
+      resource.provider(get_dynamic_lwrp_provider(:lwrp_monkey_name_printer))
 
       provider = resource.provider_for_action(:twiddle_thumbs)
       provider.action_twiddle_thumbs
@@ -528,7 +518,7 @@ describe "LWRP" do
     it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
       resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
       resource.monkey("bob")
-      resource.provider(get_lwrp_provider(:lwrp_embedded_resource_accesses_providers_scope))
+      resource.provider(get_dynamic_lwrp_provider(:lwrp_embedded_resource_accesses_providers_scope))
 
       provider = resource.provider_for_action(:twiddle_thumbs)
       #provider = @runner.build_provider(resource)
@@ -548,7 +538,7 @@ describe "LWRP" do
         @resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
         @resource.allowed_actions << :test
         @resource.action(:test)
-        @resource.provider(get_lwrp_provider(:lwrp_inline_compiler))
+        @resource.provider(get_dynamic_lwrp_provider(:lwrp_inline_compiler))
       end
 
       it "does not add interior resources to the exterior resource collection" do

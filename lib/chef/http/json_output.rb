@@ -1,7 +1,7 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,6 +61,9 @@ class Chef
           [http_response, rest_request, return_value]
         else
           Chef::Log.debug("Expected JSON response, but got content-type '#{http_response['content-type']}'")
+          if http_response.body
+            Chef::Log.debug("Response body contains:\n#{http_response.body.length < 256 ? http_response.body : http_response.body[0..256] + " [...truncated...]"}")
+          end
           return [http_response, rest_request, http_response.body.to_s]
         end
       end

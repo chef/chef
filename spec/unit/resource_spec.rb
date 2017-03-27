@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -160,7 +160,7 @@ describe Chef::Resource do
     end
 
     it "describes its state" do
-      resource_state = file_resource.state
+      resource_state = file_resource.state_for_resource_reporter
       expect(resource_state.keys).to match_array([:checksum, :owner, :group, :mode])
       expect(resource_state[:checksum]).to eq("abc123")
       expect(resource_state[:owner]).to eq("root")
@@ -192,7 +192,6 @@ describe Chef::Resource do
   describe "load_from" do
     let(:prior_resource) do
       prior_resource = Chef::Resource.new("funk")
-      prior_resource.supports(:funky => true)
       prior_resource.source_line
       prior_resource.allowed_actions << :funkytown
       prior_resource.action(:funkytown)
@@ -205,7 +204,6 @@ describe Chef::Resource do
 
     it "should load the attributes of a prior resource" do
       resource.load_from(prior_resource)
-      expect(resource.supports).to eq({ :funky => true })
     end
 
     it "should not inherit the action from the prior resource" do
@@ -230,14 +228,6 @@ describe Chef::Resource do
 
     it "should coerce objects to a string" do
       expect(resource.name Object.new).to be_a(String)
-    end
-  end
-
-  describe "noop" do
-    it "should accept true or false for noop" do
-      expect { resource.noop true }.not_to raise_error
-      expect { resource.noop false }.not_to raise_error
-      expect { resource.noop "eat it" }.to raise_error(ArgumentError)
     end
   end
 
@@ -452,18 +442,6 @@ describe Chef::Resource do
     end
   end
 
-  describe "is" do
-    it "should return the arguments passed with 'is'" do
-      zm = Chef::Resource::ZenMaster.new("coffee")
-      expect(zm.is("one", "two", "three")).to eq(%w{one two three})
-    end
-
-    it "should allow arguments preceded by is to methods" do
-      resource.noop(resource.is(true))
-      expect(resource.noop).to eql(true)
-    end
-  end
-
   describe "to_json" do
     it "should serialize to json" do
       json = resource.to_json
@@ -481,10 +459,10 @@ describe Chef::Resource do
       let(:resource_class) { Class.new(Chef::Resource) { property :a, default: 1 } }
       it "should include the default in the hash" do
         expect(resource.to_hash.keys.sort).to eq([:a, :allowed_actions, :params, :provider, :updated,
-          :updated_by_last_action, :before, :supports,
-          :noop, :ignore_failure, :name, :source_line,
-          :action, :retries, :retry_delay, :elapsed_time,
-          :default_guard_interpreter, :guard_interpreter, :sensitive].sort)
+          :updated_by_last_action, :before,
+          :name, :source_line,
+          :action, :elapsed_time,
+          :default_guard_interpreter, :guard_interpreter].sort)
         expect(resource.to_hash[:name]).to eq "funk"
         expect(resource.to_hash[:a]).to eq 1
       end
@@ -493,10 +471,10 @@ describe Chef::Resource do
     it "should convert to a hash" do
       hash = resource.to_hash
       expected_keys = [ :allowed_actions, :params, :provider, :updated,
-        :updated_by_last_action, :before, :supports,
-        :noop, :ignore_failure, :name, :source_line,
-        :action, :retries, :retry_delay, :elapsed_time,
-        :default_guard_interpreter, :guard_interpreter, :sensitive ]
+        :updated_by_last_action, :before,
+        :name, :source_line,
+        :action, :elapsed_time,
+        :default_guard_interpreter, :guard_interpreter ]
       expect(hash.keys - expected_keys).to eq([])
       expect(expected_keys - hash.keys).to eq([])
       expect(hash[:name]).to eql("funk")
@@ -506,21 +484,9 @@ describe Chef::Resource do
   describe "self.json_create" do
     it "should deserialize itself from json" do
       json = Chef::JSONCompat.to_json(resource)
-      serialized_node = Chef::JSONCompat.from_json(json)
+      serialized_node = Chef::Resource.from_json(json)
       expect(serialized_node).to be_a_kind_of(Chef::Resource)
       expect(serialized_node.name).to eql(resource.name)
-    end
-  end
-
-  describe "supports" do
-    it "should allow you to set what features this resource supports" do
-      support_hash = { :one => :two }
-      resource.supports(support_hash)
-      expect(resource.supports).to eql(support_hash)
-    end
-
-    it "should return the current value of supports" do
-      expect(resource.supports).to eq({})
     end
   end
 
@@ -583,31 +549,18 @@ describe Chef::Resource do
       expect { retriable_resource.run_action(:purr) }.to raise_error(RuntimeError)
       expect(retriable_resource.retries).to eq(3)
     end
-  end
 
-  describe "setting the base provider class for the resource" do
+    it "should not rescue from non-StandardError exceptions" do
+      retriable_resource.retries(3)
+      retriable_resource.retry_delay(0) # No need to wait.
 
-    it "defaults to Chef::Provider for the base class" do
-      expect(Chef::Resource.provider_base).to eq(Chef::Provider)
+      provider = Chef::Provider::SnakeOil.new(retriable_resource, run_context)
+      allow(Chef::Provider::SnakeOil).to receive(:new).and_return(provider)
+      allow(provider).to receive(:action_purr).and_raise(LoadError)
+
+      expect(retriable_resource).not_to receive(:sleep)
+      expect { retriable_resource.run_action(:purr) }.to raise_error(LoadError)
     end
-
-    it "allows the base provider to be overridden" do
-      Chef::Config.treat_deprecation_warnings_as_errors(false)
-      class OverrideProviderBaseTest < Chef::Resource
-        provider_base Chef::Provider::Package
-      end
-
-      expect(OverrideProviderBaseTest.provider_base).to eq(Chef::Provider::Package)
-    end
-
-    it "warns when setting provider_base" do
-      expect do
-        class OverrideProviderBaseTest2 < Chef::Resource
-          provider_base Chef::Provider::Package
-        end
-      end.to raise_error(Chef::Exceptions::DeprecatedFeatureError)
-    end
-
   end
 
   it "runs an action by finding its provider, loading the current resource and then running the action" do
@@ -857,11 +810,7 @@ describe Chef::Resource do
       snitch_var1 = snitch_var2 = 0
       runner = Chef::Runner.new(run_context)
 
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      Chef::Platform.set(
-        :resource => :cat,
-        :provider => Chef::Provider::SnakeOil
-      )
+      Chef::Provider::SnakeOil.provides :cat
 
       resource1.only_if { snitch_var1 = 1 }
       resource1.not_if { snitch_var2 = 2 }

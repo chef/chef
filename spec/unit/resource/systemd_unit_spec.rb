@@ -109,7 +109,7 @@ describe Chef::Resource::SystemdUnit do
     @resource.masked false
     @resource.static false
     @resource.content "test"
-    state = @resource.state
+    state = @resource.state_for_resource_reporter
     expect(state[:active]).to eq(true)
     expect(state[:enabled]).to eq(true)
     expect(state[:masked]).to eq(false)

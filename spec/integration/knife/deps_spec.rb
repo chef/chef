@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -211,20 +211,16 @@ depends "bar"'
 depends "baz"'
           file "cookbooks/baz/metadata.rb", 'name "baz"
 depends "foo"'
-          file "cookbooks/self/metadata.rb", 'name "self"
-depends "self"'
         end
 
         it "knife deps prints each once" do
-          knife("deps /cookbooks/foo /cookbooks/self").should_succeed(
-            stdout: "/cookbooks/baz\n/cookbooks/bar\n/cookbooks/foo\n/cookbooks/self\n",
-            stderr: "WARN: Ignoring self-dependency in cookbook self, please remove it (in the future this will be fatal).\n"
+          knife("deps /cookbooks/foo").should_succeed(
+            stdout: "/cookbooks/baz\n/cookbooks/bar\n/cookbooks/foo\n"
           )
         end
         it "knife deps --tree prints each once" do
-          knife("deps --tree /cookbooks/foo /cookbooks/self").should_succeed(
-            stdout: "/cookbooks/foo\n  /cookbooks/bar\n    /cookbooks/baz\n      /cookbooks/foo\n/cookbooks/self\n",
-            stderr: "WARN: Ignoring self-dependency in cookbook self, please remove it (in the future this will be fatal).\n"
+          knife("deps --tree /cookbooks/foo").should_succeed(
+            stdout: "/cookbooks/foo\n  /cookbooks/bar\n    /cookbooks/baz\n      /cookbooks/foo\n"
           )
         end
       end

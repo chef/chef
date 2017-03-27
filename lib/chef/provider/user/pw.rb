@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Haynes (<sh@nomitor.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ class Chef
 
         def remove_user
           command = [ "pw", "userdel", new_resource.username ]
-          command << "-r" if managing_home_dir?
+          command << "-r" if new_resource.manage_home
           shell_out_compact!(command)
         end
 
@@ -83,7 +83,7 @@ class Chef
               opts << new_resource.send(field_symbol)
             end
           end
-          if managing_home_dir?
+          if new_resource.manage_home
             Chef::Log.debug("#{new_resource} is managing the users home directory")
             opts << "-m"
           end

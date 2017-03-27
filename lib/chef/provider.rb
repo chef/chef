@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, 2009-2016 Chef Software, Inc.
+# Copyright:: Copyright 2008-2016, 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,7 +75,7 @@ class Chef
     end
 
     def whyrun_supported?
-      false
+      true
     end
 
     def node
@@ -379,16 +379,11 @@ class Chef
         def action(name, &block)
           # We need the block directly in a method so that `super` works
           define_method("compile_action_#{name}", &block)
-          # We try hard to use `def` because define_method doesn't show the method name in the stack.
-          begin
-            class_eval <<-EOM
-              def action_#{name}
-                compile_and_converge_action { compile_action_#{name} }
-              end
-            EOM
-          rescue SyntaxError
-            define_method("action_#{name}") { send("compile_action_#{name}") }
-          end
+          class_eval <<-EOM
+            def action_#{name}
+              compile_and_converge_action { compile_action_#{name} }
+            end
+          EOM
         end
       end
     end

@@ -135,6 +135,24 @@ describe Shell do
       expect(exitstatus).to eq(0)
     end
 
+    context "on solo mode" do
+      it "starts correctly" do
+        output, exitstatus = run_chef_shell_with("--solo")
+        expect(output).to include("done")
+        expect(exitstatus).to eq(0)
+      end
+
+      it "should be able to use the API" do
+        output, exitstatus = run_chef_shell_with("-s") do |out, keyboard|
+          simple_api_get = "api.get('data')"
+          keyboard.puts(simple_api_get)
+          read_until(out, simple_api_get)
+        end
+        expect(output).to include("{}")
+        expect(exitstatus).to eq(0)
+      end
+    end
+
     it "sets the override_runlist from the command line" do
       output, exitstatus = run_chef_shell_with("-o 'override::foo,override::bar'") do |out, keyboard|
         show_recipes_code = %q[puts "#{node["recipes"].inspect}"]

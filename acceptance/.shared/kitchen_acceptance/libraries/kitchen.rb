@@ -32,7 +32,7 @@ module KitchenAcceptance
     property :artifactory_username, String, default: lazy { ENV["ARTIFACTORY_USERNAME"] ? ENV["ARTIFACTORY_USERNAME"] : "" }
     property :artifactory_password, String, default: lazy { ENV["ARTIFACTORY_PASSWORD"] ? ENV["ARTIFACTORY_PASSWORD"] : "" }
     property :env, Hash, default: {}
-    property :kitchen_options, String, default: lazy { ENV["PROJECT_NAME"] ? "-c -l debug" : "-c" }
+    property :kitchen_options, String, default: "-c"
 
     action :run do
 

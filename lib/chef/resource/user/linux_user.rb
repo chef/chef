@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software Inc.
+# Copyright:: Copyright 2016-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,15 +25,6 @@ class Chef
 
         provides :linux_user
         provides :user, os: "linux"
-
-        def initialize(name, run_context = nil)
-          super
-          @supports = {
-            manage_home: false,
-            non_unique: false,
-          }
-          @manage_home = false
-        end
 
       end
     end

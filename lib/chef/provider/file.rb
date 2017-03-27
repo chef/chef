@@ -30,8 +30,6 @@ require "chef/mixin/enforce_ownership_and_permissions"
 require "chef/util/backup"
 require "chef/util/diff"
 require "chef/util/selinux"
-require "chef/deprecation/provider/file"
-require "chef/deprecation/warnings"
 require "chef/file_content_management/deploy"
 
 # The Tao of File Providers:
@@ -52,10 +50,6 @@ class Chef
       include Chef::Util::Selinux
       include Chef::Mixin::FileClass
 
-      extend Chef::Deprecation::Warnings
-      include Chef::Deprecation::Provider::File
-      add_deprecation_warnings_for(Chef::Deprecation::Provider::File.instance_methods)
-
       provides :file
 
       attr_reader :deployment_strategy
@@ -70,10 +64,6 @@ class Chef
           @deployment_strategy = Chef::FileContentManagement::Deploy.strategy(new_resource.atomic_update)
         end
         super
-      end
-
-      def whyrun_supported?
-        true
       end
 
       def load_current_resource

@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -109,16 +109,6 @@ class Chef
           :kind_of => [ TrueClass, FalseClass ])
       end
 
-      def path(arg = nil)
-        Chef::Log.warn "The 'path' attribute of 'execute' is not used by any provider in Chef 11 or Chef 12. Use 'environment' attribute to configure 'PATH'. This attribute will be removed in Chef 13."
-
-        set_or_return(
-          :path,
-          arg,
-          :kind_of => [ Array ]
-        )
-      end
-
       def returns(arg = nil)
         set_or_return(
           :returns,
@@ -141,13 +131,7 @@ class Chef
 
       property :password, String, sensitive: true
 
-      def sensitive(args = nil)
-        if password
-          true
-        else
-          super
-        end
-      end
+      property :sensitive, [ TrueClass, FalseClass ], default: false, coerce: proc { |x| password ? true : x }
 
       def self.set_guard_inherited_attributes(*inherited_attributes)
         @class_inherited_attributes = inherited_attributes

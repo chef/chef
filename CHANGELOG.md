@@ -1,5 +1,91 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
+## [v13.0.66](https://github.com/chef/chef/tree/v13.0.66) (2017-03-27)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.66...v13.0.66)
+
+**Closed issues:**
+
+- powershell\_out stdout contains '\r\n' at the end of the output [\#5947](https://github.com/chef/chef/issues/5947)
+
+**Merged pull requests:**
+
+- Make ResourceReporter smarter to get resource identity and state [\#5941](https://github.com/chef/chef/pull/5941) ([afiune](https://github.com/afiune))
+
+## [v13.0.66](https://github.com/chef/chef/tree/v13.0.66) (2017-03-27)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.66)
+
+**Closed issues:**
+
+- `group` resource not idempotent on Windows \(12.19.36\) [\#5857](https://github.com/chef/chef/issues/5857)
+- Chef doesn't have access to a file created by itself, under the ownership of SYSTEM? [\#5844](https://github.com/chef/chef/issues/5844)
+- apt\_repository can't identify key fingerprints when gnupg 2.1.x is used [\#5831](https://github.com/chef/chef/issues/5831)
+- FATAL: NoMethodError: undefined method `password' for Chef::Resource::Execute [\#5824](https://github.com/chef/chef/issues/5824)
+- We should update the default data bag encryption version for Chef 13 [\#5819](https://github.com/chef/chef/issues/5819)
+
+**Merged pull requests:**
+
+- Chef-13: Simplify DSL creation [\#5934](https://github.com/chef/chef/pull/5934) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: Remove deprecated Chef::Client attrs [\#5932](https://github.com/chef/chef/pull/5932) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: remove method\_missing from the DSL [\#5930](https://github.com/chef/chef/pull/5930) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: remove node\_map back-compat [\#5926](https://github.com/chef/chef/pull/5926) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: remove deprecated run\_context methods [\#5925](https://github.com/chef/chef/pull/5925) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: remove Chef::ShellOut [\#5923](https://github.com/chef/chef/pull/5923) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: remove old platform mapping code [\#5914](https://github.com/chef/chef/pull/5914) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: remove the old rake tasks [\#5913](https://github.com/chef/chef/pull/5913) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13:  raise on properties redefining inherited methods [\#5912](https://github.com/chef/chef/pull/5912) ([lamont-granquist](https://github.com/lamont-granquist))
+- fix node\#debug\_value access through arrays [\#5911](https://github.com/chef/chef/pull/5911) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13:  Nillable properties [\#5907](https://github.com/chef/chef/pull/5907) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: freeze merged node attribute [\#5905](https://github.com/chef/chef/pull/5905) ([lamont-granquist](https://github.com/lamont-granquist))
+- bump ruby to 2.3.3 [\#5902](https://github.com/chef/chef/pull/5902) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13:  Remove declare\_resource create\_if\_missing API [\#5900](https://github.com/chef/chef/pull/5900) ([lamont-granquist](https://github.com/lamont-granquist))
+- Properly use chef-shell in SoloSession by deprecating old behavior into SoloLegacySession [\#5898](https://github.com/chef/chef/pull/5898) ([afiune](https://github.com/afiune))
+- Chef-13:  properly deep dup Node\#to\_hash [\#5896](https://github.com/chef/chef/pull/5896) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: remove method\_missing access to node object. [\#5895](https://github.com/chef/chef/pull/5895) ([lamont-granquist](https://github.com/lamont-granquist))
+- Jeremymv2/cheffs optimizations [\#5890](https://github.com/chef/chef/pull/5890) ([jeremymv2](https://github.com/jeremymv2))
+- Changed EOP to 'EOP' to avoid content expansion [\#5888](https://github.com/chef/chef/pull/5888) ([afiune](https://github.com/afiune))
+- Compress debs and rpms with xz [\#5884](https://github.com/chef/chef/pull/5884) ([thommay](https://github.com/thommay))
+- Chef-13:  Chef::Resource cleanup [\#5882](https://github.com/chef/chef/pull/5882) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix apt\_repository for latest os version 16.10 [\#5874](https://github.com/chef/chef/pull/5874) ([afiune](https://github.com/afiune))
+- Chef-13: convert additional resource methods to properties [\#5871](https://github.com/chef/chef/pull/5871) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add the ability to blacklist attributes from being saved to the chef server [\#5868](https://github.com/chef/chef/pull/5868) ([robmul](https://github.com/robmul))
+- Chef-13:  remove supports API from Chef::Resource [\#5863](https://github.com/chef/chef/pull/5863) ([lamont-granquist](https://github.com/lamont-granquist))
+- HTTP: add debug long for non-JSON response [\#5858](https://github.com/chef/chef/pull/5858) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13 remove resource cloning and 3694 warnings [\#5856](https://github.com/chef/chef/pull/5856) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: support why-run by default [\#5853](https://github.com/chef/chef/pull/5853) ([lamont-granquist](https://github.com/lamont-granquist))
+- bump major to chef-13 [\#5833](https://github.com/chef/chef/pull/5833) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
+[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
+
+**Closed issues:**
+
+- Package resource fails chefspec on RHEL starting with Chef 12.18. [\#5769](https://github.com/chef/chef/issues/5769)
+
+**Merged pull requests:**
+
+- coerce immutable arrays to normal arrays in the yum\_package resource [\#5816](https://github.com/chef/chef/pull/5816) ([lamont-granquist](https://github.com/lamont-granquist))
+- Suppress sensitive properties from resource log and reporting output [\#5803](https://github.com/chef/chef/pull/5803) ([tduffield](https://github.com/tduffield))
+- Sanitize UTF-8 data sent to Data Collector [\#5793](https://github.com/chef/chef/pull/5793) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add multipackage\_api support to yum\_package provider [\#5791](https://github.com/chef/chef/pull/5791) ([tduffield](https://github.com/tduffield))
+- rhel7 / dnf 2.0 fixes / improved errors [\#5782](https://github.com/chef/chef/pull/5782) ([lamont-granquist](https://github.com/lamont-granquist))
+- Grant Administrators group permissions to nodes directory under chef-solo [\#5781](https://github.com/chef/chef/pull/5781) ([tduffield](https://github.com/tduffield))
+- Fix --no-fips on chef-client [\#5778](https://github.com/chef/chef/pull/5778) ([btm](https://github.com/btm))
+- Raise error if ips\_package install returns non-zero [\#5773](https://github.com/chef/chef/pull/5773) ([tduffield](https://github.com/tduffield))
+- Use CIDR notation rather than netmask in route-eth0 file [\#5772](https://github.com/chef/chef/pull/5772) ([tduffield](https://github.com/tduffield))
+- Verify systemd\_unit file with custom verifier [\#5765](https://github.com/chef/chef/pull/5765) ([mal](https://github.com/mal))
+- Windows alternate user support for execute resources [\#5764](https://github.com/chef/chef/pull/5764) ([NimishaS](https://github.com/NimishaS))
+- favor metadata.json over metadata.rb [\#5750](https://github.com/chef/chef/pull/5750) ([lamont-granquist](https://github.com/lamont-granquist))
+- Ensure ssh search paginates correctly [\#5744](https://github.com/chef/chef/pull/5744) ([thommay](https://github.com/thommay))
+- Do not modify File's new\_resource during why-run [\#5742](https://github.com/chef/chef/pull/5742) ([scottopherson](https://github.com/scottopherson))
+- Add gems for ECC algorithm support to omnibus. [\#5736](https://github.com/chef/chef/pull/5736) ([rhass](https://github.com/rhass))
+- dh/url support cab [\#5732](https://github.com/chef/chef/pull/5732) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- use git archive to speed up putting source in place [\#5730](https://github.com/chef/chef/pull/5730) ([robbkidd](https://github.com/robbkidd))
+- use pkg.path variable to reference path to self [\#5729](https://github.com/chef/chef/pull/5729) ([robbkidd](https://github.com/robbkidd))
+- Raise NamedSecurityInfo related exception using HR result. [\#5727](https://github.com/chef/chef/pull/5727) ([Aliasgar16](https://github.com/Aliasgar16))
+- Core: Ensure paths are correctly escaped when syntax checking [\#5704](https://github.com/chef/chef/pull/5704) ([ceneo](https://github.com/ceneo))
+- Added module\_version attribute for dsc\_resource for SxS support [\#5701](https://github.com/chef/chef/pull/5701) ([Aliasgar16](https://github.com/Aliasgar16))
+- Bump net-ssh to v4, add dependencies for ed25519 support [\#5687](https://github.com/chef/chef/pull/5687) ([onlyhavecans](https://github.com/onlyhavecans))
+
 ## [v12.18.31](https://github.com/chef/chef/tree/v12.18.31) (2017-01-11)
 [Full Changelog](https://github.com/chef/chef/compare/v12.17.44...v12.18.31)
 
@@ -1330,6 +1416,5 @@ of partial templates.
   would not share the same actions/default_action as their parent
 * Raise error if a guard_interpreter is specified and a block is passed to a guard (conditional)
 * Allow specifying a guard_interpreter after a conditional on a resource (Fixes #1943)
-* Windows package type should be a symbol (Fixes #1997)
 
 \* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*

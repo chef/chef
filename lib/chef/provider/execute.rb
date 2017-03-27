@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,14 +34,10 @@ class Chef
         current_resource
       end
 
-      def whyrun_supported?
-        true
-      end
-
       def define_resource_requirements
-        # @todo: this should change to raise in some appropriate major version bump.
         if creates && creates_relative? && !cwd
-          Chef::Log.warn "Providing a relative path for the creates attribute without the cwd is deprecated and will be changed to fail in the future (CHEF-3819)"
+          # FIXME? move this onto the resource?
+          raise Chef::Exceptions::Execute, "Please either specify a full path for the creates attribute, or specify a cwd propoerty to the #{new_resource} resource"
         end
       end
 

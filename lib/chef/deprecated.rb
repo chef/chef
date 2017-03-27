@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2016 Chef Software, Inc.
+# Copyright:: Copyright 2016-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,6 +66,16 @@ class Chef
       end
     end
 
+    class InternalApi < Base
+      def id
+        0
+      end
+
+      def target
+        "internal_api.html"
+      end
+    end
+
     class JsonAutoInflate < Base
       def id
         1
@@ -86,15 +96,7 @@ class Chef
       end
     end
 
-    class ChefGemCompileTime < Base
-      def id
-        3
-      end
-
-      def target
-        "chef_gem_compile_time.html"
-      end
-    end
+    # id 3 has been deleted
 
     class Attributes < Base
       def id
@@ -156,6 +158,16 @@ class Chef
       end
     end
 
+    class DnfPackageAllowDowngrade < Base
+      def id
+        10
+      end
+
+      def target
+        "dnf_package_allow_downgrade.html"
+      end
+    end
+
     class PropertyNameCollision < Base
       def id
         11
@@ -206,35 +218,7 @@ class Chef
       end
     end
 
-    class ResourceCloning < Base
-      def id
-        3694
-      end
-
-      def target
-        "resource_cloning.html"
-      end
-    end
-
-    class InternalApi < Base
-      def id
-        0
-      end
-
-      def target
-        "internal_api.html"
-      end
-    end
-
-    class DnfPackageAllowDowngrade < Base
-      def id
-        10
-      end
-
-      def target
-        "dnf_package_allow_downgrade.html"
-      end
-    end
+    # id 3694 was deleted
 
     class Generic < Base
       def url
