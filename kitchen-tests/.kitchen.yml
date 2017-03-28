@@ -22,13 +22,11 @@ provisioner:
     diff_disabled: true
 
 platforms:
-  - name: ubuntu-12.04
   - name: ubuntu-14.04
   - name: ubuntu-16.04
-  - name: centos-7.2
-  - name: centos-6.7
-  # needs fixing for 5.11
-  # - name: centos-5.11
+  - name: centos-7.3
+  - name: centos-6.8
+  - name: opensuse-leap-42.2
 
 suites:
   - name: webapp

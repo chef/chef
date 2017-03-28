@@ -2,7 +2,6 @@
 driver:
   name: dokken
   privileged: true
-  chef_image: chef/chef
   chef_version: current
 
 transport:
@@ -43,16 +42,6 @@ platforms:
       - RUN /usr/bin/apt-get update
       - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
 
-- name: centos-5
-  driver:
-    image: centos:5
-    platform: rhel
-    run_command: /sbin/init
-    intermediate_instructions:
-      - RUN yum clean all
-      - RUN yum install -y which initscripts net-tools sudo wget
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
 - name: centos-6
   driver:
     image: centos:6
@@ -83,14 +72,6 @@ platforms:
       - RUN yum makecache
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: ubuntu-12.04
-  driver:
-    image: ubuntu-upstart:12.04
-    pid_one_command: /sbin/init
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update
-      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
-
 - name: ubuntu-14.04
   driver:
     image: ubuntu-upstart:14.04
@@ -107,9 +88,9 @@ platforms:
       - RUN /usr/bin/apt-get update
       - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
 
-- name: opensuse-13.2
+- name: opensuse-42.2
   driver:
-    image: opensuse:13.2
+    image: opensuse:42.2
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN zypper refresh
