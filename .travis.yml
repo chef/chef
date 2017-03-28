@@ -44,7 +44,7 @@ matrix:
     script: sudo -E $(which bundle) exec rake spec;
     # also remove integration / external tests
     bundler_args: --without ci development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
-  - rvm: 2.4.0
+  - rvm: 2.4.1
     sudo: true
     script: sudo -E $(which bundle) exec rake spec;
     # also remove integration / external tests

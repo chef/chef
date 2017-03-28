@@ -137,3 +137,8 @@ The Python `easy_install` package installer has been deprecated for many years,
 so we have removed support for it. No specific replacement for `pip` is being
 included with Chef at this time, but a `pip`-based `python_package` resource is
 available in the [`poise-python`](https://github.com/poise/poise-python) cookbooks.
+
+### Ruby version upgraded to 2.4.1
+
+We've upgraded to the latest stable release of the Ruby programming
+language.
