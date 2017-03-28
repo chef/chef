@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/license_scout
-  revision: 544a9335549148037a4161ff4c6c9d9a71e39660
+  revision: 2cf81860f92d4f2df4444341048b8aeec2da0cfa
   specs:
     license_scout (0.1.2)
       ffi-yajl (~> 2.2)
@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 443f42abe0b791b132fb27aa85448bb691af9102
+  revision: ced452379e27b85b9958421f258b5fbe22e3760a
   specs:
     omnibus (5.5.0)
       aws-sdk (~> 2)
@@ -25,7 +25,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 703ecb80af7897a6a85a7340f9b280f757f3372f
+  revision: 6a56be11bfbf871147b00d32d3b1368800e68107
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -38,13 +38,13 @@ GEM
       public_suffix (~> 2.0, >= 2.0.2)
     artifactory (2.7.0)
     awesome_print (1.7.0)
-    aws-sdk (2.8.7)
-      aws-sdk-resources (= 2.8.7)
-    aws-sdk-core (2.8.7)
+    aws-sdk (2.8.10)
+      aws-sdk-resources (= 2.8.10)
+    aws-sdk-core (2.8.10)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.8.7)
-      aws-sdk-core (= 2.8.7)
+    aws-sdk-resources (2.8.10)
+      aws-sdk-core (= 2.8.10)
     aws-sigv4 (1.0.0)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)

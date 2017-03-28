@@ -34,30 +34,25 @@ env:
 
 matrix:
   include:
-  - rvm: 2.2.6
-    sudo: true
-    script: sudo -E $(which bundle) exec rake spec;
-    # also remove integration / external tests
-    bundler_args: --without ci development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - rvm: 2.3.3
     sudo: true
     script: sudo -E $(which bundle) exec rake spec;
     # also remove integration / external tests
     bundler_args: --without ci development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
-  - rvm: 2.4.0
+  - rvm: 2.4.1
     sudo: true
     script: sudo -E $(which bundle) exec rake spec;
     # also remove integration / external tests
     bundler_args: --without ci development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - env:
       CHEFSTYLE: 1
-    rvm: 2.3.3
+    rvm: 2.4.1
     script: bundle exec rake style
     # also remove integration / external tests
     bundler_args: --without ci development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - env:
       AUDIT_CHECK: 1
-    rvm: 2.3.3
+    rvm: 2.4.1
     script: bundle exec bundle-audit check --update
     # also remove integration / external tests
     bundler_args: --without ci development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
@@ -67,15 +62,15 @@ matrix:
   - env:
       TEST_GEM: chef-sugar
     script: tasks/bin/run_external_test $TEST_GEM rake
-    rvm: 2.3.3
+    rvm: 2.4.1
   - env:
       - TEST_GEM: chef-zero
     script: tasks/bin/run_external_test $TEST_GEM rake spec cheffs
-    rvm: 2.3.3
+    rvm: 2.4.1
   - env:
       TEST_GEM: cheffish
     script: tasks/bin/run_external_test $TEST_GEM rake spec
-    rvm: 2.3.3
+    rvm: 2.4.1
     #- env:
     #  TEST_GEM: chefspec
     ## The chefspec tests + bundler cache + "gem update --system" interact badly :/
@@ -86,29 +81,29 @@ matrix:
     #  - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
     #  - bundle config --local without server:docgen:maintenance:omnibus_package:development:ruby_prof:pry
     #script: tasks/bin/run_external_test $TEST_GEM rake
-    #rvm: 2.3.3
+    #rvm: 2.4.1
   - env:
       TEST_GEM: foodcritic
     script: tasks/bin/run_external_test $TEST_GEM rake test
-    rvm: 2.3.3
+    rvm: 2.4.1
   - env:
       TEST_GEM: halite
     script: tasks/bin/run_external_test $TEST_GEM rake spec
-    rvm: 2.3.3
+    rvm: 2.4.1
     # this has been broken for some time and running incorrectly, see:
     #
     # see https://github.com/chef/knife-windows/pull/421
     #- env:
     #  TEST_GEM: knife-windows
     #script: tasks/bin/run_external_test $TEST_GEM rake unit_spec
-    #rvm: 2.3.3
+    #rvm: 2.4.1
   - env:
       TEST_GEM: poise
     script: tasks/bin/run_external_test $TEST_GEM rake spec
-    rvm: 2.3.3
+    rvm: 2.4.1
   ### START TEST KITCHEN ONLY ###
   #
-  - rvm: 2.3.3
+  - rvm: 2.4.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -126,7 +121,7 @@ matrix:
     env:
       - UBUNTU=12.04
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.3
+  - rvm: 2.4.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -144,7 +139,7 @@ matrix:
     env:
       - UBUNTU=14.04
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.3
+  - rvm: 2.4.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -162,7 +157,7 @@ matrix:
     env:
       - UBUNTU=16.04
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.3
+  - rvm: 2.4.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -180,7 +175,7 @@ matrix:
     env:
       - DEBIAN=7
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.3
+  - rvm: 2.4.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -199,7 +194,7 @@ matrix:
     env:
       - DEBIAN=8
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.3
+  - rvm: 2.4.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -217,7 +212,7 @@ matrix:
     env:
       - CENTOS=6
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.3
+  - rvm: 2.4.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -235,7 +230,7 @@ matrix:
     env:
       - CENTOS=7
       - KITCHEN_YAML=.kitchen.travis.yml
-# - rvm: 2.3.3
+# - rvm: 2.4.1
 #    services: docker
 #    sudo: required
 #    gemfile: kitchen-tests/Gemfile
@@ -253,7 +248,7 @@ matrix:
 #    env:
 #      - FEDORA=latest
 #      - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.3
+  - rvm: 2.4.1
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -271,7 +266,7 @@ matrix:
     env:
       - AMAZONLINUX=LATEST
       - KITCHEN_YAML=.kitchen.travis.yml
-#  - rvm: 2.3.3
+#  - rvm: 2.4.1
 #    services: docker
 #    sudo: required
 #    gemfile: kitchen-tests/Gemfile
@@ -289,7 +284,7 @@ matrix:
 #    env:
 #      - AWESOME_CUSTOMERS_UBUNTU=1
 #      - KITCHEN_YAML=.kitchen.travis.yml
-#  - rvm: 2.3.3
+#  - rvm: 2.4.1
 #    services: docker
 #    sudo: required
 #    gemfile: kitchen-tests/Gemfile
@@ -308,7 +303,7 @@ matrix:
 #      - AWESOME_CUSTOMERS_RHEL=1
 #      - KITCHEN_YAML=.kitchen.travis.yml
 #    ### END TEST KITCHEN ONLY ###
-  - rvm: 2.3.3
+  - rvm: 2.4.1
     sudo: required
     dist: trusty
     before_install:
