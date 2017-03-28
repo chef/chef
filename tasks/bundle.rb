@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2016 Chef Software Inc.
+# Copyright:: Copyright (c) 2016-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,27 +53,31 @@ namespace :bundle do
     end
   end
 
+  def parse_bundle_outdated(bundle_outdated_output)
+    result = []
+    bundle_outdated_output.each_line do |line|
+      if line =~ /^\s*\* (.+) \(newest ([^,]+), installed ([^,)])*/
+        gem_name, newest_version, installed_version = $1, $2, $3
+        result << [ line, gem_name ]
+      end
+    end
+    result
+  end
+
   # Find out if we're using the latest gems we can (so we don't regress versions)
   desc "Check for gems that are not at the latest released version, and report if anything not in ACCEPTABLE_OUTDATED_GEMS (version_policy.rb) is out of date."
   task :outdated do
-    extend BundleUtil
-    puts ""
-    puts "-------------------------------------------------------------------"
-    puts "Checking for outdated gems ..."
-    puts "-------------------------------------------------------------------"
-    # TODO check for outdated windows gems too
-    with_bundle_unfrozen do
-      bundle_outdated = bundle("outdated", extract_output: true)
+    bundle_outdated = ""
+    Bundler.with_clean_env do
+      sh "bundle config --local frozen '0'"
+      bundle_outdated = `bundle outdated`
       puts bundle_outdated
-      outdated_gems = parse_bundle_outdated(bundle_outdated).map { |line, gem_name| gem_name }
-      # Weed out the acceptable ones
-      outdated_gems = outdated_gems.reject { |gem_name| ACCEPTABLE_OUTDATED_GEMS.include?(gem_name) }
-      if outdated_gems.empty?
-        puts ""
-        puts "SUCCESS!"
-      else
-        raise "ERROR: outdated gems: #{outdated_gems.join(", ")}. Either fix them or add them to ACCEPTABLE_OUTDATED_GEMS in #{__FILE__}."
-      end
+      sh "bundle config --local frozen '1'"
+    end
+    outdated_gems = parse_bundle_outdated(bundle_outdated).map { |line, gem_name| gem_name }
+    outdated_gems = outdated_gems.reject { |gem_name| ACCEPTABLE_OUTDATED_GEMS.include?(gem_name) }
+    unless outdated_gems.empty?
+      raise "ERROR: outdated gems: #{outdated_gems.join(", ")}. Either fix them or add them to ACCEPTABLE_OUTDATED_GEMS in #{__FILE__}."
     end
   end
 end
