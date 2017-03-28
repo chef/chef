@@ -26,11 +26,11 @@ class Chef
     end
 
     def min_server_version
-      !@versions.nil? ? @versions["min_version"] : nil
+      !@versions.nil? ? Integer(@versions["min_version"]) : nil
     end
 
     def max_server_version
-      !@versions.nil? ? @versions["max_version"] : nil
+      !@versions.nil? ? Integer(@versions["max_version"]) : nil
     end
 
     def reset!

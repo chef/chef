@@ -38,7 +38,7 @@ describe Chef::HTTP::APIVersions do
   let(:response_body) { "Thanks for checking in." }
   let(:response_headers) do
     {
-      "x-ops-server-api-version" => { "min_version" => 0, "max_version" => 2 },
+      "x-ops-server-api-version" => { "min_version" => 0, "max_version" => 2 }.to_json,
     }
   end
 

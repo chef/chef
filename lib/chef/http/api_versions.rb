@@ -16,6 +16,7 @@
 #
 
 require "chef/server_api_versions"
+require "chef/json_compat"
 
 class Chef
   class HTTP
@@ -32,7 +33,7 @@ class Chef
 
       def handle_response(http_response, rest_request, return_value)
         if http_response.key?("x-ops-server-api-version")
-          ServerAPIVersions.instance.set_versions(http_response["x-ops-server-api-version"])
+          ServerAPIVersions.instance.set_versions(JSONCompat.parse(http_response["x-ops-server-api-version"]))
         end
         [http_response, rest_request, return_value]
       end
