@@ -1,14 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.67](https://github.com/chef/chef/tree/v13.0.67) (2017-03-28)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.67...v13.0.67)
-
-**Merged pull requests:**
-
-- Fix action class weirdness in Chef-13 [\#5946](https://github.com/chef/chef/pull/5946) ([lamont-granquist](https://github.com/lamont-granquist))
-
-## [v13.0.67](https://github.com/chef/chef/tree/v13.0.67) (2017-03-27)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.67)
+## [v13.0.68](https://github.com/chef/chef/tree/v13.0.68) (2017-03-28)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.68)
 
 **Closed issues:**
 
@@ -21,6 +14,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- Fix action class weirdness in Chef-13 [\#5946](https://github.com/chef/chef/pull/5946) ([lamont-granquist](https://github.com/lamont-granquist))
 - Make ResourceReporter smarter to get resource identity and state [\#5941](https://github.com/chef/chef/pull/5941) ([afiune](https://github.com/afiune))
 - Chef-13: Simplify DSL creation [\#5934](https://github.com/chef/chef/pull/5934) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: Remove deprecated Chef::Client attrs [\#5932](https://github.com/chef/chef/pull/5932) ([lamont-granquist](https://github.com/lamont-granquist))
