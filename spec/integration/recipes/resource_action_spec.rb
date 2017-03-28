@@ -502,40 +502,28 @@ module ResourceActionSpec
       end
     end
 
-    context "When a resource declares methods in action_class and declare_action_class" do
+    context "When a resource declares methods in action_class" do
       class DeclaresActionClassMethods < Chef::Resource
         use_automatic_resource_name
         property :x
-        action :create do
-          new_resource.x = a + b + c + d
-        end
         action_class do
           def a
             1
           end
         end
-        declare_action_class do
-          def b
-            2
-          end
-        end
-        action_class do
+        action_class.class_eval <<-EOM
           def c
             3
           end
-        end
-        declare_action_class do
-          def d
-            4
-          end
+        EOM
+        action :create do
+          new_resource.x = a + c
         end
       end
 
       it "the methods are not available on the resource" do
         expect { DeclaresActionClassMethods.new("hi").a }.to raise_error(NameError)
-        expect { DeclaresActionClassMethods.new("hi").b }.to raise_error(NameError)
         expect { DeclaresActionClassMethods.new("hi").c }.to raise_error(NameError)
-        expect { DeclaresActionClassMethods.new("hi").d }.to raise_error(NameError)
       end
 
       it "the methods are available to the action" do
@@ -543,17 +531,14 @@ module ResourceActionSpec
         expect_recipe do
           r = declares_action_class_methods "hi"
         end.to emit_no_warnings_or_errors
-        expect(r.x).to eq(10)
+        expect(r.x).to eq(4)
       end
 
-      context "And a subclass also creates a method" do
+      context "And a subclass overrides a method with an action_class block" do
         class DeclaresActionClassMethodsToo < DeclaresActionClassMethods
           use_automatic_resource_name
-          action :create do
-            new_resource.x a + b + c + d + e
-          end
           action_class do
-            def e
+            def a
               5
             end
           end
@@ -561,10 +546,7 @@ module ResourceActionSpec
 
         it "the methods are not available on the resource" do
           expect { DeclaresActionClassMethods.new("hi").a }.to raise_error(NameError)
-          expect { DeclaresActionClassMethods.new("hi").b }.to raise_error(NameError)
           expect { DeclaresActionClassMethods.new("hi").c }.to raise_error(NameError)
-          expect { DeclaresActionClassMethods.new("hi").d }.to raise_error(NameError)
-          expect { DeclaresActionClassMethods.new("hi").e }.to raise_error(NameError)
         end
 
         it "the methods are available to the action" do
@@ -572,7 +554,32 @@ module ResourceActionSpec
           expect_recipe do
             r = declares_action_class_methods_too "hi"
           end.to emit_no_warnings_or_errors
-          expect(r.x).to eq(15)
+          expect(r.x).to eq(8)
+        end
+      end
+
+      context "And a subclass overrides a method with class_eval" do
+        # this tests inheritance with *only* an action_class accessor that does not declare a block
+        class DeclaresActionClassMethodsToo < DeclaresActionClassMethods
+          use_automatic_resource_name
+          action_class.class_eval <<-EOM
+            def a
+              5
+            end
+          EOM
+        end
+
+        it "the methods are not available on the resource" do
+          expect { DeclaresActionClassMethods.new("hi").a }.to raise_error(NameError)
+          expect { DeclaresActionClassMethods.new("hi").c }.to raise_error(NameError)
+        end
+
+        it "the methods are available to the action" do
+          r = nil
+          expect_recipe do
+            r = declares_action_class_methods_too "hi"
+          end.to emit_no_warnings_or_errors
+          expect(r.x).to eq(8)
         end
       end
     end
