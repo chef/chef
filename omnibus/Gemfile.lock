@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus
-  revision: ced452379e27b85b9958421f258b5fbe22e3760a
+  revision: 433220e0b7c434dbc4a36daaa1fecbdb1bf7231d
   specs:
     omnibus (5.5.0)
       aws-sdk (~> 2)
@@ -25,7 +25,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: a8acfaabcee5506482d5c56beb74afc573c2c1f9
+  revision: 69e7fd212b293795c9a1abf7e2aed3be89ac6d06
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -34,7 +34,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.5.0)
+    addressable (2.5.1)
       public_suffix (~> 2.0, >= 2.0.2)
     artifactory (2.8.1)
     awesome_print (1.7.0)
