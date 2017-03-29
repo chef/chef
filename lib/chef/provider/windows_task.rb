@@ -16,15 +16,17 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/shell_out'
-require 'rexml/document'
-require 'iso8601'
+require "chef/mixin/shell_out"
+require "rexml/document"
+require "iso8601"
+require "chef/mixin/powershell_out"
 
 class Chef
   class Provider
     class WindowsTask < Chef::Provider
       use_inline_resources
       include Chef::Mixin::ShellOut
+      include Chef::Mixin::PowershellOut
 
       provides :windows_task, os: "windows"
 
@@ -36,12 +38,13 @@ class Chef
         task_hash = load_task_hash(pathed_task_name)
 
         set_current_resource(task_hash) if task_hash.respond_to?(:[]) && task_hash[:TaskName] == pathed_task_name
+        @current_resource
       end
 
-      def set_current_resource task_hash
+      def set_current_resource(task_hash)
         @current_resource.exists = true
         @current_resource.command(task_hash[:TaskToRun])
-        @current_resource.cwd(task_hash[:StartIn]) unless task_hash[:StartIn] == 'N/A'
+        @current_resource.cwd(task_hash[:StartIn]) unless task_hash[:StartIn] == "N/A"
         @current_resource.user(task_hash[:RunAsUser])
         set_current_run_level task_hash[:run_level]
         set_current_frequency task_hash
@@ -51,8 +54,8 @@ class Chef
         @current_resource.random_delay(task_hash[:random_delay]) if task_hash[:random_delay]
         @current_resource.execution_time_limit(task_hash[:execution_time_limit]) if task_hash[:execution_time_limit]
 
-        @current_resource.status = :running if task_hash[:Status] == 'Running'
-        @current_resource.enabled = true if task_hash[:ScheduledTaskState] == 'Enabled'
+        @current_resource.status = :running if task_hash[:Status] == "Running"
+        @current_resource.enabled = true if task_hash[:ScheduledTaskState] == "Enabled"
       end
 
       def action_create
@@ -60,21 +63,21 @@ class Chef
           Chef::Log.info "#{@new_resource} task already exists - nothing to do"
         else
           options = {}
-          options['F'] = '' if @new_resource.force || task_need_update?
-          options['SC'] = schedule
-          options['MO'] = @new_resource.frequency_modifier if frequency_modifier_allowed
-          options['I']  = @new_resource.idle_time unless @new_resource.idle_time.nil?
-          options['SD'] = @new_resource.start_day unless @new_resource.start_day.nil?
-          options['ST'] = @new_resource.start_time unless @new_resource.start_time.nil?
-          options['TR'] = @new_resource.command
-          options['RU'] = @new_resource.user
-          options['RP'] = @new_resource.password if use_password?
-          options['RL'] = 'HIGHEST' if @new_resource.run_level == :highest
-          options['IT'] = '' if @new_resource.interactive_enabled
-          options['D'] = @new_resource.day if @new_resource.day
-          options['M'] = @new_resource.months unless @new_resource.months.nil?
+          options["F"] = "" if @new_resource.force || task_need_update?
+          options["SC"] = schedule
+          options["MO"] = @new_resource.frequency_modifier if frequency_modifier_allowed
+          options["I"]  = @new_resource.idle_time unless @new_resource.idle_time.nil?
+          options["SD"] = @new_resource.start_day unless @new_resource.start_day.nil?
+          options["ST"] = @new_resource.start_time unless @new_resource.start_time.nil?
+          options["TR"] = @new_resource.command
+          options["RU"] = @new_resource.user
+          options["RP"] = @new_resource.password if use_password?
+          options["RL"] = "HIGHEST" if @new_resource.run_level == :highest
+          options["IT"] = "" if @new_resource.interactive_enabled
+          options["D"] = @new_resource.day if @new_resource.day
+          options["M"] = @new_resource.months unless @new_resource.months.nil?
 
-          run_schtasks 'CREATE', options
+          run_schtasks "CREATE", options
           xml_options = []
           xml_options << "cwd" if new_resource.cwd
           xml_options << "random_delay" if new_resource.random_delay
@@ -91,7 +94,7 @@ class Chef
           if @current_resource.status == :running
             Chef::Log.info "#{@new_resource} task is currently running, skipping run"
           else
-            run_schtasks 'RUN'
+            run_schtasks "RUN"
             new_resource.updated_by_last_action true
             Chef::Log.info "#{@new_resource} task ran"
           end
@@ -103,7 +106,7 @@ class Chef
       def action_delete
         if @current_resource.exists
           # always need to force deletion
-          run_schtasks 'DELETE', 'F' => ''
+          run_schtasks "DELETE", "F" => ""
           new_resource.updated_by_last_action true
           Chef::Log.info "#{@new_resource} task deleted"
         else
@@ -116,7 +119,7 @@ class Chef
           if @current_resource.status != :running
             Chef::Log.debug "#{@new_resource} is not running - nothing to do"
           else
-            run_schtasks 'END'
+            run_schtasks "END"
             @new_resource.updated_by_last_action true
             Chef::Log.info "#{@new_resource} task ended"
           end
@@ -130,7 +133,7 @@ class Chef
           if @current_resource.enabled
             Chef::Log.debug "#{@new_resource} already enabled - nothing to do"
           else
-            run_schtasks 'CHANGE', 'ENABLE' => ''
+            run_schtasks "CHANGE", "ENABLE" => ""
             @new_resource.updated_by_last_action true
             Chef::Log.info "#{@new_resource} task enabled"
           end
@@ -143,7 +146,7 @@ class Chef
       def action_disable
         if @current_resource.exists
           if @current_resource.enabled
-            run_schtasks 'CHANGE', 'DISABLE' => ''
+            run_schtasks "CHANGE", "DISABLE" => ""
             @new_resource.updated_by_last_action true
             Chef::Log.info "#{@new_resource} task disabled"
           else
@@ -161,28 +164,34 @@ class Chef
         cmd = "schtasks /#{task_action} /TN \"#{@new_resource.task_name}\" "
         options.keys.each do |option|
           cmd += "/#{option} "
-          cmd += "\"#{options[option].to_s.gsub('"', "\\\"")}\" " unless options[option] == ''
+          cmd += "\"#{options[option].to_s.gsub('"', "\\\"")}\" " unless options[option] == ""
         end
-        Chef::Log.debug('running: ')
+        Chef::Log.debug("running: ")
         Chef::Log.debug("    #{cmd}")
         shell_out!(cmd, returns: [0])
       end
       # rubocop:enable Style/StringLiteralsInInterpolation
 
       def task_need_update?
-        # gsub needed as schtasks converts single quotes to double quotes on creation
-        @current_resource.command != @new_resource.command.tr("'", '"') ||
-        @current_resource.user.encode('external') != @new_resource.user ||
-        @current_resource.run_level != @new_resource.run_level ||
-        @current_resource.cwd != @new_resource.cwd ||
-        @current_resource.frequency_modifier != @new_resource.frequency_modifier ||
-        @current_resource.frequency != @new_resource.frequency ||
-        @new_resource.day.casecmp(@current_resource.day) != 0 rescue false ||
-        @new_resource.months.casecmp(@current_resource.months) != 0 rescue false ||
-        @current_resource.idle_time != @new_resource.idle_time ||
-        @current_resource.random_delay != @new_resource.random_delay ||
-        @current_resource.execution_time_limit != @new_resource.execution_time_limit ||
-        !@new_resource.start_day.nil? || !@new_resource.start_time.nil?
+        return true if @current_resource.command != @new_resource.command.tr("'", '"') ||
+            @current_resource.user != @new_resource.user ||
+            @current_resource.run_level != @new_resource.run_level ||
+            @current_resource.cwd != @new_resource.cwd ||
+            @current_resource.frequency_modifier != @new_resource.frequency_modifier ||
+            @current_resource.frequency != @new_resource.frequency ||
+            @current_resource.idle_time != @new_resource.idle_time ||
+            @current_resource.random_delay != @new_resource.random_delay ||
+            @current_resource.execution_time_limit != @new_resource.execution_time_limit ||
+            !@new_resource.start_day.nil? || !@new_resource.start_time.nil?
+
+        begin
+          return true if @new_resource.day.to_s.casecmp(@current_resource.day.to_s) != 0 ||
+              @new_resource.months.to_s.casecmp(@current_resource.months.to_s) != 0
+        rescue
+          Chef::Log.debug "caught a raise in task_needs_update?"
+        end
+
+        false
       end
 
       def update_task_xml(options = [])
@@ -199,10 +208,10 @@ class Chef
         xml_element_mapping = {
           "cwd" => "Actions/Exec/WorkingDirectory",
           "random_delay" => random_delay_xml_element[@new_resource.frequency],
-          "execution_time_limit" => "Settings/ExecutionTimeLimit"
+          "execution_time_limit" => "Settings/ExecutionTimeLimit",
         }
 
-        Chef::Log.debug 'looking for existing tasks'
+        Chef::Log.debug "looking for existing tasks"
 
         # we use shell_out here instead of shell_out! because a failure implies that the task does not exist
         xml_cmd = shell_out("schtasks /Query /TN \"#{@new_resource.task_name}\" /XML")
@@ -217,9 +226,9 @@ class Chef
           option_value = @new_resource.send("#{option}")
 
           if option_value
-            Chef::Log.debug 'Setting #option as #option_value'
-            split_xml_path = xml_element_mapping[option].split("/")  # eg. if xml_element_mapping[option] = "Actions/Exec/WorkingDirectory"
-            element_name = split_xml_path.last   # element_name = "WorkingDirectory"
+            Chef::Log.debug "Setting #option as #option_value"
+            split_xml_path = xml_element_mapping[option].split("/") # eg. if xml_element_mapping[option] = "Actions/Exec/WorkingDirectory"
+            element_name = split_xml_path.last # element_name = "WorkingDirectory"
             cwd_element = REXML::Element.new(element_name)
             cwd_element.add_text(option_value)
             element_root = (split_xml_path - [element_name]).join("/") # element_root = 'Actions/Exec'
@@ -228,41 +237,45 @@ class Chef
           end
         end
 
-        temp_task_file = ::File.join(ENV['TEMP'], 'windows_task.xml')
+        temp_task_file = ::File.join(ENV["TEMP"], "windows_task.xml")
         begin
-          ::File.open(temp_task_file, 'w:UTF-16LE') do |f|
+          ::File.open(temp_task_file, "w:UTF-16LE") do |f|
             doc.write(f)
           end
 
           options = {}
-          options['RU'] = @new_resource.user if @new_resource.user
-          options['RP'] = @new_resource.password if @new_resource.password
-          options['IT'] = '' if @new_resource.interactive_enabled
-          options['XML'] = temp_task_file
+          options["RU"] = @new_resource.user if @new_resource.user
+          options["RP"] = @new_resource.password if @new_resource.password
+          options["IT"] = "" if @new_resource.interactive_enabled
+          options["XML"] = temp_task_file
 
-          run_schtasks('DELETE', 'F' => '')
-          run_schtasks('CREATE', options)
+          run_schtasks("DELETE", "F" => "")
+          run_schtasks("CREATE", options)
         ensure
           ::File.delete(temp_task_file)
         end
       end
 
       def load_task_hash(task_name)
-        Chef::Log.debug 'Looking for existing tasks'
+        Chef::Log.debug "Looking for existing tasks"
 
-        # we use shell_out here instead of shell_out! because a failure implies that the task does not exist
-        output = shell_out("chcp 65001 >nul 2>&1 && schtasks /Query /FO LIST /V /TN \"#{task_name}\"").stdout.force_encoding('UTF-8')
+        task_script = <<-EOH
+          [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
+          schtasks /Query /FO LIST /V /TN \"#{task_name}\"
+        EOH
+
+        output = powershell_out("#{task_script}").stdout.force_encoding("UTF-8")
         if output.empty?
           task = false
         else
           task = {}
 
           output.split("\n").map! do |line|
-            line.split(': ').map!(&:strip)
+            line.split(": ").map!(&:strip)
           end.each do |field|
             if field.is_a?(Array) && field[0].respond_to?(:to_sym)
               key = (field - [field.last]).join(": ")
-              task[key.gsub(/\s+/, '').to_sym] = field.last
+              task[key.gsub(/\s+/, "").to_sym] = field.last
             end
           end
         end
@@ -273,7 +286,7 @@ class Chef
         task
       end
 
-      def load_task_xml task_name
+      def load_task_xml(task_name)
         xml_cmd = shell_out("chcp 65001 >nul 2>&1 && schtasks /Query /TN \"#{task_name}\" /XML")
         return if xml_cmd.exitstatus != 0
 
@@ -313,16 +326,16 @@ class Chef
         task[:onstart] = true if root.elements["Triggers/BootTrigger"]
         task[:on_idle] = true if root.elements["Triggers/IdleTrigger"]
 
-        task[:idle_time] = root.elements["Settings/IdleSettings/Duration"].text if root.elements["Settings/IdleSettings/Duration"] if task[:on_idle]
+        task[:idle_time] = root.elements["Settings/IdleSettings/Duration"].text if root.elements["Settings/IdleSettings/Duration"] && task[:on_idle]
 
         task[:once] = true if !(task[:repetition_interval] || task[:schedule_by_day] || task[:schedule_by_week] || task[:schedule_by_month] || task[:on_logon] || task[:onstart] || task[:on_idle])
-        task[:execution_time_limit] = root.elements["Settings/ExecutionTimeLimit"].text if root.elements["Settings/ExecutionTimeLimit"]  #by default PT72H
+        task[:execution_time_limit] = root.elements["Settings/ExecutionTimeLimit"].text if root.elements["Settings/ExecutionTimeLimit"] #by default PT72H
         task[:random_delay] = root.elements["Triggers/TimeTrigger/RandomDelay"].text if root.elements["Triggers/TimeTrigger/RandomDelay"]
         task[:random_delay] = root.elements["Triggers/CalendarTrigger/RandomDelay"].text if root.elements["Triggers/CalendarTrigger/RandomDelay"]
         task
       end
 
-      SYSTEM_USERS = ['NT AUTHORITY\SYSTEM', 'SYSTEM', 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE'].freeze
+      SYSTEM_USERS = ['NT AUTHORITY\SYSTEM', "SYSTEM", 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', "USERS"].freeze
 
       def use_password?
         @use_password ||= !SYSTEM_USERS.include?(@new_resource.user.upcase)
@@ -331,9 +344,9 @@ class Chef
       def schedule
         case @new_resource.frequency
         when :on_logon
-          'ONLOGON'
+          "ONLOGON"
         when :on_idle
-          'ONIDLE'
+          "ONIDLE"
         else
           @new_resource.frequency
         end
@@ -344,13 +357,13 @@ class Chef
         when :minute, :hourly, :daily, :weekly
           true
         when :monthly
-          @new_resource.months.nil? || %w(FIRST SECOND THIRD FOURTH LAST LASTDAY).include?(@new_resource.frequency_modifier)
+          @new_resource.months.nil? || %w{ FIRST SECOND THIRD FOURTH LAST LASTDAY }.include?(@new_resource.frequency_modifier)
         else
           false
         end
       end
 
-      def set_current_run_level run_level
+      def set_current_run_level(run_level)
         case run_level
         when "HighestAvailable"
           @current_resource.run_level(:highest)

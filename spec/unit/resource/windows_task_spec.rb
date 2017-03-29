@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::MsuPackage do
+describe Chef::Resource::WindowsTask do
   let(:resource) { Chef::Resource::WindowsTask.new("sample_task") }
 
   it "creates a new Chef::Resource::WindowsTask" do
@@ -39,7 +39,7 @@ describe Chef::Resource::MsuPackage do
   end
 
   it "sets the default user as System" do
-    expect(resource.user).to eql('SYSTEM')
+    expect(resource.user).to eql("SYSTEM")
   end
 
   it "sets the default run_level as :limited" do
