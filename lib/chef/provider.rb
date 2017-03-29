@@ -267,15 +267,15 @@ class Chef
     # @param include_resource_dsl [Boolean] Whether to include resource DSL or
     #   not (defaults to `false`).
     #
-    def self.include_resource_dsl(include_resource_dsl)
-      @include_resource_dsl = include_resource_dsl
+    def self.include_resource_dsl?
+      false
     end
 
     # Create the resource DSL module that forwards resource methods to new_resource
     #
     # @api private
     def self.include_resource_dsl_module(resource)
-      if @include_resource_dsl && !defined?(@included_resource_dsl_module)
+      if include_resource_dsl? && !defined?(@included_resource_dsl_module)
         provider_class = self
         @included_resource_dsl_module = Module.new do
           extend Forwardable
@@ -286,10 +286,26 @@ class Chef
           resource.class.properties.each do |name, property|
             class_eval(<<-EOM, __FILE__, __LINE__)
               def #{name}(*args, &block)
+                # FIXME:  DEPRECATE THIS IN CHEF 13.1
+                #
                 # If no arguments were passed, we process "get" by defaulting
                 # the value to current_resource, not new_resource. This helps
                 # avoid issues where resources accidentally overwrite perfectly
                 # valid stuff with default values.
+                #
+                # This magic is to make this kind of thing easy:
+                #
+                # FileUtils.chown new_resource.mode.nil? ? current_resource.mode : new_resource.mode, new_resource.path
+                #
+                # We do this in the file provider where we need to construct a new filesystem object and
+                # when the new_resource is nil/default that means "preserve the current stuff" and does not
+                # mean to ignore it which will wind up defaulting to changing the file to have a "root"
+                # ownership if anything else changes.  Its kind of overly clever and magical, and most likely
+                # gets the use case wrong where someone has a property that they really mean to default to
+                # some value which /should/ get set if its left as the default and where the default is
+                # meant to be declarative.  Instead of property_is_set? we should most likely be using
+                # nil? but we're going to deprecate all of it anyway.  Just type out what you really mean longhand.
+                #
                 if args.empty? && !block
                   if !new_resource.property_is_set?(__method__) && current_resource
                     return current_resource.public_send(__method__)
