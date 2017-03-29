@@ -40,11 +40,15 @@ class Chef
       end
 
       def versioned_api_class
+        get_class_for(:max_server_version)
+      end
+
+      def get_class_for(type)
         versioned_interfaces.select do |klass|
           version = klass.send(:minimum_api_version)
           # min and max versions will be nil if we've not made a request to the server yet,
           # in which case we'll just start with the highest version and see what happens
-          ServerAPIVersions.instance.min_server_version.nil? || (version >= ServerAPIVersions.instance.min_server_version && version <= ServerAPIVersions.instance.max_server_version)
+          ServerAPIVersions.instance.min_server_version.nil? || (version >= ServerAPIVersions.instance.min_server_version && version <= ServerAPIVersions.instance.send(type))
         end
           .sort { |a, b| a.send(:minimum_api_version) <=> b.send(:minimum_api_version) }
           .last
@@ -57,6 +61,17 @@ class Chef
           end
         }
         module_eval(str, __FILE__, line_no)
+      end
+
+      # When teeing up an HTTP request, we need to be able to ask which API version we should use.
+      # Something in Net::HTTP seems to expect to strip headers, so we return this as a string.
+      def best_request_version
+        klass = get_class_for(:max_server_version)
+        klass.minimum_api_version.to_s
+      end
+
+      def possible_requests
+        versioned_interfaces.length
       end
 
       def new(*args)

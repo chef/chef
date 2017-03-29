@@ -70,6 +70,9 @@ require "chef/chef_fs/file_system_cache"
 
 require "chef/api_client_v1"
 
+require "chef/mixin/versioned_api"
+require "chef/server_api_versions"
+
 if ENV["CHEF_FIPS"] == "1"
   Chef::Config.init_openssl
 end
