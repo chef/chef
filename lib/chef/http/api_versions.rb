@@ -32,6 +32,9 @@ class Chef
       end
 
       def handle_response(http_response, rest_request, return_value)
+        if http_response.code == "406"
+          ServerAPIVersions.instance.reset!
+        end
         if http_response.key?("x-ops-server-api-version")
           ServerAPIVersions.instance.set_versions(JSONCompat.parse(http_response["x-ops-server-api-version"]))
         end

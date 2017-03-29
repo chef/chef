@@ -142,13 +142,26 @@ class Chef
     # Makes an HTTP request to +path+ with the given +method+, +headers+, and
     # +data+ (if applicable).
     def request(method, path, headers = {}, data = false)
+      http_attempts ||= 0
       url = create_url(path)
       method, url, headers, data = apply_request_middleware(method, url, headers, data)
 
       response, rest_request, return_value = send_http_request(method, url, headers, data)
       response, rest_request, return_value = apply_response_middleware(response, rest_request, return_value)
+
       response.error! unless success_response?(response)
       return_value
+
+    rescue Net::HTTPServerException => e
+      http_attempts += 1
+      response = e.response
+      if response.kind_of?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
+        Chef::Log.debug("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
+        sleep(http_retry_delay)
+        retry
+      else
+        raise
+      end
     rescue Exception => exception
       log_failed_request(response, return_value) unless response.nil?
 
@@ -159,6 +172,7 @@ class Chef
     end
 
     def streaming_request_with_progress(path, headers = {}, &progress_block)
+      http_attempts ||= 0
       url = create_url(path)
       response, rest_request, return_value = nil, nil, nil
       tempfile = nil
@@ -177,6 +191,16 @@ class Chef
         response.error!
       end
       tempfile
+    rescue Net::HTTPServerException => e
+      http_attempts += 1
+      response = e.response
+      if response.kind_of?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
+        Chef::Log.debug("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
+        sleep(http_retry_delay)
+        retry
+      else
+        raise
+      end
     rescue Exception => e
       log_failed_request(response, return_value) unless response.nil?
       if e.respond_to?(:chef_rest_request=)
@@ -195,6 +219,7 @@ class Chef
     # @yield [tempfile] block to process the tempfile
     # @yieldparams [tempfile<Tempfile>] tempfile
     def streaming_request(path, headers = {})
+      http_attempts ||= 0
       url = create_url(path)
       response, rest_request, return_value = nil, nil, nil
       tempfile = nil
@@ -222,6 +247,16 @@ class Chef
         end
       end
       tempfile
+    rescue Net::HTTPServerException => e
+      http_attempts += 1
+      response = e.response
+      if response.kind_of?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
+        Chef::Log.debug("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
+        sleep(http_retry_delay)
+        retry
+      else
+        raise
+      end
     rescue Exception => e
       log_failed_request(response, return_value) unless response.nil?
       if e.respond_to?(:chef_rest_request=)
@@ -411,6 +446,10 @@ class Chef
         end
         raise OpenSSL::SSL::SSLError, "SSL Error connecting to #{url} - #{e.message}"
       end
+    end
+
+    def version_retries
+      @version_retries ||= options[:version_class].possible_requests
     end
 
     # @api private

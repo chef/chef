@@ -70,6 +70,10 @@ class Chef
         klass.minimum_api_version.to_s
       end
 
+      def possible_requests
+        versioned_interfaces.length
+      end
+
       def new(*args)
         object = versioned_api_class.allocate
         object.send(:initialize, *args)

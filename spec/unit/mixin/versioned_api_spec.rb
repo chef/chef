@@ -100,6 +100,14 @@ describe Chef::Mixin::VersionedAPIFactory do
     end
   end
 
+  describe "#possible_requests" do
+    it "returns the number of registered classes" do
+      factory_class.add_versioned_api_class V2Class
+      factory_class.add_versioned_api_class V3Class
+      expect(factory_class.possible_requests).to eq(2)
+    end
+  end
+
   describe "#new" do
     it "creates an instance of the versioned class" do
       factory_class.add_versioned_api_class V2Class
