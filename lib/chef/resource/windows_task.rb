@@ -37,7 +37,7 @@ class Chef
       property :task_name, String, regex: [/\A[^\/\:\*\?\<\>\|]+\z/]
       property :command, String
       property :cwd, String
-      property :user, String, default: 'SYSTEM'
+      property :user, String, default: "SYSTEM"
       property :password, String
       property :run_level, equal_to: [:highest, :limited], default: :limited
       property :force, [TrueClass, FalseClass], default: false
@@ -83,7 +83,7 @@ class Chef
 
         validate_start_time(start_time) if frequency == :once
         validate_start_day(start_day, frequency) if start_day
-        validate_user_and_password(user,password)
+        validate_user_and_password(user, password)
         validate_interactive_setting(interactive_enabled, password)
         validate_create_frequency_modifier(frequency, frequency_modifier)
         validate_create_day(day, frequency) if day
@@ -108,12 +108,12 @@ class Chef
       end
 
       def validate_start_time(start_time)
-        raise ArgumentError,"`start_time` needs to be provided with `frequency :once`" unless start_time
+        raise ArgumentError, "`start_time` needs to be provided with `frequency :once`" unless start_time
       end
 
-      SYSTEM_USERS = ['NT AUTHORITY\SYSTEM', 'SYSTEM', 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE'].freeze
+      SYSTEM_USERS = ['NT AUTHORITY\SYSTEM', "SYSTEM", 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', "USERS"].freeze
 
-      def validate_user_and_password(user,password)
+      def validate_user_and_password(user, password)
         if user && use_password?(user)
           if password.nil?
             raise ArgumentError, "Can't specify a non-system user without a password!"
@@ -153,7 +153,7 @@ class Chef
               raise ArgumentError, "frequency_modifier value #{frequency_modifier} is invalid.  Valid values for :weekly frequency are 1 - 52."
             end
           when :monthly
-            unless ('1'..'12').to_a.push('FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST', 'LASTDAY').include?(frequency_modifier.to_s.upcase)
+            unless ("1".."12").to_a.push("FIRST", "SECOND", "THIRD", "FOURTH", "LAST", "LASTDAY").include?(frequency_modifier.to_s.upcase)
               raise ArgumentError, "frequency_modifier value #{frequency_modifier} is invalid.  Valid values for :monthly frequency are 1 - 12, 'FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST', 'LASTDAY'."
             end
           end
@@ -162,13 +162,13 @@ class Chef
 
       def validate_create_day(day, frequency)
         unless [:weekly].include?(frequency)
-          raise 'day attribute is only valid for tasks that run weekly'
+          raise "day attribute is only valid for tasks that run weekly"
         end
         if day.is_a?(String) && day.to_i.to_s != day
-          days = day.split(',')
+          days = day.split(",")
           days.each do |d|
-            unless ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun', '*'].include?(d.strip.downcase)
-              raise 'day attribute invalid.  Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *.  Multiple values must be separated by a comma.'
+            unless ["mon", "tue", "wed", "thu", "fri", "sat", "sun", "*"].include?(d.strip.downcase)
+              raise "day attribute invalid.  Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *.  Multiple values must be separated by a comma."
             end
           end
         end
@@ -176,12 +176,12 @@ class Chef
 
       def validate_create_months(months, frequency)
         unless [:monthly].include?(frequency)
-          raise 'months attribute is only valid for tasks that run monthly'
+          raise "months attribute is only valid for tasks that run monthly"
         end
         if months.is_a? String
-          months.split(',').each do |month|
-            unless ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC', '*'].include?(month.strip.upcase)
-              raise 'months attribute invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma.'
+          months.split(",").each do |month|
+            unless ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "*"].include?(month.strip.upcase)
+              raise "months attribute invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma."
             end
           end
         end
@@ -189,7 +189,7 @@ class Chef
 
       def validate_idle_time(idle_time, frequency)
         unless [:on_idle].include?(frequency)
-          raise 'idle_time attribute is only valid for tasks that run on_idle'
+          raise "idle_time attribute is only valid for tasks that run on_idle"
         end
 
         unless idle_time.to_i > 0 && idle_time.to_i <= 999
@@ -203,7 +203,7 @@ class Chef
       def sec_to_dur(seconds)
         seconds = seconds.to_i
         return if seconds == 0
-        iso_str = 'P'
+        iso_str = "P"
         if seconds > 604_800 # more than a week
           weeks = seconds / 604_800
           seconds -= (604_800 * weeks)
@@ -215,7 +215,7 @@ class Chef
           iso_str << "#{days}D"
         end
         if seconds > 0
-          iso_str << 'T'
+          iso_str << "T"
           if seconds > 3600 # more than an hour
             hours = seconds / 3600
             seconds -= (3600 * hours)
