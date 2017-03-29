@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.72](https://github.com/chef/chef/tree/v13.0.72) (2017-03-29)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.72)
+## [v13.0.73](https://github.com/chef/chef/tree/v13.0.73) (2017-03-29)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.73)
 
 **Closed issues:**
 
@@ -9,7 +9,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - `group` resource not idempotent on Windows \(12.19.36\) [\#5857](https://github.com/chef/chef/issues/5857)
 - Chef doesn't have access to a file created by itself, under the ownership of SYSTEM? [\#5844](https://github.com/chef/chef/issues/5844)
 - apt\_repository can't identify key fingerprints when gnupg 2.1.x is used [\#5831](https://github.com/chef/chef/issues/5831)
-- FATAL: NoMethodError: undefined method `password' for Chef::Resource::Execute [\#5824](https://github.com/chef/chef/issues/5824)
 
 **Merged pull requests:**
 
