@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright 2015-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,17 @@
 # limitations under the License.
 #
 
+require "chef/provider"
 require "chef/exceptions"
 require "chef/dsl/recipe"
 
 class Chef
   class Resource
-    module ActionClass
+    class ActionClass < Chef::Provider
       include Chef::DSL::Recipe
 
       def to_s
         "#{new_resource || "<no resource>"} action #{action ? action.inspect : "<no action>"}"
-      end
-
-      def whyrun_supported?
-        true
       end
 
       #
@@ -67,27 +64,28 @@ class Chef
         @current_resource = current_resource
       end
 
-      def self.included(other)
-        other.extend(ClassMethods)
-        other.use_inline_resources
-        other.include_resource_dsl true
+      use_inline_resources
+
+      # XXX: remove in Chef-14
+      def self.include_resource_dsl?
+        true
       end
 
-      module ClassMethods
+      class << self
         #
         # The Chef::Resource class this ActionClass was declared against.
         #
         # @return [Class] The Chef::Resource class this ActionClass was declared against.
         #
         attr_accessor :resource_class
+      end
 
-        def to_s
-          "#{resource_class} action provider"
-        end
+      def self.to_s
+        "#{resource_class} action provider"
+      end
 
-        def inspect
-          to_s
-        end
+      def self.inspect
+        to_s
       end
     end
   end

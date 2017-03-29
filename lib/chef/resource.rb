@@ -1172,12 +1172,11 @@ class Chef
             if superclass.custom_resource?
               superclass.action_class
             else
-              Chef::Provider
+              ActionClass
             end
 
           resource_class = self
           Class.new(base_provider) do
-            include ActionClass
             self.resource_class = resource_class
           end
         end
