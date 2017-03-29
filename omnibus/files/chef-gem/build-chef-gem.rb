@@ -72,6 +72,11 @@ module BuildChefGem
       env["CXX"] = "g++44"
     end
 
+    if solaris_11?
+      env["CFLAGS"] << " -std=c99"
+      env["CPPFLAGS"] << " -D_XOPEN_SOURCE=600 -D_XPG6"
+    end
+
     # From dep-selector-libgecode
     # Ruby DevKit ships with BSD Tar
     env["PROG_TAR"] = "bsdtar" if windows?
