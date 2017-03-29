@@ -39,7 +39,7 @@ dependency "bundler"
 # Worst offenders first to take best advantage of cache:
 dependency "chef-gem-ffi-yajl"
 dependency "chef-gem-ohai"
-dependency "chef-gem-nokogiri"
+dependency "chef-gem-nokogiri" unless windows?
 dependency "chef-gem-libyajl2"
 dependency "chef-gem-ruby-prof"
 dependency "chef-gem-byebug"

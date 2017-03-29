@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: aa0ee4ec5538ef5f4842b3ea0bd089714c8d2c72
+  revision: 40c201d434ec14fe8985259b4fed9f81f3176691
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -54,19 +54,19 @@ GIT
 
 GIT
   remote: https://github.com/poise/halite.git
-  revision: b0f1372ea7710e47b52c8c843597d21aaed5ebf6
+  revision: fc1f42ac129865ffe08b7fb47fd366abe9dbf29c
   specs:
-    halite (1.4.1.pre)
+    halite (1.5.1.pre)
       bundler
       chef (>= 12.0, < 14.0)
-      stove (~> 4.0)
+      stove (~> 5.0)
       thor
 
 GIT
   remote: https://github.com/poise/poise-boiler.git
-  revision: dedd08087d65830e7c7dd0d6c8daa964cfb33999
+  revision: d547f77ca7335af7943f681e1d0dd68c825cf429
   specs:
-    poise-boiler (1.13.3.pre)
+    poise-boiler (1.14.1.pre)
       bundler
       chefspec (~> 5.0)
       codeclimate-test-reporter (~> 0.4)
@@ -205,13 +205,13 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.8.1)
     ast (2.3.0)
-    aws-sdk (2.8.13)
-      aws-sdk-resources (= 2.8.13)
-    aws-sdk-core (2.8.13)
+    aws-sdk (2.8.14)
+      aws-sdk-resources (= 2.8.14)
+    aws-sdk-core (2.8.14)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.8.13)
-      aws-sdk-core (= 2.8.13)
+    aws-sdk-resources (2.8.14)
+      aws-sdk-core (= 2.8.14)
     aws-sigv4 (1.0.0)
     backports (3.7.0)
     binding_of_caller (0.7.2)
@@ -477,7 +477,7 @@ GEM
       net-ssh (>= 2.7, < 5.0)
       net-telnet
       sfl
-    stove (4.1.1)
+    stove (5.0.0)
       chef-api (~> 0.5)
       logify (~> 0.2)
     syslog-logger (1.6.8)
@@ -581,7 +581,6 @@ DEPENDENCIES
   knife-windows
   mixlib-install
   netrc
-  nokogiri (>= 1.7.1)
   oc-chef-pedant!
   octokit
   ohai!
