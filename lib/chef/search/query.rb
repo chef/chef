@@ -63,7 +63,7 @@ class Chef
         validate_type(type)
 
         args_h = hashify_args(*args)
-        if args_h.key?(:fuzz)
+        if args_h[:fuzz]
           if type == :node
             query = fuzzify_node_query(query)
           end

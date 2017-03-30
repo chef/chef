@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -235,6 +235,27 @@ describe Chef::Search::Query do
       query.search(:node, "platform:rhel", rows: 4) do |r|
         nil
       end
+    end
+
+    it "fuzzifies node searches when fuzz is set" do
+      expect(rest).to receive(:get).with(
+        "search/node?q=tags:*free.messi*%20OR%20roles:*free.messi*%20OR%20fqdn:*free.messi*%20OR%20addresses:*free.messi*%20OR%20policy_name:*free.messi*%20OR%20policy_group:*free.messi*&start=0"
+      ).and_return(response)
+      query.search(:node, "free.messi", fuzz: true)
+    end
+
+    it "does not fuzzify node searches when fuzz is not set" do
+      expect(rest).to receive(:get).with(
+        "search/node?q=free.messi&start=0"
+      ).and_return(response)
+      query.search(:node, "free.messi")
+    end
+
+    it "does not fuzzify client searches" do
+      expect(rest).to receive(:get).with(
+        "search/client?q=messi&start=0"
+      ).and_return(response)
+      query.search(:client, "messi", fuzz: true)
     end
 
     context "when :filter_result is provided as a result" do
