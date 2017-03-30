@@ -1,17 +1,11 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.76](https://github.com/chef/chef/tree/v13.0.76) (2017-03-30)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.76...v13.0.76)
+## [v13.0.77](https://github.com/chef/chef/tree/v13.0.77) (2017-03-30)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.77)
 
 **Closed issues:**
 
 - powershell\_script's default guard\_interpreter should be :powershell\_script [\#5953](https://github.com/chef/chef/issues/5953)
-
-## [v13.0.76](https://github.com/chef/chef/tree/v13.0.76) (2017-03-30)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.76)
-
-**Closed issues:**
-
 - powershell\_out stdout contains '\r\n' at the end of the output [\#5947](https://github.com/chef/chef/issues/5947)
 - `group` resource not idempotent on Windows \(12.19.36\) [\#5857](https://github.com/chef/chef/issues/5857)
 - Chef doesn't have access to a file created by itself, under the ownership of SYSTEM? [\#5844](https://github.com/chef/chef/issues/5844)
