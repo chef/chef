@@ -142,3 +142,18 @@ available in the [`poise-python`](https://github.com/poise/poise-python) cookboo
 
 We've upgraded to the latest stable release of the Ruby programming
 language.
+
+### Resource can now declare a default name
+
+The core `apt_update` resource can now be declared without any name argument, no need for `apt_update "this string doesn't matter but
+why do i have to type it?"`.
+
+This can be used by any other resource by just overriding the name property and supplying a default:
+
+```ruby
+  property :name, String, default: ""
+```
+
+Notifications to resources with empty strings as their name is also supported via either the bare resource name (`apt_update` --
+matches what the user types in the DSL) or with empty brackets (`apt_update[]` -- matches the resource notification pattern).
+

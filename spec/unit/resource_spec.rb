@@ -284,6 +284,23 @@ describe Chef::Resource do
       resource.notifies :reload, run_context.resource_collection.find(:zen_master => "coffee, tea")
       expect(resource.delayed_notifications.detect { |e| e.resource.name == "coffee, tea" && e.action == :reload }).not_to be_nil
     end
+
+    it "notifies a resource without a name via a string name with brackets" do
+      run_context.resource_collection << Chef::Resource::ZenMaster.new("")
+      resource.notifies :reload, "zen_master[]"
+    end
+
+    it "notifies a resource without a name via a string name without brackets" do
+      run_context.resource_collection << Chef::Resource::ZenMaster.new("")
+      resource.notifies :reload, "zen_master"
+      expect(resource.delayed_notifications.first.resource).to eql("zen_master")
+    end
+
+    it "notifies a resource without a name via a hash name with an empty string" do
+      run_context.resource_collection << Chef::Resource::ZenMaster.new("")
+      resource.notifies :reload, zen_master: ""
+      expect(resource.delayed_notifications.first.resource).to eql(zen_master: "")
+    end
   end
 
   describe "subscribes" do

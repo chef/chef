@@ -74,12 +74,6 @@ describe Chef::Recipe do
         expect { recipe.not_home("not_home_resource") }.to raise_error(NameError)
       end
 
-      it "should require a name argument" do
-        expect do
-          recipe.cat
-        end.to raise_error(ArgumentError)
-      end
-
       it "should allow regular errors (not NameErrors) to pass unchanged" do
         expect do
           recipe.cat("felix") { raise ArgumentError, "You Suck" }

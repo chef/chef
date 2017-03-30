@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -161,6 +161,35 @@ describe Chef::ResourceCollection::ResourceSet do
 
     it "raises an error when attempting to find a resource that does not exist" do
       expect { collection.find("script[nonesuch]") }.to raise_error(Chef::Exceptions::ResourceNotFound)
+    end
+
+    context "nameless resources" do
+      let(:zen_master_name) { "" }
+
+      it "looks up nameless resources with find without brackets" do
+        collection.insert_as(zen_master)
+        expect(collection.find("zen_master")).to eq(zen_master)
+      end
+
+      it "looks up nameless resources with find with empty brackets" do
+        collection.insert_as(zen_master)
+        expect(collection.find("zen_master[]")).to eq(zen_master)
+      end
+
+      it "looks up nameless resources with find with empty string hash key" do
+        collection.insert_as(zen_master)
+        expect(collection.find(zen_master: "")).to eq(zen_master)
+      end
+
+      it "looks up nameless resources with lookup with empty brackets" do
+        collection.insert_as(zen_master)
+        expect(collection.lookup("zen_master[]")).to eq(zen_master)
+      end
+
+      it "looks up nameless resources with lookup with the resource" do
+        collection.insert_as(zen_master)
+        expect(collection.lookup(zen_master)).to eq(zen_master)
+      end
     end
   end
 

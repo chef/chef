@@ -59,21 +59,30 @@ describe "Recipe DSL methods" do
       expect(BaseThingy.created_resource).to eq BaseThingy
     end
 
-    it "errors out when you call base_thingy do ... end in a recipe" do
+    it "errors when you call base_thingy do ... end in a recipe" do
       expect_converge do
         base_thingy { ; }
-      end.to raise_error(ArgumentError, "You must supply a name when declaring a base_thingy resource")
+      end.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
-    it "emits a warning when you call base_thingy 'foo', 'bar' do ... end in a recipe" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      recipe = converge do
-        base_thingy "foo", "bar" do
+    context "nameless resources" do
+      before(:context) do
+        class NamelessThingy < BaseThingy
+          resource_name :nameless_thingy
+          provides :nameless_thingy
+
+          property :name, String, default: ""
         end
       end
-      expect(recipe.logged_warnings).to match(/Cannot create resource base_thingy with more than one argument. All arguments except the name \("foo"\) will be ignored. This will cause an error in Chef 13. Arguments: \["foo", "bar"\]/)
-      expect(BaseThingy.created_name).to eq "foo"
-      expect(BaseThingy.created_resource).to eq BaseThingy
+
+      it "does not error when not given a name" do
+        recipe = converge do
+          nameless_thingy {}
+        end
+        expect(recipe.logged_warnings).to eq ""
+        expect(BaseThingy.created_name).to eq ""
+        expect(BaseThingy.created_resource).to eq NamelessThingy
+      end
     end
 
     context "Deprecated automatic resource DSL" do

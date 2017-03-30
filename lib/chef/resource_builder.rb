@@ -43,8 +43,6 @@ class Chef
     end
 
     def build(&block)
-      raise ArgumentError, "You must supply a name when declaring a #{type} resource" if name.nil?
-
       @resource = resource_class.new(name, run_context)
       if resource.resource_name.nil?
         raise Chef::Exceptions::InvalidResourceSpecification, "#{resource}.resource_name is `nil`!  Did you forget to put `provides :blah` or `resource_name :blah` in your resource class?"
