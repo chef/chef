@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,6 +63,14 @@ class Chef
         validate_type(type)
 
         args_h = hashify_args(*args)
+        if args_h.key?(:fuzz)
+          if type == :node
+            query = fuzzify_node_query(query)
+          end
+          # FIXME: can i haz proper ruby-2.x named parameters someday plz?
+          args_h = args_h.reject { |k, v| k == :fuzz }
+        end
+
         response = call_rest_service(type, query: query, **args_h)
 
         if block
@@ -91,6 +99,14 @@ class Chef
       end
 
       private
+
+      def fuzzify_node_query(query)
+        if query !~ /:/
+          "tags:*#{query}* OR roles:*#{query}* OR fqdn:*#{query}* OR addresses:*#{query}* OR policy_name:*#{query}* OR policy_group:*#{query}*"
+        else
+          query
+        end
+      end
 
       def validate_type(t)
         unless t.kind_of?(String) || t.kind_of?(Symbol)
