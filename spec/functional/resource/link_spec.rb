@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -654,7 +654,7 @@ describe Chef::Resource::Link do
           end
           context "and the link does not yet exist" do
             it "links to the target file" do
-              skip("OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks") if os_x? || freebsd? || aix?
+              skip("OS X/FreeBSD/AIX/Solaris symlink? and readlink working on hard links to symlinks") if os_x? || freebsd? || aix? || solaris?
               resource.run_action(:create)
               expect(File.exists?(target_file)).to be_truthy
               # OS X gets angry about this sort of link.  Bug in OS X, IMO.
@@ -673,7 +673,7 @@ describe Chef::Resource::Link do
           end
           context "and the link does not yet exist" do
             it "links to the target file" do
-              skip("OS X/FreeBSD/AIX fails to create hardlinks to broken symlinks") if os_x? || freebsd? || aix?
+              skip("OS X/FreeBSD/AIX/Solaris fails to create hardlinks to broken symlinks") if os_x? || freebsd? || aix? || solaris?
               resource.run_action(:create)
               expect(File.exists?(target_file) || File.symlink?(target_file)).to be_truthy
               expect(symlink?(target_file)).to be_truthy
