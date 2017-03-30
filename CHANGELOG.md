@@ -1,7 +1,14 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.74](https://github.com/chef/chef/tree/v13.0.74) (2017-03-29)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.74)
+## [v13.0.75](https://github.com/chef/chef/tree/v13.0.75) (2017-03-30)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.75...v13.0.75)
+
+**Merged pull requests:**
+
+- Chef-13: remove more deprecated provider\_resolver code [\#5920](https://github.com/chef/chef/pull/5920) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v13.0.75](https://github.com/chef/chef/tree/v13.0.75) (2017-03-30)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.75)
 
 **Closed issues:**
 
