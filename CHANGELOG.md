@@ -1,21 +1,20 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.75](https://github.com/chef/chef/tree/v13.0.75) (2017-03-30)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.75...v13.0.75)
+## [v13.0.76](https://github.com/chef/chef/tree/v13.0.76) (2017-03-30)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.76...v13.0.76)
 
-**Merged pull requests:**
+**Closed issues:**
 
-- Chef-13: remove more deprecated provider\_resolver code [\#5920](https://github.com/chef/chef/pull/5920) ([lamont-granquist](https://github.com/lamont-granquist))
+- powershell\_script's default guard\_interpreter should be :powershell\_script [\#5953](https://github.com/chef/chef/issues/5953)
 
-## [v13.0.75](https://github.com/chef/chef/tree/v13.0.75) (2017-03-30)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.75)
+## [v13.0.76](https://github.com/chef/chef/tree/v13.0.76) (2017-03-30)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.76)
 
 **Closed issues:**
 
 - powershell\_out stdout contains '\r\n' at the end of the output [\#5947](https://github.com/chef/chef/issues/5947)
 - `group` resource not idempotent on Windows \(12.19.36\) [\#5857](https://github.com/chef/chef/issues/5857)
 - Chef doesn't have access to a file created by itself, under the ownership of SYSTEM? [\#5844](https://github.com/chef/chef/issues/5844)
-- apt\_repository can't identify key fingerprints when gnupg 2.1.x is used [\#5831](https://github.com/chef/chef/issues/5831)
 
 **Merged pull requests:**
 
@@ -27,6 +26,7 @@ This changelog reflects the current state of chef's master branch on github and 
 - Chef-13: remove node\_map back-compat [\#5926](https://github.com/chef/chef/pull/5926) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove deprecated run\_context methods [\#5925](https://github.com/chef/chef/pull/5925) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove Chef::ShellOut [\#5923](https://github.com/chef/chef/pull/5923) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: remove more deprecated provider\_resolver code [\#5920](https://github.com/chef/chef/pull/5920) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove old platform mapping code [\#5914](https://github.com/chef/chef/pull/5914) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove the old rake tasks [\#5913](https://github.com/chef/chef/pull/5913) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13:  raise on properties redefining inherited methods [\#5912](https://github.com/chef/chef/pull/5912) ([lamont-granquist](https://github.com/lamont-granquist))
@@ -49,7 +49,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - HTTP: add debug long for non-JSON response [\#5858](https://github.com/chef/chef/pull/5858) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13 remove resource cloning and 3694 warnings [\#5856](https://github.com/chef/chef/pull/5856) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: support why-run by default [\#5853](https://github.com/chef/chef/pull/5853) ([lamont-granquist](https://github.com/lamont-granquist))
-- bump major to chef-13 [\#5833](https://github.com/chef/chef/pull/5833) ([lamont-granquist](https://github.com/lamont-granquist))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
