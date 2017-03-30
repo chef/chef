@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: 40c201d434ec14fe8985259b4fed9f81f3176691
+  revision: e530dd27a696ec154394f360411ae874adc4e3af
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -37,7 +37,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: bda5683231607ef55df0264dd6ed0af04c74c6b4
+  revision: 05cf05cb76ae22af9a8466e0226d0092b74c8414
   specs:
     ohai (13.0.0)
       chef-config (>= 12.5.0.alpha.1, < 14)
@@ -54,7 +54,7 @@ GIT
 
 GIT
   remote: https://github.com/poise/halite.git
-  revision: fc1f42ac129865ffe08b7fb47fd366abe9dbf29c
+  revision: 09c4ef7c6b8188ec2b9a929de8d9f6aa3f620553
   specs:
     halite (1.5.1.pre)
       bundler
@@ -97,7 +97,7 @@ GIT
 
 GIT
   remote: https://github.com/poise/poise.git
-  revision: 9e953bb04e86e3d5e52619951b7c754b85ac022b
+  revision: c42a55afe2ff897801b274eb47594135ac856b12
   specs:
     poise (2.7.3.pre)
       halite (~> 1.0)
@@ -472,7 +472,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    specinfra (2.67.6)
+    specinfra (2.67.7)
       net-scp
       net-ssh (>= 2.7, < 5.0)
       net-telnet
@@ -492,7 +492,7 @@ GEM
       thor (~> 0.19, < 0.19.2)
     thor (0.19.1)
     thread_safe (0.3.6)
-    tomlrb (1.2.3)
+    tomlrb (1.2.4)
     travis (1.8.8)
       backports
       faraday (~> 0.9)

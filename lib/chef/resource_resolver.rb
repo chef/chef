@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -161,24 +161,5 @@ class Chef
     def overrode_provides?(handler)
       handler.method(:provides?).owner != Chef::Resource.method(:provides?).owner
     end
-
-    module Deprecated
-      # return a deterministically sorted list of Chef::Resource subclasses
-      def resources
-        Chef::Resource.sorted_descendants
-      end
-
-      def enabled_handlers
-        handlers = super
-        if handlers.empty?
-          handlers = resources.select { |handler| overrode_provides?(handler) && handler.provides?(node, resource_name) }
-          handlers.each do |handler|
-            Chef.deprecated(:custom_resource, "#{handler}.provides? returned true when asked if it provides DSL #{resource_name}, but provides #{resource_name.inspect} was never called! In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
-          end
-        end
-        handlers
-      end
-    end
-    prepend Deprecated
   end
 end
