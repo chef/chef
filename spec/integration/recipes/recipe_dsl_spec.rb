@@ -59,13 +59,30 @@ describe "Recipe DSL methods" do
       expect(BaseThingy.created_resource).to eq BaseThingy
     end
 
-    it "does not errors  when you call base_thingy do ... end in a recipe" do
-      recipe = converge do
+    it "errors when you call base_thingy do ... end in a recipe" do
+      expect_converge do
         base_thingy { ; }
+      end.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
+    context "nameless resources" do
+      before(:context) do
+        class NamelessThingy < BaseThingy
+          resource_name :nameless_thingy
+          provides :nameless_thingy
+
+          property :name, String, default: ""
+        end
       end
-      expect(recipe.logged_warnings).to eq ""
-      expect(BaseThingy.created_name).to eq ""
-      expect(BaseThingy.created_resource).to eq BaseThingy
+
+      it "does not error when not given a name" do
+        recipe = converge do
+          nameless_thingy {}
+        end
+        expect(recipe.logged_warnings).to eq ""
+        expect(BaseThingy.created_name).to eq ""
+        expect(BaseThingy.created_resource).to eq NamelessThingy
+      end
     end
 
     context "Deprecated automatic resource DSL" do

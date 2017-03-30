@@ -46,7 +46,7 @@ class Chef
       def insert_as(resource, resource_type = nil, instance_name = nil)
         is_chef_resource!(resource)
         resource_type ||= resource.resource_name
-        instance_name ||= resource.name || ""
+        instance_name ||= resource.name
         key = create_key(resource_type, instance_name)
         @resources_by_key[key] = resource
       end
@@ -145,7 +145,7 @@ class Chef
 
       private
 
-      def create_key(resource_type, instance_name = "")
+      def create_key(resource_type, instance_name)
         "#{resource_type}[#{instance_name}]"
       end
 

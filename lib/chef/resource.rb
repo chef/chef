@@ -84,7 +84,7 @@ class Chef
     # @param name [Object] The name to set, typically a String or Array
     # @return [String] The name of this Resource.
     #
-    property :name, String, coerce: proc { |v| v.is_a?(Array) ? v.join(", ") : v.to_s }, desired_state: false
+    property :name, String, coerce: proc { |v| v.is_a?(Array) ? v.join(", ") : v.to_s }, desired_state: false, required: true
 
     #
     # The node the current Chef run is using.

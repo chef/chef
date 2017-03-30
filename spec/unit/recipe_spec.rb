@@ -74,11 +74,6 @@ describe Chef::Recipe do
         expect { recipe.not_home("not_home_resource") }.to raise_error(NameError)
       end
 
-      it "does not require a name argument and looks up with empty brackets" do
-        recipe.zen_master
-        expect(run_context.resource_collection.lookup("zen_master[]").name).to eql("")
-      end
-
       it "should allow regular errors (not NameErrors) to pass unchanged" do
         expect do
           recipe.cat("felix") { raise ArgumentError, "You Suck" }

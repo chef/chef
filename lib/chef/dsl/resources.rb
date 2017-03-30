@@ -34,10 +34,10 @@ class Chef
 
       def self.add_resource_dsl(dsl_name)
         module_eval(<<-EOM, __FILE__, __LINE__ + 1)
-          def #{dsl_name}(arg = "", &block)
-            declare_resource(#{dsl_name.inspect}, arg, created_at: caller[0], &block)
-          end
-        EOM
+            def #{dsl_name}(args = nil, &block)
+              declare_resource(#{dsl_name.inspect}, args, created_at: caller[0], &block)
+            end
+          EOM
       end
 
       def self.remove_resource_dsl(dsl_name)
