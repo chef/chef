@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ describe Chef::Resource::Conditional do
     allow_any_instance_of(Mixlib::ShellOut).to receive(:run_command).and_return(nil)
     @status = OpenStruct.new(:success? => true)
     allow_any_instance_of(Mixlib::ShellOut).to receive(:status).and_return(@status)
-    @parent_resource = Chef::Resource.new(nil, Chef::Node.new)
+    @parent_resource = Chef::Resource.new("", Chef::Node.new)
   end
 
   it "raises an exception when neither a block or command is given" do

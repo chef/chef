@@ -301,7 +301,7 @@ describe "Chef::Resource.property" do
       expect(resource.property_is_set?(:name)).to be_truthy
       resource.reset_property(:name)
       expect(resource.property_is_set?(:name)).to be_falsey
-      expect(resource.name).to be_nil
+      expect { resource.name }.to raise_error Chef::Exceptions::ValidationFailed
     end
 
     it "when referencing an undefined property, reset_property(:x) raises an error" do
