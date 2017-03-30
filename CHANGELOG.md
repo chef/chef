@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.77](https://github.com/chef/chef/tree/v13.0.77) (2017-03-30)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.77)
+## [v13.0.78](https://github.com/chef/chef/tree/v13.0.78) (2017-03-30)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.78)
 
 **Closed issues:**
 
@@ -12,6 +12,8 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- disable building nokogiri on windows for now [\#5958](https://github.com/chef/chef/pull/5958) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: Make ActionClass a class [\#5952](https://github.com/chef/chef/pull/5952) ([lamont-granquist](https://github.com/lamont-granquist))
 - Fix action class weirdness in Chef-13 [\#5946](https://github.com/chef/chef/pull/5946) ([lamont-granquist](https://github.com/lamont-granquist))
 - Make ResourceReporter smarter to get resource identity and state [\#5941](https://github.com/chef/chef/pull/5941) ([afiune](https://github.com/afiune))
 - Chef-13: Simplify DSL creation [\#5934](https://github.com/chef/chef/pull/5934) ([lamont-granquist](https://github.com/lamont-granquist))
