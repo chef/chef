@@ -22,7 +22,7 @@ class Chef
   class Util
     class FileEdit
 
-      private
+      protected
 
       attr_reader :editor, :original_pathname
 
