@@ -17,13 +17,11 @@
 #
 
 require "chef/provider"
-require "chef/mixin/command"
 require "chef/resource/env"
 
 class Chef
   class Provider
     class Env < Chef::Provider
-      include Chef::Mixin::Command
       attr_accessor :key_exists
 
       provides :env, os: "!windows"

@@ -25,7 +25,6 @@ require "uuidtools"
 class Chef
   class Provider
     class OsxProfile < Chef::Provider
-      include Chef::Mixin::Command
       provides :osx_profile, os: "darwin"
       provides :osx_config_profile, os: "darwin"
 

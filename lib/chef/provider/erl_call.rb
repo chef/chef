@@ -17,13 +17,11 @@
 #
 
 require "chef/log"
-require "chef/mixin/command"
 require "chef/provider"
 
 class Chef
   class Provider
     class ErlCall < Chef::Provider
-      include Chef::Mixin::Command
 
       provides :erl_call
 

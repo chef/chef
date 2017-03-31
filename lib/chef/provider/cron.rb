@@ -17,13 +17,11 @@
 #
 
 require "chef/log"
-require "chef/mixin/command"
 require "chef/provider"
 
 class Chef
   class Provider
     class Cron < Chef::Provider
-      include Chef::Mixin::Command
 
       provides :cron, os: ["!aix", "!solaris2"]
 

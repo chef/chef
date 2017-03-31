@@ -20,7 +20,6 @@
 
 require "chef/log"
 require "chef/provider"
-require "chef/mixin/command"
 require "chef-config/mixin/fuzzy_hostname_matcher"
 require "fileutils"
 
@@ -32,7 +31,6 @@ class Chef
 
       SVN_INFO_PATTERN = /^([\w\s]+): (.+)$/
 
-      include Chef::Mixin::Command
       include ChefConfig::Mixin::FuzzyHostnameMatcher
 
       def load_current_resource

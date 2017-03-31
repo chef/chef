@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require "chef/mixin/command"
 require "chef/mixin/from_file"
 require "chef/provider/git"
 require "chef/provider/subversion"
@@ -29,7 +28,6 @@ class Chef
 
       include Chef::DSL::Recipe
       include Chef::Mixin::FromFile
-      include Chef::Mixin::Command
 
       attr_reader :scm_provider, :release_path, :shared_path, :previous_release_path
 

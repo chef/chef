@@ -19,7 +19,6 @@
 
 require "open3"
 require "chef/provider/package"
-require "chef/mixin/command"
 require "chef/resource/package"
 
 class Chef

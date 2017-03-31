@@ -18,7 +18,6 @@
 
 require "chef/resource/service"
 require "chef/provider/service/simple"
-require "chef/mixin/command"
 require "chef/util/file_edit"
 
 class Chef
