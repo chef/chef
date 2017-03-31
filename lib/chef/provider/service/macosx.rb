@@ -106,6 +106,7 @@ class Chef
         end
 
         def start_service
+          set_service_status
           if @current_resource.running
             Chef::Log.debug("#{@new_resource} already running, not starting")
           else
@@ -118,6 +119,7 @@ class Chef
         end
 
         def stop_service
+          set_service_status
           unless @current_resource.running
             Chef::Log.debug("#{@new_resource} not running, not stopping")
           else
