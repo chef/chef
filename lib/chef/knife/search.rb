@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,19 +73,18 @@ class Chef
 
       def run
         read_cli_args
-        fuzzify_query
 
         if @type == "node"
           ui.use_presenter Knife::Core::NodePresenter
         end
 
         q = Chef::Search::Query.new
-        escaped_query = Addressable::URI.encode_component(@query, Addressable::URI::CharacterClasses::QUERY)
 
         result_items = []
         result_count = 0
 
         search_args = Hash.new
+        search_args[:fuzz] = true
         search_args[:start] = config[:start] if config[:start]
         search_args[:rows] = config[:rows] if config[:rows]
         if config[:filter_result]
@@ -95,7 +94,7 @@ class Chef
         end
 
         begin
-          q.search(@type, escaped_query, search_args) do |item|
+          q.search(@type, @query, search_args) do |item|
             formatted_item = Hash.new
             if item.is_a?(Hash)
               # doing a little magic here to set the correct name
@@ -148,12 +147,6 @@ class Chef
             @type = name_args[0]
             @query = name_args[1]
           end
-        end
-      end
-
-      def fuzzify_query
-        if @query !~ /:/
-          @query = "tags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}* OR policy_name:*#{@query}* OR policy_group:*#{@query}*"
         end
       end
 

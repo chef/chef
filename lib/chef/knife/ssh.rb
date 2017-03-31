@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -223,7 +223,7 @@ class Chef
         end
 
         @search_count = 0
-        query.search(:node, @name_args[0], filter_result: required_attributes) do |item|
+        query.search(:node, @name_args[0], filter_result: required_attributes, fuzz: true) do |item|
           @search_count += 1
           # we should skip the loop to next iteration if the item
           # returned by the search is nil
