@@ -362,4 +362,33 @@ EOM
       result.error!
     end
   end
+
+  when_the_repository "has resources that have arrays as the name" do
+    before do
+      directory "cookbooks/x" do
+        file "recipes/default.rb", <<-EOM
+          log [ "a", "b" ] do
+            action :nothing
+          end
+
+          log "doit" do
+            notifies :write, "log[a, b]"
+          end
+        EOM
+      end
+    end
+
+    it "notifying the resource should work" do
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+log_level :warn
+EOM
+
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
+      expect(result.stdout).to match /\* log\[a, b\] action write/
+      result.error!
+    end
+
+  end
 end

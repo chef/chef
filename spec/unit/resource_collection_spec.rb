@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -219,6 +219,7 @@ describe Chef::ResourceCollection do
     end
 
     it "should find resources by strings of zen_master[a,b]" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       load_up_resources
       results = rc.resources("zen_master[monkey,dog]")
       expect(results.length).to eql(2)

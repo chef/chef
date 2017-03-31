@@ -218,6 +218,16 @@ class Chef
       end
     end
 
+    class MultiresourceMatch < Base
+      def id
+        16
+      end
+
+      def target
+        "multiresource_match.html"
+      end
+    end
+
     # id 3694 was deleted
 
     class Generic < Base

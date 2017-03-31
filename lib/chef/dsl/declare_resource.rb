@@ -241,7 +241,7 @@ class Chef
 
         resource = build_resource(type, name, created_at: created_at, &resource_attrs_block)
 
-        run_context.resource_collection.insert(resource, resource_type: type, instance_name: name)
+        run_context.resource_collection.insert(resource, resource_type: resource.declared_type, instance_name: resource.name)
         resource
       end
 
