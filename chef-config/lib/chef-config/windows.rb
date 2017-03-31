@@ -17,8 +17,9 @@
 
 module ChefConfig
   def self.windows?
-    if @node
-      platform = @node[:platform] || @node[:platform_family] || @node[:os]
+    @node ||= nil
+    if @node && @node[:os]
+      platform = "windows"
     else
       platform = RUBY_PLATFORM
     end
