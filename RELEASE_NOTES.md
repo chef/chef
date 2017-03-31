@@ -164,3 +164,17 @@ match when given partial strings (available since Chef 11).  The `knife ssh` sea
 search API matches in both cases.  The node search fuzzifier has also been extracted out to a `fuzz` option to Chef::Search::Query for re-use
 elsewhere.
 
+### Resources which later modify their name during creation will have their name changed on the ResourceCollection and notifications
+
+```ruby
+some_resource "name_one" do
+  name "name_two"
+end
+```
+
+The fix for sending notifications to multipackage resources involved changing the API which inserts resources into the resource collection slightly
+so that it no longer directly takes the string which is typed into the DSL but reads the (possibly coerced) name off of the resource after it is
+built.  The end result is that the above resource will be named `some_resource[name_two]` instead of `some_resource[name_one]`.  Note that setting
+the name (*not* the `name_property`, but actually renaming the resource) is very uncommon.  The fix is to simply name the resource correctly in
+the first place (`some_resource "name_two" do ...`)
+
