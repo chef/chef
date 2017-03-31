@@ -1,0 +1,52 @@
+bash -c '
+if [ ! -f /usr/local/bin/chef-client ]; then
+  apt-get update
+  apt-get install -y git-core curl
+  apt-get install -y build-essential binutils-doc gcc autoconf flex bison
+  apt-get install -y libreadline5-dev zlib1g-dev libssl-dev libxml2-dev libxslt1-dev
+  bash < <( curl -L http://bit.ly/rvm-install-system-wide )
+  (
+  cat <<'EOP'
+[[ -s "/usr/local/lib/rvm" ]] && . "/usr/local/lib/rvm"  # This loads RVM into a shell session.
+EOP
+  ) > /etc/profile.d/rvm.sh
+  source /etc/profile
+  rvm install ree
+  rvm --default ree
+  gem install ohai chef --no-rdoc --no-ri --verbose <%= '--prerelease' if @config[:prerelease] %>
+  ln -nfs $(which unicorn) /usr/bin/unicorn
+  ln -nfs $(which unicorn_rails) /usr/bin/unicorn_rails
+  ln -nfs $(which chef-client) /usr/bin/chef-client
+fi
+
+mkdir -p /etc/chef
+
+(
+cat <<'EOP'
+<%= IO.read(Chef::Config[:validation_key]) %>
+EOP
+) > /tmp/validation.pem
+awk NF /tmp/validation.pem > /etc/chef/validation.pem
+rm /tmp/validation.pem
+
+(
+cat <<'EOP'
+log_level        :info
+log_location     STDOUT
+chef_server_url  "<%= Chef::Config[:chef_server_url] %>"
+validation_client_name "<%= Chef::Config[:validation_client_name] %>"
+<% if @config[:chef_node_name] == nil %>
+# Using default node name"
+<% else %>
+node_name "<%= @config[:chef_node_name] %>"
+<% end %> 
+EOP
+) > /etc/chef/client.rb
+
+(
+cat <<'EOP'
+<%= { "run_list" => @run_list }.to_json %>
+EOP
+) > /etc/chef/first-boot.json
+
+chef-client -j /etc/chef/first-boot.json'
