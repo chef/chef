@@ -160,6 +160,7 @@ matches what the user types in the DSL) or with empty brackets (`apt_update[]` -
 ### The knife ssh command applies the same fuzzifier as knife search node
 
 A bare name to knife search node will search for the name in `tags`, `roles`, `fqdn`, `addresses`, `policy_name` or `policy_group` fields and will
-match when given partial strings.  The `knife ssh` search term has been similarly extended so that the search API matches in both cases.  The
-node search fuzzifier has also been extracted out to a `fuzz` option to Chef::Search::Query for re-use elsewhere.
+match when given partial strings (available since Chef 11).  The `knife ssh` search term has been similarly extended so that the
+search API matches in both cases.  The node search fuzzifier has also been extracted out to a `fuzz` option to Chef::Search::Query for re-use
+elsewhere.
 
