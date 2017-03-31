@@ -909,17 +909,6 @@ class Chef
     end
 
     #
-    # Set whether this class was updated during an action.
-    #
-    # @deprecated Multiple actions are supported by resources.  Please call {}#updated_by_last_action} instead.
-    #
-    def updated=(true_or_false)
-      Chef.deprecated(:custom_resource, "Chef::Resource#updated=(true|false) is deprecated. Please call #updated_by_last_action(true|false) instead.")
-      updated_by_last_action(true_or_false)
-      @updated = true_or_false
-    end
-
-    #
     # The display name of this resource type, for printing purposes.
     #
     # Will be used to print out the resource in messages, e.g. resource_name[name]
