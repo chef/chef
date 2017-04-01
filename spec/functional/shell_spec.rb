@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,6 @@ require "spec_helper"
 require "functional/resource/base"
 require "chef/version"
 require "chef/shell"
-require "chef/mixin/command/unix"
 
 describe Shell do
 
@@ -28,7 +27,6 @@ describe Shell do
   # not catch cases where chef-shell fails to boot because of changes in
   # chef/client.rb
   describe "smoke tests", :unix_only => true do
-    include Chef::Mixin::Command::Unix
 
     TIMEOUT = 300
 
