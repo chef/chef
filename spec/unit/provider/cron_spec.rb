@@ -918,7 +918,7 @@ MAILTO=foo@example.com
     it "should raise an exception if another error occurs" do
       @status = double("Status", exitstatus: 2)
       allow(@provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-      expect { @provider.send(:read_crontab) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
+      expect { @provider.send(:read_crontab) }.to raise_error(Chef::Exceptions::Cron)
     end
   end
 
@@ -938,7 +938,7 @@ MAILTO=foo@example.com
       allow(@provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       expect do
         @provider.send(:write_crontab, "Foo")
-      end.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
+      end.to raise_error(Chef::Exceptions::Cron)
     end
   end
 

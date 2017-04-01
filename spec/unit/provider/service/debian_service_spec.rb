@@ -98,6 +98,7 @@ describe Chef::Provider::Service::Debian do
     context "when update-rc.d fails" do
       before do
         @status = double("Status", :exitstatus => -1)
+        allow(@provider).to receive(:shell_out!).and_return(@status)
       end
 
       it "raises an error" do
