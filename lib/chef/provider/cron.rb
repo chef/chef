@@ -203,14 +203,14 @@ class Chef
         so = shell_out!("crontab -l -u #{new_resource.user}", returns: [0, 1])
         return nil if so.exitstatus == 1
         so.stdout
-      rescue Mixlib::ShellOut::ShellCommandFailed => e
+      rescue => e
         raise Chef::Exceptions::Cron, "Error determining state of #{new_resource.name}, error: #{e}"
       end
 
       def write_crontab(crontab)
         write_exception = false
         so = shell_out!("crontab -u #{new_resource.user} -", input: crontab)
-      rescue Mixlib::ShellOut::ShellCommandFailed => e
+      rescue => e
         raise Chef::Exceptions::Cron, "Error updating state of #{new_resource.name}, error: #{e}"
       end
 
