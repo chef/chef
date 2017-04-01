@@ -161,7 +161,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
 
     def cron_create_should_raise_exception
-      expect { new_resource.run_action(:create) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
+      expect { new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron)
       cron_should_not_exists(new_resource.name)
     end
 
