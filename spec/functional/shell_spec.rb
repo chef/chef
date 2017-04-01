@@ -77,44 +77,26 @@ describe Shell do
     end
 
     def run_chef_shell_with(options)
-      case ohai[:platform]
-      when "aix"
-        config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
-        path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
-        output = ""
-        status = popen4("#{path_to_chef_shell} -c #{config} #{options}", :waitlast => true) do |pid, stdin, stdout, stderr|
-          read_until(stdout, "chef (#{Chef::VERSION})>")
-          yield stdout, stdin if block_given?
-          stdin.write("'done'\n")
-          output = read_until(stdout, '=> "done"')
-          stdin.print("exit\n")
-          flush_output(stdout)
-        end
+      # Windows ruby installs don't (always?) have PTY,
+      # so hide the require here
 
-        [output, status.exitstatus]
-      else
-        # Windows ruby installs don't (always?) have PTY,
-        # so hide the require here
-        begin
-          require "pty"
-          config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
-          path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
-          reader, writer, pid = PTY.spawn("#{path_to_chef_shell} -c #{config} #{options}")
-          read_until(reader, "chef (#{Chef::VERSION})>")
-          yield reader, writer if block_given?
-          writer.puts('"done"')
-          output = read_until(reader, '=> "done"')
-          writer.print("exit\n")
-          flush_output(reader)
-          writer.close
+      require "pty"
+      config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
+      path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
+      reader, writer, pid = PTY.spawn("#{path_to_chef_shell} -c #{config} #{options}")
+      read_until(reader, "chef (#{Chef::VERSION})>")
+      yield reader, writer if block_given?
+      writer.puts('"done"')
+      output = read_until(reader, '=> "done"')
+      writer.print("exit\n")
+      flush_output(reader)
+      writer.close
 
-          exitstatus = wait_or_die(pid)
+      exitstatus = wait_or_die(pid)
 
-          [output, exitstatus]
-        rescue PTY::ChildExited => e
-          [output, e.status]
-        end
-      end
+      [output, exitstatus]
+    rescue PTY::ChildExited => e
+      [output, e.status]
     end
 
     it "boots correctly with -lauto" do
