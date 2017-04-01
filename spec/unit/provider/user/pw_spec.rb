@@ -155,11 +155,7 @@ describe Chef::Provider::User::Pw do
   describe "when modifying the password" do
     before(:each) do
       @status = double("Status", exitstatus: 0)
-      allow(@provider).to receive(:popen4).and_return(@status)
-      @pid = nil
-      @stdin = nil
-      @stdout = nil
-      @stderr = nil
+      allow(@provider).to receive(:shell_out!).and_return(@status)
     end
 
     describe "and the new password has not been specified" do
@@ -206,24 +202,16 @@ describe Chef::Provider::User::Pw do
       end
 
       it "should run pw usermod with the username and the option -H 0" do
-        expect(@provider).to receive(:popen4).with("pw usermod adam -H 0", waitlast: true).and_return(@status)
+        expect(@provider).to receive(:shell_out!).with("pw usermod adam -H 0", { :input => "abracadabra" }).and_return(@status)
         @provider.modify_password
-      end
-
-      it "should send the new password to the stdin of pw usermod" do
-        @stdin = StringIO.new
-        allow(@provider).to receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-        @provider.modify_password
-        expect(@stdin.string).to eq("abracadabra\n")
       end
 
       it "should raise an exception if pw usermod fails" do
-        expect(@status).to receive(:exitstatus).and_return(1)
-        expect { @provider.modify_password }.to raise_error(Chef::Exceptions::User)
+        expect(@provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+        expect { @provider.modify_password }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
       end
 
       it "should not raise an exception if pw usermod succeeds" do
-        expect(@status).to receive(:exitstatus).and_return(0)
         expect { @provider.modify_password }.not_to raise_error
       end
     end

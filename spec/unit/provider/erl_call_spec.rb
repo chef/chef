@@ -31,11 +31,8 @@ describe Chef::Provider::ErlCall do
 
     @provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
 
-    allow(@provider).to receive(:popen4).and_return(@status)
-    @stdin = StringIO.new
-    @stdout = StringIO.new("{ok, woohoo}")
-    @stderr = StringIO.new
-    @pid = 2342999
+    @status = double("Status", stdout: "{ok, woohoo}", stderr: "")
+    allow(@provider).to receive(:shell_out!).and_return(@status)
   end
 
   it "should return a Chef::Provider::ErlCall object" do
@@ -56,12 +53,9 @@ describe Chef::Provider::ErlCall do
 
     it "should write to stdin of the erl_call command" do
       expected_cmd = "erl_call -e -s -sname chef@localhost -c nomnomnom"
-      expect(@provider).to receive(:popen4).with(expected_cmd, :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
-      expect(Process).to receive(:wait).with(@pid)
+      expect(@provider).to receive(:shell_out!).with(expected_cmd, input: @new_resource.code).and_return(@status)
 
       @provider.action_run
-
-      expect(@stdin.string).to eq("#{@new_resource.code}\n")
     end
   end
 
@@ -73,12 +67,10 @@ describe Chef::Provider::ErlCall do
     end
 
     it "should write to stdin of the erl_call command" do
-      expect(@provider).to receive(:popen4).with("erl_call -e  -name chef@localhost ", :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
-      expect(Process).to receive(:wait).with(@pid)
+      expected_cmd = "erl_call -e  -name chef@localhost "
+      expect(@provider).to receive(:shell_out!).with(expected_cmd, input: @new_resource.code).and_return(@status)
 
       @provider.action_run
-
-      expect(@stdin.string).to eq("#{@new_resource.code}\n")
     end
   end
 
