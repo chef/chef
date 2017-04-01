@@ -25,10 +25,6 @@ class Chef
 
       provides :mdadm
 
-      def popen4
-        raise Exception, "deprecated"
-      end
-
       def load_current_resource
         @current_resource = Chef::Resource::Mdadm.new(new_resource.name)
         current_resource.raid_device(new_resource.raid_device)

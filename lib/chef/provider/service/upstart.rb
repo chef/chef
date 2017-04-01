@@ -240,17 +240,16 @@ class Chef
 
         def upstart_goal_state
           command = "/sbin/status #{@job}"
-          status = popen4(command) do |pid, stdin, stdout, stderr|
-            stdout.each_line do |line|
-              # service goal/state
-              # OR
-              # service (instance) goal/state
-              # OR
-              # service (goal) state
-              line =~ UPSTART_STATE_FORMAT
-              data = Regexp.last_match
-              return data[1]
-            end
+          so = shell_out(command)
+          so.stdout.each_line do |line|
+            # service goal/state
+            # OR
+            # service (instance) goal/state
+            # OR
+            # service (goal) state
+            line =~ UPSTART_STATE_FORMAT
+            data = Regexp.last_match
+            return data[1]
           end
         end
 

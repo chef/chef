@@ -94,13 +94,7 @@ class Chef
           if !new_resource.password.nil? && (current_resource.password != new_resource.password)
             Chef::Log.debug("#{new_resource} updating password")
             command = "pw usermod #{new_resource.username} -H 0"
-            status = popen4(command, waitlast: true) do |pid, stdin, stdout, stderr|
-              stdin.puts new_resource.password.to_s
-            end
-
-            unless status.exitstatus == 0
-              raise Chef::Exceptions::User, "pw failed - #{status.inspect}!"
-            end
+            shell_out!(command, input: new_resource.password.to_s)
           else
             Chef::Log.debug("#{new_resource} no change needed to password")
           end
