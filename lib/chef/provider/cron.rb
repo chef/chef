@@ -201,29 +201,14 @@ class Chef
 
       def read_crontab
         crontab = nil
-        status = popen4("crontab -l -u #{new_resource.user}") do |pid, stdin, stdout, stderr|
-          crontab = stdout.read
-        end
-        if status.exitstatus > 1
-          raise Chef::Exceptions::Cron, "Error determining state of #{new_resource.name}, exit: #{status.exitstatus}"
-        end
-        crontab
+        so = shell_out!("crontab -l -u #{new_resource.user}", returns: [0, 1])
+        return nil if so.exitstatus == 1
+        so.stdout
       end
 
       def write_crontab(crontab)
         write_exception = false
-        status = popen4("crontab -u #{new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
-          begin
-            stdin.write crontab
-          rescue Errno::EPIPE => e
-            # popen4 could yield while child has already died.
-            write_exception = true
-            Chef::Log.debug("#{e.message}")
-          end
-        end
-        if status.exitstatus > 0 || write_exception
-          raise Chef::Exceptions::Cron, "Error updating state of #{new_resource.name}, exit: #{status.exitstatus}"
-        end
+        shell_out!("crontab -u #{new_resource.user} -", input: crontab)
       end
 
       def get_crontab_entry
