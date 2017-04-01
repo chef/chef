@@ -17,13 +17,11 @@
 #
 
 require "chef/log"
-require "chef/mixin/command"
 require "chef/provider"
 
 class Chef
   class Provider
     class Cron < Chef::Provider
-      include Chef::Mixin::Command
 
       provides :cron, os: ["!aix", "!solaris2"]
 
@@ -202,30 +200,18 @@ class Chef
       end
 
       def read_crontab
-        crontab = nil
-        status = popen4("crontab -l -u #{new_resource.user}") do |pid, stdin, stdout, stderr|
-          crontab = stdout.read
-        end
-        if status.exitstatus > 1
-          raise Chef::Exceptions::Cron, "Error determining state of #{new_resource.name}, exit: #{status.exitstatus}"
-        end
-        crontab
+        so = shell_out!("crontab -l -u #{new_resource.user}", returns: [0, 1])
+        return nil if so.exitstatus == 1
+        so.stdout
+      rescue => e
+        raise Chef::Exceptions::Cron, "Error determining state of #{new_resource.name}, error: #{e}"
       end
 
       def write_crontab(crontab)
         write_exception = false
-        status = popen4("crontab -u #{new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
-          begin
-            stdin.write crontab
-          rescue Errno::EPIPE => e
-            # popen4 could yield while child has already died.
-            write_exception = true
-            Chef::Log.debug("#{e.message}")
-          end
-        end
-        if status.exitstatus > 0 || write_exception
-          raise Chef::Exceptions::Cron, "Error updating state of #{new_resource.name}, exit: #{status.exitstatus}"
-        end
+        so = shell_out!("crontab -u #{new_resource.user} -", input: crontab)
+      rescue => e
+        raise Chef::Exceptions::Cron, "Error updating state of #{new_resource.name}, error: #{e}"
       end
 
       def get_crontab_entry

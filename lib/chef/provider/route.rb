@@ -17,14 +17,12 @@
 #
 
 require "chef/log"
-require "chef/mixin/command"
 require "chef/provider"
 require "ipaddr"
 
 class Chef
   class Provider
     class Route < Chef::Provider
-      include Chef::Mixin::Command
 
       provides :route
 

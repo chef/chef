@@ -17,7 +17,6 @@
 #
 
 require "chef/mixin/shell_out"
-require "chef/mixin/command"
 require "chef/mixin/subclass_directive"
 require "chef/log"
 require "chef/file_cache"
@@ -28,7 +27,6 @@ require "shellwords"
 class Chef
   class Provider
     class Package < Chef::Provider
-      include Chef::Mixin::Command
       include Chef::Mixin::ShellOut
       extend Chef::Mixin::SubclassDirective
 

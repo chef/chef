@@ -17,7 +17,6 @@
 #
 
 require "chef/provider/service/simple"
-require "chef/mixin/command"
 require "chef/platform/service_helpers"
 
 class Chef

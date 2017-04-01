@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +43,7 @@ describe Chef::Provider::Subversion do
     ENV.update(@original_env)
   end
 
-  it "converts resource attributes to options for run_command and popen4" do
+  it "converts resource attributes to options for shell_out" do
     expect(@provider.run_options).to eq({})
     @resource.user "deployninja"
     expect(@provider.run_options).to eq({ :user => "deployninja" })

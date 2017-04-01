@@ -17,7 +17,6 @@
 #
 
 require "chef/provider/package"
-require "chef/mixin/command"
 require "chef/resource/package"
 require "chef/util/path_helper"
 

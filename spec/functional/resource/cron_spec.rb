@@ -1,7 +1,7 @@
 # encoding: UTF-8
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -161,7 +161,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
 
     def cron_create_should_raise_exception
-      expect { new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron, /Error updating state of #{new_resource.name}, exit: 1/)
+      expect { new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron)
       cron_should_not_exists(new_resource.name)
     end
 

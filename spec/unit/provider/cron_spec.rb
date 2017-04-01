@@ -880,8 +880,7 @@ MAILTO=foo@example.com
 
   describe "read_crontab" do
     before :each do
-      @status = double("Status", :exitstatus => 0)
-      @stdout = StringIO.new(<<-CRONTAB)
+      @stdout = <<-CRONTAB
 0 2 * * * /some/other/command
 
 # Chef Name: something else
@@ -889,11 +888,12 @@ MAILTO=foo@example.com
 
 # Another comment
       CRONTAB
-      allow(@provider).to receive(:popen4).and_yield(1234, StringIO.new, @stdout, StringIO.new).and_return(@status)
+      @status = double("Status", exitstatus: 0, stdout: @stdout)
+      allow(@provider).to receive(:shell_out!).and_return(@status)
     end
 
     it "should call crontab -l with the user" do
-      expect(@provider).to receive(:popen4).with("crontab -l -u #{@new_resource.user}").and_return(@status)
+      expect(@provider).to receive(:shell_out!).with("crontab -l -u #{@new_resource.user}", returns: [0, 1]).and_return(@status)
       @provider.send(:read_crontab)
     end
 
@@ -910,60 +910,36 @@ MAILTO=foo@example.com
     end
 
     it "should return nil if the user has no crontab" do
-      status = double("Status", :exitstatus => 1)
-      allow(@provider).to receive(:popen4).and_return(status)
+      @status = double("Status", exitstatus: 1, stdout: "")
+      allow(@provider).to receive(:shell_out!).and_return(@status)
       expect(@provider.send(:read_crontab)).to eq(nil)
     end
 
     it "should raise an exception if another error occurs" do
-      status = double("Status", :exitstatus => 2)
-      allow(@provider).to receive(:popen4).and_return(status)
-      expect do
-        @provider.send(:read_crontab)
-      end.to raise_error(Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: 2")
+      @status = double("Status", exitstatus: 2)
+      allow(@provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      expect { @provider.send(:read_crontab) }.to raise_error(Chef::Exceptions::Cron)
     end
   end
 
   describe "write_crontab" do
     before :each do
-      @status = double("Status", :exitstatus => 0)
-      @stdin = StringIO.new
-      allow(@provider).to receive(:popen4).and_yield(1234, @stdin, StringIO.new, StringIO.new).and_return(@status)
+      @status = double("Status", exitstatus: 0)
+      allow(@provider).to receive(:shell_out!).and_return(@status)
     end
 
     it "should call crontab for the user" do
-      expect(@provider).to receive(:popen4).with("crontab -u #{@new_resource.user} -", :waitlast => true).and_return(@status)
+      expect(@provider).to receive(:shell_out!).with("crontab -u #{@new_resource.user} -", input: "Foo").and_return(@status)
       @provider.send(:write_crontab, "Foo")
     end
 
-    it "should write the given string to the crontab command" do
-      @provider.send(:write_crontab, "Foo\n# wibble\n wah!!")
-      expect(@stdin.string).to eq("Foo\n# wibble\n wah!!")
-    end
-
     it "should raise an exception if the command returns non-zero" do
-      allow(@status).to receive(:exitstatus).and_return(1)
+      @status = double("Status", exitstatus: 1)
+      allow(@provider).to receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       expect do
         @provider.send(:write_crontab, "Foo")
-      end.to raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
+      end.to raise_error(Chef::Exceptions::Cron)
     end
-
-    it "should raise an exception if the command die's and parent tries to write" do
-      class WriteErrPipe
-        def write(str)
-          raise Errno::EPIPE, "Test"
-        end
-      end
-      allow(@status).to receive(:exitstatus).and_return(1)
-      allow(@provider).to receive(:popen4).and_yield(1234, WriteErrPipe.new, StringIO.new, StringIO.new).and_return(@status)
-
-      expect(Chef::Log).to receive(:debug).with("Broken pipe - Test")
-
-      expect do
-        @provider.send(:write_crontab, "Foo")
-      end.to raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
-    end
-
   end
 
   describe "weekday_in_crontab" do

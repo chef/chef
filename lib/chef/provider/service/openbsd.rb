@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require "chef/mixin/command"
 require "chef/mixin/shell_out"
 require "chef/provider/service/init"
 require "chef/resource/service"

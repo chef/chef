@@ -17,13 +17,11 @@
 #
 
 require "chef/provider"
-require "chef/mixin/command"
 require "etc"
 
 class Chef
   class Provider
     class User < Chef::Provider
-      include Chef::Mixin::Command
 
       attr_accessor :user_exists, :locked
 

@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,8 +35,6 @@ class Chef
 
         def load_current_resource
           super
-          @priority_success = true
-          @rcd_status = nil
           current_resource.priority(get_priority)
           current_resource.enabled(service_currently_enabled?(current_resource.priority))
           current_resource
@@ -54,8 +52,8 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @priority_success }
-            a.failure_message Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{current_resource.service_name} failed - #{@rcd_status.inspect}"
+            a.assertion { @so_priority.exitstatus == 0 }
+            a.failure_message Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{current_resource.service_name} failed - #{@so_priority.inspect}"
             # This can happen if the service is not yet installed,so we'll fake it.
             a.whyrun ["Unable to determine priority of service, assuming service would have been correctly installed earlier in the run.",
                       "Assigning temporary priorities to continue.",
@@ -75,19 +73,18 @@ class Chef
         def get_priority
           priority = {}
 
-          @rcd_status = popen4("/usr/sbin/update-rc.d -n -f #{current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
+          @so_priority = shell_out!("/usr/sbin/update-rc.d -n -f #{current_resource.service_name} remove")
 
-            [stdout, stderr].each do |iop|
-              iop.each_line do |line|
-                if UPDATE_RC_D_PRIORITIES =~ line
-                  # priority[runlevel] = [ S|K, priority ]
-                  # S = Start, K = Kill
-                  # debian runlevels: 0 Halt, 1 Singleuser, 2 Multiuser, 3-5 == 2, 6 Reboot
-                  priority[$1] = [($2 == "S" ? :start : :stop), $3]
-                end
-                if line =~ UPDATE_RC_D_ENABLED_MATCHES
-                  enabled = true
-                end
+          [@so_priority.stdout, @so_priority.stderr].each do |iop|
+            iop.each_line do |line|
+              if UPDATE_RC_D_PRIORITIES =~ line
+                # priority[runlevel] = [ S|K, priority ]
+                # S = Start, K = Kill
+                # debian runlevels: 0 Halt, 1 Singleuser, 2 Multiuser, 3-5 == 2, 6 Reboot
+                priority[$1] = [($2 == "S" ? :start : :stop), $3]
+              end
+              if line =~ UPDATE_RC_D_ENABLED_MATCHES
+                enabled = true
               end
             end
           end
@@ -98,9 +95,6 @@ class Chef
             priority = priority[2].last
           end
 
-          unless @rcd_status.exitstatus == 0
-            @priority_success = false
-          end
           priority
         end
 

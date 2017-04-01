@@ -17,14 +17,11 @@
 # limitations under the License.
 #
 
-require "chef/mixin/command"
 require "chef/provider"
 
 class Chef
   class Provider
     class Service < Chef::Provider
-
-      include Chef::Mixin::Command
 
       def supports
         @supports ||= new_resource.supports.dup
