@@ -26,7 +26,6 @@ end
 # For nokogiri
 dependency "libxml2"
 dependency "libxslt"
-dependency "libiconv"
 dependency "liblzma"
 dependency "zlib"
 
