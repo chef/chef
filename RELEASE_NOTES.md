@@ -182,3 +182,14 @@ the first place (`some_resource "name_two" do ...`)
 
 All the APIs in chef/mixlib/command have been removed.  They were deprecated by mixlib-shellout and the shell_out mixin API.
 
+### Iconv has been removed from the ruby libraries and chef omnibus build
+
+The ruby Iconv library was replaced by the Encoding library in ruby 1.9.x and since the deprecation of ruby 1.8.7 there has been no need
+for the Iconv library but we have carried it forwards as a dependency since removing it might break some chef code out there which used
+this library.  It has now been removed from the ruby build.  This also removes LGPLv3 code from the omnibus build and reduces build
+headaches from porting iconv to every platform we ship chef-client on.
+
+This will also affect nokogiri, but that gem natively supports UTF-8, UTF-16LE/BE, ISO-8851-1(Latin-1), ASCII and "HTML" encodings.  Users
+who really need to write something like Shift-JIS inside of XML will need to either maintain their own nokogiri installs or will need to
+convert to using UTF-8.
+
