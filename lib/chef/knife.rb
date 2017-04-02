@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -265,8 +265,7 @@ class Chef
         ui.fatal("Cannot find subcommand for: '#{args.join(' ')}'")
 
         # Mention rehash when the subcommands cache(plugin_manifest.json) is used
-        if subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::HashedCommandLoader) ||
-            subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::CustomManifestLoader)
+        if subcommand_loader.is_a?(Chef::Knife::SubcommandLoader::HashedCommandLoader)
           ui.info("If this is a recently installed plugin, please run 'knife rehash' to update the subcommands cache.")
         end
 
