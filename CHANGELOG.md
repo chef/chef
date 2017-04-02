@@ -1,7 +1,14 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.83](https://github.com/chef/chef/tree/v13.0.83) (2017-03-31)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.83)
+## [v13.0.84](https://github.com/chef/chef/tree/v13.0.84) (2017-04-02)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.84...v13.0.84)
+
+**Merged pull requests:**
+
+- Chef-13: fix notifying array resources [\#5984](https://github.com/chef/chef/pull/5984) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v13.0.84](https://github.com/chef/chef/tree/v13.0.84) (2017-04-01)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.84)
 
 **Closed issues:**
 
