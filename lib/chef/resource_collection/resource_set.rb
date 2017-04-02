@@ -161,27 +161,39 @@ class Chef
       end
 
       def find_resource_by_string(arg)
-        results = Array.new
-        case arg
-          when MULTIPLE_RESOURCE_MATCH
-            resource_type = $1
-            arg =~ /^.+\[(.+)\]$/
-            resource_list = $1
-            resource_list.split(",").each do |instance_name|
-              results << lookup(create_key(resource_type, instance_name))
-            end
-          when SINGLE_RESOURCE_MATCH
+        begin
+          if arg =~ SINGLE_RESOURCE_MATCH
             resource_type = $1
             name = $2
-            results << lookup(create_key(resource_type, name))
-          when NAMELESS_RESOURCE_MATCH
-            resource_type = $1
-            name = ""
-            results << lookup(create_key(resource_type, name))
+            return [ lookup(create_key(resource_type, name)) ]
+          end
+        rescue Chef::Exceptions::ResourceNotFound => e
+          if arg =~ MULTIPLE_RESOURCE_MATCH
+            begin
+              results = Array.new
+              resource_type = $1
+              arg =~ /^.+\[(.+)\]$/
+              resource_list = $1
+              resource_list.split(",").each do |instance_name|
+                results << lookup(create_key(resource_type, instance_name))
+              end
+              Chef.deprecated(:multiresource_match, "The resource_collection multi-resource syntax is deprecated")
+              return results
+            rescue  Chef::Exceptions::ResourceNotFound
+              raise e
+            end
           else
-            raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
+            raise e
+          end
         end
-        results
+
+        if arg =~ NAMELESS_RESOURCE_MATCH
+          resource_type = $1
+          name = ""
+          return [ lookup(create_key(resource_type, name)) ]
+        end
+
+        raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
       end
     end
   end

@@ -27,6 +27,7 @@ describe Chef::ResourceCollection::ResourceSet do
   let(:zen_master) { Chef::Resource::ZenMaster.new(zen_master_name) }
   let(:zen_master2) { Chef::Resource::ZenMaster.new(zen_master2_name) }
   let(:zen_follower) { Chef::Resource::ZenFollower.new(zen_follower_name) }
+  let(:zen_array) { Chef::Resource::ZenMaster.new( [ zen_master_name, zen_master2_name ]) }
 
   describe "initialize" do
     it "should return a Chef::ResourceSet" do
@@ -113,13 +114,27 @@ describe Chef::ResourceCollection::ResourceSet do
     end
 
     it "should find resources by strings of zen_master[a,b]" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       collection.insert_as(zen_master)
       collection.insert_as(zen_master2)
       check_by_names(collection.find("zen_master[#{zen_master_name},#{zen_master2_name}]"),
                      zen_master_name, zen_master2_name)
     end
 
+    it "should find array names" do
+      collection.insert_as(zen_array)
+      expect(collection.find("zen_master[#{zen_master_name}, #{zen_master2_name}]")).to eql(zen_array)
+    end
+
+    it "should favor array names over multi resource syntax" do
+      collection.insert_as(zen_master)
+      collection.insert_as(zen_master2)
+      collection.insert_as(zen_array)
+      expect(collection.find("zen_master[#{zen_master_name}, #{zen_master2_name}]")).to eql(zen_array)
+    end
+
     it "should find resources by strings of zen_master[a,b] with custom names" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       collection.insert_as(zen_master, :zzz, "name1")
       collection.insert_as(zen_master2, :zzz, "name2")
       check_by_names(collection.find("zzz[name1,name2]"),
@@ -134,6 +149,7 @@ describe Chef::ResourceCollection::ResourceSet do
     end
 
     it "should find resources of multiple types by strings of zen_master[a] with custom names" do
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
       collection.insert_as(zen_master, :zzz, "name1")
       collection.insert_as(zen_master2, :zzz, "name2")
       collection.insert_as(zen_follower, :yyy, "name3")
