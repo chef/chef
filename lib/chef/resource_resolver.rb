@@ -54,11 +54,6 @@ class Chef
     # @api private
     attr_reader :resource_name
     # @api private
-    def resource
-      Chef.deprecated(:custom_resource, "Chef::ResourceResolver.resource deprecated.  Use resource_name instead.")
-      resource_name
-    end
-    # @api private
     attr_reader :action
     # @api private
     attr_reader :canonical
