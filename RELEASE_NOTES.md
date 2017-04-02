@@ -178,3 +178,7 @@ built.  The end result is that the above resource will be named `some_resource[n
 the name (*not* the `name_property`, but actually renaming the resource) is very uncommon.  The fix is to simply name the resource correctly in
 the first place (`some_resource "name_two" do ...`)
 
+### Removal of run_command and popen4 APIs
+
+All the APIs in chef/mixlib/command have been removed.  They were deprecated by mixlib-shellout and the shell_out mixin API.
+
