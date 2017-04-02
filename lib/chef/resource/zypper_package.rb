@@ -23,6 +23,8 @@ class Chef
     class ZypperPackage < Chef::Resource::Package
       resource_name :zypper_package
       provides :package, platform_family: "suse"
+
+      property :gpg_check, [ TrueClass, FalseClass ], default: lazy { Chef::Config[:zypper_check_gpg] }
     end
   end
 end
