@@ -1,14 +1,14 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.84](https://github.com/chef/chef/tree/v13.0.84) (2017-04-02)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.84...v13.0.84)
+## [v13.0.85](https://github.com/chef/chef/tree/v13.0.85) (2017-04-02)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.85...v13.0.85)
 
 **Merged pull requests:**
 
-- Chef-13: fix notifying array resources [\#5984](https://github.com/chef/chef/pull/5984) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: Remove deprecated Chef::ResourceResolver.resource API [\#5988](https://github.com/chef/chef/pull/5988) ([lamont-granquist](https://github.com/lamont-granquist))
 
-## [v13.0.84](https://github.com/chef/chef/tree/v13.0.84) (2017-04-01)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.84)
+## [v13.0.85](https://github.com/chef/chef/tree/v13.0.85) (2017-04-02)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.85)
 
 **Closed issues:**
 
@@ -18,6 +18,8 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- Chef-13: remove deprecated run\_command API entirely [\#5985](https://github.com/chef/chef/pull/5985) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: fix notifying array resources [\#5984](https://github.com/chef/chef/pull/5984) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove deprecated launchd resource hash property [\#5983](https://github.com/chef/chef/pull/5983) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13:  remove Chef::Resource.updated= [\#5982](https://github.com/chef/chef/pull/5982) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove more deprecated method\_missing access [\#5979](https://github.com/chef/chef/pull/5979) ([lamont-granquist](https://github.com/lamont-granquist))
