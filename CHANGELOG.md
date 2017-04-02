@@ -1,14 +1,14 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.85](https://github.com/chef/chef/tree/v13.0.85) (2017-04-02)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.85...v13.0.85)
+## [v13.0.86](https://github.com/chef/chef/tree/v13.0.86) (2017-04-02)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.86...v13.0.86)
 
 **Merged pull requests:**
 
-- Chef-13: Remove deprecated Chef::ResourceResolver.resource API [\#5988](https://github.com/chef/chef/pull/5988) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: remove iconv from the chef build [\#5993](https://github.com/chef/chef/pull/5993) ([lamont-granquist](https://github.com/lamont-granquist))
 
-## [v13.0.85](https://github.com/chef/chef/tree/v13.0.85) (2017-04-02)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.85)
+## [v13.0.86](https://github.com/chef/chef/tree/v13.0.86) (2017-04-02)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.86)
 
 **Closed issues:**
 
@@ -18,6 +18,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- Chef-13: Remove deprecated Chef::ResourceResolver.resource API [\#5988](https://github.com/chef/chef/pull/5988) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove deprecated run\_command API entirely [\#5985](https://github.com/chef/chef/pull/5985) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: fix notifying array resources [\#5984](https://github.com/chef/chef/pull/5984) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove deprecated launchd resource hash property [\#5983](https://github.com/chef/chef/pull/5983) ([lamont-granquist](https://github.com/lamont-granquist))
@@ -56,7 +57,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Chef-13:  remove supports API from Chef::Resource [\#5863](https://github.com/chef/chef/pull/5863) ([lamont-granquist](https://github.com/lamont-granquist))
 - HTTP: add debug long for non-JSON response [\#5858](https://github.com/chef/chef/pull/5858) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13 remove resource cloning and 3694 warnings [\#5856](https://github.com/chef/chef/pull/5856) ([lamont-granquist](https://github.com/lamont-granquist))
-- Chef-13: support why-run by default [\#5853](https://github.com/chef/chef/pull/5853) ([lamont-granquist](https://github.com/lamont-granquist))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
