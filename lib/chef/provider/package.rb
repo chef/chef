@@ -52,11 +52,7 @@ class Chef
       end
 
       def options
-        if new_resource.options.is_a?(String)
-          new_resource.options.shellsplit
-        else
-          new_resource.options
-        end
+        new_resource.options
       end
 
       def check_resource_semantics!
