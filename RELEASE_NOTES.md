@@ -193,3 +193,19 @@ This will also affect nokogiri, but that gem natively supports UTF-8, UTF-16LE/B
 who really need to write something like Shift-JIS inside of XML will need to either maintain their own nokogiri installs or will need to
 convert to using UTF-8.
 
+### Deprecated cookbook metadata has been removed
+
+The `recommends`, `suggests`, `conflicts`, `replaces` and `grouping`
+metadata fields are no longer supported, and have been removed, since
+they were never used. Chef will ignore them in existing `metadata.rb`
+files, but we recommend that you remove them. This was proposed in RFC 85.
+
+### All unignored cookbook files will now be uploaded.
+
+We now treat every file under a cookbook directory as belonging to a
+cookbook, unless that file is ignored with a `chefignore` file. This is
+a change from the previous behaviour where only files in certain
+directories, such as `recipes` or `templates`, were treated as special.
+This change allows chef to support new classes of files, such as Ohai
+plugins or Inspec tests, without having to make changes to the cookbook
+format to support them.
