@@ -1488,27 +1488,6 @@ class Chef
       self.class.resource_for_node(name, node).new("name", run_context).provider_for_action(action).class
     end
 
-    module DeprecatedLWRPClass
-
-      # @api private
-      def register_deprecated_lwrp_class(resource_class, class_name)
-        if Chef::Resource.const_defined?(class_name, false)
-          Chef::Log.warn "#{class_name} already exists!  Deprecation class overwrites #{resource_class}"
-          Chef::Resource.send(:remove_const, class_name)
-        end
-
-        if !Chef::Config[:treat_deprecation_warnings_as_errors]
-          Chef::Resource.const_set(class_name, resource_class)
-          Chef::Resource.deprecated_constants[class_name.to_sym] = resource_class
-        end
-      end
-
-      def deprecated_constants
-        raise "Deprecated constants should be called only on Chef::Resource" unless self == Chef::Resource
-        @deprecated_constants ||= {}
-      end
-    end
-
     def self.remove_canonical_dsl
       if @resource_name
         remaining = Chef.resource_handler_map.delete_canonical(@resource_name, self)
@@ -1517,7 +1496,6 @@ class Chef
         end
       end
     end
-    extend DeprecatedLWRPClass
   end
 end
 

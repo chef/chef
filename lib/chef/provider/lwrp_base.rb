@@ -75,8 +75,6 @@ class Chef
 
           LWRPBase.loaded_lwrps[filename] = true
 
-          Chef::Provider.register_deprecated_lwrp_class(provider_class, convert_to_class_name(resource_name))
-
           provider_class
         end
 
