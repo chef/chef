@@ -73,6 +73,8 @@ class Chef
           "resources"              => reporter_data[:resources].map(&:report_data),
           "run_id"                 => run_status.run_id,
           "run_list"               => run_status.node.run_list.for_json,
+          "policy_name"            => run_status.node.policy_name,
+          "policy_group"           => run_status.node.policy_group,
           "start_time"             => run_status.start_time.utc.iso8601,
           "end_time"               => run_status.end_time.utc.iso8601,
           "source"                 => collector_source,
