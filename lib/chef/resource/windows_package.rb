@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,6 +36,9 @@ class Chef
         super
         @source ||= source(@package_name) if @package_name.downcase.end_with?(".msi")
       end
+
+      # windows can't take array options yet
+      property :options, String
 
       # Unique to this resource
       property :installer_type, Symbol
