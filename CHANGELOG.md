@@ -1,13 +1,22 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.87](https://github.com/chef/chef/tree/v13.0.87) (2017-04-02)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.87)
+## [v13.0.88](https://github.com/chef/chef/tree/v13.0.88) (2017-04-03)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.88...v13.0.88)
+
+**Merged pull requests:**
+
+- Chef-13 knife search exit 1 when no results [\#5994](https://github.com/chef/chef/pull/5994) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: coerce package options property to an Array [\#5991](https://github.com/chef/chef/pull/5991) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: turn on zypper gpg checks by default [\#5990](https://github.com/chef/chef/pull/5990) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: remove deprecated knife subcommand APIs [\#5989](https://github.com/chef/chef/pull/5989) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v13.0.88](https://github.com/chef/chef/tree/v13.0.88) (2017-04-03)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.88)
 
 **Closed issues:**
 
 - powershell\_script's default guard\_interpreter should be :powershell\_script [\#5953](https://github.com/chef/chef/issues/5953)
 - powershell\_out stdout contains '\r\n' at the end of the output [\#5947](https://github.com/chef/chef/issues/5947)
-- `group` resource not idempotent on Windows \(12.19.36\) [\#5857](https://github.com/chef/chef/issues/5857)
 
 **Merged pull requests:**
 
@@ -49,8 +58,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Chef-13: convert additional resource methods to properties [\#5871](https://github.com/chef/chef/pull/5871) ([lamont-granquist](https://github.com/lamont-granquist))
 - Add the ability to blacklist attributes from being saved to the chef server [\#5868](https://github.com/chef/chef/pull/5868) ([robmul](https://github.com/robmul))
 - Chef-13:  remove supports API from Chef::Resource [\#5863](https://github.com/chef/chef/pull/5863) ([lamont-granquist](https://github.com/lamont-granquist))
-- HTTP: add debug long for non-JSON response [\#5858](https://github.com/chef/chef/pull/5858) ([lamont-granquist](https://github.com/lamont-granquist))
-- Chef-13 remove resource cloning and 3694 warnings [\#5856](https://github.com/chef/chef/pull/5856) ([lamont-granquist](https://github.com/lamont-granquist))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
