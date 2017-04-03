@@ -53,13 +53,13 @@ describe Chef::Formatters::ErrorDescription do
       stub_const("RUBY_DESCRIPTION", "ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]")
       allow(subject).to receive(:caller) { Kernel.caller + ["/test/bin/chef-client:1:in `<main>'"] }
       allow(File).to receive(:realpath).and_call_original
-      allow(File).to receive(:realpath).with('/test/bin/chef-client').and_return('/test/bin/chef-client')
+      allow(File).to receive(:realpath).with("/test/bin/chef-client").and_return("/test/bin/chef-client")
     end
 
     around do |ex|
       old_program_name = $PROGRAM_NAME
       begin
-        $PROGRAM_NAME = 'chef-client'
+        $PROGRAM_NAME = "chef-client"
         ex.run
       ensure
         $PROGRAM_NAME = old_program_name
@@ -117,7 +117,7 @@ executable=/test/bin/chef-client
       it "should output the expected sections" do
         # This can't be in a before block because the spec-wide helper calls a
         # reset on global values.
-        Chef.set_node({"platform" => "openvms", "platform_version" => "8.4-2L1"})
+        Chef.set_node({ "platform" => "openvms", "platform_version" => "8.4-2L1" })
         subject.display(out)
         expect(out.out.string).to eq <<-END
 ================================================================================
