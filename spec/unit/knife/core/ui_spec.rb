@@ -3,7 +3,7 @@
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,6 @@ describe Chef::Knife::UI do
       :field_separator => ".",
     }
     @ui = Chef::Knife::UI.new(@out, @err, @in, @config)
-    Chef::Config[:treat_deprecation_warnings_as_errors] = false
   end
 
   class TestObject < OpenStruct
