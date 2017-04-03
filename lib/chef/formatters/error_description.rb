@@ -17,8 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/version'
-
+require "chef/version"
 
 class Chef
   module Formatters
@@ -68,7 +67,7 @@ class Chef
       end
 
       def error_context_info
-        context_info = {chef_version: Chef::VERSION}
+        context_info = { chef_version: Chef::VERSION }
         if Chef.node
           context_info[:platform] = Chef.node["platform"]
           context_info[:platform_version] = Chef.node["platform_version"]
@@ -79,7 +78,7 @@ class Chef
         context_info[:program_name] = $PROGRAM_NAME
         # This is kind of wonky but it's the only way to get the entry path script.
         context_info[:executable] = File.realpath(caller.last[/^(.*):\d+:in /, 1])
-        context_info.map {|k, v| "#{k}=#{v}"}.join("\n")
+        context_info.map { |k, v| "#{k}=#{v}" }.join("\n")
       end
 
     end
