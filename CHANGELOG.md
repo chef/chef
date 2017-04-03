@@ -1,17 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.88](https://github.com/chef/chef/tree/v13.0.88) (2017-04-03)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.88...v13.0.88)
-
-**Merged pull requests:**
-
-- Chef-13 knife search exit 1 when no results [\#5994](https://github.com/chef/chef/pull/5994) ([lamont-granquist](https://github.com/lamont-granquist))
-- Chef-13: coerce package options property to an Array [\#5991](https://github.com/chef/chef/pull/5991) ([lamont-granquist](https://github.com/lamont-granquist))
-- Chef-13: turn on zypper gpg checks by default [\#5990](https://github.com/chef/chef/pull/5990) ([lamont-granquist](https://github.com/lamont-granquist))
-- Chef-13: remove deprecated knife subcommand APIs [\#5989](https://github.com/chef/chef/pull/5989) ([lamont-granquist](https://github.com/lamont-granquist))
-
-## [v13.0.88](https://github.com/chef/chef/tree/v13.0.88) (2017-04-03)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.88)
+## [v13.0.89](https://github.com/chef/chef/tree/v13.0.89) (2017-04-03)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.89)
 
 **Closed issues:**
 
@@ -20,7 +10,11 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- Chef-13 knife search exit 1 when no results [\#5994](https://github.com/chef/chef/pull/5994) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove iconv from the chef build [\#5993](https://github.com/chef/chef/pull/5993) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: coerce package options property to an Array [\#5991](https://github.com/chef/chef/pull/5991) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: turn on zypper gpg checks by default [\#5990](https://github.com/chef/chef/pull/5990) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef-13: remove deprecated knife subcommand APIs [\#5989](https://github.com/chef/chef/pull/5989) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: Remove deprecated Chef::ResourceResolver.resource API [\#5988](https://github.com/chef/chef/pull/5988) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove deprecated run\_command API entirely [\#5985](https://github.com/chef/chef/pull/5985) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: fix notifying array resources [\#5984](https://github.com/chef/chef/pull/5984) ([lamont-granquist](https://github.com/lamont-granquist))
