@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-server
-  revision: b670bd5f2ed1f56a39ab0c211efd4204b6978422
+  revision: 96b05f83f616b7cf1eec289a00eb599de903819b
   specs:
     oc-chef-pedant (2.2.0)
       activesupport (>= 4.2.7.1, < 6.0)
@@ -205,13 +205,13 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.8.1)
     ast (2.3.0)
-    aws-sdk (2.9.1)
-      aws-sdk-resources (= 2.9.1)
-    aws-sdk-core (2.9.1)
+    aws-sdk (2.9.2)
+      aws-sdk-resources (= 2.9.2)
+    aws-sdk-core (2.9.2)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.9.1)
-      aws-sdk-core (= 2.9.1)
+    aws-sdk-resources (2.9.2)
+      aws-sdk-core (= 2.9.2)
     aws-sigv4 (1.0.0)
     backports (3.7.0)
     binding_of_caller (0.7.2)
@@ -340,7 +340,7 @@ GEM
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
-    mini_portile (0.6.2)
+    mini_portile2 (2.1.0)
     minitest (5.10.1)
     mixlib-archive (0.4.1)
       mixlib-log
@@ -377,10 +377,10 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     net-telnet (0.1.1)
     netrc (0.11.0)
-    nokogiri (1.6.6.4)
-      mini_portile (~> 0.6.0)
-    nokogiri (1.6.6.4-x86-mingw32)
-      mini_portile (~> 0.6.0)
+    nokogiri (1.7.1)
+      mini_portile2 (~> 2.1.0)
+    nokogiri (1.7.1-x86-mingw32)
+      mini_portile2 (~> 2.1.0)
     nori (2.6.0)
     octokit (4.6.2)
       sawyer (~> 0.8.0, >= 0.5.3)
