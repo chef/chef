@@ -48,6 +48,7 @@ class Chef
       configure_chef
       configure_logging
       configure_encoding
+      emit_warnings
     end
 
     # Get this party started
@@ -77,6 +78,10 @@ class Chef
           reconfigure
         end
       end
+    end
+
+    def emit_warnings
+      Chef::Log.warn "Chef::Config[:zypper_check_gpg] is set to false which disables security checking on zypper packages" unless Chef::Config[:zypper_check_gpg]
     end
 
     # Parse configuration (options and config file)

@@ -641,11 +641,10 @@ module ChefConfig
     # generation (server generates client keys).
     default(:local_key_generation) { true }
 
-    # Zypper package provider gpg checks. Set to true to enable package
-    # gpg signature checking. This will be default in the
-    # future. Setting to false disables the warnings.
-    # Leaving this set to nil or false is a security hazard!
-    default :zypper_check_gpg, nil
+    # Zypper package provider gpg checks. Set to false to disable package
+    # gpg signature checking globally.  This will warn you that it is a
+    # bad thing to do.
+    default :zypper_check_gpg, true
 
     # Report Handlers
     default :report_handlers, []

@@ -2,7 +2,7 @@
 #
 # Authors:: Adam Jacob (<adam@chef.io>)
 #           Ionuț Arțăriși (<iartarisi@suse.cz>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 #             Copyright 2013-2016, SUSE Linux GmbH
 # License:: Apache License, Version 2.0
 #
@@ -145,17 +145,7 @@ class Chef
         end
 
         def gpg_checks
-          case Chef::Config[:zypper_check_gpg]
-          when true
-            nil
-          when false
-            "--no-gpg-checks"
-          when nil
-            Chef::Log.warn("Chef::Config[:zypper_check_gpg] was not set. " \
-              "All packages will be installed without gpg signature checks. " \
-              "This is a security hazard.")
-            "--no-gpg-checks"
-          end
+          "--no-gpg-checks" unless new_resource.gpg_check
         end
       end
     end
