@@ -108,7 +108,7 @@ class Chef
         rescue Net::HTTPServerException => e
           msg = Chef::JSONCompat.from_json(e.response.body)["error"].first
           ui.error("knife search failed: #{msg}")
-          exit 1
+          exit 99
         end
 
         if ui.interchange?
@@ -123,6 +123,9 @@ class Chef
             end
           end
         end
+
+        # return a "failure" code to the shell so that knife search can be used in pipes similar to grep
+        exit 1 if result_count == 0
       end
 
       def read_cli_args
