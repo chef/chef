@@ -36,7 +36,26 @@ class Chef
         private
 
         def file_for_provider
-          context = TemplateContext.new(new_resource.variables)
+          # Deal with any DelayedEvaluator values in the template variables.
+          visitor = lambda do |obj|
+            case obj
+            when Hash
+              # Avoid mutating hashes in the resource in case we're changing anything.
+              obj.each_with_object(obj.class.new) do |(key, value), memo|
+                memo[key] = visitor.call(value)
+              end
+            when Array
+              # Avoid mutating arrays in the resource in case we're changing anything.
+              obj.map {|value| visitor.call(value) }
+            when DelayedEvaluator
+              new_resource.instance_eval(&obj)
+            else
+              obj
+            end
+          end
+          variables = visitor.call(new_resource.variables)
+
+          context = TemplateContext.new(variables)
           context[:node] = run_context.node
           context[:template_finder] = template_finder
 

@@ -209,4 +209,27 @@ describe Chef::Resource::Template do
     end
   end
 
+  describe "when template variables contain lazy{} calls" do
+    it "resolves the DelayedEvaluator" do
+      resource.source("openldap_variable_stuff.conf.erb")
+      resource.variables(:secret => Chef::DelayedEvaluator.new { "nutella" })
+      resource.run_action(:create)
+      expect(IO.read(path)).to eq("super secret is nutella")
+    end
+
+    it "does not mutate the resource variables" do
+      resource.source("openldap_variable_stuff.conf.erb")
+      resource.variables(:secret => Chef::DelayedEvaluator.new { "nutella" })
+      resource.run_action(:create)
+      expect(resource.variables[:secret]).to be_a Chef::DelayedEvaluator
+    end
+
+    it "resolves the DelayedEvaluator when deeply nested" do
+      resource.source("openldap_nested_variable_stuff.erb")
+      resource.variables(:secret => [{"key" => Chef::DelayedEvaluator.new { "nutella" }}])
+      resource.run_action(:create)
+      expect(IO.read(path)).to eq("super secret is nutella")
+    end
+  end
+
 end
