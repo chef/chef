@@ -331,18 +331,22 @@ class Chef
         command = fixup_sudo(command)
         command.force_encoding("binary") if command.respond_to?(:force_encoding)
         subsession.open_channel do |chan|
-          chan.request_pty
-          chan.exec command do |ch, success|
-            raise ArgumentError, "Cannot execute #{command}" unless success
-            ch.on_data do |ichannel, data|
-              print_data(ichannel[:host], data)
-              if data =~ /^knife sudo password: /
-                print_data(ichannel[:host], "\n")
-                ichannel.send_data("#{get_password}\n")
+          if config[:on_error] && exit_status != 0
+            chan.close()
+          else
+            chan.request_pty
+            chan.exec command do |ch, success|
+              raise ArgumentError, "Cannot execute #{command}" unless success
+              ch.on_data do |ichannel, data|
+                print_data(ichannel[:host], data)
+                if data =~ /^knife sudo password: /
+                  print_data(ichannel[:host], "\n")
+                  ichannel.send_data("#{get_password}\n")
+                end
               end
-            end
-            ch.on_request "exit-status" do |ichannel, data|
-              exit_status = [exit_status, data.read_long].max
+              ch.on_request "exit-status" do |ichannel, data|
+                exit_status = [exit_status, data.read_long].max
+              end
             end
           end
         end
