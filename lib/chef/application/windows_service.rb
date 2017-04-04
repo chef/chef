@@ -318,11 +318,11 @@ class Chef
 
           Chef::Config.merge!(config)
         rescue SocketError
-          Chef::Application.fatal!("Error getting config file #{Chef::Config[:config_file]}", Chef::Exceptions::DeprecatedExitCode.new)
+          Chef::Application.fatal!("Error getting config file #{Chef::Config[:config_file]}")
         rescue Chef::Exceptions::ConfigurationError => error
-          Chef::Application.fatal!("Error processing config file #{Chef::Config[:config_file]} with error #{error.message}", Chef::Exceptions::DeprecatedExitCode.new)
+          Chef::Application.fatal!("Error processing config file #{Chef::Config[:config_file]} with error #{error.message}")
         rescue Exception => error
-          Chef::Application.fatal!("Unknown error processing config file #{Chef::Config[:config_file]} with error #{error.message}", Chef::Exceptions::DeprecatedExitCode.new)
+          Chef::Application.fatal!("Unknown error processing config file #{Chef::Config[:config_file]} with error #{error.message}")
         end
       end
 

@@ -70,92 +70,11 @@ describe Chef::Application::ExitCode do
     end
   end
 
-  context "when Chef::Config :exit_status is not configured" do
-    before do
-      allow(Chef::Config).to receive(:[]).with(:exit_status).and_return(nil)
-      allow(Chef::Config).to receive(:[]).with(:treat_deprecation_warnings_as_errors).and_return(false)
-    end
+  context "when Chef validates exit codes" do
 
-    it "writes a deprecation warning" do
-      expect(Chef).to receive(:deprecated).with(:exit_code, /^Chef RFC 062/)
-      expect(exit_codes.normalize_exit_code(151)).to eq(151)
-    end
-
-    it "does not modify non-RFC exit codes" do
-      expect(exit_codes.normalize_exit_code(151)).to eq(151)
-    end
-
-    it "returns DEPRECATED_FAILURE when no exit code is specified" do
-      expect(exit_codes.normalize_exit_code()).to eq(-1)
-    end
-
-    it "returns SIGINT_RECEIVED when a SIGINT is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::SigInt.new("BOOM"))).to eq(2)
-    end
-
-    it "returns SIGTERM_RECEIVED when a SIGTERM is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::SigTerm.new("BOOM"))).to eq(3)
-    end
-
-    it "returns SIGINT_RECEIVED when a deprecated exit code error is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::DeprecatedExitCode.new("BOOM"))).to eq(2)
-    end
-
-    it "returns GENERIC_FAILURE when an exception is specified" do
-      expect(exit_codes.normalize_exit_code(Exception.new("BOOM"))).to eq(1)
-    end
-
-  end
-
-  context "when Chef::Config :exit_status is configured to not validate exit codes" do
-    before do
-      allow(Chef::Config).to receive(:[]).with(:exit_status).and_return(:disabled)
-      allow(Chef::Config).to receive(:[]).with(:treat_deprecation_warnings_as_errors).and_return(false)
-    end
-
-    it "does not write a deprecation warning" do
-      expect(Chef).not_to receive(:deprecated).with(:exit_code, /^Chef RFC 062/)
-      expect(exit_codes.normalize_exit_code(151)).to eq(151)
-    end
-
-    it "does not modify non-RFC exit codes" do
-      expect(exit_codes.normalize_exit_code(151)).to eq(151)
-    end
-
-    it "returns DEPRECATED_FAILURE when no exit code is specified" do
-      expect(exit_codes.normalize_exit_code()).to eq(-1)
-    end
-
-    it "returns GENERIC_FAILURE when an exception is specified" do
-      expect(exit_codes.normalize_exit_code(Exception.new("BOOM"))).to eq(1)
-    end
-
-    it "returns SUCCESS when a reboot is pending" do
-      allow(Chef::DSL::RebootPending).to receive(:reboot_pending?).and_return(true)
-      expect(exit_codes.normalize_exit_code(0)).to eq(0)
-    end
-
-    it "returns SIGINT_RECEIVED when a SIGINT is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::SigInt.new("BOOM"))).to eq(2)
-    end
-
-    it "returns SIGTERM_RECEIVED when a SIGTERM is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::SigTerm.new("BOOM"))).to eq(3)
-    end
-
-    it "returns SIGINT_RECEIVED when a deprecated exit code error is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::DeprecatedExitCode.new("BOOM"))).to eq(2)
-    end
-  end
-
-  context "when Chef::Config :exit_status is configured to validate exit codes" do
-    before do
-      allow(Chef::Config).to receive(:[]).with(:exit_status).and_return(:enabled)
-      allow(Chef::Config).to receive(:[]).with(:treat_deprecation_warnings_as_errors).and_return(false)
-    end
-
-    it "does write a deprecation warning" do
-      expect(Chef).to receive(:deprecated).with(:exit_code, /^Chef RFC 062/)
+    it "does write a warning on non-standard exit codes" do
+      expect(Chef::Log).to receive(:warn).with(
+        /^Chef attempted to exit with a non-standard exit code of 151/)
       expect(exit_codes.normalize_exit_code(151)).to eq(1)
     end
 
@@ -173,10 +92,6 @@ describe Chef::Application::ExitCode do
 
     it "returns SIGTERM_RECEIVED when a SIGTERM is received" do
       expect(exit_codes.normalize_exit_code(Chef::Exceptions::SigTerm.new("BOOM"))).to eq(3)
-    end
-
-    it "returns GENERIC_FAILURE when a deprecated exit code error is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::DeprecatedExitCode.new("BOOM"))).to eq(1)
     end
 
     it "returns GENERIC_FAILURE when an exception is specified" do

@@ -299,16 +299,23 @@ describe Chef::Application do
       Chef::Application.fatal! "blah"
     end
 
-    describe "when an exit code is supplied" do
+    describe "when a standard exit code is supplied" do
       it "should exit with the given exit code" do
-        expect(Process).to receive(:exit).with(-100).and_return(true)
+        expect(Process).to receive(:exit).with(42).and_return(true)
+        Chef::Application.fatal! "blah", 42
+      end
+    end
+
+    describe "when a non-standard exit code is supplied" do
+      it "should exit with the default exit code" do
+        expect(Process).to receive(:exit).with(1).and_return(true)
         Chef::Application.fatal! "blah", -100
       end
     end
 
     describe "when an exit code is not supplied" do
       it "should exit with the default exit code" do
-        expect(Process).to receive(:exit).with(-1).and_return(true)
+        expect(Process).to receive(:exit).with(1).and_return(true)
         Chef::Application.fatal! "blah"
       end
     end
