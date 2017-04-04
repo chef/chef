@@ -110,6 +110,9 @@ class Chef
         raise ArgumentError, "Cannot specify both default and name_property/name_attribute together on property #{self}"
       end
 
+      # Freeze the default if it isn't a lazy value.
+      default.freeze unless default.is_a?(DelayedEvaluator)
+
       # Validate the default early, so the user gets a good error message, and
       # cache it so we don't do it again if so
       begin

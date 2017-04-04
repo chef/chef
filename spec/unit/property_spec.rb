@@ -522,22 +522,41 @@ describe "Chef::Resource.property" do
       end
     end
 
-    context "hash default" do
-      context "(deprecations allowed)" do
-        before { Chef::Config[:treat_deprecation_warnings_as_errors] = false }
+    context "string default" do
+      with_property ":x, default: ''" do
+        it "when x is not set, it returns ''" do
+          expect(resource.x).to eq ""
+        end
+        it "x is immutable" do
+          expect { resource.x << "foo" }.to raise_error(RuntimeError, "can't modify frozen String")
+        end
+      end
 
-        with_property ":x, default: {}" do
-          it "when x is not set, it returns {}" do
-            expect(resource.x).to eq({})
-          end
-          it "The same exact value is returned multiple times in a row" do
-            value = resource.x
-            expect(value).to eq({})
-            expect(resource.x.object_id).to eq(value.object_id)
-          end
-          it "Multiple instances of x receive the exact same value" do
-            expect(resource.x.object_id).to eq(resource_class.new("blah2").x.object_id)
-          end
+      with_property ":x, default: lazy { '' }" do
+        it "x is immutable" do
+          expect(resource.x).to eq ""
+          resource.x << "foo"
+          expect(resource.x).to eq "foo"
+          expect(resource_class.new("other").x).to eq ""
+        end
+      end
+    end
+
+    context "hash default" do
+      with_property ":x, default: {}" do
+        it "when x is not set, it returns {}" do
+          expect(resource.x).to eq({})
+        end
+        it "x is immutable" do
+          expect { resource.x["foo"] = "bar" }.to raise_error(RuntimeError, "can't modify frozen Hash")
+        end
+        it "The same exact value is returned multiple times in a row" do
+          value = resource.x
+          expect(value).to eq({})
+          expect(resource.x.object_id).to eq(value.object_id)
+        end
+        it "Multiple instances of x receive the exact same value" do
+          expect(resource.x.object_id).to eq(resource_class.new("blah2").x.object_id)
         end
       end
 
@@ -545,11 +564,11 @@ describe "Chef::Resource.property" do
         it "when x is not set, it returns {}" do
           expect(resource.x).to eq({})
         end
-        # it "The value is different each time it is called" do
-        #   value = resource.x
-        #   expect(value).to eq({})
-        #   expect(resource.x.object_id).not_to eq(value.object_id)
-        # end
+        it "The value is the same each time it is called" do
+          value = resource.x
+          expect(value).to eq({})
+          expect(resource.x.object_id).to eq(value.object_id)
+        end
         it "Multiple instances of x receive different values" do
           expect(resource.x.object_id).not_to eq(resource_class.new("blah2").x.object_id)
         end
@@ -576,7 +595,6 @@ describe "Chef::Resource.property" do
         it "x is run in the context of each instance it is run in" do
           expect(resource.x).to eq "blah1"
           expect(resource_class.new("another").x).to eq "another2"
-          # expect(resource.x).to eq "blah3"
         end
       end
 
@@ -587,7 +605,6 @@ describe "Chef::Resource.property" do
         it "x is passed the value of each instance it is run in" do
           expect(resource.x).to eq "classblah1"
           expect(resource_class.new("another").x).to eq "classanother2"
-          # expect(resource.x).to eq "classblah3"
         end
       end
     end
