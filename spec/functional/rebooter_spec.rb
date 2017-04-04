@@ -72,6 +72,7 @@ describe Chef::Platform::Rebooter do
         def test_rebooter_method(method_sym, is_windows, expected_reboot_str)
           allow(ChefConfig).to receive(:windows?).and_return(is_windows)
           expect(rebooter).to receive(:shell_out!).once.with(expected_reboot_str)
+          expect(rebooter).to receive(:raise).with(Chef::Exceptions::Reboot)
           expect(rebooter).to receive(method_sym).once.and_call_original
           rebooter.send(method_sym, run_context.node)
         end

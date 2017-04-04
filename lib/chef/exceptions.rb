@@ -62,8 +62,6 @@ class Chef
     class DeprecatedExitCode < RuntimeError
       def initalize
         super "Exiting with a non RFC 062 Exit Code."
-        require "chef/application/exit_code"
-        Chef::Application::ExitCode.notify_deprecated_exit_code
       end
     end
 
