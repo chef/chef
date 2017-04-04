@@ -56,13 +56,13 @@ class Chef
       attr_reader :events
       attr_reader :node
       attr_reader :node_name
-      attr_reader :ohai_data
+      attr_reader :ohai
       attr_reader :json_attribs
       attr_reader :run_context
 
-      def initialize(node_name, ohai_data, json_attribs, override_runlist, events)
+      def initialize(node_name, ohai, json_attribs, override_runlist, events)
         @node_name = node_name
-        @ohai_data = ohai_data
+        @ohai = ohai
         @json_attribs = json_attribs
         @events = events
 
@@ -128,7 +128,7 @@ class Chef
         # determine which versions of cookbooks to use.
         node.reset_defaults_and_overrides
 
-        node.consume_external_attrs(ohai_data, json_attribs)
+        node.consume_external_attrs(ohai.data, json_attribs)
 
         expand_run_list
         apply_policyfile_attributes
@@ -155,7 +155,7 @@ class Chef
         cookbook_collection.validate!
         cookbook_collection.install_gems(events)
 
-        run_context = Chef::RunContext.new(node, cookbook_collection, events)
+        run_context = Chef::RunContext.new(node, cookbook_collection, events, ohai)
 
         setup_chef_class(run_context)
 

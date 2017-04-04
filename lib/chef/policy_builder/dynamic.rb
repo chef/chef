@@ -35,16 +35,16 @@ class Chef
 
       attr_reader :node
       attr_reader :node_name
-      attr_reader :ohai_data
+      attr_reader :ohai
       attr_reader :json_attribs
       attr_reader :override_runlist
       attr_reader :events
 
-      def initialize(node_name, ohai_data, json_attribs, override_runlist, events)
+      def initialize(node_name, ohai, json_attribs, override_runlist, events)
         @implementation = nil
 
+        @ohai = ohai
         @node_name = node_name
-        @ohai_data = ohai_data
         @json_attribs = json_attribs
         @override_runlist = override_runlist
         @events = events
@@ -152,9 +152,9 @@ class Chef
             policyfile_attribs_in_node_json? ||
             node_has_policyfile_attrs?(node) ||
             policyfile_compat_mode_config?
-          @implementation = Policyfile.new(node_name, ohai_data, json_attribs, override_runlist, events)
+          @implementation = Policyfile.new(node_name, ohai, json_attribs, override_runlist, events)
         else
-          @implementation = ExpandNodeObject.new(node_name, ohai_data, json_attribs, override_runlist, events)
+          @implementation = ExpandNodeObject.new(node_name, ohai, json_attribs, override_runlist, events)
         end
       end
 

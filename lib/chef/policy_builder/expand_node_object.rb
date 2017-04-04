@@ -41,15 +41,15 @@ class Chef
       attr_reader :events
       attr_reader :node
       attr_reader :node_name
-      attr_reader :ohai_data
+      attr_reader :ohai
       attr_reader :json_attribs
       attr_reader :override_runlist
       attr_reader :run_context
       attr_reader :run_list_expansion
 
-      def initialize(node_name, ohai_data, json_attribs, override_runlist, events)
+      def initialize(node_name, ohai, json_attribs, override_runlist, events)
         @node_name = node_name
-        @ohai_data = ohai_data
+        @ohai = ohai
         @json_attribs = json_attribs
         @override_runlist = override_runlist
         @events = events
@@ -77,7 +77,7 @@ class Chef
           cookbook_collection.validate!
           cookbook_collection.install_gems(events)
 
-          run_context = Chef::RunContext.new(node, cookbook_collection, @events)
+          run_context = Chef::RunContext.new(node, cookbook_collection, @events, ohai)
         else
           Chef::Cookbook::FileVendor.fetch_from_remote(api_service)
           cookbook_hash = sync_cookbooks
@@ -85,7 +85,7 @@ class Chef
           cookbook_collection.validate!
           cookbook_collection.install_gems(events)
 
-          run_context = Chef::RunContext.new(node, cookbook_collection, @events)
+          run_context = Chef::RunContext.new(node, cookbook_collection, @events, ohai)
         end
 
         # TODO: this is really obviously not the place for this
