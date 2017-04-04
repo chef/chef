@@ -58,7 +58,7 @@ class Chef
 
         def usermod_options
           opts = []
-          opts += [ "-u", new_resource.uid ] if non_unique?
+          opts += [ "-u", new_resource.uid ] if new_resource.non_unique
           if updating_home?
             if new_resource.manage_home
               opts << "-m"
