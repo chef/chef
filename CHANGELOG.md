@@ -1,12 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.96](https://github.com/chef/chef/tree/v13.0.96) (2017-04-04)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.96)
-
-**Closed issues:**
-
-- powershell\_script's default guard\_interpreter should be :powershell\_script [\#5953](https://github.com/chef/chef/issues/5953)
-- powershell\_out stdout contains '\r\n' at the end of the output [\#5947](https://github.com/chef/chef/issues/5947)
+## [v13.0.97](https://github.com/chef/chef/tree/v13.0.97) (2017-04-04)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.97)
 
 **Merged pull requests:**
 
@@ -56,8 +51,8 @@ This changelog reflects the current state of chef's master branch on github and 
 - Properly use chef-shell in SoloSession by deprecating old behavior into SoloLegacySession [\#5898](https://github.com/chef/chef/pull/5898) ([afiune](https://github.com/afiune))
 - Chef-13:  properly deep dup Node\#to\_hash [\#5896](https://github.com/chef/chef/pull/5896) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove method\_missing access to node object. [\#5895](https://github.com/chef/chef/pull/5895) ([lamont-granquist](https://github.com/lamont-granquist))
-- Jeremymv2/cheffs optimizations [\#5890](https://github.com/chef/chef/pull/5890) ([jeremymv2](https://github.com/jeremymv2))
-- Changed EOP to 'EOP' to avoid content expansion [\#5888](https://github.com/chef/chef/pull/5888) ([afiune](https://github.com/afiune))
+- Avoid a double get in chef\_fs [\#5890](https://github.com/chef/chef/pull/5890) ([jeremymv2](https://github.com/jeremymv2))
+- Prevent content expansion of the bootstrap command in the option --json-attributes [\#5888](https://github.com/chef/chef/pull/5888) ([afiune](https://github.com/afiune))
 - Compress debs and rpms with xz [\#5884](https://github.com/chef/chef/pull/5884) ([thommay](https://github.com/thommay))
 - Chef-13:  Chef::Resource cleanup [\#5882](https://github.com/chef/chef/pull/5882) ([lamont-granquist](https://github.com/lamont-granquist))
 
