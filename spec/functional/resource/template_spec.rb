@@ -32,6 +32,7 @@ describe Chef::Resource::Template do
   let(:node) do
     node = Chef::Node.new
     node.normal[:slappiness] = "a warm gun"
+    node.normal[:nested][:secret] = "value"
     node
   end
 
@@ -229,6 +230,15 @@ describe Chef::Resource::Template do
       resource.variables(:secret => [{ "key" => Chef::DelayedEvaluator.new { "nutella" } }])
       resource.run_action(:create)
       expect(IO.read(path)).to eq("super secret is nutella")
+    end
+  end
+
+  describe "when passing a node attribute mash as a template variable" do
+    it "uses the node attributes like a hash" do
+      resource.source("openldap_variable_stuff.conf.erb")
+      resource.variables(node[:nested])
+      resource.run_action(:create)
+      expect(IO.read(path)).to eq("super secret is value")
     end
   end
 
