@@ -47,9 +47,9 @@ describe Chef::Knife::CookbookShow do
 
   let (:manifest) do
     {
-      "recipes" => [
+      "all_files" => [
         {
-          :name => "default.rb",
+          :name => "recipes/default.rb",
           :path => "recipes/default.rb",
           :checksum => "1234",
           :url => "http://example.org/files/default.rb",
@@ -101,9 +101,42 @@ describe Chef::Knife::CookbookShow do
         knife.name_args << "0.1.0"
       end
 
+      let(:output) do
+        { "cookbook_name" => "cookbook_name",
+          "name" => "cookbook_name-0.0.0",
+          "frozen?" => false,
+          "version" => "0.0.0",
+          "metadata" => {
+            "name" => nil,
+            "description" => "",
+            "long_description" => "",
+            "maintainer" => nil,
+            "maintainer_email" => nil,
+            "license" => "All rights reserved",
+            "platforms" => {},
+            "dependencies" => {},
+            "providing" => {},
+            "attributes" => {},
+            "recipes" => {},
+            "version" => "0.0.0",
+            "source_url" => "",
+            "issues_url" => "",
+            "privacy" => false,
+            "chef_versions" => [],
+            "ohai_versions" => [],
+            "gems" => [],
+          },
+          "recipes" =>
+          [{ "name" => "recipes/default.rb",
+             "path" => "recipes/default.rb",
+             "checksum" => "1234",
+             "url" => "http://example.org/files/default.rb" }],
+        }
+      end
+
       it "should show the specific part of a cookbook" do
         expect(Chef::CookbookVersion).to receive(:load).with("cookbook_name", "0.1.0").and_return(cb)
-        expect(knife).to receive(:output).with(cb)
+        expect(knife).to receive(:output).with(output)
         knife.run
       end
     end
@@ -115,7 +148,7 @@ describe Chef::Knife::CookbookShow do
 
       it "should print the json of the part" do
         expect(Chef::CookbookVersion).to receive(:load).with("cookbook_name", "0.1.0").and_return(cb)
-        expect(knife).to receive(:output).with(cb.manifest["recipes"])
+        expect(knife).to receive(:output).with(cb.files_for("recipes"))
         knife.run
       end
     end
@@ -137,30 +170,30 @@ describe Chef::Knife::CookbookShow do
       before(:each) do
         knife.name_args = [ "cookbook_name", "0.1.0", "files", "afile.rb" ]
         cb.manifest = {
-          "files" => [
+          "all_files" => [
             {
-              :name => "afile.rb",
+              :name => "files/afile.rb",
               :path => "files/host-examplehost.example.org/afile.rb",
               :checksum => "1111",
               :specificity => "host-examplehost.example.org",
               :url => "http://example.org/files/1111",
             },
             {
-              :name => "afile.rb",
+              :name => "files/afile.rb",
               :path => "files/ubuntu-9.10/afile.rb",
               :checksum => "2222",
               :specificity => "ubuntu-9.10",
               :url => "http://example.org/files/2222",
             },
             {
-              :name => "afile.rb",
+              :name => "files/afile.rb",
               :path => "files/ubuntu/afile.rb",
               :checksum => "3333",
               :specificity => "ubuntu",
               :url => "http://example.org/files/3333",
             },
             {
-              :name => "afile.rb",
+              :name => "files/afile.rb",
               :path => "files/default/afile.rb",
               :checksum => "4444",
               :specificity => "default",

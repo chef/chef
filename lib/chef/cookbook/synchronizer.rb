@@ -62,18 +62,11 @@ class Chef
   # Synchronizes the locally cached copies of cookbooks with the files on the
   # server.
   class CookbookSynchronizer
-    CookbookFile = Struct.new(:cookbook, :segment, :manifest_record)
+    CookbookFile = Struct.new(:cookbook, :manifest_record)
 
     attr_accessor :remove_obsoleted_files
 
     def initialize(cookbooks_by_name, events)
-      @eager_segments = Chef::CookbookVersion::COOKBOOK_SEGMENTS.dup
-      unless Chef::Config[:no_lazy_load]
-        @eager_segments.delete(:files)
-        @eager_segments.delete(:templates)
-      end
-      @eager_segments.freeze
-
       @cookbooks_by_name, @events = cookbooks_by_name, events
 
       @cookbook_full_file_paths = {}
@@ -101,15 +94,19 @@ class Chef
     end
 
     def cookbook_segment(cookbook_name, segment)
-      @cookbooks_by_name[cookbook_name].manifest[segment]
+      @cookbooks_by_name[cookbook_name].files_for(segment)
     end
 
     def files
+      exclude = unless Chef::Config[:no_lazy_load]
+                  [ :files, :templates ]
+                else
+                  []
+                end
+
       @files ||= cookbooks.inject([]) do |memo, cookbook|
-        @eager_segments.each do |segment|
-          cookbook.manifest[segment].each do |manifest_record|
-            memo << CookbookFile.new(cookbook, segment, manifest_record)
-          end
+        cookbook.each_file(excluded_parts: exclude) do |manifest_record|
+          memo << CookbookFile.new(cookbook, manifest_record)
         end
         memo
       end
@@ -162,8 +159,10 @@ class Chef
 
       @events.cookbook_sync_start(cookbook_count)
       queue.process(Chef::Config[:cookbook_sync_threads])
+      # Ensure that cookbooks know where they're rooted at, for manifest purposes.
+      ensure_cookbook_paths
       # Update the full file paths in the manifest
-      update_cookbook_filenames()
+      update_cookbook_filenames
 
     rescue Exception => e
       @events.cookbook_sync_failed(cookbooks, e)
@@ -176,9 +175,8 @@ class Chef
     # Saves the full_path to the file of the cookbook to be updated
     # in the manifest later
     def save_full_file_path(file, full_path)
-      @cookbook_full_file_paths[file.cookbook] ||= {}
-      @cookbook_full_file_paths[file.cookbook][file.segment] ||= [ ]
-      @cookbook_full_file_paths[file.cookbook][file.segment] << full_path
+      @cookbook_full_file_paths[file.cookbook] ||= []
+      @cookbook_full_file_paths[file.cookbook] << full_path
     end
 
     # remove cookbooks that are not referenced in the expanded run_list at all
@@ -229,10 +227,15 @@ class Chef
     end
 
     def update_cookbook_filenames
-      @cookbook_full_file_paths.each do |cookbook, file_segments|
-        file_segments.each do |segment, full_paths|
-          cookbook.replace_segment_filenames(segment, full_paths)
-        end
+      @cookbook_full_file_paths.each do |cookbook, full_paths|
+        cookbook.all_files = full_paths
+      end
+    end
+
+    def ensure_cookbook_paths
+      cookbooks.each do |cookbook|
+        cb_dir = File.join(Chef::Config[:file_cache_path], "cookbooks", cookbook.name)
+        cookbook.root_paths = Array(cb_dir)
       end
     end
 

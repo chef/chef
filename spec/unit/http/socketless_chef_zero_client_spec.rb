@@ -132,7 +132,7 @@ describe Chef::HTTP::SocketlessChefZeroClient do
 
     let(:method) { :GET }
     let(:relative_url) { "clients" }
-    let(:headers) { { "Accept" => "application/json" } }
+    let(:headers) { { "Accept" => "application/json", "X-Ops-Server-API-Version" => "2" } }
     let(:body) { false }
 
     let(:expected_rack_req) do
@@ -144,6 +144,7 @@ describe Chef::HTTP::SocketlessChefZeroClient do
         "QUERY_STRING"    => uri.query,
         "SERVER_PORT"     => uri.port,
         "HTTP_HOST"       => "localhost:#{uri.port}",
+        "HTTP_X_OPS_SERVER_API_VERSION" => "2",
         "rack.url_scheme" => "chefzero",
         "rack.input"      => an_instance_of(StringIO),
       }

@@ -31,6 +31,10 @@ describe Chef::CookbookLoader do
 
   let(:cookbook_loader) { Chef::CookbookLoader.new(repo_paths) }
 
+  def full_paths_for_part(cb, part)
+    cookbook_loader[cb].files_for(part).inject([]) { |memo, f| memo << f[:full_path]; memo }
+  end
+
   it "checks each directory only once when loading (CHEF-3487)" do
     cookbook_paths = []
     repo_paths.each do |repo_path|
@@ -112,61 +116,61 @@ describe Chef::CookbookLoader do
       end
 
       it "should allow you to override an attribute file via cookbook_path" do
-        expect(cookbook_loader[:openldap].attribute_filenames.detect do |f|
+        expect(full_paths_for_part(:openldap, "attributes").detect do |f|
           f =~ /cookbooks\/openldap\/attributes\/default.rb/
         end).not_to eql(nil)
-        expect(cookbook_loader[:openldap].attribute_filenames.detect do |f|
+        expect(full_paths_for_part(:openldap, "attributes").detect do |f|
           f =~ /kitchen\/openldap\/attributes\/default.rb/
         end).to eql(nil)
       end
 
       it "should load different attribute files from deeper paths" do
-        expect(cookbook_loader[:openldap].attribute_filenames.detect do |f|
+        expect(full_paths_for_part(:openldap, "attributes").detect do |f|
           f =~ /kitchen\/openldap\/attributes\/robinson.rb/
         end).not_to eql(nil)
       end
 
       it "should allow you to override a definition file via cookbook_path" do
-        expect(cookbook_loader[:openldap].definition_filenames.detect do |f|
+        expect(full_paths_for_part(:openldap, "definitions").detect do |f|
           f =~ /cookbooks\/openldap\/definitions\/client.rb/
         end).not_to eql(nil)
-        expect(cookbook_loader[:openldap].definition_filenames.detect do |f|
+        expect(full_paths_for_part(:openldap, "definitions").detect do |f|
           f =~ /kitchen\/openldap\/definitions\/client.rb/
         end).to eql(nil)
       end
 
       it "should load definition files from deeper paths" do
-        expect(cookbook_loader[:openldap].definition_filenames.detect do |f|
+        expect(full_paths_for_part(:openldap, "definitions").detect do |f|
           f =~ /kitchen\/openldap\/definitions\/drewbarrymore.rb/
         end).not_to eql(nil)
       end
 
       it "should allow you to override a recipe file via cookbook_path" do
-        expect(cookbook_loader[:openldap].recipe_filenames.detect do |f|
+        expect(full_paths_for_part(:openldap, "recipes").detect do |f|
           f =~ /cookbooks\/openldap\/recipes\/gigantor.rb/
         end).not_to eql(nil)
-        expect(cookbook_loader[:openldap].recipe_filenames.detect do |f|
+        expect(full_paths_for_part(:openldap, "recipes").detect do |f|
           f =~ /kitchen\/openldap\/recipes\/gigantor.rb/
         end).to eql(nil)
       end
 
       it "should load recipe files from deeper paths" do
-        expect(cookbook_loader[:openldap].recipe_filenames.detect do |f|
+        expect(full_paths_for_part(:openldap, "recipes").detect do |f|
           f =~ /kitchen\/openldap\/recipes\/woot.rb/
         end).not_to eql(nil)
       end
 
       it "should allow you to have an 'ignore' file, which skips loading files in later cookbooks" do
-        expect(cookbook_loader[:openldap].recipe_filenames.detect do |f|
+        expect(full_paths_for_part(:openldap, "recipes").detect do |f|
           f =~ /kitchen\/openldap\/recipes\/ignoreme.rb/
         end).to eql(nil)
       end
 
       it "should find files that start with a ." do
-        expect(cookbook_loader[:openldap].file_filenames.detect do |f|
+        expect(full_paths_for_part(:openldap, "files").detect do |f|
           f =~ /\.dotfile$/
         end).to match(/\.dotfile$/)
-        expect(cookbook_loader[:openldap].file_filenames.detect do |f|
+        expect(full_paths_for_part(:openldap, "files").detect do |f|
           f =~ /\.ssh\/id_rsa$/
         end).to match(/\.ssh\/id_rsa$/)
       end

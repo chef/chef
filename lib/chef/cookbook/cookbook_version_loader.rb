@@ -9,15 +9,6 @@ class Chef
   class Cookbook
     class CookbookVersionLoader
 
-      FILETYPES_SUBJECT_TO_IGNORE = [ :attribute_filenames,
-                                      :definition_filenames,
-                                      :recipe_filenames,
-                                      :template_filenames,
-                                      :file_filenames,
-                                      :library_filenames,
-                                      :resource_filenames,
-                                      :provider_filenames]
-
       UPLOADED_COOKBOOK_VERSION_FILE = ".uploaded-cookbook-version.json".freeze
 
       attr_reader :cookbook_settings
@@ -44,16 +35,7 @@ class Chef
         @relative_path = /#{Regexp.escape(@cookbook_path)}\/(.+)$/
         @metadata_loaded = false
         @cookbook_settings = {
-          :all_files            => {},
-          :attribute_filenames  => {},
-          :definition_filenames => {},
-          :recipe_filenames     => {},
-          :template_filenames   => {},
-          :file_filenames       => {},
-          :library_filenames    => {},
-          :resource_filenames   => {},
-          :provider_filenames   => {},
-          :root_filenames       => {},
+          :all_files => {},
         }
 
         @metadata_filenames = []
@@ -83,16 +65,6 @@ class Chef
         load_all_files
 
         remove_ignored_files
-
-        load_as(:attribute_filenames, "attributes", "*.rb")
-        load_as(:definition_filenames, "definitions", "*.rb")
-        load_as(:recipe_filenames, "recipes", "*.rb")
-        load_recursively_as(:library_filenames, "libraries", "*")
-        load_recursively_as(:template_filenames, "templates", "*")
-        load_recursively_as(:file_filenames, "files", "*")
-        load_recursively_as(:resource_filenames, "resources", "*.rb")
-        load_recursively_as(:provider_filenames, "providers", "*.rb")
-        load_root_files
 
         if empty?
           Chef::Log.warn "Found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
@@ -126,16 +98,6 @@ class Chef
 
         Chef::CookbookVersion.new(cookbook_name, *cookbook_paths).tap do |c|
           c.all_files            = cookbook_settings[:all_files].values
-          c.attribute_filenames  = cookbook_settings[:attribute_filenames].values
-          c.definition_filenames = cookbook_settings[:definition_filenames].values
-          c.recipe_filenames     = cookbook_settings[:recipe_filenames].values
-          c.template_filenames   = cookbook_settings[:template_filenames].values
-          c.file_filenames       = cookbook_settings[:file_filenames].values
-          c.library_filenames    = cookbook_settings[:library_filenames].values
-          c.resource_filenames   = cookbook_settings[:resource_filenames].values
-          c.provider_filenames   = cookbook_settings[:provider_filenames].values
-          c.root_filenames       = cookbook_settings[:root_filenames].values
-          c.metadata_filenames   = metadata_filenames
           c.metadata             = metadata
 
           c.freeze_version if @frozen
@@ -250,51 +212,6 @@ class Chef
             path = Pathname.new(path).cleanpath.to_s
             cookbook_settings[:all_files][relative_path] = path
           end
-        end
-      end
-
-      def load_root_files
-        select_files_by_glob(File.join(Chef::Util::PathHelper.escape_glob_dir(cookbook_path), "*"), File::FNM_DOTMATCH).each do |file|
-          file = Chef::Util::PathHelper.cleanpath(file)
-          next if File.directory?(file)
-          next if File.basename(file) == UPLOADED_COOKBOOK_VERSION_FILE
-          name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
-          cookbook_settings[:root_filenames][name] = file
-        end
-      end
-
-      def load_recursively_as(category, category_dir, glob)
-        glob_pattern = File.join(Chef::Util::PathHelper.escape_glob_dir(cookbook_path, category_dir), "**", glob)
-        select_files_by_glob(glob_pattern, File::FNM_DOTMATCH).each do |file|
-          file = Chef::Util::PathHelper.cleanpath(file)
-          name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
-          cookbook_settings[category][name] = file
-        end
-      end
-
-      def load_as(category, *path_glob)
-        glob_pattern = File.join(Chef::Util::PathHelper.escape_glob_dir(cookbook_path), *path_glob)
-        select_files_by_glob(glob_pattern).each do |file|
-          file = Chef::Util::PathHelper.cleanpath(file)
-          name = Chef::Util::PathHelper.relative_path_from(@cookbook_path, file)
-          cookbook_settings[category][name] = file
-        end
-      end
-
-      # Mimic Dir.glob inside a cookbook by running `File.fnmatch?` against
-      # `cookbook_settings[:all_files]`.
-      #
-      # @param pattern [String] a glob string passed to `File.fnmatch?`
-      # @param option [Integer] Option flag to control globbing behavior. These
-      #   are constants defined on `File`, such as `File::FNM_DOTMATCH`.
-      #   `File.fnmatch?` and `Dir.glob` only take one option argument, if you
-      #   need to combine options, you must `|` the constants together. To make
-      #   `File.fnmatch?` behave like `Dir.glob`, `File::FNM_PATHNAME` is
-      #   always enabled.
-      def select_files_by_glob(pattern, option = 0)
-        combined_opts = option | File::FNM_PATHNAME
-        cookbook_settings[:all_files].values.select do |path|
-          File.fnmatch?(pattern, path, combined_opts)
         end
       end
 
