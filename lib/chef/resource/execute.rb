@@ -42,7 +42,6 @@ class Chef
         @cwd = nil
         @environment = nil
         @group = nil
-        @path = nil
         @returns = 0
         @timeout = nil
         @user = nil
