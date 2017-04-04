@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-require_relative "bundle_util"
 require_relative "bundle"
 require_relative "../version_policy"
 
