@@ -193,3 +193,17 @@ This will also affect nokogiri, but that gem natively supports UTF-8, UTF-16LE/B
 who really need to write something like Shift-JIS inside of XML will need to either maintain their own nokogiri installs or will need to
 convert to using UTF-8.
 
+### DSL-based custom resources and providers no longer get module constants
+
+Up until now, creating a `mycook/resources/thing.rb` would create a `Chef::Resources::MycookThing` name to access the resource class object.
+This const is no longer created for resources and providers. You can access resource classes through the resolver API like:
+
+```ruby
+Chef::Resource.resource_for_node(:mycook_thing, node)
+```
+
+Accessing a provider class is a bit more complex, as you need a resource against which to run a resolution like so:
+
+```ruby
+Chef::ProviderResolver.new(node, find_resource!("mycook_thing[name]"), :nothing).resolve
+```
