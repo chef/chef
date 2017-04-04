@@ -60,6 +60,7 @@ describe Chef::Cookbook::SyntaxCheck do
                     openldap_stuff.conf.erb
                     nested_openldap_partials.erb
                     nested_partial.erb
+                    openldap_nested_variable_stuff.erb
                     openldap_variable_stuff.conf.erb
                     test.erb
                     some_windows_line_endings.erb
