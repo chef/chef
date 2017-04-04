@@ -144,9 +144,9 @@ describe Chef::Knife do
     end
 
     it "finds a subcommand class based on ARGV" do
-      Chef::Knife.subcommands["cookbook_site_vendor"] = :CookbookSiteVendor
+      Chef::Knife.subcommands["cookbook_site_install"] = :CookbookSiteInstall
       Chef::Knife.subcommands["cookbook"] = :Cookbook
-      expect(Chef::Knife.subcommand_class_from(%w{cookbook site vendor --help foo bar baz})).to eq(:CookbookSiteVendor)
+      expect(Chef::Knife.subcommand_class_from(%w{cookbook site install --help foo bar baz})).to eq(:CookbookSiteInstall)
     end
 
     it "special case sets the subcommand_loader to GemGlobLoader when running rehash" do

@@ -83,7 +83,7 @@ BRANCHES
           it "exits when the git repo is dirty" do
             @dirty_status = Mixlib::ShellOut.new
             @dirty_status.stdout.replace(<<-DIRTY)
- M chef/lib/chef/knife/cookbook_site_vendor.rb
+ M chef/lib/chef/knife/cookbook_site_install.rb
 DIRTY
             expect(@cookbook_repo).to receive(:shell_out!).with("git status --porcelain", :cwd => @repo_path).and_return(@dirty_status)
             expect { @cookbook_repo.sanity_check }.to raise_error(SystemExit)

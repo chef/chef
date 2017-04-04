@@ -253,3 +253,7 @@ the array form and explicitly add "https://rubygems.org" to their resources.  Us
 either globally or on a resource case-by-case basis.
 
 The behavior of the `clear_sources` property is now to only add `--clear-sources` and has no side effects on the source options.
+
+### `knife cookbook site vendor` has been removed
+
+Please use `knife cookbook site install` instead.
