@@ -196,7 +196,7 @@ RSpec.configure do |config|
     node = TEST_NODE.dup
     resource_class = Chef::ResourceResolver.resolve(type, node: node)
     if resource_class
-      resource = resource_class.new("test", Chef::RunContext.new(node, nil, nil))
+      resource = resource_class.new("test", Chef::RunContext.new(node, nil, nil, Ohai::System.new))
       begin
         provider = resource.provider_for_action(Array(resource_class.default_action).first)
         provider.class != target_provider
