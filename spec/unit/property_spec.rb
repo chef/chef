@@ -578,7 +578,7 @@ describe "Chef::Resource.property" do
     context "complex, nested default" do
       with_property ":x, default: [{foo: 'bar'}]" do
         it "when x is not set, it returns [{foo: 'bar'}]" do
-          expect(resource.x).to eq([{foo: 'bar'}])
+          expect(resource.x).to eq([{ foo: "bar" }])
         end
         it "x is immutable" do
           expect { resource.x << :other }.to raise_error(RuntimeError, "can't modify frozen Array")

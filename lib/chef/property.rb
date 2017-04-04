@@ -115,9 +115,9 @@ class Chef
         visitor = lambda do |obj|
           case obj
           when Hash
-            obj.each_value {|value| visitor.call(value) }
+            obj.each_value { |value| visitor.call(value) }
           when Array
-            obj.each {|value| visitor.call(value) }
+            obj.each { |value| visitor.call(value) }
           end
           obj.freeze
         end
