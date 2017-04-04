@@ -241,6 +241,19 @@ mutable default value, define it inside a `lazy{}` helper like:
 property :x, default: lazy { {} }
 ```
 
+### Rubygems provider sources behavior changed.
+
+The default behavior of the `gem_package` and `chef_gem` resources is now to inherit whatever settings are in the external environment
+that chef is running in.  Chef no longer forces `https://rubygems.org`.  The `Chef::Config[:rubygems_uri]` default has been changed to
+nil.  It can now be set to either a string URI or to an array of string URIs.  The behavior of setting the source on an individual
+resource now overrides the source setting completely and does not inherit the global setting.
+
+Users that previously relied on the source setting always being additive to "https://rubygmes.org" will find that they need to use
+the array form and explicitly add "https://rubygems.org" to their resources.  Users can now more easily remove "https://rubygems.org"
+either globally or on a resource case-by-case basis.
+
+The behavior of the `clear_sources` property is now to only add `--clear-sources` and has no side effects on the source options.
+
 ### `knife cookbook site vendor` has been removed
 
 Please use `knife cookbook site install` instead.

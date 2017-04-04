@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright (c) 2010-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) 2010-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,7 +50,9 @@ class Chef
           begin
             Dir.mktmpdir("chef-gem-bundle") do |dir|
               File.open("#{dir}/Gemfile", "w+") do |tf|
-                tf.puts "source '#{Chef::Config[:rubygems_url]}'"
+                Array(Chef::Config[:rubygems_url] || "https://www.rubygems.org").each do |s|
+                  tf.puts "source '#{s}'"
+                end
                 cookbook_gems.each do |gem_name, args|
                   tf.puts "gem(*#{([gem_name] + args).inspect})"
                 end
