@@ -1050,7 +1050,8 @@ module ChefConfig
     # break Chef community cookbooks and is very highly discouraged.
     default :ruby_encoding, Encoding::UTF_8
 
-    default :rubygems_url, "https://rubygems.org"
+    # can be set to a string or array of strings for URIs to set as rubygems sources
+    default :rubygems_url, nil
 
     # If installed via an omnibus installer, this gives the path to the
     # "embedded" directory which contains all of the software packaged with
