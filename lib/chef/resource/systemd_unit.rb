@@ -33,14 +33,19 @@ class Chef
                       :try_restart, :reload_or_restart,
                       :reload_or_try_restart
 
+      # Internal provider-managed properties
       property :enabled, [TrueClass, FalseClass]
       property :active, [TrueClass, FalseClass]
       property :masked, [TrueClass, FalseClass]
       property :static, [TrueClass, FalseClass]
+
+      # User-provided properties
       property :user, String, desired_state: false
       property :content, [String, Hash]
       property :triggers_reload, [TrueClass, FalseClass],
                                  default: true, desired_state: false
+      property :verify, [TrueClass, FalseClass],
+                        default: true, desired_state: false
 
       def to_ini
         case content

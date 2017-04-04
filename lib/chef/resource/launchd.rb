@@ -27,7 +27,7 @@ class Chef
       identity_attr :label
 
       default_action :create
-      allowed_actions :create, :create_if_missing, :delete, :enable, :disable
+      allowed_actions :create, :create_if_missing, :delete, :enable, :disable, :restart
 
       property :label, String, default: lazy { name }, identity: true
       property :backup, [Integer, FalseClass]
@@ -114,7 +114,7 @@ class Chef
       property :ld_group, String
       property :limit_load_from_hosts, Array
       property :limit_load_to_hosts, Array
-      property :limit_load_to_session_type, Array
+      property :limit_load_to_session_type, [ Array, String ]
       property :low_priority_io, [ TrueClass, FalseClass ]
       property :mach_services, Hash
       property :nice, Integer
