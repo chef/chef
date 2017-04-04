@@ -1,7 +1,15 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.91](https://github.com/chef/chef/tree/v13.0.91) (2017-04-04)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.91)
+## [v13.0.92](https://github.com/chef/chef/tree/v13.0.92) (2017-04-04)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.92...v13.0.92)
+
+**Merged pull requests:**
+
+- Allow users to opt out of the systemd\_unit verifier [\#5971](https://github.com/chef/chef/pull/5971) ([nathwill](https://github.com/nathwill))
+- V2 Cookbook Manifests [\#5929](https://github.com/chef/chef/pull/5929) ([thommay](https://github.com/thommay))
+
+## [v13.0.92](https://github.com/chef/chef/tree/v13.0.92) (2017-04-04)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.92)
 
 **Closed issues:**
 
@@ -16,16 +24,24 @@ This changelog reflects the current state of chef's master branch on github and 
 - Chef-13: turn on zypper gpg checks by default [\#5990](https://github.com/chef/chef/pull/5990) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove deprecated knife subcommand APIs [\#5989](https://github.com/chef/chef/pull/5989) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: Remove deprecated Chef::ResourceResolver.resource API [\#5988](https://github.com/chef/chef/pull/5988) ([lamont-granquist](https://github.com/lamont-granquist))
+- Expand the system info displayed on error to give us some more data to work with when helping users [\#5987](https://github.com/chef/chef/pull/5987) ([coderanger](https://github.com/coderanger))
 - Chef-13: remove deprecated run\_command API entirely [\#5985](https://github.com/chef/chef/pull/5985) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: fix notifying array resources [\#5984](https://github.com/chef/chef/pull/5984) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove deprecated launchd resource hash property [\#5983](https://github.com/chef/chef/pull/5983) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13:  remove Chef::Resource.updated= [\#5982](https://github.com/chef/chef/pull/5982) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove more deprecated method\_missing access [\#5979](https://github.com/chef/chef/pull/5979) ([lamont-granquist](https://github.com/lamont-granquist))
 - apply knife search node fuzzifier to knife ssh [\#5977](https://github.com/chef/chef/pull/5977) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add policy\_name and policy\_group indexes to converge message sent to data-collector [\#5973](https://github.com/chef/chef/pull/5973) ([itmustbejj](https://github.com/itmustbejj))
+- Retry API requests if using an unsupported version [\#5960](https://github.com/chef/chef/pull/5960) ([thommay](https://github.com/thommay))
 - disable building nokogiri on windows for now [\#5958](https://github.com/chef/chef/pull/5958) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: Make ActionClass a class [\#5952](https://github.com/chef/chef/pull/5952) ([lamont-granquist](https://github.com/lamont-granquist))
 - Fix action class weirdness in Chef-13 [\#5946](https://github.com/chef/chef/pull/5946) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump nokogiri for CVE-2016-4658 [\#5943](https://github.com/chef/chef/pull/5943) ([brugidou](https://github.com/brugidou))
+- Fix gem installs via gem in metadata if more than 1 cookbook references the same gem [\#5942](https://github.com/chef/chef/pull/5942) ([brugidou](https://github.com/brugidou))
 - Make ResourceReporter smarter to get resource identity and state [\#5941](https://github.com/chef/chef/pull/5941) ([afiune](https://github.com/afiune))
+- Don't `rescue Exception` in retryable resources [\#5940](https://github.com/chef/chef/pull/5940) ([srenatus](https://github.com/srenatus))
+- Chef-13: Support nameless resources and remove deprecated multi-arg resources [\#5938](https://github.com/chef/chef/pull/5938) ([lamont-granquist](https://github.com/lamont-granquist))
+- Use the ruby 2.4.1 release [\#5936](https://github.com/chef/chef/pull/5936) ([thommay](https://github.com/thommay))
 - Chef-13: Simplify DSL creation [\#5934](https://github.com/chef/chef/pull/5934) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: Remove deprecated Chef::Client attrs [\#5932](https://github.com/chef/chef/pull/5932) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove method\_missing from the DSL [\#5930](https://github.com/chef/chef/pull/5930) ([lamont-granquist](https://github.com/lamont-granquist))
@@ -37,9 +53,11 @@ This changelog reflects the current state of chef's master branch on github and 
 - Chef-13: remove the old rake tasks [\#5913](https://github.com/chef/chef/pull/5913) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13:  raise on properties redefining inherited methods [\#5912](https://github.com/chef/chef/pull/5912) ([lamont-granquist](https://github.com/lamont-granquist))
 - fix node\#debug\_value access through arrays [\#5911](https://github.com/chef/chef/pull/5911) ([lamont-granquist](https://github.com/lamont-granquist))
+- Remove Chef::REST [\#5910](https://github.com/chef/chef/pull/5910) ([thommay](https://github.com/thommay))
 - Chef-13:  Nillable properties [\#5907](https://github.com/chef/chef/pull/5907) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: freeze merged node attribute [\#5905](https://github.com/chef/chef/pull/5905) ([lamont-granquist](https://github.com/lamont-granquist))
 - bump ruby to 2.3.3 [\#5902](https://github.com/chef/chef/pull/5902) ([lamont-granquist](https://github.com/lamont-granquist))
+- Remove the easy\_install resource [\#5901](https://github.com/chef/chef/pull/5901) ([coderanger](https://github.com/coderanger))
 - Chef-13:  Remove declare\_resource create\_if\_missing API [\#5900](https://github.com/chef/chef/pull/5900) ([lamont-granquist](https://github.com/lamont-granquist))
 - Properly use chef-shell in SoloSession by deprecating old behavior into SoloLegacySession [\#5898](https://github.com/chef/chef/pull/5898) ([afiune](https://github.com/afiune))
 - Chef-13:  properly deep dup Node\#to\_hash [\#5896](https://github.com/chef/chef/pull/5896) ([lamont-granquist](https://github.com/lamont-granquist))
@@ -49,8 +67,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Compress debs and rpms with xz [\#5884](https://github.com/chef/chef/pull/5884) ([thommay](https://github.com/thommay))
 - Chef-13:  Chef::Resource cleanup [\#5882](https://github.com/chef/chef/pull/5882) ([lamont-granquist](https://github.com/lamont-granquist))
 - Fix apt\_repository for latest os version 16.10 [\#5874](https://github.com/chef/chef/pull/5874) ([afiune](https://github.com/afiune))
-- Chef-13: convert additional resource methods to properties [\#5871](https://github.com/chef/chef/pull/5871) ([lamont-granquist](https://github.com/lamont-granquist))
-- Add the ability to blacklist attributes from being saved to the chef server [\#5868](https://github.com/chef/chef/pull/5868) ([robmul](https://github.com/robmul))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
