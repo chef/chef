@@ -201,14 +201,38 @@ class Chef
     def fully_qualified_recipe_names
       results = Array.new
       recipe_filenames_by_name.each_key do |rname|
-        results << "#{name}::#{rname}"
+        results << "#{name}::#{rname.to_s.gsub(/[\\\/]/, '::')}"
       end
       results
     end
 
     def recipe_filenames=(*filenames)
       @recipe_filenames = filenames.flatten
-      @recipe_filenames_by_name = filenames_by_name(recipe_filenames)
+
+      # If there are no files, don't do any more work.
+      unless recipe_filenames
+        @recipe_filenames_by_name = []
+        return recipe_filenames
+      end
+
+      # Do this here so it doesn't need to be done again.
+      recipe_files = recipe_filenames.select { |filename| filename =~ /\.rb$/ }
+
+      # Use the root dir if available, otherwise find the "oldest" 'recipes' ancestor and use that.
+      recipes_dir = if root_dir
+        ChefConfig::PathHelper.join(root_dir, 'recipes')
+      else
+        segments = Chef::ChefFS::PathUtils.split(recipe_files[0]).take_while { |segment| segment != 'recipes' }
+        ChefConfig::PathHelper.join(*segments)
+      end
+
+      # resolve each file to its relative path from 'recipes_dir'
+      @recipe_filenames_by_name = recipe_files.inject({}) { |memo, filename|
+        recipe_path = ChefConfig::PathHelper.relative_path_from(recipes_dir, ChefConfig::PathHelper.dirname(filename))
+        memo[ChefConfig::PathHelper.join(recipe_path, File.basename(filename, '.rb'))] = filename
+        next memo
+      }
+
       recipe_filenames
     end
 
