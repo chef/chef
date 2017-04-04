@@ -73,7 +73,7 @@ describe Chef::Application::ExitCode do
   context "when Chef validates exit codes" do
 
     it "does write a warning on non-standard exit codes" do
-      expect(Chef::Log).to receive(:warn).with( 
+      expect(Chef::Log).to receive(:warn).with(
         /^Chef attempted to exit with a non-standard exit code of 151/)
       expect(exit_codes.normalize_exit_code(151)).to eq(1)
     end
@@ -92,10 +92,6 @@ describe Chef::Application::ExitCode do
 
     it "returns SIGTERM_RECEIVED when a SIGTERM is received" do
       expect(exit_codes.normalize_exit_code(Chef::Exceptions::SigTerm.new("BOOM"))).to eq(3)
-    end
-
-    it "returns GENERIC_FAILURE when a deprecated exit code error is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::DeprecatedExitCode.new("BOOM"))).to eq(1)
     end
 
     it "returns GENERIC_FAILURE when an exception is specified" do

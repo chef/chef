@@ -59,12 +59,6 @@ class Chef
     class UnsupportedAction < RuntimeError; end
     class MissingLibrary < RuntimeError; end
 
-    class DeprecatedExitCode < RuntimeError
-      def initalize
-        super "Exiting with a non RFC 062 Exit Code."
-      end
-    end
-
     class CannotDetermineNodeName < RuntimeError
       def initialize
         super "Unable to determine node name: configure node_name or configure the system's hostname and fqdn"

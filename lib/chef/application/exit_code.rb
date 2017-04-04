@@ -72,8 +72,6 @@ class Chef
             VALID_RFC_062_EXIT_CODES[:SIGINT_RECEIVED]
           elsif sigterm_received?(exception)
             VALID_RFC_062_EXIT_CODES[:SIGTERM_RECEIVED]
-          elsif legacy_exit_code?(exception)
-            VALID_RFC_062_EXIT_CODES[:GENERIC_FAILURE]
           elsif reboot_scheduled?(exception)
             VALID_RFC_062_EXIT_CODES[:REBOOT_SCHEDULED]
           elsif reboot_needed?(exception)
@@ -86,12 +84,6 @@ class Chef
             VALID_RFC_062_EXIT_CODES[:CLIENT_UPGRADED]
           else
             VALID_RFC_062_EXIT_CODES[:GENERIC_FAILURE]
-          end
-        end
-
-        def legacy_exit_code?(exception)
-          resolve_exception_array(exception).any? do |e|
-            e.is_a? Chef::Exceptions::DeprecatedExitCode
           end
         end
 
@@ -162,7 +154,7 @@ class Chef
           "Chef attempted to exit with a non-standard exit code of #{exit_code}." \
           " Chef RFC 062 (https://github.com/chef/chef-rfc/blob/master/rfc062-exit-status.md) defines the" \
           " exit codes that should be used with Chef.  Chef::Application::ExitCode defines valid exit codes"  \
-          " Non-standard exit codes are redefined as GENERIC_FAILURE." 
+          " Non-standard exit codes are redefined as GENERIC_FAILURE."
         end
 
       end
