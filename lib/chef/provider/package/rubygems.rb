@@ -539,7 +539,8 @@ class Chef
             src = " --clear-sources"
             src << (new_resource.source && " --source=#{new_resource.source}" || "")
           else
-            src = new_resource.source && " --source=#{new_resource.source} --source=#{Chef::Config[:rubygems_url]}"
+            src = new_resource.source && " --source=#{new_resource.source}" || ""
+            src << (Chef::Config[:rubygems_url] && " --source=#{Chef::Config[:rubygems_url]}" || "")
           end
           if !version.nil? && !version.empty?
             shell_out_with_timeout!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", env: nil)
