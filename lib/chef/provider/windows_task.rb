@@ -213,8 +213,11 @@ class Chef
 
         Chef::Log.debug "looking for existing tasks"
 
-        # we use shell_out here instead of shell_out! because a failure implies that the task does not exist
-        xml_cmd = shell_out("schtasks /Query /TN \"#{@new_resource.task_name}\" /XML")
+        task_script = <<-EOH
+            [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
+            schtasks /Query /TN \"#{@new_resource.task_name}\" /XML
+        EOH
+        xml_cmd = powershell_out(task_script)
 
         return if xml_cmd.exitstatus != 0
 
@@ -264,7 +267,7 @@ class Chef
           schtasks /Query /FO LIST /V /TN \"#{task_name}\"
         EOH
 
-        output = powershell_out("#{task_script}").stdout.force_encoding("UTF-8")
+        output = powershell_out(task_script).stdout.force_encoding("UTF-8")
         if output.empty?
           task = false
         else
@@ -287,7 +290,12 @@ class Chef
       end
 
       def load_task_xml(task_name)
-        xml_cmd = shell_out("chcp 65001 >nul 2>&1 && schtasks /Query /TN \"#{task_name}\" /XML")
+        task_script = <<-EOH
+            [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
+            schtasks /Query /TN \"#{task_name}\" /XML
+        EOH
+        xml_cmd = powershell_out(task_script)
+
         return if xml_cmd.exitstatus != 0
 
         doc = REXML::Document.new(xml_cmd.stdout)

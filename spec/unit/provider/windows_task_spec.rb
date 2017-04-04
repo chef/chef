@@ -340,14 +340,14 @@ describe Chef::Provider::WindowsTask do
 
     it "does nothing if the task doesn't exist" do
       task_xml = double("xml", :exitstatus => 1)
-      allow(provider).to receive(:shell_out).with("schtasks /Query /TN \"#{new_resource.task_name}\" /XML").and_return(task_xml)
+      allow(provider).to receive(:powershell_out).and_return(task_xml)
       output = provider.send(:update_task_xml, ["random_delay"])
       expect(output).to be(nil)
     end
 
     it "updates the task XML if random_delay is passed" do
       shell_out_obj = double("xml", :exitstatus => 0, :stdout => task_xml)
-      allow(provider).to receive(:shell_out).with("schtasks /Query /TN \"#{new_resource.task_name}\" /XML").and_return(shell_out_obj)
+      allow(provider).to receive(:powershell_out).and_return(shell_out_obj)
       expect(::File).to receive(:join)
       expect(::File).to receive(:open)
       expect(::File).to receive(:delete)
@@ -359,6 +359,7 @@ describe Chef::Provider::WindowsTask do
   describe "#load_task_hash" do
     it "returns false if the task doesn't exist" do
       allow(provider).to receive_message_chain(:powershell_out, :stdout, :force_encoding).and_return("")
+      allow(provider).to receive(:load_task_xml)
       expect(provider.send(:load_task_hash, "chef-client")).to be(false)
     end
 
