@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ class Chef
         # @api private
         attr_accessor :current_run_levels
 
-        provides :service, platform_family: %w{rhel fedora suse} do |node|
+        provides :service, platform_family: %w{rhel fedora suse amazon} do |node|
           Chef::Platform::ServiceHelpers.service_resource_providers.include?(:redhat)
         end
 

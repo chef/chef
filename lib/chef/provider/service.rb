@@ -245,7 +245,7 @@ class Chef
         Chef.set_provider_priority_array :service, [ Systemd, Arch ], platform_family: "arch"
         Chef.set_provider_priority_array :service, [ Systemd, Gentoo ], platform_family: "gentoo"
         Chef.set_provider_priority_array :service, [ Systemd, Upstart, Insserv, Debian, Invokercd ], platform_family: "debian"
-        Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ], platform_family: %w{rhel fedora suse}
+        Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ], platform_family: %w{rhel fedora suse amazon}
       end
     end
   end

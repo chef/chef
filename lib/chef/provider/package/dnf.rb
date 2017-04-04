@@ -35,7 +35,7 @@ class Chef
         use_multipackage_api
         use_package_name_for_source
 
-        provides :package, platform_family: %w{rhel fedora} do
+        provides :package, platform_family: %w{rhel fedora amazon} do
           which("dnf") && shell_out("rpm -q dnf").stdout =~ /^dnf-[1-9]/
         end
 

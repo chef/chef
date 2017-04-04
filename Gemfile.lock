@@ -37,7 +37,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 05cf05cb76ae22af9a8466e0226d0092b74c8414
+  revision: 58296dc0035e4f94a7b7cdc1db01887a3c3c1e30
   specs:
     ohai (13.0.0)
       chef-config (>= 12.5.0.alpha.1, < 14)
@@ -97,7 +97,7 @@ GIT
 
 GIT
   remote: https://github.com/poise/poise.git
-  revision: bf1ae70fda2486964397acd04221c968c30dd092
+  revision: 47cd0e2296fed918b30b0889ed127c824cc32d30
   specs:
     poise (2.7.3.pre)
       halite (~> 1.0)
@@ -205,13 +205,13 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.8.1)
     ast (2.3.0)
-    aws-sdk (2.9.1)
-      aws-sdk-resources (= 2.9.1)
-    aws-sdk-core (2.9.1)
+    aws-sdk (2.9.2)
+      aws-sdk-resources (= 2.9.2)
+    aws-sdk-core (2.9.2)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.9.1)
-      aws-sdk-core (= 2.9.1)
+    aws-sdk-resources (2.9.2)
+      aws-sdk-core (= 2.9.2)
     aws-sigv4 (1.0.0)
     backports (3.7.0)
     binding_of_caller (0.7.2)
@@ -263,7 +263,7 @@ GEM
     ethon (0.10.1)
       ffi (>= 1.3.0)
     excon (0.55.0)
-    faraday (0.11.0)
+    faraday (0.12.0.1)
       multipart-post (>= 1.2, < 3)
     faraday-http-cache (2.0.0)
       faraday (~> 0.8)
@@ -323,7 +323,7 @@ GEM
     kitchen-sync (2.1.2)
       net-sftp
       test-kitchen (>= 1.0.0)
-    kitchen-vagrant (1.0.2)
+    kitchen-vagrant (1.1.0)
       test-kitchen (~> 1.4)
     knife-windows (1.9.0)
       winrm (~> 2.1)
