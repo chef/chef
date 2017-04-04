@@ -17,7 +17,7 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "tm/load_additional
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
 gem "rake"
 gem "bundler"
-gem "cheffish", "~> 13", git: "https://github.com/chef/cheffish.git", branch: "tm/ohai_run_context"# required for rspec tests
+gem "cheffish", "~> 13", git: "https://github.com/chef/cheffish.git", branch: "tm/ohai_run_context" # required for rspec tests
 
 group(:omnibus_package) do
   gem "appbundler"
