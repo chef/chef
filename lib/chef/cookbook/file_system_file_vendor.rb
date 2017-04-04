@@ -35,7 +35,7 @@ class Chef
       attr_reader :repo_paths
 
       def initialize(manifest, *repo_paths)
-        @cookbook_name = manifest[:cookbook_name]
+        @cookbook_name = manifest.name
         @repo_paths = repo_paths.flatten
         raise ArgumentError, "You must specify at least one repo path" if repo_paths.empty?
       end

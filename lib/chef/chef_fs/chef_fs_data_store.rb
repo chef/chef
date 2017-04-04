@@ -768,7 +768,7 @@ class Chef
           end
 
         elsif path.length == 2 && path[0] != "cookbooks"
-          path[1] = path[1][0..-6]
+          path[1] = path[1].gsub(/\.(rb|json)/, "")
         end
 
         path

@@ -188,7 +188,7 @@ describe Chef::Client do
             # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
             #
             expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-            expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
+            expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
             expect(http_cookbook_sync).to receive(:post).
               with("environments/_default/cookbook_versions", { :run_list => ["override_recipe"] }).
               and_return({})
@@ -222,7 +222,7 @@ describe Chef::Client do
           # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
           #
           expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-          expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(http_cookbook_sync)
+          expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
           expect(http_cookbook_sync).to receive(:post).
             with("environments/_default/cookbook_versions", { :run_list => ["new_run_list_recipe"] }).
             and_return({})

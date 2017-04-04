@@ -69,8 +69,6 @@ class Chef
 
           LWRPBase.loaded_lwrps[filename] = true
 
-          # Create the deprecated Chef::Resource::LwrpFoo class
-          Chef::Resource.register_deprecated_lwrp_class(resource_class, convert_to_class_name(resource_name))
           resource_class
         end
 

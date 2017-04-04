@@ -417,9 +417,8 @@ describe "LWRP" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = @old_treat_deprecation_warnings_as_errors
       end
 
-      it "should load the provider into a properly-named class" do
-        expect(Chef::Provider.const_get("LwrpBuckPasser")).to be_kind_of(Class)
-        expect(Chef::Provider::LwrpBuckPasser <= Chef::Provider::LWRPBase).to be_truthy
+      it "should not load the provider into a const" do
+        expect(defined?(Chef::Provider::LwrpBuckPasser)).to be_nil
       end
 
       it "should create a method for each action" do
@@ -571,55 +570,28 @@ describe "LWRP" do
   end
 
   context "resource class created" do
+    let(:test_lwrp_class) { @test_lwrp_class }
     before(:context) do
       @tmpdir = Dir.mktmpdir("lwrp_test")
       resource_path = File.join(@tmpdir, "once.rb")
       IO.write(resource_path, "default_action :create")
-
-      @old_treat_deprecation_warnings_as_errors = Chef::Config[:treat_deprecation_warnings_as_errors]
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      Chef::Resource::LWRPBase.build_from_file("lwrp", resource_path, nil)
+      @test_lwrp_class = Chef::Resource::LWRPBase.build_from_file("lwrp", resource_path, nil)
     end
 
     after(:context) do
       FileUtils.remove_entry @tmpdir
-      Chef::Config[:treat_deprecation_warnings_as_errors] = @old_treat_deprecation_warnings_as_errors
     end
 
-    it "should load the resource into a properly-named class" do
-      expect(Chef::Resource::LwrpOnce).to be_kind_of(Class)
-      expect(Chef::Resource::LwrpOnce <= Chef::Resource::LWRPBase).to be_truthy
+    it "should not load the resource into a const" do
+      expect(defined?(Chef::Resource::LwrpOnce)).to be_nil
     end
 
-    it "get_lwrp(:lwrp_once).new is a Chef::Resource::LwrpOnce" do
+    it "get_lwrp(:lwrp_once).new is an instance of the LWRP class" do
       lwrp = get_lwrp(:lwrp_once).new("hi")
-      expect(lwrp.kind_of?(Chef::Resource::LwrpOnce)).to be_truthy
-      expect(lwrp.is_a?(Chef::Resource::LwrpOnce)).to be_truthy
+      expect(lwrp.kind_of?(test_lwrp_class)).to be_truthy
+      expect(lwrp.is_a?(test_lwrp_class)).to be_truthy
       expect(get_lwrp(:lwrp_once) === lwrp).to be_truthy
-      expect(Chef::Resource::LwrpOnce === lwrp).to be_truthy
-    end
-
-    it "Chef::Resource::LwrpOnce.new is a get_lwrp(:lwrp_once)" do
-      lwrp = Chef::Resource::LwrpOnce.new("hi")
-      expect(lwrp.kind_of?(get_lwrp(:lwrp_once))).to be_truthy
-      expect(lwrp.is_a?(get_lwrp(:lwrp_once))).to be_truthy
-      expect(get_lwrp(:lwrp_once) === lwrp).to be_truthy
-      expect(Chef::Resource::LwrpOnce === lwrp).to be_truthy
-    end
-
-    it "works even if LwrpOnce exists in the top level" do
-      module ::LwrpOnce
-      end
-      expect(Chef::Resource::LwrpOnce).not_to eq(::LwrpOnce)
-    end
-
-    it "allows monkey patching of the lwrp through Chef::Resource" do
-      monkey = Module.new do
-        def issue_3607
-        end
-      end
-      Chef::Resource::LwrpOnce.send(:include, monkey)
-      expect { get_lwrp(:lwrp_once).new("blah").issue_3607 }.not_to raise_error
+      expect(test_lwrp_class === lwrp).to be_truthy
     end
 
     context "with a subclass of get_lwrp(:lwrp_once)" do
@@ -634,12 +606,12 @@ describe "LWRP" do
         expect(subclass === lwrp).to be_truthy
         expect(lwrp.class === subclass)
       end
-      it "subclass.new is a Chef::Resource::LwrpOnce" do
+      it "subclass.new is an instance of the LWRP class" do
         lwrp = subclass.new("hi")
-        expect(lwrp.kind_of?(Chef::Resource::LwrpOnce)).to be_truthy
-        expect(lwrp.is_a?(Chef::Resource::LwrpOnce)).to be_truthy
-        expect(Chef::Resource::LwrpOnce === lwrp).to be_truthy
-        expect(lwrp.class === Chef::Resource::LwrpOnce)
+        expect(lwrp.kind_of?(test_lwrp_class)).to be_truthy
+        expect(lwrp.is_a?(test_lwrp_class)).to be_truthy
+        expect(test_lwrp_class === lwrp).to be_truthy
+        expect(lwrp.class === test_lwrp_class)
       end
       it "subclass.new is a get_lwrp(:lwrp_once)" do
         lwrp = subclass.new("hi")
@@ -647,55 +619,6 @@ describe "LWRP" do
         expect(lwrp.is_a?(get_lwrp(:lwrp_once))).to be_truthy
         expect(get_lwrp(:lwrp_once) === lwrp).to be_truthy
         expect(lwrp.class === get_lwrp(:lwrp_once))
-      end
-      it "Chef::Resource::LwrpOnce.new is *not* a subclass" do
-        lwrp = Chef::Resource::LwrpOnce.new("hi")
-        expect(lwrp.kind_of?(subclass)).to be_falsey
-        expect(lwrp.is_a?(subclass)).to be_falsey
-        expect(subclass === lwrp.class).to be_falsey
-        expect(subclass === Chef::Resource::LwrpOnce).to be_falsey
-      end
-      it "get_lwrp(:lwrp_once).new is *not* a subclass" do
-        lwrp = get_lwrp(:lwrp_once).new("hi")
-        expect(lwrp.kind_of?(subclass)).to be_falsey
-        expect(lwrp.is_a?(subclass)).to be_falsey
-        expect(subclass === lwrp.class).to be_falsey
-        expect(subclass === get_lwrp(:lwrp_once)).to be_falsey
-      end
-    end
-
-    context "with a subclass of Chef::Resource::LwrpOnce" do
-      let(:subclass) do
-        Class.new(Chef::Resource::LwrpOnce)
-      end
-
-      it "subclass.new is a subclass" do
-        lwrp = subclass.new("hi")
-        expect(lwrp.kind_of?(subclass)).to be_truthy
-        expect(lwrp.is_a?(subclass)).to be_truthy
-        expect(subclass === lwrp).to be_truthy
-        expect(lwrp.class === subclass)
-      end
-      it "subclass.new is a Chef::Resource::LwrpOnce" do
-        lwrp = subclass.new("hi")
-        expect(lwrp.kind_of?(Chef::Resource::LwrpOnce)).to be_truthy
-        expect(lwrp.is_a?(Chef::Resource::LwrpOnce)).to be_truthy
-        expect(Chef::Resource::LwrpOnce === lwrp).to be_truthy
-        expect(lwrp.class === Chef::Resource::LwrpOnce)
-      end
-      it "subclass.new is a get_lwrp(:lwrp_once)" do
-        lwrp = subclass.new("hi")
-        expect(lwrp.kind_of?(get_lwrp(:lwrp_once))).to be_truthy
-        expect(lwrp.is_a?(get_lwrp(:lwrp_once))).to be_truthy
-        expect(get_lwrp(:lwrp_once) === lwrp).to be_truthy
-        expect(lwrp.class === get_lwrp(:lwrp_once))
-      end
-      it "Chef::Resource::LwrpOnce.new is *not* a subclass" do
-        lwrp = Chef::Resource::LwrpOnce.new("hi")
-        expect(lwrp.kind_of?(subclass)).to be_falsey
-        expect(lwrp.is_a?(subclass)).to be_falsey
-        expect(subclass === lwrp.class).to be_falsey
-        expect(subclass === Chef::Resource::LwrpOnce).to be_falsey
       end
       it "get_lwrp(:lwrp_once).new is *not* a subclass" do
         lwrp = get_lwrp(:lwrp_once).new("hi")

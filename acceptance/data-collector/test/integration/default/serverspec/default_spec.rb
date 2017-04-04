@@ -108,6 +108,8 @@ shared_examples_for "run_converge.success payload check" do
         node
         node_name
         organization_name
+        policy_name
+        policy_group
         resources
         run_id
         run_list
@@ -145,6 +147,8 @@ shared_examples_for "run_converge.failure payload check" do
         node
         node_name
         organization_name
+        policy_name
+        policy_group
         resources
         run_id
         run_list

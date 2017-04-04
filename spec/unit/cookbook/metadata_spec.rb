@@ -28,8 +28,7 @@ describe Chef::Cookbook::Metadata do
     before do
       @fields = [ :name, :description, :long_description, :maintainer,
                   :maintainer_email, :license, :platforms, :dependencies,
-                  :recommendations, :suggestions, :conflicting, :providing,
-                  :replacing, :attributes, :groupings, :recipes, :version,
+                  :providing, :attributes, :recipes, :version,
                   :source_url, :issues_url, :privacy, :ohai_versions, :chef_versions,
                   :gems ]
     end
@@ -114,28 +113,8 @@ describe Chef::Cookbook::Metadata do
       expect(metadata.dependencies).to eq(Mash.new)
     end
 
-    it "has an empty recommends list" do
-      expect(metadata.recommendations).to eq(Mash.new)
-    end
-
-    it "has an empty suggestions list" do
-      expect(metadata.suggestions).to eq(Mash.new)
-    end
-
-    it "has an empty conflicts list" do
-      expect(metadata.conflicting).to eq(Mash.new)
-    end
-
-    it "has an empty replaces list" do
-      expect(metadata.replacing).to eq(Mash.new)
-    end
-
     it "has an empty attributes list" do
       expect(metadata.attributes).to eq(Mash.new)
-    end
-
-    it "has an empty groupings list" do
-      expect(metadata.groupings).to eq(Mash.new)
     end
 
     it "has an empty recipes list" do
@@ -234,11 +213,7 @@ describe Chef::Cookbook::Metadata do
 
     dep_types = {
       :depends     => [ :dependencies, "foo::bar", "> 0.2" ],
-      :recommends  => [ :recommendations, "foo::bar", ">= 0.2" ],
-      :suggests    => [ :suggestions, "foo::bar", "> 0.2" ],
-      :conflicts   => [ :conflicting, "foo::bar", "~> 0.2" ],
       :provides    => [ :providing, "foo::bar", "<= 0.2" ],
-      :replaces    => [ :replacing, "foo::bar", "= 0.2.1" ],
     }
     dep_types.sort_by(&:to_s).each do |dep, dep_args|
       check_with = dep_args.shift
@@ -255,11 +230,7 @@ describe Chef::Cookbook::Metadata do
 
     dep_types = {
       :depends     => [ :dependencies, "foo::bar", ">0.2", "> 0.2" ],
-      :recommends  => [ :recommendations, "foo::bar", ">=0.2", ">= 0.2" ],
-      :suggests    => [ :suggestions, "foo::bar", ">0.2", "> 0.2" ],
-      :conflicts   => [ :conflicting, "foo::bar", "~>0.2", "~> 0.2" ],
       :provides    => [ :providing, "foo::bar", "<=0.2", "<= 0.2" ],
-      :replaces    => [ :replacing, "foo::bar", "=0.2.1", "= 0.2.1" ],
     }
     dep_types.sort_by(&:to_s).each do |dep, dep_args|
       check_with = dep_args.shift
@@ -278,11 +249,7 @@ describe Chef::Cookbook::Metadata do
     describe "in the obsoleted format" do
       dep_types = {
         :depends     => [ "foo::bar", "> 0.2", "< 1.0" ],
-        :recommends  => [ "foo::bar", ">= 0.2", "< 1.0" ],
-        :suggests    => [ "foo::bar", "> 0.2", "< 1.0" ],
-        :conflicts   => [ "foo::bar", "> 0.2", "< 1.0" ],
         :provides    => [ "foo::bar", "> 0.2", "< 1.0" ],
-        :replaces    => [ "foo::bar", "> 0.2.1", "< 1.0" ],
       }
 
       dep_types.each do |dep, dep_args|
@@ -295,11 +262,7 @@ describe Chef::Cookbook::Metadata do
     describe "with obsolete operators" do
       dep_types = {
         :depends     => [ "foo::bar", ">> 0.2"],
-        :recommends  => [ "foo::bar", ">> 0.2"],
-        :suggests    => [ "foo::bar", ">> 0.2"],
-        :conflicts   => [ "foo::bar", ">> 0.2"],
         :provides    => [ "foo::bar", ">> 0.2"],
-        :replaces    => [ "foo::bar", ">> 0.2.1"],
       }
 
       dep_types.each do |dep, dep_args|
@@ -449,33 +412,6 @@ describe Chef::Cookbook::Metadata do
 
     it "works if there's a more complicated constraint" do
       expect_gem_works(["foo", "~> 1.2"], ["bar", ">= 2.4", "< 4.0"])
-    end
-  end
-
-  describe "attribute groupings" do
-    it "should allow you set a grouping" do
-      group = {
-        "title" => "MySQL Tuning",
-        "description" => "Setting from the my.cnf file that allow you to tune your mysql server",
-      }
-      expect(metadata.grouping("/db/mysql/databases/tuning", group)).to eq(group)
-    end
-    it "should not accept anything but a string for display_name" do
-      expect do
-        metadata.grouping("db/mysql/databases", :title => "foo")
-      end.not_to raise_error
-      expect do
-        metadata.grouping("db/mysql/databases", :title => Hash.new)
-      end.to raise_error(ArgumentError)
-    end
-
-    it "should not accept anything but a string for the description" do
-      expect do
-        metadata.grouping("db/mysql/databases", :description => "foo")
-      end.not_to raise_error
-      expect do
-        metadata.grouping("db/mysql/databases", :description => Hash.new)
-      end.to raise_error(ArgumentError)
     end
   end
 
@@ -765,7 +701,10 @@ describe Chef::Cookbook::Metadata do
   describe "recipes" do
     let(:cookbook) do
       c = Chef::CookbookVersion.new("test_cookbook")
-      c.recipe_files = [ "default.rb", "enlighten.rb" ]
+      c.manifest = { all_files: [
+        { name: "recipes/default.rb", path: "recipes/default.rb", checksum: "my_only_friend" },
+        { name: "recipes/enlighten.rb", path: "recipes/enlighten.rb", checksum: "my_only_friend" },
+      ] }
       c
     end
 
@@ -801,11 +740,7 @@ describe Chef::Cookbook::Metadata do
       metadata.depends "bobo", "= 1.0"
       metadata.depends "bubu", "=1.0"
       metadata.depends "bobotclown", "= 1.1"
-      metadata.recommends "snark", "< 3.0"
-      metadata.suggests "kindness", "> 2.0"
-      metadata.conflicts "hatred"
       metadata.provides "foo(:bar, :baz)"
-      metadata.replaces "snarkitron"
       metadata.recipe "test_cookbook::enlighten", "is your buddy"
       metadata.attribute "bizspark/has_login",
         :display_name => "You have nothing"
@@ -840,11 +775,7 @@ describe Chef::Cookbook::Metadata do
         license
         platforms
         dependencies
-        suggestions
-        recommendations
-        conflicting
         providing
-        replacing
         attributes
         recipes
         version
@@ -885,11 +816,7 @@ describe Chef::Cookbook::Metadata do
         license
         platforms
         dependencies
-        suggestions
-        recommendations
-        conflicting
         providing
-        replacing
         attributes
         recipes
         version
@@ -911,40 +838,34 @@ describe Chef::Cookbook::Metadata do
         @hash = metadata.to_hash
       end
 
-      [:dependencies,
-       :recommendations,
-       :suggestions,
-       :conflicting,
-       :replacing].each do |to_check|
-        it "should transform deprecated greater than syntax for :#{to_check}" do
-          @hash[to_check.to_s]["foo::bar"] = ">> 0.2"
-          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          expect(deserial.send(to_check)["foo::bar"]).to eq("> 0.2")
-        end
+      it "should transform deprecated greater than syntax for :dependencies" do
+        @hash[:dependencies.to_s]["foo::bar"] = ">> 0.2"
+        deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+        expect(deserial.send(:dependencies)["foo::bar"]).to eq("> 0.2")
+      end
 
-        it "should transform deprecated less than syntax for :#{to_check}" do
-          @hash[to_check.to_s]["foo::bar"] = "<< 0.2"
-          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          expect(deserial.send(to_check)["foo::bar"]).to eq("< 0.2")
-        end
+      it "should transform deprecated less than syntax for :dependencies" do
+        @hash[:dependencies.to_s]["foo::bar"] = "<< 0.2"
+        deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+        expect(deserial.send(:dependencies)["foo::bar"]).to eq("< 0.2")
+      end
 
-        it "should ignore multiple dependency constraints for :#{to_check}" do
-          @hash[to_check.to_s]["foo::bar"] = [ ">= 1.0", "<= 5.2" ]
-          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          expect(deserial.send(to_check)["foo::bar"]).to eq([])
-        end
+      it "should ignore multiple dependency constraints for :dependencies" do
+        @hash[:dependencies.to_s]["foo::bar"] = [ ">= 1.0", "<= 5.2" ]
+        deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+        expect(deserial.send(:dependencies)["foo::bar"]).to eq([])
+      end
 
-        it "should accept an empty array of dependency constraints for :#{to_check}" do
-          @hash[to_check.to_s]["foo::bar"] = []
-          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          expect(deserial.send(to_check)["foo::bar"]).to eq([])
-        end
+      it "should accept an empty array of dependency constraints for :dependencies" do
+        @hash[:dependencies.to_s]["foo::bar"] = []
+        deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+        expect(deserial.send(:dependencies)["foo::bar"]).to eq([])
+      end
 
-        it "should accept single-element arrays of dependency constraints for :#{to_check}" do
-          @hash[to_check.to_s]["foo::bar"] = [ ">= 2.0" ]
-          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-          expect(deserial.send(to_check)["foo::bar"]).to eq(">= 2.0")
-        end
+      it "should accept single-element arrays of dependency constraints for :dependencies" do
+        @hash[:dependencies.to_s]["foo::bar"] = [ ">= 2.0" ]
+        deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+        expect(deserial.send(:dependencies)["foo::bar"]).to eq(">= 2.0")
       end
     end
 

@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 require "spec_helper"
+require "chef/cookbook_version"
 
 describe Chef::Cookbook::FileVendor do
 
@@ -24,6 +25,12 @@ describe Chef::Cookbook::FileVendor do
   context "when configured to fetch files over http" do
 
     let(:http) { double("Chef::ServerAPI") }
+
+    # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
+    let(:manifest) do
+      cbv = Chef::CookbookVersion.new("bob", Array(Dir.tmpdir))
+      cbv.cookbook_manifest
+    end
 
     before do
       file_vendor_class.fetch_from_remote(http)
@@ -39,8 +46,11 @@ describe Chef::Cookbook::FileVendor do
 
     context "with a manifest from a cookbook version" do
 
-      # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
-      let(:manifest) { { :cookbook_name => "bob", :name => "bob-1.2.3" } }
+      # # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
+      # let(:manifest) do
+      #   cbv = Chef::CookbookVersion.new("bob", Array(Dir.tmpdir))
+      #   cbv.cookbook_manifest
+      # end
 
       it "creates a RemoteFileVendor for a given manifest" do
         file_vendor = file_vendor_class.create_from_manifest(manifest)
@@ -52,9 +62,6 @@ describe Chef::Cookbook::FileVendor do
     end
 
     context "with a manifest from a cookbook artifact" do
-
-      # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
-      let(:manifest) { { :name => "bob" } }
 
       it "creates a RemoteFileVendor for a given manifest" do
         file_vendor = file_vendor_class.create_from_manifest(manifest)
@@ -70,8 +77,10 @@ describe Chef::Cookbook::FileVendor do
 
     let(:cookbook_path) { %w{/var/chef/cookbooks /var/chef/other_cookbooks} }
 
-    # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
-    let(:manifest) { { :cookbook_name => "bob" } }
+    let(:manifest) do
+      cbv = Chef::CookbookVersion.new("bob", Array(Dir.tmpdir))
+      cbv.cookbook_manifest
+    end
 
     before do
       file_vendor_class.fetch_from_disk(cookbook_path)
@@ -97,8 +106,10 @@ describe Chef::Cookbook::FileVendor do
   context "when vendoring a cookbook with a name mismatch" do
     let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "cookbooks") }
 
-    # A manifest is a Hash of the format defined by Chef::CookbookVersion#manifest
-    let(:manifest) { { :cookbook_name => "name-mismatch" } }
+    let(:manifest) do
+      cbv = Chef::CookbookVersion.new("name-mismatch", Array(Dir.tmpdir))
+      cbv.cookbook_manifest
+    end
 
     before do
       file_vendor_class.fetch_from_disk(cookbook_path)

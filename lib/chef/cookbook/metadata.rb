@@ -44,13 +44,8 @@ class Chef
       LICENSE                = "license".freeze
       PLATFORMS              = "platforms".freeze
       DEPENDENCIES           = "dependencies".freeze
-      RECOMMENDATIONS        = "recommendations".freeze
-      SUGGESTIONS            = "suggestions".freeze
-      CONFLICTING            = "conflicting".freeze
       PROVIDING              = "providing".freeze
-      REPLACING              = "replacing".freeze
       ATTRIBUTES             = "attributes".freeze
-      GROUPINGS              = "groupings".freeze
       RECIPES                = "recipes".freeze
       VERSION                = "version".freeze
       SOURCE_URL             = "source_url".freeze
@@ -62,17 +57,12 @@ class Chef
 
       COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,
                             :maintainer_email, :license, :platforms, :dependencies,
-                            :recommendations, :suggestions, :conflicting, :providing,
-                            :replacing, :attributes, :groupings, :recipes, :version,
+                            :providing, :attributes, :recipes, :version,
                             :source_url, :issues_url, :privacy, :chef_versions, :ohai_versions,
                             :gems ]
 
       VERSION_CONSTRAINTS = { :depends      => DEPENDENCIES,
-                              :recommends   => RECOMMENDATIONS,
-                              :suggests     => SUGGESTIONS,
-                              :conflicts    => CONFLICTING,
                               :provides     => PROVIDING,
-                              :replaces     => REPLACING,
                               :chef_version => CHEF_VERSIONS,
                               :ohai_version => OHAI_VERSIONS }
 
@@ -81,13 +71,8 @@ class Chef
 
       attr_reader :platforms
       attr_reader :dependencies
-      attr_reader :recommendations
-      attr_reader :suggestions
-      attr_reader :conflicting
       attr_reader :providing
-      attr_reader :replacing
       attr_reader :attributes
-      attr_reader :groupings
       attr_reader :recipes
       attr_reader :version
 
@@ -120,13 +105,8 @@ class Chef
 
         @platforms = Mash.new
         @dependencies = Mash.new
-        @recommendations = Mash.new
-        @suggestions = Mash.new
-        @conflicting = Mash.new
         @providing = Mash.new
-        @replacing = Mash.new
         @attributes = Mash.new
-        @groupings = Mash.new
         @recipes = Mash.new
         @version = Version.new("0.0.0")
         @source_url = ""
@@ -315,57 +295,6 @@ class Chef
         @dependencies[cookbook]
       end
 
-      # Adds a recommendation for another cookbook, with version checking strings.
-      #
-      # === Parameters
-      # cookbook<String>:: The cookbook
-      # version<String>:: A version constraint of the form "OP VERSION",
-      # where OP is one of < <= = > >= ~> and VERSION has
-      # the form x.y.z or x.y.
-      #
-      # === Returns
-      # versions<Array>:: Returns the list of versions for the platform
-      def recommends(cookbook, *version_args)
-        version = new_args_format(:recommends, cookbook, version_args)
-        constraint = validate_version_constraint(:recommends, cookbook, version)
-        @recommendations[cookbook] = constraint.to_s
-        @recommendations[cookbook]
-      end
-
-      # Adds a suggestion for another cookbook, with version checking strings.
-      #
-      # === Parameters
-      # cookbook<String>:: The cookbook
-      # version<String>:: A version constraint of the form "OP VERSION",
-      # where OP is one of < <= = > >= ~> and VERSION has the
-      # formx.y.z or x.y.
-      #
-      # === Returns
-      # versions<Array>:: Returns the list of versions for the platform
-      def suggests(cookbook, *version_args)
-        version = new_args_format(:suggests, cookbook, version_args)
-        constraint = validate_version_constraint(:suggests, cookbook, version)
-        @suggestions[cookbook] = constraint.to_s
-        @suggestions[cookbook]
-      end
-
-      # Adds a conflict for another cookbook, with version checking strings.
-      #
-      # === Parameters
-      # cookbook<String>:: The cookbook
-      # version<String>:: A version constraint of the form "OP VERSION",
-      # where OP is one of < <= = > >= ~> and VERSION has
-      # the form x.y.z or x.y.
-      #
-      # === Returns
-      # versions<Array>:: Returns the list of versions for the platform
-      def conflicts(cookbook, *version_args)
-        version = new_args_format(:conflicts, cookbook, version_args)
-        constraint = validate_version_constraint(:conflicts, cookbook, version)
-        @conflicting[cookbook] = constraint.to_s
-        @conflicting[cookbook]
-      end
-
       # Adds a recipe, definition, or resource provided by this cookbook.
       #
       # Recipes are specified as normal
@@ -385,22 +314,6 @@ class Chef
         constraint = validate_version_constraint(:provides, cookbook, version)
         @providing[cookbook] = constraint.to_s
         @providing[cookbook]
-      end
-
-      # Adds a cookbook that is replaced by this one, with version checking strings.
-      #
-      # === Parameters
-      # cookbook<String>:: The cookbook we replace
-      # version<String>:: A version constraint of the form "OP VERSION",
-      # where OP is one of < <= = > >= ~> and VERSION has the form x.y.z or x.y.
-      #
-      # === Returns
-      # versions<Array>:: Returns the list of versions for the platform
-      def replaces(cookbook, *version_args)
-        version = new_args_format(:replaces, cookbook, version_args)
-        constraint = validate_version_constraint(:replaces, cookbook, version)
-        @replacing[cookbook] = constraint.to_s
-        @replacing[cookbook]
       end
 
       # Metadata DSL to set a valid chef_version.  May be declared multiple times
@@ -519,18 +432,6 @@ class Chef
         @attributes[name]
       end
 
-      def grouping(name, options)
-        validate(
-          options,
-          {
-            :title => { :kind_of => String },
-            :description => { :kind_of => String },
-          }
-        )
-        @groupings[name] = options
-        @groupings[name]
-      end
-
       # Convert an Array of Gem::Dependency objects (chef_version/ohai_version) to an Array.
       #
       # Gem::Dependencey#to_s is not useful, and there is no #to_json defined on it or its component
@@ -575,13 +476,8 @@ class Chef
           LICENSE                => license,
           PLATFORMS              => platforms,
           DEPENDENCIES           => dependencies,
-          RECOMMENDATIONS        => recommendations,
-          SUGGESTIONS            => suggestions,
-          CONFLICTING            => conflicting,
           PROVIDING              => providing,
-          REPLACING              => replacing,
           ATTRIBUTES             => attributes,
-          GROUPINGS              => groupings,
           RECIPES                => recipes,
           VERSION                => version,
           SOURCE_URL             => source_url,
@@ -612,13 +508,8 @@ class Chef
         @license                      = o[LICENSE] if o.has_key?(LICENSE)
         @platforms                    = o[PLATFORMS] if o.has_key?(PLATFORMS)
         @dependencies                 = handle_deprecated_constraints(o[DEPENDENCIES]) if o.has_key?(DEPENDENCIES)
-        @recommendations              = handle_deprecated_constraints(o[RECOMMENDATIONS]) if o.has_key?(RECOMMENDATIONS)
-        @suggestions                  = handle_deprecated_constraints(o[SUGGESTIONS]) if o.has_key?(SUGGESTIONS)
-        @conflicting                  = handle_deprecated_constraints(o[CONFLICTING]) if o.has_key?(CONFLICTING)
         @providing                    = o[PROVIDING] if o.has_key?(PROVIDING)
-        @replacing                    = handle_deprecated_constraints(o[REPLACING]) if o.has_key?(REPLACING)
         @attributes                   = o[ATTRIBUTES] if o.has_key?(ATTRIBUTES)
-        @groupings                    = o[GROUPINGS] if o.has_key?(GROUPINGS)
         @recipes                      = o[RECIPES] if o.has_key?(RECIPES)
         @version                      = o[VERSION] if o.has_key?(VERSION)
         @source_url                   = o[SOURCE_URL] if o.has_key?(SOURCE_URL)
@@ -726,7 +617,7 @@ class Chef
         if block_given?
           super
         else
-          Chef::Log.debug "ignoring method #{method} on cookbook with name #{name}, possible typo or future metadata?"
+          Chef::Log.debug "ignoring method #{method} on cookbook with name #{name}, possible typo or the ghosts of metadata past or future?"
         end
       end
 

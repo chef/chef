@@ -194,7 +194,7 @@ class Chef
           f.group "root"
           f.mode "0644"
           f.content new_resource.to_ini
-          f.verify :systemd_unit
+          f.verify :systemd_unit if new_resource.verify
         end.run_action(action)
       end
 
