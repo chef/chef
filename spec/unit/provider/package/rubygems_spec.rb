@@ -534,12 +534,49 @@ describe Chef::Provider::Package::Rubygems do
         end
       end
 
+      context "when the source is from the rubygems_uri" do
+        it "determines the candidate version by querying the remote gem servers" do
+          Chef::Config[:rubygems_url] = "https://mirror1/"
+          expect(provider.gem_env).to receive(:candidate_version_from_remote)
+            .with(gem_dep, "https://mirror1/")
+            .and_return(Gem::Version.new(target_version))
+          expect(provider.candidate_version).to eq(target_version)
+        end
+      end
+
       context "when the requested source is a remote server" do
         let(:source) { "http://mygems.example.com" }
 
         it "determines the candidate version by querying the remote gem servers" do
           expect(provider.gem_env).to receive(:candidate_version_from_remote)
             .with(gem_dep, source)
+            .and_return(Gem::Version.new(target_version))
+          expect(provider.candidate_version).to eq(target_version)
+        end
+
+        it "overwrites the config variable" do
+          Chef::Config[:rubygems_url] = "https://overridden"
+          expect(provider.gem_env).to receive(:candidate_version_from_remote)
+            .with(gem_dep, source)
+            .and_return(Gem::Version.new(target_version))
+          expect(provider.candidate_version).to eq(target_version)
+        end
+      end
+
+      context "when the requested source is an array" do
+        let(:source) { [ "https://mirror1", "https://mirror2" ] }
+
+        it "determines the candidate version by querying the remote gem servers" do
+          expect(provider.gem_env).to receive(:candidate_version_from_remote)
+            .with(gem_dep, *source)
+            .and_return(Gem::Version.new(target_version))
+          expect(provider.candidate_version).to eq(target_version)
+        end
+
+        it "overwrites the config variable" do
+          Chef::Config[:rubygems_url] = "https://overridden"
+          expect(provider.gem_env).to receive(:candidate_version_from_remote)
+            .with(gem_dep, *source)
             .and_return(Gem::Version.new(target_version))
           expect(provider.candidate_version).to eq(target_version)
         end
@@ -566,13 +603,14 @@ describe Chef::Provider::Package::Rubygems do
         current_resource
       end
 
+      let(:version) { Gem::Version.new(candidate_version) }
+
       before do
-        version = Gem::Version.new(candidate_version)
-        args = [gem_dep]
-        args << source if source
-        allow(provider.gem_env).to receive(:candidate_version_from_remote)
-          .with(*args)
-          .and_return(version)
+        if source
+          allow(provider.gem_env).to receive(:candidate_version_from_remote).with(gem_dep, *source).and_return(version)
+        else
+          allow(provider.gem_env).to receive(:candidate_version_from_remote).with(gem_dep).and_return(version)
+        end
       end
 
       describe "in the current gem environment" do
@@ -633,12 +671,53 @@ describe Chef::Provider::Package::Rubygems do
           end
         end
 
+        context "when the Chef::Config[:rubygems_url] option is provided" do
+          let(:gem_binary) { "/foo/bar" }
+
+          it "installs the gem with rubygems.org as an added source" do
+            Chef::Config[:rubygems_url] = "https://mirror1"
+            expect(provider.gem_env).to receive(:candidate_version_from_remote).with(gem_dep, Chef::Config[:rubygems_url]).and_return(version)
+            expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=https://mirror1"
+            expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
+            provider.run_action(:install)
+            expect(new_resource).to be_updated_by_last_action
+          end
+        end
+
         context "when another source and binary are provided" do
           let(:source) { "http://mirror.ops.rhcloud.com/mirror/ruby" }
           let(:gem_binary) { "/foo/bar" }
 
           it "installs the gem with rubygems.org as an added source" do
             expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=#{source}"
+            expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
+            provider.run_action(:install)
+            expect(new_resource).to be_updated_by_last_action
+          end
+
+          it "ignores the Chef::Config setting" do
+            Chef::Config[:rubygems_url] = "https://ignored"
+            expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=#{source}"
+            expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
+            provider.run_action(:install)
+            expect(new_resource).to be_updated_by_last_action
+          end
+        end
+
+        context "when the source is an array" do
+          let(:source) { [ "https://mirror1" , "https://mirror2" ] }
+          let(:gem_binary) { "/foo/bar" }
+
+          it "installs the gem with an array as an added source" do
+            expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=https://mirror1 --source=https://mirror2"
+            expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
+            provider.run_action(:install)
+            expect(new_resource).to be_updated_by_last_action
+          end
+
+          it "ignores the Chef::Config setting" do
+            Chef::Config[:rubygems_url] = "https://ignored"
+            expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=https://mirror1 --source=https://mirror2"
             expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action

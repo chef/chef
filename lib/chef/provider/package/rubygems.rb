@@ -423,6 +423,7 @@ class Chef
 
         def source_is_remote?
           return true if new_resource.source.nil?
+          return true if new_resource.source.is_a?(Array)
           scheme = URI.parse(new_resource.source).scheme
           # URI.parse gets confused by MS Windows paths with forward slashes.
           scheme = nil if scheme =~ /^[a-z]$/
@@ -469,7 +470,8 @@ class Chef
         end
 
         def gem_sources
-          new_resource.source ? Array(new_resource.source) : nil
+          srcs = new_resource.source || Chef::Config[:rubygems_url]
+          srcs ? Array(srcs) : nil
         end
 
         def load_current_resource
