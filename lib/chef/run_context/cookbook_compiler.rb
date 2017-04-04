@@ -57,6 +57,7 @@ class Chef
 
       # Run the compile phase of the chef run. Loads files in the following order:
       # * Libraries
+      # * Ohai Plugins
       # * Attributes
       # * LWRPs
       # * Resource Definitions
@@ -69,6 +70,7 @@ class Chef
       # #cookbook_order for more information.
       def compile
         compile_libraries
+        install_ohai_plugins
         compile_attributes
         compile_lwrps
         compile_resource_definitions
@@ -99,6 +101,21 @@ class Chef
           load_libraries_from_cookbook(cookbook)
         end
         @events.library_load_complete
+      end
+
+      # Install ohai plugins and ensure that ones not associated with a cookbook
+      # are properly removed.
+      def install_ohai_plugins
+        @events.ohai_plugin_load_start(count_files_by_segment(:ohai))
+        FileUtils.rm_rf(Chef::Config[:ohai_segment_plugin_path])
+        cookbook_order.each do |cookbook|
+          install_ohai_plugins_from_cookbook(cookbook)
+        end
+
+        @run_context.ohai.run_additional_plugins(Chef::Config[:ohai_segment_plugin_path])
+        node.consume_ohai_data(@run_context.ohai.data)
+
+        @events.ohai_plugin_load_complete
       end
 
       # Loads attributes files from cookbooks. Attributes files are loaded
@@ -183,6 +200,19 @@ class Chef
       rescue Exception => e
         @events.attribute_file_load_failed(filename, e)
         raise
+      end
+
+      def install_ohai_plugins_from_cookbook(cookbook_name)
+        target = Chef::Config[:ohai_segment_plugin_path]
+        files_in_cookbook_by_segment(cookbook_name, :ohai).each do |filename|
+          next unless File.extname(filename) == ".rb"
+
+          target_name = File.join(target, cookbook_name.to_s, File.basename(filename))
+          Chef::Log.debug "Installing ohai file: #{filename} from #{cookbook_name} to #{target_name}"
+
+          FileUtils.mkdir_p(File.dirname(target_name))
+          FileUtils.cp(filename, target_name)
+        end
       end
 
       def load_libraries_from_cookbook(cookbook_name)

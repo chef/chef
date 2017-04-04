@@ -15,6 +15,15 @@ GIT
       rspec_junit_formatter (~> 0.2)
 
 GIT
+  remote: https://github.com/chef/cheffish.git
+  revision: d088e7a10b4289cfb1410b92388e8bc5972a6be2
+  branch: tm/ohai_run_context
+  specs:
+    cheffish (13.0.0)
+      chef-zero (~> 13.0)
+      net-ssh
+
+GIT
   remote: https://github.com/chef/chefstyle.git
   revision: b2bf89dd11270e169fd2315495c98095d4a19090
   branch: master
@@ -37,7 +46,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 58296dc0035e4f94a7b7cdc1db01887a3c3c1e30
+  revision: 0b4cab6d491a5b1e52995a65e0039c6fa1ba8e9f
+  branch: tm/load_additional_plugins
   specs:
     ohai (13.0.0)
       chef-config (>= 12.5.0.alpha.1, < 14)
@@ -228,9 +238,6 @@ GEM
       mixlib-log (~> 1.3)
       rack (~> 2.0)
       uuidtools (~> 2.1)
-    cheffish (13.0.0)
-      chef-zero (~> 13.0)
-      net-ssh
     chefspec (5.4.0)
       chef (>= 12.0)
       fauxhai (~> 3.6)
@@ -571,7 +578,7 @@ DEPENDENCIES
   chef!
   chef-config!
   chef-sugar
-  cheffish (~> 13)
+  cheffish (~> 13)!
   chefspec
   chefstyle!
   cucumber (>= 2.4.0)

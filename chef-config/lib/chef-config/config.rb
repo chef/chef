@@ -450,6 +450,10 @@ module ChefConfig
     # most of our testing scenarios)
     default :minimal_ohai, false
 
+    # When consuming Ohai plugins from cookbook segments, we place those plugins in this directory.
+    # Subsequent chef client runs will wipe and re-populate the directory to ensure cleanliness
+    default(:ohai_segment_plugin_path) { PathHelper.join(config_dir, "ohai", "cookbook_plugins") }
+
     ###
     # Policyfile Settings
     #

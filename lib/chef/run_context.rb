@@ -149,6 +149,7 @@ class Chef
     #
     attr_reader :delayed_actions
 
+    attr_reader :ohai
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
@@ -158,10 +159,11 @@ class Chef
     # @param events [EventDispatch::Dispatcher] The event dispatcher for this
     #   run.
     #
-    def initialize(node, cookbook_collection, events)
+    def initialize(node, cookbook_collection, events, ohai)
       @node = node
       @cookbook_collection = cookbook_collection
       @events = events
+      @ohai = ohai
 
       node.run_context = self
       node.set_cookbook_attribute
@@ -603,6 +605,7 @@ ERROR_MESSAGE
         loaded_recipes
         loaded_recipes_hash
         node
+        ohai
         open_stream
         reboot_info
         reboot_info=

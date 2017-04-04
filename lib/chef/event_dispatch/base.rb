@@ -179,6 +179,22 @@ class Chef
       def library_load_complete
       end
 
+      # Called when an ohai plugin file loading starts
+      def ohai_plugin_load_start(file_count)
+      end
+
+      # Called when an ohai plugin file has been loaded
+      def ohai_plugin_file_loaded(path)
+      end
+
+      # Called when an ohai plugin file has an error on load.
+      def ohai_plugin_file_load_failed(path, exception)
+      end
+
+      # Called when an ohai plugin file loading has finished
+      def ohai_plugin_load_complete
+      end
+
       # Called when LWRP loading starts
       def lwrp_load_start(lwrp_file_count)
       end
