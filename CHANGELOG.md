@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.89](https://github.com/chef/chef/tree/v13.0.89) (2017-04-03)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.89)
+## [v13.0.90](https://github.com/chef/chef/tree/v13.0.90) (2017-04-03)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.90)
 
 **Closed issues:**
 
@@ -51,7 +51,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Fix apt\_repository for latest os version 16.10 [\#5874](https://github.com/chef/chef/pull/5874) ([afiune](https://github.com/afiune))
 - Chef-13: convert additional resource methods to properties [\#5871](https://github.com/chef/chef/pull/5871) ([lamont-granquist](https://github.com/lamont-granquist))
 - Add the ability to blacklist attributes from being saved to the chef server [\#5868](https://github.com/chef/chef/pull/5868) ([robmul](https://github.com/robmul))
-- Chef-13:  remove supports API from Chef::Resource [\#5863](https://github.com/chef/chef/pull/5863) ([lamont-granquist](https://github.com/lamont-granquist))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
