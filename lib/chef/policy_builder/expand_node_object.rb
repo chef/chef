@@ -68,6 +68,10 @@ class Chef
         Chef.set_run_context(run_context)
       end
 
+      def ohai_data
+        @ohai.data
+      end
+
       def setup_run_context(specific_recipes = nil)
         if Chef::Config[:solo_legacy_mode]
           Chef::Cookbook::FileVendor.fetch_from_disk(Chef::Config[:cookbook_path])

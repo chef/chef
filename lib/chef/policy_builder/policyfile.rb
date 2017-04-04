@@ -98,6 +98,10 @@ class Chef
         nil
       end
 
+      def ohai_data
+        @ohai.data
+      end
+
       # Policyfile gives you the run_list already expanded, but users of this
       # class may expect to get a run_list expansion compatible object by
       # calling this method.
