@@ -97,9 +97,9 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            if is_dir
+            if is_dir && !%w{ root_files .. . }.include?(name)
               # Only the given directories will be uploaded.
-              return Chef::ChefFS::FileSystem::ChefServer::CookbookDir::COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) && name != "root_files"
+              return true
             elsif name == Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE
               return false
             end
@@ -128,8 +128,7 @@ class Chef
           protected
 
           def make_child_entry(child_name)
-            segment_info = Chef::ChefFS::FileSystem::ChefServer::CookbookDir::COOKBOOK_SEGMENT_INFO[child_name.to_sym] || {}
-            ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, segment_info[:ruby_only], segment_info[:recursive])
+            ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, false, true)
           end
 
           def cookbook_version

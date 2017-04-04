@@ -22,7 +22,7 @@ class Chef
   class Resource
     class YumPackage < Chef::Resource::Package
       resource_name :yum_package
-      provides :package, os: "linux", platform_family: %w{rhel fedora}
+      provides :package, os: "linux", platform_family: %w{rhel fedora amazon}
 
       # XXX: the coercions here are due to the provider promiscuously updating the properties on the
       # new_resource which causes immutable modification exceptions when passed an immutable node array.

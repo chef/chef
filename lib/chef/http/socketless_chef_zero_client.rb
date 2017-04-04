@@ -170,6 +170,7 @@ class Chef
           "QUERY_STRING"    => url.query,
           "SERVER_PORT"     => url.port,
           "HTTP_HOST"       => "localhost:#{url.port}",
+          "HTTP_X_OPS_SERVER_API_VERSION" => headers["X-Ops-Server-API-Version"],
           "rack.url_scheme" => "chefzero",
           "rack.input"      => StringIO.new(body_str),
         }

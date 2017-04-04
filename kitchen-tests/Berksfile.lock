@@ -36,6 +36,8 @@ GRAPH
     compat_resource (>= 0.0.0)
   iis (5.1.0)
     windows (>= 2.0)
+  inifile_chef_gem (0.1.0)
+    build-essential (>= 0.0.0)
   iptables (4.0.1)
   logrotate (2.1.0)
     compat_resource (>= 0.0.0)

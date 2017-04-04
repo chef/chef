@@ -62,6 +62,7 @@ describe Chef::CookbookSynchronizer do
   let(:cookbook_a_default_recipe) do
     {
       "path" => "recipes/default.rb",
+      "name" => "recipes/default.rb",
       "url"  => "http://chef.example.com/abc123",
       "checksum" => "abc123",
     }
@@ -70,6 +71,7 @@ describe Chef::CookbookSynchronizer do
   let(:cookbook_a_default_attrs) do
     {
       "path" => "attributes/default.rb",
+      "name" => "attributes/default.rb",
       "url"  => "http://chef.example.com/abc456",
       "checksum" => "abc456",
     }
@@ -78,6 +80,7 @@ describe Chef::CookbookSynchronizer do
   let(:cookbook_a_template) do
     {
       "path" => "templates/default/apache2.conf.erb",
+      "name" => "templates/apache2.conf.erb",
       "url" => "http://chef.example.com/ffffff",
       "checksum" => "abc125",
     }
@@ -86,18 +89,14 @@ describe Chef::CookbookSynchronizer do
   let(:cookbook_a_file) do
     {
       "path" => "files/default/megaman.conf",
+      "name" => "files/megaman.conf",
       "url" => "http://chef.example.com/megaman.conf",
       "checksum" => "abc124",
     }
   end
 
   let(:cookbook_a_manifest) do
-    segments = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
-    cookbook_a_manifest = segments.inject({}) { |h, segment| h[segment.to_s] = []; h }
-    cookbook_a_manifest["recipes"] = [ cookbook_a_default_recipe ]
-    cookbook_a_manifest["attributes"] = [ cookbook_a_default_attrs ]
-    cookbook_a_manifest["templates"] = [ cookbook_a_template ]
-    cookbook_a_manifest["files"] = [ cookbook_a_file ]
+    cookbook_a_manifest = { all_files: [ cookbook_a_default_recipe, cookbook_a_default_attrs, cookbook_a_template, cookbook_a_file ] }
     cookbook_a_manifest
   end
 
