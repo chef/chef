@@ -240,3 +240,7 @@ mutable default value, define it inside a `lazy{}` helper like:
 ```ruby
 property :x, default: lazy { {} }
 ```
+
+### `knife cookbook site vendor` has been removed
+
+Please use `knife cookbook site install` instead.
