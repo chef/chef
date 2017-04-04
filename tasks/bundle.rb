@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-require_relative "bundle_util"
 require_relative "../version_policy"
 require "fileutils"
 
@@ -23,33 +22,22 @@ desc "Tasks to work with the main Gemfile and Gemfile.<platform>"
 namespace :bundle do
   desc "Update Gemfile.lock and all Gemfile.<platform>.locks (or one or more gems via bundle:update gem1 gem2 ...)."
   task :update, [:args] do |t, rake_args|
-    extend BundleUtil
     args = rake_args[:args] || ""
-    with_bundle_unfrozen do
-      puts ""
-      puts "-------------------------------------------------------------------"
-      puts "Updating Gemfile.lock ..."
-      puts "-------------------------------------------------------------------"
-      bundle "update #{args}"
-      platforms.each do |platform|
-        bundle "update #{args}", platform: platform
-      end
+    Bundler.with_clean_env do
+      sh "bundle config --local frozen '0'"
+      sh "bundle update #{args}"
+      sh "bundle config --local frozen '1'"
     end
   end
 
   desc "Conservatively update Gemfile.lock and all Gemfile.<platform>.locks"
   task :install, [:args] do |t, rake_args|
-    extend BundleUtil
     args = rake_args[:args] || ""
-    with_bundle_unfrozen do
-      puts ""
-      puts "-------------------------------------------------------------------"
-      puts "Updating Gemfile.lock ..."
-      puts "-------------------------------------------------------------------"
-      bundle "install #{args}"
-      platforms.each do |platform|
-        bundle "lock", platform: platform
-      end
+    args = rake_args[:args] || ""
+    Bundler.with_clean_env do
+      sh "bundle config --local frozen '0'"
+      sh "bundle install #{args}"
+      sh "bundle config --local frozen '1'"
     end
   end
 
@@ -82,20 +70,12 @@ namespace :bundle do
   end
 end
 
-desc "Run bundle with arbitrary args against the given platform; e.g. rake bundle[show]. No platform to run against the main bundle; bundle[show,windows] to run the windows one; bundle[show,*] to run against all non-default platforms."
-task :bundle, [:args, :platform] do |t, rake_args|
-  extend BundleUtil
+desc "Run bundle with arbitrary args"
+task :bundle, [:args] do |t, rake_args|
   args = rake_args[:args] || ""
-  platform = rake_args[:platform]
-  with_bundle_unfrozen do
-    if platform == "*"
-      platforms.each do |platform|
-        bundle args, platform: platform
-      end
-    elsif platform
-      bundle args, platform: platform
-    else
-      bundle args
-    end
+  Bundler.with_clean_env do
+    sh "bundle config --local frozen '0'"
+    sh "bundle #{args}"
+    sh "bundle config --local frozen '1'"
   end
 end

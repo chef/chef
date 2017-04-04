@@ -37,44 +37,22 @@ class Chef
   class CookbookVersion
 
     include Comparable
+    extend Forwardable
+
+    def_delegator :@cookbook_manifest, :files_for
+    def_delegator :@cookbook_manifest, :each_file
 
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
 
-    attr_accessor :all_files
+    attr_reader :all_files
 
     attr_accessor :root_paths
-    attr_accessor :definition_filenames
-    attr_accessor :template_filenames
-    attr_accessor :file_filenames
-    attr_accessor :library_filenames
-    attr_accessor :resource_filenames
-    attr_accessor :provider_filenames
-    attr_accessor :root_filenames
     attr_accessor :name
-    attr_accessor :metadata_filenames
-
-    def status=(new_status)
-      Chef.deprecated(:internal_api, "Deprecated method `status' called. This method will be removed.")
-      @status = new_status
-    end
-
-    def status
-      Chef.deprecated(:internal_api, "Deprecated method `status' called. This method will be removed.")
-      @status
-    end
 
     # A Chef::Cookbook::Metadata object. It has a setter that fixes up the
     # metadata to add descriptions of the recipes contained in this
     # CookbookVersion.
     attr_reader :metadata
-
-    # attribute_filenames also has a setter that has non-default
-    # functionality.
-    attr_reader :attribute_filenames
-
-    # recipe_filenames also has a setter that has non-default
-    # functionality.
-    attr_reader :recipe_filenames
 
     attr_reader :recipe_filenames_by_name
     attr_reader :attribute_filenames_by_short_filename
@@ -94,6 +72,11 @@ class Chef
     # The first root path is the primary cookbook dir, from which metadata is loaded
     def root_dir
       root_paths[0]
+    end
+
+    def all_files=(files)
+      @all_files = Array(files)
+      cookbook_manifest.reset!
     end
 
     # This is the one and only method that knows how cookbook files'
@@ -118,23 +101,10 @@ class Chef
       @root_paths = root_paths
       @frozen = false
 
-      @attribute_filenames = Array.new
-      @definition_filenames = Array.new
-      @template_filenames = Array.new
-      @file_filenames = Array.new
-      @recipe_filenames = Array.new
-      @recipe_filenames_by_name = Hash.new
-      @library_filenames = Array.new
-      @resource_filenames = Array.new
-      @provider_filenames = Array.new
-      @metadata_filenames = Array.new
-      @root_filenames = Array.new
-
       @all_files = Array.new
 
-      # deprecated
-      @status = :ready
       @file_vendor = nil
+      @cookbook_manifest = Chef::CookbookManifest.new(self)
       @metadata = Chef::Cookbook::Metadata.new
       @chef_server_rest = chef_server_rest
     end
@@ -163,10 +133,12 @@ class Chef
       "#{name}-#{version}"
     end
 
-    def attribute_filenames=(*filenames)
-      @attribute_filenames = filenames.flatten
-      @attribute_filenames_by_short_filename = filenames_by_name(attribute_filenames)
-      attribute_filenames
+    def attribute_filenames_by_short_filename
+      @attribute_filenames_by_short_filename ||= filenames_by_name(files_for("attributes"))
+    end
+
+    def recipe_filenames_by_name
+      @recipe_filenames_by_name ||= filenames_by_name(files_for("recipes"))
     end
 
     def metadata=(metadata)
@@ -175,12 +147,12 @@ class Chef
       @metadata
     end
 
-    ## BACKCOMPAT/DEPRECATED - Remove these and fix breakage before release [DAN - 5/20/2010]##
-    alias :attribute_files :attribute_filenames
-    alias :attribute_files= :attribute_filenames=
-
     def manifest
       cookbook_manifest.manifest
+    end
+
+    def manifest=(new_manifest)
+      cookbook_manifest.update_from(new_manifest)
     end
 
     # Returns a hash of checksums to either nil or the on disk path (which is
@@ -193,28 +165,15 @@ class Chef
       cookbook_manifest.manifest_records_by_path
     end
 
-    def manifest=(new_manifest)
-      cookbook_manifest.update_from(new_manifest)
-    end
-
     # Return recipe names in the form of cookbook_name::recipe_name
     def fully_qualified_recipe_names
-      results = Array.new
-      recipe_filenames_by_name.each_key do |rname|
-        results << "#{name}::#{rname}"
+      files_for("recipes").inject([]) do |memo, recipe|
+        rname = recipe[:name].split("/")[1]
+        rname = File.basename(rname, ".rb")
+        memo << "#{name}::#{rname}"
+        memo
       end
-      results
     end
-
-    def recipe_filenames=(*filenames)
-      @recipe_filenames = filenames.flatten
-      @recipe_filenames_by_name = filenames_by_name(recipe_filenames)
-      recipe_filenames
-    end
-
-    ## BACKCOMPAT/DEPRECATED - Remove these and fix breakage before release [DAN - 5/20/2010]##
-    alias :recipe_files :recipe_filenames
-    alias :recipe_files= :recipe_filenames=
 
     # called from DSL
     def load_recipe(recipe_name, run_context)
@@ -235,41 +194,7 @@ class Chef
     end
 
     def segment_filenames(segment)
-      unless COOKBOOK_SEGMENTS.include?(segment)
-        raise ArgumentError, "invalid segment #{segment}: must be one of #{COOKBOOK_SEGMENTS.join(', ')}"
-      end
-
-      case segment.to_sym
-      when :resources
-        @resource_filenames
-      when :providers
-        @provider_filenames
-      when :recipes
-        @recipe_filenames
-      when :libraries
-        @library_filenames
-      when :definitions
-        @definition_filenames
-      when :attributes
-        @attribute_filenames
-      when :files
-        @file_filenames
-      when :templates
-        @template_filenames
-      when :root_files
-        @root_filenames
-      end
-    end
-
-    def replace_segment_filenames(segment, filenames)
-      case segment.to_sym
-      when :recipes
-        self.recipe_filenames = filenames
-      when :attributes
-        self.attribute_filenames = filenames
-      else
-        segment_filenames(segment).replace(filenames)
-      end
+      files_for(segment).map { |f| f["full_path"] || File.join(root_dir, f["path"]) }
     end
 
     # Query whether a template file +template_filename+ is available. File
@@ -349,7 +274,7 @@ class Chef
       filenames_by_pref = Hash.new
       preferences.each { |pref| filenames_by_pref[pref] = Array.new }
 
-      manifest[segment].each do |manifest_record|
+      files_for(segment).each do |manifest_record|
         manifest_record_path = manifest_record[:path]
 
         # find the NON SPECIFIC filenames, but prefer them by filespecificity.
@@ -389,7 +314,7 @@ class Chef
       records_by_pref = Hash.new
       preferences.each { |pref| records_by_pref[pref] = Array.new }
 
-      manifest[segment].each do |manifest_record|
+      files_for(segment).each do |manifest_record|
         manifest_record_path = manifest_record[:path]
 
         # extract the preference part from the path.
@@ -469,12 +394,22 @@ class Chef
     end
     private :preferences_for_path
 
+    def display
+      output = Mash.new
+      output["cookbook_name"] = name
+      output["name"] = full_name
+      output["frozen?"] = frozen_version?
+      output["metadata"] = metadata.to_hash
+      output["version"] = version
+      output.merge(cookbook_manifest.by_parent_directory)
+    end
+
     def self.from_hash(o)
       cookbook_version = new(o["cookbook_name"] || o["name"])
 
       # We want the Chef::Cookbook::Metadata object to always be inflated
-      cookbook_version.metadata = Chef::Cookbook::Metadata.from_hash(o["metadata"])
       cookbook_version.manifest = o
+      cookbook_version.metadata = Chef::Cookbook::Metadata.from_hash(o["metadata"])
       cookbook_version.identifier = o["identifier"] if o.key?("identifier")
 
       # We don't need the following step when we decide to stop supporting deprecated operators in the metadata (e.g. <<, >>)
@@ -486,33 +421,6 @@ class Chef
 
     def self.from_cb_artifact_data(o)
       from_hash(o)
-    end
-
-    # @deprecated This method was used by the Ruby Chef Server and is no longer
-    #   needed. There is no replacement.
-    def generate_manifest_with_urls
-      Chef.deprecated(:internal_api, "Deprecated method #generate_manifest_with_urls.")
-
-      rendered_manifest = manifest.dup
-      COOKBOOK_SEGMENTS.each do |segment|
-        if rendered_manifest.has_key?(segment)
-          rendered_manifest[segment].each do |manifest_record|
-            url_options = { :cookbook_name => name.to_s, :cookbook_version => version, :checksum => manifest_record["checksum"] }
-            manifest_record["url"] = yield(url_options)
-          end
-        end
-      end
-      rendered_manifest
-    end
-
-    def to_hash
-      # TODO: this should become deprecated when the API for CookbookManifest becomes stable
-      cookbook_manifest.to_hash
-    end
-
-    def to_json(*a)
-      # TODO: this should become deprecated when the API for CookbookManifest becomes stable
-      cookbook_manifest.to_json
     end
 
     def metadata_json_file
@@ -533,22 +441,12 @@ class Chef
     # REST API
     ##
 
-    def save_url
-      # TODO: this should become deprecated when the API for CookbookManifest becomes stable
-      cookbook_manifest.save_url
-    end
-
-    def force_save_url
-      # TODO: this should become deprecated when the API for CookbookManifest becomes stable
-      cookbook_manifest.force_save_url
-    end
-
     def chef_server_rest
       @chef_server_rest ||= chef_server_rest
     end
 
     def self.chef_server_rest
-      Chef::ServerAPI.new(Chef::Config[:chef_server_url])
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url], { version_class: Chef::CookbookManifestVersions })
     end
 
     def destroy
@@ -602,11 +500,11 @@ class Chef
       Chef::Version.new(version) <=> Chef::Version.new(other.version)
     end
 
-    private
-
     def cookbook_manifest
       @cookbook_manifest ||= CookbookManifest.new(self)
     end
+
+    private
 
     def find_preferred_manifest_record(node, segment, filename)
       preferences = preferences_for_path(node, segment, filename)
@@ -615,15 +513,21 @@ class Chef
       preferences.find { |preferred_filename| manifest_records_by_path[preferred_filename] }
     end
 
-    # For each filename, produce a mapping of base filename (i.e. recipe name
+    # For each manifest record, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
-    def filenames_by_name(filenames)
-      filenames.select { |filename| filename =~ /\.rb$/ }.inject({}) { |memo, filename| memo[File.basename(filename, ".rb")] = filename; memo }
+    def relative_paths_by_name(records)
+      records.select { |record| record[:name] =~ /\.rb$/ }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:path]; memo }
+    end
+
+    # For each manifest record, produce a mapping of base filename (i.e. recipe name
+    # or attribute file) to on disk location
+    def filenames_by_name(records)
+      records.select { |record| record[:name] =~ /\.rb$/ }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:full_path]; memo }
     end
 
     def file_vendor
       unless @file_vendor
-        @file_vendor = Chef::Cookbook::FileVendor.create_from_manifest(manifest)
+        @file_vendor = Chef::Cookbook::FileVendor.create_from_manifest(cookbook_manifest)
       end
       @file_vendor
     end

@@ -149,7 +149,7 @@ class Chef
       #
       # @return [Chef::RunContext]
       def setup_run_context(specific_recipes = nil)
-        Chef::Cookbook::FileVendor.fetch_from_remote(http_api)
+        Chef::Cookbook::FileVendor.fetch_from_remote(api_service)
         sync_cookbooks
         cookbook_collection = Chef::CookbookCollection.new(cookbooks_to_sync)
         cookbook_collection.validate!
@@ -267,7 +267,7 @@ class Chef
 
       # @api private
       def policy
-        @policy ||= http_api.get(policyfile_location)
+        @policy ||= api_service.get(policyfile_location)
       rescue Net::HTTPServerException => e
         raise ConfigurationError, "Error loading policyfile from `#{policyfile_location}': #{e.class} - #{e.message}"
       end
@@ -452,8 +452,9 @@ class Chef
       end
 
       # @api private
-      def http_api
-        @api_service ||= Chef::ServerAPI.new(config[:chef_server_url])
+      def api_service
+        @api_service ||= Chef::ServerAPI.new(config[:chef_server_url],
+                                             { version_class: Chef::CookbookManifestVersions })
       end
 
       # @api private
@@ -496,7 +497,7 @@ class Chef
       def compat_mode_manifest_for(cookbook_name, lock_data)
         xyz_version = lock_data["dotted_decimal_identifier"]
         rel_url = "cookbooks/#{cookbook_name}/#{xyz_version}"
-        inflate_cbv_object(http_api.get(rel_url))
+        inflate_cbv_object(api_service.get(rel_url))
       rescue Exception => e
         message = "Error loading cookbook #{cookbook_name} at version #{xyz_version} from #{rel_url}: #{e.class} - #{e.message}"
         err = Chef::Exceptions::CookbookNotFound.new(message)
@@ -507,7 +508,7 @@ class Chef
       def artifact_manifest_for(cookbook_name, lock_data)
         identifier = lock_data["identifier"]
         rel_url = "cookbook_artifacts/#{cookbook_name}/#{identifier}"
-        inflate_cbv_object(http_api.get(rel_url))
+        inflate_cbv_object(api_service.get(rel_url))
       rescue Exception => e
         message = "Error loading cookbook #{cookbook_name} with identifier #{identifier} from #{rel_url}: #{e.class} - #{e.message}"
         err = Chef::Exceptions::CookbookNotFound.new(message)

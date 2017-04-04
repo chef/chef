@@ -103,11 +103,11 @@ class Chef
           end
 
           def get_json(path)
-            Chef::ServerAPI.new(chef_server_url, :client_name => chef_username, :signing_key_filename => chef_private_key, :api_version => "0").get(path)
+            chef_rest.get(path)
           end
 
           def chef_rest
-            Chef::ServerAPI.new(chef_server_url, :client_name => chef_username, :signing_key_filename => chef_private_key)
+            Chef::ServerAPI.new(chef_server_url, :client_name => chef_username, :signing_key_filename => chef_private_key, :api_version => "0")
           end
 
           def api_path

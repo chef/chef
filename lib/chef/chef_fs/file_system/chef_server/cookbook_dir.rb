@@ -49,18 +49,6 @@ class Chef
 
           attr_reader :cookbook_name, :version
 
-          COOKBOOK_SEGMENT_INFO = {
-            :attributes => { :ruby_only => true },
-            :definitions => { :ruby_only => true },
-            :recipes => { :ruby_only => true },
-            :libraries => { :recursive => true },
-            :templates => { :recursive => true },
-            :files => { :recursive => true },
-            :resources => { :ruby_only => true, :recursive => true },
-            :providers => { :ruby_only => true, :recursive => true },
-            :root_files => {},
-          }
-
           def add_child(child)
             @children << child
           end
@@ -80,34 +68,29 @@ class Chef
           end
 
           def can_have_child?(name, is_dir)
-            # A cookbook's root may not have directories unless they are segment directories
-            return name != "root_files" && COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) if is_dir
+            return name != "root_files" if is_dir
             true
           end
 
           def children
             if @children.nil?
               @children = []
-              manifest = chef_object.manifest
-              COOKBOOK_SEGMENT_INFO.each do |segment, segment_info|
-                next unless manifest.has_key?(segment)
-
-                # Go through each file in the manifest for the segment, and
-                # add cookbook subdirs and files for it.
-                manifest[segment].each do |segment_file|
-                  parts = segment_file[:path].split("/")
+              manifest = chef_object.cookbook_manifest
+              manifest.by_parent_directory.each do |segment, files|
+                files.each do |file|
+                  parts = file[:path].split("/")
                   # Get or create the path to the file
                   container = self
                   parts[0, parts.length - 1].each do |part|
                     old_container = container
                     container = old_container.children.find { |child| part == child.name }
                     if !container
-                      container = CookbookSubdir.new(part, old_container, segment_info[:ruby_only], segment_info[:recursive])
+                      container = CookbookSubdir.new(part, old_container, false, true)
                       old_container.add_child(container)
                     end
                   end
                   # Create the file itself
-                  container.add_child(CookbookFile.new(parts[parts.length - 1], container, segment_file))
+                  container.add_child(CookbookFile.new(parts[parts.length - 1], container, file))
                 end
               end
               @children = @children.sort_by { |c| c.name }
@@ -165,7 +148,11 @@ class Chef
           end
 
           def rest
-            parent.rest
+            Chef::ServerAPI.new(parent.rest.url, parent.rest.options.merge(version_class: Chef::CookbookManifestVersions))
+          end
+
+          def chef_rest
+            Chef::ServerAPI.new(parent.chef_rest.url, parent.chef_rest.options.merge(version_class: Chef::CookbookManifestVersions))
           end
 
           def chef_object
@@ -187,7 +174,7 @@ class Chef
               old_retry_count = Chef::Config[:http_retry_count]
               begin
                 Chef::Config[:http_retry_count] = 0
-                @chef_object ||= Chef::CookbookVersion.from_hash(root.get_json(api_path))
+                @chef_object ||= Chef::CookbookVersion.from_hash(chef_rest.get(api_path))
               ensure
                 Chef::Config[:http_retry_count] = old_retry_count
               end

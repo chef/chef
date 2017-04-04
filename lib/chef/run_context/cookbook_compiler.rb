@@ -268,7 +268,7 @@ class Chef
       # Lists the local paths to files in +cookbook+ of type +segment+
       # (attribute, recipe, etc.), sorted lexically.
       def files_in_cookbook_by_segment(cookbook, segment)
-        cookbook_collection[cookbook].segment_filenames(segment).sort
+        cookbook_collection[cookbook].files_for(segment).map { |record| record[:full_path] }.sort
       end
 
       # Yields the name, as a symbol, of each cookbook depended on by
