@@ -224,3 +224,19 @@ Accessing a provider class is a bit more complex, as you need a resource against
 ```ruby
 Chef::ProviderResolver.new(node, find_resource!("mycook_thing[name]"), :nothing).resolve
 ```
+
+### Default values for resource properties are frozen
+
+A resource declaring something like:
+
+```ruby
+property :x, default: {}
+```
+
+will now see the default value set to be immutable. This prevents cases of
+modifying the default in one resource affecting others. If you want a per-resource
+mutable default value, define it inside a `lazy{}` helper like:
+
+```ruby
+property :x, default: lazy { {} }
+```
