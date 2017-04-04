@@ -193,3 +193,19 @@ This will also affect nokogiri, but that gem natively supports UTF-8, UTF-16LE/B
 who really need to write something like Shift-JIS inside of XML will need to either maintain their own nokogiri installs or will need to
 convert to using UTF-8.
 
+### Default values for resource properties are frozen
+
+A resource declaring something like:
+
+```ruby
+property :x, default: {}
+```
+
+will now see the default value set to be immutable. This prevents cases of
+modifying the default in one resource affecting others. If you want a per-resource
+mutable default value, define it inside a `lazy{}` helper like:
+
+```ruby
+property :x, default: lazy { {} }
+```
+
