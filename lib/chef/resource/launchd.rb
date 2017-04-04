@@ -114,7 +114,7 @@ class Chef
       property :ld_group, String
       property :limit_load_from_hosts, Array
       property :limit_load_to_hosts, Array
-      property :limit_load_to_session_type, Array
+      property :limit_load_to_session_type, [ Array, String ]
       property :low_priority_io, [ TrueClass, FalseClass ]
       property :mach_services, Hash
       property :nice, Integer
