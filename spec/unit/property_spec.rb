@@ -575,6 +575,23 @@ describe "Chef::Resource.property" do
       end
     end
 
+    context "complex, nested default" do
+      with_property ":x, default: [{foo: 'bar'}]" do
+        it "when x is not set, it returns [{foo: 'bar'}]" do
+          expect(resource.x).to eq([{foo: 'bar'}])
+        end
+        it "x is immutable" do
+          expect { resource.x << :other }.to raise_error(RuntimeError, "can't modify frozen Array")
+        end
+        it "x.first is immutable" do
+          expect { resource.x.first[:foo] = "other" }.to raise_error(RuntimeError, "can't modify frozen Hash")
+        end
+        it "x.first[:foo] is immutable" do
+          expect { resource.x.first[:foo] << "other" }.to raise_error(RuntimeError, "can't modify frozen String")
+        end
+      end
+    end
+
     context "with a class with 'blah' as both class and instance methods" do
       before do
         resource_class.class_eval do

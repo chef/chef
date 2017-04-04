@@ -110,8 +110,19 @@ class Chef
         raise ArgumentError, "Cannot specify both default and name_property/name_attribute together on property #{self}"
       end
 
-      # Freeze the default if it isn't a lazy value.
-      default.freeze unless default.is_a?(DelayedEvaluator)
+      # Recursively freeze the default if it isn't a lazy value.
+      unless default.is_a?(DelayedEvaluator)
+        visitor = lambda do |obj|
+          case obj
+          when Hash
+            obj.each_value {|value| visitor.call(value) }
+          when Array
+            obj.each {|value| visitor.call(value) }
+          end
+          obj.freeze
+        end
+        visitor.call(default)
+      end
 
       # Validate the default early, so the user gets a good error message, and
       # cache it so we don't do it again if so
