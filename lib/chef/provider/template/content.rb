@@ -46,7 +46,7 @@ class Chef
               end
             when Array
               # Avoid mutating arrays in the resource in case we're changing anything.
-              obj.map {|value| visitor.call(value) }
+              obj.map { |value| visitor.call(value) }
             when DelayedEvaluator
               new_resource.instance_eval(&obj)
             else

@@ -226,7 +226,7 @@ describe Chef::Resource::Template do
 
     it "resolves the DelayedEvaluator when deeply nested" do
       resource.source("openldap_nested_variable_stuff.erb")
-      resource.variables(:secret => [{"key" => Chef::DelayedEvaluator.new { "nutella" }}])
+      resource.variables(:secret => [{ "key" => Chef::DelayedEvaluator.new { "nutella" } }])
       resource.run_action(:create)
       expect(IO.read(path)).to eq("super secret is nutella")
     end
