@@ -257,3 +257,9 @@ The behavior of the `clear_sources` property is now to only add `--clear-sources
 ### `knife cookbook site vendor` has been removed
 
 Please use `knife cookbook site install` instead.
+
+### Cookbook root aliases
+
+Rather than `attributes/default.rb`, cookbooks can now use `attributes.rb` in
+the root of the cookbook. Similarly for a single default recipe, cookbooks can
+use `recipe.rb` in the root of the cookbook.
