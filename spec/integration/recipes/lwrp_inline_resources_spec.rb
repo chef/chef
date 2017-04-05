@@ -19,14 +19,13 @@ describe "LWRPs with inline resources" do
   let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
 
   context "with a use_inline_resources provider with 'def action_a' instead of action :a" do
-    class LwrpInlineResourcesTest < Chef::Resource::LWRPBase
+    class LwrpInlineResourcesTest < Chef::Resource
       resource_name :lwrp_inline_resources_test
-      actions :a, :nothing
+      allowed_actions :a, :nothing
       default_action :a
       property :ran_a
       class Provider < Chef::Provider::LWRPBase
         provides :lwrp_inline_resources_test
-        use_inline_resources
         def action_a
           r = new_resource
           ruby_block "run a" do
@@ -46,10 +45,10 @@ describe "LWRPs with inline resources" do
   end
 
   context "with an inline resource with a property that shadows the enclosing provider's property" do
-    class LwrpShadowedPropertyTest < Chef::Resource::LWRPBase
+    class LwrpShadowedPropertyTest < Chef::Resource
       PATH = ::File.join(Dir.tmpdir, "shadow-property.txt")
       use_automatic_resource_name
-      actions :fiddle
+      allowed_actions :fiddle
       property :content
       action :fiddle do
         file PATH do
@@ -73,16 +72,14 @@ describe "LWRPs with inline resources" do
   end
 
   context "with an inline_resources provider with two actions, one calling the other" do
-    class LwrpInlineResourcesTest2 < Chef::Resource::LWRPBase
+    class LwrpInlineResourcesTest2 < Chef::Resource
       resource_name :lwrp_inline_resources_test2
-      actions :a, :b, :nothing
+      allowed_actions :a, :b, :nothing
       default_action :b
       property :ran_a
       property :ran_b
       class Provider < Chef::Provider::LWRPBase
         provides :lwrp_inline_resources_test2
-        use_inline_resources
-
         action :a do
           r = new_resource
           ruby_block "run a" do
@@ -133,8 +130,7 @@ describe "LWRPs with inline resources" do
           default_action :create
         EOM
         file "providers/my_machine.rb", <<-EOM
-          use_inline_resources
-          action :create do
+            action :create do
             x_do_nothing 'a'
             x_do_nothing 'b'
           end
