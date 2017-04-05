@@ -99,7 +99,7 @@ describe Chef::CookbookLoader do
         cookbook_loader.each do |cookbook_name, cookbook|
           seen << cookbook_name
         end
-        expect(seen).to eq %w{aliased angrybash apache2 borken ignorken java name-mismatch openldap preseed supports-platform-constraints}
+        expect(seen).to eq %w{angrybash apache2 borken ignorken java name-mismatch openldap preseed supports-platform-constraints}
       end
     end
 
