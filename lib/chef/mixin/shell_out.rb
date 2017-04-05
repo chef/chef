@@ -109,8 +109,16 @@ class Chef
           "LC_ALL" => Chef::Config[:internal_locale],
           "LANGUAGE" => Chef::Config[:internal_locale],
           "LANG" => Chef::Config[:internal_locale],
-          "PATH" => sanitized_path,
         }.update(options[env_key] || {})
+        if Chef::Platform.windows?
+          options[env_key] = {
+            "Path" => sanitized_path,
+          }.update(options[env_key] || {})
+        else
+          options[env_key] = {
+            "PATH" => sanitized_path,
+          }.update(options[env_key] || {})
+        end
         shell_out_command(*args, **options)
       end
 
