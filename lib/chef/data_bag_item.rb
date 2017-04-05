@@ -75,6 +75,7 @@ class Chef
     end
 
     def raw_data=(new_data)
+      new_data = Mash.new(new_data)
       unless new_data.respond_to?(:[]) && new_data.respond_to?(:keys)
         raise Exceptions::ValidationFailed, "Data Bag Items must contain a Hash or Mash!"
       end
@@ -132,7 +133,7 @@ class Chef
       item = new
       item.data_bag(h.delete("data_bag")) if h.key?("data_bag")
       if h.key?("raw_data")
-        item.raw_data = Mash.new(h["raw_data"])
+        item.raw_data = h["raw_data"]
       else
         item.raw_data = h
       end
