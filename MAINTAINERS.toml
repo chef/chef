@@ -51,7 +51,8 @@ Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, ch
         "stevendanna",
         "tas50",
         "tduffield",
-        "tyler-ball"
+        "tyler-ball",
+        "itmustbejj"
       ]
 
     [Org.Components.Provisioning]
@@ -366,3 +367,9 @@ The specific components of Chef related to a given platform - including (but not
     GitHub = "mikedodge04"
     Twitter = "mikedodge04"
     IRC = "mikedodge04"
+
+  [people.itmustbejj]
+    Name = "Josh Hudson"
+    GitHub = "itmustbejj"
+    Twitter = "itmustbejj"
+    IRC = "itmustbejj"
