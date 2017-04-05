@@ -228,6 +228,16 @@ class Chef
       end
     end
 
+    class UseInlineResources < Base
+      def id
+        17
+      end
+
+      def target
+        "use_inline_resources.html"
+      end
+    end
+
     # id 3694 was deleted
 
     class Generic < Base

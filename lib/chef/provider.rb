@@ -69,6 +69,13 @@ class Chef
       EOM
     end
 
+    # Deprecation stub for the old use_inline_resources mode.
+    #
+    # @return [void]
+    def self.use_inline_resources
+      Chef.deprecated(:use_inline_resources, "The use_inline_resources mode is no longer optional and the line enabling it can be removed")
+    end
+
     #--
     # TODO: this should be a reader, and the action should be passed in the
     # constructor; however, many/most subclasses override the constructor so
