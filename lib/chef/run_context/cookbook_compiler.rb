@@ -105,7 +105,7 @@ class Chef
       # according to #cookbook_order; within a cookbook, +default.rb+ is loaded
       # first, then the remaining attributes files in lexical sort order.
       def compile_attributes
-        @events.attribute_load_start(count_files_by_segment(:attributes))
+        @events.attribute_load_start(count_files_by_segment(:attributes, "attributes.rb"))
         cookbook_order.each do |cookbook|
           load_attributes_from_cookbook(cookbook)
         end
@@ -166,7 +166,16 @@ class Chef
 
       def load_attributes_from_cookbook(cookbook_name)
         list_of_attr_files = files_in_cookbook_by_segment(cookbook_name, :attributes).dup
-        if default_file = list_of_attr_files.find { |path| File.basename(path) == "default.rb" }
+        root_alias = cookbook_collection[cookbook_name].files_for(:root_files).find { |record| record[:name] == "attributes.rb" }
+        default_file = list_of_attr_files.find { |path| File.basename(path) == "default.rb" }
+        if root_alias
+          if default_file
+            Chef::Log.error("Cookbook #{cookbook_name} contains both attributes.rb and and attributes/default.rb, ignoring attributes/default.rb")
+            list_of_attr_files.delete(default_file)
+          end
+          # The actual root_alias path decoding is handled in CookbookVersion#attribute_filenames_by_short_filename
+          load_attribute_file(cookbook_name.to_s, "default")
+        elsif default_file
           list_of_attr_files.delete(default_file)
           load_attribute_file(cookbook_name.to_s, default_file)
         end
@@ -259,9 +268,9 @@ class Chef
         ordered_cookbooks << cookbook
       end
 
-      def count_files_by_segment(segment)
+      def count_files_by_segment(segment, root_alias = nil)
         cookbook_collection.inject(0) do |count, cookbook_by_name|
-          count + cookbook_by_name[1].segment_filenames(segment).size
+          count + cookbook_by_name[1].segment_filenames(segment).size + (root_alias ? cookbook_by_name[1].files_for(:root_files).select { |record| record[:name] == root_alias }.size : 0)
         end
       end
 

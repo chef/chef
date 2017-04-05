@@ -134,11 +134,24 @@ class Chef
     end
 
     def attribute_filenames_by_short_filename
-      @attribute_filenames_by_short_filename ||= filenames_by_name(files_for("attributes"))
+      @attribute_filenames_by_short_filename ||= begin
+        name_map = filenames_by_name(files_for("attributes"))
+        root_alias = cookbook_manifest.root_files.find { |record| record[:name] == "attributes.rb" }
+        name_map["default"] = root_alias[:full_path] if root_alias
+        name_map
+      end
     end
 
     def recipe_filenames_by_name
-      @recipe_filenames_by_name ||= filenames_by_name(files_for("recipes"))
+      @recipe_filenames_by_name ||= begin
+        name_map = filenames_by_name(files_for("recipes"))
+        root_alias = cookbook_manifest.root_files.find { |record| record[:name] == "recipe.rb" }
+        if root_alias
+          Chef::Log.error("Cookbook #{name} contains both recipe.rb and and recipes/default.rb, ignoring recipes/default.rb") if name_map["default"]
+          name_map["default"] = root_alias[:full_path]
+        end
+        name_map
+      end
     end
 
     def metadata=(metadata)

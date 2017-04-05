@@ -418,11 +418,11 @@ EOH
 
         license_name = case license
                        when "apachev2"
-                         "Apache 2.0"
+                         "Apache-2.0"
                        when "gplv2"
-                         "GNU Public License 2.0"
+                         "GPL-2.0"
                        when "gplv3"
-                         "GNU Public License 3.0"
+                         "GPL-3.0"
                        when "mit"
                          "MIT"
                        when "none"

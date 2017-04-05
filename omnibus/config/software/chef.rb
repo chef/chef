@@ -44,6 +44,7 @@ dependency "chef-gem-ruby-prof"
 dependency "chef-gem-byebug"
 dependency "chef-gem-debug_inspector"
 dependency "chef-gem-binding_of_caller"
+dependency "chef-gem-inspec"
 unless ios_xr? || solaris?
   dependency "chef-gem-rbnacl-libsodium"
   dependency "chef-gem-bcrypt_pbkdf-ruby"

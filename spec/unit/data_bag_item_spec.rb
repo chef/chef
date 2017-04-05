@@ -52,6 +52,10 @@ describe Chef::DataBagItem do
       expect { data_bag_item.raw_data = { "id" => "octahedron" } }.not_to raise_error
     end
 
+    it "should let you set the raw_data with a hash containing symbols" do
+      expect { data_bag_item.raw_data = { :id => "octahedron" } }.not_to raise_error
+    end
+
     it "should let you set the raw_data from a mash" do
       expect { data_bag_item.raw_data = Mash.new({ "id" => "octahedron" }) }.not_to raise_error
     end
