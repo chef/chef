@@ -250,7 +250,7 @@ module ChefConfig
     default(:policy_path) { derive_path_from_chef_repo_path("policies") }
 
     # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
-    default :enforce_path_sanity, true
+    default :enforce_path_sanity, false
 
     # Formatted Chef Client output is a beta feature, disabled by default:
     default :formatter, "null"

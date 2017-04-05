@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,25 +22,23 @@ class Chef
 
       def enforce_path_sanity(env = ENV)
         if Chef::Config[:enforce_path_sanity]
-          env["PATH"] = "" if env["PATH"].nil?
-          path_separator = Chef::Platform.windows? ? ";" : ":"
-          existing_paths = env["PATH"].split(path_separator)
-          # ensure the Ruby and Gem bindirs are included
-          # mainly for 'full-stack' Chef installs
-          paths_to_add = []
-          paths_to_add << ruby_bindir unless sane_paths.include?(ruby_bindir)
-          paths_to_add << gem_bindir unless sane_paths.include?(gem_bindir)
-          paths_to_add << sane_paths if sane_paths
-          paths_to_add.flatten!.compact!
-          paths_to_add.each do |sane_path|
-            unless existing_paths.include?(sane_path)
-              env_path = env["PATH"].dup
-              env_path << path_separator unless env["PATH"].empty?
-              env_path << sane_path
-              env["PATH"] = env_path.encode("utf-8", invalid: :replace, undef: :replace)
-            end
-          end
+          env["PATH"] = sanitized_path(env)
         end
+      end
+
+      def sanitized_path(env = ENV)
+        env_path = env["PATH"].nil? ? "" : env["PATH"].dup
+        path_separator = Chef::Platform.windows? ? ";" : ":"
+        # ensure the Ruby and Gem bindirs are included
+        # mainly for 'full-stack' Chef installs
+        new_paths = env_path.split(path_separator)
+        [ ruby_bindir, gem_bindir ].compact.each do |path|
+          new_paths = [ path ] + new_paths unless new_paths.include?(path)
+        end
+        sane_paths.each do |path|
+          new_paths << path unless new_paths.include?(path)
+        end
+        new_paths.join(path_separator).encode("utf-8", invalid: :replace, undef: :replace)
       end
 
       private
