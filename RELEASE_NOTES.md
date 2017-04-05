@@ -257,3 +257,9 @@ The behavior of the `clear_sources` property is now to only add `--clear-sources
 ### `knife cookbook site vendor` has been removed
 
 Please use `knife cookbook site install` instead.
+
+### `use_inline_resources` is always enabled
+
+The `use_inline_resources` provider mode is always enabled when using the
+`action :name do ... end` syntax. You can remove the `use_inline_resources`
+line.
