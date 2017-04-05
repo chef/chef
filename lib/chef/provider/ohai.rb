@@ -21,8 +21,6 @@ require "ohai"
 class Chef
   class Provider
     class Ohai < Chef::Provider
-      use_inline_resources
-
       provides :ohai
 
       def load_current_resource

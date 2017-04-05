@@ -30,8 +30,6 @@ class Chef
       include Chef::Mixin::ShellOut
       extend Chef::Mixin::SubclassDirective
 
-      use_inline_resources
-
       # subclasses declare this if they want all their arguments as arrays of packages and names
       subclass_directive :use_multipackage_api
       # subclasses declare this if they want sources (filenames) pulled from their package names

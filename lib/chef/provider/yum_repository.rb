@@ -26,8 +26,6 @@ require "chef/provider/noop"
 class Chef
   class Provider
     class YumRepository < Chef::Provider
-      use_inline_resources
-
       extend Chef::Mixin::Which
 
       provides :yum_repository do

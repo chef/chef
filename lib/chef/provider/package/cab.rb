@@ -26,7 +26,6 @@ class Chef
   class Provider
     class Package
       class Cab < Chef::Provider::Package
-        use_inline_resources
         include Chef::Mixin::ShellOut
         include Chef::Mixin::Uris
         include Chef::Mixin::Checksum

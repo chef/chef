@@ -23,8 +23,6 @@ require "chef/mixin/which"
 class Chef
   class Provider
     class AptUpdate < Chef::Provider
-      use_inline_resources
-
       extend Chef::Mixin::Which
 
       provides :apt_update do
