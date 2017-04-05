@@ -26,8 +26,6 @@ require "chef/provider/noop"
 class Chef
   class Provider
     class AptRepository < Chef::Provider
-      use_inline_resources
-
       include Chef::Mixin::ShellOut
       extend Chef::Mixin::Which
 

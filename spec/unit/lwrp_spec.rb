@@ -644,8 +644,6 @@ describe "LWRP" do
     end
 
     class MyAwesomeProvider < Chef::Provider::LWRPBase
-      use_inline_resources
-
       provides :my_awesome_resource
 
       action :create do

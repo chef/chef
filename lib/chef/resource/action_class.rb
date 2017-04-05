@@ -64,8 +64,6 @@ class Chef
         @current_resource = current_resource
       end
 
-      use_inline_resources
-
       # XXX: remove in Chef-14
       def self.include_resource_dsl?
         true

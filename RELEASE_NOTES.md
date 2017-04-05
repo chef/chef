@@ -263,3 +263,9 @@ Please use `knife cookbook site install` instead.
 Rather than `attributes/default.rb`, cookbooks can now use `attributes.rb` in
 the root of the cookbook. Similarly for a single default recipe, cookbooks can
 use `recipe.rb` in the root of the cookbook.
+
+### `use_inline_resources` is always enabled
+
+The `use_inline_resources` provider mode is always enabled when using the
+`action :name do ... end` syntax. You can remove the `use_inline_resources`
+line.

@@ -78,13 +78,6 @@ class Chef
           provider_class
         end
 
-        # DSL for defining a provider's actions.
-        def action(name, &block)
-          define_method("action_#{name}") do
-            instance_eval(&block)
-          end
-        end
-
         protected
 
         def loaded_lwrps
