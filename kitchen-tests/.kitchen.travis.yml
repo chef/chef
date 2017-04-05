@@ -83,14 +83,6 @@ platforms:
       - RUN yum makecache
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: ubuntu-12.04
-  driver:
-    image: ubuntu-upstart:12.04
-    pid_one_command: /sbin/init
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update
-      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
-
 - name: ubuntu-14.04
   driver:
     image: ubuntu-upstart:14.04

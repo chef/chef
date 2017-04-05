@@ -115,24 +115,6 @@ matrix:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
     script:
-      - bundle exec kitchen test webapp-ubuntu-1204
-    after_failure:
-      - cat .kitchen/logs/kitchen.log
-    env:
-      - UBUNTU=12.04
-      - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.4.1
-    services: docker
-    sudo: required
-    gemfile: kitchen-tests/Gemfile
-    before_install:
-      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
-    bundler_args: --without ci development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
-    before_script:
-      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-      - cd kitchen-tests
-    script:
       - bundle exec kitchen test webapp-ubuntu-1404
     after_failure:
       - cat .kitchen/logs/kitchen.log
