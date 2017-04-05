@@ -34,6 +34,7 @@ Maintainers for the Chef client, Ohai, mixlibs, ChefDK, ChefSpec, Foodcritic, ch
       lieutenant = "thommay"
 
       maintainers = [
+        "adamleff",
         "btm",
         "coderanger",
         "danielsdeleo",
@@ -224,6 +225,10 @@ The specific components of Chef related to a given platform - including (but not
   [people.adamhjk]
     Name = "Adam Jacob"
     GitHub = "adamhjk"
+
+  [people.adamleff]
+    Name = "Adam Leff"
+    GitHub = "adamleff"
 
   [people.Aevin1387]
     Name = "Cory Stephenson"
