@@ -166,7 +166,7 @@ class Chef
 
       def load_attributes_from_cookbook(cookbook_name)
         list_of_attr_files = files_in_cookbook_by_segment(cookbook_name, :attributes).dup
-        root_alias = cookbook_collection[cookbook_name].files_for(:root_files).find {|record| record[:name] == "attributes.rb" }
+        root_alias = cookbook_collection[cookbook_name].files_for(:root_files).find { |record| record[:name] == "attributes.rb" }
         default_file = list_of_attr_files.find { |path| File.basename(path) == "default.rb" }
         if root_alias
           if default_file
@@ -268,9 +268,9 @@ class Chef
         ordered_cookbooks << cookbook
       end
 
-      def count_files_by_segment(segment, root_alias=nil)
+      def count_files_by_segment(segment, root_alias = nil)
         cookbook_collection.inject(0) do |count, cookbook_by_name|
-          count + cookbook_by_name[1].segment_filenames(segment).size + (root_alias ? cookbook_by_name[1].files_for(:root_files).select {|record| record[:name] == root_alias }.size : 0)
+          count + cookbook_by_name[1].segment_filenames(segment).size + (root_alias ? cookbook_by_name[1].files_for(:root_files).select { |record| record[:name] == root_alias }.size : 0)
         end
       end
 
