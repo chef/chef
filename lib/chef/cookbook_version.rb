@@ -146,7 +146,10 @@ class Chef
       @recipe_filenames_by_name ||= begin
         name_map = filenames_by_name(files_for("recipes"))
         root_alias = cookbook_manifest.root_files.find {|record| record[:name] == "recipe.rb" }
-        name_map["default"] = root_alias[:full_path] if root_alias
+        if root_alias
+          Chef::Log.error("Cookbook #{name} contains both recipe.rb and and recipes/default.rb, ignoring recipes/default.rb") if name_map["default"]
+          name_map["default"] = root_alias[:full_path]
+        end
         name_map
       end
     end

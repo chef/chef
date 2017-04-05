@@ -37,8 +37,13 @@ describe "root aliases" do
   end
 
   describe "attributes root aliases" do
-    it "should load attributes.rb" do
+    it "should load attributes.rb when included directly" do
       node.include_attribute("aliased")
+      expect(node["aliased"]["attr"]).to eq "value"
+    end
+
+    it "should load attributes.rb when loading a cookbook" do
+      run_context.load(node.run_list.expand("_default"))
       expect(node["aliased"]["attr"]).to eq "value"
     end
   end
