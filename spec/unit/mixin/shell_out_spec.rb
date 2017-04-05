@@ -29,6 +29,14 @@ describe Chef::Mixin::ShellOut do
   let(:shell_out_class) { Class.new { include Chef::Mixin::ShellOut } }
   subject(:shell_out_obj) { shell_out_class.new }
 
+  def env_path
+    if Chef::Platform.windows?
+      "Path"
+    else
+      "PATH"
+    end
+  end
+
   context "when testing individual methods" do
     before(:each) do
       @original_env = ENV.to_hash
@@ -47,13 +55,13 @@ describe Chef::Mixin::ShellOut do
       describe "when the last argument is a Hash" do
         describe "and environment is an option" do
           it "should not change environment language settings when they are set to nil" do
-            options = { :environment => { "LC_ALL" => nil, "LANGUAGE" => nil, "LANG" => nil, "PATH" => nil } }
+            options = { :environment => { "LC_ALL" => nil, "LANGUAGE" => nil, "LANG" => nil, env_path => nil } }
             expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
 
           it "should not change environment language settings when they are set to non-nil" do
-            options = { :environment => { "LC_ALL" => "en_US.UTF-8", "LANGUAGE" => "en_US.UTF-8", "LANG" => "en_US.UTF-8", "PATH" => "foo:bar:baz" } }
+            options = { :environment => { "LC_ALL" => "en_US.UTF-8", "LANGUAGE" => "en_US.UTF-8", "LANG" => "en_US.UTF-8", env_path => "foo:bar:baz" } }
             expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
@@ -66,7 +74,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
-                "PATH"     => sanitized_path,
+                env_path   => sanitized_path,
               },
             }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
@@ -80,7 +88,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
-                "PATH"     => sanitized_path,
+                env_path   => sanitized_path,
               },
             }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
@@ -90,13 +98,13 @@ describe Chef::Mixin::ShellOut do
 
         describe "and env is an option" do
           it "should not change env when langauge options are set to nil" do
-            options = { :env => { "LC_ALL" => nil, "LANG" => nil, "LANGUAGE" => nil, "PATH" => nil } }
+            options = { :env => { "LC_ALL" => nil, "LANG" => nil, "LANGUAGE" => nil, env_path => nil } }
             expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
 
           it "should not change env when language options are set to non-nil" do
-            options = { :env => { "LC_ALL" => "de_DE.UTF-8", "LANG" => "de_DE.UTF-8", "LANGUAGE" => "de_DE.UTF-8", "PATH" => "foo:bar:baz" } }
+            options = { :env => { "LC_ALL" => "de_DE.UTF-8", "LANG" => "de_DE.UTF-8", "LANGUAGE" => "de_DE.UTF-8", env_path => "foo:bar:baz" } }
             expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
@@ -109,7 +117,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
-                "PATH"     => sanitized_path,
+                env_path   => sanitized_path,
               },
             }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
@@ -123,7 +131,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
-                "PATH"     => sanitized_path,
+                env_path   => sanitized_path,
               },
             }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
@@ -140,7 +148,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
-                "PATH"     => sanitized_path,
+                env_path   => sanitized_path,
               },
             }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
@@ -155,7 +163,7 @@ describe Chef::Mixin::ShellOut do
               "LC_ALL"   => Chef::Config[:internal_locale],
               "LANG"     => Chef::Config[:internal_locale],
               "LANGUAGE" => Chef::Config[:internal_locale],
-              "PATH"     => sanitized_path,
+              env_path   => sanitized_path,
             },
           }).and_return(true)
           shell_out_obj.shell_out(cmd)
