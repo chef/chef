@@ -338,6 +338,10 @@ class Chef
       automatic[:platform_version] = version
     end
 
+    def consume_ohai_data(ohai_data)
+      self.automatic_attrs = Chef::Mixin::DeepMerge.merge(automatic_attrs, ohai_data)
+    end
+
     # Consumes the combined run_list and other attributes in +attrs+
     def consume_attributes(attrs)
       normal_attrs_to_merge = consume_run_list(attrs)

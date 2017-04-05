@@ -57,6 +57,7 @@ class Chef
 
       # Run the compile phase of the chef run. Loads files in the following order:
       # * Libraries
+      # * Ohai
       # * Attributes
       # * LWRPs
       # * Resource Definitions
@@ -69,6 +70,7 @@ class Chef
       # #cookbook_order for more information.
       def compile
         compile_libraries
+        compile_ohai_plugins
         compile_attributes
         compile_lwrps
         compile_resource_definitions
@@ -99,6 +101,26 @@ class Chef
           load_libraries_from_cookbook(cookbook)
         end
         @events.library_load_complete
+      end
+
+      # Loads Ohai Plugins from cookbooks, and ensure any old ones are
+      # properly cleaned out
+      def compile_ohai_plugins
+        ohai_plugin_count = count_files_by_segment(:ohai)
+        @events.ohai_plugin_load_start(ohai_plugin_count)
+        FileUtils.rm_rf(Chef::Config[:ohai_segment_plugin_path])
+
+        cookbook_order.each do |cookbook|
+          load_ohai_plugins_from_cookbook(cookbook)
+        end
+
+        # Doing a full ohai system check is costly, so only do so if we've loaded additional plugins
+        if ohai_plugin_count > 0
+          ohai = Ohai::System.new.run_additional_plugins(Chef::Config[:ohai_segment_plugin_path])
+          node.consume_ohai_data(ohai)
+        end
+
+        @events.ohai_plugin_load_complete
       end
 
       # Loads attributes files from cookbooks. Attributes files are loaded
@@ -224,6 +246,19 @@ class Chef
       rescue Exception => e
         @events.lwrp_file_load_failed(filename, e)
         raise
+      end
+
+      def load_ohai_plugins_from_cookbook(cookbook_name)
+        target = Chef::Config[:ohai_segment_plugin_path]
+        files_in_cookbook_by_segment(cookbook_name, :ohai).each do |filename|
+          next unless File.extname(filename) == ".rb"
+
+          Chef::Log.debug "Loading Ohai plugin: #{filename} from #{cookbook_name}"
+          target_name = File.join(target, cookbook_name.to_s, File.basename(filename))
+
+          FileUtils.mkdir_p(File.dirname(target_name))
+          FileUtils.cp(filename, target_name)
+        end
       end
 
       def load_resource_definitions_from_cookbook(cookbook_name)
