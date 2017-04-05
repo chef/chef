@@ -465,6 +465,39 @@ end
     end
   end
 
+  when_the_repository "has a cookbook with an ohai plugin" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<-RECIPE
+file #{path_to('tempfile.txt').inspect} do
+  content node["english"]["version"]
+end
+      RECIPE
+
+      file "cookbooks/x/ohai/english.rb", <<-OHAI
+        Ohai.plugin(:English) do
+          provides 'english'
+
+          collect_data do
+            english Mash.new
+            english[:version] = "2014"
+          end
+        end
+      OHAI
+
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+    end
+
+    it "should run the ohai plugin" do
+      result = shell_out("#{chef_client} -l debug -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      result.error!
+
+      expect(IO.read(path_to("tempfile.txt"))).to eq("2014")
+    end
+  end
+
   # Fails on appveyor, but works locally on windows and on windows hosts in Ci.
   context "when using recipe-url", :skip_appveyor do
     before(:each) do
