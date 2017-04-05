@@ -1,7 +1,7 @@
 name             "base"
 maintainer       ""
 maintainer_email ""
-license          ""
+license          "Apache-2.0"
 description      "Installs/Configures base"
 long_description "Installs/Configures base"
 version          "0.1.0"
