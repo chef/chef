@@ -1,3 +1,9 @@
+#
+# Cookbook:: webapp
+# Recipe:: packages
+#
+# Copyright:: 2014-2017, Chef Software, Inc.
+#
 
 # this is just a list of package that exist on every O/S we test, and often aren't installed by default.  you don't
 # have to get too clever here, you can delete packages if they don't exist everywhere we test.

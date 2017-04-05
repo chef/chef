@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: webapp
-# Recipe:: default
+# Cookbook:: webapp
+# Recipe:: tests
 #
-# Copyright (C) 2014
+# Copyright:: 2014-2017, Chef Software, Inc.
 #
 
 #

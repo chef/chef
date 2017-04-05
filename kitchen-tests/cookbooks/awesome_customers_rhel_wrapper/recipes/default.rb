@@ -1,6 +1,8 @@
 #
-# Cookbook Name:: awesome_customers_rhel
+# Cookbook:: awesome_customers_rhel
 # Recipe:: default
 #
-# Copyright (c) 2016 The Authors, All Rights Reserved.
+# Copyright:: 2014-2017, Chef Software, Inc.
+#
+
 include_recipe "awesome_customers_rhel::default"
