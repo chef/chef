@@ -34,7 +34,7 @@ describe Chef::Knife::CookbookCreate do
 
     # Fixes CHEF-2579
     it "should expand the path of the cookbook directory" do
-      expect(Chef::Log).to receive(:fatal).with("knife cookbook create has been deprecated in favor of chef generate cookbook in Chef-DK!")
+      expect(Chef::Log).to receive(:fatal).with("knife cookbook create has been removed. Please use `chef generate cookbook` from the ChefDK")
       @knife.run
     end
 

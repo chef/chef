@@ -22,7 +22,7 @@ class Chef
   class Knife
     class CookbookCreate < Knife
       def run
-        Chef::Log.fatal("knife cookbook create has been deprecated in favor of chef generate cookbook in Chef-DK!")
+        Chef::Log.fatal("knife cookbook create has been removed. Please use `chef generate cookbook` from the ChefDK")
       end
     end
   end
