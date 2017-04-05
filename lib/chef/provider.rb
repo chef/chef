@@ -73,7 +73,8 @@ class Chef
     #
     # @return [void]
     def self.use_inline_resources
-      Chef.deprecated(:use_inline_resources, "The use_inline_resources mode is no longer optional and the line enabling it can be removed")
+      # Uncomment this in Chef 13.6.
+      # Chef.deprecated(:use_inline_resources, "The use_inline_resources mode is no longer optional and the line enabling it can be removed")
     end
 
     #--

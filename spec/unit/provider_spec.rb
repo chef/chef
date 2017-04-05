@@ -197,6 +197,7 @@ describe Chef::Provider do
 
   context "when using use_inline_resources" do
     it "should log a deprecation warning" do
+      pending Chef::VERSION.start_with?("13.6")
       expect(Chef).to receive(:deprecated).with(:use_inline_resources, kind_of(String))
       Class.new(described_class) { use_inline_resources }
     end
