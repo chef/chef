@@ -1,17 +1,11 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.106](https://github.com/chef/chef/tree/v13.0.106) (2017-04-06)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.106...v13.0.106)
+## [v13.0.107](https://github.com/chef/chef/tree/v13.0.107) (2017-04-06)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.107)
 
 **Merged pull requests:**
 
 - Chef-13: better solution to gem\_package source issues [\#6028](https://github.com/chef/chef/pull/6028) ([lamont-granquist](https://github.com/lamont-granquist))
-
-## [v13.0.106](https://github.com/chef/chef/tree/v13.0.106) (2017-04-05)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.106)
-
-**Merged pull requests:**
-
 - Chef-13:  tweaks to rubygems source option for urls [\#5995](https://github.com/chef/chef/pull/5995) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13 knife search exit 1 when no results [\#5994](https://github.com/chef/chef/pull/5994) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove iconv from the chef build [\#5993](https://github.com/chef/chef/pull/5993) ([lamont-granquist](https://github.com/lamont-granquist))
