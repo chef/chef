@@ -554,4 +554,42 @@ EOM
       command.error!
     end
   end
+
+  when_the_repository "has a cookbook that logs at the info level" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<EOM
+      log "info level" do
+        level :info
+      end
+EOM
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+    end
+
+    it "a chef client run should not log to info by default" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).not_to include("INFO")
+    end
+
+    it "a chef client run to a pipe should not log to info by default" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork | tee #{path_to('chefrun.out')}", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).not_to include("INFO")
+    end
+
+    it "a chef solo run should not log to info by default" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).not_to include("INFO")
+    end
+
+    it "a chef solo run to a pipe should not log to info by default" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork | tee #{path_to('chefrun.out')}", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).not_to include("INFO")
+    end
+  end
 end
