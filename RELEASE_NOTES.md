@@ -2,7 +2,101 @@ _This file holds "in progress" release notes for the current release under devel
 
 # Chef Client Release Notes 13.0:
 
-## Back Compat Breaks
+## Rubygems provider sources behavior changed.
+
+The behavior of `gem_package` and `chef_gem` is now to always apply the `Chef::Config[:rubygems_uri]` sources, which may be a
+String uri or an Array of Strings.  If additional sources are put on the resource with the `source` property those are added
+to the configured `:rubygems_uri` sources.
+
+This should enable easier setup of rubygems mirrors particularly in "airgapped" environments through the use of the global config
+variable.  It also means that an admin may force all rubygems.org traffic to an internal mirror, while still being able to
+consume external cookbooks which have resources which add other mirrors unchanged (in a non-airgapped environment).
+
+In the case where a resource must force the use of only the specified source(s), then the `include_default_source` property
+has been added -- setting it to false will remove the `Chef::Config[:rubygems_url]` setting from the list of sources for
+that resource.
+
+The behavior of the `clear_sources` property is now to only add `--clear-sources` and has no magic side effects on the source options.
+
+## Ruby version upgraded to 2.4.1
+
+We've upgraded to the latest stable release of the Ruby programming
+language. See the Ruby [2.4.0 Release Notes](https://www.ruby-lang.org/en/news/2016/12/25/ruby-2-4-0-released/) for an overview of what's new in the language.
+
+## Resource can now declare a default name
+
+The core `apt_update` resource can now be declared without any name argument, no need for `apt_update "this string doesn't matter but
+why do i have to type it?"`.
+
+This can be used by any other resource by just overriding the name property and supplying a default:
+
+```ruby
+  property :name, String, default: ""
+```
+
+Notifications to resources with empty strings as their name is also supported via either the bare resource name (`apt_update` --
+matches what the user types in the DSL) or with empty brackets (`apt_update[]` -- matches the resource notification pattern).
+
+## The knife ssh command applies the same fuzzifier as knife search node
+
+A bare name to knife search node will search for the name in `tags`, `roles`, `fqdn`, `addresses`, `policy_name` or `policy_group` fields and will
+match when given partial strings (available since Chef 11).  The `knife ssh` search term has been similarly extended so that the
+search API matches in both cases.  The node search fuzzifier has also been extracted out to a `fuzz` option to Chef::Search::Query for re-use
+elsewhere.
+
+## Cookbook root aliases
+
+Rather than `attributes/default.rb`, cookbooks can now use `attributes.rb` in
+the root of the cookbook. Similarly for a single default recipe, cookbooks can
+use `recipe.rb` in the root of the cookbook.
+
+## knife ssh can now connect to gateways with ssh key authentication
+
+The new `gateway_identity_file` option allows the operator to specify
+the key to access ssh gateways with.
+
+## Windows Task resource added
+
+The `windows_task` resource has been ported from the windows cookbook,
+and many bugs have been fixed.
+
+## Solaris SMF services can now been started recursively
+
+It is now possible to load Solaris services recursively, by ensuring the
+new `options` property of the `service` resource contains `-r`.
+
+## It's now possible to blacklist node attributes
+
+This is the inverse of the pre-existing whitelisting functionality.
+
+## The guard interpreter for `powershell_script` is Powershell, again
+
+When writing `not_if` or `only_if` statements, by default we now run
+those statements using powershell, rather than forcing the user to set
+`guard_interpreter` each time.
+
+## Zypper GPG checks by default
+
+Zypper now defaults to performing gpg checks of packages.
+
+## The InSpec gem is now shipped by default
+
+The `inspec` and `train` gems are shipped by default in the chef omnibus
+package, making it easier for users in airgapped environments to use
+InSpec.
+
+## Backwards Compatibility Breaks
+
+### Resource Cloning has been removed
+
+When Chef compiles resources, it will no longer attempt to merge the
+properties of previously compiled resources with the same name and type
+in to the new resource. See [the deprecation page](https://docs.chef.io/deprecations_resource_cloning.html) for further information.
+
+### It is an error to specify both `default` and `name_property` on a property
+
+Chef 12 made this work by picking the first option it found, but it was
+always an error and has now been disallowed.
 
 ### The path property of the execute resource has been removed
 
@@ -20,11 +114,11 @@ It is possible that this was being used as a no-op resource, but the log resourc
 resource added.  Omitting the code property or mixing up the code property with the command property are also common usage mistakes
 that we need to catch and error on.
 
-### The chef_gem resource defaults to not run at compile time
+### The chef\_gem resource defaults to not run at compile time
 
 The `compile_time true` flag may still be used to force compile time.
 
-### The Chef::Config[:chef_gem_compile_time] config option has been removed
+### The Chef::Config[:chef\_gem\_compile\_time] config option has been removed
 
 In order to for community cookbooks to behave consistently across all users this optional flag has been removed.
 
@@ -138,46 +232,6 @@ so we have removed support for it. No specific replacement for `pip` is being
 included with Chef at this time, but a `pip`-based `python_package` resource is
 available in the [`poise-python`](https://github.com/poise/poise-python) cookbooks.
 
-### Ruby version upgraded to 2.4.1
-
-We've upgraded to the latest stable release of the Ruby programming
-language.
-
-### Resource can now declare a default name
-
-The core `apt_update` resource can now be declared without any name argument, no need for `apt_update "this string doesn't matter but
-why do i have to type it?"`.
-
-This can be used by any other resource by just overriding the name property and supplying a default:
-
-```ruby
-  property :name, String, default: ""
-```
-
-Notifications to resources with empty strings as their name is also supported via either the bare resource name (`apt_update` --
-matches what the user types in the DSL) or with empty brackets (`apt_update[]` -- matches the resource notification pattern).
-
-### The knife ssh command applies the same fuzzifier as knife search node
-
-A bare name to knife search node will search for the name in `tags`, `roles`, `fqdn`, `addresses`, `policy_name` or `policy_group` fields and will
-match when given partial strings (available since Chef 11).  The `knife ssh` search term has been similarly extended so that the
-search API matches in both cases.  The node search fuzzifier has also been extracted out to a `fuzz` option to Chef::Search::Query for re-use
-elsewhere.
-
-### Resources which later modify their name during creation will have their name changed on the ResourceCollection and notifications
-
-```ruby
-some_resource "name_one" do
-  name "name_two"
-end
-```
-
-The fix for sending notifications to multipackage resources involved changing the API which inserts resources into the resource collection slightly
-so that it no longer directly takes the string which is typed into the DSL but reads the (possibly coerced) name off of the resource after it is
-built.  The end result is that the above resource will be named `some_resource[name_two]` instead of `some_resource[name_one]`.  Note that setting
-the name (*not* the `name_property`, but actually renaming the resource) is very uncommon.  The fix is to simply name the resource correctly in
-the first place (`some_resource "name_two" do ...`)
-
 ### Removal of run_command and popen4 APIs
 
 All the APIs in chef/mixlib/command have been removed.  They were deprecated by mixlib-shellout and the shell_out mixin API.
@@ -241,37 +295,43 @@ mutable default value, define it inside a `lazy{}` helper like:
 property :x, default: lazy { {} }
 ```
 
-### Rubygems provider sources behavior changed.
+### Resources which later modify their name during creation will have their name changed on the ResourceCollection and notifications
 
-The behavior of `gem_package` and `chef_gem` is now to always apply the `Chef::Config[:rubygems_uri]` sources, which may be a
-String uri or an Array of Strings.  If additional sources are put on the resource with the `source` property those are added
-to the configured `:rubygems_uri` sources.
+```ruby
+some_resource "name_one" do
+  name "name_two"
+end
+```
 
-This should enable easier setup of rubygems mirrors particularly in "airgapped" environments through the use of the global config
-variable.  It also means that an admin may force all rubygems.org traffic to an internal mirror, while still being able to
-consume external cookbooks which have resources which add other mirrors unchanged (in a non-airgapped environment).
-
-In the case where a resource must force the use of only the specified source(s), then the `include_default_source` property
-has been added -- setting it to false will remove the `Chef::Config[:rubygems_url]` setting from the list of sources for
-that resource.
-
-The behavior of the `clear_sources` property is now to only add `--clear-sources` and has no magic side effects on the source options.
-
-### `knife cookbook site vendor` has been removed
-
-Please use `knife cookbook site install` instead.
-
-### Cookbook root aliases
-
-Rather than `attributes/default.rb`, cookbooks can now use `attributes.rb` in
-the root of the cookbook. Similarly for a single default recipe, cookbooks can
-use `recipe.rb` in the root of the cookbook.
+The fix for sending notifications to multipackage resources involved changing the API which inserts resources into the resource collection slightly
+so that it no longer directly takes the string which is typed into the DSL but reads the (possibly coerced) name off of the resource after it is
+built.  The end result is that the above resource will be named `some_resource[name_two]` instead of `some_resource[name_one]`.  Note that setting
+the name (*not* the `name_property`, but actually renaming the resource) is very uncommon.  The fix is to simply name the resource correctly in
+the first place (`some_resource "name_two" do ...`)
 
 ### `use_inline_resources` is always enabled
 
 The `use_inline_resources` provider mode is always enabled when using the
 `action :name do ... end` syntax. You can remove the `use_inline_resources`
 line.
+
+### `knife cookbook site vendor` has been removed
+
+Please use `knife cookbook site install` instead.
+
+### `knife cookbook create` has been removed
+
+Please use `chef generate cookbook` from the ChefDK instead.
+
+### Verify commands no longer support "%{file}"
+
+Chef has always recommended `%{path}`, and `%{file}` has now been
+removed.
+
+### The `partial_search` recipe method has been removed
+
+The `partial_search` method has been fully replaced by the
+`filter_result` argument to `search`, and has now been removed.
 
 ### The logger and formatter settings are more predictable
 
@@ -318,4 +378,3 @@ fix more problems than it solves, but may causes issues for some use cases.
 ### Default guard clauses (`not_if`/`only_if`) do not change the PATH or other env vars
 
 The implementation switched to `shell_out_with_systems_locale` to match `execute` resource, etc.
-
