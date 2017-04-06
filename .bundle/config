@@ -1,2 +1,3 @@
 ---
 BUNDLE_FROZEN: "1"
+BUNDLE_WITHOUT: "omnibus_package:test:pry:integration:docgen:maintenance:travis:aix:bsd:linux:mac_os_x:solaris:windows:development"
