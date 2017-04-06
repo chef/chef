@@ -150,6 +150,9 @@ class Chef
     def configure_logging
       configure_log_location
       Chef::Log.init(MonoLogger.new(Chef::Config[:log_location]))
+      if want_additional_logger?
+        configure_stdout_logger
+      end
       Chef::Log.level = resolve_log_level
     rescue StandardError => error
       Chef::Log.fatal("Failed to open or create log file at #{Chef::Config[:log_location]}: #{error.class} (#{error.message})")
@@ -168,6 +171,18 @@ class Chef
           when :win_evt then Chef::Log::WinEvt.new
           else log_location # Probably a path; let MonoLogger sort it out
         end
+    end
+
+    # Based on config and whether or not STDOUT is a tty, should we setup a
+    # secondary logger for stdout?
+    def want_additional_logger?
+      ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && !Chef::Config[:daemonize]
+    end
+
+    def configure_stdout_logger
+      stdout_logger = MonoLogger.new(STDOUT)
+      stdout_logger.formatter = Chef::Log.logger.formatter
+      Chef::Log.loggers << stdout_logger
     end
 
     # Use of output formatters is assumed if `force_formatter` is set or if `force_logger` is not set
