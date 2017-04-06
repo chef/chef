@@ -188,7 +188,7 @@ describe Chef::Application do
         @monologger = double("Monologger")
         expect(MonoLogger).to receive(:new).with(Chef::Config[:log_location]).and_return(@monologger)
         allow(MonoLogger).to receive(:new).with(STDOUT).and_return(@monologger)
-        expect(@monologger).to receive(:formatter=).with(Chef::Log.logger.formatter)
+        allow(@monologger).to receive(:formatter=).with(Chef::Log.logger.formatter)
         expect(Chef::Log).to receive(:init).with(@monologger)
         @app.configure_logging
       end
