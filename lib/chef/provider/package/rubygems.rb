@@ -470,8 +470,9 @@ class Chef
         end
 
         def gem_sources
-          srcs = new_resource.source || Chef::Config[:rubygems_url]
-          srcs ? Array(srcs) : nil
+          srcs = [ new_resource.source ]
+          srcs << Chef::Config[:rubygems_url] if new_resource.include_default_source
+          srcs.flatten.compact
         end
 
         def load_current_resource
@@ -540,10 +541,7 @@ class Chef
             name = new_resource.source
           else
             src << "--clear-sources" if new_resource.clear_sources
-            srcarry = [ new_resource.source || Chef::Config[:rubygems_url] ].flatten.compact
-            srcarry.each do |s|
-              src << "--source=#{s}"
-            end
+            src += gem_sources.map { |s| "--source=#{s}" }
           end
           src_str = src.empty? ? "" : " #{src.join(" ")}"
           if !version.nil? && !version.empty?
