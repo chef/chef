@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: webapp
+# Cookbook:: webapp
 # Recipe:: default
 #
-# Copyright (C) 2014
+# Copyright:: 2014-2017, Chef Software, Inc.
 #
 
 hostname "chef-travis-ci.chef.io"

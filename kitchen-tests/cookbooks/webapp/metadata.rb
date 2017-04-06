@@ -1,7 +1,7 @@
 name             "webapp"
 maintainer       ""
 maintainer_email ""
-license          ""
+license          "Apache-2.0"
 description      "Installs/Configures webapp"
 long_description "Installs/Configures webapp"
 version          "0.1.0"
