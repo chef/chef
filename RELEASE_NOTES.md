@@ -315,7 +315,7 @@ Some examples of changes:
 
 * `which ruby` in 12.x will return any system ruby and fall back to the embedded ruby if using omnibus
 * `which ruby` in 13.x will return any system ruby and will not find the embedded ruby if using omnibus
-* `shell_out_with_systems_locale("which ruby") behaves the same as `which ruby` above
+* `shell_out_with_systems_locale("which ruby")` behaves the same as `which ruby` above
 * `shell_out("which ruby")` in 12.x will return any system ruby and fall back to the embedded ruby if using omnibus
 * `shell_out("which ruby")` in 13.x will always return the omnibus ruby first (but will find the system ruby if not using omnibus)
 
