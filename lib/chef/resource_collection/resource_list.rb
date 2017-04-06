@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,11 +75,6 @@ class Chef
           raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
         end
         ret
-      end
-
-      # @deprecated - can be removed when it is removed from resource_collection.rb
-      def []=(index, resource)
-        @resources[index] = resource
       end
 
       def all_resources
