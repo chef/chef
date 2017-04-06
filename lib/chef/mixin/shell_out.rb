@@ -16,11 +16,12 @@
 # limitations under the License.
 
 require "mixlib/shellout"
-require "chef/deprecated"
+require "chef/mixin/path_sanity"
 
 class Chef
   module Mixin
     module ShellOut
+      include Chef::Mixin::PathSanity
 
       # PREFERRED APIS:
       #
@@ -108,6 +109,7 @@ class Chef
           "LC_ALL" => Chef::Config[:internal_locale],
           "LANGUAGE" => Chef::Config[:internal_locale],
           "LANG" => Chef::Config[:internal_locale],
+          env_path => sanitized_path,
         }.update(options[env_key] || {})
         shell_out_command(*args, **options)
       end
@@ -127,28 +129,6 @@ class Chef
         cmd = shell_out_with_systems_locale(*command_args)
         cmd.error!
         cmd
-      end
-
-      DEPRECATED_OPTIONS =
-        [ [:command_log_level,   :log_level],
-          [:command_log_prepend, :log_tag] ]
-
-      # CHEF-3090: Deprecate command_log_level and command_log_prepend
-      # Patterned after https://github.com/chef/chef/commit/e1509990b559984b43e428d4d801c394e970f432
-      def run_command_compatible_options(command_args)
-        return command_args unless command_args.last.is_a?(Hash)
-
-        my_command_args = command_args.dup
-        my_options = my_command_args.last
-
-        DEPRECATED_OPTIONS.each do |old_option, new_option|
-          # Edge case: someone specifies :command_log_level and 'command_log_level' in the option hash
-          next unless value = my_options.delete(old_option) || my_options.delete(old_option.to_s)
-          deprecate_option old_option, new_option
-          my_options[new_option] = value
-        end
-
-        my_command_args
       end
 
       # Helper for sublcasses to convert an array of string args into a string.  It
@@ -186,14 +166,10 @@ class Chef
       private
 
       def shell_out_command(*command_args)
-        cmd = Mixlib::ShellOut.new(*run_command_compatible_options(command_args))
+        cmd = Mixlib::ShellOut.new(*command_args)
         cmd.live_stream ||= io_for_live_stream
         cmd.run_command
         cmd
-      end
-
-      def deprecate_option(old_option, new_option)
-        Chef.deprecated :internal_api, "Chef::Mixin::ShellOut option :#{old_option} is deprecated. Use :#{new_option}"
       end
 
       def io_for_live_stream
@@ -201,6 +177,14 @@ class Chef
           STDOUT
         else
           nil
+        end
+      end
+
+      def env_path
+        if Chef::Platform.windows?
+          "Path"
+        else
+          "PATH"
         end
       end
     end

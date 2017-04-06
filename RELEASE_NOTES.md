@@ -297,3 +297,38 @@ to the command line that invokes your daemon process.
 
 Redirecting output to a file with `chef-client > /tmp/chef.out` now captures the same output as invoking it directly on the command
 line with no redirection.
+
+### Path Sanity disabled by default and modified
+
+The chef client itself no long modifies its `ENV['PATH']` variable directly.  When using the `shell_out` API now, in addition to
+setting up LANG/LANGUAGE/LC_ALL variables that API will also inject certain system paths and the ruby bindir and gemdirs into
+the PATH (or Path on Windows).  The `shell_out_with_systems_locale` API still does not mangle any environment variables.  During
+the Chef-13 lifecycle changes will be made to prep Chef-14 to switch so that `shell_out` by default behaves like
+`shell_out_with_systems_locale`.  A new flag will get introduced to call `shell_out(..., internal: [true|false])` to either
+get the forced locale and path settings ("internal") or not.  When that is introduced in Chef 13.x the default will be `true`
+(backwards-compat with 13.0) and that default will change in 14.0 to 'false'.
+
+The PATH changes have also been tweaked so that the ruby bindir and gemdir PATHS are prepended instead of appended to the PATH.
+Some system directories are still appended.
+
+Some examples of changes:
+
+* `which ruby` in 12.x will return any system ruby and fall back to the embedded ruby if using omnibus
+* `which ruby` in 13.x will return any system ruby and will not find the embedded ruby if using omnibus
+* `shell_out_with_systems_locale("which ruby")` behaves the same as `which ruby` above
+* `shell_out("which ruby")` in 12.x will return any system ruby and fall back to the embedded ruby if using omnibus
+* `shell_out("which ruby")` in 13.x will always return the omnibus ruby first (but will find the system ruby if not using omnibus)
+
+The PATH in `shell_out` can also be overridden:
+
+* `shell_out("which ruby", env: { "PATH" => nil })` - behaves like shell_out_with_systems_locale()
+* `shell_out("which ruby", env: { "PATH" => [...include PATH string here...] })` - set it arbitrarily however you need
+
+Since most providers which launch custom user commands use `shell_out_with_systems_locale` (service, execute, script, etc) the behavior
+will be that those commands that used to be having embedded omnibus paths injected into them no longer will.  Generally this will
+fix more problems than it solves, but may causes issues for some use cases.
+
+### Default guard clauses (`not_if`/`only_if`) do not change the PATH or other env vars
+
+The implementation switched to `shell_out_with_systems_locale` to match `execute` resource, etc.
+

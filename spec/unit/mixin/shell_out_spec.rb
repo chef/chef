@@ -21,91 +21,19 @@
 #
 
 require "spec_helper"
+require "chef/mixin/path_sanity"
 
 describe Chef::Mixin::ShellOut do
+  include Chef::Mixin::PathSanity
+
   let(:shell_out_class) { Class.new { include Chef::Mixin::ShellOut } }
   subject(:shell_out_obj) { shell_out_class.new }
-  describe "#run_command_compatible_options" do
-    subject { shell_out_obj.run_command_compatible_options(command_args) }
-    let(:command_args) { [ cmd, options ] }
-    let(:cmd) { "echo '#{rand(1000)}'" }
 
-    let(:output) { StringIO.new }
-    let!(:capture_log_output) { Chef::Log.logger = Logger.new(output) }
-    let(:assume_deprecation_log_level) { allow(Chef::Log).to receive(:level).and_return(:warn) }
-
-    before do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-    end
-
-    context "without options" do
-      let(:command_args) { [ cmd ] }
-
-      it "should not edit command args" do
-        is_expected.to eql(command_args)
-      end
-    end
-
-    context "without deprecated options" do
-      let(:options) { { :environment => environment } }
-      let(:environment) { { "LC_ALL" => "C", "LANG" => "C", "LANGUAGE" => "C" } }
-
-      it "should not edit command args" do
-        is_expected.to eql(command_args)
-      end
-    end
-
-    def self.should_emit_deprecation_warning_about(old_option, new_option)
-      it "should emit a deprecation warning" do
-        assume_deprecation_log_level && capture_log_output
-        subject
-        expect(output.string).to match Regexp.escape(old_option.to_s)
-        expect(output.string).to match Regexp.escape(new_option.to_s)
-      end
-    end
-
-    context "with :command_log_level option" do
-      let(:options) { { :command_log_level => command_log_level } }
-      let(:command_log_level) { :warn }
-
-      it "should convert :command_log_level to :log_level" do
-        is_expected.to eql [ cmd, { :log_level => command_log_level } ]
-      end
-
-      should_emit_deprecation_warning_about :command_log_level, :log_level
-    end
-
-    context "with :command_log_prepend option" do
-      let(:options) { { :command_log_prepend => command_log_prepend } }
-      let(:command_log_prepend) { "PROVIDER:" }
-
-      it "should convert :command_log_prepend to :log_tag" do
-        is_expected.to eql [ cmd, { :log_tag => command_log_prepend } ]
-      end
-
-      should_emit_deprecation_warning_about :command_log_prepend, :log_tag
-    end
-
-    context "with 'command_log_level' option" do
-      let(:options) { { "command_log_level" => command_log_level } }
-      let(:command_log_level) { :warn }
-
-      it "should convert 'command_log_level' to :log_level" do
-        is_expected.to eql [ cmd, { :log_level => command_log_level } ]
-      end
-
-      should_emit_deprecation_warning_about :command_log_level, :log_level
-    end
-
-    context "with 'command_log_prepend' option" do
-      let(:options) { { "command_log_prepend" => command_log_prepend } }
-      let(:command_log_prepend) { "PROVIDER:" }
-
-      it "should convert 'command_log_prepend' to :log_tag" do
-        is_expected.to eql [ cmd, { :log_tag => command_log_prepend } ]
-      end
-
-      should_emit_deprecation_warning_about :command_log_prepend, :log_tag
+  def env_path
+    if Chef::Platform.windows?
+      "Path"
+    else
+      "PATH"
     end
   end
 
@@ -127,13 +55,13 @@ describe Chef::Mixin::ShellOut do
       describe "when the last argument is a Hash" do
         describe "and environment is an option" do
           it "should not change environment language settings when they are set to nil" do
-            options = { :environment => { "LC_ALL" => nil, "LANGUAGE" => nil, "LANG" => nil } }
+            options = { :environment => { "LC_ALL" => nil, "LANGUAGE" => nil, "LANG" => nil, env_path => nil } }
             expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
 
           it "should not change environment language settings when they are set to non-nil" do
-            options = { :environment => { "LC_ALL" => "en_US.UTF-8", "LANGUAGE" => "en_US.UTF-8", "LANG" => "en_US.UTF-8" } }
+            options = { :environment => { "LC_ALL" => "en_US.UTF-8", "LANGUAGE" => "en_US.UTF-8", "LANG" => "en_US.UTF-8", env_path => "foo:bar:baz" } }
             expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
@@ -146,6 +74,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
+                env_path   => sanitized_path,
               },
             }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
@@ -159,6 +88,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
+                env_path   => sanitized_path,
               },
             }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
@@ -168,13 +98,13 @@ describe Chef::Mixin::ShellOut do
 
         describe "and env is an option" do
           it "should not change env when langauge options are set to nil" do
-            options = { :env => { "LC_ALL" => nil, "LANG" => nil, "LANGUAGE" => nil } }
+            options = { :env => { "LC_ALL" => nil, "LANG" => nil, "LANGUAGE" => nil, env_path => nil } }
             expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
 
           it "should not change env when language options are set to non-nil" do
-            options = { :env => { "LC_ALL" => "de_DE.UTF-8", "LANG" => "de_DE.UTF-8", "LANGUAGE" => "de_DE.UTF-8" } }
+            options = { :env => { "LC_ALL" => "de_DE.UTF-8", "LANG" => "de_DE.UTF-8", "LANGUAGE" => "de_DE.UTF-8", env_path => "foo:bar:baz" } }
             expect(shell_out_obj).to receive(:shell_out_command).with(cmd, options).and_return(true)
             shell_out_obj.shell_out(cmd, options)
           end
@@ -187,6 +117,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
+                env_path   => sanitized_path,
               },
             }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
@@ -200,6 +131,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
+                env_path   => sanitized_path,
               },
             }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
@@ -216,6 +148,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL"   => Chef::Config[:internal_locale],
                 "LANG"     => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
+                env_path   => sanitized_path,
               },
             }).and_return(true)
             shell_out_obj.shell_out(cmd, options)
@@ -230,6 +163,7 @@ describe Chef::Mixin::ShellOut do
               "LC_ALL"   => Chef::Config[:internal_locale],
               "LANG"     => Chef::Config[:internal_locale],
               "LANGUAGE" => Chef::Config[:internal_locale],
+              env_path   => sanitized_path,
             },
           }).and_return(true)
           shell_out_obj.shell_out(cmd)
