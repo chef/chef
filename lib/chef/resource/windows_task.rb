@@ -58,7 +58,7 @@ class Chef
       property :months, String
       property :idle_time, Integer
       property :random_delay, String
-      property :execution_time_limit
+      property :execution_time_limit, String
 
       attr_accessor :exists, :status, :enabled
 

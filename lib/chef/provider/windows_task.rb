@@ -24,7 +24,6 @@ require "chef/mixin/powershell_out"
 class Chef
   class Provider
     class WindowsTask < Chef::Provider
-      use_inline_resources
       include Chef::Mixin::ShellOut
       include Chef::Mixin::PowershellOut
 
