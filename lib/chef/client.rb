@@ -531,34 +531,31 @@ class Chef
     # the existing rest client in as a parameter
     #
     def load_required_recipe(rest, run_context)
-      begin
-        required_recipe_contents = rest.get("required_recipe")
-        Chef::FileCache.store("required_recipe", required_recipe_contents)
-        required_recipe_file = Chef::FileCache.load("required_recipe", false)
+      required_recipe_contents = rest.get("required_recipe")
+      Chef::FileCache.store("required_recipe", required_recipe_contents)
+      required_recipe_file = Chef::FileCache.load("required_recipe", false)
 
-        # TODO: add integration tests with resource reporting turned on
-        #       (presumably requires changes to chef-zero)
-        #
-        # Chef::Recipe.new takes a cookbook name and a recipe name along
-        # with the run context. These names are eventually used in the
-        # resource reporter, and if the cookbook name cannot be found in the
-        # cookbook collection then we will fail with an exception. Cases where
-        # we currently also fail:
-        #   - specific recipes
-        #   - chef-apply would fail if resource reporting was enabled
-        #
-        recipe = Chef::Recipe.new(nil, nil, run_context)
-        recipe.from_file(required_recipe_file)
-        run_context
-      rescue Net::HTTPServerException => e
-        case e.response
-        when Net::HTTPNotFound
-          Chef::Log.info("Required Recipe not found")
-        else
-          raise
-        end
+      # TODO: add integration tests with resource reporting turned on
+      #       (presumably requires changes to chef-zero)
+      #
+      # Chef::Recipe.new takes a cookbook name and a recipe name along
+      # with the run context. These names are eventually used in the
+      # resource reporter, and if the cookbook name cannot be found in the
+      # cookbook collection then we will fail with an exception. Cases where
+      # we currently also fail:
+      #   - specific recipes
+      #   - chef-apply would fail if resource reporting was enabled
+      #
+      recipe = Chef::Recipe.new(nil, nil, run_context)
+      recipe.from_file(required_recipe_file)
+      run_context
+    rescue Net::HTTPServerException => e
+      case e.response
+      when Net::HTTPNotFound
+        Chef::Log.info("Required Recipe not found")
+      else
+        raise
       end
-
     end
 
     #

@@ -398,11 +398,11 @@ describe Chef::Client do
     let(:rest)        { double("Chef::ServerAPI (required recipe)") }
     let(:run_context) { double("Chef::RunContext") }
     let(:recipe)      { double("Chef::Recipe (required recipe)") }
-    let(:required_recipe) {
+    let(:required_recipe) do
       <<EOM
 fake_recipe_variable = "for reals"
 EOM
-    }
+    end
 
     context "when required_recipe is configured" do
 
@@ -417,11 +417,11 @@ EOM
       end
 
       context "when the required_recipe has bad contents" do
-        let(:required_recipe) {
+        let(:required_recipe) do
           <<EOM
 this is not a recipe
 EOM
-        }
+        end
         it "should not raise an error" do
           expect { client.load_required_recipe(rest, run_context) }.not_to raise_error()
         end
