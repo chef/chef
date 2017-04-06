@@ -58,8 +58,6 @@ describe Chef::Knife::ConfigureClient do
       it "should write out the config file" do
         allow(FileUtils).to receive(:mkdir_p)
         @knife.run
-        expect(@client_file.string).to match /log_level\s+\:info/
-        expect(@client_file.string).to match /log_location\s+STDOUT/
         expect(@client_file.string).to match /chef_server_url\s+'https\:\/\/chef\.example\.com'/
         expect(@client_file.string).to match /validation_client_name\s+'chef-validator'/
       end
