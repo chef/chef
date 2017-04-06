@@ -270,9 +270,12 @@ The `use_inline_resources` provider mode is always enabled when using the
 `action :name do ... end` syntax. You can remove the `use_inline_resources`
 line.
 
-### Magic removed from logger and formatter settings
+### The logger and formatter settings are more predictable
 
-There is no more magic involved in the setting of the logger and the formatter, the default is now the formatter.
+The default now is the formatter.  There is no more automatic switching to the logger when logging or when output
+is sent to a pipe.  The logger needs to be specifically requested with `--force-logger` or it will not show up.
+
+The `--force-formatter` option does still exist, although it will probably be deprecated in the future.
 
 Setting the `log_location` in the config.rb now applies to both daemonized and command-line invocation and there is
 no magic which dups the logger in order to log to STDOUT on the command line in that case.
@@ -291,4 +294,3 @@ to the command line that invokes your daemon process.
 
 Redirecting output to a file with `chef-client > /tmp/chef.out` now captures the same output as invoking it directly on the command
 line with no redirection.
-
