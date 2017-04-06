@@ -243,16 +243,19 @@ property :x, default: lazy { {} }
 
 ### Rubygems provider sources behavior changed.
 
-The default behavior of the `gem_package` and `chef_gem` resources is now to inherit whatever settings are in the external environment
-that chef is running in.  Chef no longer forces `https://rubygems.org`.  The `Chef::Config[:rubygems_uri]` default has been changed to
-nil.  It can now be set to either a string URI or to an array of string URIs.  The behavior of setting the source on an individual
-resource now overrides the source setting completely and does not inherit the global setting.
+The behavior of `gem_package` and `chef_gem` is now to always apply the `Chef::Config[:rubygems_uri]` sources, which may be a
+String uri or an Array of Strings.  If additional sources are put on the resource with the `source` property those are added
+to the configured `:rubygems_uri` sources.
 
-Users that previously relied on the source setting always being additive to "https://rubygmes.org" will find that they need to use
-the array form and explicitly add "https://rubygems.org" to their resources.  Users can now more easily remove "https://rubygems.org"
-either globally or on a resource case-by-case basis.
+This should enable easier setup of rubygems mirrors particularly in "airgapped" environments through the use of the global config
+variable.  It also means that an admin may force all rubygems.org traffic to an internal mirror, while still being able to
+consume external cookbooks which have resources which add other mirrors unchanged (in a non-airgapped environment).
 
-The behavior of the `clear_sources` property is now to only add `--clear-sources` and has no side effects on the source options.
+In the case where a resource must force the use of only the specified source(s), then the `include_default_source` property
+has been added -- setting it to false will remove the `Chef::Config[:rubygems_url]` setting from the list of sources for
+that resource.
+
+The behavior of the `clear_sources` property is now to only add `--clear-sources` and has no magic side effects on the source options.
 
 ### `knife cookbook site vendor` has been removed
 

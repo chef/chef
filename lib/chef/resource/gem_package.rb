@@ -39,6 +39,9 @@ class Chef
       # Sets a custom gem_binary to run for gem commands.
       property :gem_binary, String, desired_state: false
 
+      # set to false to avoid including Chef::Config[:rubygems_url] in the sources
+      property :include_default_source, [ TrueClass, FalseClass ], default: true
+
       ##
       # Options for the gem install, either a Hash or a String. When a hash is
       # given, the options are passed to Gem::DependencyInstaller.new, and the

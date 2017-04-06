@@ -341,6 +341,7 @@ describe Chef::Provider::Package::Rubygems do
   let(:bindir) { "/usr/bin/ruby" }
   let(:options) { nil }
   let(:source) { nil }
+  let(:include_default_source) { true }
 
   let(:new_resource) do
     new_resource = Chef::Resource::GemPackage.new(gem_name)
@@ -348,6 +349,7 @@ describe Chef::Provider::Package::Rubygems do
     new_resource.gem_binary(gem_binary) if gem_binary
     new_resource.options(options) if options
     new_resource.source(source) if source
+    new_resource.include_default_source(include_default_source)
     new_resource
   end
 
@@ -549,12 +551,13 @@ describe Chef::Provider::Package::Rubygems do
 
         it "determines the candidate version by querying the remote gem servers" do
           expect(provider.gem_env).to receive(:candidate_version_from_remote)
-            .with(gem_dep, source)
+            .with(gem_dep, source, Chef::Config[:rubygems_url])
             .and_return(Gem::Version.new(target_version))
           expect(provider.candidate_version).to eq(target_version)
         end
 
         it "overwrites the config variable" do
+          new_resource.include_default_source false
           Chef::Config[:rubygems_url] = "https://overridden"
           expect(provider.gem_env).to receive(:candidate_version_from_remote)
             .with(gem_dep, source)
@@ -568,12 +571,13 @@ describe Chef::Provider::Package::Rubygems do
 
         it "determines the candidate version by querying the remote gem servers" do
           expect(provider.gem_env).to receive(:candidate_version_from_remote)
-            .with(gem_dep, *source)
+            .with(gem_dep, *[source, Chef::Config[:rubygems_url] ].flatten)
             .and_return(Gem::Version.new(target_version))
           expect(provider.candidate_version).to eq(target_version)
         end
 
         it "overwrites the config variable" do
+          new_resource.include_default_source false
           Chef::Config[:rubygems_url] = "https://overridden"
           expect(provider.gem_env).to receive(:candidate_version_from_remote)
             .with(gem_dep, *source)
@@ -606,16 +610,14 @@ describe Chef::Provider::Package::Rubygems do
       let(:version) { Gem::Version.new(candidate_version) }
 
       before do
-        if source
-          allow(provider.gem_env).to receive(:candidate_version_from_remote).with(gem_dep, *source).and_return(version)
-        else
-          allow(provider.gem_env).to receive(:candidate_version_from_remote).with(gem_dep).and_return(version)
-        end
+        expected_source = [ source ]
+        expected_source << Chef::Config[:rubygems_url] if include_default_source
+        allow(provider.gem_env).to receive(:candidate_version_from_remote).with(gem_dep, *expected_source.flatten.compact).and_return(version)
       end
 
       describe "in the current gem environment" do
         it "installs the gem via the gems api when no explicit options are used" do
-          expect(provider.gem_env).to receive(:install).with(gem_dep, sources: nil)
+          expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [ Chef::Config[:rubygems_url] ])
           provider.run_action(:install)
           expect(new_resource).to be_updated_by_last_action
         end
@@ -624,7 +626,7 @@ describe Chef::Provider::Package::Rubygems do
           let(:source) { "http://gems.example.org" }
 
           it "installs the gem via the gems api" do
-            expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [source])
+            expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [source, Chef::Config[:rubygems_url]])
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end
@@ -655,7 +657,7 @@ describe Chef::Provider::Package::Rubygems do
         it "installs the gem via the gems api, when the package has no file separator characters in it, but a matching file exists in cwd" do
           allow(::File).to receive(:exist?).and_return(true)
           new_resource.package_name("rspec-core")
-          expect(provider.gem_env).to receive(:install).with(gem_dep, sources: nil)
+          expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [ Chef::Config[:rubygems_url] ])
           provider.run_action(:install)
           expect(new_resource).to be_updated_by_last_action
         end
@@ -664,7 +666,7 @@ describe Chef::Provider::Package::Rubygems do
           let(:options) { "-i /alt/install/location" }
 
           it "installs the gem by shelling out when options are provided as a String" do
-            expected = "gem install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" #{options}"
+            expected = "gem install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=https://www.rubygems.org #{options}"
             expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
@@ -689,18 +691,22 @@ describe Chef::Provider::Package::Rubygems do
           let(:gem_binary) { "/foo/bar" }
 
           it "installs the gem with rubygems.org as an added source" do
-            expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=#{source}"
+            expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=#{source} --source=https://www.rubygems.org"
             expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end
 
-          it "ignores the Chef::Config setting" do
-            Chef::Config[:rubygems_url] = "https://ignored"
-            expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=#{source}"
-            expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
-            provider.run_action(:install)
-            expect(new_resource).to be_updated_by_last_action
+          context "with include_default_source false" do
+            let(:include_default_source) { false }
+
+            it "ignores the Chef::Config setting" do
+              Chef::Config[:rubygems_url] = "https://ignored"
+              expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=#{source}"
+              expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
+              provider.run_action(:install)
+              expect(new_resource).to be_updated_by_last_action
+            end
           end
         end
 
@@ -709,18 +715,22 @@ describe Chef::Provider::Package::Rubygems do
           let(:gem_binary) { "/foo/bar" }
 
           it "installs the gem with an array as an added source" do
-            expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=https://mirror1 --source=https://mirror2"
+            expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=https://mirror1 --source=https://mirror2 --source=https://www.rubygems.org"
             expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end
 
-          it "ignores the Chef::Config setting" do
-            Chef::Config[:rubygems_url] = "https://ignored"
-            expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=https://mirror1 --source=https://mirror2"
-            expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
-            provider.run_action(:install)
-            expect(new_resource).to be_updated_by_last_action
+          context "with include_default_source false" do
+            let(:include_default_source) { false }
+
+            it "ignores the Chef::Config setting" do
+              Chef::Config[:rubygems_url] = "https://ignored"
+              expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=https://mirror1 --source=https://mirror2"
+              expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
+              provider.run_action(:install)
+              expect(new_resource).to be_updated_by_last_action
+            end
           end
         end
 
@@ -730,7 +740,7 @@ describe Chef::Provider::Package::Rubygems do
 
           it "installs the gem" do
             new_resource.clear_sources(true)
-            expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --clear-sources --source=#{source}"
+            expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --clear-sources --source=#{source} --source=https://www.rubygems.org"
             expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
@@ -742,7 +752,7 @@ describe Chef::Provider::Package::Rubygems do
           let(:options) { "-i /alt/install/location" }
 
           it "installs the gem by shelling out when options are provided but no version is given" do
-            expected = "gem install rspec-core -q --no-rdoc --no-ri -v \"#{candidate_version}\" #{options}"
+            expected = "gem install rspec-core -q --no-rdoc --no-ri -v \"#{candidate_version}\" --source=https://www.rubygems.org #{options}"
             expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
@@ -753,7 +763,7 @@ describe Chef::Provider::Package::Rubygems do
           let(:options) { { install_dir: "/alt/install/location" } }
 
           it "installs the gem via the gems api when options are given as a Hash" do
-            expect(provider.gem_env).to receive(:install).with(gem_dep, { sources: nil }.merge(options))
+            expect(provider.gem_env).to receive(:install).with(gem_dep, { sources: [ Chef::Config[:rubygems_url] ] }.merge(options))
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end
@@ -763,7 +773,7 @@ describe Chef::Provider::Package::Rubygems do
           let(:target_version) { "9000.0.2" }
 
           it "installs the gem via the gems api" do
-            expect(provider.gem_env).to receive(:install).with(gem_dep, sources: nil)
+            expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [ Chef::Config[:rubygems_url] ] )
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end
@@ -806,7 +816,7 @@ describe Chef::Provider::Package::Rubygems do
         let(:gem_binary) { "/usr/weird/bin/gem" }
 
         it "installs the gem by shelling out to gem install" do
-          expect(provider).to receive(:shell_out!).with("#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\"", env: nil, timeout: 900)
+          expect(provider).to receive(:shell_out!).with("#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=https://www.rubygems.org", env: nil, timeout: 900)
           provider.run_action(:install)
           expect(new_resource).to be_updated_by_last_action
         end
