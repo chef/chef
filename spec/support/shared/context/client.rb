@@ -135,6 +135,12 @@ shared_context "a client run" do
       and_return({})
   end
 
+  def stub_for_required_recipe
+    response = Net::HTTPNotFound.new("1.1", "404", "Not Found")
+    exception = Net::HTTPServerException.new('404 "Not Found"', response)
+    expect(http_node_load).to receive(:get).with("required_recipe").and_raise(exception)
+  end
+
   def stub_for_converge
     # define me
   end
@@ -165,6 +171,7 @@ shared_context "a client run" do
     stub_for_data_collector_init
     stub_for_node_load
     stub_for_sync_cookbooks
+    stub_for_required_recipe
     stub_for_converge
     stub_for_audit
     stub_for_node_save
