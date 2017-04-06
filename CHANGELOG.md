@@ -1,10 +1,18 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.105](https://github.com/chef/chef/tree/v13.0.105) (2017-04-05)
-[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.105)
+## [v13.0.106](https://github.com/chef/chef/tree/v13.0.106) (2017-04-06)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.106...v13.0.106)
 
 **Merged pull requests:**
 
+- Chef-13: better solution to gem\_package source issues [\#6028](https://github.com/chef/chef/pull/6028) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v13.0.106](https://github.com/chef/chef/tree/v13.0.106) (2017-04-05)
+[Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v13.0.106)
+
+**Merged pull requests:**
+
+- Chef-13:  tweaks to rubygems source option for urls [\#5995](https://github.com/chef/chef/pull/5995) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13 knife search exit 1 when no results [\#5994](https://github.com/chef/chef/pull/5994) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: remove iconv from the chef build [\#5993](https://github.com/chef/chef/pull/5993) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: coerce package options property to an Array [\#5991](https://github.com/chef/chef/pull/5991) ([lamont-granquist](https://github.com/lamont-granquist))
@@ -46,11 +54,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Chef-13:  Nillable properties [\#5907](https://github.com/chef/chef/pull/5907) ([lamont-granquist](https://github.com/lamont-granquist))
 - Chef-13: freeze merged node attribute [\#5905](https://github.com/chef/chef/pull/5905) ([lamont-granquist](https://github.com/lamont-granquist))
 - bump ruby to 2.3.3 [\#5902](https://github.com/chef/chef/pull/5902) ([lamont-granquist](https://github.com/lamont-granquist))
-- Remove the easy\_install resource [\#5901](https://github.com/chef/chef/pull/5901) ([coderanger](https://github.com/coderanger))
-- Chef-13:  Remove declare\_resource create\_if\_missing API [\#5900](https://github.com/chef/chef/pull/5900) ([lamont-granquist](https://github.com/lamont-granquist))
-- Properly use chef-shell in SoloSession by deprecating old behavior into SoloLegacySession [\#5898](https://github.com/chef/chef/pull/5898) ([afiune](https://github.com/afiune))
-- Chef-13:  properly deep dup Node\#to\_hash [\#5896](https://github.com/chef/chef/pull/5896) ([lamont-granquist](https://github.com/lamont-granquist))
-- Chef-13: remove method\_missing access to node object. [\#5895](https://github.com/chef/chef/pull/5895) ([lamont-granquist](https://github.com/lamont-granquist))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
