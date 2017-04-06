@@ -294,10 +294,9 @@ chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
 EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -r 'x::default' -z -l info", :cwd => chef_dir)
       expect(result.stdout).not_to include("Overridden Run List")
       expect(result.stdout).to include("Run List is [recipe[x::default]]")
-      #puts result.stdout
       result.error!
     end
 
@@ -445,7 +444,7 @@ control_group "control group without top level control" do
 end
       RECIPE
 
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::succeed'", :cwd => chef_dir)
+      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'audit_test::succeed' -l info", :cwd => chef_dir)
       expect(result.error?).to be_falsey
       expect(result.stdout).to include("Successfully executed all `control_group` blocks and contained examples")
     end
@@ -553,6 +552,44 @@ EOM
     it "a chef-solo run should succeed" do
       command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
       command.error!
+    end
+  end
+
+  when_the_repository "has a cookbook that logs at the info level" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<EOM
+      log "info level" do
+        level :info
+      end
+EOM
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+    end
+
+    it "a chef client run should not log to info by default" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).not_to include("INFO")
+    end
+
+    it "a chef client run to a pipe should not log to info by default" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork | tee #{path_to('chefrun.out')}", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).not_to include("INFO")
+    end
+
+    it "a chef solo run should not log to info by default" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).not_to include("INFO")
+    end
+
+    it "a chef solo run to a pipe should not log to info by default" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork | tee #{path_to('chefrun.out')}", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).not_to include("INFO")
     end
   end
 end
