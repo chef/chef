@@ -280,20 +280,7 @@ is sent to a pipe.  The logger needs to be specifically requested with `--force-
 
 The `--force-formatter` option does still exist, although it will probably be deprecated in the future.
 
-Setting the `log_location` in the config.rb now applies to both daemonized and command-line invocation and there is
-no magic which dups the logger in order to log to STDOUT on the command line in that case.
-
-Setting logger settings in config.rb is most likely no longer appropriate and those settings should be changed to
-command line flags on the config script or cronjob that invokes chef-client daemonized.  In other words:
-
-```
-chef-client -d -L /var/log/client.rb --force-logger
-```
-
 If your logfiles switch to the formatter, you need to include `--force-logger` for your daemonized runs.
-
-If your command line invocations have no output, delete the config.rb setting for the log_location and move that
-to the command line that invokes your daemon process.
 
 Redirecting output to a file with `chef-client > /tmp/chef.out` now captures the same output as invoking it directly on the command
 line with no redirection.

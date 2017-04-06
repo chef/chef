@@ -241,11 +241,26 @@ class Chef
 
       def configure_logging
         Chef::Log.init(MonoLogger.new(resolve_log_location))
+        if want_additional_logger?
+          configure_stdout_logger
+        end
         Chef::Log.level = resolve_log_level
       end
 
+      def configure_stdout_logger
+        stdout_logger = MonoLogger.new(STDOUT)
+        stdout_logger.formatter = Chef::Log.logger.formatter
+        Chef::Log.loggers << stdout_logger
+      end
+
+      # Based on config and whether or not STDOUT is a tty, should we setup a
+      # secondary logger for stdout?
+      def want_additional_logger?
+        ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && !Chef::Config[:daemonize]
+      end
+
       # Use of output formatters is assumed if `force_formatter` is set or if
-      # `force_logger` is not set and STDOUT is to a console (tty)
+      # `force_logger` is not set
       def using_output_formatter?
         Chef::Config[:force_formatter] || !Chef::Config[:force_logger]
       end
