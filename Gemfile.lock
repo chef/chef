@@ -36,23 +36,6 @@ GIT
       retriable (>= 1.4)
 
 GIT
-  remote: https://github.com/chef/ohai.git
-  revision: daeb73c1089d8b611bc5fde3bfddddad28f304eb
-  specs:
-    ohai (13.0.0)
-      chef-config (>= 12.5.0.alpha.1, < 14)
-      ffi (~> 1.9)
-      ffi-yajl (~> 2.2)
-      ipaddress
-      mixlib-cli
-      mixlib-config (~> 2.0)
-      mixlib-log (>= 1.7.1, < 2.0)
-      mixlib-shellout (~> 2.0)
-      plist (~> 3.1)
-      systemu (~> 2.6.4)
-      wmi-lite (~> 1.0)
-
-GIT
   remote: https://github.com/poise/halite.git
   revision: b9b3f61682abe1c656f57b7edbbf43d918c5c16b
   specs:
@@ -207,13 +190,13 @@ GEM
       mixlib-cli (~> 1.4)
     artifactory (2.8.1)
     ast (2.3.0)
-    aws-sdk (2.9.3)
-      aws-sdk-resources (= 2.9.3)
-    aws-sdk-core (2.9.3)
+    aws-sdk (2.9.5)
+      aws-sdk-resources (= 2.9.5)
+    aws-sdk-core (2.9.5)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.9.3)
-      aws-sdk-core (= 2.9.3)
+    aws-sdk-resources (2.9.5)
+      aws-sdk-core (= 2.9.5)
     aws-sigv4 (1.0.0)
     backports (3.7.0)
     binding_of_caller (0.7.2)
@@ -263,7 +246,7 @@ GEM
     docker-api (1.33.3)
       excon (>= 0.38.0)
       json
-    domain_name (0.5.20170223)
+    domain_name (0.5.20170404)
       unf (>= 0.0.5, < 1.0.0)
     erubis (2.7.0)
     ethon (0.10.1)
@@ -406,8 +389,20 @@ GEM
     nokogiri (1.7.1-x86-mingw32)
       mini_portile2 (~> 2.1.0)
     nori (2.6.0)
-    octokit (4.6.2)
+    octokit (4.7.0)
       sawyer (~> 0.8.0, >= 0.5.3)
+    ohai (13.0.0)
+      chef-config (>= 12.5.0.alpha.1, < 14)
+      ffi (~> 1.9)
+      ffi-yajl (~> 2.2)
+      ipaddress
+      mixlib-cli
+      mixlib-config (~> 2.0)
+      mixlib-log (>= 1.7.1, < 2.0)
+      mixlib-shellout (~> 2.0)
+      plist (~> 3.1)
+      systemu (~> 2.6.4)
+      wmi-lite (~> 1.0)
     parallel (1.11.1)
     parser (2.4.0.0)
       ast (~> 2.2)
@@ -575,7 +570,7 @@ GEM
       ffi-win32-extensions
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
-    winrm (2.1.3)
+    winrm (2.2.1)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)
@@ -622,7 +617,7 @@ DEPENDENCIES
   netrc
   oc-chef-pedant!
   octokit
-  ohai!
+  ohai (~> 13)
   poise!
   poise-boiler!
   pry
