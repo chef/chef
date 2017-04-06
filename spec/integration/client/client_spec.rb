@@ -592,4 +592,27 @@ EOM
       expect(command.stdout).not_to include("INFO")
     end
   end
+
+  context "when connected to a Chef Server" do
+
+    let(:chef_client_cmd) { "#{chef_client} -c #{path_to('config/client.rb')}" }
+
+    before do
+      directory "config"
+      directory "cache"
+
+      file "config/client.rb", <<EOM
+chef_server_url "http://localhost:8900"
+cache_path "#{path_to("cache")}"
+client_key "#{path_to("config/client.pem")}"
+EOM
+    end
+
+    when_the_chef_server "is empty with a basic config" do
+      it "a chef-client run should succeed" do
+        result = shell_out(chef_client_cmd)
+        result.error!
+      end
+    end
+  end
 end
