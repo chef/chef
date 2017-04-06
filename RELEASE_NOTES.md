@@ -328,3 +328,7 @@ Since most providers which launch custom user commands use `shell_out_with_syste
 will be that those commands that used to be having embedded omnibus paths injected into them no longer will.  Generally this will
 fix more problems than it solves, but may causes issues for some use cases.
 
+### Default guard clauses (`not_if`/`only_if`) do not change the PATH or other env vars
+
+The implementation switched to `shell_out_with_systems_locale` to match `execute` resource, etc.
+
