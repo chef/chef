@@ -54,6 +54,11 @@ class Chef
             end
           end
         end
+        # Ensure all segments are set to [] if they don't exist.
+        # See https://github.com/chef/chef/issues/6044
+        COOKBOOK_SEGMENTS.each do |segment|
+          result[segment] ||= []
+        end
 
         result.merge({ "frozen?" => manifest.frozen_version?, "chef_type" => "cookbook_version" })
       end
