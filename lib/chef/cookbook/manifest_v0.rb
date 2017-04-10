@@ -44,7 +44,7 @@ class Chef
         result.delete("all_files")
 
         files = manifest.by_parent_directory
-        files.keys.inject(result) do |memo, parent|
+        files.keys.each_with_object(result) do |parent, memo|
           if COOKBOOK_SEGMENTS.include?(parent)
             memo[parent] ||= []
             files[parent].each do |file|
@@ -53,7 +53,6 @@ class Chef
               memo[parent] << file
             end
           end
-          memo
         end
 
         result.merge({ "frozen?" => manifest.frozen_version?, "chef_type" => "cookbook_version" })
