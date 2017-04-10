@@ -15,6 +15,7 @@ skip_tags: true
 branches:
   only:
     - master
+    - chef-12
 
 install:
   - systeminfo
