@@ -532,6 +532,7 @@ class Chef
     #
     def load_required_recipe(rest, run_context)
       required_recipe_contents = rest.get("required_recipe")
+      Chef::Log.info("Required Recipe found, loading it")
       Chef::FileCache.store("required_recipe", required_recipe_contents)
       required_recipe_file = Chef::FileCache.load("required_recipe", false)
 
@@ -552,7 +553,7 @@ class Chef
     rescue Net::HTTPServerException => e
       case e.response
       when Net::HTTPNotFound
-        Chef::Log.info("Required Recipe not found")
+        Chef::Log.debug("Required Recipe not configured on the server, skipping it")
       else
         raise
       end

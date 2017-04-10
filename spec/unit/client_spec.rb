@@ -445,7 +445,7 @@ EOM
       end
 
       it "should log and continue on" do
-        expect(Chef::Log).to receive(:info)
+        expect(Chef::Log).to receive(:debug)
         client.load_required_recipe(rest, run_context)
       end
     end
