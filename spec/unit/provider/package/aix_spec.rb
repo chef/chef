@@ -163,7 +163,7 @@ describe Chef::Provider::Package::Aix do
     end
 
     it "should run installp with -eLogfile option." do
-      allow(@new_resource).to receive(:options).and_return("-e/tmp/installp.log")
+      @new_resource.options("-e/tmp/installp.log")
       expect(@provider).to receive(:shell_out!).with("installp", "-aYF", "-e/tmp/installp.log", "-d", "/tmp/samba.base", "samba.base", timeout: 900)
       @provider.install_package("samba.base", "3.3.12.0")
     end
@@ -176,7 +176,7 @@ describe Chef::Provider::Package::Aix do
     end
 
     it "should run installp -u -e/tmp/installp.log  with options -e/tmp/installp.log" do
-      allow(@new_resource).to receive(:options).and_return("-e/tmp/installp.log")
+      @new_resource.options("-e/tmp/installp.log")
       expect(@provider).to receive(:shell_out!).with("installp", "-u", "-e/tmp/installp.log", "samba.base", timeout: 900)
       @provider.remove_package("samba.base", "3.3.12.0")
     end

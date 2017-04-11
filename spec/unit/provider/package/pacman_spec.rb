@@ -157,7 +157,7 @@ PACMAN_CONF
 
     it "should run pacman install with the package name and version and options if specified" do
       expect(@provider).to receive(:shell_out!).with("pacman", "--sync", "--noconfirm", "--noprogressbar", "--debug", "nano", { timeout: 900 })
-      allow(@new_resource).to receive(:options).and_return("--debug")
+      @new_resource.options("--debug")
 
       @provider.install_package("nano", "1.0")
     end
@@ -178,7 +178,7 @@ PACMAN_CONF
 
     it "should run pacman remove with the package name and options if specified" do
       expect(@provider).to receive(:shell_out!).with("pacman", "--remove", "--noconfirm", "--noprogressbar", "--debug", "nano", { timeout: 900 })
-      allow(@new_resource).to receive(:options).and_return("--debug")
+      @new_resource.options("--debug")
 
       @provider.remove_package("nano", "1.0")
     end
