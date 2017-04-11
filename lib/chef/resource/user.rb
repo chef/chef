@@ -67,7 +67,7 @@ class Chef
           :uid,
           arg,
           :kind_of => [ String, Integer, NilClass ],
-          :coerce => proc {|x| x || nil }
+          :coerce => proc { |x| x || nil }
         )
       end
 
@@ -76,7 +76,7 @@ class Chef
           :gid,
           arg,
           :kind_of => [ String, Integer, NilClass ],
-          :coerce => proc {|x| x || nil }
+          :coerce => proc { |x| x || nil }
         )
       end
 
