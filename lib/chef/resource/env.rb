@@ -20,46 +20,14 @@
 class Chef
   class Resource
     class Env < Chef::Resource
-
-      identity_attr :key_name
-
-      state_attrs :value
-
       provides :env, os: "windows"
 
       default_action :create
       allowed_actions :create, :delete, :modify
 
-      def initialize(name, run_context = nil)
-        super
-        @key_name = name
-        @value = nil
-        @delim = nil
-      end
-
-      def key_name(arg = nil)
-        set_or_return(
-          :key_name,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def value(arg = nil)
-        set_or_return(
-          :value,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def delim(arg = nil)
-        set_or_return(
-          :delim,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :key_name, String, identity: true, name_property: true
+      property :value, String, required: true
+      property :delim, [ String, nil, false ], desired_state: false
     end
   end
 end
