@@ -278,31 +278,31 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should flush the cache if :before is true" do
-      allow(@new_resource).to receive(:flush_cache).and_return({ :after => false, :before => true })
+      @new_resource.flush_cache({ :after => false, :before => true })
       expect(@yum_cache).to receive(:reload).once
       @provider.load_current_resource
     end
 
     it "should flush the cache if :before is false" do
-      allow(@new_resource).to receive(:flush_cache).and_return({ :after => false, :before => false })
+      @new_resource.flush_cache({ :after => false, :before => false })
       expect(@yum_cache).not_to receive(:reload)
       @provider.load_current_resource
     end
 
     it "should detect --enablerepo or --disablerepo when passed among options, collect them preserving order and notify the yum cache" do
-      allow(@new_resource).to receive(:options).and_return("--stuff --enablerepo=foo --otherthings --disablerepo=a,b,c  --enablerepo=bar")
+      @new_resource.options("--stuff --enablerepo=foo --otherthings --disablerepo=a,b,c  --enablerepo=bar")
       expect(@yum_cache).to receive(:enable_extra_repo_control).with("--enablerepo=foo --disablerepo=a,b,c --enablerepo=bar")
       @provider.load_current_resource
     end
 
     it "should let the yum cache know extra repos are disabled if --enablerepo or --disablerepo aren't among options" do
-      allow(@new_resource).to receive(:options).and_return("--stuff --otherthings")
+      @new_resource.options("--stuff --otherthings")
       expect(@yum_cache).to receive(:disable_extra_repo_control)
       @provider.load_current_resource
     end
 
     it "should let the yum cache know extra repos are disabled if options aren't set" do
-      allow(@new_resource).to receive(:options).and_return(nil)
+      @new_resource.options(nil)
       expect(@yum_cache).to receive(:disable_extra_repo_control)
       @provider.load_current_resource
     end
