@@ -182,8 +182,8 @@ describe Chef::Provider::Group::Dscl do
 
     describe "with existing members in the current resource and append set to false in the new resource" do
       before do
-        allow(@new_resource).to receive(:members).and_return([])
-        allow(@new_resource).to receive(:append).and_return(false)
+        @new_resource.members([])
+        @new_resource.append(false)
         allow(@current_resource).to receive(:members).and_return(%w{all your base})
       end
 

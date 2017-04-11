@@ -77,7 +77,7 @@ describe Chef::Provider::Group::Pw do
 
     describe "with an empty members array in both the new and current resource" do
       before do
-        allow(@new_resource).to receive(:members).and_return([])
+        @new_resource.members([])
         allow(@current_resource).to receive(:members).and_return([])
       end
 
@@ -88,7 +88,7 @@ describe Chef::Provider::Group::Pw do
 
     describe "with an empty members array in the new resource and existing members in the current resource" do
       before do
-        allow(@new_resource).to receive(:members).and_return([])
+        @new_resource.members([])
         allow(@current_resource).to receive(:members).and_return(%w{all your base})
       end
 
@@ -104,7 +104,7 @@ describe Chef::Provider::Group::Pw do
 
     describe "with supplied members array in the new resource and an empty members array in the current resource" do
       before do
-        allow(@new_resource).to receive(:members).and_return(%w{all your base})
+        @new_resource.members(%w{all your base})
         allow(@current_resource).to receive(:members).and_return([])
       end
 

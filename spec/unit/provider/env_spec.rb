@@ -183,12 +183,12 @@ describe Chef::Provider::Env do
     end
 
     it "should return true if the element is not found" do
-      allow(@new_resource).to receive(:value).and_return("C:/baz/bin")
+      @new_resource.value("C:/baz/bin")
       expect(@provider.delete_element).to eql(true)
     end
 
     it "should return false if the delim not defined" do
-      allow(@new_resource).to receive(:delim).and_return(nil)
+      @new_resource.delim(nil)
       expect(@provider.delete_element).to eql(false)
     end
 

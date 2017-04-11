@@ -62,19 +62,19 @@ describe Chef::Provider::Group::Windows do
     end
 
     it "should call @net_group.local_set_members" do
-      allow(@new_resource).to receive(:append).and_return(false)
+      @new_resource.append(false)
       expect(@net_group).to receive(:local_set_members).with(@new_resource.members)
       @provider.manage_group
     end
 
     it "should call @net_group.local_add_members" do
-      allow(@new_resource).to receive(:append).and_return(true)
+      @new_resource.append(true)
       expect(@net_group).to receive(:local_add_members).with(@new_resource.members)
       @provider.manage_group
     end
 
     it "should call @net_group.local_delete_members" do
-      allow(@new_resource).to receive(:append).and_return(true)
+      @new_resource.append(true)
       allow(@provider).to receive(:lookup_account_name).with("all").and_return("all")
       expect(@net_group).to receive(:local_delete_members).with(@new_resource.excluded_members)
       @provider.manage_group

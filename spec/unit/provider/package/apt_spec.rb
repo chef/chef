@@ -217,8 +217,8 @@ mpg123 1.12.1-0ubuntu1
           @new_resource = Chef::Resource::AptPackage.new("irssi", @run_context)
           @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
 
-          allow(@new_resource).to receive(:default_release).and_return("lenny-backports")
-          allow(@new_resource).to receive(:provider).and_return(nil)
+          @new_resource.default_release("lenny-backports")
+          @new_resource.provider(nil)
           expect(@provider).to receive(:shell_out!).with(
             "apt-cache", "-o", "APT::Default-Release=lenny-backports", "policy", "irssi",
             :env => { "DEBIAN_FRONTEND" => "noninteractive" },

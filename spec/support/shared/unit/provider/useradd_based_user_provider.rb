@@ -75,9 +75,9 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       end
 
       it "should set the option for #{attribute} if the new resources #{attribute} is not nil, without homedir management (using real attributes)" do
-        allow(@new_resource).to receive(:manage_home).and_return(false)
-        allow(@new_resource).to receive(:non_unique).and_return(false)
-        allow(@new_resource).to receive(:non_unique).and_return(false)
+        @new_resource.manage_home(false)
+        @new_resource.non_unique(false)
+        @new_resource.non_unique(false)
         allow(@new_resource).to receive(attribute).and_return("hola")
         expect(provider.universal_options).to eql([option, "hola"])
       end

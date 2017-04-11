@@ -201,7 +201,7 @@ REMOTE
 
     context "when accept_license is true" do
       before do
-        allow(@new_resource).to receive(:accept_license).and_return(true)
+        @new_resource.accept_license(true)
       end
 
       it "should run pkg install with the --accept flag" do

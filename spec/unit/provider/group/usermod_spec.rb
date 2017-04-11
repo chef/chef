@@ -34,8 +34,8 @@ describe Chef::Provider::Group::Usermod do
 
     describe "with an empty members array" do
       before do
-        allow(@new_resource).to receive(:append).and_return(true)
-        allow(@new_resource).to receive(:members).and_return([])
+        @new_resource.append(true)
+        @new_resource.members([])
       end
 
       it "should log an appropriate message" do
@@ -56,7 +56,7 @@ describe Chef::Provider::Group::Usermod do
       }
 
       before do
-        allow(@new_resource).to receive(:members).and_return(%w{all your base})
+        @new_resource.members(%w{all your base})
         allow(File).to receive(:exist?).and_return(true)
       end
 
@@ -73,8 +73,8 @@ describe Chef::Provider::Group::Usermod do
         @provider.load_current_resource
         @provider.instance_variable_set("@group_exists", true)
         @provider.action = :modify
-        allow(@new_resource).to receive(:append).and_return(true)
-        allow(@new_resource).to receive(:excluded_members).and_return(["someone"])
+        @new_resource.append(true)
+        @new_resource.excluded_members(["someone"])
         expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "excluded_members is not supported by #{@provider}")
       end
 
@@ -84,7 +84,7 @@ describe Chef::Provider::Group::Usermod do
           current_resource.members([ ])
           @provider.current_resource = current_resource
           @node.automatic_attrs[:platform] = platform
-          allow(@new_resource).to receive(:append).and_return(true)
+          @new_resource.append(true)
           expect(@provider).to receive(:shell_out!).with("usermod", *flags, "wheel", "all")
           expect(@provider).to receive(:shell_out!).with("usermod", *flags, "wheel", "your")
           expect(@provider).to receive(:shell_out!).with("usermod", *flags, "wheel", "base")

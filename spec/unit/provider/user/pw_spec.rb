@@ -160,7 +160,7 @@ describe Chef::Provider::User::Pw do
 
     describe "and the new password has not been specified" do
       before(:each) do
-        allow(@new_resource).to receive(:password).and_return(nil)
+        @new_resource.password(nil)
       end
 
       it "logs an appropriate message" do
@@ -170,19 +170,19 @@ describe Chef::Provider::User::Pw do
 
     describe "and the new password has been specified" do
       before(:each) do
-        allow(@new_resource).to receive(:password).and_return("abracadabra")
+        @new_resource.password("abracadabra")
       end
 
       it "should check for differences in password between the new and current resources" do
         expect(@current_resource).to receive(:password)
-        expect(@new_resource).to receive(:password)
+        expect(@new_resource).to receive(:password).and_call_original.at_least(:once)
         @provider.modify_password
       end
     end
 
     describe "and the passwords are identical" do
       before(:each) do
-        allow(@new_resource).to receive(:password).and_return("abracadabra")
+        @new_resource.password("abracadabra")
         allow(@current_resource).to receive(:password).and_return("abracadabra")
       end
 
@@ -193,7 +193,7 @@ describe Chef::Provider::User::Pw do
 
     describe "and the passwords are different" do
       before(:each) do
-        allow(@new_resource).to receive(:password).and_return("abracadabra")
+        @new_resource.password("abracadabra")
         allow(@current_resource).to receive(:password).and_return("sesame")
       end
 
