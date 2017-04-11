@@ -18,7 +18,13 @@
 module ChefConfig
 
   def self.windows?
-    if RUBY_PLATFORM =~ /mswin|mingw|windows/
+    if instance_variable_defined?(:@node) && @node && @node["os"]
+      platform = "windows"
+    end
+
+    platform ||= RUBY_PLATFORM
+
+    if platform =~ /mswin|mingw|windows/
       true
     else
       false
