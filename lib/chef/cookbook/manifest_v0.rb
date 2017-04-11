@@ -27,13 +27,14 @@ class Chef
       COOKBOOK_SEGMENTS = %w{ resources providers recipes definitions libraries attributes files templates root_files }
 
       def self.from_hash(hash)
-        response = Mash.new
+        response = Mash.new(hash)
         response[:all_files] = COOKBOOK_SEGMENTS.inject([]) do |memo, segment|
           next memo if hash[segment].nil? || hash[segment].empty?
           hash[segment].each do |file|
             file["name"] = "#{segment}/#{file["name"]}" unless segment == "root_files"
             memo << file
           end
+          response.delete(segment)
           memo
         end
         response
