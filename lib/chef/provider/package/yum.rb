@@ -194,7 +194,7 @@ class Chef
         def manage_extra_repo_control
           if new_resource.options
             repo_control = []
-            new_resource.options.split.each do |opt|
+            new_resource.options.each do |opt|
               repo_control << opt if opt =~ /--(enable|disable)repo=.+/
             end
 

@@ -297,7 +297,11 @@ class Chef
       def expand_options(options)
         # its deprecated but still work to do to deprecate it fully
         #Chef.deprecated(:package_misc, "expand_options is deprecated, use shell_out_compact or shell_out_compact_timeout instead")
-        options ? " #{options}" : ""
+        if options
+          " #{options.is_a?(Array) ? Shellwords.join(options) : options}"
+        else
+          ""
+        end
       end
 
       # Check the current_version against either the candidate_version or the new_version

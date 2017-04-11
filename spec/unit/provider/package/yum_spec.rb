@@ -278,31 +278,31 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should flush the cache if :before is true" do
-      allow(@new_resource).to receive(:flush_cache).and_return({ :after => false, :before => true })
+      @new_resource.flush_cache({ :after => false, :before => true })
       expect(@yum_cache).to receive(:reload).once
       @provider.load_current_resource
     end
 
     it "should flush the cache if :before is false" do
-      allow(@new_resource).to receive(:flush_cache).and_return({ :after => false, :before => false })
+      @new_resource.flush_cache({ :after => false, :before => false })
       expect(@yum_cache).not_to receive(:reload)
       @provider.load_current_resource
     end
 
     it "should detect --enablerepo or --disablerepo when passed among options, collect them preserving order and notify the yum cache" do
-      allow(@new_resource).to receive(:options).and_return("--stuff --enablerepo=foo --otherthings --disablerepo=a,b,c  --enablerepo=bar")
+      @new_resource.options("--stuff --enablerepo=foo --otherthings --disablerepo=a,b,c  --enablerepo=bar")
       expect(@yum_cache).to receive(:enable_extra_repo_control).with("--enablerepo=foo --disablerepo=a,b,c --enablerepo=bar")
       @provider.load_current_resource
     end
 
     it "should let the yum cache know extra repos are disabled if --enablerepo or --disablerepo aren't among options" do
-      allow(@new_resource).to receive(:options).and_return("--stuff --otherthings")
+      @new_resource.options("--stuff --otherthings")
       expect(@yum_cache).to receive(:disable_extra_repo_control)
       @provider.load_current_resource
     end
 
     it "should let the yum cache know extra repos are disabled if options aren't set" do
-      allow(@new_resource).to receive(:options).and_return(nil)
+      @new_resource.options(nil)
       expect(@yum_cache).to receive(:disable_extra_repo_control)
       @provider.load_current_resource
     end
@@ -558,7 +558,7 @@ describe Chef::Provider::Package::Yum do
     it "installs the package with the options given in the resource" do
       @provider.load_current_resource
       allow(@provider).to receive(:candidate_version).and_return("11")
-      allow(@new_resource).to receive(:options).and_return("--disablerepo epmd")
+      @new_resource.options("--disablerepo epmd")
       allow(Chef::Provider::Package::Yum::RPMUtils).to receive(:rpmvercmp).and_return(-1)
       expect(@provider).to receive(:yum_command).with(
         "-d0 -e0 -y --disablerepo epmd install cups-11"
@@ -2261,7 +2261,7 @@ describe "Chef::Provider::Package::Yum - Multi" do
       expect(@provider).to receive(:yum_command).with(
         "-d0 -e0 -y --disablerepo epmd install cups-1.2.4-11.19.el5 vim-1.0"
       )
-      allow(@new_resource).to receive(:options).and_return("--disablerepo epmd")
+      @new_resource.options("--disablerepo epmd")
       @provider.install_package(%w{cups vim}, ["1.2.4-11.19.el5", "1.0"])
     end
 
