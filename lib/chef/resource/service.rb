@@ -78,7 +78,7 @@ class Chef
         set_or_return(
           :start_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, NilClass, FalseClass ]
         )
       end
 
@@ -87,7 +87,7 @@ class Chef
         set_or_return(
           :stop_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, NilClass, FalseClass ]
         )
       end
 
@@ -96,7 +96,7 @@ class Chef
         set_or_return(
           :status_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, NilClass, FalseClass ]
         )
       end
 
@@ -105,7 +105,7 @@ class Chef
         set_or_return(
           :restart_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, NilClass, FalseClass ]
         )
       end
 
@@ -113,7 +113,7 @@ class Chef
         set_or_return(
           :reload_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, NilClass, FalseClass ]
         )
       end
 
