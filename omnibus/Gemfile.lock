@@ -1,14 +1,14 @@
 GIT
   remote: https://github.com/chef/license_scout
-  revision: 2cf81860f92d4f2df4444341048b8aeec2da0cfa
+  revision: ff3cb28159e72414d63008f9a0d42e85d4aec4ba
   specs:
-    license_scout (0.1.2)
+    license_scout (0.1.3)
       ffi-yajl (~> 2.2)
       mixlib-shellout (~> 2.2)
 
 GIT
   remote: https://github.com/chef/omnibus
-  revision: dae5821c972ad37716f852767bc8ec7919730600
+  revision: ffbda9ad7d37ddb485342505ff4407c6ff23d95f
   specs:
     omnibus (5.5.0)
       aws-sdk (~> 2)
@@ -25,7 +25,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 7a9182b313ca767a0d286e0db337cc61a6e621a3
+  revision: cae44c1a3ebf7207516813ba15b372231c253954
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -38,13 +38,13 @@ GEM
       public_suffix (~> 2.0, >= 2.0.2)
     artifactory (2.8.1)
     awesome_print (1.7.0)
-    aws-sdk (2.9.3)
-      aws-sdk-resources (= 2.9.3)
-    aws-sdk-core (2.9.3)
+    aws-sdk (2.9.7)
+      aws-sdk-resources (= 2.9.7)
+    aws-sdk-core (2.9.7)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.9.3)
-      aws-sdk-core (= 2.9.3)
+    aws-sdk-resources (2.9.7)
+      aws-sdk-core (= 2.9.7)
     aws-sigv4 (1.0.0)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -113,12 +113,12 @@ GEM
     iostruct (0.0.4)
     ipaddress (0.8.3)
     jmespath (1.3.1)
-    json (2.0.3)
+    json (2.0.4)
     kitchen-vagrant (0.19.0)
       test-kitchen (~> 1.4)
     libyajl2 (1.2.0)
     little-plugger (1.1.4)
-    logging (2.2.0)
+    logging (2.2.2)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     method_source (0.8.2)
@@ -150,7 +150,7 @@ GEM
       net-ssh (>= 2.6.5)
     nio4r (2.0.0)
     nori (2.6.0)
-    octokit (4.6.2)
+    octokit (4.7.0)
       sawyer (~> 0.8.0, >= 0.5.3)
     ohai (8.23.0)
       chef-config (>= 12.5.0.alpha.1, < 13)
