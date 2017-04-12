@@ -25,8 +25,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 23d2dd83dd55b6d0260b1a48160b018157db7cd9
-  branch: tm/copy_ruby_bins
+  revision: cae44c1a3ebf7207516813ba15b372231c253954
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
