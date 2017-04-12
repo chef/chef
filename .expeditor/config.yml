@@ -1,0 +1,31 @@
+# The name of the product key for this product from mixlib-install
+product_key: chef
+
+# Slack channel in Chef Software slack to send notifications about build failures, etc
+slack:
+  notify_channel: chef-notify
+
+# When a version of ChefDK hits the current channel, build a corresponding Docker image
+# and publish that image to https://hub.docker.com/r/chef/chefdk
+docker:
+  enable: true
+  build_args:
+    CHANNEL: "{{channel}}"
+    VERSION: "{{version}}"
+
+github:
+  # The file where the MAJOR.MINOR.PATCH version is kept
+  version_file: "VERSION"
+
+  # When a PR is merged, bump the PATCH version
+  bump_version_on_merge: true
+
+  # After the PATCH version has been bumped, execute this script
+  # to distribute that version to other files in the repository.
+  update_version_script: ".expeditor/update_version.sh"
+
+  # The tag format Expeditor should use when tagging version commits
+  version_tag_format: "v{{version}}"
+
+  # After the version is bumped and the tag is pushed to Github, trigger a Jenkins build
+  trigger_build_on_bump: true
