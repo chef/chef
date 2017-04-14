@@ -30,6 +30,8 @@ class Chef
     class ClientKeyCreate < Knife
       include Chef::Knife::KeyCreateBase
 
+      banner "knife client key create CLIENT (options)"
+
       attr_reader :actor
 
       def initialize(argv = [])
