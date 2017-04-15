@@ -1,0 +1,88 @@
+#!/usr/bin/env ruby
+
+require 'chef'
+require 'chef/application'
+
+
+class Chef::Application::Rehai < Chef::Application
+
+  # config options nicked from Chef::Application::Client
+  option :config_file,
+    :short => "-c CONFIG",
+    :long  => "--config CONFIG",
+    :default => "/etc/chef/client.rb",
+    :description => "The configuration file to use"
+  option :log_level,
+    :short        => "-l LEVEL",
+    :long         => "--log_level LEVEL",
+    :description  => "Set the log level (debug, info, warn, error, fatal)",
+    :proc         => lambda { |l| l.to_sym }
+  option :log_location,
+    :short        => "-L LOGLOCATION",
+    :long         => "--logfile LOGLOCATION",
+    :description  => "Set the log file location, defaults to STDOUT - recommended for daemonizing",
+    :proc         => nil
+  option :help,
+    :short        => "-h",
+    :long         => "--help",
+    :description  => "Show this message",
+    :on           => :tail,
+    :boolean      => true,
+    :show_options => true,
+    :exit         => 0
+  option :node_name,
+    :short => "-N NODE_NAME",
+    :long => "--node-name NODE_NAME",
+    :description => "The node name for this client",
+    :proc => nil
+  option :chef_server_url,
+    :short => "-S CHEFSERVERURL",
+    :long => "--server CHEFSERVERURL",
+    :description => "The chef server URL",
+    :proc => nil
+  option :client_key,
+    :short        => "-k KEY_FILE",
+    :long         => "--client_key KEY_FILE",
+    :description  => "Set the client key file location",
+    :proc         => nil
+  attr_reader :chef_client_json
+
+  # pull configuration settings from the config file(s), most
+  # likely in /etc/chef/client.rb
+  def setup_application
+    parse_options
+    ::File::open(config[:config_file]) { |f|
+      Chef::Config.from_file(f.path)
+      Chef::Config.merge!(config)
+    }
+  end
+
+  # The meat of our task, do an ohai run and update the
+  # nodes attributes then post back to
+  def run_application
+
+    # Do an ohai run to find the current system state
+    ohai = Ohai::System.new
+    ohai.all_plugins
+
+    # Create a reference to the node
+    node_name = Chef::Config[:node_name] || ohai[:fqdn] || ohai[:hostname]
+    Chef::Config[:node_name] = node_name
+    node = Chef::Node.find_or_create(node_name)
+
+    # Clear out existing attributes, some of these may have been deleted
+    node.reset_defaults_and_overrides
+
+    # Set the new attributes, the second argument here is the list of user
+    # supplied attributes from the command line or possibly a config file
+    node.consume_external_attrs(ohai.data, {})
+
+    # Write back to the server
+    node.save
+    # puts Chef::JSONCompat.to_json(node)
+  end
+
+end
+
+rehai = Chef::Application::Rehai.new()
+rehai.run()
