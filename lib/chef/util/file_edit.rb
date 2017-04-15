@@ -22,6 +22,11 @@ class Chef
   class Util
     class FileEdit
 
+               # return if file has been edited
+               def file_edited?
+                 file_edited
+               end
+
       private
 
       attr_reader :editor, :original_pathname
