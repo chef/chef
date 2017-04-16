@@ -98,6 +98,28 @@ describe Chef::Provider::File::Content do
       end
     end
 
+    context "when creating a tempfiles in destdir fails" do
+      let(:enclosing_directory) {
+        canonicalize_path("/nonexisting/path")
+      }
+
+      it "returns a tempfile in the tempdir when :file_deployment_uses_destdir is set to :auto" do
+        Chef::Config[:file_staging_uses_destdir] = :auto
+        expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be_true
+        expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be_false
+      end
+
+      it "fails when :file_desployment_uses_destdir is set" do
+        Chef::Config[:file_staging_uses_destdir] = true
+        expect{content.tempfile}.to raise_error
+      end
+
+      it "returns a tempfile in the tempdir when :file_desployment_uses_destdir is not set" do
+        expect(content.tempfile.path.start_with?(Dir::tmpdir)).to be_true
+        expect(canonicalize_path(content.tempfile.path).start_with?(enclosing_directory)).to be_false
+      end
+    end
+
   end
 
   describe "when the resource does not have a content attribute set" do
