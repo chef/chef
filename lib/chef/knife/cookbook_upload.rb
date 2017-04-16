@@ -264,10 +264,35 @@ WARNING
         end
       end
 
+      # Get the preferred metadata path on disk. Chef prefers the metadata.rb
+      # over the metadata.json.
+      #
+      # @raise if there is no metadata in the cookbook
+      #
+      # @return [Chef::Cookbook::Metadata]
+      def preferred_metadata
+        md = Chef::Cookbook::Metadata.new
+
+        rb   = File.join(@install_path, @cookbook_name, "metadata.rb")
+        if File.exist?(rb)
+          md.from_file(rb)
+          return md
+        end
+
+        json = File.join(@install_path, @cookbook_name, "metadata.json")
+        if File.exist?(json)
+          json = IO.read(json)
+          md.from_json(json)
+          return md
+        end
+
+        raise Chef::Exceptions::MetadataNotFound.new(@install_path, @cookbook_name)
+      end
+
       def check_for_dependencies!(cookbook)
         # for all dependencies, check if the version is on the server, or
         # the version is in the cookbooks being uploaded. If not, exit and warn the user.
-        missing_dependencies = cookbook.metadata.dependencies.reject do |cookbook_name, version|
+        missing_dependencies = preferred_metadata.dependencies.reject do |cookbook_name, version|
           check_server_side_cookbooks(cookbook_name, version) || check_uploading_cookbooks(cookbook_name, version)
         end
 
