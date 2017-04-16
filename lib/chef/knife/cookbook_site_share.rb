@@ -58,6 +58,7 @@ class Chef
         :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 
       def run
+        ui.warn("This command is deprecated, please install the knife-supermarket gem and use knife supermarket share")
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
         if @name_args.length < 1
