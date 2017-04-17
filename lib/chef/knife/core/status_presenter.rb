@@ -103,7 +103,7 @@ class Chef
 
             hours, minutes, = time_difference_in_hms(node["ohai_time"])
             hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
-            minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
+            minutes_text = "#{minutes} minute#{minutes <= 1 ? ' ' : 's'}"
             run_list = "#{node['run_list']}" if config[:run_list]
             if hours > 24
               color = :red
