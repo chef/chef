@@ -50,6 +50,21 @@ describe "chef-client" do
 
   let(:critical_env_vars) { %w{_ORIGINAL_GEM_PATH GEM_PATH GEM_HOME GEM_ROOT BUNDLE_BIN_PATH BUNDLE_GEMFILE RUBYLIB RUBYOPT RUBY_ENGINE RUBY_ROOT RUBY_VERSION PATH}.map { |o| "#{o}=#{ENV[o]}" } .join(" ") }
 
+  context 'with fully-qualified recipes' do
+    before(:all) { start_tiny_server }
+    after(:all) { stop_tiny_server }
+
+    it 'should load the recipes' do
+      file 'config/client.rb', <<-EOM
+        local_mode true
+        cookbook_path "#{path_to('cookbooks')}"
+        EOM
+      result = shell_out "#{chef_client} -c '#{path_to 'config/client.rb'}' " \
+         "--recipe-url=http://localhost:9000/recipes.tgz -o 'x::default@0.0.1'"
+      result.error!
+    end
+  end
+
   when_the_repository "has a cookbook with a no-op recipe" do
     before { file "cookbooks/x/recipes/default.rb", "" }
 

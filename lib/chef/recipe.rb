@@ -39,17 +39,24 @@ class Chef
     #   "aws::elastic_ip" returns [:aws, "elastic_ip"]
     #   "aws" returns [:aws, "default"]
     #   "::elastic_ip" returns [ current_cookbook, "elastic_ip" ]
+    #   "aws::elastic_ip@1.2.3" returns [:aws, "elastic_ip"]
+    #   "aws@1.2.3" returns [:aws, "default"]
+    #   "::elastic_ip@1.2.3" returns [:aws, "default"]
+    #
+    # Fails with RecipeNotFound if current_cookbook is nil.
     #--
     # TODO: Duplicates functionality of RunListItem
     def self.parse_recipe_name(recipe_name, current_cookbook: nil)
-      case recipe_name
+      recipe = recipe_name.sub /@(\d\.){0,2}(\d){1}$/i, ''
+      case recipe
       when /(.+?)::(.+)/
-        [ $1.to_sym, $2 ]
+        [$1.to_sym, $2]
       when /^::(.+)/
-        raise "current_cookbook is nil, cannot resolve #{recipe_name}" if current_cookbook.nil?
-        [ current_cookbook.to_sym, $1 ]
+        raise Chef::Exceptions::RecipeNotFound, "current_cookbook is nil, " \
+          "cannot resolve #{recipe_name}" if current_cookbook.nil?
+        [current_cookbook.to_sym, $1]
       else
-        [ recipe_name.to_sym, "default" ]
+        [recipe.to_sym, 'default']
       end
     end
 

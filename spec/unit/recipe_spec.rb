@@ -23,6 +23,46 @@ require "spec_helper"
 require "chef/platform/resource_priority_map"
 
 describe Chef::Recipe do
+  describe '#parse_recipe_name' do
+    context 'with full naming and version constraints' do
+      it "parses 'a::b'" do
+        expect(Chef::Recipe.parse_recipe_name 'a::b').to eql [:a, 'b']
+      end
+
+      it "parses 'a'" do
+        expect(Chef::Recipe.parse_recipe_name 'a').to eql [:a, 'default']
+      end
+
+      it "parses '::b'" do
+        expect(Chef::Recipe.parse_recipe_name '::b', current_cookbook: 'a')
+          .to eql [:a, 'b']
+      end
+
+      it "parses '::b' with nil current_cookbook" do
+        expect { Chef::Recipe.parse_recipe_name '::b', current_cookbook: nil }
+          .to raise_exception Chef::Exceptions::RecipeNotFound
+      end
+
+      it "parses 'a::b@1.2.3'" do
+        expect(Chef::Recipe.parse_recipe_name 'a::b@1.2.3').to eql [:a, 'b']
+      end
+
+      it "parses 'a@1.2.3'" do
+        expect(Chef::Recipe.parse_recipe_name 'a@1.2.3').to eql [:a, 'default']
+      end
+
+      it "parses '::b@1.2.3'" do
+        expect(Chef::Recipe.parse_recipe_name '::b@1.2.3',
+          current_cookbook: 'a').to eql [:a, 'b']
+      end
+
+      it "parses '::b@1.2.3' with nil current_cookbook" do
+        expect { Chef::Recipe.parse_recipe_name '::b@1.2.3',
+          current_cookbook: nil }
+            .to raise_exception Chef::Exceptions::RecipeNotFound
+      end
+    end
+  end
 
   let(:cookbook_collection) do
     cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
