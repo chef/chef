@@ -462,6 +462,9 @@ class Chef
       def ssh_command
         command = render_template
 
+        Chef::Log.debug("Bootstrap command has rendered as: ")
+        Chef::Log.debug(command)
+
         if config[:use_sudo]
           sudo_prefix = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -S " : "sudo "
           command = config[:preserve_home] ? "#{sudo_prefix} #{command}" : "#{sudo_prefix} -H #{command}"
