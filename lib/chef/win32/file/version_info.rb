@@ -28,7 +28,11 @@ class Chef
 
         def initialize(file_name)
           raise Errno::ENOENT, file_name unless ::File.exist?(file_name)
-          @file_version_info = retrieve_file_version_info(file_name)
+          begin
+            @file_version_info = retrieve_file_version_info(file_name)
+          rescue Chef::Exceptions::Win32APIError
+            # file likely has no embedded version info
+          end
         end
 
         # defining method for each predefined version resource string
@@ -48,6 +52,8 @@ class Chef
           :SpecialBuild,
         ].each do |method|
           define_method method do
+            return nil if @file_version_info.nil?
+
             begin
               get_version_info_string(method.to_s)
             rescue Chef::Exceptions::Win32APIError
