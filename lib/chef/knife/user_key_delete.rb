@@ -17,6 +17,7 @@
 #
 
 require "chef/knife"
+require "chef/knife/key_delete"
 
 class Chef
   class Knife
