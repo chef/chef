@@ -112,7 +112,11 @@ module ChefConfig
     # Produces a comparable path.
     def self.canonical_path(path, add_prefix = true)
       # First remove extra separators and resolve any relative paths
-      abs_path = File.absolute_path(path)
+      begin
+        abs_path = File.absolute_path(path)
+      rescue Errno::ENOENT
+        ChefConfig.logger.error("Current directory doesn't exist anymore.")
+      end
 
       if ChefConfig.windows?
         # Add the \\?\ API prefix on Windows unless add_prefix is false
