@@ -9,7 +9,6 @@ class Chef
     class Doc < Formatters::Base
 
       attr_reader :start_time, :end_time, :successful_audits, :failed_audits
-      private :successful_audits, :failed_audits
 
       cli_name(:doc)
 
