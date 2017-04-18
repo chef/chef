@@ -17,6 +17,7 @@
 #
 
 require "chef/knife"
+require "chef/knife/key_show"
 
 class Chef
   class Knife
