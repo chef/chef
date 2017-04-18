@@ -83,7 +83,7 @@ class Chef
               uninstall_string,
               expand_options(new_resource.options),
               " ",
-              unattended_flags,
+              unattended_flags
             ].join
             %{start "" /wait #{uninstall_string} & exit %%%%ERRORLEVEL%%%%}
           end
