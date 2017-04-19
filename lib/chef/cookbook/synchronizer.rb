@@ -2,6 +2,7 @@ require "chef/client"
 require "chef/util/threaded_job_queue"
 require "chef/server_api"
 require "singleton"
+require "uri"
 
 class Chef
 
@@ -282,7 +283,7 @@ class Chef
     # downloaded to the path +destination+ which is relative to the Chef file
     # cache root.
     def download_file(url, destination)
-      raw_file = server_api.streaming_request(url)
+      raw_file = server_api.streaming_request(URI.escape(url))
 
       Chef::Log.info("Storing updated #{destination} in the cache.")
       cache.move_to(raw_file.path, destination)
