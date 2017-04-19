@@ -64,7 +64,7 @@ end
 # win32/service gem. windows_service_manager tests create a windows
 # service that starts with the system ruby and requires this gem.
 def system_windows_service_gem?
-  windows_service_gem_check_command = %q{ruby -r "win32/daemon" -e ":noop"}
+  windows_service_gem_check_command = %q{gem which win32/daemon}
   if defined?(Bundler)
     Bundler.with_clean_env do
       # This returns true if the gem can be loaded
