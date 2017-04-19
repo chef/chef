@@ -69,7 +69,7 @@ class Chef
 
       def debug(msg)
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::INFO_TYPE,
+          :event_type => ::Win32::EventLog::DEBUG_TYPE,
           :source => SOURCE,
           :event_id => DEBUG_EVENT_ID,
           :data => [msg]
