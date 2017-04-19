@@ -29,7 +29,7 @@ class Chef
 
       default_action :nothing
       allowed_actions :enable, :disable, :start, :stop, :restart, :reload,
-                      :mask, :unmask
+                      :mask, :unmask, :stop_start
 
       # this is a poor API please do not re-use this pattern
       property :supports, Hash, default: { restart: nil, reload: nil, status: nil },

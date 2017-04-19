@@ -97,6 +97,27 @@ describe Chef::Provider::Service do
     end
   end
 
+  describe "action_stop_start" do
+    before do
+      @current_resource.supports(:stop_start => true)
+    end
+
+    it "should stop and then start the service if it's supported and set the resource as updated" do
+      expect(@provider).to receive(:stop_service).and_return(true)
+      expect(@provider).to receive(:start_service).and_return(true)
+      @provider.run_action(:stop_start)
+      expect(@provider.new_resource).to be_updated
+    end
+
+    it "should stop then start the service even if it isn't running and set the resource as updated" do
+      allow(@current_resource).to receive(:running).and_return(false)
+      expect(@provider).to receive(:stop_service).and_return(true)
+      expect(@provider).to receive(:start_service).and_return(true)
+      @provider.run_action(:stop_start)
+      expect(@provider.new_resource).to be_updated
+    end
+  end
+
   describe "action_restart" do
     before do
       @current_resource.supports(:restart => true)
