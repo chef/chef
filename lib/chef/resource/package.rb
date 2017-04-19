@@ -40,7 +40,7 @@ class Chef
       property :response_file, String, desired_state: false
       property :response_file_variables, Hash, default: lazy { {} }, desired_state: false
       property :source, String, desired_state: false
-      property :timeout, [ String, Integer ], desired_state: false
+      property :timeout, [ String, Integer ], desired_state: false, default: 600
 
     end
   end
