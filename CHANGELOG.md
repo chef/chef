@@ -1,7 +1,14 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.0.121](https://github.com/chef/chef/tree/v13.0.121) (2017-04-19)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.0.121)
+## [v13.0.122](https://github.com/chef/chef/tree/v13.0.122) (2017-04-20)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.122...v13.0.122)
+
+**Merged pull requests:**
+
+- add a pointer from the run\_context back to the runner [\#6077](https://github.com/chef/chef/pull/6077) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v13.0.122](https://github.com/chef/chef/tree/v13.0.122) (2017-04-20)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.0.122)
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
