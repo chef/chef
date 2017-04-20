@@ -98,6 +98,10 @@ describe Chef::Runner do
     run_context.resource_collection << first_resource
   end
 
+  it "runner sets up a pointer back to itself in the run_context" do
+    expect(runner).to eql(run_context.runner)
+  end
+
   context "when we are doing dynamic provider resolution" do
 
     it "should pass each resource in the collection to a provider" do
