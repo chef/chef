@@ -639,7 +639,7 @@ describe Chef::Provider::User::Useradd, metadata do
         # TODO: platform_family should be setup in spec_helper w/ tags
         if %w{opensuse}.include?(OHAI_SYSTEM["platform_family"]) ||
             (%w{suse}.include?(OHAI_SYSTEM["platform_family"]) &&
-            OHAI_SYSTEM["platform_version"].to_f < 12.1)
+            OHAI_SYSTEM["platform_version"].to_f < 12.0)
           # suse 11.x gets this right:
           it "errors out trying to unlock the user" do
             expect(@error).to be_a(Mixlib::ShellOut::ShellCommandFailed)
