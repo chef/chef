@@ -111,6 +111,11 @@ class Chef
     attr_reader :audits
 
     #
+    # Pointer back to the Chef::Runner that created this
+    #
+    attr_accessor :runner
+
+    #
     # Notification handling
     #
 
@@ -646,6 +651,8 @@ ERROR_MESSAGE
         root_run_context
         resource_collection
         resource_collection=
+        runner
+        runner=
       }.map { |x| x.to_sym }
 
       # Verify that we didn't miss any methods
