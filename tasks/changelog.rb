@@ -4,7 +4,9 @@ begin
 
   namespace :changelog do
     # Fetch the latest version from mixlib-install
-    latest_stable_version = Mixlib::Install.available_versions("chef", "stable").last
+    def latest_stable_version
+      Mixlib::Install.available_versions("chef", "stable").last
+    end
 
     # Take the changelog from the latest stable release and put it into history.
     task :archive do
