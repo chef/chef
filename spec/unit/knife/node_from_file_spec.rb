@@ -27,7 +27,7 @@ describe Chef::Knife::NodeFromFile do
     @knife.config = {
       :print_after => nil,
     }
-    @knife.name_args = [ "adam.rb" ]
+    @knife.name_args = [ "/path/to/adam.rb" ]
     allow(@knife).to receive(:output).and_return(true)
     allow(@knife).to receive(:confirm).and_return(true)
     @node = Chef::Node.new()
@@ -35,11 +35,14 @@ describe Chef::Knife::NodeFromFile do
     allow(@knife.loader).to receive(:load_from).and_return(@node)
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
+    exception = double(:code => 404)
+    allow(Chef::Node).to receive(:load).with("adam").and_raise(Net::HTTPServerException.new('404 "Object Not Found"', exception))
   end
 
   describe "run" do
     it "should load from a file" do
-      expect(@knife.loader).to receive(:load_from).with("nodes", "adam.rb").and_return(@node)
+      expect(Chef::Log).to receive(:debug)
+      expect(@knife.loader).to receive(:load_from).with("nodes", "/path/to/adam.rb").and_return(@node)
       @knife.run
     end
 
@@ -52,6 +55,14 @@ describe Chef::Knife::NodeFromFile do
       it "should print the Node" do
         @knife.config[:print_after] = true
         expect(@knife).to receive(:output)
+        @knife.run
+      end
+    end
+
+    context "node exists" do
+      it "warns that current node is about to be overriden" do
+        expect(Chef::Node).to receive(:load).with("adam").and_return(@node)
+        expect(@knife).to receive(:confirm)
         @knife.run
       end
     end

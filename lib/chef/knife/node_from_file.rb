@@ -36,6 +36,15 @@ class Chef
 
       def run
         @name_args.each do |arg|
+          node_name = File.basename(arg.gsub(/\.(json|rb)/, ""))
+          begin
+            Chef::Node.load(node_name)
+            ui.warn("Node #{node_name} exists!")
+            confirm("Proceed to override this node?")
+          rescue Net::HTTPServerException
+            Chef::Log.debug("#{node_name} not found.")
+          end
+
           updated = loader.load_from("nodes", arg)
 
           updated.save
@@ -45,7 +54,6 @@ class Chef
           ui.info("Updated Node #{updated.name}")
         end
       end
-
     end
   end
 end
