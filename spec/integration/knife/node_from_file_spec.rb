@@ -45,6 +45,13 @@ describe "knife node from file", :workstation do
 }
 EOM
 
+        file "nodes/raisin.json", <<-EOM
+name: raisin
+chef_environment: _default
+run_list:
+  - recipe[my_cookbook::my_recipe]
+EOM
+
       end
 
       it "uploads a single file" do

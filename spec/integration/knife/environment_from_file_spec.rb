@@ -83,6 +83,19 @@ EOM
 }
 EOM
 
+        file "environments/raisin.json", <<-EOM
+name: raisin
+description: An environment for Raisin
+cookbook_versions:
+  a: = 1.0.0
+  b: ~> 1.2.3
+json_class: Chef::Environment
+chef_type: environment
+default_attributes:
+  is_dog: true
+override_attributes:
+  some_attr: 'some value'
+EOM
       end
 
       it "uploads a single file" do
@@ -92,10 +105,13 @@ EOM
       end
 
       it "uploads many files" do
-        knife("environment from file #{env_dir}/cons.json #{env_dir}/car.json #{env_dir}/cdr.json").should_succeed stderr: <<EOM
+        knife(
+          "environment from file #{env_dir}/cons.json #{env_dir}/car.json #{env_dir}/cdr.json #{env_dir}/raisin.json"
+        ).should_succeed stderr: <<EOM
 Updated Environment cons
 Updated Environment car
 Updated Environment cdr
+Updated Environment raisin
 EOM
       end
 
@@ -107,6 +123,7 @@ _default
 car
 cdr
 cons
+raisin
 EOM
       end
 

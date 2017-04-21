@@ -74,6 +74,17 @@ EOM
 }
 EOM
 
+        file "roles/raisin.json", <<-EOM
+name: raisin
+description: A role for Raisin
+json_class: Chef::Role
+chef_type: role
+default_attributes:
+  is_dog: true
+override_attributes:
+  some_attr: 'some value'
+EOM
+
       end
 
       it "uploads a single file" do
