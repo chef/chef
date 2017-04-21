@@ -74,6 +74,14 @@ EOM
 }
 EOM
 
+        file "roles/lore.yaml", <<EOM
+name: lore
+description: "A role for list nodes"
+default_attributes:
+  hola: "Amigos!"
+override_attributes: {}
+EOM
+
       end
 
       it "uploads a single file" do
@@ -83,10 +91,11 @@ EOM
       end
 
       it "uploads many files" do
-        knife("role from file #{role_dir}/cons.json #{role_dir}/car.json #{role_dir}/cdr.json").should_succeed stderr: <<EOM
+        knife("role from file #{role_dir}/cons.json #{role_dir}/car.json #{role_dir}/cdr.json #{role_dir}/lore.yaml").should_succeed stderr: <<EOM
 Updated Role cons
 Updated Role car
 Updated Role cdr
+Updated Role lore
 EOM
       end
 

@@ -83,6 +83,15 @@ EOM
 }
 EOM
 
+        file "environments/lore.yaml", <<EOM
+name: lore
+description: "An environment for last nodes"
+cookbook_versions: {}
+default_attributes:
+  hole: "Amigos!"
+override_attributes: {}
+EOM
+
       end
 
       it "uploads a single file" do
@@ -92,10 +101,11 @@ EOM
       end
 
       it "uploads many files" do
-        knife("environment from file #{env_dir}/cons.json #{env_dir}/car.json #{env_dir}/cdr.json").should_succeed stderr: <<EOM
+        knife("environment from file #{env_dir}/cons.json #{env_dir}/car.json #{env_dir}/cdr.json #{env_dir}/lore.yaml").should_succeed stderr: <<EOM
 Updated Environment cons
 Updated Environment car
 Updated Environment cdr
+Updated Environment lore
 EOM
       end
 
