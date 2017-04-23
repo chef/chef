@@ -101,6 +101,9 @@ We use RSpec for unit/spec tests. It is not necessary to start the development
 environment to run the specs--they are completely standalone.
 
 ```bash
+#Ensuring for any linux box which has FIPS enabled , the chef test cases will pass using below:
+export CHEF_FIPS=""
+
 # Run All the Tests
 bundle exec rake spec
 
