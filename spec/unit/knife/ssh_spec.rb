@@ -187,7 +187,7 @@ describe Chef::Knife::Ssh do
   describe "#session_from_list" do
     before :each do
       @knife.instance_variable_set(:@longest, 0)
-      ssh_config = { :timeout => 50, :user => "locutus", :port => 23 }
+      ssh_config = { :timeout => 50, :user => "locutus", :port => 23, :keepalive => true, :keepalive_interval => 60 }
       allow(Net::SSH).to receive(:configuration_for).with("the.b.org", true).and_return(ssh_config)
     end
 
@@ -222,6 +222,12 @@ describe Chef::Knife::Ssh do
     it "uses the user from an ssh config file" do
       @knife.session_from_list([["the.b.org", 123]])
       expect(@knife.session.servers[0].user).to eq("locutus")
+    end
+
+    it "uses keepalive settings from an ssh config file" do
+      @knife.session_from_list([["the.b.org", 123]])
+      expect(@knife.session.servers[0].options[:keepalive]).to be true
+      expect(@knife.session.servers[0].options[:keepalive_interval]).to eq 60
     end
   end
 
