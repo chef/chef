@@ -148,11 +148,11 @@ class Chef
           end
 
           def rest
-            Chef::ServerAPI.new(parent.rest.url, parent.rest.options.merge(version_class: Chef::CookbookManifestVersions))
+            Chef::ServerAPI.new(parent.rest.url, parent.rest.options.merge(version_class: Chef::CookbookManifest::Versions))
           end
 
           def chef_rest
-            Chef::ServerAPI.new(parent.chef_rest.url, parent.chef_rest.options.merge(version_class: Chef::CookbookManifestVersions))
+            Chef::ServerAPI.new(parent.chef_rest.url, parent.chef_rest.options.merge(version_class: Chef::CookbookManifest::Versions))
           end
 
           def chef_object

@@ -19,7 +19,7 @@ require "chef/cookbook_manifest"
 require "chef/digester"
 require "pathname"
 
-describe Chef::Cookbook::ManifestV0 do
+describe Chef::CookbookManifest::ManifestV0 do
   let(:version) { "1.2.3" }
 
   let(:identifier) { "9e10455ce2b4a4e29424b7064b1d67a1a25c9d3b" }
@@ -110,7 +110,7 @@ describe Chef::Cookbook::ManifestV0 do
   end
 
   context "ensures that all segments exist" do
-    Chef::Cookbook::ManifestV0::COOKBOOK_SEGMENTS.each do |segment|
+    Chef::CookbookManifest::ManifestV0::COOKBOOK_SEGMENTS.each do |segment|
       it "with #{segment}" do
         result = described_class.to_hash(cookbook_manifest)
         expect(result[segment]).to be_empty
@@ -123,7 +123,7 @@ describe Chef::Cookbook::ManifestV0 do
       cookbook_version.all_files = all_files
     end
 
-    Chef::Cookbook::ManifestV0::COOKBOOK_SEGMENTS.each do |segment|
+    Chef::CookbookManifest::ManifestV0::COOKBOOK_SEGMENTS.each do |segment|
       it "places the files for #{segment} correctly" do
         result = described_class.to_hash(cookbook_manifest)
         expect(result[segment]).to eq(expected_hash[segment])

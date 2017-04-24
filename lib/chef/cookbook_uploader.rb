@@ -40,7 +40,7 @@ class Chef
     def initialize(cookbooks, opts = {})
       @opts = opts
       @cookbooks = Array(cookbooks)
-      @rest = opts[:rest] || Chef::ServerAPI.new(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions)
+      @rest = opts[:rest] || Chef::ServerAPI.new(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifest::Versions)
       @concurrency = opts[:concurrency] || 10
       @policy_mode = opts[:policy_mode] || false
     end

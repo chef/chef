@@ -98,7 +98,7 @@ class Chef
           end
 
           def chef_rest
-            Chef::ServerAPI.new(root.chef_rest.url, root.chef_rest.options.merge(version_class: Chef::CookbookManifestVersions))
+            Chef::ServerAPI.new(root.chef_rest.url, root.chef_rest.options.merge(version_class: Chef::CookbookManifest::Versions))
           end
 
           def can_have_child?(name, is_dir)

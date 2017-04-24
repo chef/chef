@@ -481,7 +481,7 @@ this is my file
 
     [true, false].each do |lazy|
       context "with no_lazy_load set to #{lazy}" do
-        it "should run the ohai plugin" do
+        it "should write the file" do
           file "config/client.rb", <<EOM
 no_lazy_load #{lazy}
 local_mode true
@@ -495,7 +495,6 @@ EOM
       end
     end
   end
-
 
   when_the_repository "has a cookbook with an ohai plugin" do
     before do

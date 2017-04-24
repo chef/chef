@@ -19,7 +19,7 @@ require "chef/cookbook_manifest"
 require "chef/digester"
 require "pathname"
 
-describe Chef::Cookbook::ManifestV2 do
+describe Chef::CookbookManifest::ManifestV2 do
   let(:version) { "1.2.3" }
 
   let(:identifier) { "9e10455ce2b4a4e29424b7064b1d67a1a25c9d3b" }

@@ -17,7 +17,7 @@ require "chef/json_compat"
 require "chef/mixin/versioned_api"
 
 class Chef
-  class Cookbook
+  class CookbookManifest
     class ManifestV2
       extend Chef::Mixin::VersionedAPI
 

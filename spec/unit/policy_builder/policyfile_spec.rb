@@ -100,7 +100,7 @@ describe Chef::PolicyBuilder::Policyfile do
     http = double("Chef::ServerAPI")
     server_url = "https://api.opscode.com/organizations/example"
     Chef::Config[:chef_server_url] = server_url
-    expect(Chef::ServerAPI).to receive(:new).with(server_url, version_class: Chef::CookbookManifestVersions).and_return(http)
+    expect(Chef::ServerAPI).to receive(:new).with(server_url, version_class: Chef::CookbookManifest::Versions).and_return(http)
     expect(policy_builder.api_service).to eq(http)
   end
 
