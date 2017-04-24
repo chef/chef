@@ -18,7 +18,7 @@ require "chef/json_compat"
 require "chef/mixin/versioned_api"
 
 class Chef
-  class Cookbook
+  class CookbookManifest
     class ManifestV0
       extend Chef::Mixin::VersionedAPI
 
@@ -49,9 +49,8 @@ class Chef
           if COOKBOOK_SEGMENTS.include?(parent)
             memo[parent] ||= []
             files[parent].each do |file|
-              file["name"] = file["name"].split("/")[1] unless parent == "root_files"
-              file.delete("full_path")
-              memo[parent] << file
+              v0 = { name: file.filename, specificity: file.specificity, checksum: file.checksum, path: file.path }
+              memo[parent] << v0
             end
           end
         end

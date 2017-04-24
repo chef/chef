@@ -65,7 +65,7 @@ describe Chef::CookbookUploader do
 
   it "creates an HTTP client with default configuration when not initialized with one" do
     default_http_client = double("Chef::ServerAPI")
-    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(default_http_client)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifest::Versions).and_return(default_http_client)
     uploader = described_class.new(cookbooks_to_upload)
     expect(uploader.rest).to eq(default_http_client)
   end
@@ -101,7 +101,7 @@ describe Chef::CookbookUploader do
         }
 
         expect(http_client).to receive(:put).
-          with(url_for(md5), IO.binread(file_path), upload_headers)
+          with(url_for(md5), IO.binread(file_path.full_path), upload_headers)
 
       end
     end

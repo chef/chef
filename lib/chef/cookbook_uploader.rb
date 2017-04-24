@@ -40,7 +40,7 @@ class Chef
     def initialize(cookbooks, opts = {})
       @opts = opts
       @cookbooks = Array(cookbooks)
-      @rest = opts[:rest] || Chef::ServerAPI.new(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions)
+      @rest = opts[:rest] || Chef::ServerAPI.new(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifest::Versions)
       @concurrency = opts[:concurrency] || 10
       @policy_mode = opts[:policy_mode] || false
     end
@@ -120,7 +120,7 @@ class Chef
         # but we need the base64 encoding for the content-md5
         # header
         checksum64 = Base64.encode64([checksum].pack("H*")).strip
-        file_contents = File.open(file, "rb") { |f| f.read }
+        file_contents = File.open(file[:full_path], "rb") { |f| f.read }
 
         # Custom headers. 'content-type' disables JSON serialization of the request body.
         headers = { "content-type" => "application/x-binary", "content-md5" => checksum64, "accept" => "application/json" }

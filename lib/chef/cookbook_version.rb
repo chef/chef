@@ -25,6 +25,7 @@ require "chef/cookbook/metadata"
 require "chef/version_class"
 require "chef/digester"
 require "chef/cookbook_manifest"
+require "chef/cookbook_manifest/file"
 require "chef/server_api"
 
 class Chef
@@ -39,12 +40,7 @@ class Chef
     include Comparable
     extend Forwardable
 
-    def_delegator :@cookbook_manifest, :files_for
-    def_delegator :@cookbook_manifest, :each_file
-
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
-
-    attr_reader :all_files
 
     attr_accessor :root_paths
     attr_accessor :name
@@ -74,9 +70,39 @@ class Chef
       root_paths[0]
     end
 
+    def all_files
+      @all_files.map { |f| f[:full_path] }
+    end
+
     def all_files=(files)
-      @all_files = Array(files)
-      cookbook_manifest.reset!
+      @all_files = Array(files).each_with_object([]) do |file, memo|
+        memo << CookbookManifest::File.from_full_path(file, root_paths)
+      end
+    end
+
+    def manifest_records_by_path
+      @manifest_records_by_path ||= @all_files.each_with_object({}) do |file, memo|
+        memo[file[:path]] = file
+      end
+    end
+
+    def root_files
+      files_for("root_files")
+    end
+
+    def files_for(part)
+      @all_files.select do |file|
+        part.to_s == file.part
+      end
+    end
+
+    def each_file(excluded_parts: [], &block)
+      excluded_parts = Array(excluded_parts).map { |p| p.to_s }
+
+      @all_files.each do |file|
+        next if excluded_parts.include?(file.part)
+        yield file if block_given?
+      end
     end
 
     # This is the one and only method that knows how cookbook files'
@@ -100,8 +126,6 @@ class Chef
       @name = name
       @root_paths = root_paths
       @frozen = false
-
-      @all_files = Array.new
 
       @file_vendor = nil
       @cookbook_manifest = Chef::CookbookManifest.new(self)
@@ -174,15 +198,10 @@ class Chef
       cookbook_manifest.checksums
     end
 
-    def manifest_records_by_path
-      cookbook_manifest.manifest_records_by_path
-    end
-
     # Return recipe names in the form of cookbook_name::recipe_name
     def fully_qualified_recipe_names
       files_for("recipes").inject([]) do |memo, recipe|
-        rname = recipe[:name].split("/")[1]
-        rname = File.basename(rname, ".rb")
+        rname = File.basename(recipe[:filename], ".rb")
         memo << "#{name}::#{rname}"
         memo
       end
@@ -414,7 +433,11 @@ class Chef
       output["frozen?"] = frozen_version?
       output["metadata"] = metadata.to_hash
       output["version"] = version
-      output.merge(cookbook_manifest.by_parent_directory)
+      files = cookbook_manifest.by_parent_directory.each_with_object({}) do |(part, file), memo|
+        memo[part] = file.map(&:to_hash)
+      end
+
+      output.merge(files)
     end
 
     def self.from_hash(o)
@@ -459,7 +482,7 @@ class Chef
     end
 
     def self.chef_server_rest
-      Chef::ServerAPI.new(Chef::Config[:chef_server_url], { version_class: Chef::CookbookManifestVersions })
+      Chef::ServerAPI.new(Chef::Config[:chef_server_url], { version_class: Chef::CookbookManifest::Versions })
     end
 
     def destroy

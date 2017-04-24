@@ -130,6 +130,7 @@ describe Chef::Knife::CookbookShow do
           [{ "name" => "recipes/default.rb",
              "path" => "recipes/default.rb",
              "checksum" => "1234",
+             "specificity" => nil,
              "url" => "http://example.org/files/default.rb" }],
         }
       end

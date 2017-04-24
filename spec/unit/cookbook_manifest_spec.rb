@@ -114,7 +114,7 @@ describe Chef::CookbookManifest do
 
     let(:match_md5) { /[0-9a-f]{32}/ }
 
-    def map_to_file_specs(paths)
+    def map_to_file_specs(paths, full: false)
       paths.map do |path|
 
         relative_path = Pathname.new(path).relative_path_from(Pathname.new(cookbook_root)).to_s
@@ -126,12 +126,17 @@ describe Chef::CookbookManifest do
                  relative_path
                end
 
-        {
+        Mash.new({
           "name"        => name,
           "path"        => relative_path,
-          "checksum"    => Chef::Digester.generate_md5_checksum_for_file(path),
           "specificity" => "default",
-        }
+          "checksum"    => Chef::Digester.generate_md5_checksum_for_file(path),
+          "url" => nil,
+        }).tap do |fp|
+          if full
+            fp["full_path"] = path
+          end
+        end
       end
     end
 
@@ -163,6 +168,20 @@ describe Chef::CookbookManifest do
       end
     end
 
+    context ".each_file" do
+      let(:manifest_files) do
+        map_to_file_specs(all_files)
+      end
+
+      it "yields all the files" do
+        expect(cookbook_manifest.to_enum(:each_file).map(&:to_hash)).to match_array(manifest_files)
+      end
+
+      it "excludes certain file parts" do
+        files = manifest_files.reject { |f| seg = f["name"].split("/")[0]; %w{ files templates }.include?(seg) }
+        expect(cookbook_manifest.to_enum(:each_file, excluded_parts: %w{ files templates }).map(&:to_hash)).to match_array(files)
+      end
+    end
   end
 
   describe "providing upstream URLs for save" do
