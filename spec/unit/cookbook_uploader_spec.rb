@@ -101,7 +101,7 @@ describe Chef::CookbookUploader do
         }
 
         expect(http_client).to receive(:put).
-          with(url_for(md5), IO.binread(file_path), upload_headers)
+          with(url_for(md5), IO.binread(file_path.full_path), upload_headers)
 
       end
     end

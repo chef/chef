@@ -118,6 +118,7 @@ describe Chef::CookbookSynchronizer do
 
   let(:synchronizer) do
     Chef::Config[:no_lazy_load] = no_lazy_load
+    Chef::Config[:file_cache_path] = "/file-cache"
     Chef::CookbookSynchronizer.new(cookbook_manifest, events)
   end
 
