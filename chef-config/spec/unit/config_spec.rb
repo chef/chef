@@ -1119,6 +1119,29 @@ RSpec.describe ChefConfig::Config do
 
   end
 
+  describe "insights integration" do
+
+    it "marks insights disabled by default" do
+      expect(ChefConfig::Config.insights_url).to be_nil
+      expect(ChefConfig::Config.insights_enabled).to eq(false)
+    end
+
+    it "errors on invalid insights_url" do
+      expect { ChefConfig::Config.insights_url = "127.0.0.1" }.to raise_error(ChefConfig::ConfigurationError)
+    end
+
+    context "when insights_url is set with valid url" do
+      before do
+        ChefConfig::Config.insights_url = "https://insights.example.com"
+      end
+
+      it "marks insights as enabled" do
+        expect(ChefConfig::Config.insights_url).to eq("https://insights.example.com")
+        expect(ChefConfig::Config.insights_enabled).to eq(true)
+      end
+    end
+  end
+
   describe "Treating deprecation warnings as errors" do
 
     context "when using our default RSpec configuration" do

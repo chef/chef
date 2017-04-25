@@ -436,6 +436,23 @@ module ChefConfig
     default :ez, false
     default :enable_reporting, true
     default :enable_reporting_url_fatals, false
+
+    ###
+    # Insights
+    #
+    # Insights is a product that integrates analytics, metrics, and data for Chef,
+    # Delivery Workflow, and more.
+    #
+    configurable(:insights_url).writes_value do |uri|
+      unless is_valid_url? uri
+        raise ConfigurationError, "#{uri} is an invalid insights_url."
+      end
+      uri.to_s.strip
+    end
+
+    # Sending data to Insights is disabled when the URL is unconfigured
+    default(:insights_enabled) { !self.configuration[:insights_url].nil? }
+
     # Possible values for :audit_mode
     # :enabled, :disabled, :audit_only,
     #
