@@ -496,7 +496,6 @@ EOM
     end
   end
 
-
   when_the_repository "has a cookbook with an ohai plugin" do
     before do
       file "cookbooks/x/recipes/default.rb", <<-RECIPE

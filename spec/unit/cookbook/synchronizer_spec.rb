@@ -118,6 +118,7 @@ describe Chef::CookbookSynchronizer do
 
   let(:synchronizer) do
     Chef::Config[:no_lazy_load] = no_lazy_load
+    Chef::Config[:file_cache_path] = "/file-cache"
     Chef::CookbookSynchronizer.new(cookbook_manifest, events)
   end
 
@@ -292,7 +293,7 @@ describe Chef::CookbookSynchronizer do
     # Current file has fff000, want abc123
     expect(Chef::CookbookVersion).to receive(:checksum_cookbook_file).
       with("/file-cache/cookbooks/cookbook_a/recipes/default.rb").
-      and_return("fff000")
+      and_return("fff000").at_least(:once)
 
     # Fetch and copy default.rb attribute file
     expect(server_api).to receive(:streaming_request).
@@ -308,7 +309,7 @@ describe Chef::CookbookSynchronizer do
     # Current file has fff000, want abc456
     expect(Chef::CookbookVersion).to receive(:checksum_cookbook_file).
       with("/file-cache/cookbooks/cookbook_a/attributes/default.rb").
-      and_return("fff000")
+      and_return("fff000").at_least(:once)
   end
 
   def setup_no_lazy_files_and_templates_chksum_mismatch_expectations
@@ -365,12 +366,12 @@ describe Chef::CookbookSynchronizer do
     # Current file has abc123, want abc123
     expect(Chef::CookbookVersion).to receive(:checksum_cookbook_file).
       with("/file-cache/cookbooks/cookbook_a/recipes/default.rb").
-      and_return("abc123")
+      and_return("abc123").at_least(:once)
 
     # Current file has abc456, want abc456
     expect(Chef::CookbookVersion).to receive(:checksum_cookbook_file).
       with("/file-cache/cookbooks/cookbook_a/attributes/default.rb").
-      and_return("abc456")
+      and_return("abc456").at_least(:once)
 
     # :load called twice
     expect(file_cache).to receive(:load).
