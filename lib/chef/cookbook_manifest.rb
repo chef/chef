@@ -160,6 +160,14 @@ class Chef
       @manifest_records_by_path = extract_manifest_records_by_path(@manifest)
     end
 
+    # @api private
+    # takes a list of hashes
+    def add_files_to_manifest(files)
+      manifest[:all_files].concat(Array(files))
+      @checksums = extract_checksums_from_manifest(@manifest)
+      @manifest_records_by_path = extract_manifest_records_by_path(@manifest)
+    end
+
     def files_for(part)
       return root_files if part.to_s == "root_files"
       manifest[:all_files].select do |file|

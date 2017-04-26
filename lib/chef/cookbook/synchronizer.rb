@@ -71,6 +71,8 @@ class Chef
 
       @cookbook_full_file_paths = {}
       @remove_obsoleted_files = true
+
+      @lazy_files = {}
     end
 
     def cache
@@ -98,15 +100,22 @@ class Chef
     end
 
     def files
-      exclude = unless Chef::Config[:no_lazy_load]
-                  [ :files, :templates ]
-                else
-                  []
-                end
+      lazy = unless Chef::Config[:no_lazy_load]
+               %w{ files templates }
+             else
+               []
+             end
 
       @files ||= cookbooks.inject([]) do |memo, cookbook|
-        cookbook.each_file(excluded_parts: exclude) do |manifest_record|
-          memo << CookbookFile.new(cookbook, manifest_record)
+        cookbook.each_file do |manifest_record|
+          part = manifest_record[:name].split("/")[0]
+          if lazy.include?(part)
+            manifest_record[:lazy] = true
+            @lazy_files[cookbook] ||= []
+            @lazy_files[cookbook] << manifest_record
+          else
+            memo << CookbookFile.new(cookbook, manifest_record)
+          end
         end
         memo
       end
@@ -229,6 +238,10 @@ class Chef
     def update_cookbook_filenames
       @cookbook_full_file_paths.each do |cookbook, full_paths|
         cookbook.all_files = full_paths
+      end
+
+      @lazy_files.each do |cookbook, lazy_files|
+        cookbook.cookbook_manifest.add_files_to_manifest(lazy_files)
       end
     end
 
