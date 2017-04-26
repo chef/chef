@@ -24,9 +24,7 @@ namespace :bundle do
   task :update, [:args] do |t, rake_args|
     args = rake_args[:args] || ""
     Bundler.with_clean_env do
-      sh "bundle config --local frozen '0'"
       sh "bundle update #{args}"
-      sh "bundle config --local frozen '1'"
     end
   end
 
@@ -35,9 +33,7 @@ namespace :bundle do
     args = rake_args[:args] || ""
     args = rake_args[:args] || ""
     Bundler.with_clean_env do
-      sh "bundle config --local frozen '0'"
       sh "bundle install #{args}"
-      sh "bundle config --local frozen '1'"
     end
   end
 
@@ -57,10 +53,8 @@ namespace :bundle do
   task :outdated do
     bundle_outdated = ""
     Bundler.with_clean_env do
-      sh "bundle config --local frozen '0'"
       bundle_outdated = `bundle outdated`
       puts bundle_outdated
-      sh "bundle config --local frozen '1'"
     end
     outdated_gems = parse_bundle_outdated(bundle_outdated).map { |line, gem_name| gem_name }
     outdated_gems = outdated_gems.reject { |gem_name| ACCEPTABLE_OUTDATED_GEMS.include?(gem_name) }
@@ -74,8 +68,6 @@ desc "Run bundle with arbitrary args"
 task :bundle, [:args] do |t, rake_args|
   args = rake_args[:args] || ""
   Bundler.with_clean_env do
-    sh "bundle config --local frozen '0'"
     sh "bundle #{args}"
-    sh "bundle config --local frozen '1'"
   end
 end
