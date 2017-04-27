@@ -1,7 +1,3 @@
-# This buys us the ability to be included in other Gemfiles
-require_relative "tasks/gemfile_util"
-extend GemfileUtil
-
 source "https://rubygems.org"
 
 # Note we do not use the gemspec DSL which restricts to the
@@ -14,8 +10,6 @@ gem "chef", path: "."
 gem "ohai", "~> 13"
 
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
-gem "rake"
-gem "bundler"
 gem "cheffish", "~> 13" # required for rspec tests
 
 group(:omnibus_package) do
@@ -31,22 +25,6 @@ group(:omnibus_package, :pry) do
   gem "pry-byebug"
   gem "pry-remote"
   gem "pry-stack_explorer"
-end
-
-# These are used for external tests
-group(:integration) do
-  gem "chef-sugar"
-  gem "chefspec"
-  gem "halite", git: "https://github.com/poise/halite.git"
-  gem "poise", git: "https://github.com/poise/poise.git"
-  gem "poise-boiler", git: "https://github.com/poise/poise-boiler.git"
-  gem "knife-windows"
-  gem "foodcritic"
-
-  # We pin this so nobody brings in a cucumber-core incompatible with cucumber latest
-  gem "cucumber", ">= 2.4.0"
-  # We pin oc-chef-pedant to prevent it from updating out of lockstep with chef-zero
-  gem "oc-chef-pedant", git: "https://github.com/chef/chef-server"
 end
 
 group(:docgen) do
@@ -72,7 +50,11 @@ group(:linux, :bsd, :mac_os_x, :solaris) do
   gem "ruby-shadow", platforms: :ruby
 end
 
+# appveyor seems to need this here?
+gem "bundler"
+
 group(:development, :test) do
+  gem "rake"
   gem "simplecov"
 
   # for testing new chefstyle rules
