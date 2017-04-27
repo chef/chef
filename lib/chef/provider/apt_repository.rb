@@ -33,6 +33,9 @@ class Chef
         which("apt-get")
       end
 
+      LIST_APT_KEYS = "apt-key list".freeze
+      LIST_APT_KEY_FINGERPRINTS = "apt-key adv --list-public-keys --with-fingerprint --with-colons".freeze
+
       def load_current_resource
       end
 
@@ -143,7 +146,7 @@ class Chef
       def no_new_keys?(file)
         # Now we are using the option --with-colons that works across old os versions
         # as well as the latest (16.10). This for both `apt-key` and `gpg` commands
-        installed_keys = extract_fingerprints_from_cmd("apt-key adv --list-public-keys --with-fingerprint --with-colons")
+        installed_keys = extract_fingerprints_from_cmd(LIST_APT_KEY_FINGERPRINTS)
         proposed_keys = extract_fingerprints_from_cmd("gpg --with-fingerprint --with-colons #{file}")
         (installed_keys & proposed_keys).sort == proposed_keys.sort
       end
@@ -194,15 +197,15 @@ class Chef
           command cmd
           sensitive new_resource.sensitive
           not_if do
-            present = extract_fingerprints_from_cmd("apt-key finger").any? do |fp|
+            present = extract_fingerprints_from_cmd(LIST_APT_KEY_FINGERPRINTS).any? do |fp|
               fp.end_with? key.upcase
             end
-            present && key_is_valid?("apt-key list", key.upcase)
+            present && key_is_valid?(LIST_APT_KEYS, key.upcase)
           end
           notifies :run, "execute[apt-cache gencaches]", :immediately
         end
 
-        raise "The key #{key} is invalid and cannot be used to verify an apt repository." unless key_is_valid?("apt-key list", key.upcase)
+        raise "The key #{key} is invalid and cannot be used to verify an apt repository." unless key_is_valid?(LIST_APT_KEYS, key.upcase)
       end
 
       def install_ppa_key(owner, repo)
