@@ -50,9 +50,6 @@ group(:linux, :bsd, :mac_os_x, :solaris) do
   gem "ruby-shadow", platforms: :ruby
 end
 
-# appveyor seems to need this here?
-gem "bundler"
-
 group(:development, :test) do
   gem "rake"
   gem "simplecov"

@@ -123,7 +123,7 @@ GEM
     appbundler (0.10.0)
       mixlib-cli (~> 1.4)
     ast (2.3.0)
-    backports (3.7.0)
+    backports (3.8.0)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     blankslate (2.1.2.4)
@@ -286,7 +286,7 @@ GEM
       rake
     rake (12.0.0)
     rb-readline (0.5.4)
-    retriable (3.0.1)
+    retriable (3.0.2)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
@@ -413,7 +413,6 @@ PLATFORMS
 
 DEPENDENCIES
   appbundler
-  bundler
   bundler-audit!
   chef!
   chef-config!
