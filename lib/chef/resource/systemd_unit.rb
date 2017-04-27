@@ -61,6 +61,8 @@ class Chef
           end.to_s
         else
           content.to_s
+            .gsub(/^#{content.to_s.scan(/^[^\S\n]+/).min_by { |l| l.length }}/, "")
+            .strip + "\n"
         end
       end
     end

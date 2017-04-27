@@ -25,6 +25,19 @@ describe Chef::Resource::SystemdUnit do
 
   let(:unit_content_string) { "[Unit]\nDescription = Run system activity accounting tool every 10 minutes\n\n[Timer]\nOnCalendar = *:00/10\n\n[Install]\nWantedBy = sysstat.service\n" }
 
+  let(:unit_content_heredoc) do
+    <<-EOF
+      [Unit]
+      Description = Run system activity accounting tool every 10 minutes
+
+      [Timer]
+      OnCalendar = *:00/10
+
+      [Install]
+      WantedBy = sysstat.service
+    EOF
+  end
+
   let(:unit_content_hash) do
     {
       "Unit" => {
@@ -123,6 +136,11 @@ describe Chef::Resource::SystemdUnit do
 
   it "serializes to ini with a string-formatted content property" do
     @resource.content(unit_content_string)
+    expect(@resource.to_ini).to eq unit_content_string
+  end
+
+  it "serializes to ini with a heredoc-formatted content property" do
+    @resource.content(unit_content_heredoc)
     expect(@resource.to_ini).to eq unit_content_string
   end
 
