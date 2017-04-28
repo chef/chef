@@ -25,7 +25,7 @@ describe Chef::Provider::AptPreference do
 
   before do
     stub_const("Chef::Provider::AptPreference::APT_PREFERENCE_DIR", pref_dir)
-    new_resource.pin = '1.0.1'
+    new_resource.pin = "1.0.1"
     new_resource.pin_priority 1001
   end
 
@@ -56,7 +56,7 @@ describe Chef::Provider::AptPreference do
     it "creates a sanitized .pref file" do
       provider.run_action(:add)
       expect(new_resource).to be_updated_by_last_action
-      expect(File.read(::File.join(pref_dir,'libmysqlclient16_1wildcard.pref'))).to match(/Package: libmysqlclient16.1*.*Pin: 1.0.1.*Pin-Priority: 1001/m)
+      expect(File.read(::File.join(pref_dir, "libmysqlclient16_1wildcard.pref"))).to match(/Package: libmysqlclient16.1*.*Pin: 1.0.1.*Pin-Priority: 1001/m)
 
     end
   end
