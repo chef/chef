@@ -33,10 +33,6 @@ class Chef
         which("apt-get")
       end
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
       end
 
