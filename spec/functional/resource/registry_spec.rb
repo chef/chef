@@ -124,7 +124,7 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
 
     @new_resource.cookbook_name = "monkey"
     @cookbook_version = double("Cookbook::Version", :version => "1.2.3")
-    allow(@new_resource).to receive(:cookbook_version).and_return(@cookbook_version)
+    @new_resource.cookbook_version(@cookbook_version)
   end
 
   after (:all) do

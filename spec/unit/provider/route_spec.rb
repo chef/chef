@@ -144,12 +144,12 @@ describe Chef::Provider::Route do
 
   describe Chef::Provider::Route, "generate_command for action_add" do
     it "should include a netmask when a one is specified" do
-      allow(@new_resource).to receive(:netmask).and_return("255.255.0.0")
+      @new_resource.netmask("255.255.0.0")
       expect(@provider.generate_command(:add).join(" ")).to match(/\/\d{1,2}/)
     end
 
     it "should not include a netmask when a one is specified" do
-      allow(@new_resource).to receive(:netmask).and_return(nil)
+      @new_resource.netmask(nil)
       expect(@provider.generate_command(:add).join(" ")).not_to match(/\/\d{1,2}/)
     end
 
@@ -158,19 +158,19 @@ describe Chef::Provider::Route do
     end
 
     it "should not include ' via $gateway ' when a gateway is not specified" do
-      allow(@new_resource).to receive(:gateway).and_return(nil)
+      @new_resource.gateway(nil)
       expect(@provider.generate_command(:add).join(" ")).not_to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}/)
     end
   end
 
   describe Chef::Provider::Route, "generate_command for action_delete" do
     it "should include a netmask when a one is specified" do
-      allow(@new_resource).to receive(:netmask).and_return("255.255.0.0")
+      @new_resource.netmask("255.255.0.0")
       expect(@provider.generate_command(:delete).join(" ")).to match(/\/\d{1,2}/)
     end
 
     it "should not include a netmask when a one is specified" do
-      allow(@new_resource).to receive(:netmask).and_return(nil)
+      @new_resource.netmask(nil)
       expect(@provider.generate_command(:delete).join(" ")).not_to match(/\/\d{1,2}/)
     end
 
@@ -179,14 +179,14 @@ describe Chef::Provider::Route do
     end
 
     it "should not include ' via $gateway ' when a gateway is not specified" do
-      allow(@new_resource).to receive(:gateway).and_return(nil)
+      @new_resource.gateway(nil)
       expect(@provider.generate_command(:delete).join(" ")).not_to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}/)
     end
   end
 
   describe Chef::Provider::Route, "config_file_contents for action_add" do
     it "should include a netmask when a one is specified" do
-      allow(@new_resource).to receive(:netmask).and_return("255.255.0.0")
+      @new_resource.netmask("255.255.0.0")
       expect(@provider.config_file_contents(:add, target: @new_resource.target, netmask: @new_resource.netmask)).to match(/\/\d{1,2}.*\n$/)
     end
 

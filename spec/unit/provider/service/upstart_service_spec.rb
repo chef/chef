@@ -194,7 +194,7 @@ describe Chef::Provider::Service::Upstart do
 
     describe "when a status command has been specified" do
       before do
-        allow(@new_resource).to receive(:status_command).and_return("/bin/chefhasmonkeypants status")
+        @new_resource.status_command("/bin/chefhasmonkeypants status")
       end
 
       it "should run the services status command if one has been specified" do
@@ -266,7 +266,7 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call the start command if one is specified" do
       @provider.upstart_service_running = false
-      allow(@new_resource).to receive(:start_command).and_return("/sbin/rsyslog startyousillysally")
+      @new_resource.start_command("/sbin/rsyslog startyousillysally")
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog startyousillysally")
       @provider.start_service()
     end
@@ -294,7 +294,7 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call the restart command if one is specified" do
       allow(@current_resource).to receive(:running).and_return(true)
-      allow(@new_resource).to receive(:restart_command).and_return("/sbin/rsyslog restartyousillysally")
+      @new_resource.restart_command("/sbin/rsyslog restartyousillysally")
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog restartyousillysally")
       @provider.restart_service()
     end
@@ -316,7 +316,7 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call the reload command if one is specified" do
       allow(@current_resource).to receive(:running).and_return(true)
-      allow(@new_resource).to receive(:reload_command).and_return("/sbin/rsyslog reloadyousillysally")
+      @new_resource.reload_command("/sbin/rsyslog reloadyousillysally")
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog reloadyousillysally")
       @provider.reload_service()
     end
@@ -329,7 +329,7 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call the stop command if one is specified" do
       @provider.upstart_service_running = true
-      allow(@new_resource).to receive(:stop_command).and_return("/sbin/rsyslog stopyousillysally")
+      @new_resource.stop_command("/sbin/rsyslog stopyousillysally")
       expect(@provider).to receive(:shell_out_with_systems_locale!).with("/sbin/rsyslog stopyousillysally")
       @provider.stop_service()
     end

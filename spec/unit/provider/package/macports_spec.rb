@@ -121,7 +121,7 @@ EOF
     it "should add options to the port command when specified" do
       expect(@current_resource).to receive(:version).and_return("4.1.6")
       @provider.current_resource = @current_resource
-      allow(@new_resource).to receive(:options).and_return("-f")
+      @new_resource.options("-f")
       expect(@provider).to receive(:shell_out!).with("port", "-f", "install", "zsh", "@4.2.7", timeout: 900)
 
       @provider.install_package("zsh", "4.2.7")
@@ -140,7 +140,7 @@ EOF
     end
 
     it "should add options to the port command when specified" do
-      allow(@new_resource).to receive(:options).and_return("-f")
+      @new_resource.options("-f")
       expect(@provider).to receive(:shell_out!).with("port", "-f", "uninstall", "zsh", "@4.2.7", timeout: 900)
       @provider.purge_package("zsh", "4.2.7")
     end
@@ -158,7 +158,7 @@ EOF
     end
 
     it "should add options to the port command when specified" do
-      allow(@new_resource).to receive(:options).and_return("-f")
+      @new_resource.options("-f")
       expect(@provider).to receive(:shell_out!).with("port", "-f", "deactivate", "zsh", "@4.2.7", timeout: 900)
       @provider.remove_package("zsh", "4.2.7")
     end
@@ -191,7 +191,7 @@ EOF
     end
 
     it "should add options to the port command when specified" do
-      allow(@new_resource).to receive(:options).and_return("-f")
+      @new_resource.options("-f")
       expect(@current_resource).to receive(:version).at_least(:once).and_return("4.1.6")
       @provider.current_resource = @current_resource
 

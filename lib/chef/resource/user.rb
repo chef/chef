@@ -62,19 +62,21 @@ class Chef
         )
       end
 
-      def uid(arg = nil)
+      def uid(arg = Chef::NOT_PASSED)
         set_or_return(
           :uid,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [ String, Integer, NilClass ],
+          :coerce => proc { |x| x || nil }
         )
       end
 
-      def gid(arg = nil)
+      def gid(arg = Chef::NOT_PASSED)
         set_or_return(
           :gid,
           arg,
-          :kind_of => [ String, Integer ]
+          :kind_of => [ String, Integer, NilClass ],
+          :coerce => proc { |x| x || nil }
         )
       end
 
