@@ -56,7 +56,8 @@ describe Chef::Provider::AptPreference do
     it "creates a sanitized .pref file" do
       provider.run_action(:add)
       expect(new_resource).to be_updated_by_last_action
-      expect(File.exist?(::File.join(pref_dir,'libmysqlclient16_1wildcard.pref'))).to be true
+      expect(File.read(::File.join(pref_dir,'libmysqlclient16_1wildcard.pref'))).to match(/Package: libmysqlclient16.1*.*Pin: 1.0.1.*Pin-Priority: 1001/m)
+
     end
   end
 end
