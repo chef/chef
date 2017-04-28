@@ -16,22 +16,22 @@
 # limitations under the License.
 #
 
-require "chef/resource"
+require "chef/provider"
 require "chef/dsl/declare_resource"
-require "chef/mixin/which"
 require "chef/provider/noop"
+require "chef/mixin/which"
 require "chef/log"
 
 class Chef
   class Provider
     class AptPreference < Chef::Provider
-      use_inline_resources
-
       extend Chef::Mixin::Which
 
       provides :apt_preference do
         which("apt-get")
       end
+
+      APT_PREFERENCE_DIR = "/etc/apt/preferences.d".freeze
 
       def load_current_resource
       end
@@ -43,9 +43,7 @@ class Chef
           new_resource.pin_priority
         )
 
-        declare_resource(:directory, "/etc/apt/preferences.d") do
-          owner "root"
-          group "root"
+        declare_resource(:directory, APT_PREFERENCE_DIR) do
           mode "0755"
           recursive true
           action :create
@@ -53,24 +51,22 @@ class Chef
 
         name = safe_name(new_resource.name)
 
-        declare_resource(:file, "/etc/apt/preferences.d/#{new_resource.name}.pref") do
+        declare_resource(:file, ::File.join(APT_PREFERENCE_DIR, "#{new_resource.name}.pref")) do
           action :delete
-          if ::File.exist?("/etc/apt/preferences.d/#{new_resource.name}.pref")
-            Chef::Log.warn "Replacing #{new_resource.name}.pref with #{name}.pref in /etc/apt/preferences.d/"
+          if ::File.exist?(::File.join(APT_PREFERENCE_DIR, "#{new_resource.name}.pref"))
+            Chef::Log.warn "Replacing #{new_resource.name}.pref with #{name}.pref in #{APT_PREFERENCE_DIR}"
           end
           only_if { name != new_resource.name }
         end
 
-        declare_resource(:file, "/etc/apt/preferences.d/#{new_resource.name}") do
+        declare_resource(:file, ::File.join(APT_PREFERENCE_DIR, "#{new_resource.name}")) do
           action :delete
-          if ::File.exist?("/etc/apt/preferences.d/#{new_resource.name}")
-            Chef::Log.warn "Replacing #{new_resource.name} with #{new_resource.name}.pref in /etc/apt/preferences.d/"
+          if ::File.exist?(::File.join(APT_PREFERENCE_DIR, "#{new_resource.name}"))
+            Chef::Log.warn "Replacing #{new_resource.name} with #{new_resource.name}.pref in #{APT_PREFERENCE_DIR}"
           end
         end
 
-        declare_resource(:file, "/etc/apt/preferences.d/#{name}.pref") do
-          owner "root"
-          group "root"
+        declare_resource(:file, ::File.join(APT_PREFERENCE_DIR, "#{name}.pref")) do
           mode "0644"
           content preference
           action :create
@@ -79,9 +75,9 @@ class Chef
 
       action :delete do
         name = safe_name(new_resource.name)
-        if ::File.exist?("/etc/apt/preferences.d/#{name}.pref")
-          Chef::Log.info "Un-pinning #{name} from /etc/apt/preferences.d/"
-          declare_resource(:file, "/etc/apt/preferences.d/#{name}.pref") do
+        if ::File.exist?(::File.join(APT_PREFERENCE_DIR, "#{name}.pref"))
+          Chef::Log.info "Un-pinning #{name} from #{APT_PREFERENCE_DIR}"
+          declare_resource(:file, ::File.join(APT_PREFERENCE_DIR, "#{name}.pref")) do
             action :delete
           end
         end

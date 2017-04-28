@@ -21,6 +21,14 @@ require "spec_helper"
 
 describe Chef::Provider::AptPreference do
   let(:new_resource) { Chef::Resource::AptPreference.new("libmysqlclient16") }
+  let(:pref_dir) { Dir.mktmpdir("apt_pref_d") }
+
+  before do
+    stub_const("Chef::Provider::AptPreference::APT_PREFERENCE_DIR", pref_dir)
+    new_resource.pin = '1.0.1'
+    new_resource.pin_priority 1001
+  end
+
   let(:provider) do
     node = Chef::Node.new
     events = Chef::EventDispatch::Dispatcher.new
@@ -32,22 +40,25 @@ describe Chef::Provider::AptPreference do
     expect(provider).to respond_to(:load_current_resource)
   end
 
-  it "creates apt preferences directory if it does not exist" do
-    provider.run_action(:update)
-    expect(new_resource).to be_updated_by_last_action
-    expect(File.exist?('/etc/apt/preferences.d')).to be true
-    expect(File.directory?('/etc/apt/preferences.d')).to be true
-  end
+  context "when the preferences.d directory does not exist" do
+    before do
+      FileUtils.rmdir pref_dir
+      expect(File.exist?(pref_dir)).to be false
+    end
 
-  it "cleans up legacy non-sanitized name files" do
-    # something
-  end
+    it "should create the preferences.d directory" do
+      provider.run_action(:add)
+      expect(new_resource).to be_updated_by_last_action
+      expect(File.exist?(pref_dir)).to be true
+      expect(File.directory?(pref_dir)).to be true
+    end
 
-  it "creates an apt .pref file" do
-    # something
-  end
+    it "creates an apt .pref file" do
+      # something
+    end
 
-  it "creates an apt .pref file with a sanitized filename" do
-    # something
+    it "creates an apt .pref file with a sanitized filename" do
+      # something
+    end
   end
 end
