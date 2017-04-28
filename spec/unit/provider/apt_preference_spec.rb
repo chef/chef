@@ -20,7 +20,7 @@
 require "spec_helper"
 
 describe Chef::Provider::AptPreference do
-  let(:new_resource) { Chef::Resource::AptPreference.new("libmysqlclient16") }
+  let(:new_resource) { Chef::Resource::AptPreference.new("libmysqlclient16.1*") }
   let(:pref_dir) { Dir.mktmpdir("apt_pref_d") }
 
   before do
@@ -53,12 +53,10 @@ describe Chef::Provider::AptPreference do
       expect(File.directory?(pref_dir)).to be true
     end
 
-    it "creates an apt .pref file" do
-      # something
-    end
-
-    it "creates an apt .pref file with a sanitized filename" do
-      # something
+    it "creates a sanitized .pref file" do
+      provider.run_action(:add)
+      expect(new_resource).to be_updated_by_last_action
+      expect(File.exist?(::File.join(pref_dir,'libmysqlclient16_1wildcard.pref'))).to be true
     end
   end
 end
