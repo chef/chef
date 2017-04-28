@@ -161,8 +161,8 @@ class Chef
       end
 
       def validate_create_day(day, frequency)
-        unless [:weekly].include?(frequency)
-          raise "day attribute is only valid for tasks that run weekly"
+        unless [:weekly, :monthly].include?(frequency)
+          raise "day attribute is only valid for tasks that run monthly or weekly"
         end
         if day.is_a?(String) && day.to_i.to_s != day
           days = day.split(",")
