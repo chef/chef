@@ -81,7 +81,7 @@ class Chef
 
         # Aix specific handling to update users home directory.
         def manage_home
-          return unless updating_home? && managing_home_dir?
+          return unless updating_home? && new_resource.manage_home
           # -m option does not work on aix, so move dir.
           universal_options.delete("-m")
           if ::File.directory?(current_resource.home)
