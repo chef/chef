@@ -14,7 +14,7 @@ gem "chef", path: "."
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
 gem "rake"
 gem "bundler"
-gem "cheffish" # required for rspec tests
+gem "cheffish", ">= 4.1.1", "< 13" # required for rspec tests
 
 group(:omnibus_package) do
   gem "appbundler"

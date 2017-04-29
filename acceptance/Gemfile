@@ -10,6 +10,7 @@ gem "kitchen-inspec"
 gem "test-kitchen"
 gem "winrm-elevated"
 gem "berkshelf"
+gem "chef-config", ">= 12.5.1.alpha.1", "< 13"
 
 # Pin to 1.2.3 because current mixlib-install has a problem where unstable
 # packages are not always immediately available via the omnitruck API.
