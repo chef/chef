@@ -78,7 +78,7 @@ class Chef
         def get_cab_package(cab_file)
           cab_resource = new_resource
           cab_resource.source = cab_file
-          cab_pkg = Chef::Provider::Package::Cab.new(cab_resource, nil)
+          Chef::Provider::Package::Cab.new(cab_resource, nil)
         end
 
         def download_source_file
