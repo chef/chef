@@ -1,0 +1,11 @@
+#!/bin/sh
+
+exec 2>&1
+for path in {{cfg.cookbook_path}} {{cfg.data_bag_path}} {{cfg.environment_path}} {{cfg.file_backup_path}} {{cfg.file_cache_path}} {{cfg.node_path}} {{cfg.role_path}}; do
+  mkdir -p "{{pkg.svc_data_path}}/$path"
+done
+
+{{#if cfg.use_member_id_as_uuid ~}}
+mkdir -p "{{pkg.svc_config_path}}/local-mode-cache/cache/"
+cp -v "{{pkg.svc_config_path}}/data_collector_metadata.json" "{{pkg.svc_config_path}}/local-mode-cache/cache/"
+{{/if ~}}
