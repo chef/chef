@@ -166,12 +166,16 @@ describe Chef::Resource::WindowsTask do
   end
 
   context "#validate_create_day" do
-    it "raises error if frequency is not :weekly" do
-      expect  { resource.send(:validate_create_day, "Mon", :monthly) }.to raise_error("day attribute is only valid for tasks that run weekly")
+    it "raises error if frequency is not :weekly or :monthly" do
+      expect  { resource.send(:validate_create_day, "Mon", :daily) }.to raise_error("day attribute is only valid for tasks that run weekly of monthly")
+    end
+    
+    it "accepts a valid day range" do
+      expect  { resource.send(:validate_create_day, "Mon-Fri", :weekly) }.not_to raise_error
     end
 
     it "accepts a valid single day" do
-      expect  { resource.send(:validate_create_day, "Mon", :weekly) }.not_to raise_error
+      expect  { resource.send(:validate_create_day, "Mon", :monthly) }.not_to raise_error
     end
 
     it "accepts a comma separated list of valid days" do
