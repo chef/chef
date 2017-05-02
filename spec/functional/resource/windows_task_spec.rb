@@ -383,7 +383,8 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
     subject do
       new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
-      new_resource.command task_name
+      new_resource.command "dir"
+      new_resource.run_level :highest
       new_resource
     end
 
@@ -391,7 +392,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       subject.run_action(:create)
       subject.run_action(:run)
       task_details = windows_task_provider.send(:load_task_hash, task_name)
-      expect(task_details[:Status]).to eq("Ready")
+      expect(task_details[:Status]).to eq("Running")
     end
   end
 
