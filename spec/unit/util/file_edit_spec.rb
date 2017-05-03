@@ -221,4 +221,11 @@ twice
       expect(fedit.file_edited?).to be_truthy
     end
   end
+
+  describe "file_edited" do
+    it "should return true if a file got edited" do
+      @fedit.insert_line_if_no_match(/pattern/, "new line inserted")
+      @fedit.file_edited?.should == true
+    end
+  end
 end
