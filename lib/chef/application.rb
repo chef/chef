@@ -72,6 +72,11 @@ class Chef
         trap("QUIT") do
           Chef::Log.info("SIGQUIT received, call stack:\n  " + caller.join("\n  "))
         end
+
+        trap("HUP") do
+          Chef::Log.info("SIGHUP received, reconfiguring")
+          reconfigure
+        end
       end
     end
 

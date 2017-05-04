@@ -304,6 +304,7 @@ class Chef::Application::Client < Chef::Application
     :boolean        => false
 
   IMMEDIATE_RUN_SIGNAL = "1".freeze
+  RECONFIGURE_SIGNAL = "H".freeze
 
   attr_reader :chef_client_json
 
@@ -409,13 +410,14 @@ class Chef::Application::Client < Chef::Application
       SELF_PIPE.replace IO.pipe
 
       trap("USR1") do
-        Chef::Log.info("SIGUSR1 received, waking up")
+        Chef::Log.info("SIGUSR1 received, will run now or after the current run")
         SELF_PIPE[1].putc(IMMEDIATE_RUN_SIGNAL) # wakeup master process from select
       end
 
+      # Override the trap setup in the parent so we can avoid running reconfigure during a run
       trap("HUP") do
-        Chef::Log.info("SIGHUP received, reconfiguring")
-        $reconfigure = true
+        Chef::Log.info("SIGHUP received, will reconfigure now or after the current run")
+        SELF_PIPE[1].putc(RECONFIGURE_SIGNAL) # wakeup master process from select
       end
     end
   end
@@ -443,7 +445,6 @@ class Chef::Application::Client < Chef::Application
   private
 
   def interval_run_chef_client
-    reconfigure if $reconfigure
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
 
@@ -460,14 +461,14 @@ class Chef::Application::Client < Chef::Application
   end
 
   def sleep_then_run_chef_client(sleep_sec)
-    @signal = test_signal
-    unless @signal == IMMEDIATE_RUN_SIGNAL
-      Chef::Log.debug("Sleeping for #{sleep_sec} seconds")
-      interval_sleep(sleep_sec)
-    end
-    @signal = nil
+    Chef::Log.debug("Sleeping for #{sleep_sec} seconds")
+
+    # interval_sleep will return early if we received a signal (unless on windows)
+    interval_sleep(sleep_sec)
 
     run_chef_client(Chef::Config[:specific_recipes])
+
+    reconfigure
   rescue SystemExit => e
     raise
   rescue Exception => e
@@ -480,10 +481,6 @@ class Chef::Application::Client < Chef::Application
     Chef::Application.fatal!("#{e.class}: #{e.message}", e)
   end
 
-  def test_signal
-    @signal = interval_sleep(0)
-  end
-
   def time_to_sleep
     duration = 0
     duration += rand(Chef::Config[:splay]) if Chef::Config[:splay]
@@ -491,18 +488,24 @@ class Chef::Application::Client < Chef::Application
     duration
   end
 
+  # sleep and handle queued signals
   def interval_sleep(sec)
     unless SELF_PIPE.empty?
-      client_sleep(sec)
+      # mimic sleep with a timeout on IO.select, listening for signals setup in #setup_signal_handlers
+      return unless IO.select([ SELF_PIPE[0] ], nil, nil, sec)
+
+      signal = SELF_PIPE[0].getc.chr
+
+      return if signal == IMMEDIATE_RUN_SIGNAL # be explicit about this behavior
+
+      # we need to sleep again after reconfigure to avoid stampeding when logrotate runs out of cron
+      if signal == RECONFIGURE_SIGNAL
+        reconfigure
+        interval_sleep(sleep)
+      end
     else
-      # Windows
       sleep(sec)
     end
-  end
-
-  def client_sleep(sec)
-    return unless IO.select([ SELF_PIPE[0] ], nil, nil, sec)
-    @signal = SELF_PIPE[0].getc.chr
   end
 
   def unforked_interval_error_message
