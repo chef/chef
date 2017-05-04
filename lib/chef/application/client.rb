@@ -412,6 +412,11 @@ class Chef::Application::Client < Chef::Application
         Chef::Log.info("SIGUSR1 received, waking up")
         SELF_PIPE[1].putc(IMMEDIATE_RUN_SIGNAL) # wakeup master process from select
       end
+
+      trap("HUP") do
+        Chef::Log.info("SIGHUP received, reconfiguring")
+        $reconfigure = true
+      end
     end
   end
 
@@ -438,6 +443,7 @@ class Chef::Application::Client < Chef::Application
   private
 
   def interval_run_chef_client
+    reconfigure if $reconfigure
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
 
