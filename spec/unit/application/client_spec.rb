@@ -257,6 +257,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
       before do
         allow(@app).to receive(:interval_sleep).with(wait_secs).and_return true
         allow(@app).to receive(:interval_sleep).with(0).and_call_original
+        allow(@app).to receive(:time_to_sleep).and_return(1)
       end
 
       it "sleeps for the amount of time passed" do
@@ -519,6 +520,7 @@ describe Chef::Application::Client, "run_application", :unix_only do
     end
 
     it "shouldn't sleep when sent USR1" do
+      allow(@app).to receive(:interval_sleep).and_return true
       allow(@app).to receive(:interval_sleep).with(0).and_call_original
       pid = fork do
         @app.run_application
