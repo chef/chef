@@ -21,7 +21,7 @@ require "chef/resource"
 class Chef
   class Resource
     class AptPreference < Chef::Resource
-      resource_name :apt_repository
+      resource_name :apt_preference
       provides :apt_preference
 
       property :package_name, String, name_property: true, regex: [/^([a-z]|[A-Z]|[0-9]|_|-|\.|\*|\+)+$/]

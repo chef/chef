@@ -29,17 +29,13 @@ describe Chef::Resource::AptPreference do
     expect(resource).to be_a_kind_of(Chef::Resource::AptPreference)
   end
 
-  it "should resolve to a AptPreference class class when apt-get is found" do
-    expect(Chef::Provider::AptPreference).to receive(:which).with("apt-get").and_return(true)
-    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::AptPreference)
-  end
-
   it "should resolve to a Noop class when apt-get is not found" do
     expect(Chef::Provider::AptPreference).to receive(:which).with("apt-get").and_return(false)
     expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
   end
 
-  it "should resolve to a NoOp provider" do
-    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
+  it "should resolve to a AptPreference class when apt-get is found" do
+    expect(Chef::Provider::AptPreference).to receive(:which).with("apt-get").and_return(true)
+    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::AptPreference)
   end
 end
