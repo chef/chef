@@ -48,24 +48,25 @@ class Chef
           action :create
         end
 
-        name = safe_name(new_resource.name)
+        sanitized_prefname = safe_name(new_resource.package_name)
 
-        declare_resource(:file, ::File.join(APT_PREFERENCE_DIR, "#{new_resource.name}.pref")) do
-          action :delete
-          if ::File.exist?(::File.join(APT_PREFERENCE_DIR, "#{new_resource.name}.pref"))
-            Chef::Log.warn "Replacing #{new_resource.name}.pref with #{name}.pref in #{APT_PREFERENCE_DIR}"
-          end
-          only_if { name != new_resource.name }
-        end
-
-        declare_resource(:file, ::File.join(APT_PREFERENCE_DIR, "#{new_resource.name}")) do
-          action :delete
-          if ::File.exist?(::File.join(APT_PREFERENCE_DIR, "#{new_resource.name}"))
-            Chef::Log.warn "Replacing #{new_resource.name} with #{new_resource.name}.pref in #{APT_PREFERENCE_DIR}"
+        # cleanup any existing pref files w/o the sanitized name (created by old apt cookbook)
+        if (sanitized_prefname != new_resource.package_name) && ::File.exist?("#{APT_PREFERENCE_DIR}/#{new_resource.package_name}.pref")
+          Chef::Log.warn "Replacing legacy #{new_resource.package_name}.pref with #{sanitized_prefname}.pref in #{APT_PREFERENCE_DIR}"
+          declare_resource(:file, "#{APT_PREFERENCE_DIR}/#{new_resource.package_name}.pref") do
+            action :delete
           end
         end
 
-        declare_resource(:file, ::File.join(APT_PREFERENCE_DIR, "#{name}.pref")) do
+        # cleanup any existing pref files without the .pref extension (created by old apt cookbook)
+        if ::File.exist?("#{APT_PREFERENCE_DIR}/#{new_resource.package_name}")
+          Chef::Log.warn "Replacing legacy #{new_resource.package_name} with #{sanitized_prefname}.pref in #{APT_PREFERENCE_DIR}"
+          declare_resource(:file, "#{APT_PREFERENCE_DIR}/#{new_resource.package_name}") do
+            action :delete
+          end
+        end
+
+        declare_resource(:file, "#{APT_PREFERENCE_DIR}/#{sanitized_prefname}.pref") do
           mode "0644"
           content preference
           action :create
@@ -73,10 +74,11 @@ class Chef
       end
 
       action :delete do
-        name = safe_name(new_resource.name)
-        if ::File.exist?(::File.join(APT_PREFERENCE_DIR, "#{name}.pref"))
-          Chef::Log.info "Un-pinning #{name} from #{APT_PREFERENCE_DIR}"
-          declare_resource(:file, ::File.join(APT_PREFERENCE_DIR, "#{name}.pref")) do
+        sanitized_prefname = safe_name(new_resource.package_name)
+
+        if ::File.exist?("#{APT_PREFERENCE_DIR}/#{sanitized_prefname}.pref")
+          Chef::Log.info "Un-pinning #{sanitized_prefname} from #{APT_PREFERENCE_DIR}"
+          declare_resource(:file, "#{APT_PREFERENCE_DIR}/#{sanitized_prefname}.pref") do
             action :delete
           end
         end

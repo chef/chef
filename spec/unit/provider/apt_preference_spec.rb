@@ -40,24 +40,47 @@ describe Chef::Provider::AptPreference do
     expect(provider).to respond_to(:load_current_resource)
   end
 
-  context "when the preferences.d directory does not exist" do
+  context "#action_add" do
+    context "without a preferences.d directory" do
+      before do
+        FileUtils.rmdir pref_dir
+      end
+
+      it "creates the preferences.d directory" do
+        provider.run_action(:add)
+        expect(new_resource).to be_updated_by_last_action
+        expect(File.exist?(pref_dir)).to be true
+        expect(File.directory?(pref_dir)).to be true
+      end
+    end
+
+    context "with a preferences.d directory" do
+      before do
+        FileUtils.mkdir pref_dir unless ::File.exist?(pref_dir)
+        FileUtils.touch("#{pref_dir}/libmysqlclient16.1*.pref")
+        FileUtils.touch("#{pref_dir}/libmysqlclient16.1*")
+      end
+
+      it "creates a sanitized .pref file and removes the legacy cookbook files" do
+        provider.run_action(:add)
+        expect(new_resource).to be_updated_by_last_action
+        expect(File).not_to exist("#{pref_dir}/libmysqlclient16.1*.pref")
+        expect(File).not_to exist("#{pref_dir}/libmysqlclient16.1*")
+        expect(File.read(::File.join(pref_dir, "libmysqlclient16_1wildcard.pref"))).to match(/Package: libmysqlclient16.1*.*Pin: 1.0.1.*Pin-Priority: 1001/m)
+      end
+    end
+  end
+
+  context "#action_delete" do
     before do
-      FileUtils.rmdir pref_dir
-      expect(File.exist?(pref_dir)).to be false
+      FileUtils.mkdir pref_dir unless ::File.exist?(pref_dir)
+      FileUtils.touch("#{pref_dir}/libmysqlclient16_1wildcard.pref")
     end
 
-    it "should create the preferences.d directory" do
-      provider.run_action(:add)
+    it "deletes the name santized .pref file" do
+      provider.run_action(:delete)
       expect(new_resource).to be_updated_by_last_action
-      expect(File.exist?(pref_dir)).to be true
-      expect(File.directory?(pref_dir)).to be true
-    end
-
-    it "creates a sanitized .pref file" do
-      provider.run_action(:add)
-      expect(new_resource).to be_updated_by_last_action
-      expect(File.read(::File.join(pref_dir, "libmysqlclient16_1wildcard.pref"))).to match(/Package: libmysqlclient16.1*.*Pin: 1.0.1.*Pin-Priority: 1001/m)
-
+      expect(File).not_to exist("#{pref_dir}/libmysqlclient16_1wildcard.pref")
     end
   end
 end
