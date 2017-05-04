@@ -45,7 +45,6 @@ class Chef
 
         declare_resource(:directory, APT_PREFERENCE_DIR) do
           mode "0755"
-          recursive true
           action :create
         end
 
