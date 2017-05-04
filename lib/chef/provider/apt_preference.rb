@@ -83,15 +83,15 @@ class Chef
           end
         end
       end
-    end
 
-    # Build preferences.d file contents
-    def build_pref(package_name, pin, pin_priority)
-      "Package: #{package_name}\nPin: #{pin}\nPin-Priority: #{pin_priority}\n"
-    end
+      # Build preferences.d file contents
+      def build_pref(package_name, pin, pin_priority)
+        "Package: #{package_name}\nPin: #{pin}\nPin-Priority: #{pin_priority}\n"
+      end
 
-    def safe_name(name)
-      name.tr(".", "_").gsub("*", "wildcard")
+      def safe_name(name)
+        name.tr(".", "_").gsub("*", "wildcard")
+      end
     end
   end
 end
