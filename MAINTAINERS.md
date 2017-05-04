@@ -28,6 +28,7 @@ To mention the team, use @chef/client-core
 
 ### Maintainers
 
+* [Adam Leff](https://github.com/adamleff)
 * [Bryan McLellan](https://github.com/btm)
 * [Noah Kantrowitz](https://github.com/coderanger)
 * [Daniel DeLeo](https://github.com/danielsdeleo)
