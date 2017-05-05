@@ -36,7 +36,7 @@ class Chef
 
         def load_current_resource
           if new_resource.gid
-            Chef::Log.warn("The 'gid' attribute is not implemented by the Windows platform. Please use the 'group' resource to assign a user to a group.")
+            Chef::Log.warn("The 'gid' (or 'group') property is not implemented on the Windows platform. Please use the `members` property of the  'group' resource to assign a user to a group.")
           end
 
           @current_resource = Chef::Resource::User.new(new_resource.name)
