@@ -191,6 +191,18 @@ describe Chef::CookbookSynchronizer do
       allow(synchronizer).to receive(:cache).and_return(file_cache)
       synchronizer.remove_deleted_files
     end
+
+    it "removes files not in the manifest" do
+      not_in_manifest_cb_file = %w{cookbooks/valid1/test/deleted.rb cookbooks/valid1/spec/deleted.rb}
+      expect(file_cache).to receive(:find).with(File.join(%w{cookbooks ** {*,.*}})).and_return(not_in_manifest_cb_file)
+      expect(synchronizer).to receive(:have_cookbook?).with("valid1").at_least(:once).and_return(true)
+      expect(file_cache).to receive(:delete).with("cookbooks/valid1/test/deleted.rb")
+      expect(file_cache).to receive(:delete).with("cookbooks/valid1/spec/deleted.rb")
+      expect(synchronizer).to receive(:cookbook_segment).with("valid1", "test").at_least(:once).and_return(nil)
+      expect(synchronizer).to receive(:cookbook_segment).with("valid1", "spec").at_least(:once).and_return(nil)
+      allow(synchronizer).to receive(:cache).and_return(file_cache)
+      synchronizer.remove_deleted_files
+    end
   end
 
   let(:cookbook_a_default_recipe_tempfile) do

@@ -202,7 +202,7 @@ class Chef
         ( cookbook_name, segment, file ) = md[1..3]
         if have_cookbook?(cookbook_name)
           manifest_segment = cookbook_segment(cookbook_name, segment)
-          if manifest_segment.select { |manifest_record| manifest_record["path"] == "#{segment}/#{file}" }.empty?
+          if manifest_segment.nil? || manifest_segment.select { |manifest_record| manifest_record["path"] == "#{segment}/#{file}" }.empty?
             Chef::Log.info("Removing #{cache_file} from the cache; its is no longer in the cookbook manifest.")
             cache.delete(cache_file)
             @events.removed_cookbook_file(cache_file)
