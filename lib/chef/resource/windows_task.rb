@@ -24,7 +24,7 @@ class Chef
 
       provides :windows_task, os: "windows"
 
-      allowed_actions :create, :delete, :run, :end, :change, :enable, :disable
+      allowed_actions :create, :delete, :run, :end, :enable, :disable
       default_action :create
 
       def initialize(name, run_context = nil)
