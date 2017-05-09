@@ -135,8 +135,9 @@ class Chef
         ssh_error_handler = Proc.new do |server|
           case config[:on_error]
           when :skip
-            ui.warn "Failed to connect to #{server.host} -- #{$!.class.name}: #{$!.message}"
+            ui.fatal("Failed to connect to #{server.host} -- #{$!.class.name}: #{$!.message}")
             $!.backtrace.each { |l| Chef::Log.debug(l) }
+            raise Exception, 'Connection Failed'
           when :raise
             #Net::SSH::Multi magic to force exception to be re-raised.
             throw :go, :raise
