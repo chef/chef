@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# FIXME: this seems uselessly trivial, replace with a rake task and have ci call the rake task?
+
 set -evx
 
 export LANG=en_US.UTF-8

@@ -25,11 +25,13 @@ namespace :dependencies do
   # dependencies locally is by running the dependency update script.
   desc "Update all dependencies. dependencies:update to update as little as possible."
   task :update do |t, rake_args|
+    # FIXME: probably broken, and needs less indirection
     system("#{File.join(Dir.pwd, "ci", "dependency_update.sh")}")
   end
 
   desc "Force update (when adding new gems to Gemfiles)"
   task :force_update do |t, rake_args|
+    # FIXME: probably broken, and needs less indirection
     FileUtils.rm_f(File.join(Dir.pwd, ".bundle", "config"))
     system("#{File.join(Dir.pwd, "ci", "dependency_update.sh")}")
   end

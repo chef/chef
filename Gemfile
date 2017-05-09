@@ -40,13 +40,12 @@ group(:maintenance, :ci) do
 end
 
 # Everything except AIX
-group(:linux, :bsd, :mac_os_x, :solaris, :windows) do
-  # may need to disable this in insolation on fussy builds like AIX, RHEL4, etc
+group(:ruby_prof) do
   gem "ruby-prof"
 end
 
 # Everything except AIX and Windows
-group(:linux, :bsd, :mac_os_x, :solaris) do
+group(:ruby_shadow) do
   gem "ruby-shadow", platforms: :ruby
 end
 
