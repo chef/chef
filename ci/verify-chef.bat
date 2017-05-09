@@ -83,6 +83,11 @@ REM ; ffi-yajl must run in c-extension mode for perf, so force it so we don't ac
 set FORCE_FFI_YAJL=ext
 
 set
+REM ; we should use bundler, but aren't because of a bug
+REM ; this should be `bundle exec rspec yadda yadda...`
+REM ; the bug is here: https://github.com/bundler/bundler/issues/5644
+REM ; while this opens us up to some testing edge conditions if we're doing our job right to build the omnibus package and its gems correct that shouldn't matter
+REM ; since that assumption has gone wrong before we should really go back to using bundler at some point
 call %EMBEDDED_BIN_DIR%\rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional
 
 GOTO :EOF
