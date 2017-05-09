@@ -1433,6 +1433,7 @@ class Chef
       conditionals = [ conditional_action ] + only_if + not_if
       conditionals.find do |conditional|
         if conditional.continue?
+          events.resource_not_skipped(self, action, conditional) if events
           false
         else
           events.resource_skipped(self, action, conditional)
