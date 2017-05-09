@@ -706,6 +706,7 @@ class Chef
     # @api private
     #
     def converge(run_context)
+      Chef.deprecated(:chef_solo_legacy_mode, "The legacy-mode of chef-solo will be removed in Chef 14.0") if Chef::Config[:solo_legacy_mode]
       converge_exception = nil
       catch(:end_client_run_early) do
         begin
