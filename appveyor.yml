@@ -34,9 +34,10 @@ install:
   - gem install bundler -v %OMNIBUS_BUNDLER% --quiet --no-ri --no-rdoc || gem install bundler -v %OMNIBUS_BUNDLER% --quiet --no-ri --no-rdoc || gem install bundler -v %OMNIBUS_BUNDLER% --quiet --no-ri --no-rdoc
   - gem --version
   - bundler --version
-  - SET BUNDLE_WITHOUT=guard:maintenance:tools:integration:ci:docgen:travis:style:omnibus_package:aix:bsd:linux:mac_os_x:solaris
+  - SET BUNDLE_WITHOUT=server:docgen:maintenance:pry:travis:integration:ci
   - appveyor DownloadFile http://curl.haxx.se/ca/cacert.pem -FileName C:\cacert.pem
   - set SSL_CERT_FILE=C:\cacert.pem
+  - bundle env
 
 build_script:
   - bundle install || bundle install || bundle install

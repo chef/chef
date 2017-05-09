@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/license_scout
-  revision: ff3cb28159e72414d63008f9a0d42e85d4aec4ba
+  revision: 92e9e27d71f457ea222b09c8fb3819bcb30a330a
   specs:
     license_scout (0.1.3)
       ffi-yajl (~> 2.2)
@@ -25,7 +25,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: cae44c1a3ebf7207516813ba15b372231c253954
+  revision: 986940586711c0ea8895120605ed59e2cacdea26
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -38,13 +38,13 @@ GEM
       public_suffix (~> 2.0, >= 2.0.2)
     artifactory (2.8.1)
     awesome_print (1.7.0)
-    aws-sdk (2.9.7)
-      aws-sdk-resources (= 2.9.7)
-    aws-sdk-core (2.9.7)
+    aws-sdk (2.9.15)
+      aws-sdk-resources (= 2.9.15)
+    aws-sdk-core (2.9.15)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.9.7)
-      aws-sdk-core (= 2.9.7)
+    aws-sdk-resources (2.9.15)
+      aws-sdk-core (= 2.9.15)
     aws-sigv4 (1.0.0)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -85,7 +85,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.19.36)
+    chef-config (12.20.3)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -170,7 +170,7 @@ GEM
       multipart-post (~> 2.0.0)
       progressbar
       zhexdump (>= 0.0.2)
-    plist (3.2.0)
+    plist (3.3.0)
     progressbar (1.8.2)
     pry (0.10.4)
       coderay (~> 1.1.0)
