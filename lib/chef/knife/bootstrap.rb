@@ -47,8 +47,7 @@ class Chef
       option :ssh_user,
         :short => "-x USERNAME",
         :long => "--ssh-user USERNAME",
-        :description => "The ssh username",
-        :default => "root"
+        :description => "The ssh username"
 
       option :ssh_password,
         :short => "-P PASSWORD",
