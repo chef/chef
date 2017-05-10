@@ -61,7 +61,8 @@ describe Chef::Provider::AptPreference do
         FileUtils.touch("#{pref_dir}/libmysqlclient16.1*")
       end
 
-      it "creates a sanitized .pref file and removes the legacy cookbook files" do
+      # FileUtils.touch throws "Invalid argument @ utime_failed" in appveyer
+      it "creates a sanitized .pref file and removes the legacy cookbook files", :unix_only do
         provider.run_action(:add)
         expect(new_resource).to be_updated_by_last_action
         expect(File).not_to exist("#{pref_dir}/libmysqlclient16.1*.pref")
