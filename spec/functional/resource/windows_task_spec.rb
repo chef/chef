@@ -255,7 +255,6 @@ describe Chef::Resource::WindowsTask, :windows_only do
           subject.run_action(:create)
           task_details = windows_task_provider.send(:load_task_hash, task_name)
           expect(task_details[:TaskName]).to eq("\\chef-client")
-          expect(task_details[:Status]).to eq("Ready")
           expect(task_details[:TaskToRun]).to eq("chef-client")
           expect(task_details[:ScheduleType]).to eq("At idle time")
           expect(task_details[:run_level]).to eq("HighestAvailable")
