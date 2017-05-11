@@ -486,7 +486,8 @@ class Chef
         ui.error "Failed to authenticate to #{server_url} as #{username} with key #{api_key}"
         ui.info "Response:  #{format_rest_error(response)}"
       when Net::HTTPForbidden
-        ui.error "You authenticated successfully to #{server_url} as #{username} but you are not authorized for this action"
+        ui.error "You authenticated successfully to #{server_url} as #{username} but you are not authorized for this action.
+        This is possibly a connectivity issue. Please check your proxy settings if any."
         ui.info "Response:  #{format_rest_error(response)}"
       when Net::HTTPBadRequest
         ui.error "The data in your request was invalid"
