@@ -81,34 +81,39 @@ class Chef
         end
 
         def installed_version
-          stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{cab_file_source}\"").stdout
-          package_info = parse_dism_get_package_info(stdout)
           # e.g. Package_for_KB2975719~31bf3856ad364e35~amd64~~6.3.1.8
-          package = split_package_identity(package_info["package_information"]["package_identity"])
+          package = new_cab_identity
           # Search for just the package name to catch a different version being installed
           Chef::Log.debug("#{new_resource} searching for installed package #{package['name']}")
-          found_packages = installed_packages.select { |p| p["package_identity"] =~ /^#{package['name']}~/ }
+          existing_package_identities = installed_packages.map do |p|
+            split_package_identity(p["package_identity"])
+          end
+          found_packages = existing_package_identities.select do |existing_package_ident|
+            existing_package_ident["name"] == package["name"]
+          end
           if found_packages.empty?
             nil
           elsif found_packages.length == 1
-            stdout = dism_command("/Get-PackageInfo /PackageName:\"#{found_packages.first['package_identity']}\"").stdout
-            find_version(stdout)
+            found_packages.first["version"]
           else
             # Presuming this won't happen, otherwise we need to handle it
             raise Chef::Exceptions::Package, "Found multiple packages installed matching name #{package['name']}, found: #{found_packages.length} matches"
           end
         end
 
-        def package_version
-          Chef::Log.debug("#{new_resource} getting product version for package at #{cab_file_source}")
+        def cab_identity_from_cab_file
           stdout = dism_command("/Get-PackageInfo /PackagePath:\"#{cab_file_source}\"").stdout
-          find_version(stdout)
+          package_info = parse_dism_get_package_info(stdout)
+          split_package_identity(package_info["package_information"]["package_identity"])
         end
 
-        def find_version(stdout)
-          package_info = parse_dism_get_package_info(stdout)
-          package = split_package_identity(package_info["package_information"]["package_identity"])
-          package["version"]
+        def new_cab_identity
+          Chef::Log.debug("#{new_resource} getting product version for package at #{cab_file_source}")
+          @new_cab_identity ||= cab_identity_from_cab_file
+        end
+
+        def package_version
+          new_cab_identity["version"].chomp
         end
 
         # returns a hash of package state information given the output of dism /get-packages

@@ -78,7 +78,7 @@ class Chef
         def get_cab_package(cab_file)
           cab_resource = new_resource
           cab_resource.source = cab_file
-          cab_pkg = Chef::Provider::Package::Cab.new(cab_resource, nil)
+          Chef::Provider::Package::Cab.new(cab_resource, nil)
         end
 
         def download_source_file
@@ -141,7 +141,7 @@ class Chef
           else
             # msu package contains only single xml file. So using xml_files.first is sufficient
             doc = ::File.open(xml_files.first.to_s) { |f| REXML::Document.new f }
-            locations = doc.elements.each("unattend/servicing/package/source") { |element| puts element.attributes["location"] }
+            locations = doc.elements.each("unattend/servicing/package/source") { |element| element.attributes["location"] }
             locations.each do |loc|
               cab_files << msu_dir + "/" + loc.attribute("location").value.split("\\")[1]
             end
