@@ -387,8 +387,8 @@ describe Chef::Resource::WindowsTask, :windows_only do
       new_resource
     end
 
-    it "runs the existing task" do
-      pending "Task status is returned as Ready instead of Running randomly"
+    xit "runs the existing task" do
+      # Task status is returned as Ready instead of Running randomly
       subject.run_action(:create)
       subject.run_action(:run)
       task_details = windows_task_provider.send(:load_task_hash, task_name)
