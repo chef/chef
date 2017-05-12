@@ -162,7 +162,7 @@ class Chef
             current_depth = 1
             last_depth = 0
             depth = new_resource.depth
-            while (exit_code != 0 && current_depth < 50)
+            while exit_code != 0 && current_depth < 50
               git_fetch_result = git("fetch", new_resource.remote, "--depth", depth.to_s, cwd: cwd, returns: [0, 1])
               git_fetch_tags_result = git("fetch", new_resource.remote, "--tags", "--depth", depth.to_s, cwd: cwd, returns: [0, 1])
               git_force_branch_result = git("branch", "-f", new_resource.checkout_branch, sha_ref, cwd: cwd, returns: [0, 128])
@@ -206,7 +206,7 @@ class Chef
             current_depth = 1
             last_depth = 0
             depth = new_resource.depth
-            while (exit_code != 0 && current_depth < 50)
+            while exit_code != 0 && current_depth < 50
               git_fetch_specific_ref_result = git("fetch", new_resource.remote, target_revision, cwd: cwd, returns: [0, 1])
               git_fetch_with_depth_result = git("fetch", new_resource.remote, "--depth", depth.to_s, cwd: cwd, returns: [0, 1])
               git_fetch_tags_result = git("fetch", new_resource.remote, "--tags", "--depth", depth.to_s, cwd: cwd, returns: [0, 1])
