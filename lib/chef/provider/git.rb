@@ -156,7 +156,28 @@ class Chef
 
         converge_by("checkout ref #{sha_ref} branch #{new_resource.revision}") do
           # checkout into a local branch rather than a detached HEAD
-          git("branch", "-f", new_resource.checkout_branch, sha_ref, cwd: cwd)
+          if new_resource.depth
+            # then a depth was specified..
+            exit_code = 1
+            current_depth = 1
+            last_depth = 0
+            depth = new_resource.depth
+            while(exit_code != 0 && current_depth < 50)
+              git_fetch_result = git("fetch", new_resource.remote, "--depth", depth.to_s, cwd: cwd, returns: [0, 1])
+              git_fetch_tags_result = git("fetch", new_resource.remote, "--tags", "--depth", depth.to_s, cwd: cwd, returns: [0, 1])
+              git_force_branch_result = git("branch", "-f", new_resource.checkout_branch, sha_ref, cwd: cwd, returns: [0, 128])
+              exit_code = git_fetch_result.exitstatus | git_fetch_tags_result.exitstatus | git_force_branch_result.exitstatus
+              if exit_code > 0
+                tmp_depth = current_depth
+                current_depth += last_depth
+                last_depth = tmp_depth
+                depth = new_resource.depth + current_depth
+                Chef::Log.info "Failed to fetch enough history to checkout, deepening by #{current_depth} .."
+              end
+            end
+          else
+            git("branch", "-f", new_resource.checkout_branch, sha_ref, cwd: cwd)
+          end
           git("checkout", new_resource.checkout_branch, cwd: cwd)
           Chef::Log.info "#{new_resource} checked out branch: #{new_resource.revision} onto: #{new_resource.checkout_branch} reference: #{sha_ref}"
         end
@@ -178,10 +199,32 @@ class Chef
         setup_remote_tracking_branches(new_resource.remote, new_resource.repository)
         converge_by("fetch updates for #{new_resource.remote}") do
           # since we're in a local branch already, just reset to specified revision rather than merge
-          Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revision #{target_revision}"
-          git("fetch", new_resource.remote, cwd: cwd)
-          git("fetch", new_resource.remote, "--tags", cwd: cwd)
-          git("reset", "--hard", target_revision, cwd: cwd)
+          Chef::Log.info "Fetching updates from #{new_resource.remote} and resetting to revision #{target_revision}"
+          if new_resource.depth
+            # then perform a shallow update ..
+            exit_code = 1
+            current_depth = 1
+            last_depth = 0
+            depth = new_resource.depth
+            while(exit_code != 0 && current_depth < 50)
+              git_fetch_specific_ref_result = git("fetch", new_resource.remote, target_revision, cwd: cwd, returns: [0, 1])
+              git_fetch_with_depth_result = git("fetch", new_resource.remote, "--depth", depth.to_s, cwd: cwd, returns: [0, 1])
+              git_fetch_tags_result = git("fetch", new_resource.remote, "--tags", "--depth", depth.to_s, cwd: cwd, returns: [0, 1])
+              git_hard_reset_result = git("reset", "--hard", target_revision, cwd: cwd, returns: [0, 128])
+              exit_code = git_fetch_specific_ref_result.exitstatus | git_fetch_with_depth_result.exitstatus | git_fetch_tags_result.exitstatus | git_hard_reset_result.exitstatus
+              if exit_code > 0
+                tmp_depth = current_depth
+                current_depth += last_depth
+                last_depth = tmp_depth
+                depth = new_resource.depth + current_depth
+                Chef::Log.info "Failed to fetch enough history to checkout, deepening by #{current_depth} .."
+              end
+            end
+          else
+            git("fetch", new_resource.remote, cwd: cwd)
+            git("fetch", new_resource.remote, "--tags", cwd: cwd)
+            git("reset", "--hard", target_revision, cwd: cwd)
+          end
         end
       end
 
