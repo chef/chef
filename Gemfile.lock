@@ -180,7 +180,7 @@ GEM
     httpclient (2.8.3)
     i18n (0.8.1)
     iniparse (1.4.2)
-    inspec (1.23.0)
+    inspec (1.24.0)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
@@ -216,7 +216,7 @@ GEM
       mixlib-log
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (3.2.0)
+    mixlib-install (3.2.1)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -245,7 +245,7 @@ GEM
     nori (2.6.0)
     octokit (4.7.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (13.0.1)
+    ohai (13.1.0)
       chef-config (>= 12.5.0.alpha.1, < 14)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -320,7 +320,7 @@ GEM
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
       faraday (~> 0.8, < 1.0)
-    serverspec (2.38.0)
+    serverspec (2.38.1)
       multi_json
       rspec (~> 3.0)
       rspec-its
