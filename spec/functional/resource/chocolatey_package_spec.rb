@@ -18,15 +18,8 @@
 require "spec_helper"
 require "chef/mixin/powershell_out"
 
-describe Chef::Resource::ChocolateyPackage, :windows_only do
+describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
   include Chef::Mixin::PowershellOut
-
-  before(:all) do
-    powershell_out!("iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))")
-    unless ENV["PATH"] =~ /chocolatey\\bin/
-      ENV["PATH"] = "C:\\ProgramData\\chocolatey\\bin;#{ENV["PATH"]}"
-    end
-  end
 
   let(:package_name) { "test-A" }
   let(:package_list) { proc { powershell_out!("choco list -lo -r #{Array(package_name).join(' ')}").stdout.chomp } }

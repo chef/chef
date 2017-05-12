@@ -2,9 +2,11 @@ require "fcntl"
 require "chef/mixin/shell_out"
 require "ohai/mixin/http_helper"
 require "ohai/mixin/gce_metadata"
+require "chef/mixin/powershell_out"
 
 class ShellHelpers
   extend Chef::Mixin::ShellOut
+  extend Chef::Mixin::PowershellOut
 end
 
 # magic stolen from bundler/spec/support/less_than_proc.rb
@@ -230,4 +232,9 @@ def gce?
   HttpHelper.can_socket_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR, 80)
 rescue SocketError
   false
+end
+
+def choco_installed?
+  result = ShellHelpers.powershell_out("choco --version")
+  result.stderr.empty? ? true : false
 end

@@ -182,6 +182,8 @@ RSpec.configure do |config|
   config.filter_run_excluding chef: DependencyProc.with(Chef::VERSION)
   config.filter_run_excluding ruby: DependencyProc.with(RUBY_VERSION)
 
+  config.filter_run_excluding :choco_installed => true unless choco_installed?
+
   running_platform_arch = `uname -m`.strip unless windows?
 
   config.filter_run_excluding :arch => lambda { |target_arch|
