@@ -1,11 +1,18 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.1.14](https://github.com/chef/chef/tree/v13.1.14) (2017-05-11)
-[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.14)
+## [v13.1.15](https://github.com/chef/chef/tree/v13.1.15) (2017-05-12)
+[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.15)
 
 **Closed issues:**
 
 - msu\_package fails to install package correctly [\#6091](https://github.com/chef/chef/issues/6091)
+
+**Merged pull requests:**
+
+- Fixing broken functional test in windows\_task resource [\#6139](https://github.com/chef/chef/pull/6139) ([NimishaS](https://github.com/NimishaS))
+- Discard caches for files not in the manifest [\#6129](https://github.com/chef/chef/pull/6129) ([akitada](https://github.com/akitada))
+- User on Windows with group incorrectly warns about passing GID [\#6125](https://github.com/chef/chef/pull/6125) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
+- cab\_package should compare package name and version [\#6100](https://github.com/chef/chef/pull/6100) ([smurawski](https://github.com/smurawski))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
