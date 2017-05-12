@@ -1,14 +1,11 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.1.13](https://github.com/chef/chef/tree/v13.1.13) (2017-05-11)
-[Full Changelog](https://github.com/chef/chef/compare/v13.1.13...v13.1.13)
+## [v13.1.14](https://github.com/chef/chef/tree/v13.1.14) (2017-05-11)
+[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.14)
 
 **Closed issues:**
 
 - msu\_package fails to install package correctly [\#6091](https://github.com/chef/chef/issues/6091)
-
-## [v13.1.13](https://github.com/chef/chef/tree/v13.1.13) (2017-05-11)
-[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.13)
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
