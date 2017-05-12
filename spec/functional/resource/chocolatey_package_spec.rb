@@ -19,6 +19,7 @@ require "spec_helper"
 require "chef/mixin/powershell_out"
 
 describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
+  skip "these tests are incredibly unstable on Win2k8"
   include Chef::Mixin::PowershellOut
 
   let(:package_name) { "test-A" }
