@@ -30,6 +30,7 @@ binstubs/
 _site/*
 .yardoc/
 doc/
+docs/_build/
 
 # Test Kitchen
 .kitchen/
