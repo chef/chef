@@ -1,4 +1,0 @@
-.. toctree::
-
-  overview
-  first-steps
