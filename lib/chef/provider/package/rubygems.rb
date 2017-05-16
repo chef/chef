@@ -21,6 +21,7 @@ require "uri"
 require "chef/provider/package"
 require "chef/resource/package"
 require "chef/mixin/get_source_from_package"
+require "chef/mixin/which"
 
 # Class methods on Gem are defined in rubygems
 require "rubygems"
@@ -359,6 +360,7 @@ class Chef
         provides :gem_package
 
         include Chef::Mixin::GetSourceFromPackage
+        include Chef::Mixin::Which
 
         def initialize(new_resource, run_context = nil)
           super
@@ -410,11 +412,7 @@ class Chef
         end
 
         def find_gem_by_path
-          Chef::Log.debug("#{new_resource} searching for 'gem' binary in path: #{ENV['PATH']}")
-          separator = ::File::ALT_SEPARATOR ? ::File::ALT_SEPARATOR : ::File::SEPARATOR
-          path_to_first_gem = ENV["PATH"].split(::File::PATH_SEPARATOR).find { |path| ::File.exist?(path + separator + "gem") }
-          raise Chef::Exceptions::FileNotFound, "Unable to find 'gem' binary in path: #{ENV['PATH']}" if path_to_first_gem.nil?
-          path_to_first_gem + separator + "gem"
+          which("gem", extra_path: RbConfig::CONFIG["bindir"])
         end
 
         def gem_dependency
