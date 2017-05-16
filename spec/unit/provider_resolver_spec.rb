@@ -192,34 +192,34 @@ describe Chef::ProviderResolver do
           stub_service_providers(:debian, :invokercd, :upstart, :systemd)
         end
 
-        it "when only the SysV init script exists, it returns a Service::Debian provider" do
+        it "when both the SysV init and Systemd script exists, it returns a Service::Debian provider" do
           stub_service_configs(:initd, :systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
         end
 
-        it "when both SysV and Upstart scripts exist, it returns a Service::Upstart provider" do
+        it "when SysV, Upstart, and Systemd scripts exist, it returns a Service::Systemd provider" do
           stub_service_configs(:initd, :upstart, :systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
         end
 
-        it "when only the Upstart script exists, it returns a Service::Upstart provider" do
+        it "when both the Upstart and Systemd scripts exists, it returns a Service::Systemd provider" do
           stub_service_configs(:upstart, :systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
         end
 
-        it "when both do not exist, it calls the old style provider resolver and returns a Debian Provider" do
+        it "when both do not exist, it calls the old style provider resolver and returns a Systemd Provider" do
           stub_service_configs(:systemd)
           expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
         end
 
-        it "when only the SysV init script exists, it returns a Service::Debian provider" do
+        it "when only the SysV init script exists, it returns a Service::Systemd provider" do
           stub_service_configs(:initd)
-          expect(resolved_provider).to eql(Chef::Provider::Service::Debian)
+          expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
         end
 
-        it "when both SysV and Upstart scripts exist, it returns a Service::Upstart provider" do
+        it "when both SysV and Upstart scripts exist, it returns a Service::Systemd provider" do
           stub_service_configs(:initd, :upstart)
-          expect(resolved_provider).to eql(Chef::Provider::Service::Upstart)
+          expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
         end
 
         it "when only the Upstart script exists, it returns a Service::Upstart provider" do
@@ -227,7 +227,7 @@ describe Chef::ProviderResolver do
           expect(resolved_provider).to eql(Chef::Provider::Service::Upstart)
         end
 
-        it "when both do not exist, it calls the old style provider resolver and returns a Debian Provider" do
+        it "when both do not exist, it calls the old style provider resolver and returns a Systemd Provider" do
           stub_service_configs
           expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
         end
@@ -410,7 +410,7 @@ describe Chef::ProviderResolver do
           stub_service_providers(:debian, :invokercd, :upstart, :systemd)
           stub_service_configs(:initd, :upstart)
           mock_shellout_command("/bin/systemctl list-unit-files", exitstatus: 1)
-          expect(resolved_provider).to eql(Chef::Provider::Service::Upstart)
+          expect(resolved_provider).to eql(Chef::Provider::Service::Systemd)
         end
       end
 
