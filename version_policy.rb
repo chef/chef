@@ -42,10 +42,6 @@ OMNIBUS_OVERRIDES = {
   "util-macros" => "1.19.0",
   "xproto" => "7.0.28",
   "zlib" => "1.2.8",
-
-  ## These can float as they are frequently updated in a way that works for us
-  #override "cacerts" =>"???",
-  "openssl" => "1.0.2j",
 }
 
 #
