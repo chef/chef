@@ -79,11 +79,14 @@ class Chef
     def self.reset_config_loader!
       @@chef_config_dir = nil
       @config_loader = nil
+      # New configs for us means new configs for subcommands.
+      reset_subcommands!
     end
 
     def self.reset_subcommands!
       @@subcommands = {}
       @subcommands_by_category = nil
+      @subcommand_loader = nil
     end
 
     def self.inherited(subclass)
