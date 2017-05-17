@@ -1,6 +1,6 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
-# Chef Client Release Notes 13.0:
+# Chef Client Release Notes 13.1:
 
 ## Rubygems provider sources behavior changed.
 
