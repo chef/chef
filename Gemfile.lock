@@ -114,7 +114,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (5.1.0)
+    activesupport (5.1.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (~> 0.7)
       minitest (~> 5.1)
@@ -180,7 +180,7 @@ GEM
     httpclient (2.8.3)
     i18n (0.8.1)
     iniparse (1.4.2)
-    inspec (1.24.0)
+    inspec (1.25.1)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
@@ -194,6 +194,7 @@ GEM
       rspec (~> 3)
       rspec-its (~> 1.2)
       rubyzip (~> 1.1)
+      semverse
       sslshake (~> 1.2)
       thor (~> 0.19)
       toml (~> 0.1)
@@ -281,7 +282,7 @@ GEM
     pusher-client (0.6.2)
       json
       websocket (~> 1.0)
-    rack (2.0.2)
+    rack (2.0.3)
     rainbow (2.2.2)
       rake
     rake (12.0.0)
@@ -320,6 +321,7 @@ GEM
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
       faraday (~> 0.8, < 1.0)
+    semverse (2.0.0)
     serverspec (2.38.1)
       multi_json
       rspec (~> 3.0)
@@ -330,9 +332,9 @@ GEM
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
-    simplecov-html (0.10.0)
+    simplecov-html (0.10.1)
     slop (3.6.0)
-    specinfra (2.67.9)
+    specinfra (2.67.10)
       net-scp
       net-ssh (>= 2.7, < 5.0)
       net-telnet
