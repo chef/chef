@@ -1,14 +1,11 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.1.19](https://github.com/chef/chef/tree/v13.1.19) (2017-05-16)
-[Full Changelog](https://github.com/chef/chef/compare/v13.1.19...v13.1.19)
+## [v13.1.20](https://github.com/chef/chef/tree/v13.1.20) (2017-05-16)
+[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.20)
 
 **Closed issues:**
 
 - Chef 13.0 regression in gem\_package related to finding gem binaries [\#6103](https://github.com/chef/chef/issues/6103)
-
-## [v13.1.19](https://github.com/chef/chef/tree/v13.1.19) (2017-05-16)
-[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.19)
 
 **Merged pull requests:**
 
