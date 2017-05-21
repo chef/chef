@@ -73,6 +73,13 @@ class Chef
         # without a value
         :default => false
 
+      option :ssh_password_for_sudo,
+        :short => "-S",
+        :long => "--ssh-password-for-sudo",
+        :description => "EXPERIMENTAL. If ssh password given as argument to -P and a sudo COMMAND is " +
+                        "specified, this password will be passed into sudo using the -S flag",
+        :default => false
+
       option :ssh_port,
         :short => "-p PORT",
         :long => "--ssh-port PORT",
@@ -299,7 +306,13 @@ class Chef
       end
 
       def fixup_sudo(command)
-        command.sub(/^sudo/, 'sudo -p \'knife sudo password: \'')
+        if config[:ssh_password_ng] && config[:ssh_password_for_sudo]
+          # if ssh password provided on command line, then pass it into sudo
+          command.sub(/^sudo/, "echo '#{config[:ssh_password_ng]}' | sudo -S -p ''")
+        else
+          # prompt for sudo password
+          command.sub(/^sudo/, 'sudo -p \'knife sudo password: \'')
+        end
       end
 
       def print_data(host, data)
