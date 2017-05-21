@@ -180,6 +180,7 @@ class Chef
                 Log.debug(e)
               end
             end
+            @name_args.uniq!
             upload_set
           end
       end

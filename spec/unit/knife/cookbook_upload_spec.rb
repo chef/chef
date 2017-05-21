@@ -184,6 +184,7 @@ E
         knife.config[:depends] = true
         allow(knife).to receive(:cookbook_names).and_return(%w{test_cookbook1 test_cookbook2 test_cookbook3})
         expect(knife).to receive(:upload).exactly(3).times
+        expect(knife.cookbooks_to_upload.keys).to match_array knife.name_args
         expect do
           Timeout.timeout(5) do
             knife.run
