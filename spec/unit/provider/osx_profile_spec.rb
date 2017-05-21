@@ -20,7 +20,10 @@ require "spec_helper"
 
 describe Chef::Provider::OsxProfile do
   let(:shell_out_success) do
-    double("shell_out", :exitstatus => 0, :error? => false)
+    double("shell_out", :exitstatus => 0, :error? => false, :stdout => 0)
+  end
+  let(:shell_out_fail) do
+    double("shell_out", :exitstatus => 1, :error? => false, :stdout => 0)
   end
   describe "action_create" do
     let(:node) { Chef::Node.new }
@@ -111,12 +114,9 @@ describe Chef::Provider::OsxProfile do
 
     it "should build the get all profiles shellout command correctly" do
       profile_name = "com.testprofile.screensaver.mobileconfig"
-      tempfile = "/tmp/allprofiles.plist"
       new_resource.profile_name profile_name
-      allow(provider).to receive(:generate_tempfile).and_return(tempfile)
       allow(provider).to receive(:get_installed_profiles).and_call_original
-      allow(provider).to receive(:read_plist).and_return(all_profiles)
-      expect(provider).to receive(:shell_out!).with("profiles -P -o '/tmp/allprofiles.plist'")
+      expect(provider).to receive(:shell_out!).with("profiles -P -o stdout-xml").and_return(shell_out_success)
       provider.load_current_resource
     end
 
