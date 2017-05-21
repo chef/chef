@@ -125,8 +125,12 @@ ROLES
             summarized << <<-SUMMARY
 #{key('Recipes:')}     #{Array(node[:recipes]).join(', ')}
 #{key('Platform:')}    #{node[:platform]} #{node[:platform_version]}
+SUMMARY
+            unless node.tags.nil?
+              summarized << <<-SUMMARY
 #{key('Tags:')}        #{node.tags.join(', ')}
 SUMMARY
+            end
             if config[:medium_output] || config[:long_output]
               summarized += <<-MORE
 #{key('Attributes:')}
