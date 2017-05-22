@@ -43,7 +43,7 @@ class Chef
             if cookbook_gems[args.first].last.is_a?(Hash)
               args << {} unless args.last.is_a?(Hash)
               args.last.merge!(cookbook_gems[args.first].pop) do |key, v1, v2|
-                Chef::Log.warn "Conflicting requirements for gem '#{args.first}', will use #{key.inspect} => #{v2.inspect}" if v1 != v2
+                raise Chef::Exceptions::GemRequirementConflict.new(args.first, key, v1, v2) if v1 != v2
                 v2
               end
             end
