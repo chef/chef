@@ -22,7 +22,14 @@ describe Chef::Cookbook::GemInstaller do
         :cookbook,
         metadata: double(
           :metadata,
-          gems: [["httpclient", ">= 1.0"]]
+          gems: [["httpclient", ">= 1.0", { "git" => "https://github.com/nahi/httpclient" }]]
+        )
+      ),
+      test4: double(
+        :cookbook,
+        metadata: double(
+          :metadata,
+          gems: [["httpclient", { "path" => "./gems/httpclient" }]]
         )
       ),
     }
