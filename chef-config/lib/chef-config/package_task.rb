@@ -220,9 +220,11 @@ module ChefConfig
 # task instead.
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+require 'chef/version_string'
+
 #{class_or_module} #{module_name}
   #{module_name.upcase}_ROOT = File.expand_path("../..", __FILE__)
-  VERSION = "#{version}"
+  VERSION = Chef::VersionString.new("#{version}")
 end
 
 #

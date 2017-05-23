@@ -19,9 +19,11 @@
 # task instead.
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+require 'chef/version_string'
+
 module ChefConfig
   CHEFCONFIG_ROOT = File.expand_path("../..", __FILE__)
-  VERSION = "13.1.21"
+  VERSION = Chef::VersionString.new("13.1.21")
 end
 
 #
