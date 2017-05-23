@@ -85,6 +85,10 @@ The `inspec` and `train` gems are shipped by default in the chef omnibus
 package, making it easier for users in airgapped environments to use
 InSpec.
 
+## Properly support managing Sys-V services on Debian systemd hosts
+
+Chef now properly supports managing sys-v services on hosts running systemd. Previously Chef would incorrectly attempt to fallback to Upstart even if upstart was not installed.
+
 ## Backwards Compatibility Breaks
 
 ### Resource Cloning has been removed
