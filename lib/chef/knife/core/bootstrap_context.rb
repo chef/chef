@@ -134,8 +134,10 @@ validation_client_name "#{@chef_config[:validation_client_name]}"
           end
 
           if knife_config[:bootstrap_proxy]
+            knife_config[:bootstrap_no_proxy] ||= "9.*, 10.*, 192.168.*"
             client_rb << %Q{http_proxy        "#{knife_config[:bootstrap_proxy]}"\n}
             client_rb << %Q{https_proxy       "#{knife_config[:bootstrap_proxy]}"\n}
+            client_rb << %Q{no_proxy          "#{knife_config[:bootstrap_no_proxy]}"\n}
           end
 
           if knife_config[:bootstrap_proxy_user]
