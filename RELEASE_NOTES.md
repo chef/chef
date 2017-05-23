@@ -1,6 +1,6 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
-# Chef Client Release Notes 13.0:
+# Chef Client Release Notes 13.0-13.1:
 
 ## Rubygems provider sources behavior changed.
 
@@ -84,6 +84,10 @@ Zypper now defaults to performing gpg checks of packages.
 The `inspec` and `train` gems are shipped by default in the chef omnibus
 package, making it easier for users in airgapped environments to use
 InSpec.
+
+## Properly support managing Sys-V services on Debian systemd hosts
+
+Chef now properly supports managing sys-v services on hosts running systemd. Previously Chef would incorrectly attempt to fallback to Upstart even if upstart was not installed.
 
 ## Backwards Compatibility Breaks
 
@@ -384,3 +388,11 @@ The implementation switched to `shell_out_with_systems_locale` to match `execute
 Chef Client will only exit with exit codes defined in RFC 062.  This allows other tooling to respond to how a Chef run completes.  Attempting to exit Chef Client with an unsupported exit code (either via `Chef::Application.fatal!` or `Chef::Application.exit!`) will result in an exit code of 1 (GENERIC_FAILURE) and a warning in the event log.
 
 When Chef Client is running as a forked process on unix systems, the standardized exit codes are used by the child process.  To actually have Chef Client return the standard exit code, `client_fork false` will need to be set in Chef Client's configuration file.
+
+## New Deprecations
+
+### Removal of support for Ohai version 6 plugins (OHAI-10)
+
+<https://docs.chef.io/deprecations_ohai_filesystem.html>
+
+In Chef/Ohai 14 (April 2018) we will remove support for loading Ohai v6 plugins, which we deprecated in Ohai 7/Chef 11.12.
