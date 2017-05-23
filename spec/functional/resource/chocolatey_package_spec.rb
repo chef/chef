@@ -18,7 +18,7 @@
 require "spec_helper"
 require "chef/mixin/powershell_out"
 
-describe Chef::Resource::ChocolateyPackage, :windows_only, :win2012r2_only do
+describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed,  do
   include Chef::Mixin::PowershellOut
 
   let(:package_name) { "test-A" }
