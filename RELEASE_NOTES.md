@@ -393,6 +393,6 @@ When Chef Client is running as a forked process on unix systems, the standardize
 
 ### Removal of support for Ohai version 6 plugins (OHAI-10)
 
-<https://docs.chef.io/deprecations_ohai_filesystem.html>
+<https://docs.chef.io/deprecations_ohai_v6_plugins.html>
 
 In Chef/Ohai 14 (April 2018) we will remove support for loading Ohai v6 plugins, which we deprecated in Ohai 7/Chef 11.12.
