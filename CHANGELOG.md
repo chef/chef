@@ -15,8 +15,8 @@ This changelog reflects the current state of chef's master branch on github and 
 - Update windows\_task to fix day validation with monthly frequency [\#6105](https://github.com/chef/chef/pull/6105) ([Stromweld](https://github.com/Stromweld))
 - cab\_package should compare package name and version [\#6100](https://github.com/chef/chef/pull/6100) ([smurawski](https://github.com/smurawski))
 
-## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
-[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
+## [v12.19.36](https://github.com/chef/chef/tree/v12.19.36) (2017-02-23)
+[Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.36)
 
 **Closed issues:**
 
