@@ -257,6 +257,7 @@ class Chef::Application::Solo < Chef::Application
       end
 
       Chef::Config[:local_mode] = true
+      Chef::Config[:listen] = false
     else
       configure_legacy_mode!
     end
