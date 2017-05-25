@@ -1,14 +1,14 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.1.25](https://github.com/chef/chef/tree/v13.1.25) (2017-05-25)
-[Full Changelog](https://github.com/chef/chef/compare/v13.1.25...v13.1.25)
+## [v13.1.26](https://github.com/chef/chef/tree/v13.1.26) (2017-05-25)
+[Full Changelog](https://github.com/chef/chef/compare/v13.1.26...v13.1.26)
 
-**Merged pull requests:**
+**Closed issues:**
 
-- convert breakpoint resource to a custom resource [\#6176](https://github.com/chef/chef/pull/6176) ([lamont-granquist](https://github.com/lamont-granquist))
+- Disable local mode's localhost socket by default in Chef 14 [\#6088](https://github.com/chef/chef/issues/6088)
 
-## [v13.1.25](https://github.com/chef/chef/tree/v13.1.25) (2017-05-24)
-[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.25)
+## [v13.1.26](https://github.com/chef/chef/tree/v13.1.26) (2017-05-25)
+[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.26)
 
 **Closed issues:**
 
@@ -16,6 +16,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- convert breakpoint resource to a custom resource [\#6176](https://github.com/chef/chef/pull/6176) ([lamont-granquist](https://github.com/lamont-granquist))
 - Make non-legacy solo use socketless mode [\#6174](https://github.com/chef/chef/pull/6174) ([coderanger](https://github.com/coderanger))
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6157](https://github.com/chef/chef/pull/6157) ([shortdudey123](https://github.com/shortdudey123))
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6156](https://github.com/chef/chef/pull/6156) ([shortdudey123](https://github.com/shortdudey123))
