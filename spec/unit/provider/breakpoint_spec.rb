@@ -17,37 +17,33 @@
 #
 
 require "spec_helper"
-describe Chef::Provider::Breakpoint do
+describe "le breakpoint provider" do
+
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:collection) { double("resource collection") }
+  let(:resource) { Chef::Resource::Breakpoint.new("name", run_context) }
+  let(:provider) { resource.provider_for_action(:break) }
 
   before do
-    @resource = Chef::Resource::Breakpoint.new
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
-    @collection = double("resource collection")
-    allow(@run_context).to receive(:resource_collection).and_return(@collection)
-    @provider = Chef::Provider::Breakpoint.new(@resource, @run_context)
-  end
-
-  it "responds to load_current_resource" do
-    expect(@provider).to respond_to(:load_current_resource)
+    allow(run_context).to receive(:resource_collection).and_return(collection)
   end
 
   it "gets the iterator from @collection and pauses it" do
     allow(Shell).to receive(:running?).and_return(true)
-    @iterator = double("stepable_iterator")
-    allow(@collection).to receive(:iterator).and_return(@iterator)
-    expect(@iterator).to receive(:pause)
-    @provider.action_break
-    expect(@resource).to be_updated
+    iterator = double("stepable_iterator")
+    allow(collection).to receive(:iterator).and_return(iterator)
+    expect(iterator).to receive(:pause)
+    provider.action_break
+    expect(resource).to be_updated
   end
 
   it "doesn't pause the iterator if chef-shell isn't running" do
     allow(Shell).to receive(:running?).and_return(false)
-    @iterator = double("stepable_iterator")
-    allow(@collection).to receive(:iterator).and_return(@iterator)
-    expect(@iterator).not_to receive(:pause)
-    @provider.action_break
+    iterator = double("stepable_iterator")
+    allow(collection).to receive(:iterator).and_return(iterator)
+    expect(iterator).not_to receive(:pause)
+    provider.action_break
   end
-
 end
