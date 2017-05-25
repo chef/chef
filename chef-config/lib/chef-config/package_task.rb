@@ -59,6 +59,9 @@ module ChefConfig
     # Name of git remote used to push tags during a release.  Default is origin.
     attr_accessor :git_remote
 
+    # True if should use Chef::VersionString.
+    attr_accessor :use_versionstring
+
     def initialize(root_path = nil, module_name = nil, gem_name = nil)
       init(root_path, module_name, gem_name)
       yield self if block_given?
@@ -219,12 +222,10 @@ module ChefConfig
 # this repo. Do not edit this manually. Edit the VERSION file and run the rake
 # task instead.
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-require 'chef/version_string'
-
+#{"\nrequire 'chef/version_string'\n" if use_versionstring}
 #{class_or_module} #{module_name}
   #{module_name.upcase}_ROOT = File.expand_path("../..", __FILE__)
-  VERSION = Chef::VersionString.new("#{version}")
+  VERSION = #{use_versionstring ? "Chef::VersionString.new(\"#{version}\")" : "\"#{version}\""}
 end
 
 #
