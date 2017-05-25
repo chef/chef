@@ -1,7 +1,14 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.1.24](https://github.com/chef/chef/tree/v13.1.24) (2017-05-24)
-[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.24)
+## [v13.1.25](https://github.com/chef/chef/tree/v13.1.25) (2017-05-25)
+[Full Changelog](https://github.com/chef/chef/compare/v13.1.25...v13.1.25)
+
+**Merged pull requests:**
+
+- convert breakpoint resource to a custom resource [\#6176](https://github.com/chef/chef/pull/6176) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v13.1.25](https://github.com/chef/chef/tree/v13.1.25) (2017-05-24)
+[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.25)
 
 **Closed issues:**
 
@@ -9,6 +16,10 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- Make non-legacy solo use socketless mode [\#6174](https://github.com/chef/chef/pull/6174) ([coderanger](https://github.com/coderanger))
+- Prefer Systemd with sysvinit script over Upstart for service provider [\#6157](https://github.com/chef/chef/pull/6157) ([shortdudey123](https://github.com/shortdudey123))
+- Prefer Systemd with sysvinit script over Upstart for service provider [\#6156](https://github.com/chef/chef/pull/6156) ([shortdudey123](https://github.com/shortdudey123))
+- Ensure that we check the embedded gem binary last [\#6154](https://github.com/chef/chef/pull/6154) ([thommay](https://github.com/thommay))
 - Fixing broken functional test in windows\_task resource [\#6139](https://github.com/chef/chef/pull/6139) ([NimishaS](https://github.com/NimishaS))
 - Discard caches for files not in the manifest [\#6129](https://github.com/chef/chef/pull/6129) ([akitada](https://github.com/akitada))
 - User on Windows with group incorrectly warns about passing GID [\#6125](https://github.com/chef/chef/pull/6125) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
