@@ -165,7 +165,7 @@ module ChefConfig
       end
 
       namespace :version do
-        desc 'Regenerate lib/#{@module_path}/version.rb from VERSION file'
+        desc "Regenerate lib/#{module_path}/version.rb from VERSION file"
         task :update => :update_components_versions do
           update_version_rb
           update_gemfile_lock
