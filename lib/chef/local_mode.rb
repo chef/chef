@@ -73,6 +73,7 @@ class Chef
         @chef_zero_server = ChefZero::Server.new(server_options)
 
         if Chef::Config[:listen]
+          Chef.deprecated(:local_listen, "Starting local-mode server in deprecated socket mode")
           @chef_zero_server.start_background
         else
           @chef_zero_server.start_socketless
