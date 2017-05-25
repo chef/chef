@@ -1,18 +1,12 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.1.26](https://github.com/chef/chef/tree/v13.1.26) (2017-05-25)
-[Full Changelog](https://github.com/chef/chef/compare/v13.1.26...v13.1.26)
-
-**Closed issues:**
-
-- Disable local mode's localhost socket by default in Chef 14 [\#6088](https://github.com/chef/chef/issues/6088)
-
-## [v13.1.26](https://github.com/chef/chef/tree/v13.1.26) (2017-05-25)
-[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.26)
+## [v13.1.27](https://github.com/chef/chef/tree/v13.1.27) (2017-05-25)
+[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.27)
 
 **Closed issues:**
 
 - Chef 13.0 regression in gem\_package related to finding gem binaries [\#6103](https://github.com/chef/chef/issues/6103)
+- Disable local mode's localhost socket by default in Chef 14 [\#6088](https://github.com/chef/chef/issues/6088)
 
 **Merged pull requests:**
 
