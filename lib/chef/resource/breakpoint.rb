@@ -30,9 +30,6 @@ class Chef
         super(caller.first, *args)
       end
 
-      def load_current_resource
-      end
-
       action :break do
         if defined?(Shell) && Shell.running?
           with_run_context :parent do
