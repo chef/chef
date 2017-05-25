@@ -259,7 +259,7 @@ mpg123 1.12.1-0ubuntu1
         describe "install_package" do
           it "should run apt-get install with the package name and version" do
             expect(@provider).to receive(:shell_out!). with(
-              "apt-get", "-q", "-y", "install", "irssi=0.8.12-7",
+              "apt-get", "-q", "-y", "--allow-downgrades", "install", "irssi=0.8.12-7",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -268,7 +268,7 @@ mpg123 1.12.1-0ubuntu1
 
           it "should run apt-get install with the package name and version and options if specified" do
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "--force-yes", "install", "irssi=0.8.12-7",
+              "apt-get", "-q", "-y", "--allow-downgrades", "--force-yes", "install", "irssi=0.8.12-7",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -284,7 +284,7 @@ mpg123 1.12.1-0ubuntu1
             @provider.new_resource = @new_resource
 
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "-o", "APT::Default-Release=lenny-backports", "install", "irssi=0.8.12-7",
+              "apt-get", "-q", "-y", "--allow-downgrades", "-o", "APT::Default-Release=lenny-backports", "install", "irssi=0.8.12-7",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -294,7 +294,7 @@ mpg123 1.12.1-0ubuntu1
 
           it "should run apt-get install with the package name and quotes options if specified" do
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "--force-yes", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confnew", "install", "irssi=0.8.12-7",
+              "apt-get", "-q", "-y", "--allow-downgrades", "--force-yes", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confnew", "install", "irssi=0.8.12-7",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -315,7 +315,7 @@ mpg123 1.12.1-0ubuntu1
 
           it "should run apt-get remove with the package name" do
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "remove", "irssi",
+              "apt-get", "-q", "-y", "--allow-downgrades", "remove", "irssi",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -324,7 +324,7 @@ mpg123 1.12.1-0ubuntu1
 
           it "should run apt-get remove with the package name and options if specified" do
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "--force-yes", "remove", "irssi",
+              "apt-get", "-q", "-y", "--allow-downgrades", "--force-yes", "remove", "irssi",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -338,7 +338,7 @@ mpg123 1.12.1-0ubuntu1
 
           it "should run apt-get purge with the package name" do
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "purge", "irssi",
+              "apt-get", "-q", "-y", "--allow-downgrades", "purge", "irssi",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -347,7 +347,7 @@ mpg123 1.12.1-0ubuntu1
 
           it "should run apt-get purge with the package name and options if specified" do
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "--force-yes", "purge", "irssi",
+              "apt-get", "-q", "-y", "--allow-downgrades", "--force-yes", "purge", "irssi",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -431,7 +431,7 @@ mpg123 1.12.1-0ubuntu1
           it "should install the package without specifying a version" do
             @provider.package_data["libmysqlclient15-dev"][:virtual] = true
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "install", "libmysqlclient15-dev",
+              "apt-get", "-q", "-y", "--allow-downgrades", "install", "libmysqlclient15-dev",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -443,7 +443,7 @@ mpg123 1.12.1-0ubuntu1
           it "should remove the resolved name instead of the virtual package name" do
             expect(@provider).to receive(:resolve_virtual_package_name).with("libmysqlclient15-dev").and_return("libmysqlclient-dev")
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "remove", "libmysqlclient-dev",
+              "apt-get", "-q", "-y", "--allow-downgrades", "remove", "libmysqlclient-dev",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -455,7 +455,7 @@ mpg123 1.12.1-0ubuntu1
           it "should purge the resolved name instead of the virtual package name" do
             expect(@provider).to receive(:resolve_virtual_package_name).with("libmysqlclient15-dev").and_return("libmysqlclient-dev")
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "purge", "libmysqlclient-dev",
+              "apt-get", "-q", "-y", "--allow-downgrades", "purge", "libmysqlclient-dev",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -467,7 +467,7 @@ mpg123 1.12.1-0ubuntu1
           it "can install a virtual package followed by a non-virtual package" do
             # https://github.com/chef/chef/issues/2914
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "install", "libmysqlclient15-dev", "irssi=0.8.12-7",
+              "apt-get", "-q", "-y", "--allow-downgrades", "install", "libmysqlclient15-dev", "irssi=0.8.12-7",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
