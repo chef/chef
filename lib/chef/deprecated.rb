@@ -238,6 +238,16 @@ class Chef
       end
     end
 
+    class LocalListen < Base
+      def id
+        18
+      end
+
+      def target
+        "local_listen.html"
+      end
+    end
+
     # id 3694 was deleted
 
     class Generic < Base
