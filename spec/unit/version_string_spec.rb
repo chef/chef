@@ -74,46 +74,4 @@ describe Chef::VersionString do
     subject { '~> 1.0' =~ described_object }
     it { expect { subject }.to raise_error TypeError }
   end
-
-  context 'with case statement' do
-    subject do
-      case described_object
-      when 'abc'
-        :a
-      when '1.2.3'
-        :b
-      when /^2\.0/
-        :c
-      when '~> 2.0'
-        :d
-      when '~> 1.0'
-        :e
-      end
-    end
-
-    context 'with 1.2.3' do
-      let(:input) { '1.2.3' }
-      it { is_expected.to eq :b }
-    end
-
-    context 'with 2.0.0' do
-      let(:input) { '2.0.0' }
-      it { is_expected.to eq :c }
-    end
-
-    context 'with 2.1.0' do
-      let(:input) { '2.1.0' }
-      it { is_expected.to eq :d }
-    end
-
-    context 'with 1.2.4' do
-      let(:input) { '1.2.4' }
-      it { is_expected.to eq :e }
-    end
-
-    context 'with 0' do
-      let(:input) { '0' }
-      it { is_expected.to be nil }
-    end
-  end
 end

@@ -139,34 +139,5 @@ class Chef
       end
     end
 
-    # Grouping operator to support fancy `case` blocks. Requires the String
-    # monkeypatch below to function.
-    #
-    # @param other [Object]
-    # @return [Boolean]
-    # @example
-    #   case Chef::VersionString.new('1.0.0')
-    #   when '~> 2.0'
-    #     :two
-    #   when '~> 1.0'
-    #     :one
-    #   end
-    def ===(other)
-      self =~ other
-    rescue ArgumentError
-      super
-    end
-
   end
 end
-
-# Monkeypatch string grouping to allow the nice case syntax shown above.
-String.prepend(Module.new do
-  def ===(other)
-    if other.is_a?(Chef::VersionString)
-      other === self
-    else
-      super
-    end
-  end
-end)
