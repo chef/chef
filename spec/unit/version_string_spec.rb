@@ -25,6 +25,8 @@ describe Chef::VersionString do
   it { is_expected.to be == '1.2.3' }
   it { is_expected.to be < 'abc' }
   it { is_expected.to be > '0' }
+  it { is_expected.to eq described_class.new('1.2.3') }
+  it { is_expected.to be == described_class.new('1.2.3') }
 
   context 'with !=' do
     subject { described_object != '1.2.4' }

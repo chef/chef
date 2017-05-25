@@ -60,7 +60,7 @@ class Chef
     def <=>(other)
       other_ver = case other
                   when VersionString
-                    other.pased_version
+                    other.parsed_version
                   else
                     begin
                       Gem::Version.create(other.to_s)
