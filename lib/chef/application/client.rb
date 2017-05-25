@@ -286,7 +286,7 @@ class Chef::Application::Client < Chef::Application
   option :listen,
     :long           => "--[no-]listen",
     :description    => "Whether a local mode (-z) server binds to a port",
-    :boolean        => true
+    :boolean        => false
 
   option :fips,
     :long         => "--[no-]fips",
