@@ -16,7 +16,7 @@
 class Chef
   # String-like object for version strings.
   #
-  # @since 13.1
+  # @since 13.2
   # @api internal
   class VersionString < String
     # Parsed version object for the string.
