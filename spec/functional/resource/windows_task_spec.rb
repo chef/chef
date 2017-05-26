@@ -396,7 +396,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
     end
   end
 
-  describe "action :end" do
+  describe "action :end", :volatile do
     after { delete_task }
 
     subject do
