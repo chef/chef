@@ -62,7 +62,6 @@ describe Chef::Resource::WindowsTask, :windows_only do
         subject.run_action(:create)
         task_details = windows_task_provider.send(:load_task_hash, task_name)
         expect(task_details[:TaskName]).to eq("\\chef-client")
-        expect(task_details[:Status]).to eq("Ready")
         expect(task_details[:TaskToRun]).to eq("chef-client")
         expect(task_details[:"Repeat:Every"]).to eq("0 Hour(s), 15 Minute(s)")
         expect(task_details[:run_level]).to eq("HighestAvailable")
@@ -83,7 +82,6 @@ describe Chef::Resource::WindowsTask, :windows_only do
         subject.run_action(:create)
         task_details = windows_task_provider.send(:load_task_hash, task_name)
         expect(task_details[:TaskName]).to eq("\\chef-client")
-        expect(task_details[:Status]).to eq("Ready")
         expect(task_details[:TaskToRun]).to eq("chef-client")
         expect(task_details[:"Repeat:Every"]).to eq("3 Hour(s), 0 Minute(s)")
         expect(task_details[:run_level]).to eq("HighestAvailable")
@@ -103,7 +101,6 @@ describe Chef::Resource::WindowsTask, :windows_only do
         subject.run_action(:create)
         task_details = windows_task_provider.send(:load_task_hash, task_name)
         expect(task_details[:TaskName]).to eq("\\chef-client")
-        expect(task_details[:Status]).to eq("Ready")
         expect(task_details[:TaskToRun]).to eq("chef-client")
         expect(task_details[:ScheduleType]).to eq("Daily")
         expect(task_details[:Days]).to eq("Every 1 day(s)")
@@ -125,7 +122,6 @@ describe Chef::Resource::WindowsTask, :windows_only do
         subject.run_action(:create)
         task_details = windows_task_provider.send(:load_task_hash, task_name)
         expect(task_details[:TaskName]).to eq("\\chef-client")
-        expect(task_details[:Status]).to eq("Ready")
         expect(task_details[:TaskToRun]).to eq("chef-client")
         expect(task_details[:ScheduleType]).to eq("Monthly")
         expect(task_details[:Months]).to eq("FEB, APR, JUN, AUG, OCT, DEC")
@@ -154,7 +150,6 @@ describe Chef::Resource::WindowsTask, :windows_only do
           subject.run_action(:create)
           task_details = windows_task_provider.send(:load_task_hash, task_name)
           expect(task_details[:TaskName]).to eq("\\chef-client")
-          expect(task_details[:Status]).to eq("Ready")
           expect(task_details[:TaskToRun]).to eq("chef-client")
           expect(task_details[:ScheduleType]).to eq("One Time Only")
           expect(task_details[:StartTime]).to eq("5:00:00 PM")
@@ -176,7 +171,6 @@ describe Chef::Resource::WindowsTask, :windows_only do
         subject.run_action(:create)
         task_details = windows_task_provider.send(:load_task_hash, task_name)
         expect(task_details[:TaskName]).to eq("\\chef-client")
-        expect(task_details[:Status]).to eq("Ready")
         expect(task_details[:TaskToRun]).to eq("chef-client")
         expect(task_details[:ScheduleType]).to eq("Weekly")
         expect(task_details[:Months]).to eq("Every 1 week(s)")
@@ -190,7 +184,6 @@ describe Chef::Resource::WindowsTask, :windows_only do
           subject.run_action(:create)
           task_details = windows_task_provider.send(:load_task_hash, task_name)
           expect(task_details[:TaskName]).to eq("\\chef-client")
-          expect(task_details[:Status]).to eq("Ready")
           expect(task_details[:TaskToRun]).to eq("chef-client")
           expect(task_details[:Days]).to eq("MON, FRI")
           expect(task_details[:ScheduleType]).to eq("Weekly")
@@ -227,7 +220,6 @@ describe Chef::Resource::WindowsTask, :windows_only do
         subject.run_action(:create)
         task_details = windows_task_provider.send(:load_task_hash, task_name)
         expect(task_details[:TaskName]).to eq("\\chef-client")
-        expect(task_details[:Status]).to eq("Ready")
         expect(task_details[:TaskToRun]).to eq("chef-client")
         expect(task_details[:ScheduleType]).to eq("At logon time")
         expect(task_details[:run_level]).to eq("HighestAvailable")
@@ -396,12 +388,14 @@ describe Chef::Resource::WindowsTask, :windows_only do
     end
   end
 
-  describe "action :end", :volatile do
+  describe "action :end" do
+    let(:task_name) { "end-task" }
     after { delete_task }
 
     subject do
       new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
-      new_resource.command task_name
+      new_resource.command "dir"
+      new_resource.run_level :highest
       new_resource
     end
 
