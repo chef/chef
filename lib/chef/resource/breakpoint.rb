@@ -21,12 +21,24 @@ require "chef/resource"
 class Chef
   class Resource
     class Breakpoint < Chef::Resource
+      provides :breakpoint
+      resource_name :breakpoinst
+
       default_action :break
 
       def initialize(action = "break", *args)
         super(caller.first, *args)
       end
 
+      action :break do
+        if defined?(Shell) && Shell.running?
+          with_run_context :parent do
+            run_context.resource_collection.iterator.pause
+            new_resource.updated_by_last_action(true)
+            run_context.resource_collection.iterator
+          end
+        end
+      end
     end
   end
 end

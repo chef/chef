@@ -381,10 +381,7 @@ module ChefConfig
     # Whether Chef Zero local mode should bind to a port. All internal requests
     # will go through the socketless code path regardless, so the socket is
     # only needed if other processes will connect to the local mode server.
-    #
-    # For compatibility this is set to true but it will be changed to false in
-    # the future.
-    default :listen, true
+    default :listen, false
 
     config_context :chef_zero do
       config_strict_mode true

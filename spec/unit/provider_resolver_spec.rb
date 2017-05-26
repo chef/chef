@@ -554,7 +554,7 @@ describe Chef::ProviderResolver do
     PROVIDERS =
       {
         bash:                   [ Chef::Resource::Bash, Chef::Provider::Script ],
-        breakpoint:             [ Chef::Resource::Breakpoint, Chef::Provider::Breakpoint ],
+        breakpoint:             [ Chef::Resource::Breakpoint, Chef::Resource::Breakpoint.action_class ],
         chef_gem:               [ Chef::Resource::ChefGem, Chef::Provider::Package::Rubygems ],
         cookbook_file:          [ Chef::Resource::CookbookFile, Chef::Provider::CookbookFile ],
         csh:                    [ Chef::Resource::Csh, Chef::Provider::Script ],
