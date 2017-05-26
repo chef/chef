@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.1.29](https://github.com/chef/chef/tree/v13.1.29) (2017-05-26)
-[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v13.1.29)
+## [v13.1.30](https://github.com/chef/chef/tree/v13.1.30) (2017-05-26)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.1.30)
 
 **Closed issues:**
 
@@ -10,6 +10,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- Use socketless local mode by default [\#6177](https://github.com/chef/chef/pull/6177) ([coderanger](https://github.com/coderanger))
 - convert breakpoint resource to a custom resource [\#6176](https://github.com/chef/chef/pull/6176) ([lamont-granquist](https://github.com/lamont-granquist))
 - Make non-legacy solo use socketless mode [\#6174](https://github.com/chef/chef/pull/6174) ([coderanger](https://github.com/coderanger))
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6157](https://github.com/chef/chef/pull/6157) ([shortdudey123](https://github.com/shortdudey123))
@@ -20,6 +21,12 @@ This changelog reflects the current state of chef's master branch on github and 
 - User on Windows with group incorrectly warns about passing GID [\#6125](https://github.com/chef/chef/pull/6125) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
 - Update windows\_task to fix day validation with monthly frequency [\#6105](https://github.com/chef/chef/pull/6105) ([Stromweld](https://github.com/Stromweld))
 - cab\_package should compare package name and version [\#6100](https://github.com/chef/chef/pull/6100) ([smurawski](https://github.com/smurawski))
+- Fix manage\_home on AIX [\#6097](https://github.com/chef/chef/pull/6097) ([thommay](https://github.com/thommay))
+- apt-key finger no longer matches extract fingerprints regex [\#6094](https://github.com/chef/chef/pull/6094) ([whiteley](https://github.com/whiteley))
+- Fix lazy loading of cookbook files [\#6087](https://github.com/chef/chef/pull/6087) ([thommay](https://github.com/thommay))
+- add a pointer from the run\_context back to the runner [\#6077](https://github.com/chef/chef/pull/6077) ([lamont-granquist](https://github.com/lamont-granquist))
+- Knife key commands were missing a library they used [\#6071](https://github.com/chef/chef/pull/6071) ([coderanger](https://github.com/coderanger))
+- Add usage banner for knife client key create [\#6064](https://github.com/chef/chef/pull/6064) ([danielsdeleo](https://github.com/danielsdeleo))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
