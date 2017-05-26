@@ -2,7 +2,7 @@ _This file holds "in progress" release notes for the current release under devel
 
 # Chef Client Release Notes
 
-# 13.2
+# 13.1
 
 ## Socketless local mode by default
 
@@ -13,9 +13,13 @@ connects to the internal Zero server for the converge and changes data.
 If you use Chef Provisioning with Local Mode, you may need to pass `--listen` to
 `chef-client`.
 
-# 13.1
+## New Deprecations
 
-No new major features.
+### Removal of support for Ohai version 6 plugins (OHAI-10)
+
+<https://docs.chef.io/deprecations_ohai_v6_plugins.html>
+
+In Chef/Ohai 14 (April 2018) we will remove support for loading Ohai v6 plugins, which we deprecated in Ohai 7/Chef 11.12.
 
 # 13.0
 
@@ -406,10 +410,3 @@ Chef Client will only exit with exit codes defined in RFC 062.  This allows othe
 
 When Chef Client is running as a forked process on unix systems, the standardized exit codes are used by the child process.  To actually have Chef Client return the standard exit code, `client_fork false` will need to be set in Chef Client's configuration file.
 
-## New Deprecations
-
-### Removal of support for Ohai version 6 plugins (OHAI-10)
-
-<https://docs.chef.io/deprecations_ohai_v6_plugins.html>
-
-In Chef/Ohai 14 (April 2018) we will remove support for loading Ohai v6 plugins, which we deprecated in Ohai 7/Chef 11.12.
