@@ -17,9 +17,7 @@
 #
 
 require "spec_helper"
-if Chef::Platform.windows?
-  require "chef/win32/version"
-end
+require "chef/win32/version" if Chef::Platform.windows?
 
 describe "Chef::ReservedNames::Win32::Version", :windows_only, :not_supported_on_win2k3 do
   before do

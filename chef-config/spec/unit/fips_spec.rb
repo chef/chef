@@ -16,8 +16,9 @@
 # limitations under the License.
 #
 
-require "chef-config/fips"
 require "spec_helper"
+require "chef-config/fips"
+require "win32/registry" if RUBY_PLATFORM =~ /mswin|mingw32|windows/
 
 begin
   require "win32/registry"

@@ -17,14 +17,11 @@
 #
 
 require "spec_helper"
-if Chef::Platform.windows?
-  require "chef/win32/security"
-end
+require "chef/win32/security" if Chef::Platform.windows?
 
 describe "Chef::ReservedNames::Win32::SID", :windows_only do
-  if Chef::Platform.windows?
-    SID ||= Chef::ReservedNames::Win32::Security::SID
-  end
+
+  SID ||= Chef::ReservedNames::Win32::Security::SID if Chef::Platform.windows?
 
   it "should resolve default_security_object_group as a sane user group", :windows_not_domain_joined_only do
     # Domain accounts: domain-specific Domain Users SID

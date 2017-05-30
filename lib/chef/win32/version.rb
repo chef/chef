@@ -76,7 +76,7 @@ class Chef
         # Obtain sku information for the purpose of identifying
         # datacenter, cluster, and core skus, the latter 2 only
         # exist in releases after Windows Server 2003
-        if ! Chef::Platform.windows_server_2003?
+        unless Chef::Platform.windows_server_2003?
           @sku = get_product_info(@major_version, @minor_version, @sp_major_version, @sp_minor_version)
         else
           # The get_product_info API is not supported on Win2k3,

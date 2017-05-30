@@ -15,11 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 require "chef/config"
-if Chef::Platform.windows?
-  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.1")
-    require "chef/monkey_patches/webrick-utils"
-  end
-end
+require "chef/monkey_patches/webrick-utils" if Chef::Platform.windows? && (Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.1"))
 
 class Chef
   module LocalMode

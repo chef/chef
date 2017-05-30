@@ -18,9 +18,7 @@
 
 require "chef/file_content_management/deploy/cp"
 require "chef/file_content_management/deploy/mv_unix"
-if Chef::Platform.windows?
-  require "chef/file_content_management/deploy/mv_windows"
-end
+require "chef/file_content_management/deploy/mv_windows" if Chef::Platform.windows?
 
 class Chef
   class FileContentManagement

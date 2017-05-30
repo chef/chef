@@ -18,8 +18,10 @@
 
 require "chef/exceptions"
 require "chef/platform/query_helpers"
-require "chef/win32/process" if Chef::Platform.windows?
-require "chef/win32/system" if Chef::Platform.windows?
+if Chef::Platform.windows?
+  require "chef/win32/process"
+  require "chef/win32/system"
+end
 
 class Chef
   module Mixin

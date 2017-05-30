@@ -17,9 +17,7 @@
 #
 
 require "spec_helper"
-if Chef::Platform.windows?
-  require "chef/application/windows_service_manager"
-end
+require "chef/application/windows_service_manager" if Chef::Platform.windows?
 
 #
 # ATTENTION:
