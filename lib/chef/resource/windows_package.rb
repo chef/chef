@@ -42,7 +42,6 @@ class Chef
 
       # Unique to this resource
       property :installer_type, Symbol
-      property :timeout, [ String, Integer ], default: 600
       # In the past we accepted return code 127 for an unknown reason and 42 because of a bug
       property :returns, [ String, Integer, Array ], default: [ 0 ], desired_state: false
       property :source, String,
