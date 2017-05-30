@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,9 +48,7 @@ class Chef
     # @param instance_name [String] If known, the recource name as used in the recipe, IE `vim` in `package 'vim'`
     # This method is meant to be the 1 insert method necessary in the future.  It should support all known use cases
     #   for writing into the ResourceCollection.
-    def insert(resource, opts = {})
-      resource_type ||= opts[:resource_type] # Would rather use Ruby 2.x syntax, but oh well
-      instance_name ||= opts[:instance_name]
+    def insert(resource, resource_type: nil, instance_name: nil)
       resource_list.insert(resource)
       if !(resource_type.nil? && instance_name.nil?)
         resource_set.insert_as(resource, resource_type, instance_name)
@@ -64,23 +62,6 @@ class Chef
       resource_set.delete(key)
     end
 
-    # @deprecated
-    def []=(index, resource)
-      Chef::Log.warn("`[]=` is deprecated, use `insert` (which only inserts at the end)")
-      resource_list[index] = resource
-      resource_set.insert_as(resource)
-    end
-
-    # @deprecated
-    def push(*resources)
-      Chef::Log.warn("`push` is deprecated, use `insert`")
-      resources.flatten.each do |res|
-        insert(res)
-      end
-      self
-    end
-
-    # @deprecated
     alias_method :<<, :insert
 
     # Read-only methods are simple to delegate - doing that below
