@@ -2,6 +2,18 @@ _This file holds "in progress" release notes for the current release under devel
 
 # Chef Client Release Notes
 
+# 13.2
+
+## Reconfigure between runs when daemonized
+
+When Chef performs a reconfigure, it re-reads the configuration files. It also re-opens its log files, which facilitates log file rotation.
+
+Chef normally will reconfigure when sent a HUP signal. As of this release if you send a HUP signal while it is converging, the reconfigure 
+happens at the end of the run. This is avoids potential Ruby issues when the configuration file contains additional Ruby code that is executed.
+While the daemon is sleeping between runs, sending a SIGHUP will still cause an immediate reconfigure.
+
+Additionally, Chef now always performs a reconfigure after every run when daemonized.
+
 # 13.1
 
 ## Socketless local mode by default
