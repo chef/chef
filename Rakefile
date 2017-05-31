@@ -34,6 +34,7 @@ require_relative "tasks/version"
 ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef", "chef") do |package|
   package.component_paths = ["chef-config"]
   package.generate_version_class = true
+  package.use_versionstring = true
 end
 
 task :pedant, :chef_zero_spec
