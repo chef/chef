@@ -19,11 +19,11 @@
 # task instead.
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-require "chef/version_string"
+require 'chef/version_string'
 
 class Chef
   CHEF_ROOT = File.expand_path("../..", __FILE__)
-  VERSION = Chef::VersionString.new("13.1.32")
+  VERSION = Chef::VersionString.new("13.1.33")
 end
 
 #
