@@ -19,7 +19,7 @@
 # task instead.
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-require 'chef/version_string'
+require "chef/version_string"
 
 class Chef
   CHEF_ROOT = File.expand_path("../..", __FILE__)
