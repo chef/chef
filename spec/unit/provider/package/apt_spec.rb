@@ -259,7 +259,7 @@ mpg123 1.12.1-0ubuntu1
         describe "install_package" do
           it "should run apt-get install with the package name and version" do
             expect(@provider).to receive(:shell_out!). with(
-              "apt-get", "-q", "-y", "install", "irssi=0.8.12-7",
+              "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "irssi=0.8.12-7",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -268,7 +268,7 @@ mpg123 1.12.1-0ubuntu1
 
           it "should run apt-get install with the package name and version and options if specified" do
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "--force-yes", "install", "irssi=0.8.12-7",
+              "apt-get", "-q", "-y", "--force-yes", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "irssi=0.8.12-7",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -284,7 +284,7 @@ mpg123 1.12.1-0ubuntu1
             @provider.new_resource = @new_resource
 
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "-o", "APT::Default-Release=lenny-backports", "install", "irssi=0.8.12-7",
+              "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "-o", "APT::Default-Release=lenny-backports", "install", "irssi=0.8.12-7",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -453,7 +453,7 @@ mpg123 1.12.1-0ubuntu1
           it "should install the package without specifying a version" do
             @provider.package_data["libmysqlclient15-dev"][:virtual] = true
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "install", "libmysqlclient15-dev",
+              "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "libmysqlclient15-dev",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
@@ -489,7 +489,7 @@ mpg123 1.12.1-0ubuntu1
           it "can install a virtual package followed by a non-virtual package" do
             # https://github.com/chef/chef/issues/2914
             expect(@provider).to receive(:shell_out!).with(
-              "apt-get", "-q", "-y", "install", "libmysqlclient15-dev", "irssi=0.8.12-7",
+              "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "libmysqlclient15-dev", "irssi=0.8.12-7",
               :env => { "DEBIAN_FRONTEND" => "noninteractive" },
               :timeout => @timeout
             )
