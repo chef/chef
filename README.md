@@ -66,7 +66,7 @@ git clone https://github.com/chef/chef.git
 cd chef
 bundle install
 bundle exec rake gem
-budnle exec rake install
+bundle exec rake install
 ```
 
 ## Contributing/Development
