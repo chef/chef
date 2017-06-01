@@ -141,6 +141,7 @@ you must use the following commands or run `rake dependencies:update_gemfile_loc
 bundle lock --update --add-platform ruby
 bundle lock --update --add-platform x64-mingw32
 bundle lock --update --add-platform x86-mingw32
+```
 
 # How Chef Builds and Versions
 
