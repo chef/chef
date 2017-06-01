@@ -147,9 +147,9 @@ class Chef
           # forcibly overwrite the config file, otherwise preserve it.
           if new_resource.respond_to?(:overwrite_config_files)
             if new_resource.overwrite_config_files
-              [ '-o', 'Dpkg::Options::="--force-confnew"' ]
+              [ "-o", "Dpkg::Options::=--force-confnew" ]
             else
-              [ '-o', 'Dpkg::Options::="--force-confdef"', '-o', 'Dpkg::Options::="--force-confold"' ]
+              [ "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold" ]
             end
           end
         end
