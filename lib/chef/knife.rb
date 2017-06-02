@@ -486,8 +486,11 @@ class Chef
         ui.error "Failed to authenticate to #{server_url} as #{username} with key #{api_key}"
         ui.info "Response:  #{format_rest_error(response)}"
       when Net::HTTPForbidden
-        ui.error "You authenticated successfully to #{server_url} as #{username} but you are not authorized for this action.
-        This is possibly a connectivity issue. Please check your proxy settings if any."
+        ui.error "You authenticated successfully to #{server_url} as #{username} but you are not authorized for this action."
+        proxy_env_vars = ENV.to_hash.keys.map(&:downcase) & %w{http_proxy https_proxy ftp_proxy socks_proxy no_proxy}
+        unless proxy_env_vars.empty?
+          ui.error "There are proxy servers configured, your Chef server may need to be added to NO_PROXY."
+        end
         ui.info "Response:  #{format_rest_error(response)}"
       when Net::HTTPBadRequest
         ui.error "The data in your request was invalid"
