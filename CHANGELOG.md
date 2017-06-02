@@ -1,14 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.2.5](https://github.com/chef/chef/tree/v13.2.5) (2017-06-02)
-[Full Changelog](https://github.com/chef/chef/compare/v13.2.5...v13.2.5)
-
-**Merged pull requests:**
-
-- \[MSYS-563\] Modified error message to explain connectivity issue due to Proxy [\#6142](https://github.com/chef/chef/pull/6142) ([NimishaS](https://github.com/NimishaS))
-
-## [v13.2.5](https://github.com/chef/chef/tree/v13.2.5) (2017-06-02)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.2.5)
+## [v13.2.6](https://github.com/chef/chef/tree/v13.2.6) (2017-06-02)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.2.6)
 
 **Closed issues:**
 
@@ -23,6 +16,7 @@ This changelog reflects the current state of chef's master branch on github and 
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6157](https://github.com/chef/chef/pull/6157) ([shortdudey123](https://github.com/shortdudey123))
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6156](https://github.com/chef/chef/pull/6156) ([shortdudey123](https://github.com/shortdudey123))
 - Ensure that we check the embedded gem binary last [\#6154](https://github.com/chef/chef/pull/6154) ([thommay](https://github.com/thommay))
+- \[MSYS-563\] Modified error message to explain connectivity issue due to Proxy [\#6142](https://github.com/chef/chef/pull/6142) ([NimishaS](https://github.com/NimishaS))
 - Fixing broken functional test in windows\_task resource [\#6139](https://github.com/chef/chef/pull/6139) ([NimishaS](https://github.com/NimishaS))
 - Discard caches for files not in the manifest [\#6129](https://github.com/chef/chef/pull/6129) ([akitada](https://github.com/akitada))
 - User on Windows with group incorrectly warns about passing GID [\#6125](https://github.com/chef/chef/pull/6125) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
