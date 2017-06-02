@@ -118,6 +118,7 @@ describe Chef::Provider::WindowsTask do
 
       it "creates the task if it's not already existing" do
         allow(provider).to receive(:task_need_update?).and_return(true)
+        allow(provider).to receive(:basic_validation).and_return(true)
         expect(provider).to receive(:run_schtasks).with("CREATE", { "F" => "", "SC" => :hourly, "MO" => 1, "TR" => nil, "RU" => "SYSTEM" })
         provider.run_action(:create)
         expect(new_resource).to be_updated_by_last_action
@@ -126,6 +127,7 @@ describe Chef::Provider::WindowsTask do
       it "updates the task XML if random_delay is provided" do
         new_resource.random_delay "20"
         allow(provider).to receive(:task_need_update?).and_return(true)
+        allow(provider).to receive(:basic_validation).and_return(true)
         expect(provider).to receive(:run_schtasks).with("CREATE", { "F" => "", "SC" => :hourly, "MO" => 1, "TR" => nil, "RU" => "SYSTEM" })
         expect(provider).to receive(:update_task_xml)
         provider.run_action(:create)
@@ -135,6 +137,7 @@ describe Chef::Provider::WindowsTask do
       it "updates the task XML if execution_time_limit is provided" do
         new_resource.execution_time_limit "20"
         allow(provider).to receive(:task_need_update?).and_return(true)
+        allow(provider).to receive(:basic_validation).and_return(true)
         expect(provider).to receive(:run_schtasks).with("CREATE", { "F" => "", "SC" => :hourly, "MO" => 1, "TR" => nil, "RU" => "SYSTEM" })
         expect(provider).to receive(:update_task_xml)
         provider.run_action(:create)
@@ -280,6 +283,29 @@ describe Chef::Provider::WindowsTask do
     end
   end
 
+  describe "#basic_validation" do
+    context "when command doesn't exist" do
+      it "raise error" do
+        new_resource.command ""
+        expect { provider.send(:basic_validation) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      end
+    end
+
+    context "when task_name doesn't exist" do
+      let(:new_resource) { Chef::Resource::WindowsTask.new("") }
+      it "raise error" do
+        expect { provider.send(:basic_validation) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      end
+    end
+
+    context "when task_name and command exists" do
+      it "returns true" do
+        new_resource.command "cd ~/"
+        expect(provider.send(:basic_validation)).to be(true)
+      end
+    end
+  end
+
   describe "#task_need_update?" do
     context "when task doesn't exist" do
       before do
@@ -322,6 +348,20 @@ describe Chef::Provider::WindowsTask do
       context "when months are updated" do
         it "returns true" do
           new_resource.months "JAN"
+          expect(provider.send(:task_need_update?)).to be(true)
+        end
+      end
+
+      context "when start_day is updated" do
+        it "returns true" do
+          new_resource.start_day "01/01/2000"
+          expect(provider.send(:task_need_update?)).to be(true)
+        end
+      end
+
+      context "when start_time updated" do
+        it "returns true" do
+          new_resource.start_time "01:01"
           expect(provider.send(:task_need_update?)).to be(true)
         end
       end
