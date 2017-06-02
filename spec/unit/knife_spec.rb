@@ -439,6 +439,28 @@ describe Chef::Knife do
       expect(stderr.string).to match(%r{Response:  y u no administrator})
     end
 
+    context "when proxy servers are set" do
+      before do
+        ENV["http_proxy"] = "xyz"
+      end
+
+      after do
+        ENV.delete("http_proxy")
+      end
+
+      it "formats proxy errors nicely" do
+        response = Net::HTTPForbidden.new("1.1", "403", "Forbidden")
+        response.instance_variable_set(:@read, true)
+        allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no administrator"))
+        allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
+        allow(knife).to receive(:username).and_return("sadpanda")
+        knife.run_with_pretty_exceptions
+        expect(stderr.string).to match(%r{ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action})
+        expect(stderr.string).to match(%r{ERROR: There are proxy servers configured, your Chef server may need to be added to NO_PROXY.})
+        expect(stderr.string).to match(%r{Response:  y u no administrator})
+      end
+    end
+
     it "formats 400s nicely" do
       response = Net::HTTPBadRequest.new("1.1", "400", "Bad Request")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
