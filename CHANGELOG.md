@@ -1,7 +1,14 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.2.4](https://github.com/chef/chef/tree/v13.2.4) (2017-06-01)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.2.4)
+## [v13.2.5](https://github.com/chef/chef/tree/v13.2.5) (2017-06-02)
+[Full Changelog](https://github.com/chef/chef/compare/v13.2.5...v13.2.5)
+
+**Merged pull requests:**
+
+- \[MSYS-563\] Modified error message to explain connectivity issue due to Proxy [\#6142](https://github.com/chef/chef/pull/6142) ([NimishaS](https://github.com/NimishaS))
+
+## [v13.2.5](https://github.com/chef/chef/tree/v13.2.5) (2017-06-02)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.2.5)
 
 **Closed issues:**
 
@@ -19,6 +26,7 @@ This changelog reflects the current state of chef's master branch on github and 
 - Fixing broken functional test in windows\_task resource [\#6139](https://github.com/chef/chef/pull/6139) ([NimishaS](https://github.com/NimishaS))
 - Discard caches for files not in the manifest [\#6129](https://github.com/chef/chef/pull/6129) ([akitada](https://github.com/akitada))
 - User on Windows with group incorrectly warns about passing GID [\#6125](https://github.com/chef/chef/pull/6125) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
+- reconfigure between runs when running in a loop [\#6122](https://github.com/chef/chef/pull/6122) ([btm](https://github.com/btm))
 - Update windows\_task to fix day validation with monthly frequency [\#6105](https://github.com/chef/chef/pull/6105) ([Stromweld](https://github.com/Stromweld))
 - cab\_package should compare package name and version [\#6100](https://github.com/chef/chef/pull/6100) ([smurawski](https://github.com/smurawski))
 - Fix manage\_home on AIX [\#6097](https://github.com/chef/chef/pull/6097) ([thommay](https://github.com/thommay))
