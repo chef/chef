@@ -360,7 +360,7 @@ class Chef
       def debug_stacktrace(e)
         message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
 
-        unless (e.message =~ /suppressed for sensitive resource/)
+        unless e.message =~ /suppressed for sensitive resource/
           cause = e.cause if e.respond_to?(:cause)
           until cause.nil?
             message << "\n\n>>>> Caused by #{cause.class}: #{cause}\n#{cause.backtrace.join("\n")}"
