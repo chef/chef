@@ -248,6 +248,16 @@ class Chef
       end
     end
 
+    class NamespaceCollisions < Base
+      def id
+        19
+      end
+
+      def target
+        "namespace_collisions.html"
+      end
+    end
+
     # id 3694 was deleted
 
     class Generic < Base

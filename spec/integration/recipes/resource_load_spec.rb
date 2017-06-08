@@ -32,7 +32,7 @@ describe "Resource.load_current_value" do
         @created
       end
       action :create do
-        new_resource.class.created_x = x
+        new_resource.class.created_x = new_resource.x
       end
     end
     result.resource_name resource_name
@@ -45,10 +45,10 @@ describe "Resource.load_current_value" do
   context "with a resource with load_current_value" do
     before :each do
       resource_class.load_current_value do
-        x "loaded #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }.
-          select { |name, p| p.is_set?(self) }.
-          map { |name, p| "#{name}=#{p.get(self)}" }.
-          join(", ")})"
+        x "loaded #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }
+          .select { |name, p| p.is_set?(self) }
+          .map { |name, p| "#{name}=#{p.get(self)}" }
+          .join(", ")})"
       end
     end
 
@@ -116,22 +116,6 @@ describe "Resource.load_current_value" do
         it "i, name and d are passed to load_current_value, but not x" do
           expect(resource.current_value.x).to eq "loaded 2 (d=desired_d, i=desired_i, name=blah)"
         end
-      end
-    end
-
-    context "and a resource with no values set" do
-      let(:resource) do
-        e = self
-        r = nil
-        converge do
-          r = public_send(e.resource_name, "blah") do
-          end
-        end
-        r
-      end
-
-      it "the provider accesses values from load_current_value" do
-        expect(resource.class.created_x).to eq "loaded 1 (name=blah)"
       end
     end
 

@@ -416,6 +416,7 @@ module ResourceActionSpec
         attr_reader :x_warning_line
 
         it "Using the enclosing resource to set x to x emits a warning that you're using the wrong x" do
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
           recipe = converge do
             resource_action_spec_also_with_x "hi" do
               x 1
@@ -423,34 +424,43 @@ module ResourceActionSpec
             end
           end
           warnings = recipe.logs.lines.select { |l| l =~ /warn/i }
-          expect(warnings.size).to eq 1
+          expect(warnings.size).to eq 2
           expect(warnings[0]).to match(/property x is declared in both resource_action_spec_with_x\[hi\] and resource_action_spec_also_with_x\[hi\] action :set_x_to_x. Use new_resource.x instead. At #{__FILE__}:#{ResourceActionSpecAlsoWithX.x_warning_line}/)
         end
 
         it "Using the enclosing resource to set x to x outside the initializer emits no warning" do
-          expect_recipe do
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          recipe = converge do
             resource_action_spec_also_with_x "hi" do
               x 1
               action :set_x_to_x_in_non_initializer
             end
-          end.to emit_no_warnings_or_errors
+          end
+          warnings = recipe.logs.lines.select { |l| l =~ /warn/i }
+          expect(warnings.size).to eq 1  # the deprecation warning, not the property masking one
         end
 
         it "Using the enclosing resource to set x to 10 emits no warning" do
-          expect_recipe do
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          recipe = converge do
             resource_action_spec_also_with_x "hi" do
               x 1
               action :set_x_to_10
             end
-          end.to emit_no_warnings_or_errors
+          end
+          warnings = recipe.logs.lines.select { |l| l =~ /warn/i }
+          expect(warnings.size).to eq 1  # the deprecation warning, not the property masking one
         end
 
         it "Using the enclosing resource to set x to 10 emits no warning" do
-          expect_recipe do
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          recipe = converge do
             r = resource_action_spec_also_with_x "hi"
             r.x 1
             r.action :set_x_to_10
-          end.to emit_no_warnings_or_errors
+          end
+          warnings = recipe.logs.lines.select { |l| l =~ /warn/i }
+          expect(warnings.size).to eq 1  # the deprecation warning, not the property masking one
         end
       end
 
@@ -496,6 +506,7 @@ module ResourceActionSpec
       end
 
       it "Raises an error when attempting to use a template in the action" do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
         expect_converge do
           has_property_named_template "hi"
         end.to raise_error(/Property `template` of `has_property_named_template\[hi\]` was incorrectly passed a block.  Possible property-resource collision.  To call a resource named `template` either rename the property or else use `declare_resource\(:template, ...\)`/)

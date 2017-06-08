@@ -328,8 +328,6 @@ class Chef
           resource.class.properties.each do |name, property|
             class_eval(<<-EOM, __FILE__, __LINE__)
               def #{name}(*args, &block)
-                # FIXME:  DEPRECATE THIS IN CHEF 13.1
-                #
                 # If no arguments were passed, we process "get" by defaulting
                 # the value to current_resource, not new_resource. This helps
                 # avoid issues where resources accidentally overwrite perfectly
@@ -350,9 +348,11 @@ class Chef
                 #
                 if args.empty? && !block
                   if !new_resource.property_is_set?(__method__) && current_resource
+                    Chef.deprecated(:namespace_collisions, "rename #{name} to current_resource.#{name}")
                     return current_resource.public_send(__method__)
                   end
                 end
+                Chef.deprecated(:namespace_collisions, "rename #{name} to new_resource.#{name}")
                 new_resource.public_send(__method__, *args, &block)
               end
             EOM
