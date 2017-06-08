@@ -222,7 +222,7 @@ module ChefConfig
 # this repo. Do not edit this manually. Edit the VERSION file and run the rake
 # task instead.
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#{"\nrequire 'chef/version_string'\n" if use_versionstring}
+#{"\nrequire \"chef/version_string\"\n" if use_versionstring}
 #{class_or_module} #{module_name}
   #{module_name.upcase}_ROOT = File.expand_path("../..", __FILE__)
   VERSION = #{use_versionstring ? "Chef::VersionString.new(\"#{version}\")" : "\"#{version}\""}
