@@ -70,7 +70,7 @@ matrix:
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
     rvm: 2.4.1
   - env:
-      TEST_GEM: sethvargo/chefspec
+      TEST_GEM: chefspec/chefspec
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
     rvm: 2.4.1
   - env:
