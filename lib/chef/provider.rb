@@ -350,9 +350,11 @@ class Chef
                 #
                 if args.empty? && !block
                   if !new_resource.property_is_set?(__method__) && current_resource
+                    Chef.deprecated(:namespace_collisions, "rename #{name} to current_resource.#{name}")
                     return current_resource.public_send(__method__)
                   end
                 end
+                Chef.deprecated(:namespace_collisions, "rename #{name} to new_resource.#{name}")
                 new_resource.public_send(__method__, *args, &block)
               end
             EOM

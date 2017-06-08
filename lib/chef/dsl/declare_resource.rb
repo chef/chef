@@ -155,7 +155,15 @@ class Chef
       def edit_resource(type, name, created_at: nil, run_context: self.run_context, &resource_attrs_block)
         edit_resource!(type, name, created_at: created_at, run_context: run_context, &resource_attrs_block)
       rescue Chef::Exceptions::ResourceNotFound
-        declare_resource(type, name, created_at: created_at, run_context: run_context, &resource_attrs_block)
+        resource = declare_resource(type, name, created_at: created_at, run_context: run_context)
+        if resource_attrs_block
+          if defined?(new_resource)
+            resource.instance_exec(new_resource, &resource_attrs_block)
+          else
+            resource.instance_exec(&resource_attrs_block)
+          end
+        end
+        resource
       end
 
       # Lookup a resource in the resource collection by name.  If the resource is not

@@ -62,7 +62,7 @@ describe "Accumulators" do
           default_action :create
 
           action :create do
-            email_alias address do
+            email_alias new_resource.address do
               recipients new_resource.recipients
             end
           end
@@ -78,7 +78,7 @@ describe "Accumulators" do
           default_action :create
 
           action :create do
-            nested address do
+            nested new_resource.address do
               recipients new_resource.recipients
             end
           end
@@ -149,8 +149,8 @@ describe "Accumulators" do
                 delayed_action :create
               end
             end
-            r.variables[:aliases][address] ||= []
-            r.variables[:aliases][address] += new_resource.recipients
+            r.variables[:aliases][new_resource.address] ||= []
+            r.variables[:aliases][new_resource.address] += new_resource.recipients
           end
         EOM
 
@@ -164,7 +164,7 @@ describe "Accumulators" do
           default_action :create
 
           action :create do
-            email_alias address do
+            email_alias new_resource.address do
               recipients new_resource.recipients
             end
           end
@@ -180,7 +180,7 @@ describe "Accumulators" do
           default_action :create
 
           action :create do
-            nested address do
+            nested new_resource.address do
               recipients new_resource.recipients
             end
           end
