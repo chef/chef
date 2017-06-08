@@ -22,7 +22,7 @@ class Chef
   class Resource
     class Breakpoint < Chef::Resource
       provides :breakpoint
-      resource_name :breakpoinst
+      resource_name :breakpoint
 
       default_action :break
 
