@@ -328,8 +328,6 @@ class Chef
           resource.class.properties.each do |name, property|
             class_eval(<<-EOM, __FILE__, __LINE__)
               def #{name}(*args, &block)
-                # FIXME:  DEPRECATE THIS IN CHEF 13.1
-                #
                 # If no arguments were passed, we process "get" by defaulting
                 # the value to current_resource, not new_resource. This helps
                 # avoid issues where resources accidentally overwrite perfectly
