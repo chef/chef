@@ -365,7 +365,7 @@ class Chef
           message << "\n\n>>>> Caused by #{cause.class}: #{cause}\n#{cause.backtrace.join("\n")}"
           cause = cause.respond_to?(:cause) ? cause.cause : nil
         end
-        
+
         chef_stacktrace_out = "Generated at #{Time.now}\n"
         chef_stacktrace_out += message
 
