@@ -58,6 +58,7 @@ class Chef
             shell_out_with_systems_locale!(command, opts)
           rescue Mixlib::ShellOut::ShellCommandFailed
             if sensitive?
+              $! = nil
               raise Mixlib::ShellOut::ShellCommandFailed,
                 "Command execution failed. STDOUT/STDERR suppressed for sensitive resource"
             else
