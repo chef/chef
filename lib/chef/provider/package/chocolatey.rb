@@ -257,7 +257,7 @@ EOS
           choco_command(*args).stdout.each_line do |line|
             next if line.start_with?("Chocolatey v")
             name, version = line.split("|")
-            hash[name.downcase] = version.chomp
+            hash[name.downcase] = version&.chomp
           end
           hash
         end
