@@ -188,7 +188,6 @@ ENABLED
 
     it "should not enable mount if it is mounted and already enabled and mount options are unchanged" do
       stub_mounted_enabled(@provider, @mounted_output, @enabled_output)
-      @new_resource.options "rw"
 
       expect(@provider).not_to receive(:enable_fs)
 

@@ -40,25 +40,32 @@ class Chef
           # Check to see if there is an entry in /etc/filesystems. Last entry for a volume wins. Using command "lsfs" to fetch entries.
           enabled = false
 
+          regex_arr = device_fstab_regex.split(":")
+          if regex_arr.size.eql?(2)
+            nodename = regex_arr[0]
+            devicename   = regex_arr[1]
+          else
+            devicename   = regex_arr[0]
+          end
           # lsfs o/p = #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
           # search only for current mount point
           shell_out("lsfs -c #{@new_resource.mount_point}").stdout.each_line do |line|
             case line
             when /^#\s/
               next
-            when /^#{Regexp.escape(@new_resource.mount_point)}:#{device_fstab_regex}:(\S+):(\[\S+\])?:(\S+)?:(\S+):(\S+):(\S+):(\S+)/
+            when /^#{Regexp.escape(@new_resource.mount_point)}:#{devicename}:(\S+):#{nodename}:(\S+)?:(\S+):(\S+):(\S+):(\S+)/
               # mount point entry with ipv6 address for nodename (ipv6 address use ':')
               enabled = true
               @current_resource.fstype($1)
-              @current_resource.options($5)
-              Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/filesystems")
+              @current_resource.options($4)
+              Chef::Log.debug("Found mount #{devicename}:#{nodename} to #{@new_resource.mount_point} in /etc/filesystems")
               next
-            when /^#{Regexp.escape(@new_resource.mount_point)}:#{device_fstab_regex}::(\S+):(\S+)?:(\S+)?:(\S+):(\S+):(\S+):(\S+)/
+            when /^#{Regexp.escape(@new_resource.mount_point)}:#{devicename}:(\S+)::(\S+)?:(\S+):(\S+):(\S+):(\S+)/
               # mount point entry with hostname or ipv4 address
               enabled = true
               @current_resource.fstype($1)
-              @current_resource.options($5)
-              Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/filesystems")
+              @current_resource.options($4)
+              Chef::Log.debug("Found mount #{devicename} to #{@new_resource.mount_point} in /etc/filesystems")
               next
             when /^#{Regexp.escape(@new_resource.mount_point)}/
               enabled = false
@@ -147,6 +154,16 @@ class Chef
             fstab.puts "\toptions\t\t= #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
             Chef::Log.debug("#{@new_resource} is enabled at #{@new_resource.mount_point}")
           end
+        end
+
+        def mount_options_unchanged?
+          current_resource_options = @current_resource.options
+          current_resource_options.pop
+
+          @current_resource.fstype == @new_resource.fstype &&
+            current_resource_options == @new_resource.options &&
+            @current_resource.dump == @new_resource.dump &&
+            @current_resource.pass == @new_resource.pass
         end
 
         def disable_fs
