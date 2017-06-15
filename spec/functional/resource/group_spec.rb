@@ -58,6 +58,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
       expect { Etc.getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
     when "windows"
+      sleep(5)
       expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to raise_error(ArgumentError, /The group name could not be found./)
     end
   end

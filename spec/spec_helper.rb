@@ -149,6 +149,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :windows64_only => true unless windows64?
   config.filter_run_excluding :windows32_only => true unless windows32?
   config.filter_run_excluding :windows_nano_only => true unless windows_nano_server?
+  config.filter_run_excluding :windows_10_or_2016 => true unless windows_10_or_2016?
   config.filter_run_excluding :ruby64_only => true unless ruby_64bit?
   config.filter_run_excluding :ruby32_only => true unless ruby_32bit?
   config.filter_run_excluding :windows_powershell_dsc_only => true unless windows_powershell_dsc?
