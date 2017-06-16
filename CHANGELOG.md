@@ -1,10 +1,11 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.2.12](https://github.com/chef/chef/tree/v13.2.12) (2017-06-09)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.2.12)
+## [v13.2.14](https://github.com/chef/chef/tree/v13.2.14) (2017-06-16)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.2.14)
 
 **Closed issues:**
 
+- Chomp errors when using Chocolatey provider [\#6165](https://github.com/chef/chef/issues/6165)
 - Chef 13.0 regression in gem\_package related to finding gem binaries [\#6103](https://github.com/chef/chef/issues/6103)
 - Disable local mode's localhost socket by default in Chef 14 [\#6088](https://github.com/chef/chef/issues/6088)
 
