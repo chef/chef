@@ -22,13 +22,13 @@ describe Chef::Mixin::PowershellOut, windows_only: true do
   include Chef::Mixin::PowershellOut
 
   describe "#powershell_out" do
-    context "for windows version less than 10", windows_10_or_2016: false do
+    context "for windows version less than 10", windows_lt_10: true do
       it "runs a powershell command and collects stdout" do
         expect(powershell_out("get-process").run_command.stdout).to match /Handles\s+NPM\(K\)\s+PM\(K\)\s+WS\(K\)\s+VM\(M\)\s+CPU\(s\)\s+Id\s+/
       end
     end
 
-    context "for windows version greater than 10", windows_10_or_2016: true do
+    context "for windows version greater than 10", windows_gte_10: true do
       it "runs a powershell command and collects stdout" do
         expect(powershell_out("get-process").run_command.stdout).to match /Handles\s+NPM\(K\)\s+PM\(K\)\s+WS\(K\)\s+CPU\(s\)\s+Id\s+SI\s+ProcessName\s+/
       end
@@ -40,13 +40,13 @@ describe Chef::Mixin::PowershellOut, windows_only: true do
   end
 
   describe "#powershell_out!" do
-    context "for windows version less than 10", windows_10_or_2016: false do
+    context "for windows version less than 10", windows_lt_10: true do
       it "runs a powershell command and collects stdout" do
         expect(powershell_out!("get-process").run_command.stdout).to match /Handles\s+NPM\(K\)\s+PM\(K\)\s+WS\(K\)\s+VM\(M\)\s+CPU\(s\)\s+Id\s+/
       end
     end
 
-    context "for windows version less than 10", windows_10_or_2016: true do
+    context "for windows version less than 10", windows_gte_10: true do
       it "runs a powershell command and collects stdout" do
         expect(powershell_out("get-process").run_command.stdout).to match /Handles\s+NPM\(K\)\s+PM\(K\)\s+WS\(K\)\s+CPU\(s\)\s+Id\s+SI\s+ProcessName\s+/
       end
