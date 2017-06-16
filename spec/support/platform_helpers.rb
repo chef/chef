@@ -70,9 +70,9 @@ def windows_2012r2?
   (host_version && host_version.start_with?("6.3"))
 end
 
-def windows_10_or_2016?
+def windows_gte_10?
   return false unless windows?
-  (host_version && host_version.start_with?("10.0"))
+  Gem::Requirement.new(">= 10").satisfied_by?(Gem::Version.new(host_version))
 end
 
 def host_version
