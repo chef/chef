@@ -27,7 +27,7 @@ bundle exec rake update_dockerfile || true
 
 # Our `rake` command can sometimes modify this file, but we don't care about the
 # changes it makes. Reset it to HEAD.
-git checkout .bundle/config
+git checkout .bundle/config || true
 
 # Once Expeditor finshes executing this script, it will commit the changes and push
 # the commit as a new tag corresponding to the value in the VERSION file.
