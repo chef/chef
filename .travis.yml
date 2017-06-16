@@ -25,7 +25,7 @@ before_script:
 branches:
   only:
   - master
-  - 11-stable
+  - chef-12
 
 env:
   global:
