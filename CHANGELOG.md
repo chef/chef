@@ -1,4 +1,14 @@
-This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
+This changelog reflects the current state of chef's 12 branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
+
+## [v12.21.0](https://github.com/chef/chef/tree/v12.21.0) (2017-06-19)
+[Full Changelog](https://github.com/chef/chef/compare/v12.20.3...v12.21.0)
+
+**Fixed bugs:**
+
+- Special case for the supports pseudo-property for Chef 12 [\#6222](https://github.com/chef/chef/pull/6222) ([coderanger](https://github.com/coderanger))
+- Backport error info for Chef 12 [\#6173](https://github.com/chef/chef/pull/6173) ([coderanger](https://github.com/coderanger))
+- Prefer Systemd with sysvinit script over Upstart for service provider [\#6157](https://github.com/chef/chef/pull/6157) ([shortdudey123](https://github.com/shortdudey123))
+- Discard caches for files not in the manifest [\#6129](https://github.com/chef/chef/pull/6129) ([akitada](https://github.com/akitada))
 
 ## [v12.20.2](https://github.com/chef/chef/tree/v12.20.2) (2017-03-07)
 [Full Changelog](https://github.com/chef/chef/compare/v12.19.36...v12.20.2)

@@ -1,5 +1,43 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Chef Client Release Notes 12.21:
+
+## Security Fixes
+
+This release of Chef Client contains a new version of zlib, fixing 4
+CVEs:
+
+ *  [CVE-2016-9840](https://www.cvedetails.com/cve/CVE-2016-9840/)
+ *  [CVE-2016-9841](https://www.cvedetails.com/cve/CVE-2016-9841/)
+ *  [CVE-2016-9842](https://www.cvedetails.com/cve/CVE-2016-9842/)
+ *  [CVE-2016-9843](https://www.cvedetails.com/cve/CVE-2016-9843/)
+
+## On Debian based systems, correctly prefer Systemd to Upstart
+
+On Debian systems, packages that support systemd will often ship both an
+old style init script and a systemd unit file. When this happened, Chef
+would incorrectly choose Upstart rather than Systemd as the service
+provider. We now pick Systemd.
+
+## Handle the supports pseudo-property more gracefully
+
+Chef 13 removed the `supports` property from core resources. However,
+many cookbooks also have a property named support, and Chef 12 was
+incorrectly giving a deprecation notice in that case, preventing users
+from properly testing their cookbooks for upgrades.
+
+## Don't crash when we downgrade from Chef 13 to Chef 12
+
+On systems where Chef 13 had been run, Chef 12 would crash as the
+on disk cookbook format has changed. Chef 12 now correctly ignores the
+unexpected files.
+
+## Provide better system information when Chef crashes
+
+When Chef crashes, the output now includes details about the platform
+and version of Chef that was running, so that a bug report has more
+detail from the off.
+
 # Chef Client Release Notes 12.19:
 
 ## Highlighted enhancements for this release:
