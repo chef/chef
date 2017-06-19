@@ -19,6 +19,7 @@ driver:
   subnet_id: subnet-19ac017c
   security_group_ids: ["sg-e401eb83", "sg-96274af3"]
   instance_type: m3.large
+  retryable_tries: 120
 #  associate_public_ip: true  # Don't enable public IP, as subnet specified is behind VPN
 
 # busser installation relies on this
