@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.2.15](https://github.com/chef/chef/tree/v13.2.15) (2017-06-19)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.2.15)
+## [v13.2.16](https://github.com/chef/chef/tree/v13.2.16) (2017-06-19)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.2.16)
 
 **Closed issues:**
 
@@ -27,7 +27,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Fix manage\_home on AIX [\#6097](https://github.com/chef/chef/pull/6097) ([thommay](https://github.com/thommay))
 - apt-key finger no longer matches extract fingerprints regex [\#6094](https://github.com/chef/chef/pull/6094) ([whiteley](https://github.com/whiteley))
 - Fix lazy loading of cookbook files [\#6087](https://github.com/chef/chef/pull/6087) ([thommay](https://github.com/thommay))
-- add a pointer from the run\_context back to the runner [\#6077](https://github.com/chef/chef/pull/6077) ([lamont-granquist](https://github.com/lamont-granquist))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
