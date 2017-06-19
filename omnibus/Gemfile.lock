@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/license_scout
-  revision: 462e731f92ce168e2d0ba407cb9b1ebcfb2e4d9d
+  revision: e9c48c6773dec6fd718642194bfcb166d5685e03
   specs:
     license_scout (0.1.3)
       ffi-yajl (~> 2.2)
@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus
-  revision: ffbda9ad7d37ddb485342505ff4407c6ff23d95f
+  revision: 0212438d74eb408791724d737afba83868e416ed
   specs:
     omnibus (5.5.0)
       aws-sdk (~> 2)
@@ -25,7 +25,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 3df02fce13992dcdef6ae083856cb62544cb7e23
+  revision: 266a8ab07b0380607ce8a6ec5fd824ea002be2f1
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -36,15 +36,15 @@ GEM
   specs:
     addressable (2.5.1)
       public_suffix (~> 2.0, >= 2.0.2)
-    artifactory (2.8.1)
+    artifactory (2.8.2)
     awesome_print (1.7.0)
-    aws-sdk (2.9.13)
-      aws-sdk-resources (= 2.9.13)
-    aws-sdk-core (2.9.13)
+    aws-sdk (2.9.41)
+      aws-sdk-resources (= 2.9.41)
+    aws-sdk-core (2.9.41)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.9.13)
-      aws-sdk-core (= 2.9.13)
+    aws-sdk-resources (2.9.41)
+      aws-sdk-core (= 2.9.41)
     aws-sigv4 (1.0.0)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -85,7 +85,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.19.36)
+    chef-config (13.1.31)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -93,7 +93,7 @@ GEM
     chef-sugar (3.4.0)
     cleanroom (1.0.0)
     coderay (1.1.1)
-    debug_inspector (0.0.2)
+    debug_inspector (0.0.3)
     erubis (2.7.0)
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
@@ -107,8 +107,8 @@ GEM
     gyoku (1.3.1)
       builder (>= 2.1.2)
     hashie (3.5.5)
-    hitimes (1.2.4)
-    hitimes (1.2.4-x86-mingw32)
+    hitimes (1.2.5)
+    hitimes (1.2.5-x86-mingw32)
     httpclient (2.7.2)
     iostruct (0.0.4)
     ipaddress (0.8.3)
@@ -148,12 +148,12 @@ GEM
     net-ssh (4.1.0)
     net-ssh-gateway (1.3.0)
       net-ssh (>= 2.6.5)
-    nio4r (2.0.0)
+    nio4r (2.1.0)
     nori (2.6.0)
     octokit (4.7.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (8.23.0)
-      chef-config (>= 12.5.0.alpha.1, < 13)
+    ohai (8.24.0)
+      chef-config (>= 12.5.0.alpha.1, < 14)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
@@ -231,7 +231,7 @@ GEM
       hashie (>= 2.0.2, < 4.0.0)
     win32-process (0.8.3)
       ffi (>= 1.0.0)
-    winrm (2.2.2)
+    winrm (2.2.3)
       builder (>= 2.1.2)
       erubis (~> 2.7)
       gssapi (~> 1.2)
