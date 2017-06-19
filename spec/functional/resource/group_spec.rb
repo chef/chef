@@ -335,19 +335,6 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree" end
       end
     end
 
-    describe "when group name length is more than 256", :windows_only do
-      let!(:group_name) do
-        "theoldmanwalkingdownthestreetalwayshadagood\
-smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
-theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
-downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" end
-
-      it "should not create a group" do
-        expect { group_resource.run_action(:create) }.to raise_error(ArgumentError)
-        group_should_not_exist(group_name)
-      end
-    end
-
     # not_supported_on_solaris because of the use of excluded_members
     describe "should raise an error when same member is included in the members and excluded_members", :not_supported_on_solaris do
       it "should raise an error" do
@@ -355,6 +342,25 @@ downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" end
         invalid_resource.members(["Jack"])
         invalid_resource.excluded_members(["Jack"])
         expect { invalid_resource.run_action(:create) }.to raise_error(Chef::Exceptions::ConflictingMembersInGroup)
+      end
+    end
+  end
+
+  # Note:This testcase is written separately from the `group create action` defined above because
+  # for group name > 256, Windows 2016 returns "The parameter is incorrect"
+  context "group create action: when group name length is more than 256", :windows_only do
+    let!(:group_name) do
+      "theoldmanwalkingdownthestreetalwayshadagood\
+smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface\
+theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking\
+downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ" end
+
+    it "should not create a group" do
+      expect { group_resource.run_action(:create) }.to raise_error(ArgumentError)
+      if windows_gte_10?
+        expect { Chef::Util::Windows::NetGroup.new(group_name).local_get_members }.to raise_error(ArgumentError, /The parameter is incorrect./)
+      else
+        group_should_not_exist(group_name)
       end
     end
   end
