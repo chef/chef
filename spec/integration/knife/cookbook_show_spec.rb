@@ -34,7 +34,7 @@ describe "knife cookbook show", :workstation do
       knife("cookbook show x").should_succeed "x   1.0.0  0.6.5\n"
     end
 
-    # rubocop:disable Style/TrailingWhitespace
+    # rubocop:disable Layout/TrailingWhitespace
     it "knife cookbook show x 1.0.0 shows the correct version" do
       knife("cookbook show x 1.0.0").should_succeed <<EOM
 cookbook_name: x
@@ -127,7 +127,7 @@ specificity: default
 url:         http://127.0.0.1:8900/file_store/checksums/d41d8cd98f00b204e9800998ecf8427e
 EOM
     end
-    # rubocop:enable Style/TrailingWhitespace
+    # rubocop:enable Layout/TrailingWhitespace
 
     it "knife cookbook show x 1.0.0 recipes default.rb shows the default recipe" do
       knife("cookbook show x 1.0.0 recipes default.rb").should_succeed "file 'n'\n"

@@ -31,7 +31,7 @@ describe "knife role show", :workstation do
       role "cat", {}
     end
 
-    # rubocop:disable Style/TrailingWhitespace
+    # rubocop:disable Layout/TrailingWhitespace
     it "shows a cookbook" do
       knife("role show cons").should_succeed <<EOM
 chef_type:           role
@@ -44,7 +44,7 @@ override_attributes:
 run_list:
 EOM
     end
-    # rubocop:enable Style/TrailingWhitespace
+    # rubocop:enable Layout/TrailingWhitespace
 
   end
 end

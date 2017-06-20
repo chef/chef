@@ -107,7 +107,7 @@ class Chef
             "password" => "password",
           }
 
-          field_list.sort { |a, b| a[0] <=> b[0] }.each do |field, option|
+          field_list.sort_by { |a| a[0] }.each do |field, option|
             field_symbol = field.to_sym
             next unless current_resource.send(field_symbol) != new_resource.send(field_symbol)
             next unless new_resource.send(field_symbol)

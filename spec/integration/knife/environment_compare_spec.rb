@@ -42,7 +42,7 @@ describe "knife environment compare", :workstation do
       }
     end
 
-    # rubocop:disable Style/TrailingWhitespace
+    # rubocop:disable Layout/TrailingWhitespace
     it "displays the cookbooks for a single environment" do
       knife("environment compare x").should_succeed <<EOM
       x       
@@ -69,6 +69,6 @@ krad  >= 1.0.0  >= 1.0.0
 
 EOM
     end
-    # rubocop:enable Style/TrailingWhitespace
+    # rubocop:enable Layout/TrailingWhitespace
   end
 end

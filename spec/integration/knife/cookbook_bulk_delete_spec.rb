@@ -34,7 +34,7 @@ describe "knife cookbook bulk delete", :workstation do
       cookbook "zfa", "0.6.5"
     end
 
-    # rubocop:disable Style/TrailingWhitespace
+    # rubocop:disable Layout/TrailingWhitespace
     it "knife cookbook bulk delete deletes all matching cookbooks" do
       stdout = <<EOM
 All versions of the following cookbooks will be deleted:
@@ -58,7 +58,7 @@ fax   0.6.0
 zfa   0.6.5
 EOM
     end
-    # rubocop:enable Style/TrailingWhitespace
+    # rubocop:enable Layout/TrailingWhitespace
 
   end
 end
