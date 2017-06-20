@@ -330,6 +330,56 @@ describe Chef::PolicyBuilder::Policyfile do
 
       end
 
+      describe "#build_node" do
+
+        let(:node) do
+          node = Chef::Node.new
+          node.name(node_name)
+          node
+        end
+
+        before do
+          allow(policy_builder).to receive(:node).and_return(node)
+        end
+
+        context "when the run is successful" do
+          let(:run_list) do
+            ["recipe[test::default]",
+             "recipe[test::other]"]
+          end
+
+          let(:version_hash) do
+            {
+              "version" => "0.1.0",
+              "identifier" => "012345678",
+            }
+          end
+
+          let(:run_list_for_data_collector) do
+            {
+              :id => "_policy_node",
+              :run_list => [
+               { :type => "recipe", :name => "test::default", :skipped => false, :version => nil },
+               { :type => "recipe", :name => "test::other", :skipped => false, :version => nil },
+              ],
+            }
+          end
+
+          before do
+            allow(policy_builder).to receive(:run_list)
+                                      .and_return(run_list)
+            allow(policy_builder).to receive(:cookbook_lock_for)
+                                      .and_return(version_hash)
+          end
+
+          it "sends the run_list_expanded event" do
+            policy_builder.build_node
+            expect(policy_builder.run_list_expansion_ish.to_hash)
+              .to eq(run_list_for_data_collector)
+          end
+        end
+      end
+
       describe "building the node object" do
 
         let(:extra_chef_config) { {} }

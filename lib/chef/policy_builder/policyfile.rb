@@ -51,7 +51,32 @@ class Chef
 
       class PolicyfileError < StandardError; end
 
-      RunListExpansionIsh = Struct.new(:recipes, :roles)
+      RunListExpansionIsh = Struct.new(:recipes, :roles) do
+        # Implementing the parts of the RunListExpansion
+        # interface we need to properly send this through to
+        # events.run_list_expanded as it is expecting a RunListExpansion
+        # object.
+        def to_hash
+          # It looks like version only gets populated in the expanded_run_list when
+          # using a little used feature of roles to version lock cookbooks, so
+          # version is not reliable in here anyway (places like Automate UI are
+          # not getting version out of here.
+          #
+          # Skipped will always be false as it can only be true when two expanded
+          # roles contain the same recipe.
+          expanded_run_list = recipes.map do |r|
+            { type: "recipe", name: r, skipped: false, version: nil }
+          end
+          data_collector_hash = {}
+          data_collector_hash[:id] = "_policy_node"
+          data_collector_hash[:run_list] = expanded_run_list
+          data_collector_hash
+        end
+
+        def to_json(*opts)
+          to_hash.to_json(*opts)
+        end
+      end
 
       attr_reader :events
       attr_reader :node
@@ -137,6 +162,7 @@ class Chef
         Chef::Log.info("Run List expands to [#{run_list_with_versions_for_display.join(', ')}]")
 
         events.node_load_completed(node, run_list_with_versions_for_display, Chef::Config)
+        events.run_list_expanded(run_list_expansion_ish)
 
         node
       rescue Exception => e
