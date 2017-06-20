@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 69c1c0d07aa4613bcdc3454767c9fb0d5ee9b36b
+  revision: e6b966a18dc4a12b4dfa49ccb911dad7432ca4fd
   branch: master
   specs:
-    chefstyle (0.5.0)
-      rubocop (= 0.47.1)
+    chefstyle (0.6.0)
+      rubocop (= 0.49.1)
 
 GIT
   remote: https://github.com/chef/github-changelog-generator
@@ -144,13 +144,13 @@ GEM
     debug_inspector (0.0.3)
     diff-lcs (1.3)
     docile (1.1.5)
-    docker-api (1.33.4)
+    docker-api (1.33.5)
       excon (>= 0.38.0)
       json
     erubis (2.7.0)
     ethon (0.10.1)
       ffi (>= 1.3.0)
-    excon (0.56.0)
+    excon (0.57.0)
     faraday (0.12.1)
       multipart-post (>= 1.2, < 3)
     faraday-http-cache (2.0.0)
@@ -181,7 +181,7 @@ GEM
     httpclient (2.8.3)
     i18n (0.8.4)
     iniparse (1.4.3)
-    inspec (1.27.0)
+    inspec (1.28.1)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
@@ -308,7 +308,8 @@ GEM
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.47.1)
+    rubocop (0.49.1)
+      parallel (~> 1.10)
       parser (>= 2.3.3.1, < 3.0)
       powerpack (~> 0.1)
       rainbow (>= 1.99.1, < 3.0)
@@ -348,7 +349,7 @@ GEM
     toml (0.1.2)
       parslet (~> 1.5.0)
     tomlrb (1.2.4)
-    train (0.24.0)
+    train (0.25.0)
       docker-api (~> 1.26)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
@@ -369,7 +370,7 @@ GEM
       ethon (>= 0.8.0)
     tzinfo (1.2.3)
       thread_safe (~> 0.1)
-    unicode-display_width (1.2.1)
+    unicode-display_width (1.3.0)
     uuidtools (2.1.5)
     websocket (1.2.4)
     win32-api (1.5.3-universal-mingw32)

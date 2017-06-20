@@ -85,7 +85,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     it "should combine all the possible options" do
       combined_opts = []
-      supported_useradd_options.sort { |a, b| a[0] <=> b[0] }.each do |attribute, option|
+      supported_useradd_options.sort_by { |a| a[0] }.each do |attribute, option|
         allow(@new_resource).to receive(attribute).and_return("hola")
         combined_opts << option << "hola"
       end

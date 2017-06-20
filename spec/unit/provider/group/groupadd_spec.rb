@@ -64,7 +64,7 @@ describe Chef::Provider::Group::Groupadd do
 
     it "should combine all the possible options" do
       match_array = []
-      field_list.sort { |a, b| a[0] <=> b[0] }.each do |attribute, option|
+      field_list.sort_by { |a| a[0] }.each do |attribute, option|
         allow(new_resource).to receive(attribute).and_return("hola")
         match_array << option
         match_array << "hola"

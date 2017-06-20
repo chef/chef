@@ -30,7 +30,7 @@ describe "knife environment show", :workstation do
       }
     end
 
-    # rubocop:disable Style/TrailingWhitespace
+    # rubocop:disable Layout/TrailingWhitespace
     it "shows an environment" do
       knife("environment show b").should_succeed <<EOM
 chef_type:           environment
@@ -45,7 +45,7 @@ name:                b
 override_attributes:
 EOM
     end
-    # rubocop:enable Style/TrailingWhitespace
+    # rubocop:enable Layout/TrailingWhitespace
 
     it "shows the requested attribute of an environment" do
       knife("environment show b -a default_attributes").should_succeed <<EOM
