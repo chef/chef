@@ -1,3 +1,7 @@
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Style/SafeNavigation:
+  Enabled: false
 AllCops:
   Exclude:
     - "spec/data/**/*"
