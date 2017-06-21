@@ -15,14 +15,6 @@ GIT
       rspec_junit_formatter (~> 0.2)
 
 GIT
-  remote: https://github.com/chef/chefstyle.git
-  revision: 69c1c0d07aa4613bcdc3454767c9fb0d5ee9b36b
-  branch: master
-  specs:
-    chefstyle (0.5.0)
-      rubocop (= 0.47.1)
-
-GIT
   remote: https://github.com/chef/github-changelog-generator
   revision: 7ab4953b47598dccf10e106058673c1592b8f9bf
   specs:
@@ -179,6 +171,8 @@ GEM
       chef (>= 12.14.89)
       fauxhai (>= 4, < 6)
       rspec (~> 3.0)
+    chefstyle (0.5.0)
+      rubocop (= 0.47.1)
     codeclimate-test-reporter (1.0.8)
       simplecov (<= 0.13)
     codecov (0.1.10)
@@ -511,7 +505,7 @@ GEM
       unf_ext
     unf_ext (0.0.7.4)
     unf_ext (0.0.7.4-x86-mingw32)
-    unicode-display_width (1.2.1)
+    unicode-display_width (1.3.0)
     url (0.3.2)
     uuidtools (2.1.5)
     vagrant-wrapper (2.0.3)
@@ -575,7 +569,7 @@ DEPENDENCIES
   chef-sugar
   cheffish
   chefspec
-  chefstyle!
+  chefstyle (= 0.5.0)
   cucumber (>= 2.4.0)
   foodcritic
   github_changelog_generator!
