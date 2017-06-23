@@ -1,6 +1,6 @@
 #
 # Author:: Nimisha Sharad (<nimisha.sharad@msystechnologies.com>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) 2016-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 
 require "spec_helper"
 require "chef/provider/package/cab"
+require "benchmark"
 
 describe Chef::Resource::MsuPackage, :win2012r2_only do
 
@@ -43,7 +44,9 @@ describe Chef::Resource::MsuPackage, :win2012r2_only do
     after { remove_package }
 
     it "installs the package successfully" do
-      subject.run_action(:install)
+      puts Benchmark.measure {
+        subject.run_action(:install)
+      }
       found_packages = cab_provider.installed_packages.select { |p| p["package_identity"] =~ /^#{package_name}~/ }
       expect(found_packages.length).to be == 1
     end
@@ -52,7 +55,9 @@ describe Chef::Resource::MsuPackage, :win2012r2_only do
   context "removing a package" do
     it "removes an installed package" do
       subject.run_action(:install)
-      remove_package
+      puts Benchmark.measure {
+        remove_package
+      }
       found_packages = cab_provider.installed_packages.select { |p| p["package_identity"] =~ /^#{package_name}~/ }
       expect(found_packages.length).to be == 0
     end
