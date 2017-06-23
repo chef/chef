@@ -1,7 +1,19 @@
 This changelog reflects the current state of chef's 12 branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
+## [v12.21.3](https://github.com/chef/chef/tree/v12.21.3) (2017-06-23)
+[Full Changelog](https://github.com/chef/chef/compare/v12.21.2...v12.21.3)
+
+**Fixed bugs:**
+- Properly send expanded run list event for policy file nodes [\#6229](https://github.com/chef/chef/pull/6229) / [\#6233](https://github.com/chef/chef/pull/6233)
+
+## [v12.21.2](https://github.com/chef/chef/tree/v12.21.2) (2017-06-21)
+[Full Changelog](https://github.com/chef/chef/compare/v12.21.1...v12.21.2)
+
+**Fixed bugs:**
+- lock chefstyle at 0.5 [\#6231](https://github.com/chef/chef/pull/6231)
+
 ## [v12.21.1](https://github.com/chef/chef/tree/v12.21.1) (2017-06-20)
-[Full Changelog](https://github.com/chef/chef/compare/v12.21.1...v12.21.1)
+[Full Changelog](https://github.com/chef/chef/compare/v12.21.0...v12.21.1)
 
 **Fixed bugs:**
 - Fix tests on SLES 12
