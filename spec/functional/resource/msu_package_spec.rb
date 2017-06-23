@@ -41,7 +41,11 @@ describe Chef::Resource::MsuPackage, :win2012r2_only do
   end
 
   context "installing package" do
-    after { remove_package }
+    after do
+      puts Benchmark.measure {
+        remove_package
+      }
+    end
 
     it "installs the package successfully" do
       puts Benchmark.measure {
@@ -54,7 +58,9 @@ describe Chef::Resource::MsuPackage, :win2012r2_only do
 
   context "removing a package" do
     it "removes an installed package" do
-      subject.run_action(:install)
+      puts Benchmark.measure {
+        subject.run_action(:install)
+      }
       puts Benchmark.measure {
         remove_package
       }
