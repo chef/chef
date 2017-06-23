@@ -60,6 +60,7 @@ class Chef
         # TODO do a check for CreateSymbolicLinkW and
         # raise NotImplemented exception on older Windows
         flags = ::File.directory?(old_name) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0
+        flags = flags | SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE if Chef::Config.enable_unprivileged_symlinks
         old_name = encode_path(old_name)
         new_name = encode_path(new_name)
         unless CreateSymbolicLinkW(new_name, old_name, flags)
