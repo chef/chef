@@ -47,20 +47,6 @@ class Chef
           noauth_rest.get("#{supermarket_uri}/cookbooks/#{@name_args[0]}/versions/#{name_args[1].tr('.', '_')}")
         end
       end
-
-      def get_cookbook_list(items = 10, start = 0, cookbook_collection = {})
-        cookbooks_url = "#{supermarket_uri}/cookbooks?items=#{items}&start=#{start}"
-        cr = noauth_rest.get(cookbooks_url)
-        cr["items"].each do |cookbook|
-          cookbook_collection[cookbook["cookbook_name"]] = cookbook
-        end
-        new_start = start + cr["items"].length
-        if new_start < cr["total"]
-          get_cookbook_list(items, new_start, cookbook_collection)
-        else
-          cookbook_collection
-        end
-      end
     end
   end
 end
