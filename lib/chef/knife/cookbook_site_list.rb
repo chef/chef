@@ -36,28 +36,32 @@ class Chef
         :description => "Supermarket Site",
         :default => "https://supermarket.chef.io",
         :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+      
+      option :order,
+        :short => "-o ORDER_PREFERENCE",
+        :long => "--order ORDER_PREFERENCE",
+        :default => "name",
+        :description => "Show cookbooks ordered by recently_updated, recently_added, most_downloaded, most_followed, or by name (DEFAULT)."
+ 
+      option :items,
+        :short => "-n NUMBER_OF_ITEMS",
+        :long => "--number NUMBER_OF_ITEMS",
+        :default => "100",
+        :description => "Show number of cookbooks. Default 100."
 
       def run
-        if config[:with_uri]
-          cookbooks = Hash.new
-          get_cookbook_list.each { |k, v| cookbooks[k] = v["cookbook"] }
-          ui.output(format_for_display(cookbooks))
+        if config[:with_uri]          
+          ui.output(format_for_display(get_cookbook_list))
         else
-          ui.msg(ui.list(get_cookbook_list.keys.sort, :columns_down))
+          ui.msg(ui.list(get_cookbook_list.keys, :columns_down))
         end
       end
 
-      def get_cookbook_list(items = 10, start = 0, cookbook_collection = {})
-        cookbooks_url = "#{config[:supermarket_site]}/api/v1/cookbooks?items=#{items}&start=#{start}"
-        cr = noauth_rest.get(cookbooks_url)
-        cr["items"].each do |cookbook|
-          cookbook_collection[cookbook["cookbook_name"]] = cookbook
-        end
-        new_start = start + cr["items"].length
-        if new_start < cr["total"]
-          get_cookbook_list(items, new_start, cookbook_collection)
-        else
-          cookbook_collection
+      def get_cookbook_list
+        cookbooks_url = "#{config[:supermarket_site]}/api/v1/cookbooks?items=#{config[:items]}&start=0&order=#{config[:order]}"
+        cookbook_response = noauth_rest.get(cookbooks_url)
+        cookbook_response["items"].each_with_object({}) do |cookbook, collection|
+          collection[cookbook["cookbook_name"]] = cookbook["cookbook"]
         end
       end
     end
