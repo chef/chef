@@ -36,13 +36,13 @@ class Chef
         :description => "Supermarket Site",
         :default => "https://supermarket.chef.io",
         :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
-      
+
       option :order,
         :short => "-o ORDER_PREFERENCE",
         :long => "--order ORDER_PREFERENCE",
         :default => "name",
         :description => "Show cookbooks ordered by recently_updated, recently_added, most_downloaded, most_followed, or by name (DEFAULT)."
- 
+
       option :items,
         :short => "-n NUMBER_OF_ITEMS",
         :long => "--number NUMBER_OF_ITEMS",
@@ -50,7 +50,7 @@ class Chef
         :description => "Show number of cookbooks. Default 100."
 
       def run
-        if config[:with_uri]          
+        if config[:with_uri]
           ui.output(format_for_display(get_cookbook_list))
         else
           ui.msg(ui.list(get_cookbook_list.keys, :columns_down))
