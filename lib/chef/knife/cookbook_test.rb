@@ -43,7 +43,7 @@ class Chef
         :description => "Test all cookbooks, rather than just a single cookbook"
 
       def run
-        ui.warn("DEPRECATED: Please use ChefSpec or Rubocop to syntax-check cookbooks.")
+        ui.warn("DEPRECATED: Please use ChefSpec or Cookstyle to syntax-check cookbooks.")
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
         checked_a_cookbook = false
