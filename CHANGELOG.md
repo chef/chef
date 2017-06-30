@@ -1,13 +1,12 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.2.18](https://github.com/chef/chef/tree/v13.2.18) (2017-06-21)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.2.18)
+## [v13.2.19](https://github.com/chef/chef/tree/v13.2.19) (2017-06-30)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.2.19)
 
 **Closed issues:**
 
 - Chomp errors when using Chocolatey provider [\#6165](https://github.com/chef/chef/issues/6165)
 - Chef 13.0 regression in gem\_package related to finding gem binaries [\#6103](https://github.com/chef/chef/issues/6103)
-- Disable local mode's localhost socket by default in Chef 14 [\#6088](https://github.com/chef/chef/issues/6088)
 
 **Merged pull requests:**
 
@@ -25,7 +24,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Update windows\_task to fix day validation with monthly frequency [\#6105](https://github.com/chef/chef/pull/6105) ([Stromweld](https://github.com/Stromweld))
 - cab\_package should compare package name and version [\#6100](https://github.com/chef/chef/pull/6100) ([smurawski](https://github.com/smurawski))
 - Fix manage\_home on AIX [\#6097](https://github.com/chef/chef/pull/6097) ([thommay](https://github.com/thommay))
-- apt-key finger no longer matches extract fingerprints regex [\#6094](https://github.com/chef/chef/pull/6094) ([whiteley](https://github.com/whiteley))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
