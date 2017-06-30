@@ -89,7 +89,7 @@ describe Chef::Provider::Execute do
     # do that we get dirty and start mocking the implementation of the shell_out mixin itself.  while arguments like
     # "timeout", "returns", "log_level" and "log_tag" appear here, we MUST NOT have an "environment" or "env" argument
     # that we are passing to Mixlib::ShellOut by default -- ever.  you might have to add some other argument here from
-    # time to time, but you MUST NOT change the enviroment.
+    # time to time, but you MUST NOT change the environment.
     it "does not use shell_out in such a way as to insert extra environment variables" do
       mock = instance_double(Mixlib::ShellOut)
       expect(Mixlib::ShellOut).to receive(:new).with("foo_resource", { timeout: 3600, returns: 0, log_level: :info, log_tag: "execute[foo_resource]" }).and_return(mock)
