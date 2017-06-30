@@ -55,7 +55,7 @@ class Chef
 
         converge_by("execute #{description}") do
           begin
-            shell_out!(command, opts)
+            shell_out_with_systems_locale!(command, opts)
           rescue Mixlib::ShellOut::ShellCommandFailed
             if sensitive?
               raise Mixlib::ShellOut::ShellCommandFailed,
