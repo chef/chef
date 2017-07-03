@@ -73,8 +73,7 @@ class Chef
               enabled = true
               @current_resource.fstype($2)
               @current_resource.options($5)
-              @current_resource.device(devicename)
-              @new_resource.device(nodename)
+              @current_resource.device(devicename + "/")
               Chef::Log.debug("Found mount #{devicename} to #{@new_resource.mount_point} in /etc/filesystems")
               next
             when /^#{Regexp.escape(@new_resource.mount_point)}:(.*?):(.*?):(.*?):(.*?):(.*?):(.*?):(.*?):(.*?)/
@@ -181,8 +180,7 @@ class Chef
         end
 
         def mount_options_unchanged?
-          current_resource_options = @current_resource.options
-          current_resource_options.pop
+          current_resource_options = @current_resource.options.delete_if { |x| x == "rw" }
 
           @current_resource.device == @new_resource.device &&
             @current_resource.fsck_device == @new_resource.fsck_device &&
