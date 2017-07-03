@@ -1,3 +1,7 @@
+
+oldpath = ENV["PATH"]
+ENV["PATH"] = "/opt/chef/embedded/bin:#{ENV["PATH"]}"
+
 api_root_dir = "/var/opt/data_collector_api"
 
 directory api_root_dir do
@@ -36,3 +40,5 @@ directory "/etc/chef"
     source "client-rb-#{config_file}.rb"
   end
 end
+
+ENV["PATH"] = oldpath
