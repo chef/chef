@@ -25,6 +25,7 @@ require "chef/http/json_output"
 require "chef/http/remote_request_id"
 require "chef/http/validate_content_length"
 require "chef/http/api_versions"
+require "chef/exceptions"
 
 class Chef
   class ServerAPI < Chef::HTTP
@@ -35,6 +36,9 @@ class Chef
       options[:signing_key_filename] = nil if chef_zero_uri?(url)
       options[:inflate_json_class] = false
       super(url, options)
+
+      chef_server_attrs = get("/").keys.sort
+      raise Chef::Exceptions::NotAChefServerException if [ "guid", "full_name", "name" ].sort != chef_server_attrs 
     end
 
     use Chef::HTTP::JSONInput
