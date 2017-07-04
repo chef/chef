@@ -58,7 +58,7 @@ class Chef
               enabled = true
               @current_resource.fstype($1)
               @current_resource.options($4)
-              Chef::Log.debug("Found mount #{devicename}:#{nodename} to #{@new_resource.mount_point} in /etc/filesystems")
+              Chef::Log.debug("Found mount point #{@new_resource.mount_point} :: device_type #{@current_resource.device_type} in /etc/filesystems")
               next
             when /^#{Regexp.escape(@new_resource.mount_point)}:#{nodename}:(\S+)::(\S+)?:(\S+):(\S+):(\S+):(\S+)/
               # mount point entry with hostname or ipv4 address
@@ -66,7 +66,7 @@ class Chef
               @current_resource.fstype($1)
               @current_resource.options($4)
               @current_resource.device("")
-              Chef::Log.debug("Found mount #{nodename} to #{@new_resource.mount_point} in /etc/filesystems")
+              Chef::Log.debug("Found mount point #{@new_resource.mount_point} :: device_type #{@current_resource.device_type} in /etc/filesystems")
               next
             when /^#{Regexp.escape(@new_resource.mount_point)}:(\S+)?:(\S+):#{devicename}:(\S+)?:(\S+):(\S+):(\S+):(\S+)/
               # mount point entry with hostname or ipv4 address
@@ -74,7 +74,7 @@ class Chef
               @current_resource.fstype($2)
               @current_resource.options($5)
               @current_resource.device(devicename + "/")
-              Chef::Log.debug("Found mount #{devicename} to #{@new_resource.mount_point} in /etc/filesystems")
+              Chef::Log.debug("Found mount point #{@new_resource.mount_point} :: device_type #{@current_resource.device_type} in /etc/filesystems")
               next
             when /^#{Regexp.escape(@new_resource.mount_point)}:(.*?):(.*?):(.*?):(.*?):(.*?):(.*?):(.*?):(.*?)/
               if $3.split("=")[0].eql?("LABEL") || $1.split("=")[0].eql?("LABEL")
@@ -87,7 +87,7 @@ class Chef
 
               if @current_resource.device_type != @new_resource.device_type
                 enabled = true
-                Chef::Log.debug("Found mount point #{@new_resource.mount_point} :: device_type:: #{@current_resource.device_type}  in /etc/filesystems")
+                Chef::Log.debug("Found mount point #{@new_resource.mount_point} :: device_type #{@current_resource.device_type} in /etc/filesystems")
               else
                 enabled = false
                 Chef::Log.debug("Found conflicting mount point #{@new_resource.mount_point} in /etc/filesystems")
