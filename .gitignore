@@ -52,3 +52,5 @@ acceptance/bin/*
 vendor/
 acceptance/vendor
 kitchen-tests/vendor
+
+*.swp
