@@ -475,7 +475,7 @@ class Chef
         ui.error "Invalid Redirect: #{e.message}"
         ui.info  "Change your server location in knife.rb to the server's FQDN to avoid unwanted redirections."
       when Chef::Exceptions::NotAChefServerException
-        ui.error "Argument Error: #{Chef::Config[:chef_server_url]} is not a valid chef server"
+        ui.error "#{Chef::Config[:chef_server_url]} is not a valid chef server"
       else
         ui.error "#{e.class.name}: #{e.message}"
       end
