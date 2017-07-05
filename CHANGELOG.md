@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.2.21](https://github.com/chef/chef/tree/v13.2.21) (2017-06-30)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.2.21)
+## [v13.2.22](https://github.com/chef/chef/tree/v13.2.22) (2017-07-05)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.2.22)
 
 **Closed issues:**
 
@@ -9,6 +9,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- \[MSYS-590\]Make mount idempotent on Aix [\#6213](https://github.com/chef/chef/pull/6213) ([NAshwini](https://github.com/NAshwini))
 - Use socketless local mode by default [\#6177](https://github.com/chef/chef/pull/6177) ([coderanger](https://github.com/coderanger))
 - convert breakpoint resource to a custom resource [\#6176](https://github.com/chef/chef/pull/6176) ([lamont-granquist](https://github.com/lamont-granquist))
 - Make non-legacy solo use socketless mode [\#6174](https://github.com/chef/chef/pull/6174) ([coderanger](https://github.com/coderanger))
