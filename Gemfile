@@ -16,8 +16,7 @@ group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
   gem "inspec"
-  # nokogiri has no ruby-2.4 version for windows so it cannot go into our Gemfile.lock
-  #  gem "nokogiri", ">= 1.7.1"
+  gem "nokogiri", ">= 1.8"
 end
 
 group(:omnibus_package, :pry) do
