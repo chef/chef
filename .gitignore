@@ -54,3 +54,6 @@ acceptance/vendor
 kitchen-tests/vendor
 
 *.swp
+
+# Visual Studio Code files
+.vscode
