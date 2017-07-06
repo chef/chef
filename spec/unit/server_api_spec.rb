@@ -55,7 +55,7 @@ describe Chef::ServerAPI do
     context "when url is not a chef server" do
       let(:org_data) { Hash.new }
       it "throws exception" do
-        expect{ described_class.new(url, raw_key: SIGNING_KEY_DOT_PEM) }.to raise_exception(Chef::Exceptions::NotAChefServerException)
+        expect { described_class.new(url, raw_key: SIGNING_KEY_DOT_PEM) }.to raise_exception(Chef::Exceptions::NotAChefServerException)
       end
     end
   end

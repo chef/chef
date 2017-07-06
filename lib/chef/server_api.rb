@@ -38,7 +38,7 @@ class Chef
       super(url, options)
 
       chef_server_attrs = get("/").keys.sort
-      raise Chef::Exceptions::NotAChefServerException if [ "guid", "full_name", "name" ].sort != chef_server_attrs 
+      raise Chef::Exceptions::NotAChefServerException if %w[ guid full_name name ].sort != chef_server_attrs
     end
 
     use Chef::HTTP::JSONInput
