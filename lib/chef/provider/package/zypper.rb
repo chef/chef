@@ -103,7 +103,7 @@ class Chef
         end
 
         def install_package(name, version)
-          zypper_package("install", "--auto-agree-with-licenses", name, version)
+          zypper_package("install", *options, "--auto-agree-with-licenses", name, version)
         end
 
         def upgrade_package(name, version)
@@ -112,19 +112,19 @@ class Chef
         end
 
         def remove_package(name, version)
-          zypper_package("remove", name, version)
+          zypper_package("remove", *options, name, version)
         end
 
         def purge_package(name, version)
-          zypper_package("remove", "--clean-deps", name, version)
+          zypper_package("remove", *options, "--clean-deps", name, version)
         end
 
         def lock_package(name, version)
-          zypper_package("addlock", name, version)
+          zypper_package("addlock", *options, name, version)
         end
 
         def unlock_package(name, version)
-          zypper_package("removelock", name, version)
+          zypper_package("removelock", *options, name, version)
         end
 
         private

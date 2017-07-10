@@ -139,6 +139,14 @@ describe Chef::Provider::Package::Zypper do
       )
       provider.install_package(["emacs"], ["1.0"])
     end
+
+    it "should add user provided options to the command" do
+      new_resource.options "--user-provided"
+      shell_out_expectation!(
+        "zypper", "--non-interactive", "install", "--user-provided", "--auto-agree-with-licenses", "emacs=1.0"
+      )
+      provider.install_package(["emacs"], ["1.0"])
+    end
   end
 
   describe "upgrade_package" do
@@ -159,6 +167,13 @@ describe Chef::Provider::Package::Zypper do
       Chef::Config[:zypper_check_gpg] = false
       shell_out_expectation!(
         "zypper", "--non-interactive", "--no-gpg-checks", "install", "--auto-agree-with-licenses", "emacs=1.0"
+      )
+      provider.upgrade_package(["emacs"], ["1.0"])
+    end
+    it "should add user provided options to the command" do
+      new_resource.options "--user-provided"
+      shell_out_expectation!(
+        "zypper", "--non-interactive", "install", "--user-provided", "--auto-agree-with-licenses", "emacs=1.0"
       )
       provider.upgrade_package(["emacs"], ["1.0"])
     end
@@ -196,6 +211,13 @@ describe Chef::Provider::Package::Zypper do
         )
         provider.remove_package(["emacs"], ["1.0"])
       end
+      it "should add user provided options to the command" do
+        new_resource.options "--user-provided"
+        shell_out_expectation!(
+          "zypper", "--non-interactive", "remove", "--user-provided", "emacs=1.0"
+        )
+        provider.remove_package(["emacs"], ["1.0"])
+      end
     end
   end
 
@@ -220,6 +242,13 @@ describe Chef::Provider::Package::Zypper do
       )
       provider.purge_package(["emacs"], ["1.0"])
     end
+    it "should add user provided options to the command" do
+      new_resource.options "--user-provided"
+      shell_out_expectation!(
+        "zypper", "--non-interactive", "remove", "--user-provided", "--clean-deps", "emacs=1.0"
+      )
+      provider.purge_package(["emacs"], ["1.0"])
+    end
   end
 
   describe "lock_package" do
@@ -236,6 +265,13 @@ describe Chef::Provider::Package::Zypper do
       )
       provider.lock_package(["emacs"], [nil])
     end
+    it "should add user provided options to the command" do
+      new_resource.options "--user-provided"
+      shell_out_expectation!(
+        "zypper", "--non-interactive", "addlock", "--user-provided", "emacs"
+      )
+      provider.lock_package(["emacs"], [nil])
+    end
   end
 
   describe "unlock_package" do
@@ -249,6 +285,13 @@ describe Chef::Provider::Package::Zypper do
       new_resource.gpg_check false
       shell_out_expectation!(
         "zypper", "--non-interactive", "--no-gpg-checks", "removelock", "emacs"
+      )
+      provider.unlock_package(["emacs"], [nil])
+    end
+    it "should add user provided options to the command" do
+      new_resource.options "--user-provided"
+      shell_out_expectation!(
+        "zypper", "--non-interactive", "removelock", "--user-provided", "emacs"
       )
       provider.unlock_package(["emacs"], [nil])
     end
