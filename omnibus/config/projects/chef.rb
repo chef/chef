@@ -48,6 +48,9 @@ instance_eval(IO.read(overrides_path), overrides_path)
 dependency "preparation"
 dependency "chef"
 
+# Nokogiri is an addon-extra we bundle and not a direct dep of chef itself
+dependency "nokogiri"
+
 # FIXME?: might make sense to move dependencies below into the omnibus-software chef
 #  definition or into a chef-complete definition added to omnibus-software.
 dependency "gem-permissions"
