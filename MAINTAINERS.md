@@ -63,7 +63,6 @@ To mention the team, use @chef/provisioning
 
 * [John Keiser](https://github.com/jkeiser)
 * [JJ Asghar](https://github.com/jjasghar)
-* [João Cravo](https://github.com/joaogbcravo)
 * [Stuart Preston](https://github.com/stuartpreston)
 * [Harley Alaniz](https://github.com/thehar)
 
@@ -231,4 +230,3 @@ To mention the team, use @chef/client-archlinux
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Ryan Cragun](https://github.com/ryancragun)
-
