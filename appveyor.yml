@@ -3,7 +3,7 @@ version: "master-{build}"
 os: Windows Server 2012 R2
 platform:
   - x64
-
+image: Previous Visual Studio 2013
 environment:
   matrix:
     - spec_type_and_ruby_version: "all$23-x64"
