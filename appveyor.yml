@@ -1,15 +1,13 @@
 version: "master-{build}"
 
-os: Windows Server 2012 R2
+os: Previous Visual Studio 2013
 platform:
   - x64
-image: Previous Visual Studio 2013
+
 environment:
   matrix:
-    - spec_type_and_ruby_version: "all$23-x64"
-    - spec_type_and_ruby_version: "all$23"
-    - spec_type_and_ruby_version: "time_consuming$23-x64"
-    - spec_type_and_ruby_version: "time_consuming$23"
+    - ruby_version: "23-x64"
+    - ruby_version: "23"
 
 clone_folder: c:\projects\chef
 clone_depth: 1
@@ -22,8 +20,6 @@ branches:
 install:
   - systeminfo
   - winrm quickconfig -q
-  - ps: $env:spec_to_run=$env:spec_type_and_ruby_version.split("$")[0]
-  - ps: $env:ruby_version=$env:spec_type_and_ruby_version.split("$")[1]
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - echo %PATH%
   - ps: $env:OMNIBUS_RUBYGEMS=$(findstr rubygems omnibus_overrides.rb | %{ $_.split(" ")[3] })
@@ -48,5 +44,4 @@ build_script:
 
 test_script:
   - SET SPEC_OPTS=--format progress
-  - if "%spec_to_run%" == "all" (bundle exec rake spec) else (bundle exec rspec ./spec/functional/resource/powershell_script_spec.rb & bundle exec rspec ./spec/functional/resource/dsc_script_spec.rb & bundle exec rspec ./spec/functional/resource/chocolatey_package_spec.rb & bundle exec rspec ./spec/functional/resource/windows_task_spec.rb)
-  
+  - bundle exec rake spec
