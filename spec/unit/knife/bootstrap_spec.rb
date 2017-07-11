@@ -586,6 +586,10 @@ describe Chef::Knife::Bootstrap do
         expect(knife.bootstrap_context.first_boot).to have_key(:policy_group)
       end
 
+      it "ensures that run_list is not set in the bootstrap context" do
+        expect(knife.bootstrap_context.first_boot).to_not have_key(:run_list)
+      end
+
     end
 
     # https://github.com/chef/chef/issues/4131
