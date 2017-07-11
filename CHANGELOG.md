@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.3.9](https://github.com/chef/chef/tree/v13.3.9) (2017-07-11)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.9)
+## [v13.3.10](https://github.com/chef/chef/tree/v13.3.10) (2017-07-11)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.10)
 
 **Closed issues:**
 
@@ -20,7 +20,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Fixing broken functional test in windows\_task resource [\#6139](https://github.com/chef/chef/pull/6139) ([NimishaS](https://github.com/NimishaS))
 - Discard caches for files not in the manifest [\#6129](https://github.com/chef/chef/pull/6129) ([akitada](https://github.com/akitada))
 - User on Windows with group incorrectly warns about passing GID [\#6125](https://github.com/chef/chef/pull/6125) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
-- reconfigure between runs when running in a loop [\#6122](https://github.com/chef/chef/pull/6122) ([btm](https://github.com/btm))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
