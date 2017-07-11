@@ -17,35 +17,51 @@ module ApiHelpers
 end
 
 class Counter
-  def self.reset
-    @@counters = Hash.new { |h, k| h[k] = 0 }
-  end
+  class << self
+    attr_accessor :counters
 
-  def self.increment(payload)
-    counter_name = ApiHelpers.payload_type(payload)
-    @@counters[counter_name] += 1
-  end
+    def counters
+      @counters ||= Hash.new { |h, k| h[k] = 0 }
+    end
 
-  def self.to_json
-    @@counters.to_json
+    def reset
+      @counters = nil
+    end
+
+    def increment(payload)
+      counter_name = ApiHelpers.payload_type(payload)
+      counters[counter_name] += 1
+    end
+
+    def to_json
+      counters.to_json
+    end
   end
 end
 
 class MessageCache
   include ApiHelpers
 
-  def self.reset
-    @@message_cache = {}
-  end
+  class << self
+    attr_accessor :message_cache
 
-  def self.store(payload)
-    cache_key = ApiHelpers.payload_type(payload)
+    def message_cache
+      @message_cache ||= {}
+    end
 
-    @@message_cache[cache_key] = payload
-  end
+    def reset
+      @message_cache = nil
+    end
 
-  def self.fetch(cache_key)
-    @@message_cache[cache_key].to_json
+    def store(payload)
+      cache_key = ApiHelpers.payload_type(payload)
+
+      message_cache[cache_key] = payload
+    end
+
+    def fetch(cache_key)
+      message_cache[cache_key].to_json
+    end
   end
 end
 
