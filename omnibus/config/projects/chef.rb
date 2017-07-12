@@ -69,11 +69,11 @@ package :msi do
   upgrade_code msi_upgrade_code
   wix_candle_extension "WixUtilExtension"
   wix_light_extension "WixUtilExtension"
-  signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
+  signing_identity "E05FF095D07F233B78EB322132BFF0F035E11B5B", machine_store: true
   parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
              ProjectLocationDir: project_location_dir
 end
 
 package :appx do
-  signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
+  signing_identity "E05FF095D07F233B78EB322132BFF0F035E11B5B", machine_store: true
 end
