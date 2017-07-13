@@ -14,18 +14,14 @@ docker:
     VERSION: "{{version}}"
 
 github:
-  # The file where the MAJOR.MINOR.PATCH version is kept
-  version_file: "VERSION"
-
-  # When a PR is merged, bump the PATCH version
-  bump_version_on_merge: true
-
-  # After the PATCH version has been bumped, execute this script
-  # to distribute that version to other files in the repository.
-  update_version_script: ".expeditor/update_version.sh"
-
-  # The tag format Expeditor should use when tagging version commits
   version_tag_format: "v{{version}}"
+  maintainer_group: chef/client-core
 
-  # After the version is bumped and the tag is pushed to Github, trigger a Jenkins build
-  trigger_build_on_bump: true
+merge_actions:
+  built_in:bump_version:
+    ignore_labels: "Version: Skip Bump"
+  bash:.expeditor/update_version.sh:
+    only_if: built_in:bump_version
+  built_in:trigger_omnibus_release_build:
+    ignore_labels: "Omnibus: Skip Build"
+    only_if: built_in:bump_version
