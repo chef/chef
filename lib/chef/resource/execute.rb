@@ -132,6 +132,8 @@ class Chef
 
       property :sensitive, [ TrueClass, FalseClass ], default: false, coerce: proc { |x| password ? true : x }
 
+      property :elevated, [ TrueClass, FalseClass ], default: false
+
       def self.set_guard_inherited_attributes(*inherited_attributes)
         @class_inherited_attributes = inherited_attributes
       end
@@ -149,13 +151,13 @@ class Chef
       end
 
       def after_created
-        validate_identity_platform(user, password, domain)
+        validate_identity_platform(user, password, domain, elevated)
         identity = qualify_user(user, password, domain)
         domain(identity[:domain])
         user(identity[:user])
       end
 
-      def validate_identity_platform(specified_user, password = nil, specified_domain = nil)
+      def validate_identity_platform(specified_user, password = nil, specified_domain = nil, elevated = false)
         if node[:platform_family] == "windows"
           if specified_user && password.nil?
             raise ArgumentError, "A value for `password` must be specified when a value for `user` is specified on the Windows platform"
@@ -163,6 +165,10 @@ class Chef
         else
           if password || specified_domain
             raise Exceptions::UnsupportedPlatform, "Values for `domain` and `password` are only supported on the Windows platform"
+          end
+
+          if elevated
+            raise Exceptions::UnsupportedPlatform, "Value for `elevated` is only supported on the Windows platform"
           end
         end
       end

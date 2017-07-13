@@ -27,7 +27,7 @@ class Chef
 
       provides :execute
 
-      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates
+      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated
 
       def load_current_resource
         current_resource = Chef::Resource::Execute.new(new_resource.name)
@@ -102,6 +102,7 @@ class Chef
             opts[:live_stream] = STDOUT
           end
         end
+        opts[:elevated] = elevated if elevated
         opts
       end
 
