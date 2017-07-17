@@ -44,4 +44,4 @@ build_script:
 
 test_script:
   - SET SPEC_OPTS=--format progress
-  - bundle exec rake spec
+  - bundle exec rspec ./spec/functional/resource/msu_package_spec.rb:22 --profile
