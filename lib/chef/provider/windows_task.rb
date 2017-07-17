@@ -52,53 +52,74 @@ class Chef
         set_current_idle_time(task_hash[:idle_time]) if task_hash[:idle_time]
         @current_resource.random_delay(task_hash[:random_delay]) if task_hash[:random_delay]
         @current_resource.execution_time_limit(task_hash[:execution_time_limit]) if task_hash[:execution_time_limit]
-
         @current_resource.status = :running if task_hash[:Status] == "Running"
         @current_resource.enabled = true if task_hash[:ScheduledTaskState] == "Enabled"
       end
 
+      # This method checks if task and command attributes exist since those two are mandatory attributes to create a schedules task.
+      def basic_validation
+        validate = []
+        validate << "Command" if new_resource.command.nil? || new_resource.command.empty?
+        validate << "Task Name" if new_resource.task_name.nil? || new_resource.task_name.empty?
+        return true if validate.empty?
+        raise Chef::Exceptions::ValidationFailed.new "Value for '#{validate.join(', ')}' option cannot be empty"
+      end
+
+      # get array of windows task resource attributes
+      def resource_attributes
+        %w{ command user run_level cwd frequency_modifier frequency idle_time random_delay execution_time_limit start_day start_time }
+      end
+
       def action_create
-        if @current_resource.exists && !(task_need_update? || @new_resource.force)
-          Chef::Log.info "#{@new_resource} task already exists - nothing to do"
-        else
-          options = {}
-          options["F"] = "" if @new_resource.force || task_need_update?
-          options["SC"] = schedule
-          options["MO"] = @new_resource.frequency_modifier if frequency_modifier_allowed
-          options["I"]  = @new_resource.idle_time unless @new_resource.idle_time.nil?
-          options["SD"] = @new_resource.start_day unless @new_resource.start_day.nil?
-          options["ST"] = @new_resource.start_time unless @new_resource.start_time.nil?
-          options["TR"] = @new_resource.command
-          options["RU"] = @new_resource.user
-          options["RP"] = @new_resource.password if use_password?
-          options["RL"] = "HIGHEST" if @new_resource.run_level == :highest
-          options["IT"] = "" if @new_resource.interactive_enabled
-          options["D"] = @new_resource.day if @new_resource.day
-          options["M"] = @new_resource.months unless @new_resource.months.nil?
-
-          run_schtasks "CREATE", options
-          xml_options = []
-          xml_options << "cwd" if new_resource.cwd
-          xml_options << "random_delay" if new_resource.random_delay
-          xml_options << "execution_time_limit" if new_resource.execution_time_limit
-          update_task_xml(xml_options) unless xml_options.empty?
-
-          new_resource.updated_by_last_action true
-          Chef::Log.info "#{@new_resource} task created"
+        if @current_resource.exists
+          if !(task_need_update? || new_resource.force)
+            Chef::Log.info "#{new_resource} task already exists - nothing to do"
+            return
+          end
+          # To merge current resource and new resource attributes
+          resource_attributes.each do |attribute|
+            new_resource_attribute = new_resource.send(attribute)
+            current_resource_attribute = @current_resource.send(attribute)
+            new_resource.send("#{attribute}=", current_resource_attribute ) if current_resource_attribute && new_resource_attribute.nil?
+          end
         end
+        basic_validation
+        options = {}
+        options["F"] = "" if new_resource.force || task_need_update?
+        options["SC"] = schedule
+        options["MO"] = new_resource.frequency_modifier if frequency_modifier_allowed
+        options["I"]  = new_resource.idle_time unless new_resource.idle_time.nil?
+        options["SD"] = new_resource.start_day unless new_resource.start_day.nil?
+        options["ST"] = new_resource.start_time unless new_resource.start_time.nil?
+        options["TR"] = new_resource.command
+        options["RU"] = new_resource.user
+        options["RP"] = new_resource.password if use_password?
+        options["RL"] = "HIGHEST" if new_resource.run_level == :highest
+        options["IT"] = "" if new_resource.interactive_enabled
+        options["D"] = new_resource.day if new_resource.day
+        options["M"] = new_resource.months unless new_resource.months.nil?
+        run_schtasks "CREATE", options
+        xml_options = []
+        xml_options << "cwd" if new_resource.cwd
+        xml_options << "random_delay" if new_resource.random_delay
+        xml_options << "execution_time_limit" if new_resource.execution_time_limit
+        update_task_xml(xml_options) unless xml_options.empty?
+
+        new_resource.updated_by_last_action true
+        Chef::Log.info "#{new_resource} task created"
       end
 
       def action_run
         if @current_resource.exists
           if @current_resource.status == :running
-            Chef::Log.info "#{@new_resource} task is currently running, skipping run"
+            Chef::Log.info "#{new_resource} task is currently running, skipping run"
           else
             run_schtasks "RUN"
             new_resource.updated_by_last_action true
-            Chef::Log.info "#{@new_resource} task ran"
+            Chef::Log.info "#{new_resource} task ran"
           end
         else
-          Chef::Log.warn "#{@new_resource} task doesn't exists - nothing to do"
+          Chef::Log.warn "#{new_resource} task doesn't exists - nothing to do"
         end
       end
 
@@ -107,38 +128,38 @@ class Chef
           # always need to force deletion
           run_schtasks "DELETE", "F" => ""
           new_resource.updated_by_last_action true
-          Chef::Log.info "#{@new_resource} task deleted"
+          Chef::Log.info "#{new_resource} task deleted"
         else
-          Chef::Log.warn "#{@new_resource} task doesn't exists - nothing to do"
+          Chef::Log.warn "#{new_resource} task doesn't exists - nothing to do"
         end
       end
 
       def action_end
         if @current_resource.exists
           if @current_resource.status != :running
-            Chef::Log.debug "#{@new_resource} is not running - nothing to do"
+            Chef::Log.debug "#{new_resource} is not running - nothing to do"
           else
             run_schtasks "END"
-            @new_resource.updated_by_last_action true
-            Chef::Log.info "#{@new_resource} task ended"
+            new_resource.updated_by_last_action true
+            Chef::Log.info "#{new_resource} task ended"
           end
         else
-          Chef::Log.warn "#{@new_resource} task doesn't exist - nothing to do"
+          Chef::Log.warn "#{new_resource} task doesn't exist - nothing to do"
         end
       end
 
       def action_enable
         if @current_resource.exists
           if @current_resource.enabled
-            Chef::Log.debug "#{@new_resource} already enabled - nothing to do"
+            Chef::Log.debug "#{new_resource} already enabled - nothing to do"
           else
             run_schtasks "CHANGE", "ENABLE" => ""
-            @new_resource.updated_by_last_action true
-            Chef::Log.info "#{@new_resource} task enabled"
+            new_resource.updated_by_last_action true
+            Chef::Log.info "#{new_resource} task enabled"
           end
         else
-          Chef::Log.fatal "#{@new_resource} task doesn't exist - nothing to do"
-          raise Errno::ENOENT, "#{@new_resource}: task does not exist, cannot enable"
+          Chef::Log.fatal "#{new_resource} task doesn't exist - nothing to do"
+          raise Errno::ENOENT, "#{new_resource}: task does not exist, cannot enable"
         end
       end
 
@@ -146,13 +167,13 @@ class Chef
         if @current_resource.exists
           if @current_resource.enabled
             run_schtasks "CHANGE", "DISABLE" => ""
-            @new_resource.updated_by_last_action true
-            Chef::Log.info "#{@new_resource} task disabled"
+            new_resource.updated_by_last_action true
+            Chef::Log.info "#{new_resource} task disabled"
           else
-            Chef::Log.warn "#{@new_resource} already disabled - nothing to do"
+            Chef::Log.warn "#{new_resource} already disabled - nothing to do"
           end
         else
-          Chef::Log.warn "#{@new_resource} task doesn't exist - nothing to do"
+          Chef::Log.warn "#{new_resource} task doesn't exist - nothing to do"
         end
       end
 
@@ -160,7 +181,7 @@ class Chef
 
       # rubocop:disable Style/StringLiteralsInInterpolation
       def run_schtasks(task_action, options = {})
-        cmd = "schtasks /#{task_action} /TN \"#{@new_resource.task_name}\" "
+        cmd = "schtasks /#{task_action} /TN \"#{new_resource.task_name}\" "
         options.keys.each do |option|
           cmd += "/#{option} "
           cmd += "\"#{options[option].to_s.gsub('"', "\\\"")}\" " unless options[option] == ""
@@ -172,20 +193,20 @@ class Chef
       # rubocop:enable Style/StringLiteralsInInterpolation
 
       def task_need_update?
-        return true if @current_resource.command != @new_resource.command.tr("'", '"') ||
-            @current_resource.user != @new_resource.user ||
-            @current_resource.run_level != @new_resource.run_level ||
-            @current_resource.cwd != @new_resource.cwd ||
-            @current_resource.frequency_modifier != @new_resource.frequency_modifier ||
-            @current_resource.frequency != @new_resource.frequency ||
-            @current_resource.idle_time != @new_resource.idle_time ||
-            @current_resource.random_delay != @new_resource.random_delay ||
-            @current_resource.execution_time_limit != @new_resource.execution_time_limit ||
-            !@new_resource.start_day.nil? || !@new_resource.start_time.nil?
-
+        return true if (new_resource.command &&
+            @current_resource.command != new_resource.command.tr("'", '"')) ||
+            @current_resource.user != new_resource.user ||
+            @current_resource.run_level != new_resource.run_level ||
+            @current_resource.cwd != new_resource.cwd ||
+            @current_resource.frequency_modifier != new_resource.frequency_modifier ||
+            @current_resource.frequency != new_resource.frequency ||
+            @current_resource.idle_time != new_resource.idle_time ||
+            @current_resource.random_delay != new_resource.random_delay ||
+            @current_resource.execution_time_limit != new_resource.execution_time_limit ||
+            !new_resource.start_day.nil? || !new_resource.start_time.nil?
         begin
-          return true if @new_resource.day.to_s.casecmp(@current_resource.day.to_s) != 0 ||
-              @new_resource.months.to_s.casecmp(@current_resource.months.to_s) != 0
+          return true if new_resource.day.to_s.casecmp(@current_resource.day.to_s) != 0 ||
+              new_resource.months.to_s.casecmp(@current_resource.months.to_s) != 0
         rescue
           Chef::Log.debug "caught a raise in task_needs_update?"
         end
@@ -206,7 +227,7 @@ class Chef
 
         xml_element_mapping = {
           "cwd" => "Actions/Exec/WorkingDirectory",
-          "random_delay" => random_delay_xml_element[@new_resource.frequency],
+          "random_delay" => random_delay_xml_element[new_resource.frequency],
           "execution_time_limit" => "Settings/ExecutionTimeLimit",
         }
 
@@ -214,7 +235,7 @@ class Chef
 
         task_script = <<-EOH
             [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
-            schtasks /Query /TN \"#{@new_resource.task_name}\" /XML
+            schtasks /Query /TN \"#{new_resource.task_name}\" /XML
         EOH
         xml_cmd = powershell_out(task_script)
 
@@ -225,7 +246,7 @@ class Chef
         options.each do |option|
           Chef::Log.debug 'Removing former #{option} if any'
           doc.root.elements.delete(xml_element_mapping[option])
-          option_value = @new_resource.send("#{option}")
+          option_value = new_resource.send("#{option}")
 
           if option_value
             Chef::Log.debug "Setting #option as #option_value"
@@ -246,9 +267,9 @@ class Chef
           end
 
           options = {}
-          options["RU"] = @new_resource.user if @new_resource.user
-          options["RP"] = @new_resource.password if @new_resource.password
-          options["IT"] = "" if @new_resource.interactive_enabled
+          options["RU"] = new_resource.user if new_resource.user
+          options["RP"] = new_resource.password if new_resource.password
+          options["IT"] = "" if new_resource.interactive_enabled
           options["XML"] = temp_task_file
 
           run_schtasks("DELETE", "F" => "")
@@ -345,26 +366,26 @@ class Chef
       SYSTEM_USERS = ['NT AUTHORITY\SYSTEM', "SYSTEM", 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', "USERS"].freeze
 
       def use_password?
-        @use_password ||= !SYSTEM_USERS.include?(@new_resource.user.upcase)
+        @use_password ||= !SYSTEM_USERS.include?(new_resource.user.upcase)
       end
 
       def schedule
-        case @new_resource.frequency
+        case new_resource.frequency
         when :on_logon
           "ONLOGON"
         when :on_idle
           "ONIDLE"
         else
-          @new_resource.frequency
+          new_resource.frequency
         end
       end
 
       def frequency_modifier_allowed
-        case @new_resource.frequency
+        case new_resource.frequency
         when :minute, :hourly, :daily, :weekly
           true
         when :monthly
-          @new_resource.months.nil? || %w{ FIRST SECOND THIRD FOURTH LAST LASTDAY }.include?(@new_resource.frequency_modifier)
+          new_resource.months.nil? || %w{ FIRST SECOND THIRD FOURTH LAST LASTDAY }.include?(new_resource.frequency_modifier)
         else
           false
         end
