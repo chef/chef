@@ -123,7 +123,7 @@ class Chef
             line_parts << run_list if run_list
 
             if node["platform"]
-              platform = node["platform"]
+              platform = node["platform"].dup
               if node["platform_version"]
                 platform << " #{node['platform_version']}"
               end
