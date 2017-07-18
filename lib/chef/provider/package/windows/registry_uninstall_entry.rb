@@ -40,7 +40,7 @@ class Chef
                     begin
                       entry = reg.open(key, desired)
                       display_name = read_registry_property(entry, "DisplayName")
-                      if display_name == package_name
+                      if display_name.to_s.rstrip == package_name
                         quiet_uninstall_string = RegistryUninstallEntry.read_registry_property(entry, "QuietUninstallString")
                         entries.push(quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry))
                       end
