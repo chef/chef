@@ -23,6 +23,8 @@ describe Chef::Knife::Status do
     node = Chef::Node.new.tap do |n|
       n.automatic_attrs["fqdn"] = "foobar"
       n.automatic_attrs["ohai_time"] = 1343845969
+      n.automatic_attrs["platform"] = "mac_os_x"
+      n.automatic_attrs["platform_version"] = "10.12.5"
     end
     allow(Time).to receive(:now).and_return(Time.at(1428573420))
     @query = double("Chef::Search::Query")
