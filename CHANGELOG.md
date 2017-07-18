@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.3.16](https://github.com/chef/chef/tree/v13.3.16) (2017-07-17)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.16)
+## [v13.3.17](https://github.com/chef/chef/tree/v13.3.17) (2017-07-18)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.17)
 
 **Closed issues:**
 
@@ -11,6 +11,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 - Use new Expeditor config format [\#6272](https://github.com/chef/chef/pull/6272) ([tduffield](https://github.com/tduffield))
 - \[MSYS-590\]Make mount idempotent on Aix [\#6213](https://github.com/chef/chef/pull/6213) ([NAshwini](https://github.com/NAshwini))
+- \[MSYS-586\] Allow windows\_task create action to update tasks. [\#6193](https://github.com/chef/chef/pull/6193) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
 - Use socketless local mode by default [\#6177](https://github.com/chef/chef/pull/6177) ([coderanger](https://github.com/coderanger))
 - convert breakpoint resource to a custom resource [\#6176](https://github.com/chef/chef/pull/6176) ([lamont-granquist](https://github.com/lamont-granquist))
 - Make non-legacy solo use socketless mode [\#6174](https://github.com/chef/chef/pull/6174) ([coderanger](https://github.com/coderanger))
