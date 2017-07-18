@@ -36,6 +36,7 @@ class Chef
         @hwaddr = nil
         @mask = nil
         @inet_addr = nil
+        @gateway = nil
         @bcast = nil
         @mtu = nil
         @metric = nil
@@ -73,6 +74,14 @@ class Chef
       def inet_addr(arg = nil)
         set_or_return(
           :inet_addr,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def gateway(arg = nil)
+        set_or_return(
+          :gateway,
           arg,
           :kind_of => String
         )
