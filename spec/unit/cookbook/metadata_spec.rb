@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -98,11 +98,11 @@ describe Chef::Cookbook::Metadata do
     end
 
     it "has an empty maintainer field" do
-      expect(metadata.maintainer).to eq(nil)
+      expect(metadata.maintainer).to eq("")
     end
 
     it "has an empty maintainer_email field" do
-      expect(metadata.maintainer).to eq(nil)
+      expect(metadata.maintainer_email).to eq("")
     end
 
     it "has an empty platforms list" do
