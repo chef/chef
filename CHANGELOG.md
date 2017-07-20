@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.3.18](https://github.com/chef/chef/tree/v13.3.18) (2017-07-20)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.18)
+## [v13.3.19](https://github.com/chef/chef/tree/v13.3.19) (2017-07-20)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.19)
 
 **Closed issues:**
 
@@ -11,6 +11,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 - Bump mixlib-shellout for \#6271 [\#6285](https://github.com/chef/chef/pull/6285) ([btm](https://github.com/btm))
 - Use new Expeditor config format [\#6272](https://github.com/chef/chef/pull/6272) ([tduffield](https://github.com/tduffield))
+- Added :elevated option for powershell\_script resource [\#6271](https://github.com/chef/chef/pull/6271) ([NimishaS](https://github.com/NimishaS))
 - \[MSYS-590\]Make mount idempotent on Aix [\#6213](https://github.com/chef/chef/pull/6213) ([NAshwini](https://github.com/NAshwini))
 - \[MSYS-586\] Allow windows\_task create action to update tasks. [\#6193](https://github.com/chef/chef/pull/6193) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
 - Use socketless local mode by default [\#6177](https://github.com/chef/chef/pull/6177) ([coderanger](https://github.com/coderanger))
