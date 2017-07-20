@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +29,8 @@ $:.unshift File.expand_path("../..", __FILE__)
 
 require "rubygems"
 require "rspec/mocks"
+
+require "webmock/rspec"
 
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 $:.unshift(File.expand_path("../lib", __FILE__))
@@ -215,6 +217,11 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
 
   config.before(:each) do
+    # it'd be nice to run this with connections blocked or only to localhost, but we do make lots
+    # of real connections, so cannot.  we reset it to allow connections every time to avoid
+    # tests setting connections to be disabled and that state leaking into other tests.
+    WebMock.allow_net_connect!
+
     Chef.reset!
 
     Chef::ChefFS::FileSystemCache.instance.reset!
