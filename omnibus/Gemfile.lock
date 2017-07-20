@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/license_scout
-  revision: 75ffc87dd36b1be3b49a4a3dfe026734f48e146f
+  revision: e0d15c52f29dadc8d057616dfadd2c39bfc24beb
   specs:
     license_scout (0.1.3)
       ffi-yajl (~> 2.2)
@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus
-  revision: f2f670e905f432a2d2c895650144b04ae4beffd2
+  revision: 2215d10c1d13c30f058f126806bff09807706c41
   specs:
     omnibus (5.6.1)
       aws-sdk (~> 2)
@@ -38,13 +38,13 @@ GEM
       public_suffix (~> 2.0, >= 2.0.2)
     artifactory (2.8.2)
     awesome_print (1.8.0)
-    aws-sdk (2.10.11)
-      aws-sdk-resources (= 2.10.11)
-    aws-sdk-core (2.10.11)
+    aws-sdk (2.10.14)
+      aws-sdk-resources (= 2.10.14)
+    aws-sdk-core (2.10.14)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.10.11)
-      aws-sdk-core (= 2.10.11)
+    aws-sdk-resources (2.10.14)
+      aws-sdk-core (= 2.10.14)
     aws-sigv4 (1.0.1)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -136,8 +136,8 @@ GEM
       mixlib-versioning
       thor
     mixlib-log (1.7.1)
-    mixlib-shellout (2.2.7)
-    mixlib-shellout (2.2.7-universal-mingw32)
+    mixlib-shellout (2.3.1)
+    mixlib-shellout (2.3.1-universal-mingw32)
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
     mixlib-versioning (1.1.0)
