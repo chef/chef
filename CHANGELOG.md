@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.3.17](https://github.com/chef/chef/tree/v13.3.17) (2017-07-18)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.17)
+## [v13.3.18](https://github.com/chef/chef/tree/v13.3.18) (2017-07-20)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.18)
 
 **Closed issues:**
 
@@ -9,6 +9,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- Bump mixlib-shellout for \#6271 [\#6285](https://github.com/chef/chef/pull/6285) ([btm](https://github.com/btm))
 - Use new Expeditor config format [\#6272](https://github.com/chef/chef/pull/6272) ([tduffield](https://github.com/tduffield))
 - \[MSYS-590\]Make mount idempotent on Aix [\#6213](https://github.com/chef/chef/pull/6213) ([NAshwini](https://github.com/NAshwini))
 - \[MSYS-586\] Allow windows\_task create action to update tasks. [\#6193](https://github.com/chef/chef/pull/6193) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
@@ -19,7 +20,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6156](https://github.com/chef/chef/pull/6156) ([shortdudey123](https://github.com/shortdudey123))
 - Ensure that we check the embedded gem binary last [\#6154](https://github.com/chef/chef/pull/6154) ([thommay](https://github.com/thommay))
 - \[MSYS-563\] Modified error message to explain connectivity issue due to Proxy [\#6142](https://github.com/chef/chef/pull/6142) ([NimishaS](https://github.com/NimishaS))
-- Fixing broken functional test in windows\_task resource [\#6139](https://github.com/chef/chef/pull/6139) ([NimishaS](https://github.com/NimishaS))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
