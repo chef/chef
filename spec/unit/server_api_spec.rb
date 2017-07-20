@@ -26,11 +26,21 @@ b857vWviwPX2/P6+E3GPdl8IVsKXCvGWOBZWTuNTjQtwbDzsUepWoMgXnlQJSn5I
 YSlLxQKBgQD16Gw9kajpKlzsPa6XoQeGmZALT6aKWJQlrKtUQIrsIWM0Z6eFtX12
 2jjHZ0awuCQ4ldqwl8IfRogWMBkHOXjTPVK0YKWWlxMpD/5+bGPARa5fir8O1Zpo
 Y6S6MeZ69Rp89ma4ttMZ+kwi1+XyHqC/dlcVRW42Zl5Dc7BALRlJjQ==
------END RSA PRIVATE KEY-----"
+-----END RSA PRIVATE KEY-----".freeze
 
 describe Chef::ServerAPI do
   let(:url) { "http://chef.example.com:4000" }
   let(:key_path) { "/tmp/foo" }
+
+  let(:client) do
+    Chef::ServerAPI.new(url)
+  end
+
+  before do
+    Chef::Config[:node_name] = "silent-bob"
+    Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
+    Chef::Config[:http_retry_delay] = 0
+  end
 
   describe "#initialize" do
     it "uses the configured key file" do
@@ -45,6 +55,70 @@ describe Chef::ServerAPI do
       api = described_class.new(url, raw_key: SIGNING_KEY_DOT_PEM)
       expect(api.options[:signing_key_filename]).to be_nil
       expect(api.options[:raw_key]).to eql(SIGNING_KEY_DOT_PEM)
+    end
+  end
+
+  context "versioned apis" do
+    class VersionedClassV0
+      extend Chef::Mixin::VersionedAPI
+      minimum_api_version 0
+    end
+
+    class VersionedClassV2
+      extend Chef::Mixin::VersionedAPI
+      minimum_api_version 2
+    end
+
+    class VersionedClassVersions
+      extend Chef::Mixin::VersionedAPIFactory
+      add_versioned_api_class VersionedClassV0
+      add_versioned_api_class VersionedClassV2
+    end
+
+    before do
+      Chef::ServerAPIVersions.instance.reset!
+    end
+
+    let(:versioned_client) do
+      Chef::ServerAPI.new(url, version_class: VersionedClassVersions)
+    end
+
+    it "on protocol negotiation it posts the same message body without doubly-encoding the json string" do
+      WebMock.disable_net_connect!
+      post_body = { bar: "baz" }
+      body_406 = '{"error":"invalid-x-ops-server-api-version","message":"Specified version 2 not supported","min_version":0,"max_version":1}'
+      stub_request(:post, "http://chef.example.com:4000/foo").with(body: post_body.to_json, headers: { "X-Ops-Server-Api-Version" => "2" }).to_return(status: [406, "Not Acceptable"], body: body_406 )
+      stub_request(:post, "http://chef.example.com:4000/foo").with(body: post_body.to_json, headers: { "X-Ops-Server-Api-Version" => "0" }).to_return(status: 200, body: "", headers: {})
+      versioned_client.post("foo", post_body)
+    end
+  end
+
+  context "retrying normal requests" do
+    it "500 on a post retries and posts correctly " do
+      WebMock.disable_net_connect!
+      post_body = { bar: "baz" }
+      headers = { "Accept" => "application/json", "Content-Type" => "application/json", "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "Content-Length" => "13", "Host" => "chef.example.com:4000", "X-Chef-Version" => Chef::VERSION, "X-Ops-Sign" => "algorithm=sha1;version=1.1;", "X-Ops-Userid" => "silent-bob" }
+      stub_request(:post, "http://chef.example.com:4000/foo").with(body: post_body.to_json, headers: headers).to_return(status: [500, "Internal Server Error"])
+      stub_request(:post, "http://chef.example.com:4000/foo").with(body: post_body.to_json, headers: headers).to_return(status: 200, body: "", headers: {})
+      client.post("foo", post_body)
+    end
+
+    it "500 on a put retries and puts correctly " do
+      WebMock.disable_net_connect!
+      put_body = { bar: "baz" }
+      headers = { "Accept" => "application/json", "Content-Type" => "application/json", "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "Content-Length" => "13", "Host" => "chef.example.com:4000", "X-Chef-Version" => Chef::VERSION, "X-Ops-Sign" => "algorithm=sha1;version=1.1;", "X-Ops-Userid" => "silent-bob" }
+      stub_request(:put, "http://chef.example.com:4000/foo").with(body: put_body.to_json, headers: headers).to_return(status: [500, "Internal Server Error"])
+      stub_request(:put, "http://chef.example.com:4000/foo").with(body: put_body.to_json, headers: headers).to_return(status: 200, body: "", headers: {})
+      client.put("foo", put_body)
+    end
+
+    it "500 on a get retries and gets correctly " do
+      WebMock.disable_net_connect!
+      get_body = { bar: "baz" }
+      headers = { "Accept" => "application/json", "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "Host" => "chef.example.com:4000", "X-Chef-Version" => Chef::VERSION, "X-Ops-Sign" => "algorithm=sha1;version=1.1;", "X-Ops-Userid" => "silent-bob" }
+      stub_request(:get, "http://chef.example.com:4000/foo").with(headers: headers).to_return(status: [500, "Internal Server Error"])
+      stub_request(:get, "http://chef.example.com:4000/foo").with(headers: headers).to_return(status: 200, body: "", headers: {})
+      client.get("foo")
     end
   end
 end

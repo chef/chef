@@ -50,6 +50,7 @@ end
 group(:development, :test) do
   gem "rake"
   gem "simplecov"
+  gem "webmock"
 
   # for testing new chefstyle rules
   # gem 'chefstyle', github: 'chef/chefstyle'

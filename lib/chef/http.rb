@@ -5,7 +5,7 @@
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2009-2016 Chef Software, Inc.
+# Copyright:: Copyright 2009-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -144,9 +144,9 @@ class Chef
     def request(method, path, headers = {}, data = false)
       http_attempts ||= 0
       url = create_url(path)
-      method, url, headers, data = apply_request_middleware(method, url, headers, data)
+      processed_method, url, processed_headers, processed_data = apply_request_middleware(method, url, headers, data)
 
-      response, rest_request, return_value = send_http_request(method, url, headers, data)
+      response, rest_request, return_value = send_http_request(processed_method, url, processed_headers, processed_data)
       response, rest_request, return_value = apply_response_middleware(response, rest_request, return_value)
 
       response.error! unless success_response?(response)
@@ -176,11 +176,12 @@ class Chef
       url = create_url(path)
       response, rest_request, return_value = nil, nil, nil
       tempfile = nil
+      data = nil
 
       method = :GET
-      method, url, headers, data = apply_request_middleware(method, url, headers, data)
+      method, url, processed_headers, data = apply_request_middleware(method, url, headers, data)
 
-      response, rest_request, return_value = send_http_request(method, url, headers, data) do |http_response|
+      response, rest_request, return_value = send_http_request(method, url, processed_headers, data) do |http_response|
         if http_response.kind_of?(Net::HTTPSuccess)
           tempfile = stream_to_tempfile(url, http_response, &progress_block)
         end
@@ -223,11 +224,12 @@ class Chef
       url = create_url(path)
       response, rest_request, return_value = nil, nil, nil
       tempfile = nil
+      data = nil
 
       method = :GET
-      method, url, headers, data = apply_request_middleware(method, url, headers, data)
+      method, url, processed_headers, data = apply_request_middleware(method, url, headers, data)
 
-      response, rest_request, return_value = send_http_request(method, url, headers, data) do |http_response|
+      response, rest_request, return_value = send_http_request(method, url, processed_headers, data) do |http_response|
         if http_response.kind_of?(Net::HTTPSuccess)
           tempfile = stream_to_tempfile(url, http_response)
         end
