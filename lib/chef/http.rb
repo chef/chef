@@ -157,7 +157,6 @@ class Chef
       response = e.response
       if response.kind_of?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
         Chef::Log.debug("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
-        sleep(http_retry_delay)
         retry
       else
         raise
@@ -197,7 +196,6 @@ class Chef
       response = e.response
       if response.kind_of?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
         Chef::Log.debug("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
-        sleep(http_retry_delay)
         retry
       else
         raise
@@ -254,7 +252,6 @@ class Chef
       response = e.response
       if response.kind_of?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
         Chef::Log.debug("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
-        sleep(http_retry_delay)
         retry
       else
         raise
