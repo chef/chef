@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.3.19](https://github.com/chef/chef/tree/v13.3.19) (2017-07-20)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.19)
+## [v13.3.20](https://github.com/chef/chef/tree/v13.3.20) (2017-07-21)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.20)
 
 **Closed issues:**
 
@@ -20,7 +20,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6157](https://github.com/chef/chef/pull/6157) ([shortdudey123](https://github.com/shortdudey123))
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6156](https://github.com/chef/chef/pull/6156) ([shortdudey123](https://github.com/shortdudey123))
 - Ensure that we check the embedded gem binary last [\#6154](https://github.com/chef/chef/pull/6154) ([thommay](https://github.com/thommay))
-- \[MSYS-563\] Modified error message to explain connectivity issue due to Proxy [\#6142](https://github.com/chef/chef/pull/6142) ([NimishaS](https://github.com/NimishaS))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
