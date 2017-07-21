@@ -100,8 +100,8 @@ class Chef
         @long_description = ""
         @license = "All rights reserved"
 
-        @maintainer = nil
-        @maintainer_email = nil
+        @maintainer = ""
+        @maintainer_email = ""
 
         @platforms = Mash.new
         @dependencies = Mash.new
