@@ -1,6 +1,6 @@
 version: "master-{build}"
 
-os: Previous Visual Studio 2015
+os: Visual Studio 2015
 platform:
   - x64
 
