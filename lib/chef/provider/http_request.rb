@@ -62,6 +62,20 @@ class Chef
         end
       end
 
+      # Send a PATCH request to new_resource.url, with the message as the payload
+      def action_patch
+        converge_by("#{new_resource} PATCH to #{new_resource.url}") do
+          message = check_message(new_resource.message)
+          body = @http.patch(
+            "#{new_resource.url}",
+            message,
+            new_resource.headers
+          )
+          Chef::Log.info("#{new_resource} PATCH to #{new_resource.url} successful")
+          Chef::Log.debug("#{new_resource} PATCH request response: #{body}")
+        end
+      end
+
       # Send a PUT request to new_resource.url, with the message as the payload
       def action_put
         converge_by("#{new_resource} PUT to #{new_resource.url}") do
