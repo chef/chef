@@ -33,7 +33,9 @@ class Chef
       public
 
       def evaluate
-        shell_out_with_systems_locale(@command, @command_opts).status.success?
+        result = shell_out_with_systems_locale(@command, @command_opts)
+        Chef::Log.debug "Command failed: #{result.stderr}" unless result.status.success?
+        result.status.success?
       # Timeout fails command rather than chef-client run, see:
       #   https://tickets.opscode.com/browse/CHEF-2690
       rescue Chef::Exceptions::CommandTimeout
