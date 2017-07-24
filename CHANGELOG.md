@@ -1,10 +1,11 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.3.23](https://github.com/chef/chef/tree/v13.3.23) (2017-07-24)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.23)
+## [v13.3.24](https://github.com/chef/chef/tree/v13.3.24) (2017-07-24)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.24)
 
 **Closed issues:**
 
+- Windows\_Package should handle trailing spaces in package names [\#6217](https://github.com/chef/chef/issues/6217)
 - Chomp errors when using Chocolatey provider [\#6165](https://github.com/chef/chef/issues/6165)
 
 **Merged pull requests:**
