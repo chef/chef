@@ -37,7 +37,6 @@ namespace :dependencies do
   desc "Update all dependencies. dependencies:update to update as little as possible (CI-only)."
   task :update_ci => %w{
                     dependencies:update_gemfile_lock
-                    dependencies:update_omnibus_overrides
                     dependencies:update_omnibus_gemfile_lock
                     dependencies:update_acceptance_gemfile_lock
                     dependencies:update_kitchen_tests_gemfile_lock
