@@ -163,6 +163,9 @@ RSpec.configure do |config|
   # testers. If we ever fix it we should restore it.
   # config.filter_run_excluding :windows_service_requires_assign_token => true if !STDOUT.isatty && !windows_user_right?("SeAssignPrimaryTokenPrivilege")
   config.filter_run_excluding :windows_service_requires_assign_token => true
+  # This filter does the same thing that :windows_service_requires_assign_token was supposed to do
+  # Need to check for SeAssignPrimaryTokenPrivilege since it's required for running a scheduled task
+  config.filter_run_excluding :requires_assign_token => true if !windows_user_right?("SeAssignPrimaryTokenPrivilege")
   config.filter_run_excluding :solaris_only => true unless solaris?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?

@@ -388,7 +388,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
     end
   end
 
-  describe "action :end", :volatile do
+  describe "action :end", :requires_assign_token do
     after { delete_task }
 
     subject do
