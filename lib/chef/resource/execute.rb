@@ -162,6 +162,10 @@ class Chef
           if specified_user && password.nil?
             raise ArgumentError, "A value for `password` must be specified when a value for `user` is specified on the Windows platform"
           end
+
+          if elevated && !specified_user && !password
+            raise ArgumentError, "`elevated` option should be passed only with `username` and `password`."
+          end
         else
           if password || specified_domain
             raise Exceptions::UnsupportedPlatform, "Values for `domain` and `password` are only supported on the Windows platform"
