@@ -77,7 +77,7 @@ describe Chef::Resource::Execute do
   shared_examples_for "it received invalid credentials" do
     describe "the validation method" do
       it "should raise an error" do
-        expect { execute_resource.validate_identity_platform(username, password, domain) }.to raise_error(ArgumentError)
+        expect { execute_resource.validate_identity_platform(username, password, domain, elevated) }.to raise_error(ArgumentError)
       end
     end
   end
@@ -113,6 +113,7 @@ describe Chef::Resource::Execute do
 
       context "when a valid username is specified" do
         let(:username) { "starchild" }
+        let(:elevated) { false }
         context "when a valid domain is specified" do
           let(:domain) { "mothership" }
 
@@ -129,6 +130,7 @@ describe Chef::Resource::Execute do
 
         context "when the domain is not specified" do
           let(:domain) { nil }
+          let(:elevated) { false }
 
           context "when the password is not specified" do
             let(:password) { nil }
@@ -177,6 +179,24 @@ describe Chef::Resource::Execute do
         context "when username is in the form user@domain" do
           let(:username) { "starchild@mothership" }
           it_behaves_like "it received invalid username and domain"
+        end
+      end
+
+      context "when elevated is passed" do
+        let(:elevated) { true }
+
+        context "when username and password are not passed" do
+          let(:username) { nil }
+          let(:domain) { nil }
+          let(:password) { nil }
+          it_behaves_like "it received invalid credentials"
+        end
+
+        context "when username and password are passed" do
+          let(:username) { "user" }
+          let(:domain) { nil }
+          let(:password) { "we.funk!" }
+          it_behaves_like "it received valid credentials"
         end
       end
     end
