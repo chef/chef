@@ -1,7 +1,7 @@
 This changelog reflects the current state of chef's master branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
-## [v13.3.26](https://github.com/chef/chef/tree/v13.3.26) (2017-07-25)
-[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.26)
+## [v13.3.27](https://github.com/chef/chef/tree/v13.3.27) (2017-07-26)
+[Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.27)
 
 **Closed issues:**
 
@@ -10,6 +10,7 @@ This changelog reflects the current state of chef's master branch on github and 
 
 **Merged pull requests:**
 
+- \[MSYS-629\] Added username/password validation for elevated option [\#6293](https://github.com/chef/chef/pull/6293) ([NimishaS](https://github.com/NimishaS))
 - Bump mixlib-shellout for \#6271 [\#6285](https://github.com/chef/chef/pull/6285) ([btm](https://github.com/btm))
 - Use new Expeditor config format [\#6272](https://github.com/chef/chef/pull/6272) ([tduffield](https://github.com/tduffield))
 - Added :elevated option for powershell\_script resource [\#6271](https://github.com/chef/chef/pull/6271) ([NimishaS](https://github.com/NimishaS))
@@ -20,7 +21,6 @@ This changelog reflects the current state of chef's master branch on github and 
 - Make non-legacy solo use socketless mode [\#6174](https://github.com/chef/chef/pull/6174) ([coderanger](https://github.com/coderanger))
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6157](https://github.com/chef/chef/pull/6157) ([shortdudey123](https://github.com/shortdudey123))
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6156](https://github.com/chef/chef/pull/6156) ([shortdudey123](https://github.com/shortdudey123))
-- Ensure that we check the embedded gem binary last [\#6154](https://github.com/chef/chef/pull/6154) ([thommay](https://github.com/thommay))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
