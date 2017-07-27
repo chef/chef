@@ -29,7 +29,7 @@ group(:docgen) do
   gem "yard"
 end
 
-group(:maintenance, :ci) do
+group(:maintenance) do
   gem "tomlrb"
 
   # To sync maintainers with github
@@ -55,11 +55,6 @@ group(:development, :test) do
   # for testing new chefstyle rules
   # gem 'chefstyle', github: 'chef/chefstyle'
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
-end
-
-group(:ci) do
-  gem "github_changelog_generator", git: "https://github.com/chef/github-changelog-generator"
-  gem "mixlib-install"
 end
 
 group(:travis) do
