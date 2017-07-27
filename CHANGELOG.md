@@ -1,7 +1,15 @@
 <!-- latest_release -->
+## [v13.3.28](https://github.com/chef/chef/tree/v13.3.28) (2017-07-27)
+
+#### Merged Pull Requests
+- Update Expeditor config to use new Merge and Artifact Actions [#6287](https://github.com/chef/chef/pull/6287) ([tduffield](https://github.com/tduffield))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=13.2.20 -->
+### Changes since 13.2.20 release
+
+#### Merged Pull Requests
+- Update Expeditor config to use new Merge and Artifact Actions [#6287](https://github.com/chef/chef/pull/6287) ([tduffield](https://github.com/tduffield)) <!-- 13.3.28 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
