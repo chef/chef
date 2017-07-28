@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/license_scout
-  revision: e0d15c52f29dadc8d057616dfadd2c39bfc24beb
+  revision: 1bf2f1c9127516b933e9dc9c02db00c9b28a9cd3
   specs:
     license_scout (0.1.3)
       ffi-yajl (~> 2.2)
@@ -266,4 +266,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   1.15.3
+   1.12.5
