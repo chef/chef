@@ -1,14 +1,15 @@
 <!-- latest_release -->
-## [v13.3.29](https://github.com/chef/chef/tree/v13.3.29) (2017-07-27)
+## [v13.3.30](https://github.com/chef/chef/tree/v13.3.30) (2017-07-31)
 
 #### Merged Pull Requests
-- Apt: Add apt_preference resource from apt cookbooks [#5529](https://github.com/chef/chef/pull/5529) ([tas50](https://github.com/tas50))
+- Fix typos [#6298](https://github.com/chef/chef/pull/6298) ([akitada](https://github.com/akitada))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.2.20 -->
 ### Changes since 13.2.20 release
 
 #### Merged Pull Requests
+- Fix typos [#6298](https://github.com/chef/chef/pull/6298) ([akitada](https://github.com/akitada)) <!-- 13.3.30 -->
 - Apt: Add apt_preference resource from apt cookbooks [#5529](https://github.com/chef/chef/pull/5529) ([tas50](https://github.com/tas50)) <!-- 13.3.29 -->
 - Update Expeditor config to use new Merge and Artifact Actions [#6287](https://github.com/chef/chef/pull/6287) ([tduffield](https://github.com/tduffield)) <!-- 13.3.28 -->
 <!-- release_rollup -->
