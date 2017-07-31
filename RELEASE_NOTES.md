@@ -93,9 +93,9 @@ In Chef/Ohai 14 (April 2018) we will remove support for loading Ohai v6 plugins,
 
 ## Rubygems provider sources behavior changed.
 
-The behavior of `gem_package` and `chef_gem` is now to always apply the `Chef::Config[:rubygems_uri]` sources, which may be a
+The behavior of `gem_package` and `chef_gem` is now to always apply the `Chef::Config[:rubygems_url]` sources, which may be a
 String uri or an Array of Strings.  If additional sources are put on the resource with the `source` property those are added
-to the configured `:rubygems_uri` sources.
+to the configured `:rubygems_url` sources.
 
 This should enable easier setup of rubygems mirrors particularly in "airgapped" environments through the use of the global config
 variable.  It also means that an admin may force all rubygems.org traffic to an internal mirror, while still being able to
