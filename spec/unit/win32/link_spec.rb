@@ -19,6 +19,7 @@ require "spec_helper"
 if Chef::Platform.windows?
   require "chef/win32/api/file"
   require "chef/win32/file"
+  require "chef/win32/version"
 end
 
 describe Chef::ReservedNames::Win32::File, :windows_only do
@@ -26,22 +27,47 @@ describe Chef::ReservedNames::Win32::File, :windows_only do
     let(:with_privilege) { Chef::ReservedNames::Win32::API::File::SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE }
     let(:without_privilege) { 0x0 }
 
-    before(:each) do
-      allow(File).to receive(:directory?).and_return(false)
-      allow(Chef::ReservedNames::Win32::File).to receive(:encode_path) { |a| a }
-      allow(Chef::ReservedNames::Win32::File).to receive(:CreateSymbolicLinkW).with(any_args) { "don't //actually// do this" }
+    context "an invalid parameter is passed" do
+      it "will throw an exception if an invalid parameter is passed" do
+        allow(File).to receive(:directory?).and_return(false)
+        allow(Chef::ReservedNames::Win32::File).to receive(:encode_path) { |a| a }
+        allow_any_instance_of(Chef::ReservedNames::Win32::Version).to receive(:windows_10?).and_return(true)
+        allow_any_instance_of(Chef::ReservedNames::Win32::Version).to receive(:build_number).and_return(1)
+        allow(Chef::ReservedNames::Win32::File).to receive(:CreateSymbolicLinkW).and_return(nil)
+
+        expect { Chef::ReservedNames::Win32::File.symlink("a", "b") }.to raise_error Chef::Exceptions::Win32APIError
+      end
     end
 
-    it "should not create unprivileged symlinks if not enabled in the config file" do
-      allow(Chef::Config).to receive(:enable_unprivileged_symlinks).and_return(false)
-      expect(Chef::ReservedNames::Win32::File).to receive(:CreateSymbolicLinkW).with("b", "a", without_privilege)
-      described_class.symlink("a", "b")
-    end
+    context "a valid parameter is passed" do
+      before(:each) do
+        allow(File).to receive(:directory?).and_return(false)
+        allow(Chef::ReservedNames::Win32::File).to receive(:encode_path) { |a| a }
+        allow(Chef::ReservedNames::Win32::File).to receive(:CreateSymbolicLinkW).with(any_args) { "don't //actually// do this" }
+      end
 
-    it "should create unprivileged symlinks if enabled in the config file" do
-      allow(Chef::Config).to receive(:enable_unprivileged_symlinks).and_return(true)
-      expect(Chef::ReservedNames::Win32::File).to receive(:CreateSymbolicLinkW).with("b", "a", with_privilege)
-      described_class.symlink("a", "b")
+      it "will not pass the unpirivileged symlink flag if the node is not Windows 10" do
+        allow_any_instance_of(Chef::ReservedNames::Win32::Version).to receive(:windows_10?).and_return(false)
+
+        expect(Chef::ReservedNames::Win32::File).to receive(:CreateSymbolicLinkW).with("b", "a", without_privilege)
+        described_class.symlink("a", "b")
+      end
+
+      it "will not pass the unpirivileged symlink flag if the node is not at least Windows 10 Creators Update" do
+        allow_any_instance_of(Chef::ReservedNames::Win32::Version).to receive(:windows_10?).and_return(true)
+        allow_any_instance_of(Chef::ReservedNames::Win32::Version).to receive(:build_number).and_return(1)
+
+        expect(Chef::ReservedNames::Win32::File).to receive(:CreateSymbolicLinkW).with("b", "a", without_privilege)
+        described_class.symlink("a", "b")
+      end
+
+      it "will pass the unpirivileged symlink flag if the node is Windows 10 Creators Update or higher" do
+        allow_any_instance_of(Chef::ReservedNames::Win32::Version).to receive(:windows_10?).and_return(true)
+        allow_any_instance_of(Chef::ReservedNames::Win32::Version).to receive(:build_number).and_return(15063)
+
+        expect(Chef::ReservedNames::Win32::File).to receive(:CreateSymbolicLinkW).with("b", "a", with_privilege)
+        described_class.symlink("a", "b")
+      end
     end
   end
 end

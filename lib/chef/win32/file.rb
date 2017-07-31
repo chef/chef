@@ -22,6 +22,7 @@ require "chef/win32/api/file"
 require "chef/win32/api/security"
 require "chef/win32/error"
 require "chef/win32/unicode"
+require "chef/win32/version"
 
 class Chef
   module ReservedNames::Win32
@@ -60,7 +61,7 @@ class Chef
         # TODO do a check for CreateSymbolicLinkW and
         # raise NotImplemented exception on older Windows
         flags = ::File.directory?(old_name) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0
-        flags |= SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE if Chef::Config.enable_unprivileged_symlinks
+        flags |= SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE if Chef::ReservedNames::Win32::Version.new.win_10_creators_or_higher?
         old_name = encode_path(old_name)
         new_name = encode_path(new_name)
         unless CreateSymbolicLinkW(new_name, old_name, flags)
