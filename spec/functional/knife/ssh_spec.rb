@@ -304,7 +304,7 @@ describe Chef::Knife::Ssh do
     Chef::Config[:client_key] = nil
     Chef::Config[:chef_server_url] = "http://localhost:9000"
 
-    @api.post("/search/node?q=*:*&start=0", 200) do
+    @api.post("/search/node?q=*:*&start=0&rows=1000", 200) do
       %({"total":1, "start":0, "rows":[{"data": {"fqdn":"the.fqdn", "config": "the_public_hostname", "knife_config": "the_public_hostname" }}]})
     end
   end
