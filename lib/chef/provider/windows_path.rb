@@ -1,6 +1,6 @@
 #
 # Author:: Nimisha Sharad (<nimisha.sharad@msystechnologies.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,7 @@ class Chef
         @current_resource
       end
 
-      def action_add
+      action :add do
         declare_resource(:env, "path") do
           action :modify
           delim ::File::PATH_SEPARATOR
@@ -39,7 +39,7 @@ class Chef
         ENV["PATH"] = expand_env_vars(ENV["PATH"])
       end
 
-      def action_remove
+      action :remove do
         declare_resource(:env, "path") do
           action :delete
           delim ::File::PATH_SEPARATOR
@@ -53,7 +53,7 @@ class Chef
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms724265%28v=vs.85%29.aspx
         buf = 0.chr * 32 * 1024 # 32k
         if Chef::Provider::WindowsPath::ExpandEnvironmentStrings.call(path.dup, buf, buf.length) == 0
-          raise Chef::Exceptions::Win32APIError, "Failed calling ExpandEnvironmentStrings (received 0)"
+          raise Chef::Exceptions::Win32APIError, "Failed calling ExpandEnvironmentStrings with error code #{FFI.errno}"
         end
         buf.strip
       end

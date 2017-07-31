@@ -1,6 +1,6 @@
 #
 # Author:: Nimisha Sharad (<nimisha.sharad@msystechnologies.com>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2017, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,26 +16,23 @@
 # limitations under the License.
 #
 
-require "chef/resource"
+require "spec_helper"
 
-class Chef
-  class Resource
-    class WindowsPath < Chef::Resource
+describe Chef::Resource::WindowsPath do
+  subject { Chef::Resource::WindowsPath.new("some_path") }
 
-      provides :windows_path, os: "windows"
+  it { is_expected.to be_a_kind_of(Chef::Resource) }
+  it { is_expected.to be_a_instance_of(Chef::Resource::WindowsPath) }
 
-      allowed_actions :add, :remove
-      default_action :add
+  it "sets resource name as :windows_path" do
+    expect(subject.resource_name).to eql(:windows_path)
+  end
 
-      def initialize(name, run_context = nil)
-        super
-        @resource_name = :windows_path
-        @path = name
-        @provider = Chef::Provider::WindowsPath
-        @action = :add
-      end
+  it "sets the path as it's name" do
+    expect(subject.path).to eql("some_path")
+  end
 
-      property :path, String, name_property: true
-    end
+  it "sets the default action as :add" do
+    expect(subject.action).to eql(:add)
   end
 end
