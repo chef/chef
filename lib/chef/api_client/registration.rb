@@ -19,6 +19,7 @@
 require "chef/config"
 require "chef/server_api"
 require "chef/exceptions"
+require "fileutils"
 
 class Chef
   class ApiClient
@@ -69,6 +70,13 @@ class Chef
       end
 
       def assert_destination_writable!
+        if !File.exists?(File.dirname(destination))
+          begin
+            FileUtils.mkdir_p(File.dirname(destination))
+          rescue Errno::EACCES
+            raise Chef::Exceptions::CannotWritePrivateKey, "I can't write your private key to #{abs_path} - check permissions?"
+          end
+        end
         if (File.exists?(destination) && !File.writable?(destination)) || !File.writable?(File.dirname(destination))
           abs_path = File.expand_path(destination)
           raise Chef::Exceptions::CannotWritePrivateKey, "I can't write your private key to #{abs_path} - check permissions?"
