@@ -224,7 +224,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
         end
       end
 
-      context "eninstall entries is empty" do
+      context "uninstall entries is empty" do
         before { allow(Chef::Provider::Package::Windows::RegistryUninstallEntry).to receive(:find_entries).and_return([]) }
 
         it "returns nil" do
