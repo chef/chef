@@ -19,6 +19,14 @@
 require "spec_helper"
 
 describe Chef::Provider::WindowsPath, :windows_only do
+  before(:all) do
+    @old_path = ENV["PATH"].dup
+  end
+
+  after(:all) do
+    ENV["PATH"] = @old_path
+  end
+
   let(:new_resource) { Chef::Resource::WindowsPath.new("some_path") }
 
   let(:provider) do
@@ -56,10 +64,17 @@ describe Chef::Provider::WindowsPath, :windows_only do
   end
 
   describe "#expand_env_vars" do
-    context "when ExpandEnvironmentStrings succeeds" do
-      it "returns the expanded environment variable" do
+    context "when a simple path is given" do
+      it "doesn't expand the environment variable" do
         expanded_var = provider.expand_env_vars("some_path")
         expect(expanded_var).to eq("some_path")
+      end
+    end
+
+    context "when an environment variable string is provided" do
+      it "expands the environment variable" do
+        expanded_var = provider.expand_env_vars("%WINDIR%")
+        expect(expanded_var).to match(/C:\\Windows/i)
       end
     end
 

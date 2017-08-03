@@ -36,6 +36,7 @@ class Chef
           delim ::File::PATH_SEPARATOR
           value new_resource.path.tr("/", '\\')
         end
+        # Expands environment-variable strings and replaces them with the values defined for the current user
         ENV["PATH"] = expand_env_vars(ENV["PATH"])
       end
 

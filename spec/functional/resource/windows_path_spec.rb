@@ -21,6 +21,14 @@ require "spec_helper"
 describe Chef::Resource::WindowsPath, :windows_only do
   let(:path) { "test_path" }
 
+  before(:all) do
+    @old_path = ENV["PATH"].dup
+  end
+
+  after(:all) do
+    ENV["PATH"] = @old_path
+  end
+
   subject do
     new_resource = Chef::Resource::WindowsPath.new(path, run_context)
     new_resource
