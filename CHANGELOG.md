@@ -1,14 +1,15 @@
-<!-- latest_release -->
-## [v13.3.32](https://github.com/chef/chef/tree/v13.3.32) (2017-07-31)
+<!-- latest_release 13.3.33 -->
+## [v13.3.33](https://github.com/chef/chef/tree/v13.3.33) (2017-08-04)
 
 #### Merged Pull Requests
-- Add .dockerignore to reduce size of resulting images [#6296](https://github.com/chef/chef/pull/6296) ([tduffield](https://github.com/tduffield))
+- Fix git command in DCO sign-off example [#6306](https://github.com/chef/chef/pull/6306) ([edmorley](https://github.com/edmorley))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.2.20 -->
 ### Changes since 13.2.20 release
 
 #### Merged Pull Requests
+- Fix git command in DCO sign-off example [#6306](https://github.com/chef/chef/pull/6306) ([edmorley](https://github.com/edmorley)) <!-- 13.3.33 -->
 - Add .dockerignore to reduce size of resulting images [#6296](https://github.com/chef/chef/pull/6296) ([tduffield](https://github.com/tduffield)) <!-- 13.3.32 -->
 - Set explicit page size for every search request [#6299](https://github.com/chef/chef/pull/6299) ([stevendanna](https://github.com/stevendanna)) <!-- 13.3.31 -->
 - Fix typos [#6298](https://github.com/chef/chef/pull/6298) ([akitada](https://github.com/akitada)) <!-- 13.3.30 -->
