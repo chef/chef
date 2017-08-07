@@ -515,7 +515,7 @@ This error is most often caused by network issues (proxies, etc) outside of chef
             "Resource #{r['Name']} is a binary resource"
           end
         end
-        super "Found multiple matching resources. #{matches_info.join("\n")}"
+        super "Found multiple matching resources of #{matches_info[0]["Module"]["Name"]}:\n#{(matches_info.map { |f| f["Module"]["Version"] }).uniq.join("\n")}"
       end
     end
 
