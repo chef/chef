@@ -1,14 +1,15 @@
-<!-- latest_release 13.3.34 -->
-## [v13.3.34](https://github.com/chef/chef/tree/v13.3.34) (2017-08-08)
+<!-- latest_release 13.3.35 -->
+## [v13.3.35](https://github.com/chef/chef/tree/v13.3.35) (2017-08-08)
 
 #### Merged Pull Requests
-- add option to enable unprivileged symlink creation on windows [#6236](https://github.com/chef/chef/pull/6236) ([svmastersamurai](https://github.com/svmastersamurai))
+- Bump omnibus-software version [#6310](https://github.com/chef/chef/pull/6310) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.2.20 -->
 ### Changes since 13.2.20 release
 
 #### Merged Pull Requests
+- Bump omnibus-software version [#6310](https://github.com/chef/chef/pull/6310) ([thommay](https://github.com/thommay)) <!-- 13.3.35 -->
 - add option to enable unprivileged symlink creation on windows [#6236](https://github.com/chef/chef/pull/6236) ([svmastersamurai](https://github.com/svmastersamurai)) <!-- 13.3.34 -->
 - Fix git command in DCO sign-off example [#6306](https://github.com/chef/chef/pull/6306) ([edmorley](https://github.com/edmorley)) <!-- 13.3.33 -->
 - Add .dockerignore to reduce size of resulting images [#6296](https://github.com/chef/chef/pull/6296) ([tduffield](https://github.com/tduffield)) <!-- 13.3.32 -->
