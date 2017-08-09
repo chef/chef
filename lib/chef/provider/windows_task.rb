@@ -54,6 +54,8 @@ class Chef
         @current_resource.execution_time_limit(task_hash[:execution_time_limit]) if task_hash[:execution_time_limit]
         @current_resource.status = :running if task_hash[:Status] == "Running"
         @current_resource.enabled = true if task_hash[:ScheduledTaskState] == "Enabled"
+        @current_resource.start_time = task_hash[:StartTime] if task_hash[:StartTime]
+        @current_resource.start_day = task_hash[:StartDate] if task_hash[:StartDate]
       end
 
       # This method checks if task and command attributes exist since those two are mandatory attributes to create a schedules task.
@@ -203,7 +205,8 @@ class Chef
             @current_resource.idle_time != new_resource.idle_time ||
             @current_resource.random_delay != new_resource.random_delay ||
             @current_resource.execution_time_limit != new_resource.execution_time_limit ||
-            !new_resource.start_day.nil? || !new_resource.start_time.nil?
+            (!new_resource.start_day.nil? && compare_day) || 
+            (!new_resource.start_time.nil? && compare_time)
         begin
           return true if new_resource.day.to_s.casecmp(@current_resource.day.to_s) != 0 ||
               new_resource.months.to_s.casecmp(@current_resource.months.to_s) != 0
@@ -212,6 +215,29 @@ class Chef
         end
 
         false
+      end
+
+      def compare_day
+        current_day = convert_system_dateformat_into_ruby_date(@current_resource.start_day).strftime("%m/%d/%Y")
+        new_day = convert_system_dateformat_into_ruby_date(new_resource.start_day).strftime("%m/%d/%Y")
+        current_day != new_day
+      end
+
+      def compare_time
+        time = convert_system_dateformat_into_ruby_date(@current_resource.start_time).strftime("%H:%M")
+        time != new_resource.start_time
+      end
+      def convert_system_dateformat_into_ruby_date date_in_string
+        Chef::Log.debug "Looking system date format"
+
+        task_script = <<-EOH
+          [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
+          ([datetime]'#{date_in_string}').ToString('yyyy-MM-dd HH:mm')
+        EOH
+
+        date_time = powershell_out(task_script).stdout.force_encoding("UTF-8")
+        p "Date-time=#{date_time}"
+        DateTime.strptime(date_time, "%Y-%m-%d %H:%M")
       end
 
       def update_task_xml(options = [])
