@@ -62,28 +62,4 @@ describe Chef::Provider::WindowsPath, :windows_only do
       provider.run_action(:remove)
     end
   end
-
-  describe "#expand_env_vars" do
-    context "when a simple path is given" do
-      it "doesn't expand the environment variable" do
-        expanded_var = provider.expand_env_vars("some_path")
-        expect(expanded_var).to eq("some_path")
-      end
-    end
-
-    context "when an environment variable string is provided" do
-      it "expands the environment variable" do
-        expanded_var = provider.expand_env_vars("%WINDIR%")
-        expect(expanded_var).to match(/C:\\Windows/i)
-      end
-    end
-
-    context "when ExpandEnvironmentStrings fails" do
-      it "raises error" do
-        allow(Chef::Provider::WindowsPath::ExpandEnvironmentStrings).to receive(:call).and_return(0)
-        allow(FFI).to receive(:errno).and_return(10)
-        expect { provider.expand_env_vars("some_path") }.to raise_error(/Failed calling ExpandEnvironmentStrings with error code 10/)
-      end
-    end
-  end
 end

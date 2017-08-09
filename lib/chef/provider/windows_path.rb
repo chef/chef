@@ -16,13 +16,15 @@
 # limitations under the License.
 #
 
-require "Win32API" if Chef::Platform.windows?
+require "chef/mixin/windows_env_helper" if Chef::Platform.windows?
+require "chef/mixin/wide_string"
 require "chef/exceptions"
 
 class Chef
   class Provider
     class WindowsPath < Chef::Provider
-      ExpandEnvironmentStrings = Win32API.new("kernel32", "ExpandEnvironmentStrings", %w{ P P L }, "L") if Chef::Platform.windows? && !defined?(ExpandEnvironmentStrings)
+
+      include Chef::Mixin::WindowsEnvHelper if Chef::Platform.windows?
 
       def load_current_resource
         @current_resource = Chef::Resource::WindowsPath.new(new_resource.name)
@@ -31,32 +33,29 @@ class Chef
       end
 
       action :add do
-        declare_resource(:env, "path") do
-          action :modify
-          delim ::File::PATH_SEPARATOR
-          value new_resource.path.tr("/", '\\')
+        # The windows Env provider does not correctly expand variables in
+        # the PATH environment variable. Ruby expects these to be expanded.
+        #
+        path = expand_path(new_resource.path)
+        converge_by "Adding #{new_resource.path} to path environment variable" do
+          declare_resource(:env, "path") do
+            action :modify
+            delim ::File::PATH_SEPARATOR
+            value path.tr("/", '\\')
+          end
         end
-        # Expands environment-variable strings and replaces them with the values defined for the current user
-        ENV["PATH"] = expand_env_vars(ENV["PATH"])
       end
 
       action :remove do
+        # The windows Env provider does not correctly expand variables in
+        # the PATH environment variable. Ruby expects these to be expanded.
+        #
+        path = expand_path(new_resource.path)
         declare_resource(:env, "path") do
           action :delete
           delim ::File::PATH_SEPARATOR
-          value new_resource.path.tr("/", '\\')
+          value path.tr("/", '\\')
         end
-      end
-
-      # Expands the environment variables
-      def expand_env_vars(path)
-        # We pick 32k because that is the largest it could be:
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms724265%28v=vs.85%29.aspx
-        buf = 0.chr * 32 * 1024 # 32k
-        if Chef::Provider::WindowsPath::ExpandEnvironmentStrings.call(path.dup, buf, buf.length) == 0
-          raise Chef::Exceptions::Win32APIError, "Failed calling ExpandEnvironmentStrings with error code #{FFI.errno}"
-        end
-        buf.strip
       end
     end
   end
