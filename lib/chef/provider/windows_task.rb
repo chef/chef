@@ -205,7 +205,7 @@ class Chef
             @current_resource.idle_time != new_resource.idle_time ||
             @current_resource.random_delay != new_resource.random_delay ||
             @current_resource.execution_time_limit != new_resource.execution_time_limit ||
-            (!new_resource.start_day.nil? && compare_day) || 
+            (!new_resource.start_day.nil? && compare_day) ||
             (!new_resource.start_time.nil? && compare_time)
         begin
           return true if new_resource.day.to_s.casecmp(@current_resource.day.to_s) != 0 ||
@@ -227,16 +227,14 @@ class Chef
         time = convert_system_dateformat_into_ruby_date(@current_resource.start_time).strftime("%H:%M")
         time != new_resource.start_time
       end
-      def convert_system_dateformat_into_ruby_date date_in_string
-        Chef::Log.debug "Looking system date format"
 
+      def convert_system_dateformat_into_ruby_date(date_in_string)
+        Chef::Log.debug "Looking system date format"
         task_script = <<-EOH
           [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
           ([datetime]'#{date_in_string}').ToString('yyyy-MM-dd HH:mm')
         EOH
-
         date_time = powershell_out(task_script).stdout.force_encoding("UTF-8")
-        p "Date-time=#{date_time}"
         DateTime.strptime(date_time, "%Y-%m-%d %H:%M")
       end
 
