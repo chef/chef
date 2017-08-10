@@ -22,7 +22,6 @@ class Chef
   class Resource
     class ZypperRepository < Chef::Resource
       resource_name :zypper_repository
-      provides :zypper_repository
       provides :zypper_repo
 
       property :repo_name, String, name_property: true
