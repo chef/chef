@@ -1,14 +1,15 @@
-<!-- latest_release 13.3.36 -->
-## [v13.3.36](https://github.com/chef/chef/tree/v13.3.36) (2017-08-09)
+<!-- latest_release 13.3.37 -->
+## [v13.3.37](https://github.com/chef/chef/tree/v13.3.37) (2017-08-10)
 
 #### Merged Pull Requests
-- throw readable errors if multiple dsc resources are found [#6307](https://github.com/chef/chef/pull/6307) ([Happycoil](https://github.com/Happycoil))
+- Add zypper_repository resource [#5948](https://github.com/chef/chef/pull/5948) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.2.20 -->
 ### Changes since 13.2.20 release
 
 #### Merged Pull Requests
+- Add zypper_repository resource [#5948](https://github.com/chef/chef/pull/5948) ([tas50](https://github.com/tas50)) <!-- 13.3.37 -->
 - throw readable errors if multiple dsc resources are found [#6307](https://github.com/chef/chef/pull/6307) ([Happycoil](https://github.com/Happycoil)) <!-- 13.3.36 -->
 - Bump omnibus-software version [#6310](https://github.com/chef/chef/pull/6310) ([thommay](https://github.com/thommay)) <!-- 13.3.35 -->
 - add option to enable unprivileged symlink creation on windows [#6236](https://github.com/chef/chef/pull/6236) ([svmastersamurai](https://github.com/svmastersamurai)) <!-- 13.3.34 -->
