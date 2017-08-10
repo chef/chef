@@ -37,6 +37,10 @@ class Chef
       end
 
       action :add do
+        # raise within the action vs. requiring the resource so :remove doesn't fail w/o pin & pin_priority
+        raise "pin property required for apt_preference when using the :add action" if new_resource.pin.nil?
+        raise "pin property required for apt_preference when using the :add action" if new_resource.pin_priority.nil?
+
         preference = build_pref(
           new_resource.glob || new_resource.package_name,
           new_resource.pin,
