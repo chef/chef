@@ -1,14 +1,15 @@
-<!-- latest_release 13.3.38 -->
-## [v13.3.38](https://github.com/chef/chef/tree/v13.3.38) (2017-08-10)
+<!-- latest_release 13.3.39 -->
+## [v13.3.39](https://github.com/chef/chef/tree/v13.3.39) (2017-08-11)
 
 #### Merged Pull Requests
-- Add release notes for 13.3 [#6317](https://github.com/chef/chef/pull/6317) ([tas50](https://github.com/tas50))
+- Pull in Ohai 13.3 [#6319](https://github.com/chef/chef/pull/6319) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.2.20 -->
 ### Changes since 13.2.20 release
 
 #### Merged Pull Requests
+- Pull in Ohai 13.3 [#6319](https://github.com/chef/chef/pull/6319) ([tas50](https://github.com/tas50)) <!-- 13.3.39 -->
 - Add release notes for 13.3 [#6317](https://github.com/chef/chef/pull/6317) ([tas50](https://github.com/tas50)) <!-- 13.3.38 -->
 - Add zypper_repository resource [#5948](https://github.com/chef/chef/pull/5948) ([tas50](https://github.com/tas50)) <!-- 13.3.37 -->
 - throw readable errors if multiple dsc resources are found [#6307](https://github.com/chef/chef/pull/6307) ([Happycoil](https://github.com/Happycoil)) <!-- 13.3.36 -->
