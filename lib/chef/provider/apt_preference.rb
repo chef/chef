@@ -73,7 +73,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :remove do
         sanitized_prefname = safe_name(new_resource.package_name)
 
         if ::File.exist?("#{APT_PREFERENCE_DIR}/#{sanitized_prefname}.pref")
