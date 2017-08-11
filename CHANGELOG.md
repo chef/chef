@@ -1,14 +1,15 @@
-<!-- latest_release 13.3.39 -->
-## [v13.3.39](https://github.com/chef/chef/tree/v13.3.39) (2017-08-11)
+<!-- latest_release 13.3.40 -->
+## [v13.3.40](https://github.com/chef/chef/tree/v13.3.40) (2017-08-11)
 
 #### Merged Pull Requests
-- Pull in Ohai 13.3 [#6319](https://github.com/chef/chef/pull/6319) ([tas50](https://github.com/tas50))
+- Maintain compat with old zypper_repo resource used in cookbooks [#6318](https://github.com/chef/chef/pull/6318) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.2.20 -->
 ### Changes since 13.2.20 release
 
 #### Merged Pull Requests
+- Maintain compat with old zypper_repo resource used in cookbooks [#6318](https://github.com/chef/chef/pull/6318) ([tas50](https://github.com/tas50)) <!-- 13.3.40 -->
 - Pull in Ohai 13.3 [#6319](https://github.com/chef/chef/pull/6319) ([tas50](https://github.com/tas50)) <!-- 13.3.39 -->
 - Add release notes for 13.3 [#6317](https://github.com/chef/chef/pull/6317) ([tas50](https://github.com/tas50)) <!-- 13.3.38 -->
 - Add zypper_repository resource [#5948](https://github.com/chef/chef/pull/5948) ([tas50](https://github.com/tas50)) <!-- 13.3.37 -->
