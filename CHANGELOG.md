@@ -1,14 +1,15 @@
-<!-- latest_release 13.3.40 -->
-## [v13.3.40](https://github.com/chef/chef/tree/v13.3.40) (2017-08-11)
+<!-- latest_release 13.3.41 -->
+## [v13.3.41](https://github.com/chef/chef/tree/v13.3.41) (2017-08-11)
 
 #### Merged Pull Requests
-- Maintain compat with old zypper_repo resource used in cookbooks [#6318](https://github.com/chef/chef/pull/6318) ([tas50](https://github.com/tas50))
+- README improvement for Chef beginner. [#6297](https://github.com/chef/chef/pull/6297) ([takaya-fuj19](https://github.com/takaya-fuj19))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.2.20 -->
 ### Changes since 13.2.20 release
 
 #### Merged Pull Requests
+- README improvement for Chef beginner. [#6297](https://github.com/chef/chef/pull/6297) ([takaya-fuj19](https://github.com/takaya-fuj19)) <!-- 13.3.41 -->
 - Maintain compat with old zypper_repo resource used in cookbooks [#6318](https://github.com/chef/chef/pull/6318) ([tas50](https://github.com/tas50)) <!-- 13.3.40 -->
 - Pull in Ohai 13.3 [#6319](https://github.com/chef/chef/pull/6319) ([tas50](https://github.com/tas50)) <!-- 13.3.39 -->
 - Add release notes for 13.3 [#6317](https://github.com/chef/chef/pull/6317) ([tas50](https://github.com/tas50)) <!-- 13.3.38 -->
