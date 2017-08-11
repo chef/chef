@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -91,7 +91,7 @@ class Chef
         options["SC"] = schedule
         options["MO"] = new_resource.frequency_modifier if frequency_modifier_allowed
         options["I"]  = new_resource.idle_time unless new_resource.idle_time.nil?
-        options["SD"] = new_resource.start_day unless new_resource.start_day.nil?
+        options["SD"] = convert_ruby_date_to_system_date unless new_resource.start_day.nil?
         options["ST"] = new_resource.start_time unless new_resource.start_time.nil?
         options["TR"] = new_resource.command
         options["RU"] = new_resource.user
@@ -236,6 +236,14 @@ class Chef
         EOH
         date_time = powershell_out(task_script).stdout.force_encoding("UTF-8")
         DateTime.strptime(date_time, "%Y-%m-%d %H:%M")
+      end
+
+      def convert_ruby_date_to_system_date
+        task_script = <<-EOH
+          [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
+          ([datetime]"#{new_resource.start_day}").ToString([cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern)
+        EOH
+        powershell_out(task_script).stdout.force_encoding("UTF-8")[0...-2]
       end
 
       def update_task_xml(options = [])
