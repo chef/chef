@@ -30,6 +30,22 @@ describe Chef::Resource::ZypperRepository do
       expect(resource).to be_a_kind_of(Chef::Resource::ZypperRepository)
     end
 
+    it "should have a name of repo-source" do
+      expect(resource.name).to eql("repo-source")
+    end
+
+    it "should have a default action of create" do
+      expect(resource.action).to eql([:create])
+    end
+
+    it "supports all valid actions" do
+      expect { resource.action :add }.not_to raise_error
+      expect { resource.action :remove }.not_to raise_error
+      expect { resource.action :create }.not_to raise_error
+      expect { resource.action :refresh }.not_to raise_error
+      expect { resource.action :delete }.to raise_error(ArgumentError)
+    end
+
     it "should resolve to a Noop class when zypper is not found" do
       expect(Chef::Provider::ZypperRepository).to receive(:which).with("zypper").and_return(false)
       expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
