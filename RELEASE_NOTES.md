@@ -28,9 +28,9 @@ The `windows_task` resource now properly allows updating the configuration of a 
 
 ## apt_preference Resource
 
-The apt_preference resource has been ported from the apt cookbook. This resource allows for the creation of APT preference files controlling which versions of packages will be installed.
+The apt_preference resource has been ported from the apt cookbook. This resource allows for the creation of APT preference files controlling which packages take priority in installed.
 
-Further information regarding apt-pinning is available via <https://wiki.debian.org/AptPreferences>.
+Further information regarding apt-pinning is available via <https://wiki.debian.org/AptPreferences> and <https://manpages.debian.org/stretch/apt/apt_preferences.5.en.html>
 
 ### Actions
 
