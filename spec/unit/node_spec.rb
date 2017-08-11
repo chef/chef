@@ -340,7 +340,7 @@ describe Chef::Node do
 
       it "consume_attributes does not exhibit chef/chef/issues/6302 bug" do
         node.normal["a"]["r1"] = nil
-        node.consume_attributes({"a" => { "r2" => nil}})
+        node.consume_attributes({ "a" => { "r2" => nil } })
         expect(node["a"]["r1"]).to be_nil
         expect(node["a"]["r2"]).to be_nil
       end
