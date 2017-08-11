@@ -1,14 +1,15 @@
-<!-- latest_release 13.3.42 -->
-## [v13.3.42](https://github.com/chef/chef/tree/v13.3.42) (2017-08-11)
+<!-- latest_release 13.3.43 -->
+## [v13.3.43](https://github.com/chef/chef/tree/v13.3.43) (2017-08-11)
 
 #### Merged Pull Requests
-- Bump InSpec to v1.33.1 [#6324](https://github.com/chef/chef/pull/6324) ([adamleff](https://github.com/adamleff))
+- Add more items to the 13.3 release notes [#6325](https://github.com/chef/chef/pull/6325) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.2.20 -->
 ### Changes since 13.2.20 release
 
 #### Merged Pull Requests
+- Add more items to the 13.3 release notes [#6325](https://github.com/chef/chef/pull/6325) ([tas50](https://github.com/tas50)) <!-- 13.3.43 -->
 - Bump InSpec to v1.33.1 [#6324](https://github.com/chef/chef/pull/6324) ([adamleff](https://github.com/adamleff)) <!-- 13.3.42 -->
 - README improvement for Chef beginner. [#6297](https://github.com/chef/chef/pull/6297) ([takaya-fuj19](https://github.com/takaya-fuj19)) <!-- 13.3.41 -->
 - Maintain compat with old zypper_repo resource used in cookbooks [#6318](https://github.com/chef/chef/pull/6318) ([tas50](https://github.com/tas50)) <!-- 13.3.40 -->
