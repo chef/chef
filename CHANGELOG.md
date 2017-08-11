@@ -34,33 +34,43 @@
 ## [v13.3.27](https://github.com/chef/chef/tree/v13.3.27) (2017-07-26)
 [Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.27)
 
-**Closed issues:**
-
-- Windows\_Package should handle trailing spaces in package names [\#6217](https://github.com/chef/chef/issues/6217)
-- Chomp errors when using Chocolatey provider [\#6165](https://github.com/chef/chef/issues/6165)
-
-**Merged pull requests:**
-
-- \[MSYS-629\] Added username/password validation for elevated option [\#6293](https://github.com/chef/chef/pull/6293) ([NimishaS](https://github.com/NimishaS))
+- Added username/password validation for elevated option [\#6293](https://github.com/chef/chef/pull/6293) ([NimishaS](https://github.com/NimishaS))
 - Bump mixlib-shellout for \#6271 [\#6285](https://github.com/chef/chef/pull/6285) ([btm](https://github.com/btm))
 - Use new Expeditor config format [\#6272](https://github.com/chef/chef/pull/6272) ([tduffield](https://github.com/tduffield))
 - Added :elevated option for powershell\_script resource [\#6271](https://github.com/chef/chef/pull/6271) ([NimishaS](https://github.com/NimishaS))
-- \[MSYS-590\]Make mount idempotent on Aix [\#6213](https://github.com/chef/chef/pull/6213) ([NAshwini](https://github.com/NAshwini))
-- \[MSYS-586\] Allow windows\_task create action to update tasks. [\#6193](https://github.com/chef/chef/pull/6193) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
+- Make mount idempotent on Aix [\#6213](https://github.com/chef/chef/pull/6213) ([NAshwini](https://github.com/NAshwini))
+- Allow windows\_task create action to update tasks. [\#6193](https://github.com/chef/chef/pull/6193) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
 - Use socketless local mode by default [\#6177](https://github.com/chef/chef/pull/6177) ([coderanger](https://github.com/coderanger))
 - convert breakpoint resource to a custom resource [\#6176](https://github.com/chef/chef/pull/6176) ([lamont-granquist](https://github.com/lamont-granquist))
 - Make non-legacy solo use socketless mode [\#6174](https://github.com/chef/chef/pull/6174) ([coderanger](https://github.com/coderanger))
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6157](https://github.com/chef/chef/pull/6157) ([shortdudey123](https://github.com/shortdudey123))
-- Prefer Systemd with sysvinit script over Upstart for service provider [\#6156](https://github.com/chef/chef/pull/6156) ([shortdudey123](https://github.com/shortdudey123))
+
+## v12.21.3 (2017-06-23)
+
+- Properly send run_list_expanded event in policy node case
+
+## v12.21.1 (2017-06-20)
+
+- Handle the supports pseudo-property more gracefully [\#6222](https://github.com/chef/chef/pull/6222) ([coderanger](https://github.com/coderanger))
+- Provide better system information when Chef crashes [\#6173](https://github.com/chef/chef/pull/6173) ([coderanger](https://github.com/coderanger))
+- On Debian based systems, correctly prefer Systemd to Upstart [\#6157](https://github.com/chef/chef/pull/6157) ([shortdudey123](https://github.com/shortdudey123))
+- Don't crash if we downgrade from Chef 13 to Chef 12 [\#6129](https://github.com/chef/chef/pull/6129) ([akitada](https://github.com/akitada))
+- Update zlib to 1.2.11 to resolve CVEs [#6219](https://github.com/chef/chef/pull/6219) ([thommay](https://github.com/thommay))
+- Update Ohai to 8.24 with improved EC2 metadata handling, dmi code fixes, and scala/lua detection fixes
+
+## v12.20.3 (2017-04-30)
+
+- Add the ability to define a server enforced required recipe[#6032](https://github.com/chef/chef/pull/6032)([sdelano](https://github.com/sdelano))
+- Fix apt_repository key fingerprint for Ubuntu 16.10+
+- Verify if a databag exists before we try to create it with knife
+- Bump json, winrm, plist, and net-ssh gems to the latest [#6106](https://github.com/chef/chef/pull/6106) ([rhass](https://github.com/rhass))
+
+## v12.19.36 (2017-02-23)
+
+- Use shellsplit for apt_package options [#5838](https://github.com/chef/chef/pull/5838) ([mivok](https://github.com/mivok))
 
 ## [v12.19.33](https://github.com/chef/chef/tree/v12.19.33) (2017-02-16)
 [Full Changelog](https://github.com/chef/chef/compare/v12.18.31...v12.19.33)
-
-**Closed issues:**
-
-- Package resource fails chefspec on RHEL starting with Chef 12.18. [\#5769](https://github.com/chef/chef/issues/5769)
-
-**Merged pull requests:**
 
 - coerce immutable arrays to normal arrays in the yum\_package resource [\#5816](https://github.com/chef/chef/pull/5816) ([lamont-granquist](https://github.com/lamont-granquist))
 - Suppress sensitive properties from resource log and reporting output [\#5803](https://github.com/chef/chef/pull/5803) ([tduffield](https://github.com/tduffield))
