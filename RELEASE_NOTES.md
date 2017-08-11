@@ -17,7 +17,7 @@ It is now possible to pass additional options to the zypper in the zypper_packag
 ### Example:
 
 ```ruby
-zypper_package 'foo'
+zypper_package 'foo' do
   options '--user-provided'
 end
 ```
@@ -28,7 +28,7 @@ The `windows_task` resource now properly allows updating the configuration of a 
 
 ## apt_preference Resource
 
-The apt_preference resource has been ported from the apt cookbook. This resource allows for the creation of APT preference files controlling which packages take priority in installed.
+The apt_preference resource has been ported from the apt cookbook. This resource allows for the creation of APT preference files controlling which packages take priority during installation.
 
 Further information regarding apt-pinning is available via <https://wiki.debian.org/AptPreferences> and <https://manpages.debian.org/stretch/apt/apt_preferences.5.en.html>
 
@@ -109,6 +109,7 @@ zypper_repository 'apache' do
   path '/openSUSE_Leap_42.2'
   type 'rpm-md'
   priority '100'
+end
 ```
 
 ## Ohai Release Notes 13.3:
