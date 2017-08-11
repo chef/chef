@@ -6,11 +6,31 @@ _This file holds "in progress" release notes for the current release under devel
 
 Chef can now create symlinks without privilege escalation, which allows for the creation of symlinks on Windows 10 Creator Update.
 
-## apt_preference resource
+## nokogiri Gem
 
-The apt_preference resource has been ported from the apt cookbook. This resource allows you to create APT preference files controlling which versions of packages will be installed.
+The nokogiri gem is once again bundled with the omnibus install of Chef
 
-Further information regarding apt-pinning is available via <https://wiki.debian.org/AptPreferences>.
+## zypper_package Options
+
+It is now possible to pass additional options to the zypper in the zypper_package resource. This can be used to pass any zypper CLI option
+
+### Example:
+
+```ruby
+zypper_package 'foo'
+  options '--user-provided'
+end
+```
+
+## windows_task Improvements
+
+The `windows_task` resource now properly allows updating the configuration of a scheduled task when using the `:create` action. Additionally the previous `:change` action from the windows cookbook has been aliased to `:create` to provide backwards compatibility.
+
+## apt_preference Resource
+
+The apt_preference resource has been ported from the apt cookbook. This resource allows for the creation of APT preference files controlling which packages take priority in installed.
+
+Further information regarding apt-pinning is available via <https://wiki.debian.org/AptPreferences> and <https://manpages.debian.org/stretch/apt/apt_preferences.5.en.html>
 
 ### Actions
 
@@ -53,7 +73,7 @@ apt_preference 'dotdeb' do
 end
 ```
 
-## zypper_repository resource
+## zypper_repository Resource
 
 The zypper_repository resource allows for the creation of Zypper package repositories on SUSE Enterprise Linux and openSUSE systems. This resource maintains full compatibility with the resource in the existing [zypper](https://supermarket.chef.io/cookbooks/zypper) cookbooks
 
