@@ -381,7 +381,7 @@ describe Chef::Resource do
     context "when property is required" do
       it "does not propagate vailidation errors" do
         resource_class = Class.new(Chef::Resource) { property :foo, String, required: true }
-        resource = resource_class.new("sensitive_property_tests")
+        resource = resource_class.new("required_property_tests")
         expect { resource.to_text }.to_not raise_error Chef::Exceptions::ValidationFailed
       end
     end
