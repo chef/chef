@@ -27,7 +27,7 @@ class Chef
     #
     # @author Tyler Cloke
     #
-    # @attr_reader [String] actor the name of the user that this key is for
+    # @!attribute [r] [String] actor the name of the user that this key is for
     class UserKeyCreate < Knife
       include Chef::Knife::KeyCreateBase
 

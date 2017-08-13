@@ -27,7 +27,7 @@ class Chef
     #
     # @author Tyler Cloke
     #
-    # @attr_reader [String] actor the name of the client that this key is for
+    # @!attribute [r] [String] actor the name of the client that this key is for
     class ClientKeyCreate < Knife
       include Chef::Knife::KeyCreateBase
 

@@ -320,7 +320,7 @@ class Chef
       # with the result being 'OR'd such that if any statements match, the version
       # is considered supported.  Uses Gem::Requirement for its implementation.
       #
-      # @param version_args [Array<String>] Version constraint in String form
+      # @param [Array<String>] version_args the version constraint in String form
       # @return [Array<Gem::Dependency>] Current chef_versions array
       def chef_version(*version_args)
         @chef_versions << Gem::Dependency.new("chef", *version_args) unless version_args.empty?
@@ -596,7 +596,7 @@ class Chef
       # Validates that the Ohai::VERSION of the running chef-client matches one of the
       # configured ohai_version statements in this cookbooks metadata.
       #
-      # @raises [Chef::Exceptions::CookbookOhaiVersionMismatch] if the cookbook fails validation
+      # @raise [Chef::Exceptions::CookbookOhaiVersionMismatch] if the cookbook fails validation
       def validate_ohai_version!
         unless gem_dep_matches?("ohai", Gem::Version.new(Ohai::VERSION), *ohai_versions)
           raise Exceptions::CookbookOhaiVersionMismatch.new(Ohai::VERSION, name, version, *ohai_versions)
@@ -606,7 +606,7 @@ class Chef
       # Validates that the Chef::VERSION of the running chef-client matches one of the
       # configured chef_version statements in this cookbooks metadata.
       #
-      # @raises [Chef::Exceptions::CookbookChefVersionMismatch] if the cookbook fails validation
+      # @raise [Chef::Exceptions::CookbookChefVersionMismatch] if the cookbook fails validation
       def validate_chef_version!
         unless gem_dep_matches?("chef", Gem::Version.new(Chef::VERSION), *chef_versions)
           raise Exceptions::CookbookChefVersionMismatch.new(Chef::VERSION, name, version, *chef_versions)

@@ -27,7 +27,7 @@ class Chef
     #
     # @author Tyler Cloke
     #
-    # @attr_accessor [Hash] cli input, see UserKeyEdit and ClientKeyEdit for what could populate it
+    # @!attribute [rw] [Hash] cli input, see UserKeyEdit and ClientKeyEdit for what could populate it
     class KeyEdit
 
       attr_accessor :config
