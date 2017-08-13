@@ -31,8 +31,8 @@ class Chef
         # @return [Chef::ApiClient] vault client
         attr_reader :client
 
-        # @param knife_config [Hash] knife merged config, typically @config
-        # @param ui [Chef::Knife::UI] ui object for output
+        # @param [Hash] knife_config the knife merged config, typically @config
+        # @param [Chef::Knife::UI] ui the ui object for output
         def initialize(knife_config: {}, ui: nil)
           @knife_config = knife_config
           @ui           = ui
@@ -118,8 +118,8 @@ class Chef
 
         # Update an individual vault item and save it
         #
-        # @param vault [String] name of the chef-vault encrypted data bag
-        # @param item [String] name of the chef-vault encrypted item
+        # @param [String] vault the name of the chef-vault encrypted data bag
+        # @param [String] item the name of the chef-vault encrypted item
         def update_vault(vault, item)
           require_chef_vault!
           bootstrap_vault_item = load_chef_bootstrap_vault_item(vault, item)
@@ -129,9 +129,9 @@ class Chef
 
         # Hook to stub out ChefVault
         #
-        # @param vault [String] name of the chef-vault encrypted data bag
-        # @param item [String] name of the chef-vault encrypted item
-        # @returns [ChefVault::Item] ChefVault::Item object
+        # @param [String] vault the name of the chef-vault encrypted data bag
+        # @param [String] item the name of the chef-vault encrypted item
+        # @return [ChefVault::Item] ChefVault::Item object
         def load_chef_bootstrap_vault_item(vault, item)
           ChefVault::Item.load(vault, item)
         end

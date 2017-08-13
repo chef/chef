@@ -35,7 +35,7 @@ class Chef
   # @attr [String] rest            Chef::ServerAPI object, initialized and cached via chef_rest method
   # @attr [string] api_base        either "users" or "clients", initialized and cached via api_base method
   #
-  # @attr_reader [String] actor_field_name must be either 'client' or 'user'
+  # @!attribute [r] [String] actor_field_name must be either 'client' or 'user'
   class Key
 
     include Chef::Mixin::ParamsValidate

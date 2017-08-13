@@ -124,7 +124,7 @@ class Chef
           end
         end
 
-        # @returns Array<Version>
+        # @return [Array<Version>]
         def available_version(index)
           @available_version ||= []
 
@@ -137,7 +137,7 @@ class Chef
           @available_version[index]
         end
 
-        # @returns Array<Version>
+        # @return [Array<Version>]
         def installed_version(index)
           @installed_version ||= []
           @installed_version[index] ||= if new_resource.source

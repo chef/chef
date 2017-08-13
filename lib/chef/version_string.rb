@@ -25,7 +25,7 @@ class Chef
 
     # Create a new VersionString from an input String.
     #
-    # @param val [String] Version string to parse.
+    # @param [String] val the version string to parse.
     def initialize(val)
       super
       @parsed_version = ::Gem::Version.create(self)
@@ -35,7 +35,7 @@ class Chef
 
     # Compat wrapper for + to behave like a normal String.
     #
-    # @param other [String]
+    # @param [String] other
     # @return [String]
     def +(other)
       to_s + other
@@ -43,7 +43,7 @@ class Chef
 
     # Compat wrapper for * to behave like a normal String.
     #
-    # @param other [Integer]
+    # @param [Integer] other
     # @return [String]
     def *(other)
       to_s * other
@@ -55,7 +55,7 @@ class Chef
     # then sort like `Gem::Version`, otherwise try to treat the other object as
     # a version but fall back to normal string comparison.
     #
-    # @param other [Object]
+    # @param [Object] other
     # @return [Integer]
     def <=>(other)
       other_ver = case other
@@ -74,7 +74,7 @@ class Chef
 
     # Compat wrapper for == based on <=>.
     #
-    # @param other [Object]
+    # @param [Object] other
     # @return [Boolean]
     def ==(other)
       (self <=> other) == 0
@@ -82,7 +82,7 @@ class Chef
 
     # Compat wrapper for != based on <=>.
     #
-    # @param other [Object]
+    # @param [Object] other
     # @return [Boolean]
     def !=(other)
       (self <=> other) != 0
@@ -90,7 +90,7 @@ class Chef
 
     # Compat wrapper for < based on <=>.
     #
-    # @param other [Object]
+    # @param [Object] other
     # @return [Boolean]
     def <(other)
       (self <=> other) < 0
@@ -98,7 +98,7 @@ class Chef
 
     # Compat wrapper for <= based on <=>.
     #
-    # @param other [Object]
+    # @param [Object] other
     # @return [Boolean]
     def <=(other)
       (self <=> other) < 1
@@ -106,7 +106,7 @@ class Chef
 
     # Compat wrapper for > based on <=>.
     #
-    # @param other [Object]
+    # @param [Object] other
     # @return [Boolean]
     def >(other)
       (self <=> other) > 0
@@ -114,7 +114,7 @@ class Chef
 
     # Compat wrapper for >= based on <=>.
     #
-    # @param other [Object]
+    # @param [Object] other
     # @return [Boolean]
     def >=(other)
       (self <=> other) > -1
@@ -124,7 +124,7 @@ class Chef
 
     # Matching operator to support checking against a requirement string.
     #
-    # @param other [Regexp, String]
+    # @param [Regexp, String] other
     # @return [Boolean]
     # @example Match against a Regexp
     #   Chef::VersionString.new('1.0.0') =~ /^1/

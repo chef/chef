@@ -50,8 +50,8 @@
 # params[:key] instead of params['key'].
 class Mash < Hash
 
-  # @param constructor<Object>
-  #   The default value for the mash. Defaults to an empty hash.
+  # @param <Object>
+  #   constructor the default value for the mash. Defaults to an empty hash.
   #
   # @details [Alternatives]
   #   If constructor is a Hash, a new mash will be created based on the keys of
@@ -65,7 +65,7 @@ class Mash < Hash
     end
   end
 
-  # @param orig<Object> Mash being copied
+  # @param <Object> orig the Mash being copied
   #
   # @return [Object] A new copied Mash
   def initialize_copy(orig)
@@ -79,7 +79,7 @@ class Mash < Hash
     self
   end
 
-  # @param key<Object> The default value for the mash. Defaults to nil.
+  # @param <Object> key the default value for the mash. Defaults to nil.
   #
   # @details [Alternatives]
   #   If key is a Symbol and it is a key in the mash, then the default value will
@@ -95,9 +95,8 @@ class Mash < Hash
   alias_method :regular_writer, :[]= unless method_defined?(:regular_writer)
   alias_method :regular_update, :update unless method_defined?(:regular_update)
 
-  # @param key<Object> The key to set.
-  # @param value<Object>
-  #   The value to set the key to.
+  # @param <Object> key the key to set.
+  # @param <Object> value the value to set the key to.
   #
   # @see Mash#convert_key
   # @see Mash#convert_value

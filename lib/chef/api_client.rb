@@ -47,7 +47,7 @@ class Chef
 
     # Gets or sets the client name.
     #
-    # @params [Optional String] The name must be alpha-numeric plus - and _.
+    # @param [Optional String] The name must be alpha-numeric plus - and _.
     # @return [String] The current value of the name.
     def name(arg = nil)
       set_or_return(
@@ -59,7 +59,7 @@ class Chef
 
     # Gets or sets whether this client is an admin.
     #
-    # @params [Optional True/False] Should be true or false - default is false.
+    # @param [Optional True/False] Should be true or false - default is false.
     # @return [True/False] The current value
     def admin(arg = nil)
       set_or_return(
@@ -71,7 +71,7 @@ class Chef
 
     # Gets or sets the public key.
     #
-    # @params [Optional String] The string representation of the public key.
+    # @param [Optional String] The string representation of the public key.
     # @return [String] The current value.
     def public_key(arg = nil)
       set_or_return(
@@ -83,7 +83,7 @@ class Chef
 
     # Gets or sets whether this client is a validator.
     #
-    # @params [Boolean] whether or not the client is a validator.  If
+    # @param [Boolean] whether or not the client is a validator.  If
     #   `nil`, retrieves the already-set value.
     # @return [Boolean] The current value
     def validator(arg = nil)
@@ -96,7 +96,7 @@ class Chef
 
     # Gets or sets the private key.
     #
-    # @params [Optional String] The string representation of the private key.
+    # @param [Optional String] The string representation of the private key.
     # @return [String] The current value.
     def private_key(arg = nil)
       set_or_return(

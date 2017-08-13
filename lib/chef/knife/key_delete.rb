@@ -25,7 +25,7 @@ class Chef
     #
     # @author Tyler Cloke
     #
-    # @attr_accessor [Hash] cli input, see UserKeyDelete and ClientKeyDelete for what could populate it
+    # @!attribute [rw] [Hash] cli input, see UserKeyDelete and ClientKeyDelete for what could populate it
     class KeyDelete
       def initialize(name, actor, actor_field_name, ui)
         @name = name

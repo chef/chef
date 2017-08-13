@@ -56,8 +56,7 @@ class Chef
         # 2. Put the actual values in the order of the defaults
         # 3. Move any other values to the end
         #
-        # == Example
-        #
+        # @example
         #   normalize_hash({x: 100, c: 2, a: 1}, { a: 10, b: 20, c: 30})
         #   -> { a: 1, b: 20, c: 2, x: 100}
         #
@@ -140,8 +139,7 @@ class Chef
         # the keys specified in "keys"; anything else must be emitted by the
         # caller.
         #
-        # == Example
-        #
+        # @example
         #   to_ruby_keys({"name" => "foo", "environment" => "desert", "foo": "bar"}, [ "name", "environment" ])
         #   ->
         #   'name "foo"
@@ -188,8 +186,8 @@ class Chef
 
         # Verify that the JSON hash for this type has a key that matches its name.
         #
-        # @param object [Object] JSON hash of the object
-        # @param entry [Chef::ChefFS::FileSystem::BaseFSObject] filesystem object we are verifying
+        # @param [Object] object the JSON hash of the object
+        # @param [Chef::ChefFS::FileSystem::BaseFSObject] entry the filesystem object we are verifying
         # @yield  [s] callback to handle errors
         # @yieldparam [s<string>] error message
         def verify_integrity(object, entry)

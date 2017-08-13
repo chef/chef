@@ -29,7 +29,6 @@ require "forwardable"
 
 class Chef
 
-  # == Chef::RunContext
   # Value object that loads and tracks the context of a Chef run
   class RunContext
     #
@@ -157,8 +156,8 @@ class Chef
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
-    # @param node [Chef::Node] The node to run against.
-    # @param cookbook_collection [Chef::CookbookCollection] The cookbooks
+    # @param [Chef::Node] node the node to run against.
+    # @param [Chef::CookbookCollection] cookbook_collection the cookbooks
     #   involved in this run.
     # @param events [EventDispatch::Dispatcher] The event dispatcher for this
     #   run.
@@ -184,7 +183,7 @@ class Chef
     #
     # Triggers the compile phase of the chef run.
     #
-    # @param run_list_expansion [Chef::RunList::RunListExpansion] The run list.
+    # @param [Chef::RunList::RunListExpansion] run_list_expansion the run list.
     # @see Chef::RunContext::CookbookCompiler
     #
     def load(run_list_expansion)
@@ -207,7 +206,7 @@ class Chef
     #
     # Adds an before notification to the +before_notification_collection+.
     #
-    # @param [Chef::Resource::Notification] The notification to add.
+    # @param [Chef::Resource::Notification] notification the notification to add.
     #
     def notifies_before(notification)
       # Note for the future, notification.notifying_resource may be an instance
@@ -219,7 +218,7 @@ class Chef
     #
     # Adds an immediate notification to the +immediate_notification_collection+.
     #
-    # @param [Chef::Resource::Notification] The notification to add.
+    # @param [Chef::Resource::Notification] notification the notification to add.
     #
     def notifies_immediately(notification)
       # Note for the future, notification.notifying_resource may be an instance
@@ -231,7 +230,7 @@ class Chef
     #
     # Adds a delayed notification to the +delayed_notification_collection+.
     #
-    # @param [Chef::Resource::Notification] The notification to add.
+    # @param [Chef::Resource::Notification] notification the notification to add.
     #
     def notifies_delayed(notification)
       # Note for the future, notification.notifying_resource may be an instance
@@ -306,13 +305,13 @@ class Chef
     #
     # Evaluates the recipe +recipe_name+. Used by DSL::IncludeRecipe
     #
-    # TODO I am sort of confused why we have both this and include_recipe ...
+    # @todo I am sort of confused why we have both this and include_recipe ...
     #      I don't see anything different beyond accepting and returning an
     #      array of recipes.
     #
-    # @param recipe_names [Array[String]] The recipe name (e.g 'my_cookbook' or
+    # @param [Array[String]] recipe_names the recipe name (e.g 'my_cookbook' or
     #   'my_cookbook::my_resource').
-    # @param current_cookbook The cookbook we are currently running in.
+    # @param [String] current_cookbook the cookbook we are currently running in.
     #
     # @return A truthy value if the load occurred; `false` if already loaded.
     #
@@ -347,7 +346,7 @@ ERROR_MESSAGE
     #
     # Load the given recipe from a filename.
     #
-    # @param recipe_file [String] The recipe filename.
+    # @param [String] recipe_file the recipe filename.
     #
     # @return [Chef::Recipe] The loaded recipe.
     #
@@ -367,8 +366,8 @@ ERROR_MESSAGE
     #
     # Look up an attribute filename.
     #
-    # @param cookbook_name [String] The cookbook name of the attribute file.
-    # @param attr_file_name [String] The attribute file's name (not path).
+    # @param [String] cookbook_name the cookbook name of the attribute file.
+    # @param [String] attr_file_name the attribute file's name (not path).
     #
     # @return [String] The filename.
     #
@@ -420,8 +419,8 @@ ERROR_MESSAGE
     #
     # Find out if a given recipe has been loaded.
     #
-    # @param cookbook [String] Cookbook name.
-    # @param recipe [String] Recipe name.
+    # @param [String] cookbook the cookbook name.
+    # @param [String] recipe the recipe name.
     #
     # @return [Boolean] `true` if the recipe has been loaded, `false` otherwise.
     #
@@ -432,7 +431,7 @@ ERROR_MESSAGE
     #
     # Find out if a given recipe has been loaded.
     #
-    # @param recipe [String] Recipe name.  "nginx" and "nginx::default" yield
+    # @param [String] recipe the recipe name.  "nginx" and "nginx::default" yield
     #   the same results.
     #
     # @return [Boolean] `true` if the recipe has been loaded, `false` otherwise.
@@ -445,8 +444,8 @@ ERROR_MESSAGE
     #
     # Mark a given recipe as having been loaded.
     #
-    # @param cookbook [String] Cookbook name.
-    # @param recipe [String] Recipe name.
+    # @param [String] cookbook the cookbook name.
+    # @param [String] recipe the recipe name.
     #
     def loaded_recipe(cookbook, recipe)
       loaded_recipes_hash["#{cookbook}::#{recipe}"] = true
@@ -455,8 +454,8 @@ ERROR_MESSAGE
     #
     # Find out if a given attribute file has been loaded.
     #
-    # @param cookbook [String] Cookbook name.
-    # @param attribute_file [String] Attribute file name.
+    # @param [String] cookbook the cookbook name.
+    # @param [String] attribute_file the attribute file name.
     #
     # @return [Boolean] `true` if the recipe has been loaded, `false` otherwise.
     #
@@ -467,8 +466,8 @@ ERROR_MESSAGE
     #
     # Mark a given attribute file as having been loaded.
     #
-    # @param cookbook [String] Cookbook name.
-    # @param attribute_file [String] Attribute file name.
+    # @param [String] cookbook the cookbook name.
+    # @param [String] attribute_file the attribute file name.
     #
     def loaded_attribute(cookbook, attribute_file)
       loaded_attributes_hash["#{cookbook}::#{attribute_file}"] = true
@@ -480,8 +479,8 @@ ERROR_MESSAGE
     #
     # Find out if the cookbook has the given template.
     #
-    # @param cookbook [String] Cookbook name.
-    # @param template_name [String] Template name.
+    # @param [String] cookbook the cookbook name.
+    # @param [String] template_name the template name.
     #
     # @return [Boolean] `true` if the template is in the cookbook, `false`
     #   otherwise.
@@ -495,8 +494,8 @@ ERROR_MESSAGE
     #
     # Find out if the cookbook has the given file.
     #
-    # @param cookbook [String] Cookbook name.
-    # @param cb_file_name [String] File name.
+    # @param [String] cookbook the cookbook name.
+    # @param [String] cb_file_name the file name.
     #
     # @return [Boolean] `true` if the file is in the cookbook, `false`
     #   otherwise.
@@ -510,7 +509,7 @@ ERROR_MESSAGE
     #
     # Find out whether the given cookbook is in the cookbook dependency graph.
     #
-    # @param cookbook_name [String] Cookbook name.
+    # @param [String] cookbook_name the cookbook name.
     #
     # @return [Boolean] `true` if the cookbook is reachable, `false` otherwise.
     #
@@ -522,8 +521,8 @@ ERROR_MESSAGE
     #
     # Open a stream object that can be printed into and will dispatch to events
     #
-    # @param name [String] The name of the stream.
-    # @param options [Hash] Other options for the stream.
+    # @param [String] name the name of the stream.
+    # @param [Hash] options the other options for the stream.
     #
     # @return [EventDispatch::EventsOutputStream] The created stream.
     #
@@ -556,11 +555,18 @@ ERROR_MESSAGE
       @reboot_info = reboot_info
     end
 
+    #
+    # Cancels a pending reboot
+    #
     def cancel_reboot
       Chef::Log.info "Changing reboot status from #{reboot_info.inspect} to {}"
       @reboot_info = {}
     end
 
+    #
+    # Checks to see if a reboot has been requested
+    # @return [Boolean]
+    #
     def reboot_requested?
       reboot_info.size > 0
     end

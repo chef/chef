@@ -65,7 +65,7 @@ class Chef
 
     # Get the array of providers associated with a resource_name for the current node
     #
-    # @param resource_name [Symbol] name of the resource as a symbol
+    # @param [Symbol] resource_name the name of the resource as a symbol
     #
     # @return [Array<Class>] Priority Array of Provider Classes to use for the resource_name on the node
     #
@@ -78,7 +78,7 @@ class Chef
     #
     # Get the array of resources associated with a resource_name for the current node
     #
-    # @param resource_name [Symbol] name of the resource as a symbol
+    # @param [Symbol] resource_name the name of the resource as a symbol
     #
     # @return [Array<Class>] Priority Array of Resource Classes to use for the resource_name on the node
     #
@@ -91,9 +91,9 @@ class Chef
     #
     # Set the array of providers associated with a resource_name for the current node
     #
-    # @param resource_name [Symbol] name of the resource as a symbol
-    # @param priority_array [Class, Array<Class>] Class or Array of Classes to set as the priority for resource_name on the node
-    # @param filter [Hash] Chef::Nodearray-style filter
+    # @param [Symbol] resource_name the name of the resource as a symbol
+    # @param [Class, Array<Class>] priority_array the Class or Array of Classes to set as the priority for resource_name on the node
+    # @param [Hash] filter the Chef::Nodearray-style filter
     #
     # @return [Array<Class>] Modified Priority Array of Provider Classes to use for the resource_name on the node
     #
@@ -106,9 +106,9 @@ class Chef
     #
     # Get the array of resources associated with a resource_name for the current node
     #
-    # @param resource_name [Symbol] name of the resource as a symbol
-    # @param priority_array [Class, Array<Class>] Class or Array of Classes to set as the priority for resource_name on the node
-    # @param filter [Hash] Chef::Nodearray-style filter
+    # @param [Symbol] resource_name the name of the resource as a symbol
+    # @param [Class, Array<Class>] priority_array the Class or Array of Classes to set as the priority for resource_name on the node
+    # @param [Hash] filter the Chef::Nodearray-style filter
     #
     # @return [Array<Class>] Modified Priority Array of Resource Classes to use for the resource_name on the node
     #
@@ -127,7 +127,7 @@ class Chef
     #
     # Sets the resource_priority_map
     #
-    # @param resource_priority_map [Chef::Platform::ResourcePriorityMap]
+    # @param [Chef::Platform::ResourcePriorityMap] resource_priority_map
     #
     # @api private
     def set_resource_priority_map(resource_priority_map)
@@ -137,7 +137,7 @@ class Chef
     #
     # Sets the provider_priority_map
     #
-    # @param provider_priority_map [Chef::Platform::providerPriorityMap]
+    # @param [Chef::Platform::providerPriorityMap] provider_priority_map
     #
     # @api private
     def set_provider_priority_map(provider_priority_map)
@@ -148,7 +148,7 @@ class Chef
     # Sets the node object
     #
     # @api private
-    # @param node [Chef::Node]
+    # @param [Chef::Node] node
     def set_node(node)
       @node = node
     end
@@ -156,7 +156,7 @@ class Chef
     #
     # Sets the run_context object
     #
-    # @param run_context [Chef::RunContext]
+    # @param [Chef::RunContext] run_context
     #
     # @api private
     def set_run_context(run_context)
@@ -200,8 +200,8 @@ class Chef
     #
     # Emit a deprecation message.
     #
-    # @param type The message to send. This should be a symbol, referring to
-    #   a class defined in Chef::Deprecated
+    # @param [Symbol] type The message to send. This should refer to a class
+    #   defined in Chef::Deprecated
     # @param message  An explicit message to display, rather than the generic one
     #   associated with the deprecation.
     # @param location The location. Defaults to the caller who called you (since
