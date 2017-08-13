@@ -377,6 +377,14 @@ describe Chef::Resource do
         expect(resource.to_text).to match(/foo "\*sensitive value suppressed\*"/)
       end
     end
+
+    context "when property is required" do
+      it "supresses that properties value" do
+        resource_class = Class.new(Chef::Resource) { property :foo, String, required: true }
+        resource = resource_class.new("sensitive_property_tests")
+        expect { resource.to_text }.to_not raise_error Chef::Exceptions::ValidationFailed
+      end
+    end
   end
 
   describe "self.resource_name" do
