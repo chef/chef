@@ -234,16 +234,16 @@ class Chef
           [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
           ([datetime]'#{date_in_string}').ToString('yyyy-MM-dd HH:mm')
         EOH
-        date_time = powershell_out(task_script).stdout.force_encoding("UTF-8")
+        date_time = powershell_out(task_script).stdout.force_encoding("UTF-8").gsub(/[\s+\uFEFF]/, "")
         DateTime.strptime(date_time, "%Y-%m-%d %H:%M")
       end
 
       def convert_ruby_date_to_system_date
         task_script = <<-EOH
           [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
-          ([datetime]"#{new_resource.start_day}").ToString([cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern)
+          ([datetime]"#{new_resource.start_day}").ToString([Globalization.Cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern)
         EOH
-        powershell_out(task_script).stdout.force_encoding("UTF-8")[0...-2]
+        powershell_out(task_script).stdout.force_encoding("UTF-8").gsub(/[\s+\uFEFF]/, "")
       end
 
       def update_task_xml(options = [])
