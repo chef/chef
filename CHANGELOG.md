@@ -1,14 +1,15 @@
-<!-- latest_release 13.3.45 -->
-## [v13.3.45](https://github.com/chef/chef/tree/v13.3.45) (2017-08-14)
+<!-- latest_release 13.3.46 -->
+## [v13.3.46](https://github.com/chef/chef/tree/v13.3.46) (2017-08-15)
 
 #### Merged Pull Requests
-- Catch Chef 12 changelog up to current 12 release [#6327](https://github.com/chef/chef/pull/6327) ([tas50](https://github.com/tas50))
+- Ignore validation errors in Resource#to_text [#6331](https://github.com/chef/chef/pull/6331) ([coderanger](https://github.com/coderanger))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.2.20 -->
 ### Changes since 13.2.20 release
 
 #### Merged Pull Requests
+- Ignore validation errors in Resource#to_text [#6331](https://github.com/chef/chef/pull/6331) ([coderanger](https://github.com/coderanger)) <!-- 13.3.46 -->
 - Catch Chef 12 changelog up to current 12 release [#6327](https://github.com/chef/chef/pull/6327) ([tas50](https://github.com/tas50)) <!-- 13.3.45 -->
 - Fix bad examples in the release notes [#6326](https://github.com/chef/chef/pull/6326) ([tas50](https://github.com/tas50)) <!-- 13.3.44 -->
 - Add more items to the 13.3 release notes [#6325](https://github.com/chef/chef/pull/6325) ([tas50](https://github.com/tas50)) <!-- 13.3.43 -->
