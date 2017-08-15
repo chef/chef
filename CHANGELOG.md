@@ -1,5 +1,15 @@
 This changelog reflects the current state of chef's 12 branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
+## [v12.21.4](https://github.com/chef/chef/tree/v12.21.4) (2017-08-14)
+[Full Changelog](https://github.com/chef/chef/compare/v12.21.3.v12.21.4)
+
+**Fixed bugs:**
+- Backport #5941 (Make ResourceReporter smarter to get resource identity and state) [\#6308](https://github.com/chef/chef/pull/6308)
+
+**Tech cleanup:**
+- Add Expeditor to chef-12 branch [\#6328](https://github.com/chef/chef/pull/6328)
+- Bump omnibus-software to fix early Rubygems segfaults on Windows [\#6329](https://github.com/chef/chef/pull/6329)
+
 ## [v12.21.3](https://github.com/chef/chef/tree/v12.21.3) (2017-06-23)
 [Full Changelog](https://github.com/chef/chef/compare/v12.21.2...v12.21.3)
 
