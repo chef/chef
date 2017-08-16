@@ -5,33 +5,38 @@
 - Ignore validation errors in Resource#to_text [#6331](https://github.com/chef/chef/pull/6331) ([coderanger](https://github.com/coderanger))
 <!-- latest_release -->
 
-<!-- release_rollup since=13.2.20 -->
-### Changes since 13.2.20 release
+<!-- release_rollup since=13.3.42 -->
+### Changes since 13.3.42 release
 
 #### Merged Pull Requests
-- Ignore validation errors in Resource#to_text [#6331](https://github.com/chef/chef/pull/6331) ([coderanger](https://github.com/coderanger)) <!-- 13.3.46 -->
-- Catch Chef 12 changelog up to current 12 release [#6327](https://github.com/chef/chef/pull/6327) ([tas50](https://github.com/tas50)) <!-- 13.3.45 -->
-- Fix bad examples in the release notes [#6326](https://github.com/chef/chef/pull/6326) ([tas50](https://github.com/tas50)) <!-- 13.3.44 -->
 - Add more items to the 13.3 release notes [#6325](https://github.com/chef/chef/pull/6325) ([tas50](https://github.com/tas50)) <!-- 13.3.43 -->
-- Bump InSpec to v1.33.1 [#6324](https://github.com/chef/chef/pull/6324) ([adamleff](https://github.com/adamleff)) <!-- 13.3.42 -->
-- README improvement for Chef beginner. [#6297](https://github.com/chef/chef/pull/6297) ([takaya-fuj19](https://github.com/takaya-fuj19)) <!-- 13.3.41 -->
-- Maintain compat with old zypper_repo resource used in cookbooks [#6318](https://github.com/chef/chef/pull/6318) ([tas50](https://github.com/tas50)) <!-- 13.3.40 -->
-- Pull in Ohai 13.3 [#6319](https://github.com/chef/chef/pull/6319) ([tas50](https://github.com/tas50)) <!-- 13.3.39 -->
-- Add release notes for 13.3 [#6317](https://github.com/chef/chef/pull/6317) ([tas50](https://github.com/tas50)) <!-- 13.3.38 -->
-- Add zypper_repository resource [#5948](https://github.com/chef/chef/pull/5948) ([tas50](https://github.com/tas50)) <!-- 13.3.37 -->
-- throw readable errors if multiple dsc resources are found [#6307](https://github.com/chef/chef/pull/6307) ([Happycoil](https://github.com/Happycoil)) <!-- 13.3.36 -->
-- Bump omnibus-software version [#6310](https://github.com/chef/chef/pull/6310) ([thommay](https://github.com/thommay)) <!-- 13.3.35 -->
-- add option to enable unprivileged symlink creation on windows [#6236](https://github.com/chef/chef/pull/6236) ([svmastersamurai](https://github.com/svmastersamurai)) <!-- 13.3.34 -->
-- Fix git command in DCO sign-off example [#6306](https://github.com/chef/chef/pull/6306) ([edmorley](https://github.com/edmorley)) <!-- 13.3.33 -->
-- Add .dockerignore to reduce size of resulting images [#6296](https://github.com/chef/chef/pull/6296) ([tduffield](https://github.com/tduffield)) <!-- 13.3.32 -->
-- Set explicit page size for every search request [#6299](https://github.com/chef/chef/pull/6299) ([stevendanna](https://github.com/stevendanna)) <!-- 13.3.31 -->
-- Fix typos [#6298](https://github.com/chef/chef/pull/6298) ([akitada](https://github.com/akitada)) <!-- 13.3.30 -->
-- Apt: Add apt_preference resource from apt cookbooks [#5529](https://github.com/chef/chef/pull/5529) ([tas50](https://github.com/tas50)) <!-- 13.3.29 -->
-- Update Expeditor config to use new Merge and Artifact Actions [#6287](https://github.com/chef/chef/pull/6287) ([tduffield](https://github.com/tduffield)) <!-- 13.3.28 -->
+- Fix bad examples in the release notes [#6326](https://github.com/chef/chef/pull/6326) ([tas50](https://github.com/tas50)) <!-- 13.3.44 -->
+- Catch Chef 12 changelog up to current 12 release [#6327](https://github.com/chef/chef/pull/6327) ([tas50](https://github.com/tas50)) <!-- 13.3.45 -->
+- Ignore validation errors in Resource#to_text [#6331](https://github.com/chef/chef/pull/6331) ([coderanger](https://github.com/coderanger)) <!-- 13.3.46 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.3.42](https://github.com/chef/chef/tree/v13.3.42) (2017-08-16)
+
+#### Merged Pull Requests
+- Update Expeditor config to use new Merge and Artifact Actions [#6287](https://github.com/chef/chef/pull/6287) ([tduffield](https://github.com/tduffield))
+- Apt: Add apt_preference resource from apt cookbooks [#5529](https://github.com/chef/chef/pull/5529) ([tas50](https://github.com/tas50))
+- Fix typos [#6298](https://github.com/chef/chef/pull/6298) ([akitada](https://github.com/akitada))
+- Set explicit page size for every search request [#6299](https://github.com/chef/chef/pull/6299) ([stevendanna](https://github.com/stevendanna))
+- Add .dockerignore to reduce size of resulting images [#6296](https://github.com/chef/chef/pull/6296) ([tduffield](https://github.com/tduffield))
+- Fix git command in DCO sign-off example [#6306](https://github.com/chef/chef/pull/6306) ([edmorley](https://github.com/edmorley))
+- add option to enable unprivileged symlink creation on windows [#6236](https://github.com/chef/chef/pull/6236) ([svmastersamurai](https://github.com/svmastersamurai))
+- Bump omnibus-software version [#6310](https://github.com/chef/chef/pull/6310) ([thommay](https://github.com/thommay))
+- throw readable errors if multiple dsc resources are found [#6307](https://github.com/chef/chef/pull/6307) ([Happycoil](https://github.com/Happycoil))
+- Add zypper_repository resource [#5948](https://github.com/chef/chef/pull/5948) ([tas50](https://github.com/tas50))
+- Add release notes for 13.3 [#6317](https://github.com/chef/chef/pull/6317) ([tas50](https://github.com/tas50))
+- Pull in Ohai 13.3 [#6319](https://github.com/chef/chef/pull/6319) ([tas50](https://github.com/tas50))
+- Maintain compat with old zypper_repo resource used in cookbooks [#6318](https://github.com/chef/chef/pull/6318) ([tas50](https://github.com/tas50))
+- README improvement for Chef beginner. [#6297](https://github.com/chef/chef/pull/6297) ([takaya-fuj19](https://github.com/takaya-fuj19))
+- Bump InSpec to v1.33.1 [#6324](https://github.com/chef/chef/pull/6324) ([adamleff](https://github.com/adamleff))
 <!-- latest_stable_release -->
+
+
 
 ## [v13.3.27](https://github.com/chef/chef/tree/v13.3.27) (2017-07-26)
 [Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.27)

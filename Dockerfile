@@ -2,7 +2,7 @@ FROM busybox
 MAINTAINER Chef Software, Inc. <docker@chef.io>
 
 ARG CHANNEL=stable
-ARG VERSION=13.2.20
+ARG VERSION=13.3.42
 
 RUN wget "http://packages.chef.io/files/${CHANNEL}/chef/${VERSION}/el/5/chef-${VERSION}-1.el5.x86_64.rpm" -O /tmp/chef-client.rpm && \
     rpm2cpio /tmp/chef-client.rpm | cpio -idmv && \
