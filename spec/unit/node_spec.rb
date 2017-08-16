@@ -337,6 +337,13 @@ describe Chef::Node do
         node.override_unless[:decontamination] = "foo"
         expect(node.override[:decontamination]).to eql("foo")
       end
+
+      it "consume_attributes does not exhibit chef/chef/issues/6302 bug" do
+        node.normal["a"]["r1"] = nil
+        node.consume_attributes({ "a" => { "r2" => nil } })
+        expect(node["a"]["r1"]).to be_nil
+        expect(node["a"]["r2"]).to be_nil
+      end
     end
 
     describe "default attributes" do
