@@ -1,12 +1,15 @@
-<!-- latest_release 13.3.46 -->
-## [v13.3.46](https://github.com/chef/chef/tree/v13.3.46) (2017-08-15)
+<!-- latest_release 13.3.47 -->
+## [v13.3.47](https://github.com/chef/chef/tree/v13.3.47) (2017-08-16)
 
-#### Merged Pull Requests
-- Ignore validation errors in Resource#to_text [#6331](https://github.com/chef/chef/pull/6331) ([coderanger](https://github.com/coderanger))
+#### Bug Fixes
+- Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
 ### Changes since 13.3.42 release
+
+#### Bug Fixes
+- Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
 
 #### Merged Pull Requests
 - Add more items to the 13.3 release notes [#6325](https://github.com/chef/chef/pull/6325) ([tas50](https://github.com/tas50)) <!-- 13.3.43 -->
