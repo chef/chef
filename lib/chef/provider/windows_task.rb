@@ -51,7 +51,7 @@ class Chef
         @current_resource.months(task_hash[:months]) if task_hash[:months]
         set_current_idle_time(task_hash[:idle_time]) if task_hash[:idle_time]
         @current_resource.random_delay(task_hash[:random_delay]) if task_hash[:random_delay]
-        @current_resource.execution_time_limit(task_hash[:execution_time_limit]) if task_hash[:execution_time_limit]
+        @current_resource.execution_time_limit(task_hash[:execution_time_limit] || "PT72H")
         @current_resource.status = :running if task_hash[:Status] == "Running"
         @current_resource.enabled = true if task_hash[:ScheduledTaskState] == "Enabled"
         @current_resource.start_time = task_hash[:StartTime] if task_hash[:StartTime]
@@ -204,7 +204,7 @@ class Chef
             @current_resource.frequency != new_resource.frequency ||
             @current_resource.idle_time != new_resource.idle_time ||
             @current_resource.random_delay != new_resource.random_delay ||
-            @current_resource.execution_time_limit != new_resource.execution_time_limit ||
+            !new_resource.execution_time_limit.include?(@current_resource.execution_time_limit) ||
             (!new_resource.start_day.nil? && compare_day) ||
             (!new_resource.start_time.nil? && compare_time)
         begin
