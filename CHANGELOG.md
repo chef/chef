@@ -56,6 +56,118 @@
 - Make non-legacy solo use socketless mode [\#6174](https://github.com/chef/chef/pull/6174) ([coderanger](https://github.com/coderanger))
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6157](https://github.com/chef/chef/pull/6157) ([shortdudey123](https://github.com/shortdudey123))
 
+## v13.0.118 (2017-04-12)
+
+- Fix Gems won't install on Windows with Chef 13
+- Fix yum_package options option broken in Chef 13
+- Fix cookbooks uploaded by Chef 13 can't be used by Chef 12
+- Update Ohai to 13.0.1 to fix the OpenStack and Eucalyptus plugins
+
+## v13.0.113 (2017-04-06)
+
+- Use Ohai 13.0
+- Add new server enforced required recipe feature
+- shell_out PATH fixes and path_sanity changes
+- Remove magic from the logger/formatter settings
+- Add new windows_task resource
+- Better solution to gem_package source issues
+- Remove the knife cookbook create command in favor of Chef-DK
+- Remove need to define use_inline_resources and always enable inline resources
+- RFC 59 - Load ohai plugins
+- Use new lzma lib
+- Have knife cookbook generate use SPDX standard license strings
+- Implement RFC033: Root aliases
+- Ensure DataBagItems are a Mash
+- Add InSpec to chef omnibus builds
+- Remove knife cookbook site vendor
+- Make Standardized Exit Codes The Default Behavior
+- Tweaks to rubygems source option for urls
+- Allow lazy{} to be used in template resource variables.
+- Freeze property defaults
+- fix knife ssh --exit-on-error
+- Add -u param to usermod in linux_user resource when using non_unique
+- Launchd limit_load_to_session_type accepts Array or String
+- Remove the consts for DSL-based resources/providers
+- Add real support for rb files (at least roles) in knife-serve
+- Adding restart action to launchd resource
+- systemd_unit verifier escape hatch
+- Ensure we check all required fields
+- V2 Cookbook Manifests
+- Fix and simplify rake bundle:* commands
+- Expand the system info displayed on error to give us some more data to work with when helping users
+- Add policy_name and policy_group indexes to converge message sent to ...
+- Turn on zypper gpg checks by default
+- Knife search exit 1 when no results
+- Remove deprecated knife subcommand APIs
+- Coerce package options property to an Array
+- Fix cookbook gem installer
+- Remove iconv from the chef build
+- Remove deprecated Chef::ResourceResolver.resource API
+- Fix notifying array resources
+- Remove deprecated run_command API entirely
+- Apply knife search node fuzzifier to knife ssh
+- Remove Chef::Resource.updated=
+- Remove deprecated launchd resource hash property
+- Remove more deprecated method_missing access
+- Support nameless resources and remove deprecated multi-arg resources
+- bumping acceptance gems
+- Set default guard_interpreter to powershell_script on Windows
+- Remove more deprecated provider_resolver code
+- Make ActionClass a class
+- Don't include nokogiri gem as it doesn't compile on Windows right now
+- Retry API requests if using an unsupported version
+- Bump _XOPEN_SOURCE to 600 for ruby 2.4 on Solaris
+- Upgrade Ruby to the 2.4.1 release
+- Fix action class weirdness in Chef-13
+- Make ResourceReporter smarter to get resource identity and state
+- Don't `rescue Exception` in retryable resources
+- Simplify DSL creation
+- Remove deprecated Chef::Client attrs
+- Remove method_missing from the DSL
+- Remove support for the sort option to searches.
+- smf_recursive_dependencies: Allow solaris services to start recursively.
+- Fix for creating users in non english windows machines
+- Remove node_map back-compat
+- Fix chef-shell option name and help message
+- Remove Chef::ShellOut
+- Remove deprecated run_context methods
+- Remove old platform mapping code
+- Remove the old rake tasks
+- Properly use chef-shell in SoloSession by deprecating old behavior into SoloLegacySession
+- Raise on properties redefining inherited methods
+- Optimize cheffs
+- Remove Chef::REST
+- Fix node#debug_value access through arrays
+- Nillable properties
+- Freeze merged node attribute
+- Properly deep dup Node#to_hash
+- Add release policy badge to README
+- Remove the deprecated easy_install resource
+- Remove declare_resource create_if_missing API
+- Kill JSON auto inflate with fire
+- Remove method_missing access to node object.
+- Cleanup of Chef::Resource
+- Add attribute blacklist
+- Enable why-run by default in resources
+- Ensure that there are no pesky // in our paths
+- Compress debs and rpms with xz
+- Fix apt_repository for Ubuntu 16.10+
+- Remove all Chef 11 era deprecations
+- Remove partial_search methods
+- Use v3 data bag encryption
+- Remove %{file} from verify interpolation
+- Revert "Remove all 11 era deprecations"
+- Convert additional resource methods to properties
+- Remove backcompat classes
+- Remove provisioning from the downstream tests
+- Remove supports API from Chef::Resource
+- Be a bit less keen to help properties
+- Add an option for gateway_identity_file that will allow key-based authentication on the gateway.
+- Mac: Validate that a machine has a computer level profile
+- Verify data bag exists before trying to create it in knife
+- Remove resource cloning and 3694 warnings
+- HTTP: add debug long for non-JSON response
+
 ## v12.21.3 (2017-06-23)
 
 - Properly send run_list_expanded event in policy node case
