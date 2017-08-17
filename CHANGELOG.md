@@ -42,7 +42,6 @@
 <!-- latest_stable_release -->
 
 
-
 ## [v13.3.27](https://github.com/chef/chef/tree/v13.3.27) (2017-07-26)
 [Full Changelog](https://github.com/chef/chef/compare/v13.0.118...v13.3.27)
 
@@ -169,11 +168,27 @@
 - Remove resource cloning and 3694 warnings
 - HTTP: add debug long for non-JSON response
 
-## v12.21.3 (2017-06-23)
 
-- Properly send run_list_expanded event in policy node case
+## [v12.21.4](https://github.com/chef/chef/tree/v12.21.4) (2017-08-14)
+[Full Changelog](https://github.com/chef/chef/compare/v12.21.3...v12.21.4)
 
-## v12.21.1 (2017-06-20)
+**Fixed bugs:**
+- Backport #5941 (Make ResourceReporter smarter to get resource identity and state) [\#6308](https://github.com/chef/chef/pull/6308)
+
+**Tech cleanup:**
+- Bump omnibus-software to fix early Rubygems segfaults on Windows [\#6329](https://github.com/chef/chef/pull/6329)
+- Upgrade Ruby from 2.3.1 to 2.3.4
+- Upgrade libiconv from 1.14 to 1.15
+- Upgrade Rubygems from 2.6.10 to 2.6.12
+
+## [v12.21.3](https://github.com/chef/chef/tree/v12.21.3) (2017-06-23)
+[Full Changelog](https://github.com/chef/chef/compare/v12.21.1...v12.21.3)
+
+**Fixed bugs:**
+- Properly send expanded run list event for policy file nodes [\#6229](https://github.com/chef/chef/pull/6229) / [\#6233](https://github.com/chef/chef/pull/6233)
+
+## [v12.21.1](https://github.com/chef/chef/tree/v12.21.1) (2017-06-20)
+[Full Changelog](https://github.com/chef/chef/compare/v12.21.0...v12.21.1)
 
 - Handle the supports pseudo-property more gracefully [\#6222](https://github.com/chef/chef/pull/6222) ([coderanger](https://github.com/coderanger))
 - Provide better system information when Chef crashes [\#6173](https://github.com/chef/chef/pull/6173) ([coderanger](https://github.com/coderanger))
