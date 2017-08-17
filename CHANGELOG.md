@@ -1,8 +1,8 @@
-<!-- latest_release 13.3.47 -->
-## [v13.3.47](https://github.com/chef/chef/tree/v13.3.47) (2017-08-16)
+<!-- latest_release 13.3.48 -->
+## [v13.3.48](https://github.com/chef/chef/tree/v13.3.48) (2017-08-17)
 
-#### Bug Fixes
-- Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm))
+#### Merged Pull Requests
+- Add windows_path resource from the Windows cookbook [#6295](https://github.com/chef/chef/pull/6295) ([NimishaS](https://github.com/NimishaS))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
@@ -12,6 +12,7 @@
 - Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
 
 #### Merged Pull Requests
+- Add windows_path resource from the Windows cookbook [#6295](https://github.com/chef/chef/pull/6295) ([NimishaS](https://github.com/NimishaS)) <!-- 13.3.48 -->
 - Add more items to the 13.3 release notes [#6325](https://github.com/chef/chef/pull/6325) ([tas50](https://github.com/tas50)) <!-- 13.3.43 -->
 - Fix bad examples in the release notes [#6326](https://github.com/chef/chef/pull/6326) ([tas50](https://github.com/tas50)) <!-- 13.3.44 -->
 - Catch Chef 12 changelog up to current 12 release [#6327](https://github.com/chef/chef/pull/6327) ([tas50](https://github.com/tas50)) <!-- 13.3.45 -->
