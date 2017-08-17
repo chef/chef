@@ -22,7 +22,7 @@ require "chef/util/windows/logon_session"
 describe ::Chef::Util::Windows::LogonSession do
   before do
     stub_const("Chef::ReservedNames::Win32::API::Security", Class.new)
-    stub_const("Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NETWORK", 314)
+    stub_const("Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NEW_CREDENTIALS", 314)
     stub_const("Chef::ReservedNames::Win32::API::Security::LOGON32_PROVIDER_DEFAULT", 159)
     stub_const("Chef::ReservedNames::Win32::API::System", Class.new )
   end
