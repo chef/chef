@@ -31,11 +31,6 @@ Y6S6MeZ69Rp89ma4ttMZ+kwi1+XyHqC/dlcVRW42Zl5Dc7BALRlJjQ==
 describe Chef::ServerAPI do
   let(:url) { "http://chef.example.com:4000" }
   let(:key_path) { "/tmp/foo" }
-  let(:org_data) { { "name" => "some_name", "full_name" => "some_full_name", "guid" => "abc1223" } }
-
-  before(:each) do
-    allow_any_instance_of(described_class).to receive(:get).with("/").and_return(org_data)
-  end
 
   describe "#initialize" do
     it "uses the configured key file" do
@@ -50,13 +45,6 @@ describe Chef::ServerAPI do
       api = described_class.new(url, raw_key: SIGNING_KEY_DOT_PEM)
       expect(api.options[:signing_key_filename]).to be_nil
       expect(api.options[:raw_key]).to eql(SIGNING_KEY_DOT_PEM)
-    end
-
-    context "when url is not a chef server" do
-      let(:org_data) { Hash.new }
-      it "throws exception" do
-        expect { described_class.new(url, raw_key: SIGNING_KEY_DOT_PEM) }.to raise_exception(Chef::Exceptions::NotAChefServerException)
-      end
     end
   end
 end
