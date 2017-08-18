@@ -333,8 +333,8 @@ describe Chef::Provider::WindowsTask do
         new_resource.start_day "3/30/2017"
         new_resource.start_time "13:12"
         date_time_obj = DateTime.strptime("#{new_resource.start_day} #{new_resource.start_time}", "%m/%d/%Y %H:%M")
-        allow(provider).to receive(:convert_system_dateformat_into_ruby_date).with(new_resource.start_day).and_return(date_time_obj)
-        allow(provider).to receive(:convert_system_dateformat_into_ruby_date).with("1:12:00 PM").and_return(date_time_obj)
+        allow(provider).to receive(:convert_system_date_format_into_ruby_date).with(new_resource.start_day).and_return(date_time_obj)
+        allow(provider).to receive(:convert_system_date_format_into_ruby_date).with("1:12:00 PM").and_return(date_time_obj)
       end
 
       context "when no attributes are modified" do
@@ -360,7 +360,7 @@ describe Chef::Provider::WindowsTask do
       context "when start_day is updated" do
         it "returns true" do
           new_resource.start_day "01/01/2000"
-          allow(provider).to receive(:convert_system_dateformat_into_ruby_date).with(new_resource.start_day).and_return(DateTime.strptime(new_resource.start_day, "%m/%d/%Y"))
+          allow(provider).to receive(:convert_system_date_format_into_ruby_date).with(new_resource.start_day).and_return(DateTime.strptime(new_resource.start_day, "%m/%d/%Y"))
           expect(provider.send(:task_need_update?)).to be(true)
         end
       end
@@ -371,6 +371,83 @@ describe Chef::Provider::WindowsTask do
           expect(provider.send(:task_need_update?)).to be(true)
         end
       end
+    end
+  end
+
+  describe "#start_day_updated?" do
+    before do
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+
+      new_resource.command "chef-client"
+      new_resource.run_level :highest
+      new_resource.frequency :minute
+      new_resource.frequency_modifier 15
+      new_resource.user "SYSTEM"
+      new_resource.execution_time_limit "PT72H"
+      new_resource.start_day "3/30/2017"
+      new_resource.start_time "13:12"
+      date_time_obj = DateTime.strptime("#{new_resource.start_day} #{new_resource.start_time}", "%m/%d/%Y %H:%M")
+      allow(provider).to receive(:convert_system_date_format_into_ruby_date).with(new_resource.start_day).and_return(date_time_obj)
+      allow(provider).to receive(:convert_system_date_format_into_ruby_date).with("1:12:00 PM").and_return(date_time_obj)
+    end
+    context "when start_day not changed" do
+      it "returns false" do
+        expect(provider.send(:start_day_updated?)).to be(false)
+      end
+    end
+
+    context "when start_day changed" do
+      it "returns true" do
+        new_resource.start_day "01/01/2000"
+        allow(provider).to receive(:convert_system_date_format_into_ruby_date).with(new_resource.start_day).and_return(DateTime.strptime(new_resource.start_day, "%m/%d/%Y"))
+        expect(provider.send(:start_day_updated?)).to be(true)
+      end
+    end
+  end
+
+  describe "#start_time_updated?" do
+    before do
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+
+      new_resource.command "chef-client"
+      new_resource.run_level :highest
+      new_resource.frequency :minute
+      new_resource.frequency_modifier 15
+      new_resource.user "SYSTEM"
+      new_resource.execution_time_limit "PT72H"
+      new_resource.start_day "3/30/2017"
+      new_resource.start_time "13:12"
+      date_time_obj = DateTime.strptime("#{new_resource.start_day} #{new_resource.start_time}", "%m/%d/%Y %H:%M")
+      allow(provider).to receive(:convert_system_date_format_into_ruby_date).with(new_resource.start_day).and_return(date_time_obj)
+      allow(provider).to receive(:convert_system_date_format_into_ruby_date).with("1:12:00 PM").and_return(date_time_obj)
+    end
+    context "when start_time not changed" do
+      it "returns false" do
+        expect(provider.send(:start_time_updated?)).to be(false)
+      end
+    end
+
+    context "when start_time changed" do
+      it "returns true" do
+        new_resource.start_time "01:01"
+        expect(provider.send(:start_time_updated?)).to be(true)
+      end
+    end
+  end
+
+  describe "#convert_system_date_format_into_ruby_date" do
+    it "retun date object" do
+      date_time = "2017-08-08 01:12"
+      task_script = <<-EOH
+          [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
+          ([datetime]'#{date_time}').ToString('yyyy-MM-dd HH:mm')
+        EOH
+      allow(provider).to receive_message_chain(:powershell_out, :stdout, :force_encoding).with(task_script).with(no_args).with("UTF-8").and_return(date_time)
+      output = provider.send(:convert_system_date_format_into_ruby_date, date_time)
+      expected_output = DateTime.strptime(date_time, "%Y-%m-%d %H:%M")
+      expect(output).to eq(expected_output)
     end
   end
 

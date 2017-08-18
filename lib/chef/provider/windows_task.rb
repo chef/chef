@@ -91,7 +91,7 @@ class Chef
         options["SC"] = schedule
         options["MO"] = new_resource.frequency_modifier if frequency_modifier_allowed
         options["I"]  = new_resource.idle_time unless new_resource.idle_time.nil?
-        options["SD"] = convert_ruby_date_to_system_date unless new_resource.start_day.nil?
+        options["SD"] = convert_user_date_to_system_date unless new_resource.start_day.nil?
         options["ST"] = new_resource.start_time unless new_resource.start_time.nil?
         options["TR"] = new_resource.command
         options["RU"] = new_resource.user
@@ -205,8 +205,8 @@ class Chef
             @current_resource.idle_time != new_resource.idle_time ||
             @current_resource.random_delay != new_resource.random_delay ||
             !new_resource.execution_time_limit.include?(@current_resource.execution_time_limit) ||
-            (!new_resource.start_day.nil? && compare_day) ||
-            (!new_resource.start_time.nil? && compare_time)
+            (!new_resource.start_day.nil? && start_day_updated?) ||
+            (!new_resource.start_time.nil? && start_time_updated?)
         begin
           return true if new_resource.day.to_s.casecmp(@current_resource.day.to_s) != 0 ||
               new_resource.months.to_s.casecmp(@current_resource.months.to_s) != 0
@@ -217,32 +217,35 @@ class Chef
         false
       end
 
-      def compare_day
-        current_day = convert_system_dateformat_into_ruby_date(@current_resource.start_day).strftime("%m/%d/%Y")
-        new_day = convert_system_dateformat_into_ruby_date(new_resource.start_day).strftime("%m/%d/%Y")
+      def start_day_updated?
+        current_day = convert_system_date_format_into_ruby_date(@current_resource.start_day)
+        new_day = convert_system_date_format_into_ruby_date(new_resource.start_day)
         current_day != new_day
       end
 
-      def compare_time
-        time = convert_system_dateformat_into_ruby_date(@current_resource.start_time).strftime("%H:%M")
+      def start_time_updated?
+        time = convert_system_date_format_into_ruby_date(@current_resource.start_time).strftime("%H:%M")
         time != new_resource.start_time
       end
 
-      def convert_system_dateformat_into_ruby_date(date_in_string)
+      def convert_system_date_format_into_ruby_date(date_in_string)
         Chef::Log.debug "Looking system date format"
         task_script = <<-EOH
           [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
           ([datetime]'#{date_in_string}').ToString('yyyy-MM-dd HH:mm')
         EOH
+        # Convert given date time in string into `yyyy-MM-dd HH:mm` formt
         date_time = powershell_out(task_script).stdout.force_encoding("UTF-8").gsub(/[\s+\uFEFF]/, "")
+        # Convert `yyyy-MM-dd HH:mm` formated string date into ruby DateTime object
         DateTime.strptime(date_time, "%Y-%m-%d %H:%M")
       end
 
-      def convert_ruby_date_to_system_date
+      def convert_user_date_to_system_date
         task_script = <<-EOH
           [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
           ([datetime]"#{new_resource.start_day}").ToString([Globalization.Cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern)
         EOH
+        # Convert start_date into OS date format
         powershell_out(task_script).stdout.force_encoding("UTF-8").gsub(/[\s+\uFEFF]/, "")
       end
 
