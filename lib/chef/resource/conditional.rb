@@ -69,7 +69,7 @@ class Chef
           end
 
           @guard_interpreter = nil
-          @command, @command_opts = nil, nil
+          @command = nil
         else
           # command was passed, but it wasn't a String
           raise ArgumentError, "Invalid only_if/not_if command, expected a string: #{command.inspect} (#{command.class})"
@@ -115,7 +115,7 @@ class Chef
       end
 
       def short_description
-        @positivity
+        @command_opts[:desc] ? "#{@positivity} (#{@command_opts[:desc]})" : @positivity
       end
 
       def description
