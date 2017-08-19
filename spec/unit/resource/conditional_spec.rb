@@ -117,7 +117,6 @@ describe Chef::Resource::Conditional do
 
       it "indicates that resource convergence should continue" do
         expect(@conditional.continue?).to be_truthy
-        expect(@conditional.short_description).to be == @conditional.positivity
       end
     end
 
