@@ -39,8 +39,8 @@ describe Chef::Resource::Conditional do
   end
 
   it "uses a detailed short_description if a :desc is provided" do
-    @parent_resource_guard = Chef::Resource::Conditional.only_if(@parent_resource, "true", :desc => 'my guard desc')
-    expect(@parent_resource_guard.short_description).to be == 'only_if (my guard desc)'
+    @parent_resource_guard = Chef::Resource::Conditional.only_if(@parent_resource, "true", :desc => "my guard desc")
+    expect(@parent_resource_guard.short_description).to be == "only_if (my guard desc)"
   end
 
   describe "configure" do
