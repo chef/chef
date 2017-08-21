@@ -68,9 +68,9 @@ describe Chef::Mixin::UserContext, windows_only: true do
   end
 
   shared_examples_for "method that executes the block while impersonating the alternate user" do
-    it "sets the current thread token to that of the alternate user when the correct password is specified" do
+    it "uses different credentials for other network connections" do
       allow_any_instance_of(Chef::Util::Windows::LogonSession).to receive(:validate_session_open!).and_return(true)
-      expect(username_while_impersonating.downcase).to eq(username_to_impersonate.downcase)
+      expect(username_while_impersonating.downcase).not_to eq(username_to_impersonate.downcase)
     end
   end
 
@@ -92,13 +92,13 @@ describe Chef::Mixin::UserContext, windows_only: true do
         let(:username_to_impersonate_password) { test_password }
         context "when an explicit domain is given with a valid password" do
           let(:domain_to_impersonate) { test_domain }
-          it "sets the current thread token to that of the alternate user when the correct password is specified" do
-            expect(username_while_impersonating.downcase).to eq(username_to_impersonate.downcase)
+          it "uses different credentials for other network connections" do
+            expect(username_while_impersonating.downcase).not_to eq(username_to_impersonate.downcase)
           end
         end
 
         context "when a valid password and a non-qualified user is given and no domain is specified" do
-          let(:domain_to_impersonate) { nil }
+          let(:domain_to_impersonate) { "." }
           it_behaves_like "method that executes the block while impersonating the alternate user"
         end
 
