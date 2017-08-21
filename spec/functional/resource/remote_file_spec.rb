@@ -192,7 +192,7 @@ describe Chef::Resource::RemoteFile do
           end
         end
 
-        context "when the the file is accessible to non-admin users only as the current identity" do
+        context "when the file is accessible to non-admin users only as the current identity" do
           before do
             shell_out!("icacls #{smb_file_local_path} /grant:r \"authenticated users:(W)\" /grant \"#{windows_current_user_qualified}:(R)\" /inheritance:r")
           end
@@ -229,8 +229,12 @@ describe Chef::Resource::RemoteFile do
             let (:windows_nonadmin_user_password) { "j82ajfxK3;2Xe1" }
             include_context "a non-admin Windows user"
 
+            before do
+              shell_out!("icacls #{smb_file_local_path} /grant:r \"authenticated users:(W)\" /deny \"#{windows_current_user_qualified}:(R)\" /inheritance:r")
+            end
+
             let(:remote_user) { windows_nonadmin_user }
-            let(:remote_domain) { nil }
+            let(:remote_domain) { windows_nonadmin_user_domain }
             let(:remote_password) { windows_nonadmin_user_password }
 
             it_behaves_like "a remote_file resource accessing a remote file to which the specified user does not have access"
@@ -243,12 +247,12 @@ describe Chef::Resource::RemoteFile do
           include_context "a non-admin Windows user"
 
           before do
-            shell_out!("icacls #{smb_file_local_path} /grant:r \"authenticated users:(W)\" /grant \"#{windows_nonadmin_user_qualified}:(R)\" /deny #{windows_current_user_qualified}:(R) /inheritance:r")
+            shell_out!("icacls #{smb_file_local_path} /grant:r \"authenticated users:(W)\" /grant \"#{windows_current_user_qualified}:(R)\" /inheritance:r")
           end
 
           context "when the resource is accessed using the specific non-qualified alternate user identity with access" do
             let(:remote_user) { windows_nonadmin_user }
-            let(:remote_domain) { nil }
+            let(:remote_domain) { "." }
             let(:remote_password) { windows_nonadmin_user_password }
 
             it_behaves_like "a remote_file resource accessing a remote file to which the specified user has access"
@@ -263,6 +267,10 @@ describe Chef::Resource::RemoteFile do
           end
 
           context "when the resource is accessed using the current user's identity" do
+            before do
+              shell_out!("icacls #{smb_file_local_path} /grant:r \"authenticated users:(W)\" /grant \"#{windows_nonadmin_user_qualified}:(R)\" /deny #{windows_current_user_qualified}:(R) /inheritance:r")
+            end
+
             it_behaves_like "a remote_file resource accessing a remote file to which the specified user does not have access"
           end
 
