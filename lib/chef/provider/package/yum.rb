@@ -445,12 +445,26 @@ class Chef
           end
 
           unless packages.empty?
-            new_package_name = packages.first.name
-            new_package_version = packages.first.version.to_s
-            debug_msg = "#{name}: Unable to match package '#{name}' but matched #{packages.size} "
-            debug_msg << (packages.size == 1 ? "package" : "packages")
-            debug_msg << ", selected '#{new_package_name}' version '#{new_package_version}'"
-            Chef::Log.debug(debug_msg)
+            installed_package = packages.find {|p| p.installed == true }
+
+            if installed_package
+              packages.each do |pkg|
+                if pkg.version.evr > installed_package.version.evr
+                  new_package_name = pkg.name
+                  new_package_version = pkg.version.to_s
+                else
+                  new_package_name = installed_package.name
+                  new_package_version = installed_package.version
+                end
+              end
+            else
+              new_package_name = packages.first.name
+              new_package_version = packages.first.version.to_s
+              debug_msg = "#{name}: Unable to match package '#{name}' but matched #{packages.size} "
+              debug_msg << (packages.size == 1 ? "package" : "packages")
+              debug_msg << ", selected '#{new_package_name}' version '#{new_package_version}'"
+              Chef::Log.debug(debug_msg)
+            end
 
             # Ensure it's not the same package under a different architecture
             unique_names = []
