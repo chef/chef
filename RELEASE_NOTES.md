@@ -2,6 +2,37 @@ _This file holds "in progress" release notes for the current release under devel
 
 # Chef Client Release Notes 13.3:
 
+## windows_path resource
+
+`windows_path` resource has been moved to core chef from windows cookbook. Use the `windows_path` resource to manage path environment key in Microsoft Windows.
+
+### Actions
+
+- `:add` - Add an item to the system path
+- `:remove` - Remove an item from the system path
+
+### Properties
+
+- `path` - Name attribute. The name of the value to add to the system path
+
+### Examples
+
+Add Sysinternals to the system path
+
+```ruby
+windows_path 'C:\Sysinternals' do
+  action :add
+end
+```
+
+Remove 7-Zip from the system path
+
+```ruby
+windows_path 'C:\7-Zip' do
+  action :remove
+end
+```
+
 ## Unprivileged Symlink Creation on Windows
 
 Chef can now create symlinks without privilege escalation, which allows for the creation of symlinks on Windows 10 Creator Update.
