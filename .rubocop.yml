@@ -28,5 +28,3 @@ Lint/IneffectiveAccessModifier:
   Enabled: false
 Lint/ShadowedException:
   Enabled: false
-Lint/PercentStringArray:
-  Enabled: false
