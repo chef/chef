@@ -1,10 +1,10 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
-# Chef Client Release Notes 13.3:
+# Unreleased:
 
 ## windows_path resource
 
-`windows_path` resource has been moved to core chef from windows cookbook. Use the `windows_path` resource to manage path environment key in Microsoft Windows.
+`windows_path` resource has been moved to core chef from windows cookbook. Use the `windows_path` resource to manage the path environment variable on Microsoft Windows.
 
 ### Actions
 
@@ -32,6 +32,8 @@ windows_path 'C:\7-Zip' do
   action :remove
 end
 ```
+
+# Chef Client Release Notes 13.3:
 
 ## Unprivileged Symlink Creation on Windows
 
