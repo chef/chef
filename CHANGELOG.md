@@ -1,8 +1,8 @@
-<!-- latest_release 13.3.50 -->
-## [v13.3.50](https://github.com/chef/chef/tree/v13.3.50) (2017-08-17)
+<!-- latest_release 13.3.51 -->
+## [v13.3.51](https://github.com/chef/chef/tree/v13.3.51) (2017-08-25)
 
 #### Merged Pull Requests
-- Add v12.21.4 to master&#39;s changelog [#6339](https://github.com/chef/chef/pull/6339) ([tas50](https://github.com/tas50))
+- Auto import gpg keys in zypper_repository [#6348](https://github.com/chef/chef/pull/6348) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
@@ -12,6 +12,7 @@
 - Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
 
 #### Merged Pull Requests
+- Auto import gpg keys in zypper_repository [#6348](https://github.com/chef/chef/pull/6348) ([tas50](https://github.com/tas50)) <!-- 13.3.51 -->
 - Add v12.21.4 to master&#39;s changelog [#6339](https://github.com/chef/chef/pull/6339) ([tas50](https://github.com/tas50)) <!-- 13.3.50 -->
 - Add Chef 13.0.113 and 13.0.118 to the changelog [#6334](https://github.com/chef/chef/pull/6334) ([tas50](https://github.com/tas50)) <!-- 13.3.49 -->
 - Add windows_path resource from the Windows cookbook [#6295](https://github.com/chef/chef/pull/6295) ([NimishaS](https://github.com/NimishaS)) <!-- 13.3.48 -->
