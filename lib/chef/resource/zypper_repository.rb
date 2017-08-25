@@ -39,6 +39,7 @@ class Chef
       property :mode, default: "0644"
       property :refresh_cache, [true, false], default: true
       property :source, String, regex: /.*/
+      property :gpgautoimportkeys, [true, false], default: true
 
       default_action :create
       allowed_actions :create, :remove, :add, :refresh
