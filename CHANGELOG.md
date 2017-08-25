@@ -1,8 +1,8 @@
-<!-- latest_release 13.3.51 -->
-## [v13.3.51](https://github.com/chef/chef/tree/v13.3.51) (2017-08-25)
+<!-- latest_release 13.3.52 -->
+## [v13.3.52](https://github.com/chef/chef/tree/v13.3.52) (2017-08-25)
 
 #### Merged Pull Requests
-- Auto import gpg keys in zypper_repository [#6348](https://github.com/chef/chef/pull/6348) ([tas50](https://github.com/tas50))
+- add codeowners for reviews [#6345](https://github.com/chef/chef/pull/6345) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
@@ -12,6 +12,7 @@
 - Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
 
 #### Merged Pull Requests
+- add codeowners for reviews [#6345](https://github.com/chef/chef/pull/6345) ([thommay](https://github.com/thommay)) <!-- 13.3.52 -->
 - Auto import gpg keys in zypper_repository [#6348](https://github.com/chef/chef/pull/6348) ([tas50](https://github.com/tas50)) <!-- 13.3.51 -->
 - Add v12.21.4 to master&#39;s changelog [#6339](https://github.com/chef/chef/pull/6339) ([tas50](https://github.com/tas50)) <!-- 13.3.50 -->
 - Add Chef 13.0.113 and 13.0.118 to the changelog [#6334](https://github.com/chef/chef/pull/6334) ([tas50](https://github.com/tas50)) <!-- 13.3.49 -->
