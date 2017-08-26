@@ -76,7 +76,7 @@ XML
             allow(Dir).to receive(:glob).and_return([plist], [])
             @stat = double("File::Stat", { :uid => 501 })
             allow(File).to receive(:stat).and_return(@stat)
-            @getpwuid = double("Etc::Passwd", { :name => 'mikedodge04' })
+            @getpwuid = double("Etc::Passwd", { :name => "mikedodge04" })
             allow(Etc).to receive(:getpwuid).and_return(@getpwuid)
             allow(node).to receive(:[]).with("platform_version").and_return(platform_version)
             cmd = "launchctl list #{service_label}"
