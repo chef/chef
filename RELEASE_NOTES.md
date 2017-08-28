@@ -1,5 +1,38 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Unreleased:
+
+## windows_path resource
+
+`windows_path` resource has been moved to core chef from windows cookbook. Use the `windows_path` resource to manage the path environment variable on Microsoft Windows.
+
+### Actions
+
+- `:add` - Add an item to the system path
+- `:remove` - Remove an item from the system path
+
+### Properties
+
+- `path` - Name attribute. The name of the value to add to the system path
+
+### Examples
+
+Add Sysinternals to the system path
+
+```ruby
+windows_path 'C:\Sysinternals' do
+  action :add
+end
+```
+
+Remove 7-Zip from the system path
+
+```ruby
+windows_path 'C:\7-Zip' do
+  action :remove
+end
+```
+
 # Chef Client Release Notes 13.3:
 
 ## Unprivileged Symlink Creation on Windows
