@@ -559,10 +559,6 @@ class Chef
           apply_path(@automatic, path),
         ]
 
-        components.map! do |component|
-          safe_dup(component)
-        end
-
         return nil if components.compact.empty?
 
         components.inject(ImmutableMash.new({}, self, __node__, :merged)) do |merged, component|
