@@ -1,8 +1,8 @@
-<!-- latest_release 13.4.3 -->
-## [v13.4.3](https://github.com/chef/chef/tree/v13.4.3) (2017-08-28)
+<!-- latest_release 13.4.4 -->
+## [v13.4.4](https://github.com/chef/chef/tree/v13.4.4) (2017-08-28)
 
 #### Merged Pull Requests
-- [MSYS-645] Updated release_notes for windows_path [#6344](https://github.com/chef/chef/pull/6344) ([NimishaS](https://github.com/NimishaS))
+- speed up immutabilization [#6355](https://github.com/chef/chef/pull/6355) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
@@ -12,6 +12,7 @@
 - Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
 
 #### Merged Pull Requests
+- speed up immutabilization [#6355](https://github.com/chef/chef/pull/6355) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.4 -->
 - [MSYS-645] Updated release_notes for windows_path [#6344](https://github.com/chef/chef/pull/6344) ([NimishaS](https://github.com/NimishaS)) <!-- 13.4.3 -->
 - dnf_provider: be more specific when we provide `package` [#6351](https://github.com/chef/chef/pull/6351) ([jaymzh](https://github.com/jaymzh)) <!-- 13.4.2 -->
 - Bumps Bundler version to 1.15.4 [#6349](https://github.com/chef/chef/pull/6349) ([jakauppila](https://github.com/jakauppila)) <!-- 13.4.1 -->
