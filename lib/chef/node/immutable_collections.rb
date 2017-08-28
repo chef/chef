@@ -115,7 +115,7 @@ class Chef
       include Immutablize
       include CommonAPI
 
-      alias :internal_set :[]=
+      alias :internal_set :regular_writer
       private :internal_set
 
       def initialize(mash_data = {})
