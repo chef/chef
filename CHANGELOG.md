@@ -1,8 +1,8 @@
-<!-- latest_release 13.4.1 -->
-## [v13.4.1](https://github.com/chef/chef/tree/v13.4.1) (2017-08-28)
+<!-- latest_release 13.4.2 -->
+## [v13.4.2](https://github.com/chef/chef/tree/v13.4.2) (2017-08-28)
 
 #### Merged Pull Requests
-- Bumps Bundler version to 1.15.4 [#6349](https://github.com/chef/chef/pull/6349) ([jakauppila](https://github.com/jakauppila))
+- dnf_provider: be more specific when we provide `package` [#6351](https://github.com/chef/chef/pull/6351) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
@@ -12,6 +12,7 @@
 - Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
 
 #### Merged Pull Requests
+- dnf_provider: be more specific when we provide `package` [#6351](https://github.com/chef/chef/pull/6351) ([jaymzh](https://github.com/jaymzh)) <!-- 13.4.2 -->
 - Bumps Bundler version to 1.15.4 [#6349](https://github.com/chef/chef/pull/6349) ([jakauppila](https://github.com/jakauppila)) <!-- 13.4.1 -->
 - add codeowners for reviews [#6345](https://github.com/chef/chef/pull/6345) ([thommay](https://github.com/thommay)) <!-- 13.3.52 -->
 - Auto import gpg keys in zypper_repository [#6348](https://github.com/chef/chef/pull/6348) ([tas50](https://github.com/tas50)) <!-- 13.3.51 -->
