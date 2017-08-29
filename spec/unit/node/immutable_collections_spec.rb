@@ -21,10 +21,10 @@ require "chef/node/immutable_collections"
 
 describe Chef::Node::ImmutableMash do
   before do
-    @data_in = { :top => { :second_level => "some value" },
+    @data_in = { "top" => { "second_level" => "some value" },
                  "top_level_2" => %w{array of values},
-                 :top_level_3 => [{ :hash_array => 1, :hash_array_b => 2 }],
-                 :top_level_4 => { :level2 => { :key => "value" } },
+                 "top_level_3" => [{ "hash_array" => 1, "hash_array_b" => 2 }],
+                 "top_level_4" => { "level2" => { "key" => "value" } },
     }
     @immutable_mash = Chef::Node::ImmutableMash.new(@data_in)
   end
@@ -52,6 +52,14 @@ describe Chef::Node::ImmutableMash do
   it "converts nested hashes to ImmutableMashes" do
     expect(@immutable_mash[:top_level_4]).to be_a(Chef::Node::ImmutableMash)
     expect(@immutable_mash[:top_level_4][:level2]).to be_a(Chef::Node::ImmutableMash)
+  end
+
+  # we only ever absorb VividMashes from other precedence levels, which already have
+  # been coerced to only have string keys, so we do not need to do that work twice (performance).
+  it "does not call convert_value like Mash/VividMash" do
+    @mash = Chef::Node::ImmutableMash.new({ test: "foo", "test2" => "bar" })
+    expect(@mash[:test]).to eql("foo")
+    expect(@mash["test2"]).to eql("bar")
   end
 
   describe "to_hash" do
@@ -117,7 +125,7 @@ describe Chef::Node::ImmutableArray do
 
   before do
     @immutable_array = Chef::Node::ImmutableArray.new(%w{foo bar baz} + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ])
-    immutable_mash = Chef::Node::ImmutableMash.new({ :m => "m" })
+    immutable_mash = Chef::Node::ImmutableMash.new({ "m" => "m" })
     @immutable_nested_array = Chef::Node::ImmutableArray.new(["level1", @immutable_array, immutable_mash])
   end
 
