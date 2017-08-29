@@ -242,7 +242,7 @@ EOM
         it "knife deps --tree prints each once" do
           knife("deps --tree /roles/foo.json /roles/self.json") do
             expect(stdout).to eq("/roles/foo.json\n  /roles/bar.json\n    /roles/baz.json\n      /roles/foo.json\n/roles/self.json\n  /roles/self.json\n")
-            expect(stderr).to eq("WARNING: No knife configuration file found\n")
+            expect(stderr).to eq("WARNING: No knife configuration file found. See https://docs.chef.io/config_rb_knife.html for details.\n")
           end
         end
       end
@@ -580,7 +580,7 @@ EOM
         it "knife deps --tree prints each once" do
           knife("deps --remote --tree /roles/foo.json /roles/self.json") do
             expect(stdout).to eq("/roles/foo.json\n  /roles/bar.json\n    /roles/baz.json\n      /roles/foo.json\n/roles/self.json\n  /roles/self.json\n")
-            expect(stderr).to eq("WARNING: No knife configuration file found\n")
+            expect(stderr).to eq("WARNING: No knife configuration file found. See https://docs.chef.io/config_rb_knife.html for details.\n")
           end
         end
       end
