@@ -83,32 +83,32 @@ describe Chef::Provider::Git do
     expect(@provider.new_resource).to equal(@resource)
   end
 
-  context 'cast git version into gem version object' do
-    it 'returns correct version with standard git' do
+  context "cast git version into gem version object" do
+    it "returns correct version with standard git" do
       expect(@provider).to receive(:shell_out!)
-        .with('git --version', log_tag: 'git[web2.0 app]')
-        .and_return(double('ShellOut result', stdout: 'git version 2.14.1'))
-      expect(@provider.git_gem_version).to eq Gem::Version.new('2.14.1')
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 2.14.1"))
+      expect(@provider.git_gem_version).to eq Gem::Version.new("2.14.1")
     end
 
-    it 'returns correct version with Apple git' do
+    it "returns correct version with Apple git" do
       expect(@provider).to receive(:shell_out!)
-        .with('git --version', log_tag: 'git[web2.0 app]')
-        .and_return(double('ShellOut result', stdout: 'git version 2.11.0 (Apple Git-81)'))
-      expect(@provider.git_gem_version).to eq Gem::Version.new('2.11.0')
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 2.11.0 (Apple Git-81)"))
+      expect(@provider.git_gem_version).to eq Gem::Version.new("2.11.0")
     end
 
-    it 'maintains deprecated method name' do
+    it "maintains deprecated method name" do
       expect(@provider).to receive(:shell_out!)
-        .with('git --version', log_tag: 'git[web2.0 app]')
-        .and_return(double('ShellOut result', stdout: 'git version 1.2.3'))
-      expect(@provider.git_minor_version).to eq Gem::Version.new('1.2.3')
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 1.2.3"))
+      expect(@provider.git_minor_version).to eq Gem::Version.new("1.2.3")
     end
 
-    it 'does not know how to handle other version' do
+    it "does not know how to handle other version" do
       expect(@provider).to receive(:shell_out!)
-        .with('git --version', log_tag: 'git[web2.0 app]')
-        .and_return(double('ShellOut result', stdout: 'git version home-grown-git-99'))
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version home-grown-git-99"))
       expect { @provider.git_gem_version }.to raise_error(ArgumentError, /unparsable git version/)
     end
   end

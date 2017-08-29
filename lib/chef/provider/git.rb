@@ -106,9 +106,9 @@ class Chef
       end
 
       def git_gem_version
-        output = git('--version').stdout
+        output = git("--version").stdout
         match = GIT_VERSION_PATTERN.match(output)
-        match or raise ArgumentError, "unparsable git version number #{output}"
+        raise ArgumentError, "unparsable git version number #{output}" unless match
         @git_gem_version ||= Gem::Version.new(match[1])
       end
 
