@@ -1,7 +1,7 @@
 # THIS IS NOW HAND MANAGED, JUST EDIT THE THING
 # .travis.yml and appveyor.yml consume this,
 # try to keep it machine-parsable.
-override :rubygems, version: "2.6.11"
+override :rubygems, version: "2.6.13"
 override :bundler, version: "1.15.4"
 override "nokogiri", version: "1.8.0"
 override "libffi", version: "3.2.1"
