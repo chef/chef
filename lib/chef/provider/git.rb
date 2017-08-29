@@ -104,7 +104,7 @@ class Chef
       end
 
       def git_minor_version
-        @git_minor_version ||= Gem::Version.new( git("--version").stdout.split.last )
+        @git_minor_version ||= Gem::Version.new( git("--version").stdout.match("[0-9]{1}\.[0-9]{1,2}((\.[0-9]+n?)?){1,2}").to_s )
       end
 
       def existing_git_clone?
