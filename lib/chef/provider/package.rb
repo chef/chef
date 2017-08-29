@@ -538,7 +538,11 @@ class Chef
       # @yield [package_name, new_version, current_version, candidate_version] Description of block
       def each_package
         package_name_array.each_with_index do |package_name, i|
-          candidate_version = candidate_version_array[i]
+          if new_version_array[i].nil?
+            candidate_version = candidate_version_array[i]
+          else
+            candidate_version = new_version_array[i]
+          end
           current_version = current_version_array[i]
           new_version = new_version_array[i]
           yield package_name, new_version, current_version, candidate_version
