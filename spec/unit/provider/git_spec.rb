@@ -724,4 +724,36 @@ SHAS
       end
     end
   end
+
+  context "parses git versions correctly" do
+    it "determines the correct version of normal git" do
+      @stdout = "git version 2.14.1\n"
+      expect(@provider).to receive(:shell_out!).with("git --version", { :log_tag => "git[web2.0 app]" }).and_return(double("ShellOut result", :stdout => @stdout))
+      expect(@provider.git_minor_version).to eq Gem::Version.new("2.14.1")
+    end
+
+    it "determines the correct version of apple git" do
+      @stdout = "git version 2.11.0 (Apple Git-81)"
+      expect(@provider).to receive(:shell_out!).with("git --version", { :log_tag => "git[web2.0 app]" }).and_return(double("ShellOut result", :stdout => @stdout))
+      expect(@provider.git_minor_version).to eq Gem::Version.new("2.11.0")
+    end
+
+    it "determines the correct version of git with a trailing n" do
+      @stdout = "git version 0.99.9n"
+      expect(@provider).to receive(:shell_out!).with("git --version", { :log_tag => "git[web2.0 app]" }).and_return(double("ShellOut result", :stdout => @stdout))
+      expect(@provider.git_minor_version).to eq Gem::Version.new("0.99.9n")
+    end
+
+    it "determines the correct version of git with 2 numbers" do
+      @stdout = "git version 2.14"
+      expect(@provider).to receive(:shell_out!).with("git --version", { :log_tag => "git[web2.0 app]" }).and_return(double("ShellOut result", :stdout => @stdout))
+      expect(@provider.git_minor_version).to eq Gem::Version.new("2.14")
+    end
+
+    it "determines the correct version of git with 4 numbers" do
+      @stdout = "git version 1.8.5.6"
+      expect(@provider).to receive(:shell_out!).with("git --version", { :log_tag => "git[web2.0 app]" }).and_return(double("ShellOut result", :stdout => @stdout))
+      expect(@provider.git_minor_version).to eq Gem::Version.new("1.8.5.6")
+    end
+  end
 end
