@@ -28,6 +28,8 @@ class Chef
       extend Forwardable
       provides :git
 
+      GIT_VERSION_PATTERN = Regexp.compile('git version (\d+\.\d+.\d+)')
+
       def_delegator :new_resource, :destination, :cwd
 
       def load_current_resource
@@ -103,8 +105,11 @@ class Chef
         end
       end
 
-      def git_minor_version
-        @git_minor_version ||= Gem::Version.new( git("--version").stdout.split.last )
+      def git_gem_version
+        output = git('--version').stdout
+        match = GIT_VERSION_PATTERN.match(output)
+        match or raise ArgumentError, "unparsable git version number #{output}"
+        @git_gem_version ||= Gem::Version.new(match[1])
       end
 
       def existing_git_clone?
@@ -142,7 +147,7 @@ class Chef
           clone_cmd = ["clone"]
           clone_cmd << "-o #{remote}" unless remote == "origin"
           clone_cmd << "--depth #{new_resource.depth}" if new_resource.depth
-          clone_cmd << "--no-single-branch" if new_resource.depth && git_minor_version >= Gem::Version.new("1.7.10")
+          clone_cmd << "--no-single-branch" if new_resource.depth && git_gem_version >= Gem::Version.new("1.7.10")
           clone_cmd << "\"#{new_resource.repository}\""
           clone_cmd << "\"#{cwd}\""
 
@@ -284,6 +289,8 @@ class Chef
       def refs_search(refs, pattern)
         refs.find_all { |m| m[1] == pattern }
       end
+
+      alias git_minor_version git_gem_version
 
       private
 
