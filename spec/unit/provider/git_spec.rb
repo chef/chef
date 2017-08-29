@@ -111,6 +111,10 @@ describe Chef::Provider::Git do
         .and_return(double("ShellOut result", stdout: "git version home-grown-git-99"))
       expect { @provider.git_gem_version }.to raise_error(ArgumentError, /unparsable git version/)
     end
+
+    it "is compatible with git in travis" do
+      expect(@provider.git_gem_version).to be > Gem::Version.new("1.0")
+    end
   end
 
   context "resolving revisions to a SHA" do
