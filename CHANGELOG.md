@@ -1,8 +1,8 @@
-<!-- latest_release 13.4.5 -->
-## [v13.4.5](https://github.com/chef/chef/tree/v13.4.5) (2017-08-28)
+<!-- latest_release 13.4.6 -->
+## [v13.4.6](https://github.com/chef/chef/tree/v13.4.6) (2017-08-29)
 
 #### Merged Pull Requests
-- node attributes: remove useless dup in merge_all [#6356](https://github.com/chef/chef/pull/6356) ([lamont-granquist](https://github.com/lamont-granquist))
+- Link to the knife docs in both places where we error on editor [#6363](https://github.com/chef/chef/pull/6363) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
@@ -12,6 +12,7 @@
 - Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
 
 #### Merged Pull Requests
+- Link to the knife docs in both places where we error on editor [#6363](https://github.com/chef/chef/pull/6363) ([tas50](https://github.com/tas50)) <!-- 13.4.6 -->
 - node attributes: remove useless dup in merge_all [#6356](https://github.com/chef/chef/pull/6356) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.5 -->
 - speed up immutabilization [#6355](https://github.com/chef/chef/pull/6355) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.4 -->
 - [MSYS-645] Updated release_notes for windows_path [#6344](https://github.com/chef/chef/pull/6344) ([NimishaS](https://github.com/NimishaS)) <!-- 13.4.3 -->
