@@ -218,30 +218,26 @@ class Chef
       end
 
       def start_day_updated?
-        current_day = convert_system_date_format_into_ruby_date(current_resource.start_day)
-        new_day = convert_system_date_format_into_ruby_date(new_resource.start_day)
+        current_day = to_date_time_obj(current_resource.start_day)
+        new_day = to_date_time_obj(new_resource.start_day)
         current_day != new_day
       end
 
       def start_time_updated?
-        time = convert_system_date_format_into_ruby_date(current_resource.start_time).strftime("%H:%M")
+        time = to_date_time_obj(current_resource.start_time).strftime("%H:%M")
         time != new_resource.start_time
       end
 
-      def convert_system_date_format_into_ruby_date(date_in_string)
-        Chef::Log.debug "Converting '#{date_in_string}' to '\%Y-\%m-\%d \%H:\%M'"
-        task_script = <<-EOH
-          [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
-          ([datetime]'#{date_in_string}').ToString('yyyy-MM-dd HH:mm')
-        EOH
-        # Convert given date time in string into `yyyy-MM-dd HH:mm` formt
-        date_time = powershell_out(task_script).stdout.force_encoding("UTF-8").gsub(/[\s+\uFEFF]/, "")
-        # Convert `yyyy-MM-dd HH:mm` formated string date into ruby DateTime object
-        DateTime.strptime(date_time, "%Y-%m-%d %H:%M")
+      def to_date_time_obj(date_in_string)
+        return DateTime.parse(date_in_string)
+      rescue
+        require "american_date"
+        return DateTime.parse(date_in_string)
       end
 
       def convert_user_date_to_system_date(date_in_string)
         Chef::Log.debug "Converting '#{date_in_string}' to system date format"
+        date_in_string = to_date_time_obj(date_in_string).strftime("%Y-%m-%d")
         task_script = <<-EOH
           [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
           ([datetime]"#{date_in_string}").ToString((((((([Globalization.Cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern -replace "dd", "d") -replace "d", "dd") -replace "MM", "M")-replace "M","MM") -replace "yyyy","yy") -replace "y", "yy"))
