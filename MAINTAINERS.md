@@ -195,7 +195,7 @@ To mention the team, use @chef/client-freebsd
 ### Maintainers
 
 * [Cory Stephenson](https://github.com/Aevin1387)
-* [David Aronsohn](https://github.com/tbunnyman)
+* [David Aronsohn](https://github.com/OnlyHaveCans)
 * [Bryant Lippert](https://github.com/AgentMeerkat)
 
 ## OpenBSD
@@ -230,3 +230,4 @@ To mention the team, use @chef/client-archlinux
 
 * [Lamont Granquist](https://github.com/lamont-granquist)
 * [Ryan Cragun](https://github.com/ryancragun)
+
