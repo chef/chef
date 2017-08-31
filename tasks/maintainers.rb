@@ -21,7 +21,7 @@ SOURCE = File.join(File.dirname(__FILE__), "..", "MAINTAINERS.toml")
 TARGET = File.join(File.dirname(__FILE__), "..", "MAINTAINERS.md")
 
 # The list of repositories that teams should own
-REPOSITORIES = ["chef/chef", "chef/chef-census", "chef/chef-repo",
+REPOSITORIES = ["chef/chef", "chef/chef-dk", "chef/chef-census", "chef/chef-repo",
                 "chef/client-docs", "chef/ffi-yajl", "chef/libyajl2-gem",
                 "chef/mixlib-authentication", "chef/mixlib-cli",
                 "chef/mixlib-config", "chef/mixlib-install", "chef/mixlib-log",
@@ -139,8 +139,8 @@ begin
     update_team_privacy(team)
     add_team_members(team, additions)
     remove_team_members(team, deletions)
-  rescue
-    puts "failed for #{team}"
+  rescue => e
+    puts "failed for #{team}: #{e.message}"
   end
 
   def update_team_privacy(team)
