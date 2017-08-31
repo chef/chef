@@ -16,6 +16,7 @@ group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
   gem "inspec"
+  gem "chef-vault"
 end
 
 group(:omnibus_package, :pry) do
