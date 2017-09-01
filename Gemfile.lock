@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 5b59b5269cc0cf6c08fcc5e160bdc6363d194708
+  revision: 4f1a175179965d53b9f2a068f2ea4c59090454a1
   branch: master
   specs:
     chefstyle (0.6.0)
@@ -110,7 +110,8 @@ GEM
       debug_inspector (>= 0.0.1)
     blankslate (2.1.2.4)
     builder (3.2.3)
-    byebug (9.0.6)
+    byebug (9.1.0)
+    chef-vault (3.3.0)
     chef-zero (13.1.0)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
@@ -133,9 +134,9 @@ GEM
     ethon (0.10.1)
       ffi (>= 1.3.0)
     excon (0.58.0)
-    faraday (0.12.2)
+    faraday (0.13.1)
       multipart-post (>= 1.2, < 3)
-    faraday_middleware (0.11.0.1)
+    faraday_middleware (0.12.2)
       faraday (>= 0.7.4, < 1.0)
     ffi (1.9.18)
     ffi (1.9.18-x64-mingw32)
@@ -156,13 +157,13 @@ GEM
       ffi (>= 1.0.1)
     gyoku (1.3.1)
       builder (>= 2.1.2)
-    hashdiff (0.3.4)
+    hashdiff (0.3.6)
     hashie (3.5.6)
     highline (1.7.8)
     htmlentities (4.3.4)
     httpclient (2.8.3)
     iniparse (1.4.4)
-    inspec (1.33.1)
+    inspec (1.34.1)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
@@ -246,8 +247,8 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
-    pry-byebug (3.4.2)
-      byebug (~> 9.0)
+    pry-byebug (3.5.0)
+      byebug (~> 9.1)
       pry (~> 0.10)
     pry-remote (0.1.8)
       pry (~> 0.9)
@@ -262,7 +263,7 @@ GEM
     rainbow (2.2.2)
       rake
     rake (12.0.0)
-    rb-readline (0.5.4)
+    rb-readline (0.5.5)
     rspec (3.6.0)
       rspec-core (~> 3.6.0)
       rspec-expectations (~> 3.6.0)
@@ -305,11 +306,11 @@ GEM
       rspec-its
       specinfra (~> 2.68)
     sfl (2.3)
-    simplecov (0.14.1)
+    simplecov (0.15.0)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
-    simplecov-html (0.10.1)
+    simplecov-html (0.10.2)
     slop (3.6.0)
     specinfra (2.71.1)
       net-scp
@@ -319,11 +320,11 @@ GEM
     sslshake (1.2.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    thor (0.19.4)
+    thor (0.20.0)
     toml (0.1.2)
       parslet (~> 1.5.0)
     tomlrb (1.2.4)
-    train (0.26.0)
+    train (0.26.1)
       docker-api (~> 1.26)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
@@ -396,6 +397,7 @@ DEPENDENCIES
   bundler-audit!
   chef!
   chef-config!
+  chef-vault
   cheffish (~> 13)
   chefstyle!
   inspec
@@ -417,4 +419,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.15.1
+   1.15.4
