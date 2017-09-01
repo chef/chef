@@ -404,7 +404,7 @@ GEM
     rainbow (2.2.2)
       rake
     rake (12.0.0)
-    rb-readline (0.5.4)
+    rb-readline (0.5.5)
     rest-client (2.0.2)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
