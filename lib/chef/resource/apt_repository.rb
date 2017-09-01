@@ -33,7 +33,7 @@ class Chef
       # whether or not to add the repository as a source repo, too
       property :deb_src, [TrueClass, FalseClass], default: false
       property :keyserver, [String, nil, false], default: "keyserver.ubuntu.com", nillable: true, coerce: proc { |x| x ? x : nil }
-      property :key, [String, Array, nil, false], default: [], coerce: proc { |x| x ? [x].flatten : nil }
+      property :key, [String, Array, nil, false], default: [], coerce: proc { |x| x ? Array(x) : nil }
       property :key_proxy, [String, nil, false], default: nil, nillable: true, coerce: proc { |x| x ? x : nil }
 
       property :cookbook, [String, nil, false], default: nil, desired_state: false, nillable: true, coerce: proc { |x| x ? x : nil }
