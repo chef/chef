@@ -1,8 +1,8 @@
-<!-- latest_release 13.4.8 -->
-## [v13.4.8](https://github.com/chef/chef/tree/v13.4.8) (2017-08-31)
+<!-- latest_release 13.4.9 -->
+## [v13.4.9](https://github.com/chef/chef/tree/v13.4.9) (2017-09-01)
 
 #### Merged Pull Requests
-- Ensure that our maintainers are all synced [#6368](https://github.com/chef/chef/pull/6368) ([thommay](https://github.com/thommay))
+- Ship chef-vault in the omnibus package [#6370](https://github.com/chef/chef/pull/6370) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
@@ -12,6 +12,7 @@
 - Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
 
 #### Merged Pull Requests
+- Ship chef-vault in the omnibus package [#6370](https://github.com/chef/chef/pull/6370) ([thommay](https://github.com/thommay)) <!-- 13.4.9 -->
 - Ensure that our maintainers are all synced [#6368](https://github.com/chef/chef/pull/6368) ([thommay](https://github.com/thommay)) <!-- 13.4.8 -->
 - bump rubygems to 2.6.13 [#6365](https://github.com/chef/chef/pull/6365) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.7 -->
 - Link to the knife docs in both places where we error on editor [#6363](https://github.com/chef/chef/pull/6363) ([tas50](https://github.com/tas50)) <!-- 13.4.6 -->
