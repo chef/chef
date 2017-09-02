@@ -109,7 +109,28 @@ describe Chef::Provider::Git do
       expect(@provider).to receive(:shell_out!)
         .with("git --version", log_tag: "git[web2.0 app]")
         .and_return(double("ShellOut result", stdout: "git version home-grown-git-99"))
-      expect { @provider.git_gem_version }.to raise_error(ArgumentError, /unparsable git version/)
+      expect(@provider.git_gem_version).to be_nil
+    end
+
+    it "determines single branch option when it fails to parse git version" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version home-grown-git-99"))
+      expect(@provider.git_has_single_branch_option?).to be false
+    end
+
+    it "determines single branch option as true when it parses git version and version is large" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 1.8.0"))
+      expect(@provider.git_has_single_branch_option?).to be true
+    end
+
+    it "determines single branch option as false when it parses git version and version is small" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 1.7.4"))
+      expect(@provider.git_has_single_branch_option?).to be false
     end
 
     it "is compatible with git in travis" do

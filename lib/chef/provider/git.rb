@@ -105,11 +105,15 @@ class Chef
         end
       end
 
+      def git_has_single_branch_option?
+        @git_has_single_branch_option ||= !git_gem_version.nil? && git_gem_version >=  Gem::Version.new("1.7.10")
+      end
+
       def git_gem_version
+        defined?(@git_gem_version) and return @git_gem_version
         output = git("--version").stdout
         match = GIT_VERSION_PATTERN.match(output)
-        raise ArgumentError, "unparsable git version number #{output}" unless match
-        @git_gem_version ||= Gem::Version.new(match[1])
+        @git_gem_version ||= match ? Gem::Version.new(match[1]) : nil
       end
 
       def existing_git_clone?
@@ -147,7 +151,7 @@ class Chef
           clone_cmd = ["clone"]
           clone_cmd << "-o #{remote}" unless remote == "origin"
           clone_cmd << "--depth #{new_resource.depth}" if new_resource.depth
-          clone_cmd << "--no-single-branch" if new_resource.depth && git_gem_version >= Gem::Version.new("1.7.10")
+          clone_cmd << "--no-single-branch" if new_resource.depth && git_has_single_branch_option?
           clone_cmd << "\"#{new_resource.repository}\""
           clone_cmd << "\"#{cwd}\""
 
