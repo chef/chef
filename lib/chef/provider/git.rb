@@ -110,7 +110,7 @@ class Chef
       end
 
       def git_gem_version
-        defined?(@git_gem_version) and return @git_gem_version
+        return @git_gem_version if defined?(@git_gem_version)
         output = git("--version").stdout
         match = GIT_VERSION_PATTERN.match(output)
         if match
