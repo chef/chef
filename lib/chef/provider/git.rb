@@ -106,7 +106,7 @@ class Chef
       end
 
       def git_has_single_branch_option?
-        @git_has_single_branch_option ||= !git_gem_version.nil? && git_gem_version >=  Gem::Version.new("1.7.10")
+        @git_has_single_branch_option ||= !git_gem_version.nil? && git_gem_version >= Gem::Version.new("1.7.10")
       end
 
       def git_gem_version
