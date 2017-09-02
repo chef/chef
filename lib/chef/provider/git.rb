@@ -113,7 +113,13 @@ class Chef
         defined?(@git_gem_version) and return @git_gem_version
         output = git("--version").stdout
         match = GIT_VERSION_PATTERN.match(output)
-        @git_gem_version ||= match ? Gem::Version.new(match[1]) : nil
+        if match
+          @git_gem_version = Gem::Version.new(match[1])
+        else
+          Chef::Log.warn "Unable to parse git version from '#{output}'"
+          @git_gem_version = nil
+        end
+        @git_gem_version
       end
 
       def existing_git_clone?
