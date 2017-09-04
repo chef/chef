@@ -1,8 +1,8 @@
-<!-- latest_release 13.4.11 -->
-## [v13.4.11](https://github.com/chef/chef/tree/v13.4.11) (2017-09-01)
+<!-- latest_release 13.4.12 -->
+## [v13.4.12](https://github.com/chef/chef/tree/v13.4.12) (2017-09-04)
 
 #### Merged Pull Requests
-- immutablize properly as we deep merge [#6362](https://github.com/chef/chef/pull/6362) ([lamont-granquist](https://github.com/lamont-granquist))
+- handle apple git [#6359](https://github.com/chef/chef/pull/6359) ([kzw](https://github.com/kzw))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
@@ -12,6 +12,7 @@
 - Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
 
 #### Merged Pull Requests
+- handle apple git [#6359](https://github.com/chef/chef/pull/6359) ([kzw](https://github.com/kzw)) <!-- 13.4.12 -->
 - immutablize properly as we deep merge [#6362](https://github.com/chef/chef/pull/6362) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.11 -->
 - Support an array of keys for apt_repository [#6372](https://github.com/chef/chef/pull/6372) ([gsreynolds](https://github.com/gsreynolds)) <!-- 13.4.10 -->
 - Ship chef-vault in the omnibus package [#6370](https://github.com/chef/chef/pull/6370) ([thommay](https://github.com/thommay)) <!-- 13.4.9 -->
