@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright 2012-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,15 +24,21 @@ class Chef
   class Node
 
     module Immutablize
-      def immutablize(value)
+      def convert_value(value)
         case value
         when Hash
           ImmutableMash.new(value, __root__, __node__, __precedence__)
         when Array
           ImmutableArray.new(value, __root__, __node__, __precedence__)
+        when ImmutableMash, ImmutableArray
+          value
         else
           value
         end
+      end
+
+      def immutablize(value)
+        convert_value(value)
       end
     end
 
@@ -110,17 +116,16 @@ class Chef
       include Immutablize
       include CommonAPI
 
-      alias :internal_set :regular_writer
-      private :internal_set
+      # this is for deep_merge usage, chef users must never touch this API
+      # @api private
+      def internal_set(key, value)
+        regular_writer(key, convert_value(value))
+      end
 
       def initialize(mash_data = {})
         mash_data.each do |key, value|
-          internal_set(key, immutablize(value))
+          internal_set(key, value)
         end
-      end
-
-      def public_method_that_only_deep_merge_should_use(key, value)
-        internal_set(key, immutablize(value))
       end
 
       alias :attribute? :has_key?
@@ -141,12 +146,6 @@ class Chef
         else
           raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
         end
-      end
-
-      # Mash uses #convert_value to mashify values on input.
-      # Since we're handling this ourselves, override it to be a no-op
-      def convert_value(value)
-        value
       end
 
       # NOTE: #default and #default= are likely to be pretty confusing. For a
