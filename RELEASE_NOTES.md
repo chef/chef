@@ -2,6 +2,70 @@ _This file holds "in progress" release notes for the current release under devel
 
 # Unreleased:
 
+## Windows `remote_file` resource with alternate credentials
+
+The `remote_file` resource now supports the use of credentials on Windows when accessing a remote UNC path on Windows such as `\\myserver\myshare\mydirectory\myfile.txt`. This
+allows access to the file at that path location even if the Chef client process identity does not have permission to access the file. The new properties `remote_user`, `remote_domain`, and `remote_password` may be used to specify credentials with access to the remote file so that it may be read.
+
+**Note**: This feature is mainly used for accessing files between two nodes in different domains and having different user accounts.
+In case the two nodes are in same domain, `remote_file` resource does not need `remote_user` and `remote_password` specified because the user has the same access on both systems through the domain.
+
+### Properties
+
+The following properties are new for the `remote_file` resource:
+
+*   `remote_user`</br>
+    **Ruby types:** String</br>
+    *Windows only:* The user name of a user with access to the remote file specified by the `source` property. Default value: `nil`. The user name may optionally be specifed with a domain, i.e. `domain\user` or `user@my.dns.domain.com` via Universal Principal Name (UPN) format. It can also be specified without a domain simply as `user` if the domain is instead specified using the `remote_domain` attribute. Note that this property is ignored if `source` is not a UNC path. If this property is specified, the `remote_password` property **must** be specified.
+
+*   `remote_password`</br>
+    **Ruby types** String</br>
+    *Windows only:* The password of the user specified by the `remote_user` property. Default value: `nil`. This property is mandatory if `remote_user` is specified and may only be specified if `remote_user` is specified. The `sensitive` property for this resource will automatically be set to `true` if `remote_password` is specified.
+
+*   `remote_domain`</br>
+    **Ruby types** String</br>
+    *Windows only:* The domain of the user user specified by the `remote_user` property. Default value: `nil`. If not specified, the user and password properties specified by the `remote_user` and `remote_password` properties will be used to authenticate that user against the domain in which the system hosting the UNC path specified via `source` is joined, or if that system is not joined to a domain it will authenticate the user as a local account on that system. An alternative way to specify the domain is to leave this property unspecified and specify the domain as part of the `remote_user` property.
+
+### Examples
+
+Accessing file from a (different) domain account
+
+```ruby
+remote_file "E://domain_test.txt"  do
+  source  "\\\\myserver\\myshare\\mydirectory\\myfile.txt"
+  remote_domain "domain"
+  remote_user "username"
+  remote_password "password"
+end
+```
+OR
+```ruby
+remote_file "E://domain_test.txt"  do
+  source  "\\\\myserver\\myshare\\mydirectory\\myfile.txt"
+  remote_user "domain\\username"
+  remote_password "password"
+end
+```
+
+Accessing file using a local account on the remote machine
+
+```ruby
+remote_file "E://domain_test.txt"  do
+  source  "\\\\myserver\\myshare\\mydirectory\\myfile.txt"
+  remote_domain "."
+  remote_user "username"
+  remote_password "password"
+end
+```
+OR
+```ruby
+remote_file "E://domain_test.txt"  do
+  source  "\\\\myserver\\myshare\\mydirectory\\myfile.txt"
+  remote_user ".\\username"
+  remote_password "password"
+end
+```
+
 ## windows_path resource
 
 `windows_path` resource has been moved to core chef from windows cookbook. Use the `windows_path` resource to manage the path environment variable on Microsoft Windows.
