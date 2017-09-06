@@ -1,8 +1,8 @@
-<!-- latest_release 13.4.14 -->
-## [v13.4.14](https://github.com/chef/chef/tree/v13.4.14) (2017-09-06)
+<!-- latest_release 13.4.15 -->
+## [v13.4.15](https://github.com/chef/chef/tree/v13.4.15) (2017-09-06)
 
 #### Merged Pull Requests
-- Launchd should not load launchagents as root. [#6353](https://github.com/chef/chef/pull/6353) ([mikedodge04](https://github.com/mikedodge04))
+- update release notes for 13.4 [#6381](https://github.com/chef/chef/pull/6381) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
@@ -12,6 +12,7 @@
 - Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
 
 #### Merged Pull Requests
+- update release notes for 13.4 [#6381](https://github.com/chef/chef/pull/6381) ([thommay](https://github.com/thommay)) <!-- 13.4.15 -->
 - Launchd should not load launchagents as root. [#6353](https://github.com/chef/chef/pull/6353) ([mikedodge04](https://github.com/mikedodge04)) <!-- 13.4.14 -->
 - Alternate user local logon authentication for remote_file resource [#5832](https://github.com/chef/chef/pull/5832) ([NimishaS](https://github.com/NimishaS)) <!-- 13.4.13 -->
 - handle apple git [#6359](https://github.com/chef/chef/pull/6359) ([kzw](https://github.com/kzw)) <!-- 13.4.12 -->
