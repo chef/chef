@@ -711,11 +711,11 @@ describe "Chef::Provider::Package - Multi" do
       expect { provider.run_action(:install) }.not_to raise_error
     end
 
-    it "raises an exception if an explicit version is asked for, an old version is installed, but no candidate" do
+    it "does not raise an exception if an explicit version is asked for, an old version is installed, but no candidate" do
       new_resource.version ["1.0", "6.2"]
       current_resource.version(["1.0", "6.1"])
       provider.candidate_version = ["1.0", nil]
-      expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+      expect { provider.run_action(:install) }.not_to raise_error
     end
 
     it "does not raise an exception if an explicit version is asked for, and is installed, but no candidate" do
@@ -725,11 +725,11 @@ describe "Chef::Provider::Package - Multi" do
       expect { provider.run_action(:install) }.not_to raise_error
     end
 
-    it "raise an exception if an explicit version is asked for, and is not installed, and no candidate" do
+    it "does not raise an exception if an explicit version is asked for, and is not installed, and no candidate" do
       new_resource.version ["1.0", "6.2"]
       current_resource.version(["1.0", nil])
       provider.candidate_version = ["1.0", nil]
-      expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+      expect { provider.run_action(:install) }.not_to raise_error
     end
 
     it "does not raise an exception if an explicit version is asked for, and is not installed, and there is a candidate" do
