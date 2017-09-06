@@ -1,6 +1,19 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
-# Unreleased:
+# Chef Client Release Notes 13.4:
+
+## Security release of RubyGems
+
+Chef Client 13.4 includes RubyGems 2.6.13 to fix the following CVEs:
+  * CVE-2017-0899
+  * CVE-2017-0900
+  * CVE-2017-0901
+  * CVE-2017-0902
+
+## Chef Vault is now included
+
+Chef Client 13.4 now includes the `chef-vault` gem, making it easier for
+users of chef-vault to use their encrypted items.
 
 ## Windows `remote_file` resource with alternate credentials
 
