@@ -1,3 +1,5 @@
+# Documentation available at http://http://expeditor-docs.es.chef.io/
+
 # The name of the product keys for this product (from mixlib-install)
 product_key:
   - chef
@@ -35,54 +37,29 @@ github:
 
 # These actions are taken, in order they are specified, anytime a Pull Request is merged.
 merge_actions:
-  built_in:bump_version:
-    ignore_labels: "Version: Skip Bump"
-  bash:.expeditor/update_version.sh:
-    only_if: built_in:bump_version
-  built_in:update_changelog:
-    ignore_labels: "Meta: Exclude From Changelog"
-  built_in:trigger_omnibus_release_build:
-    ignore_labels: "Omnibus: Skip Build"
-    only_if: built_in:bump_version
+  - built_in:bump_version:
+      ignore_labels:
+        - "Version: Skip Bump"
+  - bash:.expeditor/update_version.sh:
+      only_if: built_in:bump_version
+  - built_in:update_changelog:
+      ignore_labels:
+        - "Meta: Exclude From Changelog"
+  - built_in:trigger_omnibus_release_build:
+      ignore_labels:
+        - "Omnibus: Skip Build"
+      only_if: built_in:bump_version
 
 # These actions are taken, in the order specified, when an Omnibus artifact is promoted
 # within Chef's internal artifact storage system.
 artifact_actions:
   promoted_to_unstable:
-    built_in:build_docker_image:
+    - built_in:build_docker_image
   promoted_to_current:
-    built_in:tag_docker_image:
+    - built_in:tag_docker_image
   promoted_to_stable:
-    built_in:tag_docker_image:
-    built_in:publish_rubygems:
-    built_in:rollover_changelog:
-    bash:.expeditor/update_dockerfile.sh:
-
-
-###############################################################################
-# Notes on the tags inside CHANGELOG.md
-###############################################################################
-# latest_release
-#   The content inside this block contains the most recent Pull Request to be
-#   merged into the repository. When the `built_in:update_changelog` merge_action
-#   is triggered, the content of this block is updated to reflect the most recent
-#   Pull Request merged.
-#
-# release_rollup
-#   This block contains all the Pull Requests merged since the most recent
-#   Stable release. When the `built_in:update_changelog` merge_action is triggered,
-#   the content inside this block is updated to include the most recent Pull Request
-#   merged. When the `built_in:rollover_changelog` artifact_action is trggered,
-#   the line items (each `-` line) are evaluated based on the version in the tags
-#   at the end of the line (e.g.  `<!-- 13.0.0 -->`). If the version is more recent
-#   than the version that was just promoted (e.g. `> STABLE`), it is left in the
-#   release_rollup section. Otherwise, it is moved into the `latest_stable_release`
-#   section.
-#
-# latest_stable_release
-#   This block contains a list of all the changes that were released in the latest
-#   stable version. When the `built_in:rollover_changelog` artifact_action is triggerd,
-#   the content inside this block is moved underneath it and the block is updated with
-#   all of the line item chanages from the `release_rollup` block that were included in
-#   the just released stable build (e.g. `> STABLE-1, <= STABLE`)
-#
+    - built_in:tag_docker_image
+    - built_in:publish_rubygems
+    - built_in:rollover_changelog
+    - bash:.expeditor/update_dockerfile.sh
+    - built_in:notify_chefio_slack_channels
