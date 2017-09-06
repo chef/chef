@@ -1,8 +1,8 @@
-<!-- latest_release 13.4.12 -->
-## [v13.4.12](https://github.com/chef/chef/tree/v13.4.12) (2017-09-04)
+<!-- latest_release 13.4.13 -->
+## [v13.4.13](https://github.com/chef/chef/tree/v13.4.13) (2017-09-06)
 
 #### Merged Pull Requests
-- handle apple git [#6359](https://github.com/chef/chef/pull/6359) ([kzw](https://github.com/kzw))
+- Alternate user local logon authentication for remote_file resource [#5832](https://github.com/chef/chef/pull/5832) ([NimishaS](https://github.com/NimishaS))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
@@ -12,6 +12,7 @@
 - Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
 
 #### Merged Pull Requests
+- Alternate user local logon authentication for remote_file resource [#5832](https://github.com/chef/chef/pull/5832) ([NimishaS](https://github.com/NimishaS)) <!-- 13.4.13 -->
 - handle apple git [#6359](https://github.com/chef/chef/pull/6359) ([kzw](https://github.com/kzw)) <!-- 13.4.12 -->
 - immutablize properly as we deep merge [#6362](https://github.com/chef/chef/pull/6362) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.11 -->
 - Support an array of keys for apt_repository [#6372](https://github.com/chef/chef/pull/6372) ([gsreynolds](https://github.com/gsreynolds)) <!-- 13.4.10 -->
