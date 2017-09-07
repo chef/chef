@@ -44,6 +44,7 @@ class Chef
         @network = nil
         @bootproto = nil
         @onparent = nil
+        @ethtool_opts = nil
       end
 
       def target(arg = nil)
@@ -137,6 +138,14 @@ class Chef
       def onparent(arg = nil)
         set_or_return(
           :onparent,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def ethtool_opts(arg = nil)
+        set_or_return(
+          :ethtool_opts,
           arg,
           :kind_of => String
         )
