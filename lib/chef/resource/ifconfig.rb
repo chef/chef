@@ -45,6 +45,9 @@ class Chef
         @bootproto = nil
         @onparent = nil
         @ethtool_opts = nil
+        @bonding_opts = nil
+        @master = nil
+        @slave = nil
       end
 
       def target(arg = nil)
@@ -146,6 +149,30 @@ class Chef
       def ethtool_opts(arg = nil)
         set_or_return(
           :ethtool_opts,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def bonding_opts(arg = nil)
+        set_or_return(
+          :bonding_opts,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def master(arg = nil)
+        set_or_return(
+          :master,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def slave(arg = nil)
+        set_or_return(
+          :slave,
           arg,
           :kind_of => String
         )
