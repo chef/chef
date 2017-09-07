@@ -51,6 +51,7 @@ class Chef
         current_resource.months(task_hash[:months]) if task_hash[:months]
         set_current_idle_time(task_hash[:idle_time]) if task_hash[:idle_time]
         current_resource.random_delay(task_hash[:random_delay]) if task_hash[:random_delay]
+        # schtask sets execution_time_limit as PT72H by default
         current_resource.execution_time_limit(task_hash[:execution_time_limit] || "PT72H")
         current_resource.status = :running if task_hash[:Status] == "Running"
         current_resource.enabled = true if task_hash[:ScheduledTaskState] == "Enabled"
@@ -218,32 +219,58 @@ class Chef
       end
 
       def start_day_updated?
-        current_day = to_date_time_obj(current_resource.start_day)
-        new_day = to_date_time_obj(new_resource.start_day)
+        current_day = DateTime.strptime(current_resource.start_day, convert_system_date_format_to_ruby_date_format)
+        new_day = DateTime.parse(new_resource.start_day)
         current_day != new_day
       end
 
       def start_time_updated?
-        time = to_date_time_obj(current_resource.start_time).strftime("%H:%M")
+        time = DateTime.parse(current_resource.start_time).strftime("%H:%M")
         time != new_resource.start_time
       end
 
       def to_date_time_obj(date_in_string)
-        return DateTime.parse(date_in_string)
-      rescue
-        require "american_date"
-        return DateTime.parse(date_in_string)
+        date_in_string = DateTime.strptime(strptime, convert_system_date_format_to_ruby_date_format)
+        DateTime.parse(date_in_string)
       end
 
       def convert_user_date_to_system_date(date_in_string)
-        Chef::Log.debug "Converting '#{date_in_string}' to system date format"
-        date_in_string = to_date_time_obj(date_in_string).strftime("%Y-%m-%d")
+        DateTime.parse(date_in_string).strftime(convert_system_date_format_to_ruby_long_date)
+      end
+
+      def convert_system_date_format_to_ruby_long_date
+        date_format = get_system_short_date_format.dup
+        date_format.sub!("MMM", "%m")
+        common_date_format_conversion(date_format)
+        date_format.sub!("yy", "%Y")
+        date_format
+      end
+
+      def convert_system_date_format_to_ruby_date_format
+        date_format = get_system_short_date_format.dup
+        date_format.sub!("MMM", "%b")
+        common_date_format_conversion(date_format)
+        date_format.sub!("yy", "%y")
+        date_format
+      end
+
+      def common_date_format_conversion(date_format)
+        date_format.sub!("dd", "d")
+        date_format.sub!("d", "%d")
+        date_format.sub!("MM", "%m")
+        date_format.sub!("M", "%m")
+        date_format.sub!("yyyy", "%Y")
+      end
+
+      def get_system_short_date_format
+        return @system_short_date_format if @system_short_date_format
+        Chef::Log.debug "Finding system date format"
         task_script = <<-EOH
           [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
-          ([datetime]"#{date_in_string}").ToString((((((([Globalization.Cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern -replace "dd", "d") -replace "d", "dd") -replace "MM", "M")-replace "M","MM") -replace "yyyy","yy") -replace "y", "yy"))
+          [Globalization.Cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern
         EOH
-        # Convert start_date into OS date format if OS date format in M-d-yy then it will give in MM-dd-yyyy
-        powershell_out(task_script).stdout.force_encoding("UTF-8").gsub(/[\s+\uFEFF]/, "")
+        @system_short_date_format = powershell_out(task_script).stdout.force_encoding("UTF-8").gsub(/[\s+\uFEFF]/, "")
+        @system_short_date_format
       end
 
       def update_task_xml(options = [])

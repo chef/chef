@@ -102,7 +102,6 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.4.0)
-    american_date (1.1.1)
     appbundler (0.10.0)
       mixlib-cli (~> 1.4)
     ast (2.3.0)
@@ -394,7 +393,6 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  american_date
   appbundler
   bundler-audit!
   chef!
@@ -420,5 +418,5 @@ DEPENDENCIES
   webmock
   yard
 
+BUNDLED WITH
    1.15.4
-
