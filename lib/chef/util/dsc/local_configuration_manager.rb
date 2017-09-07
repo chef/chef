@@ -47,10 +47,10 @@ class Chef::Util::DSC
 
     def run_configuration_cmdlet(configuration_document, apply_configuration, shellout_flags)
       Chef::Log.debug("DSC: Calling DSC Local Config Manager to #{apply_configuration ? "set" : "test"} configuration document.")
-      test_only_parameters = ! apply_configuration ? "-whatif; if (! $?) { exit 1 }" : ""
+      test_parameters = ! apply_configuration ? "-whatif; if (! $?) { exit 1 }" : ""
 
       start_operation_timing
-      command_code = lcm_command_code(@configuration_path, test_only_parameters)
+      command_code = lcm_command_code(@configuration_path, test_parameters)
       status = nil
 
       begin
@@ -72,10 +72,20 @@ class Chef::Util::DSC
       status
     end
 
-    def lcm_command_code(configuration_path, test_only_parameters)
-      <<-EOH
-$ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -erroraction 'stop' -force #{test_only_parameters}
+    def lcm_command_code(configuration_path, test_parameters)
+      if !test_parameters.strip.empty? && is_ps_version_gte_5?
+        <<-EOH
+$ProgressPreference = 'SilentlyContinue';Test-DscConfiguration -path #{@configuration_path}
 EOH
+      else
+        <<-EOH
+$ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -erroraction 'stop' -force #{test_parameters}
+EOH
+      end
+    end
+
+    def is_ps_version_gte_5?
+      Chef::Platform.supported_powershell_version?(@node, 5)
     end
 
     def log_what_if_exception(what_if_exception_output)
