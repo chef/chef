@@ -174,15 +174,7 @@ class Chef
             conf[dev] = "" if conf[dev].nil?
             case @action
             when :add
-              if resource.target == "default"
-                network_file_name = "/etc/sysconfig/network"
-                network_file = Chef::Util::FileEdit.new network_file_name
-                network_file.search_file_replace_line /^GATEWAY=/, "GATEWAY=#{resource.gateway}"
-                network_file.insert_line_if_no_match /^GATEWAY=/, "GATEWAY=#{resource.gateway}"
-                network_file.write_file
-              else
-                conf[dev] << config_file_contents(:add, target: resource.target, netmask: resource.netmask, gateway: resource.gateway) if resource.action == [:add]
-              end
+              conf[dev] << config_file_contents(:add, target: resource.target, netmask: resource.netmask, gateway: resource.gateway) if resource.action == [:add]
             when :delete
               # need to do this for the case when the last route on an int
               # is removed
@@ -190,12 +182,29 @@ class Chef
             end
           end
           conf.each do |k, v|
-            network_file_name = "/etc/sysconfig/network-scripts/route-#{k}"
-            converge_by("write route route.#{k}\n#{conf[k]} to #{network_file_name}") do
-              network_file = ::File.new(network_file_name, "w")
-              network_file.puts(conf[k])
-              Chef::Log.debug("#{new_resource} writing route.#{k}\n#{conf[k]}")
-              network_file.close
+            if new_resource.target == "default"
+              network_file_name = "/etc/sysconfig/network"
+              converge_by("write route default route to #{network_file_name}") do
+                Chef::Log.debug("#{new_resource} writing default route #{new_resource.gateway} to #{network_file_name}")
+                if ::File.exists?(network_file_name)
+                  network_file = ::Chef::Util::FileEdit.new(network_file_name)
+                  network_file.search_file_replace_line /^GATEWAY=/, "GATEWAY=#{new_resource.gateway}"
+                  network_file.insert_line_if_no_match /^GATEWAY=/, "GATEWAY=#{new_resource.gateway}"
+                  network_file.write_file
+                else
+                  network_file = ::File.new(network_file_name, "w")
+                  network_file.puts("GATEWAY=#{new_resource.gateway}")
+                  network_file.close
+                end
+              end
+            else
+              network_file_name = "/etc/sysconfig/network-scripts/route-#{k}"
+              converge_by("write route route.#{k}\n#{conf[k]} to #{network_file_name}") do
+                network_file = ::File.new(network_file_name, "w")
+                network_file.puts(conf[k])
+                Chef::Log.debug("#{new_resource} writing route.#{k}\n#{conf[k]}")
+                network_file.close
+              end
             end
           end
         end
