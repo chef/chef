@@ -56,8 +56,8 @@ describe Chef::Provider::Ifconfig::Redhat do
         expect(arg).to match(/^\s*DEVICE=eth0\s*$/)
         expect(arg).to match(/^\s*IPADDR=10\.0\.0\.1\s*$/)
         expect(arg).to match(/^\s*NETMASK=255\.255\.254\.0\s*$/)
-        expect(arg).to match(/^\s*ETHTOOL_OPTS=-A eth0 autoneg off\s*$/)
-        expect(arg).to match(/^\s*BONDING_OPTS=mode=active-backup miimon=100\s*$/)
+        expect(arg).to match(/^\s*ETHTOOL_OPTS="-A eth0 autoneg off"\s*$/)
+        expect(arg).to match(/^\s*BONDING_OPTS="mode=active-backup miimon=100"\s*$/)
         expect(arg).to match(/^\s*MASTER=bond0\s*$/)
         expect(arg).to match(/^\s*SLAVE=yes\s*$/)
       end
