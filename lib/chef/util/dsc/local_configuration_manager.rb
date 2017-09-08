@@ -47,15 +47,13 @@ class Chef::Util::DSC
 
     def run_configuration_cmdlet(configuration_document, apply_configuration, shellout_flags)
       Chef::Log.debug("DSC: Calling DSC Local Config Manager to #{apply_configuration ? "set" : "test"} configuration document.")
-      test_parameters = ! apply_configuration ? "-whatif; if (! $?) { exit 1 }" : ""
 
       start_operation_timing
-      command_code = lcm_command_code(@configuration_path, test_parameters)
       status = nil
 
       begin
         save_configuration_document(configuration_document)
-        cmdlet = ::Chef::Util::Powershell::Cmdlet.new(@node, "#{command_code}")
+        cmdlet = ::Chef::Util::Powershell::Cmdlet.new(@node, lcm_command(apply_configuration))
         if apply_configuration
           status = cmdlet.run!({}, shellout_flags)
         else
@@ -72,19 +70,22 @@ class Chef::Util::DSC
       status
     end
 
-    def lcm_command_code(configuration_path, test_parameters)
-      if !test_parameters.strip.empty? && is_ps_version_gte_5?
-        <<-EOH
-$ProgressPreference = 'SilentlyContinue';Test-DscConfiguration -path #{@configuration_path}
-EOH
+    def lcm_command(apply_configuration)
+      common_command_prefix = "$ProgressPreference = 'SilentlyContinue';"
+      ps4_base_command = "#{common_command_prefix} Start-DscConfiguration -path #{@configuration_path} -wait -erroraction 'stop' -force"
+
+      if apply_configuration
+        ps4_base_command
       else
-        <<-EOH
-$ProgressPreference = 'SilentlyContinue';start-dscconfiguration -path #{@configuration_path} -wait -erroraction 'stop' -force #{test_parameters}
-EOH
+        if ps_version_gte_5?
+          "#{common_command_prefix} Test-DscConfiguration -path #{@configuration_path}"
+        else
+          ps4_base_command + " -whatif; if (! $?) { exit 1 }"
+        end
       end
     end
 
-    def is_ps_version_gte_5?
+    def ps_version_gte_5?
       Chef::Platform.supported_powershell_version?(@node, 5)
     end
 
