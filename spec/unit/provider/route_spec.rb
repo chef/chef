@@ -29,9 +29,14 @@ describe Chef::Provider::Route do
     @new_resource.gateway "10.0.0.9"
     @current_resource = Chef::Resource::Route.new("10.0.0.10")
     @current_resource.gateway "10.0.0.9"
+    @default_resource = Chef::Resource::Route.new("default")
+    @default_resource.gateway "10.0.0.9"
 
     @provider = Chef::Provider::Route.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
+
+    @default_provider = Chef::Provider::Route.new(@default_resource, @run_context)
+    @default_provider.current_resource = @default_resource
   end
 
   describe Chef::Provider::Route, "hex2ip" do
@@ -160,6 +165,11 @@ describe Chef::Provider::Route do
     it "should not include ' via $gateway ' when a gateway is not specified" do
       @new_resource.gateway(nil)
       expect(@provider.generate_command(:add).join(" ")).not_to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}/)
+    end
+
+    it "should use the gatway when target is default" do
+      @default_resource.gateway("10.0.0.10")
+      expect(@default_provider.generate_command(:add).join(" ")).to match(/10.0.0.10/)
     end
   end
 
