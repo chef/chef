@@ -1,9 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.4.16 -->
-## [v13.4.16](https://github.com/chef/chef/tree/v13.4.16) (2017-09-08)
+<!-- latest_release 13.4.17 -->
+## [v13.4.17](https://github.com/chef/chef/tree/v13.4.17) (2017-09-08)
 
 #### Merged Pull Requests
-- Add support for specifying ETHTOOL_OPTS [#6384](https://github.com/chef/chef/pull/6384) ([tomdoherty](https://github.com/tomdoherty))
+- Ensure we quote ETHTOOL/BONDING_OPTS [#6385](https://github.com/chef/chef/pull/6385) ([tomdoherty](https://github.com/tomdoherty))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
@@ -13,6 +13,7 @@
 - Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
 
 #### Merged Pull Requests
+- Ensure we quote ETHTOOL/BONDING_OPTS [#6385](https://github.com/chef/chef/pull/6385) ([tomdoherty](https://github.com/tomdoherty)) <!-- 13.4.17 -->
 - Add support for specifying ETHTOOL_OPTS [#6384](https://github.com/chef/chef/pull/6384) ([tomdoherty](https://github.com/tomdoherty)) <!-- 13.4.16 -->
 - update release notes for 13.4 [#6381](https://github.com/chef/chef/pull/6381) ([thommay](https://github.com/thommay)) <!-- 13.4.15 -->
 - Launchd should not load launchagents as root. [#6353](https://github.com/chef/chef/pull/6353) ([mikedodge04](https://github.com/mikedodge04)) <!-- 13.4.14 -->
