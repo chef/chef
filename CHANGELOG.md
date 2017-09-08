@@ -11,34 +11,24 @@
 
 #### Bug Fixes
 - Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
+- Launchd should not load launchagents as root. [#6353](https://github.com/chef/chef/pull/6353) ([mikedodge04](https://github.com/mikedodge04)) <!-- 13.4.14 -->
+- Handle apple's git in the git resource [#6359](https://github.com/chef/chef/pull/6359) ([kzw](https://github.com/kzw)) <!-- 13.4.12 -->
+- Auto import gpg keys in zypper_repository [#6348](https://github.com/chef/chef/pull/6348) ([tas50](https://github.com/tas50)) <!-- 13.3.51 -->
+- Ignore validation errors in Resource#to_text [#6331](https://github.com/chef/chef/pull/6331) ([coderanger](https://github.com/coderanger)) <!-- 13.3.46 -->
 
 #### Merged Pull Requests
-- Ensure we quote ETHTOOL/BONDING_OPTS [#6385](https://github.com/chef/chef/pull/6385) ([tomdoherty](https://github.com/tomdoherty)) <!-- 13.4.17 -->
-- Add support for specifying ETHTOOL_OPTS [#6384](https://github.com/chef/chef/pull/6384) ([tomdoherty](https://github.com/tomdoherty)) <!-- 13.4.16 -->
-- update release notes for 13.4 [#6381](https://github.com/chef/chef/pull/6381) ([thommay](https://github.com/thommay)) <!-- 13.4.15 -->
-- Launchd should not load launchagents as root. [#6353](https://github.com/chef/chef/pull/6353) ([mikedodge04](https://github.com/mikedodge04)) <!-- 13.4.14 -->
+- Add support for specifying ETHTOOL_OPTS in the ifconfig resource [#6384](https://github.com/chef/chef/pull/6384) ([tomdoherty](https://github.com/tomdoherty)) <!-- 13.4.16 -->
 - Alternate user local logon authentication for remote_file resource [#5832](https://github.com/chef/chef/pull/5832) ([NimishaS](https://github.com/NimishaS)) <!-- 13.4.13 -->
-- handle apple git [#6359](https://github.com/chef/chef/pull/6359) ([kzw](https://github.com/kzw)) <!-- 13.4.12 -->
-- immutablize properly as we deep merge [#6362](https://github.com/chef/chef/pull/6362) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.11 -->
+- Immutablize properly as we deep merge [#6362](https://github.com/chef/chef/pull/6362) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.11 -->
 - Support an array of keys for apt_repository [#6372](https://github.com/chef/chef/pull/6372) ([gsreynolds](https://github.com/gsreynolds)) <!-- 13.4.10 -->
 - Ship chef-vault in the omnibus package [#6370](https://github.com/chef/chef/pull/6370) ([thommay](https://github.com/thommay)) <!-- 13.4.9 -->
-- Ensure that our maintainers are all synced [#6368](https://github.com/chef/chef/pull/6368) ([thommay](https://github.com/thommay)) <!-- 13.4.8 -->
-- bump rubygems to 2.6.13 [#6365](https://github.com/chef/chef/pull/6365) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.7 -->
+- Bump rubygems to 2.6.13 [#6365](https://github.com/chef/chef/pull/6365) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.7 -->
 - Link to the knife docs in both places where we error on editor [#6363](https://github.com/chef/chef/pull/6363) ([tas50](https://github.com/tas50)) <!-- 13.4.6 -->
 - node attributes: remove useless dup in merge_all [#6356](https://github.com/chef/chef/pull/6356) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.5 -->
-- speed up immutabilization [#6355](https://github.com/chef/chef/pull/6355) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.4 -->
-- [MSYS-645] Updated release_notes for windows_path [#6344](https://github.com/chef/chef/pull/6344) ([NimishaS](https://github.com/NimishaS)) <!-- 13.4.3 -->
+- Speed up immutabilization [#6355](https://github.com/chef/chef/pull/6355) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.4 -->
 - dnf_provider: be more specific when we provide `package` [#6351](https://github.com/chef/chef/pull/6351) ([jaymzh](https://github.com/jaymzh)) <!-- 13.4.2 -->
-- Bumps Bundler version to 1.15.4 [#6349](https://github.com/chef/chef/pull/6349) ([jakauppila](https://github.com/jakauppila)) <!-- 13.4.1 -->
-- add codeowners for reviews [#6345](https://github.com/chef/chef/pull/6345) ([thommay](https://github.com/thommay)) <!-- 13.3.52 -->
-- Auto import gpg keys in zypper_repository [#6348](https://github.com/chef/chef/pull/6348) ([tas50](https://github.com/tas50)) <!-- 13.3.51 -->
-- Add v12.21.4 to master&#39;s changelog [#6339](https://github.com/chef/chef/pull/6339) ([tas50](https://github.com/tas50)) <!-- 13.3.50 -->
-- Add Chef 13.0.113 and 13.0.118 to the changelog [#6334](https://github.com/chef/chef/pull/6334) ([tas50](https://github.com/tas50)) <!-- 13.3.49 -->
+- Bump Bundler version to 1.15.4 [#6349](https://github.com/chef/chef/pull/6349) ([jakauppila](https://github.com/jakauppila)) <!-- 13.4.1 -->
 - Add windows_path resource from the Windows cookbook [#6295](https://github.com/chef/chef/pull/6295) ([NimishaS](https://github.com/NimishaS)) <!-- 13.3.48 -->
-- Add more items to the 13.3 release notes [#6325](https://github.com/chef/chef/pull/6325) ([tas50](https://github.com/tas50)) <!-- 13.3.43 -->
-- Fix bad examples in the release notes [#6326](https://github.com/chef/chef/pull/6326) ([tas50](https://github.com/tas50)) <!-- 13.3.44 -->
-- Catch Chef 12 changelog up to current 12 release [#6327](https://github.com/chef/chef/pull/6327) ([tas50](https://github.com/tas50)) <!-- 13.3.45 -->
-- Ignore validation errors in Resource#to_text [#6331](https://github.com/chef/chef/pull/6331) ([coderanger](https://github.com/coderanger)) <!-- 13.3.46 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
@@ -55,7 +45,6 @@
 - Bump omnibus-software version [#6310](https://github.com/chef/chef/pull/6310) ([thommay](https://github.com/thommay))
 - throw readable errors if multiple dsc resources are found [#6307](https://github.com/chef/chef/pull/6307) ([Happycoil](https://github.com/Happycoil))
 - Add zypper_repository resource [#5948](https://github.com/chef/chef/pull/5948) ([tas50](https://github.com/tas50))
-- Add release notes for 13.3 [#6317](https://github.com/chef/chef/pull/6317) ([tas50](https://github.com/tas50))
 - Pull in Ohai 13.3 [#6319](https://github.com/chef/chef/pull/6319) ([tas50](https://github.com/tas50))
 - Maintain compat with old zypper_repo resource used in cookbooks [#6318](https://github.com/chef/chef/pull/6318) ([tas50](https://github.com/tas50))
 - README improvement for Chef beginner. [#6297](https://github.com/chef/chef/pull/6297) ([takaya-fuj19](https://github.com/takaya-fuj19))
