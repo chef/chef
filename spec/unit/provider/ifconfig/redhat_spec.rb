@@ -31,6 +31,10 @@ describe Chef::Provider::Ifconfig::Redhat do
     @new_resource.metric "1"
     @new_resource.mtu "1500"
     @new_resource.device "eth0"
+    @new_resource.ethtool_opts "-A eth0 autoneg off"
+    @new_resource.bonding_opts "mode=active-backup miimon=100"
+    @new_resource.master "bond0"
+    @new_resource.slave "yes"
     @provider = Chef::Provider::Ifconfig::Redhat.new(@new_resource, @run_context)
     @current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
 
@@ -52,6 +56,10 @@ describe Chef::Provider::Ifconfig::Redhat do
         expect(arg).to match(/^\s*DEVICE=eth0\s*$/)
         expect(arg).to match(/^\s*IPADDR=10\.0\.0\.1\s*$/)
         expect(arg).to match(/^\s*NETMASK=255\.255\.254\.0\s*$/)
+        expect(arg).to match(/^\s*ETHTOOL_OPTS=-A eth0 autoneg off\s*$/)
+        expect(arg).to match(/^\s*BONDING_OPTS=mode=active-backup miimon=100\s*$/)
+        expect(arg).to match(/^\s*MASTER=bond0\s*$/)
+        expect(arg).to match(/^\s*SLAVE=yes\s*$/)
       end
       expect(@config).to receive(:run_action).with(:create)
       expect(@config).to receive(:updated?).and_return(true)
