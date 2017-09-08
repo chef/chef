@@ -97,10 +97,12 @@ describe Chef::Provider::Package::Openbsd do
         end
 
         context "if a version is specified" do
-          it "should use the flavor from the version" do
-            expect(provider).to receive(:shell_out!).with("pkg_info", "-I", "#{name}-#{version}-#{flavor_b}", anything()).and_return(
-              instance_double("shellout", :stdout => "#{name}-#{version}-#{flavor_a}\n"))
 
+          let(:package_name) { "ihavetoes" }
+
+          it "should use the flavor from the version" do
+            expect(provider).to receive(:shell_out!).with("pkg_info", "-e", "#{package_name}->0", anything()).and_return(
+              instance_double("shellout", :stdout => "#{name}-#{version}-#{flavor_a}\n"))
             new_resource.version("#{version}-#{flavor_b}")
             expect(provider).to receive(:shell_out!).with(
               "pkg_add", "-r", "#{name}-#{version}-#{flavor_b}",

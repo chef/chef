@@ -681,7 +681,7 @@ describe Chef::Provider::Package::Rubygems do
 
           it "installs the gem with rubygems.org as an added source" do
             Chef::Config[:rubygems_url] = "https://mirror1"
-            expect(provider.gem_env).to receive(:candidate_version_from_remote).with(gem_dep, Chef::Config[:rubygems_url]).and_return(version)
+            allow(provider.gem_env).to receive(:candidate_version_from_remote).with(gem_dep, Chef::Config[:rubygems_url]).and_return(version)
             expected = "#{gem_binary} install rspec-core -q --no-rdoc --no-ri -v \"#{target_version}\" --source=https://mirror1"
             expect(provider).to receive(:shell_out!).with(expected, env: nil, timeout: 900)
             provider.run_action(:install)
