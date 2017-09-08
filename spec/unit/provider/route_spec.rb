@@ -226,9 +226,19 @@ describe Chef::Provider::Route do
 
         route_file = StringIO.new
         expect(File).to receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
-        # Chef::Log.should_receive(:debug).with("route[10.0.0.10] writing route.eth0\n10.0.0.10 via 10.0.0.9\n")
         @run_context.resource_collection << @new_resource
         @provider.generate_config
+      end
+
+    end
+    %w{ centos redhat fedora }.each do |platform|
+      it "should write a default route file on #{platform} platform" do
+        @node.automatic_attrs[:platform] = platform
+
+        route_file = StringIO.new
+        expect(File).to receive(:new).with("/etc/sysconfig/network", "w").and_return(route_file)
+        @run_context.resource_collection << @default_resource
+        @default_provider.generate_config
       end
     end
 
