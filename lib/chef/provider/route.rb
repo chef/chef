@@ -86,12 +86,15 @@ class Chef
         self.is_running = false
 
         # cidr or quad dot mask
-        new_ip = if new_resource.netmask
+        new_ip = if new_resource.target == "default"
+                   nil
+                 elsif new_resource.netmask
                    IPAddr.new("#{new_resource.target}/#{new_resource.netmask}")
                  else
                    IPAddr.new(new_resource.target)
                  end
 
+        return unless new_ip
         # For linux, we use /proc/net/route file to read proc table info
         return if node[:os] != "linux"
 
@@ -172,7 +175,15 @@ class Chef
             conf[dev] = "" if conf[dev].nil?
             case @action
             when :add
-              conf[dev] << config_file_contents(:add, target: resource.target, netmask: resource.netmask, gateway: resource.gateway) if resource.action == [:add]
+              if resource.target == "default"
+                network_file_name = "/etc/sysconfig/network"
+                network_file = Chef::Util::FileEdit.new network_file_name
+                network_file.search_file_replace_line /^GATEWAY=/, "GATEWAY=#{resource.gateway}"
+                network_file.insert_line_if_no_match /^GATEWAY=/, "GATEWAY=#{resource.gateway}"
+                network_file.write_file
+              else
+                conf[dev] << config_file_contents(:add, target: resource.target, netmask: resource.netmask, gateway: resource.gateway) if resource.action == [:add]
+              end
             when :delete
               # need to do this for the case when the last route on an int
               # is removed
@@ -197,9 +208,14 @@ class Chef
 
         case action
         when :add
-          command = [ "ip", "route", "replace", target ]
-          command += [ "via", new_resource.gateway ] if new_resource.gateway
-          command += [ "dev", new_resource.device ] if new_resource.device
+          if target == "default"
+            command = [ "ip", "route", "replace", target ]
+            command += [ "via", new_resource.gateway ] if new_resource.gateway
+          else
+            command = [ "ip", "route", "replace", target ]
+            command += [ "via", new_resource.gateway ] if new_resource.gateway
+            command += [ "dev", new_resource.device ] if new_resource.device
+          end
         when :delete
           command = [ "ip", "route", "delete", target ]
           command += [ "via", new_resource.gateway ] if new_resource.gateway
