@@ -293,7 +293,7 @@ class Chef
       end
 
       def bootstrap_template
-        #
+        # Allow passing a bootstrap template or use the default
         # @return [String] The CLI specific bootstrap template or the default
         config[:bootstrap_template] || default_bootstrap_template
       end
