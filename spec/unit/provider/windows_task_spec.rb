@@ -322,6 +322,7 @@ describe Chef::Provider::WindowsTask do
     context "when the task exists" do
       before do
         allow(provider).to receive(:load_task_hash).and_return(task_hash)
+        allow(provider).to receive(:get_system_short_date_format).and_return("MM/dd/yyyy")
         provider.load_current_resource
 
         new_resource.command "chef-client"
@@ -330,7 +331,7 @@ describe Chef::Provider::WindowsTask do
         new_resource.frequency_modifier 15
         new_resource.user "SYSTEM"
         new_resource.execution_time_limit "PT72H"
-        new_resource.start_day "3/30/2017"
+        new_resource.start_day "30-Mar-2017"
         new_resource.start_time "13:12"
       end
 
@@ -373,6 +374,7 @@ describe Chef::Provider::WindowsTask do
   describe "#start_day_updated?" do
     before do
       allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      allow(provider).to receive(:get_system_short_date_format).and_return("MM/dd/yyyy")
       provider.load_current_resource
 
       new_resource.command "chef-client"
@@ -381,7 +383,7 @@ describe Chef::Provider::WindowsTask do
       new_resource.frequency_modifier 15
       new_resource.user "SYSTEM"
       new_resource.execution_time_limit "PT72H"
-      new_resource.start_day "3/30/2017"
+      new_resource.start_day "30-Mar-2017"
       new_resource.start_time "13:12"
     end
     context "when start_day not changed" do
@@ -422,6 +424,59 @@ describe Chef::Provider::WindowsTask do
       it "returns true" do
         new_resource.start_time "01:01"
         expect(provider.send(:start_time_updated?)).to be(true)
+      end
+    end
+  end
+
+  describe "#convert_user_date_to_system_date" do
+    it "when current resource start date is '30-May-2017' then returns '05/30/2017'" do
+      allow(provider).to receive(:get_system_short_date_format).and_return("MM/dd/yyyy")
+      expect(provider.send(:convert_user_date_to_system_date, "30-May-2017")).to eq("05/30/2017")
+    end
+  end
+
+  describe "#convert_system_date_format_to_ruby_date_format" do
+    context "when system date format 'dd-MMM-yy'" do
+      it "returns '%d-%b-%y'" do
+        allow(provider).to receive(:get_system_short_date_format).and_return("dd-MMM-yy")
+        expect(provider.send(:convert_system_date_format_to_ruby_date_format)).to eq("%d-%b-%y")
+      end
+    end
+
+    context "when system date format 'dd/MM/yyyy'" do
+      it "returns '%d/%m/%Y'" do
+        allow(provider).to receive(:get_system_short_date_format).and_return("dd/MM/yyyy")
+        expect(provider.send(:convert_system_date_format_to_ruby_date_format)).to eq("%d/%m/%Y")
+      end
+    end
+  end
+
+  describe "#convert_system_date_format_to_ruby_long_date" do
+    context "when system date format 'dd-MMM-yy'" do
+      it "returns '%d-%m-%Y'" do
+        allow(provider).to receive(:get_system_short_date_format).and_return("dd-MMM-yy")
+        expect(provider.send(:convert_system_date_format_to_ruby_long_date)).to eq("%d-%m-%Y")
+      end
+    end
+
+    context "when system date format 'dd/MM/yyyy'" do
+      it "returns '%d/%m/%Y'" do
+        allow(provider).to receive(:get_system_short_date_format).and_return("dd/MM/yyyy")
+        expect(provider.send(:convert_system_date_format_to_ruby_long_date)).to eq("%d/%m/%Y")
+      end
+    end
+  end
+
+  describe "#common_date_format_conversion" do
+    context "when system date format 'dd-MM-yyyy'" do
+      it "returns '%d-%m-%Y'" do
+        expect(provider.send(:common_date_format_conversion, "dd-MM-yyyy")).to eq("%d-%m-%Y")
+      end
+    end
+
+    context "when system date format 'd-M-yyyy'" do
+      it "returns '%d-%m-%Y'" do
+        expect(provider.send(:common_date_format_conversion, "dd-MM-yyyy")).to eq("%d-%m-%Y")
       end
     end
   end

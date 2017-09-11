@@ -229,11 +229,6 @@ class Chef
         time != new_resource.start_time
       end
 
-      def to_date_time_obj(date_in_string)
-        date_in_string = DateTime.strptime(strptime, convert_system_date_format_to_ruby_date_format)
-        DateTime.parse(date_in_string)
-      end
-
       def convert_user_date_to_system_date(date_in_string)
         DateTime.parse(date_in_string).strftime(convert_system_date_format_to_ruby_long_date)
       end
