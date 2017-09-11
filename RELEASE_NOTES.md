@@ -10,6 +10,36 @@ Chef Client 13.4 includes RubyGems 2.6.13 to fix the following CVEs:
   * CVE-2017-0901
   * CVE-2017-0902
 
+# Ifconfig provider on Red Hat now supports additional properties
+
+It is now possible to set `ETHTOOL_OPTS`, `BONDING_OPTS`, `MASTER` and
+`SLAVE` properties on interfaces on Red Hat compatible systems. See https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Deployment_Guide/s1-networkscripts-interfaces.html for further information
+
+### Properties
+
+*   `ethtool\_opts`<br/>
+    **Ruby types:** String</br>
+    **Platforms:** Fedora, RHEL, Amazon Linux
+    A string containing arguments to ethtool. The string will be wrapped
+    in double quotes, so ensure that any needed quotes in the property
+    are surrounded by single quotes
+
+*   `bonding\_opts`<br/>
+    **Ruby types:** String</br>
+    **Platforms:** Fedora, RHEL, Amazon Linux
+    A string containing configuration parameters for the bonding device.
+
+*   `master`<br/>
+    **Ruby types:** String</br>
+    **Platforms:** Fedora, RHEL, Amazon Linux
+    The channel bonding interface that this interface is linked to.
+
+*   `slave`<br/>
+    **Ruby types:** String</br>
+    **Platforms:** Fedora, RHEL, Amazon Linux
+    Whether the interface is controlled by the channel bonding interface
+    defined by `master`, above.
+  
 ## Chef Vault is now included
 
 Chef Client 13.4 now includes the `chef-vault` gem, making it easier for
