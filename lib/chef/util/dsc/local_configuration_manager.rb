@@ -73,7 +73,6 @@ class Chef::Util::DSC
     def lcm_command(apply_configuration)
       common_command_prefix = "$ProgressPreference = 'SilentlyContinue';"
       ps4_base_command = "#{common_command_prefix} Start-DscConfiguration -path #{@configuration_path} -wait -erroraction 'stop' -force"
-
       if apply_configuration
         ps4_base_command
       else

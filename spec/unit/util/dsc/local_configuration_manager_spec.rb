@@ -63,11 +63,63 @@ EOH
         let(:lcm_standard_error) { nil }
         let(:lcm_cmdlet_success) { true }
 
-        it "should successfully return resource information for normally formatted output when cmdlet the cmdlet succeeds" do
+        it "successfully returns resource information for normally formatted output when cmdlet the cmdlet succeeds" do
           test_configuration_result = lcm.test_configuration("config", {})
           expect(test_configuration_result.class).to be(Array)
           expect(test_configuration_result.length).to be > 0
           expect(Chef::Log).not_to receive(:warn)
+        end
+      end
+
+      context "when running on PowerShell version 5" do
+        let(:lcm_standard_output) { normal_lcm_output }
+        let(:lcm_standard_error) { nil }
+        let(:lcm_cmdlet_success) { true }
+
+        it "successfully returns resource information for normally formatted output when cmdlet the cmdlet succeeds" do
+          allow(lcm).to receive(:ps_version_gte_5?).and_return(true)
+          test_configuration_result = lcm.test_configuration("config", {})
+          expect(test_configuration_result.class).to be(Array)
+          expect(test_configuration_result.length).to be > 0
+          expect(Chef::Log).not_to receive(:warn)
+        end
+      end
+
+      context "when running on PowerShell version less than 5" do
+        let(:lcm_standard_output) { normal_lcm_output }
+        let(:lcm_standard_error) { nil }
+        let(:lcm_cmdlet_success) { true }
+
+        it "successfully returns resource information for normally formatted output when cmdlet the cmdlet succeeds" do
+          allow(lcm).to receive(:ps_version_gte_5?).and_return(false)
+          test_configuration_result = lcm.test_configuration("config", {})
+          expect(test_configuration_result.class).to be(Array)
+          expect(test_configuration_result.length).to be > 0
+          expect(Chef::Log).not_to receive(:warn)
+        end
+      end
+
+      context "#lcm_command" do
+        let(:common_command_prefix) { "$ProgressPreference = 'SilentlyContinue';" }
+        let(:ps4_base_command) { "#{common_command_prefix} Start-DscConfiguration -path tmp -wait -erroraction 'stop' -force" }
+        let(:lcm_command_ps4) { ps4_base_command + " -whatif; if (! $?) { exit 1 }" }
+        let(:lcm_command_ps5) { "#{common_command_prefix} Test-DscConfiguration -path tmp" }
+        let(:lcm_standard_output) { normal_lcm_output }
+        let(:lcm_standard_error) { nil }
+        let(:lcm_cmdlet_success) { true }
+
+        it "successfully returns command when apply_configuration true" do
+          expect(lcm.send(:lcm_command, true)).to eq(ps4_base_command)
+        end
+
+        it "successfully returns command when PowerShell version 4" do
+          allow(lcm).to receive(:ps_version_gte_5?).and_return(false)
+          expect(lcm.send(:lcm_command, false)).to eq(lcm_command_ps4)
+        end
+
+        it "successfully returns command when PowerShell version 5" do
+          allow(lcm).to receive(:ps_version_gte_5?).and_return(true)
+          expect(lcm.send(:lcm_command, false)).to eq(lcm_command_ps5)
         end
       end
 
@@ -80,7 +132,7 @@ EOH
           expect(lcm.send(:whatif_not_supported?, no_whatif_lcm_output)).to be_truthy
         end
 
-        it "should should return a (possibly empty) array of ResourceInfo instances" do
+        it "returns a (possibly empty) array of ResourceInfo instances" do
           expect(Chef::Log).to receive(:warn).at_least(:once)
           expect(lcm).to receive(:whatif_not_supported?).and_call_original
           test_configuration_result = nil
@@ -94,14 +146,14 @@ EOH
         let(:lcm_standard_error) { dsc_resource_import_failure_output }
         let(:lcm_cmdlet_success) { false }
 
-        it "should log a warning if the message is formatted as expected when a resource import failure occurs" do
+        it "logs a warning if the message is formatted as expected when a resource import failure occurs" do
           expect(Chef::Log).to receive(:warn).at_least(:once)
           expect(lcm).to receive(:dsc_module_import_failure?).and_call_original
           test_configuration_result = nil
           expect { test_configuration_result = lcm.test_configuration("config", {}) }.not_to raise_error
         end
 
-        it "should return a (possibly empty) array of ResourceInfo instances" do
+        it "returns a (possibly empty) array of ResourceInfo instances" do
           expect(Chef::Log).to receive(:warn).at_least(:once)
           test_configuration_result = nil
           expect { test_configuration_result = lcm.test_configuration("config", {}) }.not_to raise_error
@@ -114,7 +166,7 @@ EOH
         let(:lcm_standard_error) { "Abort, Retry, Fail?" }
         let(:lcm_cmdlet_success) { false }
 
-        it "should log a warning" do
+        it "logs a warning" do
           expect(Chef::Log).to receive(:warn).at_least(:once)
           expect(lcm).to receive(:dsc_module_import_failure?).and_call_original
           expect { lcm.test_configuration("config", {}) }.not_to raise_error
@@ -122,15 +174,15 @@ EOH
       end
     end
 
-    it "should identify a correctly formatted error message as a resource import failure" do
+    it "identify a correctly formatted error message as a resource import failure" do
       expect(lcm.send(:dsc_module_import_failure?, dsc_resource_import_failure_output)).to be(true)
     end
 
-    it "should not identify an incorrectly formatted error message as a resource import failure" do
+    it "does not identify an incorrectly formatted error message as a resource import failure" do
       expect(lcm.send(:dsc_module_import_failure?, dsc_resource_import_failure_output.gsub("module", "gibberish"))).to be(false)
     end
 
-    it "should not identify a message without a CimException reference as a resource import failure" do
+    it "does not identify a message without a CimException reference as a resource import failure" do
       expect(lcm.send(:dsc_module_import_failure?, dsc_resource_import_failure_output.gsub("CimException", "ArgumentException"))).to be(false)
     end
   end
