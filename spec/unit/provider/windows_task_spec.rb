@@ -143,6 +143,17 @@ describe Chef::Provider::WindowsTask do
         provider.run_action(:create)
         expect(new_resource).to be_updated_by_last_action
       end
+
+      it "updates the task XML if frequency is set as `:none`" do
+        new_resource.frequency :none
+        new_resource.random_delay ""
+        allow(provider).to receive(:task_need_update?).and_return(true)
+        allow(provider).to receive(:basic_validation).and_return(true)
+        allow(provider).to receive(:run_schtasks).with("CREATE", { "F" => "", "SC" => :once, "ST" => "00:00", "SD" => "12/12/2012", "TR" => nil, "RU" => "SYSTEM" }).twice
+        expect(provider).to receive(:update_task_xml)
+        provider.run_action(:create)
+        expect(new_resource).to be_updated_by_last_action
+      end
     end
   end
 
@@ -507,6 +518,18 @@ describe Chef::Provider::WindowsTask do
       expect(provider).to receive(:run_schtasks).twice
       output = provider.send(:update_task_xml, ["random_delay"])
     end
+
+    it "updates the task XML if frequency is set as `:none`" do
+      new_resource.frequency :none
+      new_resource.random_delay ""
+      shell_out_obj = double("xml", :exitstatus => 0, :stdout => task_xml)
+      allow(provider).to receive(:powershell_out).and_return(shell_out_obj)
+      expect(::File).to receive(:delete)
+      expect(::File).to receive(:join)
+      expect(::File).to receive(:open)
+      expect(provider).to receive(:run_schtasks).twice
+      output = provider.send(:update_task_xml, ["random_delay"])
+    end
   end
 
   describe "#load_task_hash" do
@@ -539,6 +562,11 @@ describe Chef::Provider::WindowsTask do
 
     it "returns false for frequency :once" do
       new_resource.frequency :once
+      expect(provider.send(:frequency_modifier_allowed)).to be(false)
+    end
+
+    it "returns false for frequency :none" do
+      new_resource.frequency :none
       expect(provider.send(:frequency_modifier_allowed)).to be(false)
     end
   end

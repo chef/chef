@@ -89,11 +89,17 @@ class Chef
         basic_validation
         options = {}
         options["F"] = "" if new_resource.force || task_need_update?
-        options["SC"] = schedule
+        if schedule == :none
+          options["SC"] = :once
+          options["ST"] = "00:00"
+          options["SD"] = convert_user_date_to_system_date "12/12/2012"
+        else
+          options["SC"] = schedule
+          options["ST"] = new_resource.start_time unless new_resource.start_time.nil?
+          options["SD"] = convert_user_date_to_system_date new_resource.start_day unless new_resource.start_day.nil?
+        end
         options["MO"] = new_resource.frequency_modifier if frequency_modifier_allowed
         options["I"]  = new_resource.idle_time unless new_resource.idle_time.nil?
-        options["SD"] = convert_user_date_to_system_date new_resource.start_day unless new_resource.start_day.nil?
-        options["ST"] = new_resource.start_time unless new_resource.start_time.nil?
         options["TR"] = new_resource.command
         options["RU"] = new_resource.user
         options["RP"] = new_resource.password if use_password?
@@ -277,6 +283,7 @@ class Chef
           :daily => "Triggers/CalendarTrigger/RandomDelay",
           :weekly => "Triggers/CalendarTrigger/RandomDelay",
           :monthly => "Triggers/CalendarTrigger/RandomDelay",
+          :none => "Triggers",
         }
 
         xml_element_mapping = {
@@ -296,6 +303,12 @@ class Chef
         return if xml_cmd.exitstatus != 0
 
         doc = REXML::Document.new(xml_cmd.stdout)
+
+        if new_resource.frequency == :none
+          doc.root.elements.delete(xml_element_mapping["random_delay"])
+          cwd_element = REXML::Element.new(xml_element_mapping["random_delay"])
+          doc.root.elements.add(cwd_element)
+        end
 
         options.each do |option|
           Chef::Log.debug 'Removing former #{option} if any'
@@ -410,7 +423,8 @@ class Chef
 
         task[:idle_time] = root.elements["Settings/IdleSettings/Duration"].text if root.elements["Settings/IdleSettings/Duration"] && task[:on_idle]
 
-        task[:once] = true if !(task[:repetition_interval] || task[:schedule_by_day] || task[:schedule_by_week] || task[:schedule_by_month] || task[:on_logon] || task[:onstart] || task[:on_idle])
+        task[:none] = true if root.elements["Triggers/"] && root.elements["Triggers/"].entries.empty?
+        task[:once] = true if !(task[:repetition_interval] || task[:schedule_by_day] || task[:schedule_by_week] || task[:schedule_by_month] || task[:on_logon] || task[:onstart] || task[:on_idle] || task[:none])
         task[:execution_time_limit] = root.elements["Settings/ExecutionTimeLimit"].text if root.elements["Settings/ExecutionTimeLimit"] #by default PT72H
         task[:random_delay] = root.elements["Triggers/TimeTrigger/RandomDelay"].text if root.elements["Triggers/TimeTrigger/RandomDelay"]
         task[:random_delay] = root.elements["Triggers/CalendarTrigger/RandomDelay"].text if root.elements["Triggers/CalendarTrigger/RandomDelay"]
@@ -481,6 +495,7 @@ class Chef
         current_resource.frequency(:onstart) if task_hash[:onstart]
         current_resource.frequency(:on_idle) if task_hash[:on_idle]
         current_resource.frequency(:once) if task_hash[:once]
+        current_resource.frequency(:none) if task_hash[:none]
       end
 
       def set_current_idle_time(idle_time)

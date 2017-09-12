@@ -158,6 +158,31 @@ describe Chef::Resource::WindowsTask, :windows_only do
       end
     end
 
+    context "frequency :none" do
+      subject do
+        new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
+        new_resource.command task_name
+        new_resource.run_level :highest
+        new_resource.frequency :none
+        new_resource.random_delay ""
+        new_resource
+      end
+
+      it "creates the scheduled task to run on demand only" do
+        subject.run_action(:create)
+        task_details = windows_task_provider.send(:load_task_hash, task_name)
+
+        expect(task_details[:TaskName]).to eq("\\chef-client")
+        expect(task_details[:TaskToRun]).to eq("chef-client")
+        expect(task_details[:ScheduleType]).to eq("On demand only")
+        expect(task_details[:StartTime]).to eq("N/A")
+        expect(task_details[:StartDate]).to eq("N/A")
+        expect(task_details[:NextRunTime]).to eq("N/A")
+        expect(task_details[:none]).to eq(true)
+        expect(task_details[:run_level]).to eq("HighestAvailable")
+      end
+    end
+
     context "frequency :weekly" do
       subject do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
