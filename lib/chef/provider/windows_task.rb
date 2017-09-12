@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,30 +30,33 @@ class Chef
       provides :windows_task, os: "windows"
 
       def load_current_resource
-        @current_resource = Chef::Resource::WindowsTask.new(new_resource.name)
+        self.current_resource = Chef::Resource::WindowsTask.new(new_resource.name)
         pathed_task_name = new_resource.task_name.start_with?('\\') ? new_resource.task_name : "\\#{new_resource.task_name}"
 
-        @current_resource.task_name(pathed_task_name)
+        current_resource.task_name(pathed_task_name)
         task_hash = load_task_hash(pathed_task_name)
 
         set_current_resource(task_hash) if task_hash.respond_to?(:[]) && task_hash[:TaskName] == pathed_task_name
-        @current_resource
+        current_resource
       end
 
       def set_current_resource(task_hash)
-        @current_resource.exists = true
-        @current_resource.command(task_hash[:TaskToRun])
-        @current_resource.cwd(task_hash[:StartIn]) unless task_hash[:StartIn] == "N/A"
-        @current_resource.user(task_hash[:RunAsUser])
+        current_resource.exists = true
+        current_resource.command(task_hash[:TaskToRun])
+        current_resource.cwd(task_hash[:StartIn]) unless task_hash[:StartIn] == "N/A"
+        current_resource.user(task_hash[:RunAsUser])
         set_current_run_level task_hash[:run_level]
         set_current_frequency task_hash
-        @current_resource.day(task_hash[:day]) if task_hash[:day]
-        @current_resource.months(task_hash[:months]) if task_hash[:months]
+        current_resource.day(task_hash[:day]) if task_hash[:day]
+        current_resource.months(task_hash[:months]) if task_hash[:months]
         set_current_idle_time(task_hash[:idle_time]) if task_hash[:idle_time]
-        @current_resource.random_delay(task_hash[:random_delay]) if task_hash[:random_delay]
-        @current_resource.execution_time_limit(task_hash[:execution_time_limit]) if task_hash[:execution_time_limit]
-        @current_resource.status = :running if task_hash[:Status] == "Running"
-        @current_resource.enabled = true if task_hash[:ScheduledTaskState] == "Enabled"
+        current_resource.random_delay(task_hash[:random_delay]) if task_hash[:random_delay]
+        # schtask sets execution_time_limit as PT72H by default
+        current_resource.execution_time_limit(task_hash[:execution_time_limit] || "PT72H")
+        current_resource.status = :running if task_hash[:Status] == "Running"
+        current_resource.enabled = true if task_hash[:ScheduledTaskState] == "Enabled"
+        current_resource.start_time = task_hash[:StartTime] if task_hash[:StartTime]
+        current_resource.start_day = task_hash[:StartDate] if task_hash[:StartDate]
       end
 
       # This method checks if task and command attributes exist since those two are mandatory attributes to create a schedules task.
@@ -71,7 +74,7 @@ class Chef
       end
 
       def action_create
-        if @current_resource.exists
+        if current_resource.exists
           if !(task_need_update? || new_resource.force)
             Chef::Log.info "#{new_resource} task already exists - nothing to do"
             return
@@ -79,7 +82,7 @@ class Chef
           # To merge current resource and new resource attributes
           resource_attributes.each do |attribute|
             new_resource_attribute = new_resource.send(attribute)
-            current_resource_attribute = @current_resource.send(attribute)
+            current_resource_attribute = current_resource.send(attribute)
             new_resource.send("#{attribute}=", current_resource_attribute ) if current_resource_attribute && new_resource_attribute.nil?
           end
         end
@@ -89,7 +92,7 @@ class Chef
         options["SC"] = schedule
         options["MO"] = new_resource.frequency_modifier if frequency_modifier_allowed
         options["I"]  = new_resource.idle_time unless new_resource.idle_time.nil?
-        options["SD"] = new_resource.start_day unless new_resource.start_day.nil?
+        options["SD"] = convert_user_date_to_system_date new_resource.start_day unless new_resource.start_day.nil?
         options["ST"] = new_resource.start_time unless new_resource.start_time.nil?
         options["TR"] = new_resource.command
         options["RU"] = new_resource.user
@@ -110,8 +113,8 @@ class Chef
       end
 
       def action_run
-        if @current_resource.exists
-          if @current_resource.status == :running
+        if current_resource.exists
+          if current_resource.status == :running
             Chef::Log.info "#{new_resource} task is currently running, skipping run"
           else
             run_schtasks "RUN"
@@ -124,7 +127,7 @@ class Chef
       end
 
       def action_delete
-        if @current_resource.exists
+        if current_resource.exists
           # always need to force deletion
           run_schtasks "DELETE", "F" => ""
           new_resource.updated_by_last_action true
@@ -135,8 +138,8 @@ class Chef
       end
 
       def action_end
-        if @current_resource.exists
-          if @current_resource.status != :running
+        if current_resource.exists
+          if current_resource.status != :running
             Chef::Log.debug "#{new_resource} is not running - nothing to do"
           else
             run_schtasks "END"
@@ -149,8 +152,8 @@ class Chef
       end
 
       def action_enable
-        if @current_resource.exists
-          if @current_resource.enabled
+        if current_resource.exists
+          if current_resource.enabled
             Chef::Log.debug "#{new_resource} already enabled - nothing to do"
           else
             run_schtasks "CHANGE", "ENABLE" => ""
@@ -164,8 +167,8 @@ class Chef
       end
 
       def action_disable
-        if @current_resource.exists
-          if @current_resource.enabled
+        if current_resource.exists
+          if current_resource.enabled
             run_schtasks "CHANGE", "DISABLE" => ""
             new_resource.updated_by_last_action true
             Chef::Log.info "#{new_resource} task disabled"
@@ -194,24 +197,75 @@ class Chef
 
       def task_need_update?
         return true if (new_resource.command &&
-            @current_resource.command != new_resource.command.tr("'", '"')) ||
-            @current_resource.user != new_resource.user ||
-            @current_resource.run_level != new_resource.run_level ||
-            @current_resource.cwd != new_resource.cwd ||
-            @current_resource.frequency_modifier != new_resource.frequency_modifier ||
-            @current_resource.frequency != new_resource.frequency ||
-            @current_resource.idle_time != new_resource.idle_time ||
-            @current_resource.random_delay != new_resource.random_delay ||
-            @current_resource.execution_time_limit != new_resource.execution_time_limit ||
-            !new_resource.start_day.nil? || !new_resource.start_time.nil?
+            current_resource.command != new_resource.command.tr("'", '"')) ||
+            current_resource.user != new_resource.user ||
+            current_resource.run_level != new_resource.run_level ||
+            current_resource.cwd != new_resource.cwd ||
+            current_resource.frequency_modifier != new_resource.frequency_modifier ||
+            current_resource.frequency != new_resource.frequency ||
+            current_resource.idle_time != new_resource.idle_time ||
+            current_resource.random_delay != new_resource.random_delay ||
+            !new_resource.execution_time_limit.include?(current_resource.execution_time_limit) ||
+            (new_resource.start_day && start_day_updated?) ||
+            (new_resource.start_time && start_time_updated?)
         begin
-          return true if new_resource.day.to_s.casecmp(@current_resource.day.to_s) != 0 ||
-              new_resource.months.to_s.casecmp(@current_resource.months.to_s) != 0
+          return true if new_resource.day.to_s.casecmp(current_resource.day.to_s) != 0 ||
+              new_resource.months.to_s.casecmp(current_resource.months.to_s) != 0
         rescue
           Chef::Log.debug "caught a raise in task_needs_update?"
         end
 
         false
+      end
+
+      def start_day_updated?
+        current_day = DateTime.strptime(current_resource.start_day, convert_system_date_format_to_ruby_date_format)
+        new_day = DateTime.parse(new_resource.start_day)
+        current_day != new_day
+      end
+
+      def start_time_updated?
+        time = DateTime.parse(current_resource.start_time).strftime("%H:%M")
+        time != new_resource.start_time
+      end
+
+      def convert_user_date_to_system_date(date_in_string)
+        DateTime.parse(date_in_string).strftime(convert_system_date_format_to_ruby_long_date)
+      end
+
+      def convert_system_date_format_to_ruby_long_date
+        date_format = get_system_short_date_format.dup
+        date_format.sub!("MMM", "%m")
+        common_date_format_conversion(date_format)
+        date_format.sub!("yy", "%Y")
+        date_format
+      end
+
+      def convert_system_date_format_to_ruby_date_format
+        date_format = get_system_short_date_format.dup
+        date_format.sub!("MMM", "%b")
+        common_date_format_conversion(date_format)
+        date_format.sub!("yy", "%y")
+        date_format
+      end
+
+      def common_date_format_conversion(date_format)
+        date_format.sub!("dd", "d")
+        date_format.sub!("d", "%d")
+        date_format.sub!("MM", "%m")
+        date_format.sub!("M", "%m")
+        date_format.sub!("yyyy", "%Y")
+      end
+
+      def get_system_short_date_format
+        return @system_short_date_format if @system_short_date_format
+        Chef::Log.debug "Finding system date format"
+        task_script = <<-EOH
+          [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
+          [Globalization.Cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern
+        EOH
+        @system_short_date_format = powershell_out(task_script).stdout.force_encoding("UTF-8").gsub(/[\s+\uFEFF]/, "")
+        @system_short_date_format
       end
 
       def update_task_xml(options = [])
@@ -394,9 +448,9 @@ class Chef
       def set_current_run_level(run_level)
         case run_level
         when "HighestAvailable"
-          @current_resource.run_level(:highest)
+          current_resource.run_level(:highest)
         when "LeastPrivilege"
-          @current_resource.run_level(:limited)
+          current_resource.run_level(:limited)
         end
       end
 
@@ -404,34 +458,34 @@ class Chef
         if task_hash[:repetition_interval]
           duration = ISO8601::Duration.new(task_hash[:repetition_interval])
           if task_hash[:repetition_interval].include?("M")
-            @current_resource.frequency(:minute)
-            @current_resource.frequency_modifier(duration.minutes.atom.to_i)
+            current_resource.frequency(:minute)
+            current_resource.frequency_modifier(duration.minutes.atom.to_i)
           elsif task_hash[:repetition_interval].include?("H")
-            @current_resource.frequency(:hourly)
-            @current_resource.frequency_modifier(duration.hours.atom.to_i)
+            current_resource.frequency(:hourly)
+            current_resource.frequency_modifier(duration.hours.atom.to_i)
           end
         end
 
         if task_hash[:schedule_by_day]
-          @current_resource.frequency(:daily)
-          @current_resource.frequency_modifier(task_hash[:schedule_by_day].to_i)
+          current_resource.frequency(:daily)
+          current_resource.frequency_modifier(task_hash[:schedule_by_day].to_i)
         end
 
         if task_hash[:schedule_by_week]
-          @current_resource.frequency(:weekly)
-          @current_resource.frequency_modifier(task_hash[:schedule_by_week].to_i)
+          current_resource.frequency(:weekly)
+          current_resource.frequency_modifier(task_hash[:schedule_by_week].to_i)
         end
 
-        @current_resource.frequency(:monthly) if task_hash[:schedule_by_month]
-        @current_resource.frequency(:on_logon) if task_hash[:on_logon]
-        @current_resource.frequency(:onstart) if task_hash[:onstart]
-        @current_resource.frequency(:on_idle) if task_hash[:on_idle]
-        @current_resource.frequency(:once) if task_hash[:once]
+        current_resource.frequency(:monthly) if task_hash[:schedule_by_month]
+        current_resource.frequency(:on_logon) if task_hash[:on_logon]
+        current_resource.frequency(:onstart) if task_hash[:onstart]
+        current_resource.frequency(:on_idle) if task_hash[:on_idle]
+        current_resource.frequency(:once) if task_hash[:once]
       end
 
       def set_current_idle_time(idle_time)
         duration = ISO8601::Duration.new(idle_time)
-        @current_resource.idle_time(duration.minutes.atom.to_i)
+        current_resource.idle_time(duration.minutes.atom.to_i)
       end
 
     end
