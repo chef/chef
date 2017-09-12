@@ -1,9 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.4.18 -->
-## [v13.4.18](https://github.com/chef/chef/tree/v13.4.18) (2017-09-09)
+<!-- latest_release 13.4.20 -->
+## [v13.4.20](https://github.com/chef/chef/tree/v13.4.20) (2017-09-12)
 
 #### Merged Pull Requests
-- Cleanup the current changelog [#6387](https://github.com/chef/chef/pull/6387) ([tas50](https://github.com/tas50))
+- Allow specifying default gateway on RHEL/Centos [#6386](https://github.com/chef/chef/pull/6386) ([tomdoherty](https://github.com/tomdoherty))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.3.42 -->
@@ -17,6 +17,7 @@
 - Ignore validation errors in Resource#to_text [#6331](https://github.com/chef/chef/pull/6331) ([coderanger](https://github.com/coderanger)) <!-- 13.3.46 -->
 
 #### Merged Pull Requests
+- Allow specifying default gateway on RHEL/Centos [#6386](https://github.com/chef/chef/pull/6386) ([tomdoherty](https://github.com/tomdoherty)) <!-- 13.4.20 -->
 - Cleanup the current changelog [#6387](https://github.com/chef/chef/pull/6387) ([tas50](https://github.com/tas50)) <!-- 13.4.18 -->
 - Add support for specifying ETHTOOL_OPTS in the ifconfig resource [#6384](https://github.com/chef/chef/pull/6384) ([tomdoherty](https://github.com/tomdoherty)) <!-- 13.4.16 -->
 - Alternate user local logon authentication for remote_file resource [#5832](https://github.com/chef/chef/pull/5832) ([NimishaS](https://github.com/NimishaS)) <!-- 13.4.13 -->
