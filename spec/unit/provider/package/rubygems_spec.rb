@@ -383,6 +383,11 @@ describe Chef::Provider::Package::Rubygems do
       provider.load_current_resource
       expect(provider.target_version_already_installed?(provider.current_resource.version, new_resource.version)).to be_falsey
     end
+
+    it "version_equals? should return false so that we can search for candidates" do
+      provider.load_current_resource
+      expect(provider.version_equals?(provider.current_resource.version, new_resource.version)).to be_falsey
+    end
   end
 
   describe "when new_resource version is an rspec version" do

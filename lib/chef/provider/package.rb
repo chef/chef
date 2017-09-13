@@ -323,10 +323,38 @@ class Chef
       #
       # Note that most likely we need a spaceship operator on versions that subclasses can implement
       # and we should have `version_compare(v1, v2)` that returns `v1 <=> v2`.
+
+      # This method performs a strict equality check between two strings representing version numbers
       #
+      # This function will eventually be deprecated in favour of the below version_equals function.
+
       def target_version_already_installed?(current_version, target_version)
-        return false unless current_version && target_version
-        current_version == target_version
+        version_equals?(current_version, target_version)
+      end
+
+      # Note that most likely we need a spaceship operator on versions that subclasses can implement
+      # and we should have `version_compare(v1, v2)` that returns `v1 <=> v2`.
+
+      # This method performs a strict equality check between two strings representing version numbers
+      #
+      def version_equals?(v1, v2)
+        return false unless v1 && v2
+        v1 == v2
+      end
+
+      # This function compares two version numbers and returns 'spaceship operator' style results, ie:
+      # if v1 < v2 then return -1
+      # if v1 = v2 then return  0
+      # if v1 > v2 then return  1
+      # if v1 and v2 are not comparable then return nil
+      #
+      # By default, this function will use Gem::Version comparison. Subclasses can reimplement this method
+      # for package-management system specific versions.
+      def version_compare(v1, v2)
+        gem_v1 = Gem::Version.new(v1)
+        gem_v2 = Gem::Version.new(v2)
+
+        gem_v1 <=> gem_v2
       end
 
       # Check the current_version against the new_resource.version, possibly using fuzzy
@@ -337,7 +365,7 @@ class Chef
       # `version_satisfied_by?(version, constraint)` might be a better name to make this generic.
       #
       def version_requirement_satisfied?(current_version, new_version)
-        target_version_already_installed?(current_version, new_version)
+        version_equals?(current_version, new_version)
       end
 
       # @todo: extract apt/dpkg specific preseeding to a helper class
@@ -439,15 +467,18 @@ class Chef
             each_package do |package_name, new_version, current_version, candidate_version|
               case action
               when :upgrade
-                if target_version_already_installed?(current_version, new_version)
+                if version_equals?(current_version, new_version)
                   # this is an odd use case
                   Chef::Log.debug("#{new_resource} #{package_name} #{new_version} is already installed -- you are equality pinning with an :upgrade action, this may be deprecated in the future")
                   target_version_array.push(nil)
-                elsif target_version_already_installed?(current_version, candidate_version)
+                elsif version_equals?(current_version, candidate_version)
                   Chef::Log.debug("#{new_resource} #{package_name} #{candidate_version} is already installed")
                   target_version_array.push(nil)
                 elsif candidate_version.nil?
                   Chef::Log.debug("#{new_resource} #{package_name} has no candidate_version to upgrade to")
+                  target_version_array.push(nil)
+                elsif version_compare(current_version, candidate_version) == 1 && !new_resource.allow_downgrade
+                  Chef::Log.debug("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{candidate_version}. Skipping...)")
                   target_version_array.push(nil)
                 else
                   Chef::Log.debug("#{new_resource} #{package_name} is out of date, will upgrade to #{candidate_version}")

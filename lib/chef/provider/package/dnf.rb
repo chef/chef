@@ -126,6 +126,10 @@ class Chef
           end
         end
 
+        def version_compare(v1, v2)
+          python_helper.compare_versions(v1, v2)
+        end
+
         # @returns Array<Version>
         def available_version(index)
           @available_version ||= []
