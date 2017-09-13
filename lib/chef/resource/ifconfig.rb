@@ -48,6 +48,7 @@ class Chef
         @bonding_opts = nil
         @master = nil
         @slave = nil
+        @vlan = nil
       end
 
       def target(arg = nil)
@@ -173,6 +174,14 @@ class Chef
       def slave(arg = nil)
         set_or_return(
           :slave,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def vlan(arg = nil)
+        set_or_return(
+          :vlan,
           arg,
           :kind_of => String
         )
