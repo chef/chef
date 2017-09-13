@@ -6,36 +6,41 @@
 - MSYS-656 - fixed dsc_script for WMF5 [#6383](https://github.com/chef/chef/pull/6383) ([piyushawasthi](https://github.com/piyushawasthi))
 <!-- latest_release -->
 
-<!-- release_rollup since=13.3.42 -->
-### Changes since 13.3.42 release
-
-#### Bug Fixes
-- Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm)) <!-- 13.3.47 -->
-- Launchd should not load launchagents as root. [#6353](https://github.com/chef/chef/pull/6353) ([mikedodge04](https://github.com/mikedodge04)) <!-- 13.4.14 -->
-- Handle apple's git in the git resource [#6359](https://github.com/chef/chef/pull/6359) ([kzw](https://github.com/kzw)) <!-- 13.4.12 -->
-- Auto import gpg keys in zypper_repository [#6348](https://github.com/chef/chef/pull/6348) ([tas50](https://github.com/tas50)) <!-- 13.3.51 -->
-- Ignore validation errors in Resource#to_text [#6331](https://github.com/chef/chef/pull/6331) ([coderanger](https://github.com/coderanger)) <!-- 13.3.46 -->
+<!-- release_rollup since=13.4.19 -->
+### Changes since 13.4.19 release
 
 #### Merged Pull Requests
-- MSYS-656 - fixed dsc_script for WMF5 [#6383](https://github.com/chef/chef/pull/6383) ([piyushawasthi](https://github.com/piyushawasthi)) <!-- 13.4.22 -->
-- [MSYS-594] windows_task resource is not idempotent when specifying start_time and start_day [#6312](https://github.com/chef/chef/pull/6312) ([harikesh-kolekar](https://github.com/harikesh-kolekar)) <!-- 13.4.21 -->
 - Allow specifying default gateway on RHEL/Centos [#6386](https://github.com/chef/chef/pull/6386) ([tomdoherty](https://github.com/tomdoherty)) <!-- 13.4.20 -->
-- Cleanup the current changelog [#6387](https://github.com/chef/chef/pull/6387) ([tas50](https://github.com/tas50)) <!-- 13.4.18 -->
-- Add support for specifying ETHTOOL_OPTS in the ifconfig resource [#6384](https://github.com/chef/chef/pull/6384) ([tomdoherty](https://github.com/tomdoherty)) <!-- 13.4.16 -->
-- Alternate user local logon authentication for remote_file resource [#5832](https://github.com/chef/chef/pull/5832) ([NimishaS](https://github.com/NimishaS)) <!-- 13.4.13 -->
-- Immutablize properly as we deep merge [#6362](https://github.com/chef/chef/pull/6362) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.11 -->
-- Support an array of keys for apt_repository [#6372](https://github.com/chef/chef/pull/6372) ([gsreynolds](https://github.com/gsreynolds)) <!-- 13.4.10 -->
-- Ship chef-vault in the omnibus package [#6370](https://github.com/chef/chef/pull/6370) ([thommay](https://github.com/thommay)) <!-- 13.4.9 -->
-- Bump rubygems to 2.6.13 [#6365](https://github.com/chef/chef/pull/6365) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.7 -->
-- Link to the knife docs in both places where we error on editor [#6363](https://github.com/chef/chef/pull/6363) ([tas50](https://github.com/tas50)) <!-- 13.4.6 -->
-- node attributes: remove useless dup in merge_all [#6356](https://github.com/chef/chef/pull/6356) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.5 -->
-- Speed up immutabilization [#6355](https://github.com/chef/chef/pull/6355) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.4.4 -->
-- dnf_provider: be more specific when we provide `package` [#6351](https://github.com/chef/chef/pull/6351) ([jaymzh](https://github.com/jaymzh)) <!-- 13.4.2 -->
-- Bump Bundler version to 1.15.4 [#6349](https://github.com/chef/chef/pull/6349) ([jakauppila](https://github.com/jakauppila)) <!-- 13.4.1 -->
-- Add windows_path resource from the Windows cookbook [#6295](https://github.com/chef/chef/pull/6295) ([NimishaS](https://github.com/NimishaS)) <!-- 13.3.48 -->
+- [MSYS-594] windows_task resource is not idempotent when specifying start_time and start_day [#6312](https://github.com/chef/chef/pull/6312) ([harikesh-kolekar](https://github.com/harikesh-kolekar)) <!-- 13.4.21 -->
+- MSYS-656 - fixed dsc_script for WMF5 [#6383](https://github.com/chef/chef/pull/6383) ([piyushawasthi](https://github.com/piyushawasthi)) <!-- 13.4.22 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.4.19](https://github.com/chef/chef/tree/v13.4.19) (2017-09-13)
+
+#### Bug Fixes
+- Ignore validation errors in Resource#to_text [#6331](https://github.com/chef/chef/pull/6331) ([coderanger](https://github.com/coderanger))
+- Auto import gpg keys in zypper_repository [#6348](https://github.com/chef/chef/pull/6348) ([tas50](https://github.com/tas50))
+- Handle apple's git in the git resource [#6359](https://github.com/chef/chef/pull/6359) ([kzw](https://github.com/kzw))
+- Launchd should not load launchagents as root. [#6353](https://github.com/chef/chef/pull/6353) ([mikedodge04](https://github.com/mikedodge04))
+- Pass json configuration to ShellSession class [#6314](https://github.com/chef/chef/pull/6314) ([btm](https://github.com/btm))
+
+#### Merged Pull Requests
+- Add windows_path resource from the Windows cookbook [#6295](https://github.com/chef/chef/pull/6295) ([NimishaS](https://github.com/NimishaS))
+- Bump Bundler version to 1.15.4 [#6349](https://github.com/chef/chef/pull/6349) ([jakauppila](https://github.com/jakauppila))
+- dnf_provider: be more specific when we provide `package` [#6351](https://github.com/chef/chef/pull/6351) ([jaymzh](https://github.com/jaymzh))
+- Speed up immutabilization [#6355](https://github.com/chef/chef/pull/6355) ([lamont-granquist](https://github.com/lamont-granquist))
+- node attributes: remove useless dup in merge_all [#6356](https://github.com/chef/chef/pull/6356) ([lamont-granquist](https://github.com/lamont-granquist))
+- Link to the knife docs in both places where we error on editor [#6363](https://github.com/chef/chef/pull/6363) ([tas50](https://github.com/tas50))
+- Bump rubygems to 2.6.13 [#6365](https://github.com/chef/chef/pull/6365) ([lamont-granquist](https://github.com/lamont-granquist))
+- Ship chef-vault in the omnibus package [#6370](https://github.com/chef/chef/pull/6370) ([thommay](https://github.com/thommay))
+- Support an array of keys for apt_repository [#6372](https://github.com/chef/chef/pull/6372) ([gsreynolds](https://github.com/gsreynolds))
+- Immutablize properly as we deep merge [#6362](https://github.com/chef/chef/pull/6362) ([lamont-granquist](https://github.com/lamont-granquist))
+- Alternate user local logon authentication for remote_file resource [#5832](https://github.com/chef/chef/pull/5832) ([NimishaS](https://github.com/NimishaS))
+- Add support for specifying ETHTOOL_OPTS in the ifconfig resource [#6384](https://github.com/chef/chef/pull/6384) ([tomdoherty](https://github.com/tomdoherty))
+- Cleanup the current changelog [#6387](https://github.com/chef/chef/pull/6387) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v13.3.42](https://github.com/chef/chef/tree/v13.3.42) (2017-08-16)
 
 #### Merged Pull Requests
@@ -53,7 +58,6 @@
 - Maintain compat with old zypper_repo resource used in cookbooks [#6318](https://github.com/chef/chef/pull/6318) ([tas50](https://github.com/tas50))
 - README improvement for Chef beginner. [#6297](https://github.com/chef/chef/pull/6297) ([takaya-fuj19](https://github.com/takaya-fuj19))
 - Bump InSpec to v1.33.1 [#6324](https://github.com/chef/chef/pull/6324) ([adamleff](https://github.com/adamleff))
-<!-- latest_stable_release -->
 
 
 ## [v13.3.27](https://github.com/chef/chef/tree/v13.3.27) (2017-07-26)
