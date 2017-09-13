@@ -102,8 +102,14 @@ describe Chef::Resource::WindowsTask do
   end
 
   context "#validate_start_time" do
-    it "raises error if start_time is nil" do
-      expect { resource.send(:validate_start_time, nil) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_time` needs to be provided with `frequency :once`")
+    it "raises error if start_time is nil when frequency `:once`" do
+      resource.frequency :once
+      expect { resource.send(:validate_start_time, nil, :once) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_time` needs to be provided with `frequency :once`")
+    end
+
+    it "raises error if start_time is given when frequency `:none`" do
+      resource.frequency :none
+      expect { resource.send(:validate_start_time, "12.00", :none) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_time` property is not supported with `frequency :none`")
     end
   end
 

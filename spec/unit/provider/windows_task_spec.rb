@@ -149,7 +149,7 @@ describe Chef::Provider::WindowsTask do
         new_resource.random_delay ""
         allow(provider).to receive(:task_need_update?).and_return(true)
         allow(provider).to receive(:basic_validation).and_return(true)
-        allow(provider).to receive(:run_schtasks).with("CREATE", { "F" => "", "SC" => :once, "ST" => "00:00", "SD" => "12/12/2012", "TR" => nil, "RU" => "SYSTEM" }).twice
+        allow(provider).to receive(:run_schtasks).with("CREATE", { "F" => "", "SC" => :once, "ST" => "00:00", "SD" => "", "TR" => nil, "RU" => "SYSTEM" }).twice
         expect(provider).to receive(:update_task_xml)
         provider.run_action(:create)
         expect(new_resource).to be_updated_by_last_action
