@@ -306,8 +306,8 @@ class Chef
 
         if new_resource.frequency == :none
           doc.root.elements.delete(xml_element_mapping["random_delay"])
-          cwd_element = REXML::Element.new(xml_element_mapping["random_delay"])
-          doc.root.elements.add(cwd_element)
+          trigger_element = REXML::Element.new(xml_element_mapping["random_delay"])
+          doc.root.elements.add(trigger_element)
         end
 
         options.each do |option|
