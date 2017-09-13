@@ -1,7 +1,19 @@
 This changelog reflects the current state of chef's 12 branch on github and may not reflect the current released version of chef, which is [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef).
 
+## [v12.21.11](https://github.com/chef/chef/tree/v12.21.10) (2017-09-13)
+[Full Changelog](https://github.com/chef/chef/compare/v12.21.10...v12.21.11)
+
+- Backport #6383 (Fix dsc_script with WMF5) [\#6395](https://github.com/chef/chef/pull/6395)
+
+## [v12.21.10](https://github.com/chef/chef/tree/v12.21.10) (2017-09-11)
+[Full Changelog](https://github.com/chef/chef/compare/v12.21.4...v12.21.10)
+
+- Rubygems 2.6.13 to fix CVE-2017-0899, CVE-2017-0900, CVE-2017-0901, CVE-2017-0902
+- Backport #6355 (speed up immutabilization) [\#6357](https://github.com/chef/chef/pull/6357)
+- Backport #6356 (node attributes: remove useless dup in merge_all) [\#6358](https://github.com/chef/chef/pull/6358)
+
 ## [v12.21.4](https://github.com/chef/chef/tree/v12.21.4) (2017-08-14)
-[Full Changelog](https://github.com/chef/chef/compare/v12.21.3.v12.21.4)
+[Full Changelog](https://github.com/chef/chef/compare/v12.21.3...v12.21.4)
 
 **Fixed bugs:**
 - Backport #5941 (Make ResourceReporter smarter to get resource identity and state) [\#6308](https://github.com/chef/chef/pull/6308)
