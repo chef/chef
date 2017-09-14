@@ -2,6 +2,14 @@ _This file holds "in progress" release notes for the current release under devel
 
 # Chef Client Release Notes 13.4:
 
+## Security release of Ruby
+
+Chef Client 13.4 includes Ruby 2.4.2 to fix the following CVEs:
+  * CVE-2017-0898
+  * CVE-2017-10784
+  * CVE-2017-14033
+  * CVE-2017-14064
+
 ## Security release of RubyGems
 
 Chef Client 13.4 includes RubyGems 2.6.13 to fix the following CVEs:
