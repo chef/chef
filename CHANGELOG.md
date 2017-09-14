@@ -6,17 +6,20 @@
 - Use ruby 2.4.2 to addess multiple security vulnerabilities [#6404](https://github.com/chef/chef/pull/6404) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
-<!-- release_rollup since=13.4.19 -->
-### Changes since 13.4.19 release
-
-#### Merged Pull Requests
-- Use ruby 2.4.2 to addess multiple security vulnerabilities [#6404](https://github.com/chef/chef/pull/6404) ([thommay](https://github.com/thommay)) <!-- 13.4.23 -->
-- Allow specifying default gateway on RHEL/Centos [#6386](https://github.com/chef/chef/pull/6386) ([tomdoherty](https://github.com/tomdoherty)) <!-- 13.4.20 -->
-- [MSYS-594] windows_task resource is not idempotent when specifying start_time and start_day [#6312](https://github.com/chef/chef/pull/6312) ([harikesh-kolekar](https://github.com/harikesh-kolekar)) <!-- 13.4.21 -->
-- MSYS-656 - fixed dsc_script for WMF5 [#6383](https://github.com/chef/chef/pull/6383) ([piyushawasthi](https://github.com/piyushawasthi)) <!-- 13.4.22 -->
+<!-- release_rollup since=13.4.24 -->
+### Changes since 13.4.24 release
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.4.24](https://github.com/chef/chef/tree/v13.4.24) (2017-09-14)
+
+#### Merged Pull Requests
+- MSYS-656 - fixed dsc_script for WMF5 [#6383](https://github.com/chef/chef/pull/6383) ([piyushawasthi](https://github.com/piyushawasthi))
+- [MSYS-594] windows_task resource is not idempotent when specifying start_time and start_day [#6312](https://github.com/chef/chef/pull/6312) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
+- Allow specifying default gateway on RHEL/Centos [#6386](https://github.com/chef/chef/pull/6386) ([tomdoherty](https://github.com/tomdoherty))
+- Use ruby 2.4.2 to addess multiple security vulnerabilities [#6404](https://github.com/chef/chef/pull/6404) ([thommay](https://github.com/thommay))
+<!-- latest_stable_release -->
+
 ## [v13.4.19](https://github.com/chef/chef/tree/v13.4.19) (2017-09-13)
 
 #### Bug Fixes
@@ -40,7 +43,6 @@
 - Alternate user local logon authentication for remote_file resource [#5832](https://github.com/chef/chef/pull/5832) ([NimishaS](https://github.com/NimishaS))
 - Add support for specifying ETHTOOL_OPTS in the ifconfig resource [#6384](https://github.com/chef/chef/pull/6384) ([tomdoherty](https://github.com/tomdoherty))
 - Cleanup the current changelog [#6387](https://github.com/chef/chef/pull/6387) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v13.3.42](https://github.com/chef/chef/tree/v13.3.42) (2017-08-16)
 
