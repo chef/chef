@@ -4,7 +4,21 @@ _This file holds "in progress" release notes for the current release under devel
 
 ## Security Fixes
 
-This release of Chef Client contains a new version of zlib, fixing 4
+This release of Chef Client contains Ruby 2.3.5, fixing 4 CVEs:
+
+  * CVE-2017-0898
+  * CVE-2017-10784
+  * CVE-2017-14033
+  * CVE-2017-14064
+
+It also contains a new version of Rubygems, fixing 4 CVEs:
+
+  * CVE-2017-0899
+  * CVE-2017-0900
+  * CVE-2017-0901
+  * CVE-2017-0902
+
+This release also contains a new version of zlib, fixing 4
 CVEs:
 
  *  [CVE-2016-9840](https://www.cvedetails.com/cve/CVE-2016-9840/)
