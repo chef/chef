@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.4.22 -->
-## [v13.4.22](https://github.com/chef/chef/tree/v13.4.22) (2017-09-12)
+<!-- latest_release 13.4.23 -->
+## [v13.4.23](https://github.com/chef/chef/tree/v13.4.23) (2017-09-14)
 
 #### Merged Pull Requests
-- MSYS-656 - fixed dsc_script for WMF5 [#6383](https://github.com/chef/chef/pull/6383) ([piyushawasthi](https://github.com/piyushawasthi))
+- Use ruby 2.4.2 to addess multiple security vulnerabilities [#6404](https://github.com/chef/chef/pull/6404) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.4.19 -->
 ### Changes since 13.4.19 release
 
 #### Merged Pull Requests
+- Use ruby 2.4.2 to addess multiple security vulnerabilities [#6404](https://github.com/chef/chef/pull/6404) ([thommay](https://github.com/thommay)) <!-- 13.4.23 -->
 - Allow specifying default gateway on RHEL/Centos [#6386](https://github.com/chef/chef/pull/6386) ([tomdoherty](https://github.com/tomdoherty)) <!-- 13.4.20 -->
 - [MSYS-594] windows_task resource is not idempotent when specifying start_time and start_day [#6312](https://github.com/chef/chef/pull/6312) ([harikesh-kolekar](https://github.com/harikesh-kolekar)) <!-- 13.4.21 -->
 - MSYS-656 - fixed dsc_script for WMF5 [#6383](https://github.com/chef/chef/pull/6383) ([piyushawasthi](https://github.com/piyushawasthi)) <!-- 13.4.22 -->
