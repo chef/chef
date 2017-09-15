@@ -18,24 +18,25 @@
 
 require "chef/resource"
 require "chef/dsl/declare_resource"
-require "chef/mixin/which"
 require "chef/provider/noop"
 require "shellwords"
 
 class Chef
   class Provider
     class ZypperRepository < Chef::Provider
-
-      extend Chef::Mixin::Which
-
-      provides :zypper_repository do
-        which "zypper"
-      end
+      provides :zypper_repository, platform_family: "suse"
 
       def load_current_resource
       end
 
       action :create do
+        if new_resource.gpgautoimportkeys
+          declare_resource(:execute, "import gpg key from #{new_resource.gpgkey}") do
+            command "/bin/rpm --import #{new_resource.gpgkey}"
+            action :nothing
+          end
+        end
+
         declare_resource(:template, "/etc/zypp/repos.d/#{escaped_repo_name}.repo") do
           if template_available?(new_resource.source)
             source new_resource.source
@@ -46,6 +47,7 @@ class Chef
           sensitive new_resource.sensitive
           variables(config: new_resource)
           mode new_resource.mode
+          notifies :run, "execute[import gpg key from #{new_resource.gpgkey}]", :before if new_resource.gpgautoimportkeys
           notifies :refresh, new_resource, :immediately if new_resource.refresh_cache
         end
       end
