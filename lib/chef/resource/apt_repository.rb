@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: 2016-2017, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ class Chef
   class Resource
     class AptRepository < Chef::Resource
       resource_name :apt_repository
-      provides :apt_repository
+      provides :apt_repository, os: "linux", platform_family: "debian"
 
       property :repo_name, String, name_property: true
       property :uri, String
