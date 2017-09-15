@@ -18,9 +18,7 @@
 
 require "chef/resource"
 require "chef/dsl/declare_resource"
-require "chef/mixin/shell_out"
 require "chef/mixin/which"
-require "chef/http/simple"
 require "chef/provider/noop"
 
 class Chef
