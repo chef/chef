@@ -72,7 +72,6 @@ def exit_handler(signal, frame):
 signal.signal(signal.SIGINT, exit_handler)
 signal.signal(signal.SIGHUP, exit_handler)
 signal.signal(signal.SIGPIPE, exit_handler)
-signal.signal(signal.SIGCHLD, exit_handler)
 
 while 1:
     # kill self if we get orphaned (tragic)
