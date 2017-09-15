@@ -57,7 +57,7 @@ class Chef
       end
 
       action :refresh do
-        declare_resource(:execute, "zypper#{' --gpg-auto-import-keys' if new_resource.gpgautoimportkeys} refresh #{escaped_repo_name}") do
+        declare_resource(:execute, "zypper#{' --gpg-auto-import-keys' if new_resource.gpgautoimportkeys} --quiet --no-confirm refresh --force #{escaped_repo_name}") do
           only_if "zypper lr #{escaped_repo_name}"
         end
       end
