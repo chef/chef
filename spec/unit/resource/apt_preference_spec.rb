@@ -24,18 +24,26 @@ describe Chef::Resource::AptPreference do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::AptPreference.new("libmysqlclient16", run_context) }
 
-  it "should create a new Chef::Resource::AptPreference" do
+  it "creates a new Chef::Resource::AptPreference" do
     expect(resource).to be_a_kind_of(Chef::Resource)
     expect(resource).to be_a_kind_of(Chef::Resource::AptPreference)
   end
 
-  it "should resolve to a Noop class when apt-get is not found" do
-    expect(Chef::Provider::AptPreference).to receive(:which).with("apt-get").and_return(false)
+  it "resolves to a Noop class when on non-linux OS" do
+    node.automatic[:os] = "windows"
+    node.automatic[:platform_family] = "windows"
     expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
   end
 
-  it "should resolve to a AptPreference class when apt-get is found" do
-    expect(Chef::Provider::AptPreference).to receive(:which).with("apt-get").and_return(true)
+  it "resolves to a Noop class when on non-debian linux" do
+    node.automatic[:os] = "linux"
+    node.automatic[:platform_family] = "gentoo"
+    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
+  end
+
+  it "resolves to a AptUpdate class when on a debian platform_family" do
+    node.automatic[:os] = "linux"
+    node.automatic[:platform_family] = "debian"
     expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::AptPreference)
   end
 end
