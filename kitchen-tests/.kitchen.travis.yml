@@ -31,38 +31,35 @@ verifier:
 platforms:
 - name: debian-7
   driver:
-    image: debian:7
+    image: dokken/debian-7
     pid_one_command: /sbin/init
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
-      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
+      - RUN /usr/bin/apt-get -y install sudo
       - RUN /bin/mkdir /var/run/sshd
 
 - name: debian-8
   driver:
-    image: debian:8
+    image: dokken/debian-8
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
-      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
+      - RUN /usr/bin/apt-get -y install sudo
 
-- name: centos-5
+- name: debian-9
   driver:
-    image: centos:5
-    platform: rhel
-    run_command: /sbin/init
+    image: dokken/debian-9
+    pid_one_command: /bin/systemd
     intermediate_instructions:
-      - RUN yum clean all
-      - RUN yum install -y which initscripts net-tools sudo wget
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get -y install sudo
 
 - name: centos-6
   driver:
-    image: centos:6
+    image: dokken/centos-6
     run_command: /sbin/init
     intermediate_instructions:
-      - RUN yum clean all
-      - RUN yum -y install which initscripts net-tools sudo wget
+      - RUN yum -y install sudo
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
   attributes:
     chef_client:
@@ -70,52 +67,47 @@ platforms:
 
 - name: centos-7
   driver:
-    image: centos:7
+    image: dokken/centos-7
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN yum clean all
-      - RUN yum -y install which initscripts net-tools sudo wget
+      - RUN yum -y install sudo
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: fedora-latest
   driver:
-    image: fedora:latest
+    image: dokken/fedora-latest
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN dnf -y install yum which initscripts rpm-build zlib-devel net-tools sudo wget
-      - RUN yum makecache
+      - RUN dnf -y install sudo
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: ubuntu-14.04
   driver:
-    image: ubuntu-upstart:14.04
+    image: dokken/ubuntu-14.04
     pid_one_command: /sbin/init
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
-      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
+      - RUN /usr/bin/apt-get -y install sudo
 
 - name: ubuntu-16.04
   driver:
-    image: ubuntu:16.04
+    image: dokken/ubuntu-16.04
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
-      - RUN /usr/bin/apt-get -y install zlib1g-dev sudo net-tools wget ca-certificates
+      - RUN /usr/bin/apt-get -y install sudo
 
-- name: opensuse-13.2
+- name: opensuse-leap
   driver:
-    image: opensuse:13.2
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN zypper refresh
+    image: dokken/opensuse-leap
+    pid_one_command: /bin/systemd⏎
 
 - name: amazonlinux
   driver:
-    image: amazonlinux:latest
+    image: dokken/amazonlinux
     pid_one_command: /sbin/init
     intermediate_instructions:
-      - RUN yum clean all
-      - RUN yum -y install which initscripts net-tools sudo wget
+      - RUN yum -y install sudo
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 suites:
