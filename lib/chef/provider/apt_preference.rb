@@ -24,7 +24,7 @@ require "chef/log"
 class Chef
   class Provider
     class AptPreference < Chef::Provider
-      provides :apt_preference, os: "linux", platform_family: [ "debian" ]
+      provides :apt_preference, os: "linux", platform_family: "debian"
 
       APT_PREFERENCE_DIR = "/etc/apt/preferences.d".freeze
 

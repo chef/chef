@@ -22,7 +22,7 @@ class Chef
   class Resource
     class AptRepository < Chef::Resource
       resource_name :apt_repository
-      provides :apt_repository, os: "linux", platform_family: [ "debian" ]
+      provides :apt_repository, os: "linux", platform_family: "debian"
 
       property :repo_name, String, name_property: true
       property :uri, String

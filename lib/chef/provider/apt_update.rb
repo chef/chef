@@ -23,7 +23,7 @@ require "chef/dsl/declare_resource"
 class Chef
   class Provider
     class AptUpdate < Chef::Provider
-      provides :apt_update, os: "linux", platform_family: [ "debian" ]
+      provides :apt_update, os: "linux", platform_family: "debian"
 
       APT_CONF_DIR = "/etc/apt/apt.conf.d"
       STAMP_DIR = "/var/lib/apt/periodic"

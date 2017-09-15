@@ -22,7 +22,7 @@ class Chef
   class Resource
     class AptUpdate < Chef::Resource
       resource_name :apt_update
-      provides :apt_update, os: "linux", platform_family: [ "debian" ]
+      provides :apt_update, os: "linux", platform_family: "debian"
 
       # allow bare apt_update with no name
       property :name, String, default: ""
