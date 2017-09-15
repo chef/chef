@@ -42,9 +42,6 @@ include_recipe "chef-client::delete_validation"
 include_recipe "chef-client::config"
 include_recipe "chef-client"
 
-# hack needed for debian-7 on docker
-directory "/var/run/sshd"
-
 include_recipe "openssh"
 
 include_recipe "nscd"
