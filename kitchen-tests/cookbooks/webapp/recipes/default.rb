@@ -2,11 +2,10 @@
 # Cookbook Name:: webapp
 # Recipe:: default
 #
-# Copyright (C) 2014
+# Copyright:: Chef Software, Inc. 2016-2017
 #
 
 include_recipe "apache2"
-include_recipe "database::mysql"
 include_recipe "php"
 
 creds = Hash.new

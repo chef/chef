@@ -1,6 +1,6 @@
 source "https://supermarket.chef.io"
 
-#cookbook "webapp", path: "cookbooks/webapp"
+cookbook "webapp", path: "cookbooks/webapp"
 cookbook "base", path: "cookbooks/base"
 
 # Disabled pending updating these test cases for Chef 13.
