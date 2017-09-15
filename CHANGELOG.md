@@ -1,13 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.4.23 -->
-## [v13.4.23](https://github.com/chef/chef/tree/v13.4.23) (2017-09-14)
+<!-- latest_release 13.4.25 -->
+## [v13.4.25](https://github.com/chef/chef/tree/v13.4.25) (2017-09-15)
 
 #### Merged Pull Requests
-- Use ruby 2.4.2 to addess multiple security vulnerabilities [#6404](https://github.com/chef/chef/pull/6404) ([thommay](https://github.com/thommay))
+- Replace which apt-get check with simple debian check in apt resources [#6409](https://github.com/chef/chef/pull/6409) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.4.24 -->
 ### Changes since 13.4.24 release
+
+#### Merged Pull Requests
+- Replace which apt-get check with simple debian check in apt resources [#6409](https://github.com/chef/chef/pull/6409) ([tas50](https://github.com/tas50)) <!-- 13.4.25 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
