@@ -9,8 +9,7 @@
 # have to get too clever here, you can delete packages if they don't exist everywhere we test.
 pkgs = %w{lsof tcpdump strace zsh dmidecode ltrace bc curl wget telnet subversion git traceroute htop tmux }
 
-# this deliberately calls the multipackage API N times in order to do one package installation in order to exercise the
-# multipackage cookbook.
+# this deliberately calls the multipackage API N times in order to do one package installation in order to exercise multipackage api
 pkgs.each do |pkg|
   multipackage pkgs
 end
