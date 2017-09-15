@@ -34,7 +34,10 @@ include_recipe "ntp"
 
 include_recipe "resolver"
 
-include_recipe "users::sysadmins"
+users_manage "sysadmin" do
+  group_id 2300
+  action [:create]
+end
 
 include_recipe "sudo"
 
