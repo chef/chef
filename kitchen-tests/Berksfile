@@ -4,9 +4,6 @@ source "https://supermarket.chef.io"
 cookbook "base", path: "cookbooks/base"
 
 cookbook "php", "~> 1.5.0"
-
-cookbook "resolver", github: "chef-cookbooks/resolver"
-
 # Disabled pending updating these test cases for Chef 13.
 # cookbook "awesome_customers_ubuntu_wrapper", path: "cookbooks/awesome_customers_ubuntu_wrapper"
 # cookbook "awesome_customers_ubuntu", github: "lamont-granquist/awesome_customers_ubuntu", branch: "lcg/bump-mysql-version"
