@@ -54,7 +54,7 @@ GRAPH
     compat_resource (>= 12.16.3)
     openssl (>= 4.0)
   resolver (2.0.1)
-  selinux (2.0.3)
+  selinux (2.1.0)
   seven_zip (2.0.2)
     windows (>= 1.2.2)
   sudo (3.5.3)
