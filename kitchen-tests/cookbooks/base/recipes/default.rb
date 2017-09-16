@@ -9,7 +9,7 @@ hostname "chef-travis-ci.chef.io"
 
 if platform_family?("debian")
   include_recipe "ubuntu"
-  apt_update "packages"
+  apt_update
 end
 
 if platform_family?("rhel", "fedora", "amazon")
