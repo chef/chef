@@ -100,7 +100,7 @@ platforms:
 - name: opensuse-leap
   driver:
     image: dokken/opensuse-leap
-    pid_one_command: /bin/systemd⏎
+    pid_one_command: /bin/systemd
 
 - name: amazonlinux
   driver:
