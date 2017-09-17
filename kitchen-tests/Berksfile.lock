@@ -42,7 +42,7 @@ GRAPH
   nscd (5.0.0)
   ntp (3.5.2)
   ohai (5.2.0)
-  openssh (2.4.1)
+  openssh (2.5.0)
     iptables (>= 1.0)
   openssl (7.1.0)
   php (4.5.0)
