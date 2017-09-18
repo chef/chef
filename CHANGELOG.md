@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.4.27 -->
-## [v13.4.27](https://github.com/chef/chef/tree/v13.4.27) (2017-09-16)
+<!-- latest_release 13.4.28 -->
+## [v13.4.28](https://github.com/chef/chef/tree/v13.4.28) (2017-09-18)
 
 #### Merged Pull Requests
-- Remove unused requires in yum_repository [#6413](https://github.com/chef/chef/pull/6413) ([tas50](https://github.com/tas50))
+- Open apt resources up to prevent breaking change [#6417](https://github.com/chef/chef/pull/6417) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.4.24 -->
 ### Changes since 13.4.24 release
 
 #### Merged Pull Requests
+- Open apt resources up to prevent breaking change [#6417](https://github.com/chef/chef/pull/6417) ([tas50](https://github.com/tas50)) <!-- 13.4.28 -->
 - Remove unused requires in yum_repository [#6413](https://github.com/chef/chef/pull/6413) ([tas50](https://github.com/tas50)) <!-- 13.4.27 -->
 - Quiet the output of the zypper refresh and add force [#6408](https://github.com/chef/chef/pull/6408) ([tas50](https://github.com/tas50)) <!-- 13.4.26 -->
 - Replace which apt-get check with simple debian check in apt resources [#6409](https://github.com/chef/chef/pull/6409) ([tas50](https://github.com/tas50)) <!-- 13.4.25 -->
