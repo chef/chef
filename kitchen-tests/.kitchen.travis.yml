@@ -111,7 +111,7 @@ platforms:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 suites:
-  - name: webapp
+  - name: base
     run_list:
       - recipe[base::default]
   - name: awesome_customers_ubuntu

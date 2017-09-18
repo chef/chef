@@ -1,5 +1,5 @@
 #
-# Cookbook:: webapp
+# Cookbook:: base
 # Recipe:: packages
 #
 # Copyright:: 2014-2017, Chef Software, Inc.

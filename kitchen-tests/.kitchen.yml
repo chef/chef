@@ -28,7 +28,7 @@ platforms:
   - name: centos-6
 
 suites:
-  - name: webapp
+  - name: base
     run_list:
       - recipe[base::default]
   - name: awesome_customers_ubuntu
