@@ -40,14 +40,17 @@ merge_actions:
   - built_in:bump_version:
       ignore_labels:
         - "Version: Skip Bump"
+        - "Expeditor: Skip All"
   - bash:.expeditor/update_version.sh:
       only_if: built_in:bump_version
   - built_in:update_changelog:
       ignore_labels:
         - "Meta: Exclude From Changelog"
+        - "Expeditor: Skip All"
   - built_in:trigger_omnibus_release_build:
       ignore_labels:
         - "Omnibus: Skip Build"
+        - "Expeditor: Skip All"
       only_if: built_in:bump_version
 
 # These actions are taken, in the order specified, when an Omnibus artifact is promoted
