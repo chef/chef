@@ -22,7 +22,7 @@ class Chef
   class Resource
     class AptPreference < Chef::Resource
       resource_name :apt_preference
-      provides :apt_preference, os: "linux", platform_family: "debian"
+      provides :apt_preference
 
       property :package_name, String, name_property: true, regex: [/^([a-z]|[A-Z]|[0-9]|_|-|\.|\*|\+)+$/]
       property :glob, String
