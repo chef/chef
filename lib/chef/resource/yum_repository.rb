@@ -24,7 +24,8 @@ class Chef
       resource_name :yum_repository
       provides :yum_repository
 
-      # http://linux.die.net/man/5/yum.conf
+      # http://linux.die.net/man/5/yum.conf as well as
+      # http://dnf.readthedocs.io/en/latest/conf_ref.html
       property :baseurl, [String, Array], regex: /.*/
       property :clean_headers, [TrueClass, FalseClass], default: false # deprecated
       property :clean_metadata, [TrueClass, FalseClass], default: true
@@ -44,6 +45,7 @@ class Chef
       property :make_cache, [TrueClass, FalseClass], default: true
       property :max_retries, [String, Integer]
       property :metadata_expire, String, regex: [/^\d+$/, /^\d+[mhd]$/, /never/]
+      property :metalink, String, regex: /.*/
       property :mirror_expire, String, regex: [/^\d+$/, /^\d+[mhd]$/]
       property :mirrorexpire, String, regex: /.*/
       property :mirrorlist_expire, String, regex: [/^\d+$/, /^\d+[mhd]$/]
@@ -65,6 +67,7 @@ class Chef
       property :sslclientkey, String, regex: /.*/
       property :sslverify, [TrueClass, FalseClass]
       property :timeout, String, regex: /^\d+$/
+      property :throttle, [String, Integer]
       property :username, String, regex: /.*/
 
       default_action :create
