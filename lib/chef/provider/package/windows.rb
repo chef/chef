@@ -165,6 +165,10 @@ class Chef
         #
         # @return [Boolean] true if new_version is equal to or included in current_version
         def target_version_already_installed?(current_version, new_version)
+          version_equals?(current_version, new_version)
+        end
+
+        def version_equals?(current_version, new_version)
           Chef::Log.debug("Checking if #{new_resource} version '#{new_version}' is already installed. #{current_version} is currently installed")
           if current_version.is_a?(Array)
             current_version.include?(new_version)
