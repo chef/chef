@@ -220,7 +220,7 @@ class Chef
 
       def start_day_updated?
         current_day = DateTime.strptime(current_resource.start_day, convert_system_date_format_to_ruby_date_format)
-        new_day = DateTime.parse(new_resource.start_day)
+        new_day = parse_day(new_resource.start_day)
         current_day != new_day
       end
 
@@ -230,7 +230,7 @@ class Chef
       end
 
       def convert_user_date_to_system_date(date_in_string)
-        DateTime.parse(date_in_string).strftime(convert_system_date_format_to_ruby_long_date)
+        parse_day(date_in_string).strftime(convert_system_date_format_to_ruby_long_date)
       end
 
       def convert_system_date_format_to_ruby_long_date
@@ -486,6 +486,10 @@ class Chef
       def set_current_idle_time(idle_time)
         duration = ISO8601::Duration.new(idle_time)
         current_resource.idle_time(duration.minutes.atom.to_i)
+      end
+
+      def parse_day(str)
+        Date.strptime(str, '%m/%d/%Y')
       end
 
     end
