@@ -179,6 +179,17 @@ class Chef
 
         private
 
+        def version_compare(v1, v2)
+          if v1 == "latest" || v2 == "latest"
+            return 0
+          end
+
+          gem_v1 = Gem::Version.new(v1)
+          gem_v2 = Gem::Version.new(v2)
+
+          gem_v1 <=> gem_v2
+        end
+
         def uninstall_registry_entries
           @uninstall_registry_entries ||= Chef::Provider::Package::Windows::RegistryUninstallEntry.find_entries(new_resource.package_name)
         end
