@@ -331,7 +331,7 @@ describe Chef::Provider::WindowsTask do
         new_resource.frequency_modifier 15
         new_resource.user "SYSTEM"
         new_resource.execution_time_limit "PT72H"
-        new_resource.start_day "30-Mar-2017"
+        new_resource.start_day "03/30/2017"
         new_resource.start_time "13:12"
       end
 
@@ -383,7 +383,7 @@ describe Chef::Provider::WindowsTask do
       new_resource.frequency_modifier 15
       new_resource.user "SYSTEM"
       new_resource.execution_time_limit "PT72H"
-      new_resource.start_day "30-Mar-2017"
+      new_resource.start_day "03/30/2017"
       new_resource.start_time "13:12"
     end
     context "when start_day not changed" do
