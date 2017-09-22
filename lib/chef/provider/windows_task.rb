@@ -489,7 +489,7 @@ class Chef
       end
 
       def parse_day(str)
-        Date.strptime(str, '%m/%d/%Y')
+        Date.strptime(str, "%m/%d/%Y")
       end
 
     end
