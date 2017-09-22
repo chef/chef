@@ -29,9 +29,11 @@ class Chef
 
       allowed_actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock, :flush_cache
 
-      provides :package, platform_family: %w{rhel fedora amazon} do
+      provides :package, platform_family: %w{fedora amazon} do
         which("dnf") && shell_out("rpm -q dnf").stdout =~ /^dnf-[1-9]/
       end
+
+      provides :package, platform_family: %{rhel}, platform_version: ">= 8"
 
       provides :dnf_package
 
