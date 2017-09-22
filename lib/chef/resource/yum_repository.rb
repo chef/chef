@@ -24,11 +24,12 @@ class Chef
       resource_name :yum_repository
       provides :yum_repository
 
-      # http://linux.die.net/man/5/yum.conf
+      # http://linux.die.net/man/5/yum.conf as well as
+      # http://dnf.readthedocs.io/en/latest/conf_ref.html
       property :baseurl, [String, Array], regex: /.*/
-      property :cost, String, regex: /^\d+$/
       property :clean_headers, [TrueClass, FalseClass], default: false # deprecated
       property :clean_metadata, [TrueClass, FalseClass], default: true
+      property :cost, String, regex: /^\d+$/
       property :description, String, regex: /.*/, default: "Yum Repository"
       property :enabled, [TrueClass, FalseClass], default: true
       property :enablegroups, [TrueClass, FalseClass]
@@ -44,17 +45,18 @@ class Chef
       property :make_cache, [TrueClass, FalseClass], default: true
       property :max_retries, [String, Integer]
       property :metadata_expire, String, regex: [/^\d+$/, /^\d+[mhd]$/, /never/]
-      property :mirrorexpire, String, regex: /.*/
-      property :mirrorlist, String, regex: /.*/
+      property :metalink, String, regex: /.*/
       property :mirror_expire, String, regex: [/^\d+$/, /^\d+[mhd]$/]
+      property :mirrorexpire, String, regex: /.*/
       property :mirrorlist_expire, String, regex: [/^\d+$/, /^\d+[mhd]$/]
+      property :mirrorlist, String, regex: /.*/
       property :mode, default: "0644"
-      property :priority, String, regex: /^(\d?[0-9]|[0-9][0-9])$/
-      property :proxy, String, regex: /.*/
-      property :proxy_username, String, regex: /.*/
-      property :proxy_password, String, regex: /.*/
-      property :username, String, regex: /.*/
+      property :options, Hash
       property :password, String, regex: /.*/
+      property :priority, String, regex: /^(\d?[0-9]|[0-9][0-9])$/
+      property :proxy_password, String, regex: /.*/
+      property :proxy_username, String, regex: /.*/
+      property :proxy, String, regex: /.*/
       property :repo_gpgcheck, [TrueClass, FalseClass]
       property :report_instanceid, [TrueClass, FalseClass]
       property :repositoryid, String, regex: /.*/, name_property: true
@@ -65,7 +67,8 @@ class Chef
       property :sslclientkey, String, regex: /.*/
       property :sslverify, [TrueClass, FalseClass]
       property :timeout, String, regex: /^\d+$/
-      property :options, Hash
+      property :throttle, [String, Integer]
+      property :username, String, regex: /.*/
 
       default_action :create
       allowed_actions :create, :remove, :makecache, :add, :delete
