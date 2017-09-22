@@ -429,9 +429,9 @@ describe Chef::Provider::WindowsTask do
   end
 
   describe "#convert_user_date_to_system_date" do
-    it "when current resource start date is '30-May-2017' then returns '05/30/2017'" do
-      allow(provider).to receive(:get_system_short_date_format).and_return("MM/dd/yyyy")
-      expect(provider.send(:convert_user_date_to_system_date, "30-May-2017")).to eq("05/30/2017")
+    it "when current resource start date is '05/30/2017' then returns '30/05/2017'" do
+      allow(provider).to receive(:get_system_short_date_format).and_return("dd/MM/yyyy")
+      expect(provider.send(:convert_user_date_to_system_date, "05/30/2017")).to eq("30/05/2017")
     end
   end
 
