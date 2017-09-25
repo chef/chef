@@ -53,14 +53,14 @@ class Chef
       end
 
       action :delete do
-        declare_resource(:execute, "zypper removerepo #{escaped_repo_name}") do
-          only_if "zypper lr #{escaped_repo_name}"
+        declare_resource(:execute, "zypper --quiet --non-interactive removerepo #{escaped_repo_name}") do
+          only_if "zypper --quiet lr #{escaped_repo_name}"
         end
       end
 
       action :refresh do
-        declare_resource(:execute, "zypper#{' --gpg-auto-import-keys' if new_resource.gpgautoimportkeys} --quiet --no-confirm refresh --force #{escaped_repo_name}") do
-          only_if "zypper lr #{escaped_repo_name}"
+        declare_resource(:execute, "zypper --quiet --non-interactive refresh --force #{escaped_repo_name}") do
+          only_if "zypper --quiet lr #{escaped_repo_name}"
         end
       end
 
