@@ -365,7 +365,7 @@ class Chef
       # `version_satisfied_by?(version, constraint)` might be a better name to make this generic.
       #
       def version_requirement_satisfied?(current_version, new_version)
-        version_equals?(current_version, new_version)
+        target_version_already_installed?(current_version, new_version)
       end
 
       # @todo: extract apt/dpkg specific preseeding to a helper class
