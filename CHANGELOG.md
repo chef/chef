@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.4.32 -->
-## [v13.4.32](https://github.com/chef/chef/tree/v13.4.32) (2017-09-25)
+<!-- latest_release 13.4.33 -->
+## [v13.4.33](https://github.com/chef/chef/tree/v13.4.33) (2017-09-25)
 
 #### Merged Pull Requests
-- Fix Knife search ID only option to actually filter result set [#6438](https://github.com/chef/chef/pull/6438) ([dimsh99](https://github.com/dimsh99))
+- update expeditor labels [#6432](https://github.com/chef/chef/pull/6432) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.4.24 -->
 ### Changes since 13.4.24 release
 
 #### Merged Pull Requests
+- update expeditor labels [#6432](https://github.com/chef/chef/pull/6432) ([thommay](https://github.com/thommay)) <!-- 13.4.33 -->
 - Fix Knife search ID only option to actually filter result set [#6438](https://github.com/chef/chef/pull/6438) ([dimsh99](https://github.com/dimsh99)) <!-- 13.4.32 -->
 - Add throttle and metalink options to yum_repository [#6431](https://github.com/chef/chef/pull/6431) ([tas50](https://github.com/tas50)) <!-- 13.4.31 -->
 - Update dokken integration testing: dokken images, updated cookbook, debian 9 [#6414](https://github.com/chef/chef/pull/6414) ([tas50](https://github.com/tas50)) <!-- 13.4.30 -->
