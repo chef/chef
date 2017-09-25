@@ -68,10 +68,13 @@ class Chef
       alias_method :action_remove, :action_delete
 
       # zypper repos are allowed to have spaces in the names
+      # @return [String] escaped repo string
       def escaped_repo_name
         Shellwords.escape(new_resource.repo_name)
       end
 
+      # determine if a template file is available in the current run
+      # @return [Boolean] template file exists or doesn't
       def template_available?(path)
         !path.nil? && run_context.has_template_in_cookbook?(new_resource.cookbook_name, path)
       end
