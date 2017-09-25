@@ -91,6 +91,8 @@ class Chef
           search_args[:filter_result] = create_result_filter(config[:filter_result])
         elsif (not ui.config[:attribute].nil?) && (not ui.config[:attribute].empty?)
           search_args[:filter_result] = create_result_filter_from_attributes(ui.config[:attribute])
+        elsif config[:id_only]
+          search_args[:filter_result] = create_result_filter_from_attributes([])
         end
 
         begin
