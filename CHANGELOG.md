@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.4.31 -->
-## [v13.4.31](https://github.com/chef/chef/tree/v13.4.31) (2017-09-22)
+<!-- latest_release 13.4.32 -->
+## [v13.4.32](https://github.com/chef/chef/tree/v13.4.32) (2017-09-25)
 
 #### Merged Pull Requests
-- Add throttle and metalink options to yum_repository [#6431](https://github.com/chef/chef/pull/6431) ([tas50](https://github.com/tas50))
+- Fix Knife search ID only option to actually filter result set [#6438](https://github.com/chef/chef/pull/6438) ([dimsh99](https://github.com/dimsh99))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.4.24 -->
 ### Changes since 13.4.24 release
 
 #### Merged Pull Requests
+- Fix Knife search ID only option to actually filter result set [#6438](https://github.com/chef/chef/pull/6438) ([dimsh99](https://github.com/dimsh99)) <!-- 13.4.32 -->
 - Add throttle and metalink options to yum_repository [#6431](https://github.com/chef/chef/pull/6431) ([tas50](https://github.com/tas50)) <!-- 13.4.31 -->
 - Update dokken integration testing: dokken images, updated cookbook, debian 9 [#6414](https://github.com/chef/chef/pull/6414) ([tas50](https://github.com/tas50)) <!-- 13.4.30 -->
 - Don&#39;t catch SIGCHLD from dnf_helper.py [#6416](https://github.com/chef/chef/pull/6416) ([nemith](https://github.com/nemith)) <!-- 13.4.29 -->
