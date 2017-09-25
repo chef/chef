@@ -104,18 +104,6 @@ class Chef
         begin
           children = result.children.sort_by { |child| child.name }
         rescue Chef::ChefFS::FileSystem::NotFoundError => e
-          begin
-            rest.get("/clients/#{Chef::Config[:client_name]}")
-          rescue Net::HTTPServerException => e
-            if e.response.class == Net::HTTPNotFound
-              require "json"
-              begin
-                JSON.load(e.response.body())
-              rescue JSON::ParserError
-                raise Chef::Exceptions::NotAChefServerException
-              end
-            end
-          end
           ui.error "#{format_path(e.entry)}: No such file or directory"
           return []
         end
