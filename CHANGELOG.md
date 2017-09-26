@@ -1,15 +1,17 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.4.33 -->
-## [v13.4.33](https://github.com/chef/chef/tree/v13.4.33) (2017-09-25)
+<!-- latest_release 13.4.35 -->
+## [v13.4.35](https://github.com/chef/chef/tree/v13.4.35) (2017-09-26)
 
 #### Merged Pull Requests
-- update expeditor labels [#6432](https://github.com/chef/chef/pull/6432) ([thommay](https://github.com/thommay))
+- Only accept MM/DD/YYYY for windows_task start_day [#6434](https://github.com/chef/chef/pull/6434) ([jaym](https://github.com/jaym))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.4.24 -->
 ### Changes since 13.4.24 release
 
 #### Merged Pull Requests
+- Only accept MM/DD/YYYY for windows_task start_day [#6434](https://github.com/chef/chef/pull/6434) ([jaym](https://github.com/jaym)) <!-- 13.4.35 -->
+- Update dependencies to pull in InSpec v1.39.1 [#6440](https://github.com/chef/chef/pull/6440) ([adamleff](https://github.com/adamleff)) <!-- 13.4.34 -->
 - update expeditor labels [#6432](https://github.com/chef/chef/pull/6432) ([thommay](https://github.com/thommay)) <!-- 13.4.33 -->
 - Fix Knife search ID only option to actually filter result set [#6438](https://github.com/chef/chef/pull/6438) ([dimsh99](https://github.com/dimsh99)) <!-- 13.4.32 -->
 - Add throttle and metalink options to yum_repository [#6431](https://github.com/chef/chef/pull/6431) ([tas50](https://github.com/tas50)) <!-- 13.4.31 -->

@@ -36,15 +36,20 @@ describe Chef::Resource::WindowsTask, :windows_only do
       subject do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
         new_resource.command task_name
+        # Make sure MM/DD/YYYY is accepted
+        new_resource.start_day "09/20/2017"
         new_resource
       end
 
-      it "creates a scheduled task to run every 1 hr" do
+      it "creates a scheduled task to run every 1 hr starting on 09/20/2017" do
         subject.run_action(:create)
         task_details = windows_task_provider.send(:load_task_hash, task_name)
         expect(task_details[:TaskName]).to eq("\\chef-client")
         expect(task_details[:TaskToRun]).to eq("chef-client")
         expect(task_details[:"Repeat:Every"]).to eq("1 Hour(s), 0 Minute(s)")
+
+        # This test will not work across locales
+        expect(task_details[:StartDate]).to eq("9/20/2017")
       end
     end
 
@@ -300,7 +305,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
     context "when start_day is passed with frequency :onstart" do
       it "raises error" do
         subject.frequency :onstart
-        subject.start_day "mon"
+        subject.start_day "09/20/2017"
         expect { subject.after_created }.to raise_error("`start_day` property is not supported with frequency: onstart")
       end
     end
