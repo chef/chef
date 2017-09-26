@@ -242,7 +242,11 @@ class Chef
     # @return [Boolean]
     #
     def sensitive?
-      options.fetch(:sensitive, false)
+      if name == :password
+        options.fetch(:sensitive, true)
+      else
+        options.fetch(:sensitive, false)
+      end
     end
 
     #
