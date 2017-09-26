@@ -138,6 +138,7 @@ module Shell
   def self.session
     unless client_type.instance.node_built?
       puts "Session type: #{client_type.session_type}"
+      client_type.instance.json_configuration = @json_attribs
       client_type.instance.reset!
     end
     client_type.instance

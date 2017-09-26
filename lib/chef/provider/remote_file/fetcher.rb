@@ -24,6 +24,9 @@ class Chef
 
         def self.for_resource(uri, new_resource, current_resource)
           if network_share?(uri)
+            if !Chef::Platform.windows?
+              raise Exceptions::UnsupportedPlatform, "Fetching the file on a network share is supported only on the Windows platform. Please change your source: #{uri}"
+            end
             Chef::Provider::RemoteFile::NetworkFile.new(uri, new_resource, current_resource)
           else
             case uri.scheme

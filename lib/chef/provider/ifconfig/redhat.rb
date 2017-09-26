@@ -38,6 +38,10 @@ class Chef
 <% if new_resource.hwaddr %>HWADDR=<%= new_resource.hwaddr %><% end %>
 <% if new_resource.metric %>METRIC=<%= new_resource.metric %><% end %>
 <% if new_resource.mtu %>MTU=<%= new_resource.mtu %><% end %>
+<% if new_resource.ethtool_opts %>ETHTOOL_OPTS="<%= new_resource.ethtool_opts %>"<% end %>
+<% if new_resource.bonding_opts %>BONDING_OPTS="<%= new_resource.bonding_opts %>"<% end %>
+<% if new_resource.master %>MASTER=<%= new_resource.master %><% end %>
+<% if new_resource.slave %>SLAVE=<%= new_resource.slave %><% end %>
           }
           @config_path = "/etc/sysconfig/network-scripts/ifcfg-#{new_resource.device}"
         end

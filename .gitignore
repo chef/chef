@@ -25,6 +25,7 @@ binstubs/
 
 # IDE files
 .project
+.idea
 
 # Documentation
 _site/*

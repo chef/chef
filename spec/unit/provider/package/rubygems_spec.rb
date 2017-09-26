@@ -539,7 +539,7 @@ describe Chef::Provider::Package::Rubygems do
         end
       end
 
-      context "when the source is from the rubygems_uri" do
+      context "when the source is from the rubygems_url" do
         it "determines the candidate version by querying the remote gem servers" do
           Chef::Config[:rubygems_url] = "https://mirror1/"
           expect(provider.gem_env).to receive(:candidate_version_from_remote)

@@ -18,16 +18,12 @@
 
 require "chef/provider"
 require "chef/provider/noop"
-require "chef/mixin/which"
+require "chef/dsl/declare_resource"
 
 class Chef
   class Provider
     class AptUpdate < Chef::Provider
-      extend Chef::Mixin::Which
-
-      provides :apt_update do
-        which("apt-get")
-      end
+      provides :apt_update, os: "linux", platform_family: "debian"
 
       APT_CONF_DIR = "/etc/apt/apt.conf.d"
       STAMP_DIR = "/var/lib/apt/periodic"

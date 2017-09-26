@@ -5,7 +5,11 @@
 [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)
 [![](https://img.shields.io/badge/Release%20Policy-Cadence%20Release-brightgreen.svg)](https://github.com/chef/chef-rfc/blob/master/rfc086-chef-oss-project-policies.md#cadence-release)
 
-Want to try Chef? Get started with [learnchef](https://learn.chef.io)
+## Getting Started
+
+Want to try Chef?
+For Chef user, please refer to [Quick Start](https://docs.chef.io/quick_start.html)
+For more details, please refer to [learnchef](https://learn.chef.io)
 
 - Documentation: <https://docs.chef.io>
 - Source: <https://github.com/chef/chef/tree/master>
@@ -37,7 +41,7 @@ to report issues against in the Chef docs in the
 If you can't determine the appropriate place to report an issue, then please open it
 against the repository you think best fits and it will be directed to the appropriate project.
 
-## Installing From Git
+## Installing From Git for Developers
 
 **NOTE:** As a Chef user, please download the omnibus package of [Chef](https://downloads.chef.io/chef) or [Chef-DK](https://downloads.chef.io/chef)
 

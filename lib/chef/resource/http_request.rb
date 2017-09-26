@@ -27,7 +27,7 @@ class Chef
       identity_attr :url
 
       default_action :get
-      allowed_actions :get, :put, :post, :delete, :head, :options
+      allowed_actions :get, :patch, :put, :post, :delete, :head, :options
 
       def initialize(name, run_context = nil)
         super

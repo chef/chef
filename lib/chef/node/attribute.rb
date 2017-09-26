@@ -399,7 +399,7 @@ class Chef
        #
 
       def merged_attributes(*path)
-        immutablize(merge_all(path))
+        merge_all(path)
       end
 
       def combined_override(*path)
@@ -536,15 +536,10 @@ class Chef
           apply_path(@automatic, path),
         ]
 
-        components.map! do |component|
-          safe_dup(component)
+        ret = components.inject(NIL) do |merged, component|
+          hash_only_merge!(merged, component)
         end
-
-        return nil if components.compact.empty?
-
-        components.inject(ImmutableMash.new({}, self, __node__, :merged)) do |merged, component|
-          Chef::Mixin::DeepMerge.hash_only_merge!(merged, component)
-        end
+        ret == NIL ? nil : ret
       end
 
        # Deep merge the default attribute levels with array merging.
@@ -554,10 +549,11 @@ class Chef
        # @param path [Array] Array of args to method chain to descend into the node object
        # @return [attr] Deep Merged values (may be VividMash, Hash, Array, etc) from the node object
       def merge_defaults(path)
-        DEFAULT_COMPONENTS.inject(nil) do |merged, component_ivar|
+        ret = DEFAULT_COMPONENTS.inject(NIL) do |merged, component_ivar|
           component_value = apply_path(instance_variable_get(component_ivar), path)
-          Chef::Mixin::DeepMerge.deep_merge(component_value, merged)
+          deep_merge!(merged, component_value)
         end
+        ret == NIL ? nil : ret
       end
 
        # Deep merge the override attribute levels with array merging.
@@ -567,10 +563,11 @@ class Chef
        # @param path [Array] Array of args to method chain to descend into the node object
        # @return [attr] Deep Merged values (may be VividMash, Hash, Array, etc) from the node object
       def merge_overrides(path)
-        OVERRIDE_COMPONENTS.inject(nil) do |merged, component_ivar|
+        ret = OVERRIDE_COMPONENTS.inject(NIL) do |merged, component_ivar|
           component_value = apply_path(instance_variable_get(component_ivar), path)
-          Chef::Mixin::DeepMerge.deep_merge(component_value, merged)
+          deep_merge!(merged, component_value)
         end
+        ret == NIL ? nil : ret
       end
 
        # needed for __path__
@@ -578,7 +575,76 @@ class Chef
         key.kind_of?(Symbol) ? key.to_s : key
       end
 
-    end
+      NIL = Object.new
 
+      # @api private
+      def deep_merge!(merge_onto, merge_with)
+        # If there are two Hashes, recursively merge.
+        if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
+          merge_with.each do |key, merge_with_value|
+            value =
+              if merge_onto.has_key?(key)
+                deep_merge!(safe_dup(merge_onto[key]), merge_with_value)
+              else
+                merge_with_value
+              end
+
+            # internal_set bypasses converting keys, does convert values and allows writing to immutable mashes
+            merge_onto.internal_set(key, value)
+          end
+          merge_onto
+
+        elsif merge_onto.kind_of?(Array) && merge_with.kind_of?(Array)
+          merge_onto |= merge_with
+
+        # If merge_with is nil, don't replace merge_onto
+        elsif merge_with.nil?
+          merge_onto
+
+        # In all other cases, replace merge_onto with merge_with
+        else
+          if merge_with.kind_of?(Hash)
+            Chef::Node::VividMash.new(merge_with)
+          elsif merge_with.kind_of?(Array)
+            Chef::Node::AttrArray.new(merge_with)
+          else
+            merge_with
+          end
+        end
+      end
+
+      # @api private
+      def hash_only_merge!(merge_onto, merge_with)
+        # If there are two Hashes, recursively merge.
+        if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
+          merge_with.each do |key, merge_with_value|
+            value =
+              if merge_onto.has_key?(key)
+                hash_only_merge!(safe_dup(merge_onto[key]), merge_with_value)
+              else
+                merge_with_value
+              end
+
+            # internal_set bypasses converting keys, does convert values and allows writing to immutable mashes
+            merge_onto.internal_set(key, value)
+          end
+          merge_onto
+
+        # If merge_with is nil, don't replace merge_onto
+        elsif merge_with.nil?
+          merge_onto
+
+        # In all other cases, replace merge_onto with merge_with
+        else
+          if merge_with.kind_of?(Hash)
+            Chef::Node::ImmutableMash.new(merge_with)
+          elsif merge_with.kind_of?(Array)
+            Chef::Node::ImmutableArray.new(merge_with)
+          else
+            merge_with
+          end
+        end
+      end
+    end
   end
 end

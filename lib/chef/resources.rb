@@ -17,6 +17,7 @@
 #
 
 require "chef/resource/apt_package"
+require "chef/resource/apt_preference"
 require "chef/resource/apt_repository"
 require "chef/resource/apt_update"
 require "chef/resource/bash"
@@ -95,7 +96,9 @@ require "chef/resource/yum_repository"
 require "chef/resource/lwrp_base"
 require "chef/resource/bff_package"
 require "chef/resource/zypper_package"
+require "chef/resource/zypper_repository"
 require "chef/resource/cab_package"
 require "chef/resource/powershell_package"
 require "chef/resource/msu_package"
 require "chef/resource/windows_task"
+require "chef/resource/windows_path"

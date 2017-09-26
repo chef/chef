@@ -273,6 +273,10 @@ class Chef
             opts[:paranoid] = false
             opts[:user_known_hosts_file] = "/dev/null"
           end
+          if ssh_config[:keepalive]
+            opts[:keepalive] = true
+            opts[:keepalive_interval] = ssh_config[:keepalive_interval]
+          end
         end
       end
 

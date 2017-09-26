@@ -83,6 +83,61 @@ describe Chef::Provider::Git do
     expect(@provider.new_resource).to equal(@resource)
   end
 
+  context "cast git version into gem version object" do
+    it "returns correct version with standard git" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 2.14.1"))
+      expect(@provider.git_gem_version).to eq Gem::Version.new("2.14.1")
+    end
+
+    it "returns correct version with Apple git" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 2.11.0 (Apple Git-81)"))
+      expect(@provider.git_gem_version).to eq Gem::Version.new("2.11.0")
+    end
+
+    it "maintains deprecated method name" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 1.2.3"))
+      expect(@provider.git_minor_version).to eq Gem::Version.new("1.2.3")
+    end
+
+    it "does not know how to handle other version" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version home-grown-git-99"))
+      expect(@provider.git_gem_version).to be_nil
+    end
+
+    it "determines single branch option when it fails to parse git version" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version home-grown-git-99"))
+      expect(@provider.git_has_single_branch_option?).to be false
+    end
+
+    it "determines single branch option as true when it parses git version and version is large" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 1.8.0"))
+      expect(@provider.git_has_single_branch_option?).to be true
+    end
+
+    it "determines single branch option as false when it parses git version and version is small" do
+      expect(@provider).to receive(:shell_out!)
+        .with("git --version", log_tag: "git[web2.0 app]")
+        .and_return(double("ShellOut result", stdout: "git version 1.7.4"))
+      expect(@provider.git_has_single_branch_option?).to be false
+    end
+
+    it "is compatible with git in travis" do
+      expect(@provider.git_gem_version).to be > Gem::Version.new("1.0")
+    end
+  end
+
   context "resolving revisions to a SHA" do
 
     before do

@@ -17,6 +17,7 @@
 #
 
 require "chef/provider/apt_update"
+require "chef/provider/apt_preference"
 require "chef/provider/apt_repository"
 require "chef/provider/batch"
 require "chef/provider/cookbook_file"
@@ -59,6 +60,8 @@ require "chef/provider/user"
 require "chef/provider/whyrun_safe_ruby_block"
 require "chef/provider/yum_repository"
 require "chef/provider/windows_task"
+require "chef/provider/zypper_repository"
+require "chef/provider/windows_path"
 
 require "chef/provider/env/windows"
 

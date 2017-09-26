@@ -1,3 +1,3 @@
-# webapp
+# base
 
-TODO: Enter the cookbook description here.
+A standard chef "base" cookbook that performs various base system configuration tasks using common community cookbooks.

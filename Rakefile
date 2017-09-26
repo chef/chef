@@ -27,9 +27,7 @@ require_relative "tasks/rspec"
 require_relative "tasks/maintainers"
 require_relative "tasks/cbgb"
 require_relative "tasks/dependencies"
-require_relative "tasks/changelog"
 require_relative "tasks/announce"
-require_relative "tasks/version"
 
 ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef", "chef") do |package|
   package.component_paths = ["chef-config"]
@@ -49,15 +47,6 @@ task :register_eventlog do
   Dir.chdir "ext/win32-eventlog/" do
     system "rake register"
   end
-end
-
-desc "Keep the Dockerfile up-to-date"
-task :update_dockerfile do
-  require "mixlib/install"
-  latest_stable_version = Mixlib::Install.available_versions("chef", "stable").last
-  text = File.read("Dockerfile")
-  new_text = text.gsub(/^ARG VERSION=[\d\.]+$/, "ARG VERSION=#{latest_stable_version}")
-  File.open("Dockerfile", "w+") { |f| f.write(new_text) }
 end
 
 begin

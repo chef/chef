@@ -155,8 +155,8 @@ describe Chef::Provider::DscResource do
       context "multiple resource are found" do
         let (:resource_records) do
           [
-          { "Module" => { "Name" => "ModuleName1" } },
-          { "Module" => { "Name" => "ModuleName2" } },
+          { "Module" => { "Name" => "ModuleName1", "Version" => "1.0.0.0" } },
+          { "Module" => { "Name" => "ModuleName1", "Version" => "2.0.0.0" } },
         ] end
 
         it "raises MultipleDscResourcesFound" do

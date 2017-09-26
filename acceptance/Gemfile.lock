@@ -128,7 +128,7 @@ GEM
       mixlib-shellout
       mixlib-versioning
     mixlib-log (1.7.1)
-    mixlib-shellout (2.2.7)
+    mixlib-shellout (2.3.2)
     mixlib-versioning (1.1.0)
     molinillo (0.5.7)
     multi_json (1.12.1)

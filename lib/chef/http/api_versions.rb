@@ -37,6 +37,8 @@ class Chef
         end
         if http_response.key?("x-ops-server-api-version")
           ServerAPIVersions.instance.set_versions(JSONCompat.parse(http_response["x-ops-server-api-version"]))
+        else
+          ServerAPIVersions.instance.unversioned!
         end
         [http_response, rest_request, return_value]
       end

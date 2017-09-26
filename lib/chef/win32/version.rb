@@ -30,6 +30,8 @@ class Chef
       include Chef::ReservedNames::Win32::API::Macros
       include Chef::ReservedNames::Win32::API::System
 
+      attr_reader :major_version, :minor_version, :build_number
+
       # Ruby implementation of
       # http://msdn.microsoft.com/en-us/library/ms724833(v=vs.85).aspx
       # http://msdn.microsoft.com/en-us/library/ms724358(v=vs.85).aspx
@@ -112,6 +114,10 @@ class Chef
               (c.to_s =~ /#{m}/i )
           end
         end
+      end
+
+      def win_10_creators_or_higher?
+        windows_10? && build_number >= 15063
       end
 
       private

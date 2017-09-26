@@ -19,7 +19,6 @@
 require "chef/resource"
 require "chef/dsl/declare_resource"
 require "chef/mixin/shell_out"
-require "chef/mixin/which"
 require "chef/http/simple"
 require "chef/provider/noop"
 
@@ -27,11 +26,8 @@ class Chef
   class Provider
     class AptRepository < Chef::Provider
       include Chef::Mixin::ShellOut
-      extend Chef::Mixin::Which
 
-      provides :apt_repository do
-        which("apt-get")
-      end
+      provides :apt_repository, os: "linux", platform_family: "debian"
 
       LIST_APT_KEYS = "apt-key list".freeze
       LIST_APT_KEY_FINGERPRINTS = "apt-key adv --list-public-keys --with-fingerprint --with-colons".freeze
@@ -41,10 +37,12 @@ class Chef
 
       action :add do
         unless new_resource.key.nil?
-          if is_key_id?(new_resource.key) && !has_cookbook_file?(new_resource.key)
-            install_key_from_keyserver
-          else
-            install_key_from_uri
+          new_resource.key.each do |k|
+            if is_key_id?(k) && !has_cookbook_file?(k)
+              install_key_from_keyserver(k)
+            else
+              install_key_from_uri(k)
+            end
           end
         end
 
@@ -151,19 +149,19 @@ class Chef
         (installed_keys & proposed_keys).sort == proposed_keys.sort
       end
 
-      def install_key_from_uri
-        key_name = new_resource.key.gsub(/[^0-9A-Za-z\-]/, "_")
+      def install_key_from_uri(key)
+        key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
         cached_keyfile = ::File.join(Chef::Config[:file_cache_path], key_name)
-        type = if new_resource.key.start_with?("http")
+        type = if key.start_with?("http")
                  :remote_file
-               elsif has_cookbook_file?(new_resource.key)
+               elsif has_cookbook_file?(key)
                  :cookbook_file
                else
                  raise Chef::Exceptions::FileNotFound, "Cannot locate key file"
                end
 
         declare_resource(type, cached_keyfile) do
-          source new_resource.key
+          source key
           mode "0644"
           sensitive new_resource.sensitive
           action :create
@@ -181,7 +179,7 @@ class Chef
         end
       end
 
-      def install_key_from_keyserver(key = new_resource.key, keyserver = new_resource.keyserver)
+      def install_key_from_keyserver(key, keyserver = new_resource.keyserver)
         cmd = "apt-key adv --recv"
         cmd << " --keyserver-options http-proxy=#{new_resource.key_proxy}" if new_resource.key_proxy
         cmd << " --keyserver "

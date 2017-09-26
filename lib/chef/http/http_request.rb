@@ -49,6 +49,7 @@ class Chef
       ENCODING_GZIP_DEFLATE = "gzip;q=1.0,deflate;q=0.6,identity;q=0.3".freeze
 
       GET     = "get".freeze
+      PATCH   = "patch".freeze
       PUT     = "put".freeze
       POST    = "post".freeze
       DELETE  = "delete".freeze
@@ -161,6 +162,8 @@ class Chef
                           Net::HTTP::Post.new(req_path, headers)
                         when PUT
                           Net::HTTP::Put.new(req_path, headers)
+                        when PATCH
+                          Net::HTTP::Patch.new(req_path, headers)
                         when DELETE
                           Net::HTTP::Delete.new(req_path, headers)
                         when HEAD

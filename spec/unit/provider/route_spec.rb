@@ -29,9 +29,14 @@ describe Chef::Provider::Route do
     @new_resource.gateway "10.0.0.9"
     @current_resource = Chef::Resource::Route.new("10.0.0.10")
     @current_resource.gateway "10.0.0.9"
+    @default_resource = Chef::Resource::Route.new("default")
+    @default_resource.gateway "10.0.0.9"
 
     @provider = Chef::Provider::Route.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
+
+    @default_provider = Chef::Provider::Route.new(@default_resource, @run_context)
+    @default_provider.current_resource = @default_resource
   end
 
   describe Chef::Provider::Route, "hex2ip" do
@@ -161,6 +166,11 @@ describe Chef::Provider::Route do
       @new_resource.gateway(nil)
       expect(@provider.generate_command(:add).join(" ")).not_to match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}/)
     end
+
+    it "should use the gatway when target is default" do
+      @default_resource.gateway("10.0.0.10")
+      expect(@default_provider.generate_command(:add).join(" ")).to match(/10.0.0.10/)
+    end
   end
 
   describe Chef::Provider::Route, "generate_command for action_delete" do
@@ -216,9 +226,19 @@ describe Chef::Provider::Route do
 
         route_file = StringIO.new
         expect(File).to receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
-        # Chef::Log.should_receive(:debug).with("route[10.0.0.10] writing route.eth0\n10.0.0.10 via 10.0.0.9\n")
         @run_context.resource_collection << @new_resource
         @provider.generate_config
+      end
+
+    end
+    %w{ centos redhat fedora }.each do |platform|
+      it "should write a default route file on #{platform} platform" do
+        @node.automatic_attrs[:platform] = platform
+
+        route_file = StringIO.new
+        expect(File).to receive(:new).with("/etc/sysconfig/network", "w").and_return(route_file)
+        @run_context.resource_collection << @default_resource
+        @default_provider.generate_config
       end
     end
 

@@ -68,7 +68,6 @@ Chef Provisioning and Drivers.  Supported Drivers are listed in the [README](htt
       maintainers = [
         "jkeiser",
         "jjasghar",
-        "joaogbcravo",
         "stuartpreston",
         "thehar"
       ]
@@ -186,7 +185,7 @@ The specific components of Chef related to a given platform - including (but not
 
         maintainers = [
           "Aevin1387",
-          "tBunnyMan",
+          "OnlyHaveCans",
           "AgentMeerkat"
         ]
 
@@ -294,9 +293,9 @@ The specific components of Chef related to a given platform - including (but not
     Name = "Steven Danna"
     GitHub = "stevendanna"
 
-  [people.tBunnyMan]
+  [people.OnlyHaveCans]
     Name = "David Aronsohn"
-    GitHub = "tbunnyman"
+    GitHub = "OnlyHaveCans"
     IRC = "tBunnyMan"
     Twitter = "OnlyHaveCans"
 
@@ -353,11 +352,6 @@ The specific components of Chef related to a given platform - including (but not
     GitHub = "jjasghar"
     Twitter = "jjasghar"
     IRC = "j^2"
-
-  [people.joaogbcravo]
-    Name = "João Cravo"
-    GitHub = "joaogbcravo"
-    Twitter = "joaogbcravo"
 
   [people.thehar]
     Name = "Harley Alaniz"

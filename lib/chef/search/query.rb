@@ -71,6 +71,11 @@ class Chef
           args_h = args_h.reject { |k, v| k == :fuzz }
         end
 
+        # Set default rows parameter to 1000. This is the default in
+        # Chef Server, but we set it explicitly here so that we can
+        # confidently advance our start parameter.
+        args_h[:rows] ||= 1000
+
         response = call_rest_service(type, query: query, **args_h)
 
         if block
@@ -87,7 +92,7 @@ class Chef
           # args_h[:rows] to avoid asking the search backend for
           # overlapping pages (which could result in duplicates).
           #
-          next_start = response["start"] + (args_h[:rows] || response["rows"].length)
+          next_start = response["start"] + args_h[:rows]
           unless next_start >= response["total"]
             args_h[:start] = next_start
             search(type, query, args_h, &block)

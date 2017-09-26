@@ -1,13 +1,13 @@
 version: "master-{build}"
 
-os: Windows Server 2012 R2
+os: Visual Studio 2015
 platform:
   - x64
 
 environment:
   matrix:
-    - ruby_version: "23-x64"
-    - ruby_version: "23"
+    - ruby_version: "24-x64"
+    - ruby_version: "24"
 
 clone_folder: c:\projects\chef
 clone_depth: 1

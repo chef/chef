@@ -61,6 +61,9 @@ keepalive=1
 <% if @config.metadata_expire %>
 metadata_expire=<%= @config.metadata_expire %>
 <% end %>
+<% if @config.metalink %>
+metalink=<%= @config.metalink %>
+<% end %>
 <% if @config.mirrorlist %>
 mirrorlist=<%= @config.mirrorlist %>
 <% end %>
@@ -111,6 +114,9 @@ sslclientkey=<%= @config.sslclientkey %>
 <% end %>
 <% unless @config.sslverify.nil? %>
 sslverify=<%= ( @config.sslverify ) ? 'true' : 'false' %>
+<% end %>
+<% if @config.throttle %>
+throttle=<%= @config.throttle %>
 <% end %>
 <% if @config.timeout %>
 timeout=<%= @config.timeout %>

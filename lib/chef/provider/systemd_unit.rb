@@ -22,6 +22,7 @@ require "chef/mixin/shell_out"
 require "chef/resource/file"
 require "chef/resource/file/verification/systemd_unit"
 require "iniparse"
+require "shellwords"
 
 class Chef
   class Provider
@@ -203,11 +204,11 @@ class Chef
       end
 
       def systemctl_execute!(action, unit)
-        shell_out_with_systems_locale!("#{systemctl_cmd} #{action} #{unit}", systemctl_opts)
+        shell_out_with_systems_locale!("#{systemctl_cmd} #{action} #{Shellwords.escape(unit)}", systemctl_opts)
       end
 
       def systemctl_execute(action, unit)
-        shell_out("#{systemctl_cmd} #{action} #{unit}", systemctl_opts)
+        shell_out("#{systemctl_cmd} #{action} #{Shellwords.escape(unit)}", systemctl_opts)
       end
 
       def systemctl_cmd

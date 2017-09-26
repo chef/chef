@@ -86,7 +86,9 @@ class Chef
         self.is_running = false
 
         # cidr or quad dot mask
-        new_ip = if new_resource.netmask
+        new_ip = if new_resource.target == "default"
+                   IPAddr.new(new_resource.gateway)
+                 elsif new_resource.netmask
                    IPAddr.new("#{new_resource.target}/#{new_resource.netmask}")
                  else
                    IPAddr.new(new_resource.target)
@@ -180,12 +182,29 @@ class Chef
             end
           end
           conf.each do |k, v|
-            network_file_name = "/etc/sysconfig/network-scripts/route-#{k}"
-            converge_by("write route route.#{k}\n#{conf[k]} to #{network_file_name}") do
-              network_file = ::File.new(network_file_name, "w")
-              network_file.puts(conf[k])
-              Chef::Log.debug("#{new_resource} writing route.#{k}\n#{conf[k]}")
-              network_file.close
+            if new_resource.target == "default"
+              network_file_name = "/etc/sysconfig/network"
+              converge_by("write route default route to #{network_file_name}") do
+                Chef::Log.debug("#{new_resource} writing default route #{new_resource.gateway} to #{network_file_name}")
+                if ::File.exists?(network_file_name)
+                  network_file = ::Chef::Util::FileEdit.new(network_file_name)
+                  network_file.search_file_replace_line /^GATEWAY=/, "GATEWAY=#{new_resource.gateway}"
+                  network_file.insert_line_if_no_match /^GATEWAY=/, "GATEWAY=#{new_resource.gateway}"
+                  network_file.write_file
+                else
+                  network_file = ::File.new(network_file_name, "w")
+                  network_file.puts("GATEWAY=#{new_resource.gateway}")
+                  network_file.close
+                end
+              end
+            else
+              network_file_name = "/etc/sysconfig/network-scripts/route-#{k}"
+              converge_by("write route route.#{k}\n#{conf[k]} to #{network_file_name}") do
+                network_file = ::File.new(network_file_name, "w")
+                network_file.puts(conf[k])
+                Chef::Log.debug("#{new_resource} writing route.#{k}\n#{conf[k]}")
+                network_file.close
+              end
             end
           end
         end

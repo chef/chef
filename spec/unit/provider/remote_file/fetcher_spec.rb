@@ -27,6 +27,7 @@ describe Chef::Provider::RemoteFile::Fetcher do
   describe "when passed a network share" do
     before do
       expect(Chef::Provider::RemoteFile::NetworkFile).to receive(:new).and_return(fetcher_instance)
+      allow(Chef::Platform).to receive(:windows?).and_return(true)
     end
 
     context "when host is a name" do

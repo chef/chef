@@ -118,6 +118,7 @@ describe Chef::Provider::WindowsTask do
 
       it "creates the task if it's not already existing" do
         allow(provider).to receive(:task_need_update?).and_return(true)
+        allow(provider).to receive(:basic_validation).and_return(true)
         expect(provider).to receive(:run_schtasks).with("CREATE", { "F" => "", "SC" => :hourly, "MO" => 1, "TR" => nil, "RU" => "SYSTEM" })
         provider.run_action(:create)
         expect(new_resource).to be_updated_by_last_action
@@ -126,6 +127,7 @@ describe Chef::Provider::WindowsTask do
       it "updates the task XML if random_delay is provided" do
         new_resource.random_delay "20"
         allow(provider).to receive(:task_need_update?).and_return(true)
+        allow(provider).to receive(:basic_validation).and_return(true)
         expect(provider).to receive(:run_schtasks).with("CREATE", { "F" => "", "SC" => :hourly, "MO" => 1, "TR" => nil, "RU" => "SYSTEM" })
         expect(provider).to receive(:update_task_xml)
         provider.run_action(:create)
@@ -135,6 +137,7 @@ describe Chef::Provider::WindowsTask do
       it "updates the task XML if execution_time_limit is provided" do
         new_resource.execution_time_limit "20"
         allow(provider).to receive(:task_need_update?).and_return(true)
+        allow(provider).to receive(:basic_validation).and_return(true)
         expect(provider).to receive(:run_schtasks).with("CREATE", { "F" => "", "SC" => :hourly, "MO" => 1, "TR" => nil, "RU" => "SYSTEM" })
         expect(provider).to receive(:update_task_xml)
         provider.run_action(:create)
@@ -280,6 +283,29 @@ describe Chef::Provider::WindowsTask do
     end
   end
 
+  describe "#basic_validation" do
+    context "when command doesn't exist" do
+      it "raise error" do
+        new_resource.command ""
+        expect { provider.send(:basic_validation) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      end
+    end
+
+    context "when task_name doesn't exist" do
+      let(:new_resource) { Chef::Resource::WindowsTask.new("") }
+      it "raise error" do
+        expect { provider.send(:basic_validation) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      end
+    end
+
+    context "when task_name and command exists" do
+      it "returns true" do
+        new_resource.command "cd ~/"
+        expect(provider.send(:basic_validation)).to be(true)
+      end
+    end
+  end
+
   describe "#task_need_update?" do
     context "when task doesn't exist" do
       before do
@@ -296,6 +322,7 @@ describe Chef::Provider::WindowsTask do
     context "when the task exists" do
       before do
         allow(provider).to receive(:load_task_hash).and_return(task_hash)
+        allow(provider).to receive(:get_system_short_date_format).and_return("MM/dd/yyyy")
         provider.load_current_resource
 
         new_resource.command "chef-client"
@@ -304,6 +331,8 @@ describe Chef::Provider::WindowsTask do
         new_resource.frequency_modifier 15
         new_resource.user "SYSTEM"
         new_resource.execution_time_limit "PT72H"
+        new_resource.start_day "30-Mar-2017"
+        new_resource.start_time "13:12"
       end
 
       context "when no attributes are modified" do
@@ -324,6 +353,130 @@ describe Chef::Provider::WindowsTask do
           new_resource.months "JAN"
           expect(provider.send(:task_need_update?)).to be(true)
         end
+      end
+
+      context "when start_day is updated" do
+        it "returns true" do
+          new_resource.start_day "01/01/2000"
+          expect(provider.send(:task_need_update?)).to be(true)
+        end
+      end
+
+      context "when start_time updated" do
+        it "returns true" do
+          new_resource.start_time "01:01"
+          expect(provider.send(:task_need_update?)).to be(true)
+        end
+      end
+    end
+  end
+
+  describe "#start_day_updated?" do
+    before do
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      allow(provider).to receive(:get_system_short_date_format).and_return("MM/dd/yyyy")
+      provider.load_current_resource
+
+      new_resource.command "chef-client"
+      new_resource.run_level :highest
+      new_resource.frequency :minute
+      new_resource.frequency_modifier 15
+      new_resource.user "SYSTEM"
+      new_resource.execution_time_limit "PT72H"
+      new_resource.start_day "30-Mar-2017"
+      new_resource.start_time "13:12"
+    end
+    context "when start_day not changed" do
+      it "returns false" do
+        expect(provider.send(:start_day_updated?)).to be(false)
+      end
+    end
+
+    context "when start_day changed" do
+      it "returns true" do
+        new_resource.start_day "01/01/2000"
+        expect(provider.send(:start_day_updated?)).to be(true)
+      end
+    end
+  end
+
+  describe "#start_time_updated?" do
+    before do
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+
+      new_resource.command "chef-client"
+      new_resource.run_level :highest
+      new_resource.frequency :minute
+      new_resource.frequency_modifier 15
+      new_resource.user "SYSTEM"
+      new_resource.execution_time_limit "PT72H"
+      new_resource.start_day "3/30/2017"
+      new_resource.start_time "13:12"
+    end
+    context "when start_time not changed" do
+      it "returns false" do
+        expect(provider.send(:start_time_updated?)).to be(false)
+      end
+    end
+
+    context "when start_time changed" do
+      it "returns true" do
+        new_resource.start_time "01:01"
+        expect(provider.send(:start_time_updated?)).to be(true)
+      end
+    end
+  end
+
+  describe "#convert_user_date_to_system_date" do
+    it "when current resource start date is '30-May-2017' then returns '05/30/2017'" do
+      allow(provider).to receive(:get_system_short_date_format).and_return("MM/dd/yyyy")
+      expect(provider.send(:convert_user_date_to_system_date, "30-May-2017")).to eq("05/30/2017")
+    end
+  end
+
+  describe "#convert_system_date_format_to_ruby_date_format" do
+    context "when system date format 'dd-MMM-yy'" do
+      it "returns '%d-%b-%y'" do
+        allow(provider).to receive(:get_system_short_date_format).and_return("dd-MMM-yy")
+        expect(provider.send(:convert_system_date_format_to_ruby_date_format)).to eq("%d-%b-%y")
+      end
+    end
+
+    context "when system date format 'dd/MM/yyyy'" do
+      it "returns '%d/%m/%Y'" do
+        allow(provider).to receive(:get_system_short_date_format).and_return("dd/MM/yyyy")
+        expect(provider.send(:convert_system_date_format_to_ruby_date_format)).to eq("%d/%m/%Y")
+      end
+    end
+  end
+
+  describe "#convert_system_date_format_to_ruby_long_date" do
+    context "when system date format 'dd-MMM-yy'" do
+      it "returns '%d-%m-%Y'" do
+        allow(provider).to receive(:get_system_short_date_format).and_return("dd-MMM-yy")
+        expect(provider.send(:convert_system_date_format_to_ruby_long_date)).to eq("%d-%m-%Y")
+      end
+    end
+
+    context "when system date format 'dd/MM/yyyy'" do
+      it "returns '%d/%m/%Y'" do
+        allow(provider).to receive(:get_system_short_date_format).and_return("dd/MM/yyyy")
+        expect(provider.send(:convert_system_date_format_to_ruby_long_date)).to eq("%d/%m/%Y")
+      end
+    end
+  end
+
+  describe "#common_date_format_conversion" do
+    context "when system date format 'dd-MM-yyyy'" do
+      it "returns '%d-%m-%Y'" do
+        expect(provider.send(:common_date_format_conversion, "dd-MM-yyyy")).to eq("%d-%m-%Y")
+      end
+    end
+
+    context "when system date format 'd-M-yyyy'" do
+      it "returns '%d-%m-%Y'" do
+        expect(provider.send(:common_date_format_conversion, "dd-MM-yyyy")).to eq("%d-%m-%Y")
       end
     end
   end

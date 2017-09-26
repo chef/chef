@@ -90,6 +90,7 @@ class Chef
       end
 
       def manage_plist(action)
+        return unless manage_agent?(action)
         if source
           res = cookbook_file_resource
         else
@@ -101,9 +102,28 @@ class Chef
       end
 
       def manage_service(action)
+        return unless manage_agent?(action)
         res = service_resource
         res.run_action(action)
         new_resource.updated_by_last_action(true) if res.updated?
+      end
+
+      def manage_agent?(action)
+        # Gets UID of console_user and converts to string.
+        console_user = Etc.getpwuid(::File.stat("/dev/console").uid).name
+        root = console_user == "root"
+        agent = type == "agent"
+        invalid_action = [:delete, :disable, :enable, :restart].include?(action)
+        lltstype = ""
+        if new_resource.limit_load_to_session_type
+          lltstype = new_resource.limit_load_to_session_type
+        end
+        invalid_type = lltstype != "LoginWindow"
+        if root && agent && invalid_action && invalid_type
+          Chef::Log.debug("#{label}: Aqua LaunchAgents shouldn't be loaded as root")
+          return false
+        end
+        true
       end
 
       def service_resource

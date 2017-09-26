@@ -16,8 +16,7 @@ group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
   gem "inspec"
-  # nokogiri has no ruby-2.4 version for windows so it cannot go into our Gemfile.lock
-  #  gem "nokogiri", ">= 1.7.1"
+  gem "chef-vault"
 end
 
 group(:omnibus_package, :pry) do
@@ -31,7 +30,7 @@ group(:docgen) do
   gem "yard"
 end
 
-group(:maintenance, :ci) do
+group(:maintenance) do
   gem "tomlrb"
 
   # To sync maintainers with github
@@ -52,15 +51,11 @@ end
 group(:development, :test) do
   gem "rake"
   gem "simplecov"
+  gem "webmock"
 
   # for testing new chefstyle rules
   # gem 'chefstyle', github: 'chef/chefstyle'
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
-end
-
-group(:ci) do
-  gem "github_changelog_generator", git: "https://github.com/chef/github-changelog-generator"
-  gem "mixlib-install"
 end
 
 group(:travis) do

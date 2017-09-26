@@ -63,7 +63,6 @@ To mention the team, use @chef/provisioning
 
 * [John Keiser](https://github.com/jkeiser)
 * [JJ Asghar](https://github.com/jjasghar)
-* [João Cravo](https://github.com/joaogbcravo)
 * [Stuart Preston](https://github.com/stuartpreston)
 * [Harley Alaniz](https://github.com/thehar)
 
@@ -196,7 +195,7 @@ To mention the team, use @chef/client-freebsd
 ### Maintainers
 
 * [Cory Stephenson](https://github.com/Aevin1387)
-* [David Aronsohn](https://github.com/tbunnyman)
+* [David Aronsohn](https://github.com/OnlyHaveCans)
 * [Bryant Lippert](https://github.com/AgentMeerkat)
 
 ## OpenBSD

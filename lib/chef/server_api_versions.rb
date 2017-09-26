@@ -26,15 +26,34 @@ class Chef
     end
 
     def min_server_version
-      !@versions.nil? ? Integer(@versions["min_version"]) : nil
+      # If we're working with a pre-api-versioning server, always claim to be zero
+      if @versions.nil?
+        unversioned? ? 0 : nil
+      else
+        Integer(@versions["min_version"])
+      end
     end
 
     def max_server_version
-      !@versions.nil? ? Integer(@versions["max_version"]) : nil
+      # If we're working with a pre-api-versioning server, always claim to be zero
+      if @versions.nil?
+        unversioned? ? 0 : nil
+      else
+        Integer(@versions["max_version"])
+      end
+    end
+
+    def unversioned!
+      @unversioned = true
+    end
+
+    def unversioned?
+      @unversioned
     end
 
     def reset!
       @versions = nil
+      @unversioned = false
     end
   end
 end

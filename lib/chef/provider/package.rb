@@ -311,18 +311,19 @@ class Chef
       #
       # This MUST have 'equality' semantics -- the exact thing matches the exact thing.
       #
-      # The current_version should probably be dropped out of the method signature, it should
-      # always be the first argument.
-      #
       # The name is not just bad, but i find it completely misleading, consider:
       #
       #    target_version_already_installed?(current_version, new_version)
       #    target_version_already_installed?(current_version, candidate_version)
       #
-      # which of those is the 'target_version'?  i'd say the new_version and i'm confused when
+      # Which of those is the 'target_version'?  I'd say the new_version and I'm confused when
       # i see it called with the candidate_version.
       #
-      # `current_version_equals?(version)` would be a better name
+      # `version_equals?(v1, v2)` would be a better name.
+      #
+      # Note that most likely we need a spaceship operator on versions that subclasses can implement
+      # and we should have `version_compare(v1, v2)` that returns `v1 <=> v2`.
+      #
       def target_version_already_installed?(current_version, target_version)
         return false unless current_version && target_version
         current_version == target_version
@@ -333,10 +334,8 @@ class Chef
       #
       # Subclasses MAY override this to provide fuzzy matching on the resource ('>=' and '~>' stuff)
       #
-      # This should only ever be offered the same arguments (so they should most likely be
-      # removed from the method signature).
+      # `version_satisfied_by?(version, constraint)` might be a better name to make this generic.
       #
-      # `new_version_satisfied?()` might be a better name
       def version_requirement_satisfied?(current_version, new_version)
         target_version_already_installed?(current_version, new_version)
       end
