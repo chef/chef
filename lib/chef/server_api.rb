@@ -57,20 +57,18 @@ class Chef
     alias :post_rest :post
     alias :put_rest :put
 
-    def get(path, headers={})
-      begin
-        request(:GET, path, headers)
-      rescue Net::HTTPServerException => e
-        if e.response.kind_of?(Net::HTTPNotFound)
-          begin
-            FFI_Yajl::Parser.parse(e.response.body)
-          rescue FFI_Yajl::ParseError => e
-            raise Chef::Exceptions::NotAChefServerException
-          end
-          raise
-        else
-          raise
+    def get(path, headers = {})
+      request(:GET, path, headers)
+    rescue Net::HTTPServerException => e
+      if e.response.kind_of?(Net::HTTPNotFound)
+        begin
+          FFI_Yajl::Parser.parse(e.response.body)
+        rescue FFI_Yajl::ParseError => e
+          raise Chef::Exceptions::NotAChefServerException
         end
+        raise
+      else
+        raise
       end
     end
 

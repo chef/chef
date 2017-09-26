@@ -69,7 +69,7 @@ describe Chef::ServerAPI do
           api = described_class.new(url, raw_key: SIGNING_KEY_DOT_PEM)
           allow(api).to receive(:request).and_raise(Net::HTTPServerException.new("", net_http_not_found))
 
-          expect{ api.get("/nodes") }.to raise_error(Chef::Exceptions::NotAChefServerException)
+          expect { api.get("/nodes") }.to raise_error(Chef::Exceptions::NotAChefServerException)
         end
       end
 
@@ -82,7 +82,7 @@ describe Chef::ServerAPI do
           api = described_class.new(url, raw_key: SIGNING_KEY_DOT_PEM)
           allow(api).to receive(:request).and_raise(Net::HTTPServerException.new("", net_http_not_found))
 
-          expect{ api.get("/nodes") }.to raise_error(Net::HTTPServerException)
+          expect { api.get("/nodes") }.to raise_error(Net::HTTPServerException)
         end
       end
     end
