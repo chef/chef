@@ -177,10 +177,8 @@ EOS
         # @return [Array] list of candidate_version, same index as new_resource.package_name/version
         def build_candidate_versions
           new_resource.package_name.map do |package_name|
-            if new_resource.source && new_resource.source.include?("artifactory") && package_name_array.length > 1
+            if new_resource.source && new_resource.source.include?("artifactory")
               available_packages_from_artifactory[package_name.downcase]
-            elsif new_resource.source && new_resource.source.include?("artifactory") && package_name_array.length == 1
-              available_packages[package_name.downcase]
             else
               available_packages[package_name.downcase]
             end
@@ -249,16 +247,23 @@ EOS
           return @available_packages_from_artifactory if @available_packages_from_artifactory
           @available_packages_from_artifactory = {}
           package_name_array.length.times do |item|
-            a =
+            available_versions =
               begin
                 cmd = [ "list -r #{package_name_array[item]}" ]
                 cmd.push( "-source #{new_resource.source}" )
                 raw = parse_list_output(*cmd).first.each_slice(2).to_h
-                raw.keys.each_with_object({}) do |name, available|
-                  available[name] = desired_name_versions[name] || raw[name]
+                raw1 = parse_list_output(*cmd)
+                if raw1.length > 1
+                  raw1.keys.each_with_object({}) do |name, available|
+                    available[name] = desired_name_versions[name] || raw1[name]
+                  end
+                else
+                  raw.keys.each_with_object({}) do |name, available|
+                    available[name] = desired_name_versions[name] || raw[name]
+                  end
                 end
               end
-            @available_packages_from_artifactory.merge! a
+            @available_packages_from_artifactory.merge! available_versions
           end
           @available_packages_from_artifactory
         end
