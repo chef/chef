@@ -588,10 +588,6 @@ class Chef
             macterm
           when "cssh"
             cssh
-          when "csshx"
-            Chef::Log.warn("knife ssh csshx will be deprecated in a future release")
-            Chef::Log.warn("please use knife ssh cssh instead")
-            cssh
           else
             ssh_command(@name_args[1..-1].join(" "))
           end
