@@ -177,11 +177,7 @@ EOS
         # @return [Array] list of candidate_version, same index as new_resource.package_name/version
         def build_candidate_versions
           new_resource.package_name.map do |package_name|
-            if new_resource.source && new_resource.source.include?("artifactory")
-              available_packages_from_artifactory[package_name.downcase]
-            else
-              available_packages[package_name.downcase]
-            end
+            available_packages[package_name.downcase]
           end
         end
 
@@ -230,27 +226,13 @@ EOS
         #
         # @return [Hash] name-to-version mapping of available packages
         def available_packages
-          @available_packages ||=
-            begin
-              cmd = [ "list -r #{package_name_array.join ' '}" ]
-              cmd.push( "-source #{new_resource.source}" ) if new_resource.source
-              raw = parse_list_output(*cmd)
-              raw.keys.each_with_object({}) do |name, available|
-                available[name] = desired_name_versions[name] || raw[name]
-              end
-            end
-          @available_packages
-        end
-
-        # Getting packages from Artifactory server and return as candidate
-        def available_packages_from_artifactory
-          return @available_packages_from_artifactory if @available_packages_from_artifactory
-          @available_packages_from_artifactory = {}
-          package_name_array.length.times do |item|
+          return @available_packages if @available_packages
+          @available_packages = {}
+          package_name_array.each do |pkg|
             available_versions =
               begin
-                cmd = [ "list -r #{package_name_array[item]}" ]
-                cmd.push( "-source #{new_resource.source}" )
+                cmd = [ "list -r #{pkg}" ]
+                cmd.push( "-source #{new_resource.source}" ) if new_resource.source
                 raw = parse_list_output(*cmd).first.each_slice(2).to_h
                 raw1 = parse_list_output(*cmd)
                 if raw1.length > 1
@@ -263,9 +245,9 @@ EOS
                   end
                 end
               end
-            @available_packages_from_artifactory.merge! available_versions
+            @available_packages.merge! available_versions
           end
-          @available_packages_from_artifactory
+          @available_packages
         end
 
         # Installed packages in chocolatey as a Hash of names mapped to versions
