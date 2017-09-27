@@ -34,6 +34,8 @@ class Chef
       property :supports, Hash, default: lazy { { remount: false } },
                                 coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
+      property :password, String, sensitive: true
+
       def initialize(name, run_context = nil)
         super
         @mount_point = name
@@ -147,14 +149,7 @@ class Chef
         set_or_return(
           :username,
           arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def password(arg = nil)
-        set_or_return(
-          :password,
-          arg,
+          :sensitive => true,
           :kind_of => [ String ]
         )
       end

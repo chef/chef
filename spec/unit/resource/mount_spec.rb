@@ -205,7 +205,7 @@ describe Chef::Resource::Mount do
       state = @resource.state_for_resource_reporter
       expect(state[:mount_point]).to eq("T:")
       expect(state[:username]).to eq("Administrator")
-      expect(state[:password]).to eq("Jetstream123!")
+      expect(state[:password]).to eq("*sensitive value suppressed*")
       expect(state[:domain]).to eq("TEST_DOMAIN")
       expect(state[:device_type]).to eql(:device)
       expect(state[:fstype]).to eq("auto")
