@@ -118,20 +118,6 @@ describe "Chef::Resource.property" do
     end
   end
 
-  with_property ":password, String" do
-    it "password is sensitive by default" do
-      expect(resource.password "Jetstream123!").to eql("Jetstream123!")
-      expect(resource.state_for_resource_reporter[:password]).to eql("*sensitive value suppressed*")
-    end
-  end
-
-  with_property ":password, String, sensitive: false" do
-    it "password is no longer sensitive" do
-      expect(resource.password "Jetstream123!").to eql("Jetstream123!")
-      expect(resource.state_for_resource_reporter[:password]).to eql("Jetstream123!")
-    end
-  end
-
   with_property ":x, name_property: true" do
     context "and subclass" do
       let(:subresource_class) do
