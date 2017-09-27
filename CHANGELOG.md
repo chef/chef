@@ -6,25 +6,28 @@
 - fix password property is sensitive for mount resource  [#6442](https://github.com/chef/chef/pull/6442) ([dimsh99](https://github.com/dimsh99))
 <!-- latest_release -->
 
-<!-- release_rollup since=13.4.24 -->
-### Changes since 13.4.24 release
+<!-- release_rollup since=12.21.14 -->
+### Changes since 12.21.14 release
 
 #### Merged Pull Requests
-- fix password property is sensitive for mount resource  [#6442](https://github.com/chef/chef/pull/6442) ([dimsh99](https://github.com/dimsh99)) <!-- 13.4.36 -->
-- Only accept MM/DD/YYYY for windows_task start_day [#6434](https://github.com/chef/chef/pull/6434) ([jaym](https://github.com/jaym)) <!-- 13.4.35 -->
-- Update dependencies to pull in InSpec v1.39.1 [#6440](https://github.com/chef/chef/pull/6440) ([adamleff](https://github.com/adamleff)) <!-- 13.4.34 -->
-- update expeditor labels [#6432](https://github.com/chef/chef/pull/6432) ([thommay](https://github.com/thommay)) <!-- 13.4.33 -->
-- Fix Knife search ID only option to actually filter result set [#6438](https://github.com/chef/chef/pull/6438) ([dimsh99](https://github.com/dimsh99)) <!-- 13.4.32 -->
-- Add throttle and metalink options to yum_repository [#6431](https://github.com/chef/chef/pull/6431) ([tas50](https://github.com/tas50)) <!-- 13.4.31 -->
-- Update dokken integration testing: dokken images, updated cookbook, debian 9 [#6414](https://github.com/chef/chef/pull/6414) ([tas50](https://github.com/tas50)) <!-- 13.4.30 -->
-- Don&#39;t catch SIGCHLD from dnf_helper.py [#6416](https://github.com/chef/chef/pull/6416) ([nemith](https://github.com/nemith)) <!-- 13.4.29 -->
-- Open apt resources up to prevent breaking change [#6417](https://github.com/chef/chef/pull/6417) ([tas50](https://github.com/tas50)) <!-- 13.4.28 -->
-- Remove unused requires in yum_repository [#6413](https://github.com/chef/chef/pull/6413) ([tas50](https://github.com/tas50)) <!-- 13.4.27 -->
-- Quiet the output of the zypper refresh and add force [#6408](https://github.com/chef/chef/pull/6408) ([tas50](https://github.com/tas50)) <!-- 13.4.26 -->
 - Replace which apt-get check with simple debian check in apt resources [#6409](https://github.com/chef/chef/pull/6409) ([tas50](https://github.com/tas50)) <!-- 13.4.25 -->
+- Quiet the output of the zypper refresh and add force [#6408](https://github.com/chef/chef/pull/6408) ([tas50](https://github.com/tas50)) <!-- 13.4.26 -->
+- Remove unused requires in yum_repository [#6413](https://github.com/chef/chef/pull/6413) ([tas50](https://github.com/tas50)) <!-- 13.4.27 -->
+- Open apt resources up to prevent breaking change [#6417](https://github.com/chef/chef/pull/6417) ([tas50](https://github.com/tas50)) <!-- 13.4.28 -->
+- Don&#39;t catch SIGCHLD from dnf_helper.py [#6416](https://github.com/chef/chef/pull/6416) ([nemith](https://github.com/nemith)) <!-- 13.4.29 -->
+- Update dokken integration testing: dokken images, updated cookbook, debian 9 [#6414](https://github.com/chef/chef/pull/6414) ([tas50](https://github.com/tas50)) <!-- 13.4.30 -->
+- Add throttle and metalink options to yum_repository [#6431](https://github.com/chef/chef/pull/6431) ([tas50](https://github.com/tas50)) <!-- 13.4.31 -->
+- Fix Knife search ID only option to actually filter result set [#6438](https://github.com/chef/chef/pull/6438) ([dimsh99](https://github.com/dimsh99)) <!-- 13.4.32 -->
+- update expeditor labels [#6432](https://github.com/chef/chef/pull/6432) ([thommay](https://github.com/thommay)) <!-- 13.4.33 -->
+- Update dependencies to pull in InSpec v1.39.1 [#6440](https://github.com/chef/chef/pull/6440) ([adamleff](https://github.com/adamleff)) <!-- 13.4.34 -->
+- Only accept MM/DD/YYYY for windows_task start_day [#6434](https://github.com/chef/chef/pull/6434) ([jaym](https://github.com/jaym)) <!-- 13.4.35 -->
+- fix password property is sensitive for mount resource  [#6442](https://github.com/chef/chef/pull/6442) ([dimsh99](https://github.com/dimsh99)) <!-- 13.4.36 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v12.21.14](https://github.com/chef/chef/tree/v12.21.14) (2017-09-27)
+<!-- latest_stable_release -->
+
 ## [v13.4.24](https://github.com/chef/chef/tree/v13.4.24) (2017-09-14)
 
 #### Merged Pull Requests
@@ -32,7 +35,6 @@
 - [MSYS-594] windows_task resource is not idempotent when specifying start_time and start_day [#6312](https://github.com/chef/chef/pull/6312) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
 - Allow specifying default gateway on RHEL/Centos [#6386](https://github.com/chef/chef/pull/6386) ([tomdoherty](https://github.com/tomdoherty))
 - Use ruby 2.4.2 to addess multiple security vulnerabilities [#6404](https://github.com/chef/chef/pull/6404) ([thommay](https://github.com/thommay))
-<!-- latest_stable_release -->
 
 ## [v13.4.19](https://github.com/chef/chef/tree/v13.4.19) (2017-09-13)
 
