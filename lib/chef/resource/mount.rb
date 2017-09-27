@@ -149,7 +149,6 @@ class Chef
         set_or_return(
           :username,
           arg,
-          :sensitive => true,
           :kind_of => [ String ]
         )
       end
