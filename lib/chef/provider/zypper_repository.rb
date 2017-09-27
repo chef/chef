@@ -124,7 +124,7 @@ class Chef
       #
       # @return [String] the fingerprint of the key
       def key_fingerprint(key_path)
-        so = shell_out("gpg --with-fingerprint #{key_path}")
+        so = shell_out!("gpg --with-fingerprint #{key_path}")
         # expected output and match: http://rubular.com/r/BpfMjxySQM
         fingerprint = /pub\s*\S*\/(\S*)/.match(so.stdout)[1].downcase
         Chef::Log.debug("GPG fingerprint of key at #{key_path} is #{fingerprint}")
