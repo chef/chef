@@ -59,7 +59,9 @@ Git|2.6.2
 munin-node|1.6.1.20130823
     EOF
     remote_list_obj = double(stdout: remote_list_stdout)
-    allow(provider).to receive(:shell_out!).with("#{choco_exe} list -r #{package_names.join ' '}#{args}", { :returns => [0], timeout: timeout }).and_return(remote_list_obj)
+    package_names.each do |pkg|
+      allow(provider).to receive(:shell_out!).with("#{choco_exe} list -r #{pkg}#{args}", { :returns => [0], timeout: timeout }).and_return(remote_list_obj)
+    end
   end
 
   describe "#initialize" do
