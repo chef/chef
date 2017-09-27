@@ -149,7 +149,7 @@ class Chef
         end
 
         declare_resource(:execute, "import gpg key from #{new_resource.gpgkey}") do
-          command "/bin/rpm --import #{new_resource.gpgkey}"
+          command "/bin/rpm --import #{cached_keyfile}"
           not_if { key_installed?(cached_keyfile) }
           action :run
         end
