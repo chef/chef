@@ -1,13 +1,13 @@
 #
-# Cookbook Name:: webapp
+# Cookbook:: base
 # Recipe:: default
 #
-# Copyright (C) 2014
+# Copyright:: 2014-2017, Chef Software, Inc.
 #
 
 hostname "chef-travis-ci.chef.io"
 
-if node["platform_family"] == "debian"
+if platform_family?("debian")
   include_recipe "ubuntu"
   apt_update "packages"
 end
@@ -34,7 +34,10 @@ include_recipe "ntp"
 
 include_recipe "resolver"
 
-include_recipe "users::sysadmins"
+users_manage "sysadmin" do
+  group_id 2300
+  action [:create]
+end
 
 include_recipe "sudo"
 

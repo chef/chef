@@ -1,6 +1,8 @@
 #
-# Cookbook Name:: awesome_customers_ubuntu
+# Cookbook:: awesome_customers_ubuntu
 # Recipe:: default
 #
-# Copyright (c) 2016 The Authors, All Rights Reserved.
+# Copyright:: 2016-2017, Chef Software, Inc.
+#
+
 include_recipe "awesome_customers_ubuntu::default"
