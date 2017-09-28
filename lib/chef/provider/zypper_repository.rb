@@ -72,12 +72,20 @@ class Chef
         Shellwords.escape(new_resource.repo_name)
       end
 
+      # return the specified cookbook name or the cookbook containing the
+      # resource.
+      #
+      # @return [String] name of the cookbook
+      def cookbook_name
+        new_resource.cookbook || new_resource.cookbook_name
+      end
+
       # determine if a template file is available in the current run
       # @param [String] path the path to the template file
       #
       # @return [Boolean] template file exists or doesn't
       def template_available?(path)
-        !path.nil? && run_context.has_template_in_cookbook?(new_resource.cookbook_name, path)
+        !path.nil? && run_context.has_template_in_cookbook?(cookbook_name, path)
       end
 
       # determine if a cookbook file is available in the run
@@ -99,7 +107,7 @@ class Chef
         if uri.start_with?("http")
           Chef::Log.debug("Will use :remote_file resource to cache the gpg key locally")
           :remote_file
-        elsif has_cookbook_file?(key)
+        elsif has_cookbook_file?(uri)
           Chef::Log.debug("Will use :cookbook_file resource to cache the gpg key locally")
           :cookbook_file
         else

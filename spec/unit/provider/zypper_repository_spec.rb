@@ -34,7 +34,7 @@ uid                            nginx signing key <signing-key@nginx.com>
 EOF
 
 describe Chef::Provider::ZypperRepository do
-  let(:new_resource) { Chef::Resource::ZypperRepository.new("nginx") }
+  let(:new_resource) { Chef::Resource::ZypperRepository.new("Nginx Repository") }
 
   let(:shellout_env) { { env: { "LANG" => "en_US", "LANGUAGE" => "en_US" } } }
   let(:provider) do
@@ -58,5 +58,11 @@ describe Chef::Provider::ZypperRepository do
 
   it "responds to load_current_resource" do
     expect(provider).to respond_to(:load_current_resource)
+  end
+
+  describe "#escaped_repo_name" do
+    it "returns an escaped repo name" do
+      expect(provider.escaped_repo_name).to eq('Nginx\\ Repository')
+    end
   end
 end
