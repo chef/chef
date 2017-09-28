@@ -116,9 +116,12 @@ describe Chef::CookbookSynchronizer do
 
   let(:no_lazy_load) { true }
 
+  let(:skip_cookbook_sync) { false }
+
   let(:synchronizer) do
     Chef::Config[:no_lazy_load] = no_lazy_load
     Chef::Config[:file_cache_path] = "/file-cache"
+    Chef::Config[:skip_cookbook_sync] = skip_cookbook_sync
     Chef::CookbookSynchronizer.new(cookbook_manifest, events)
   end
 
@@ -521,6 +524,31 @@ describe Chef::CookbookSynchronizer do
           expect(server_api).not_to receive(:streaming_request)
           synchronizer.sync_cookbooks
         end
+      end
+    end
+
+    context "when Chef::Config[:skip_cookbook_sync] is true" do
+      let(:skip_cookbook_sync) { true }
+
+      it "loads the cookbook files and warns the user that this isn't supported" do
+        expect(file_cache).to receive(:load).
+          with("cookbooks/cookbook_a/recipes/default.rb", false).
+          once.
+          and_return("/file-cache/cookbooks/cookbook_a/recipes/default.rb")
+        expect(file_cache).to receive(:load).
+          with("cookbooks/cookbook_a/attributes/default.rb", false).
+          once.
+          and_return("/file-cache/cookbooks/cookbook_a/attributes/default.rb")
+        expect(file_cache).to receive(:load).
+          with("cookbooks/cookbook_a/templates/default/apache2.conf.erb", false).
+          once.
+          and_return("/file-cache/cookbooks/cookbook_a/templates/default/apache2.conf.erb")
+        expect(file_cache).to receive(:load).
+          with("cookbooks/cookbook_a/files/default/megaman.conf", false).
+          once.
+          and_return("/file-cache/cookbooks/cookbook_a/files/default/megaman.conf")
+        expect(Chef::Log).to receive(:warn).with("skipping cookbook synchronization! DO NOT LEAVE THIS ENABLED IN PRODUCTION!!!").once
+        synchronizer.sync_cookbooks
       end
     end
   end
