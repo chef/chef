@@ -547,7 +547,9 @@ describe Chef::CookbookSynchronizer do
           with("cookbooks/cookbook_a/files/default/megaman.conf", false).
           once.
           and_return("/file-cache/cookbooks/cookbook_a/files/default/megaman.conf")
-        expect(Chef::Log).to receive(:warn).with("skipping cookbook synchronization! DO NOT LEAVE THIS ENABLED IN PRODUCTION!!!").once
+        expect(Chef::Log).to receive(:warn).
+          with("skipping cookbook synchronization! DO NOT LEAVE THIS ENABLED IN PRODUCTION!!!").
+          once
         synchronizer.sync_cookbooks
       end
     end
