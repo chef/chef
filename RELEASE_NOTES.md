@@ -1,5 +1,20 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Chef Client Release Notes 13.5:
+
+## Mount's password property is now marked as sensitive
+
+This means that passwords passed to mount won't show up in logs.
+
+## The `windows_task` resource now correctly handles `start_day`
+
+Previously, the resource would accept any date that was formatted
+correctly in the local locale, unlike the Windows cookbook and Windows
+itself. We now only support the `MM/DD/YYYY` format, in common with the
+Windows cookbook.
+
+## InSpec updated to 1.39.1
+
 # Chef Client Release Notes 13.4:
 
 ## Security release of Ruby
