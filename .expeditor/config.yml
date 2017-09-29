@@ -32,9 +32,9 @@ github:
   # for building.
   release_branch:
     - master:
-        version_constraint: ~> 13.0
+        version_constraint: 13.*
     - chef-12:
-        version_constraint: ~> 12.0
+        version_constraint: 12.*
 
 # These actions are taken, in order they are specified, anytime a Pull Request is merged.
 merge_actions:
