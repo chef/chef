@@ -147,18 +147,28 @@ class Chef
         (installed_keys & proposed_keys).sort == proposed_keys.sort
       end
 
+      # Given the provided key URI determine what kind of chef resource we need
+      # to fetch the key
+      # @param [String] uri the uri of the gpg key (local path or http URL)
+      #
+      # @raise [Chef::Exceptions::FileNotFound] Key isn't remote or found in the current run
+      #
+      # @return [Symbol] :remote_file or :cookbook_file
+      def key_type(uri)
+        if uri.start_with?("http")
+          :remote_file
+        elsif has_cookbook_file?(uri)
+          :cookbook_file
+        else
+          raise Chef::Exceptions::FileNotFound, "Cannot locate key file: #{uri}"
+        end
+      end
+
       def install_key_from_uri(key)
         key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
         cached_keyfile = ::File.join(Chef::Config[:file_cache_path], key_name)
-        type = if key.start_with?("http")
-                 :remote_file
-               elsif has_cookbook_file?(key)
-                 :cookbook_file
-               else
-                 raise Chef::Exceptions::FileNotFound, "Cannot locate key file"
-               end
 
-        declare_resource(type, cached_keyfile) do
+        declare_resource(key_type(key), cached_keyfile) do
           source key
           mode "0644"
           sensitive new_resource.sensitive
