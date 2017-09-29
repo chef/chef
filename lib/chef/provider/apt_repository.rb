@@ -131,14 +131,27 @@ class Chef
         valid
       end
 
+      # return the specified cookbook name or the cookbook containing the
+      # resource.
+      #
+      # @return [String] name of the cookbook
       def cookbook_name
         new_resource.cookbook || new_resource.cookbook_name
       end
 
+      # determine if a cookbook file is available in the run
+      # @param [String] path the path to the cookbook file
+      #
+      # @return [Boolean] cookbook file exists or doesn't
       def has_cookbook_file?(fn)
         run_context.has_cookbook_file_in_cookbook?(cookbook_name, fn)
       end
 
+      # determine if there are any new keys by comparing the fingerprints of installed
+      # keys to those of the passed file
+      # @param [String] file the keyfile of the new repository
+      #
+      # @return [Boolean] true: no new keys in the file. false: there are new keys
       def no_new_keys?(file)
         # Now we are using the option --with-colons that works across old os versions
         # as well as the latest (16.10). This for both `apt-key` and `gpg` commands
