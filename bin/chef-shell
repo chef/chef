@@ -23,6 +23,8 @@ begin
 rescue LoadError
 end
 
+Encoding.default_external = Encoding::UTF_8
+
 require "irb"
 require "irb/completion"
 require "irb/ext/save-history"
