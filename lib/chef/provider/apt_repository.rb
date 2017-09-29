@@ -108,7 +108,6 @@ class Chef
 
       def extract_fingerprints_from_cmd(cmd)
         so = shell_out(cmd)
-        so.run_command
         so.stdout.split(/\n/).map do |t|
           if z = t.match(/^fpr:+([0-9A-F]+):/)
             z[1].split.join
@@ -120,7 +119,6 @@ class Chef
         valid = true
 
         so = shell_out(cmd)
-        so.run_command
         so.stdout.split(/\n/).map do |t|
           if t =~ %r{^\/#{key}.*\[expired: .*\]$}
             Chef::Log.debug "Found expired key: #{t}"
