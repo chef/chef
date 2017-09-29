@@ -180,9 +180,7 @@ class Chef
         declare_resource(:execute, "apt-key add #{cached_keyfile}") do
           sensitive new_resource.sensitive
           action :run
-          not_if do
-            no_new_keys?(cached_keyfile)
-          end
+          not_if { no_new_keys?(cached_keyfile) }
           notifies :run, "execute[apt-cache gencaches]", :immediately
         end
       end
