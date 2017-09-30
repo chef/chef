@@ -244,6 +244,10 @@ class Chef
         raise "Could not access Launchpad ppa API: #{e.message}"
       end
 
+      # determine if the repository URL is a PPA
+      # @param [String] url the url of the repository
+      #
+      # @return [Boolean] is the repo URL a PPA
       def is_ppa_url?(url)
         url.start_with?("ppa:")
       end
