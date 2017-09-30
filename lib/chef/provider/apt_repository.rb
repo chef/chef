@@ -92,8 +92,9 @@ class Chef
               ignore_failure true
               action :nothing
             end
-
           end
+        else
+          Chef::Log.debug("/etc/apt/sources.list.d/#{new_resource.name}.list does not exist. Nothing to do")
         end
       end
 
