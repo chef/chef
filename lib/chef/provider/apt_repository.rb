@@ -200,7 +200,13 @@ class Chef
         end
       end
 
-      def install_key_from_keyserver(key, keyserver = new_resource.keyserver)
+      # build the apt-key command to install the keyserver
+      #
+      # @param [String] key the key to install
+      # @param [String] keyserver the key server to use
+      #
+      # @return [String] the full apt-key command to run
+      def keyserver_install_cmd(key, keyserver)
         cmd = "apt-key adv --recv"
         cmd << " --keyserver-options http-proxy=#{new_resource.key_proxy}" if new_resource.key_proxy
         cmd << " --keyserver "
@@ -211,9 +217,12 @@ class Chef
                end
 
         cmd << " #{key}"
+        cmd
+      end
 
+      def install_key_from_keyserver(key, keyserver = new_resource.keyserver)
         declare_resource(:execute, "install-key #{key}") do
-          command cmd
+          command keyserver_install_cmd(key, keyserver)
           sensitive new_resource.sensitive
           not_if do
             present = extract_fingerprints_from_cmd(LIST_APT_KEY_FINGERPRINTS).any? do |fp|
