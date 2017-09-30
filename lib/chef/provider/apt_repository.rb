@@ -98,11 +98,19 @@ class Chef
         end
       end
 
+      # is the provided ID a key ID from a keyserver. Looks at length and HEX only values
+      # @param [String] id the key value passed by the user that *may* be an ID
       def is_key_id?(id)
         id = id[2..-1] if id.start_with?("0x")
         id =~ /^\h+$/ && [8, 16, 40].include?(id.length)
       end
 
+      # run the specified command and extract the fingerprints from the output
+      # accepts a command so it can be used to extract both the current key's fingerprints
+      # and the fingerprint of the new key
+      # @param [String] cmd the command to run
+      #
+      # @return [Array] an array of fingerprints
       def extract_fingerprints_from_cmd(cmd)
         so = shell_out(cmd)
         so.stdout.split(/\n/).map do |t|
@@ -112,6 +120,11 @@ class Chef
         end.compact
       end
 
+      # validate the key
+      # @param [Sting] cmd
+      # @param [Sting] key
+      #
+      # @return [Boolean] is the key valid or not
       def key_is_valid?(cmd, key)
         valid = true
 
@@ -174,6 +187,11 @@ class Chef
         end
       end
 
+      # Fetch the key using either cookbook_file or remote_file, validate it,
+      # and install it with apt-key add
+      # @param [String] key the key to install
+      #
+      # @return [void]
       def install_key_from_uri(key)
         key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
         cached_keyfile = ::File.join(Chef::Config[:file_cache_path], key_name)
@@ -215,6 +233,9 @@ class Chef
         cmd
       end
 
+      # @param [Sting] key
+      # @param [Sting] keyserver
+      # @return [void]
       def install_key_from_keyserver(key, keyserver = new_resource.keyserver)
         declare_resource(:execute, "install-key #{key}") do
           command keyserver_install_cmd(key, keyserver)
