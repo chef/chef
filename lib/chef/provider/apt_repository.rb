@@ -36,7 +36,9 @@ class Chef
       end
 
       action :add do
-        unless new_resource.key.nil?
+        if new_resource.key.nil?
+          Chef::Log.debug "No 'key' property specified skipping key import"
+        else
           new_resource.key.each do |k|
             if is_key_id?(k) && !has_cookbook_file?(k)
               install_key_from_keyserver(k)
