@@ -58,16 +58,10 @@ class Chef
           action :nothing
         end
 
-        components = if is_ppa_url?(new_resource.uri) && new_resource.components.empty?
-                       "main"
-                     else
-                       new_resource.components
-                     end
-
         repo = build_repo(
           new_resource.uri,
           new_resource.distribution,
-          components,
+          repo_components,
           new_resource.trusted,
           new_resource.arch,
           new_resource.deb_src
@@ -250,6 +244,20 @@ class Chef
       # @return [Boolean] is the repo URL a PPA
       def is_ppa_url?(url)
         url.start_with?("ppa:")
+      end
+
+      # determine the repository's components:
+      #  - "components" property if defined
+      #  - "main" if "components" not defined and the repo is a PPA URL
+      #  - otherwise nothing
+      #
+      # @return [String] the repository component
+      def repo_components
+        if is_ppa_url?(new_resource.uri) && new_resource.components.empty?
+          "main"
+        else
+          new_resource.components
+        end
       end
 
       def make_ppa_url(ppa)
