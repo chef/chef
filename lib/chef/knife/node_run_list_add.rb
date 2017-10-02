@@ -27,7 +27,7 @@ class Chef
         require "chef/json_compat"
       end
 
-      banner "knife node run_list add [NODE] [ENTRY[,ENTRY]] (options)"
+      banner "knife node run_list add [NODE] [ENTRY [ENTRY]] (options)"
 
       option :after,
         :short => "-a ITEM",
