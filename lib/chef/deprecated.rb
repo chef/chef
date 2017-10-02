@@ -268,6 +268,16 @@ class Chef
       end
     end
 
+    class CookbookInstallVendor < Base
+      def id
+        20
+      end
+
+      def target
+        "cookbook_install_vendor.html"
+      end
+    end
+
     # id 3694 was deleted
 
     class Generic < Base

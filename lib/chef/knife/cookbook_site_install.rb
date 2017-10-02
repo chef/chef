@@ -67,11 +67,23 @@ class Chef
         :default => "https://supermarket.chef.io",
         :proc => Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
 
+      option :no_vendor,
+        :long => "--no-vendor",
+        :description => "Do not commit cookbook to a git vendor branch",
+        :boolean => true,
+        :default => false
+
       attr_reader :cookbook_name
       attr_reader :vendor_path
 
       def run
         extend Chef::Mixin::ShellOut
+
+        # Deprecation warning for vendor installs.
+        unless config[:no_vendor]
+          Chef.deprecated(:cookbook_install_vendor, "Using knife cookbook site install with vendor branching is deprecated. " \
+            "Please pass --no-vendor or add `knife[:no_vendor] = true` to your knife configuration.")
+        end
 
         if config[:cookbook_path]
           Chef::Config[:cookbook_path] = config[:cookbook_path]
@@ -90,7 +102,7 @@ class Chef
         upstream_file = File.join(@install_path, "#{@cookbook_name}.tar.gz")
 
         @repo.sanity_check
-        unless config[:use_current_branch]
+        unless config[:use_current_branch] || config[:no_vendor]
           @repo.reset_to_default_state
           @repo.prepare_to_import(@cookbook_name)
         end
@@ -104,14 +116,16 @@ class Chef
         ui.info("Removing downloaded tarball")
         File.unlink(upstream_file)
 
-        if @repo.finalize_updates_to(@cookbook_name, downloader.version)
-          unless config[:use_current_branch]
-            @repo.reset_to_default_state
-          end
-          @repo.merge_updates_from(@cookbook_name, downloader.version)
-        else
-          unless config[:use_current_branch]
-            @repo.reset_to_default_state
+        unless config[:no_vendor]
+          if @repo.finalize_updates_to(@cookbook_name, downloader.version)
+            unless config[:use_current_branch]
+              @repo.reset_to_default_state
+            end
+            @repo.merge_updates_from(@cookbook_name, downloader.version)
+          else
+            unless config[:use_current_branch]
+              @repo.reset_to_default_state
+            end
           end
         end
 
