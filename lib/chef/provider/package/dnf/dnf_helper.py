@@ -26,6 +26,14 @@ def flushcache():
         pass
     get_sack().load_system_repo(build_cache=True)
 
+def versioncompare(versions):
+    sack = get_sack()
+    if (versions[0] is None) or (versions[1] is None):
+      sys.stdout.write('0\n')
+    else:
+      evr_comparison = sack.evr_cmp(versions[0], versions[1])
+      sys.stdout.write('{}\n'.format(evr_comparison))
+
 def query(command):
     sack = get_sack()
 
@@ -86,5 +94,7 @@ while 1:
         query(command)
     elif command['action'] == "flushcache":
         flushcache()
+    elif command['action'] == "versioncompare":
+        versioncompare(command['versions'])
     else:
         raise RuntimeError("bad command")

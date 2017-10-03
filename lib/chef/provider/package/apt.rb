@@ -127,6 +127,13 @@ class Chef
 
         private
 
+        def version_compare(v1, v2)
+          gem_v1 =  v1.gsub(/[_+]/, "+" => "-", "_" => "-") unless v1.nil?
+          gem_v2 =  v2.gsub(/[_+]/, "+" => "-", "_" => "-") unless v2.nil?
+
+          Gem::Version.new(gem_v1) <=> Gem::Version.new(gem_v2)
+        end
+
         # Runs command via shell_out with magic environment to disable
         # interactive prompts. Command is run with default localization rather
         # than forcing locale to "C", so command output may not be stable.

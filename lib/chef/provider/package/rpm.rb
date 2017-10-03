@@ -18,6 +18,7 @@
 require "chef/provider/package"
 require "chef/resource/package"
 require "chef/mixin/get_source_from_package"
+require "chef/provider/package/yum/rpm_utils"
 
 class Chef
   class Provider
@@ -108,6 +109,10 @@ class Chef
         end
 
         private
+
+        def version_compare(v1, v2)
+          Chef::Provider::Package::Yum::RPMVersion.parse(v1) <=> Chef::Provider::Package::Yum::RPMVersion.parse(v2)
+        end
 
         def uri_scheme?(str)
           scheme = URI.split(str).first

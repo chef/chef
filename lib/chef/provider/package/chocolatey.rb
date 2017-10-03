@@ -141,6 +141,17 @@ EOS
 
         private
 
+        def version_compare(v1, v2)
+          if v1 == "latest" || v2 == "latest"
+            return 0
+          end
+
+          gem_v1 = Gem::Version.new(v1)
+          gem_v2 = Gem::Version.new(v2)
+
+          gem_v1 <=> gem_v2
+        end
+
         # Magic to find where chocolatey is installed in the system, and to
         # return the full path of choco.exe
         #
