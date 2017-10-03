@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.5.8 -->
-## [v13.5.8](https://github.com/chef/chef/tree/v13.5.8) (2017-10-03)
+<!-- latest_release 13.5.9 -->
+## [v13.5.9](https://github.com/chef/chef/tree/v13.5.9) (2017-10-03)
 
 #### Merged Pull Requests
-- Fixes to package upgrade behaviour [#6428](https://github.com/chef/chef/pull/6428) ([jonlives](https://github.com/jonlives))
+- Tweak the knife banners for multi-arg commands. [#6466](https://github.com/chef/chef/pull/6466) ([coderanger](https://github.com/coderanger))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- Tweak the knife banners for multi-arg commands. [#6466](https://github.com/chef/chef/pull/6466) ([coderanger](https://github.com/coderanger)) <!-- 13.5.9 -->
 - Fixes to package upgrade behaviour [#6428](https://github.com/chef/chef/pull/6428) ([jonlives](https://github.com/jonlives)) <!-- 13.5.8 -->
 - Import the zypper GPG key before templating the repo [#6410](https://github.com/chef/chef/pull/6410) ([tas50](https://github.com/tas50)) <!-- 13.5.7 -->
 - only warn about skipping sync once [#6454](https://github.com/chef/chef/pull/6454) ([Happycoil](https://github.com/Happycoil)) <!-- 13.5.4 -->
