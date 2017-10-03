@@ -236,9 +236,11 @@ describe Chef::Provider::Route do
         @node.automatic_attrs[:platform] = platform
 
         route_file = StringIO.new
+        allow(File).to receive(:exist?).with("/etc/sysconfig/network").and_return(false)
         expect(File).to receive(:new).with("/etc/sysconfig/network", "w").and_return(route_file)
         @run_context.resource_collection << @default_resource
         @default_provider.generate_config
+        expect(route_file.string).to match(/GATEWAY=10\.0\.0\.9/)
       end
     end
 
