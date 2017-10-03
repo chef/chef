@@ -84,6 +84,12 @@ class Chef
         @checkout_branch = "deploy"
       end
 
+      # This resource is deprecated.
+      def after_created
+        Chef.deprecated(:deploy_resource, "The #{resource_name} resource (#{source_line}) is deprecated and will be removed from Chef core in 14.0 (April 2018). " \
+          "A migration cookbook will be available in the future, see the deprecation documentation for more information.")
+      end
+
       # where the checked out/cloned code goes
       def destination
         @destination ||= shared_path + "/#{@repository_cache}"

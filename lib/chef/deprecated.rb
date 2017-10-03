@@ -258,6 +258,16 @@ class Chef
       end
     end
 
+    class DeployResource < Base
+      def id
+        21
+      end
+
+      def target
+        "deploy_resource.html"
+      end
+    end
+
     # id 3694 was deleted
 
     class Generic < Base
