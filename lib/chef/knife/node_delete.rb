@@ -27,7 +27,7 @@ class Chef
         require "chef/json_compat"
       end
 
-      banner "knife node delete [NODE[,NODE]] (options)"
+      banner "knife node delete [NODE [NODE]] (options)"
 
       def run
         if @name_args.length == 0

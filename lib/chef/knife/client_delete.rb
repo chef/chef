@@ -32,7 +32,7 @@ class Chef
        :long => "--delete-validators",
        :description => "Force deletion of client if it's a validator"
 
-      banner "knife client delete [CLIENT[,CLIENT]] (options)"
+      banner "knife client delete [CLIENT [CLIENT]] (options)"
 
       def run
         if @name_args.length == 0
