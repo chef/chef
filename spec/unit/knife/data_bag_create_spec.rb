@@ -72,6 +72,14 @@ describe Chef::Knife::DataBagCreate do
       expect { knife.run }.to exit_with_code(1)
     end
 
+    it "won't create a data bag with a reserved name for search" do
+      ['node', 'role', 'client', 'environment'].each do |name|
+        knife.name_args = [name]
+        expect(Chef::DataBag).to receive(:validate_name!).with(knife.name_args[0]).and_raise(Chef::Exceptions::InvalidDataBagName)
+        expect { knife.run }.to exit_with_code(1)
+      end
+    end
+
     context "when given one argument" do
       before do
         knife.name_args = [bag_name]
