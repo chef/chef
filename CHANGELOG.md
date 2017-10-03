@@ -6,28 +6,32 @@
 - Bump InSpec to v1.40.0 [#6460](https://github.com/chef/chef/pull/6460) ([adamleff](https://github.com/adamleff))
 <!-- latest_release -->
 
-<!-- release_rollup since=12.21.14 -->
-### Changes since 12.21.14 release
+<!-- release_rollup since=13.5.3 -->
+### Changes since 13.5.3 release
 
 #### Merged Pull Requests
-- Bump InSpec to v1.40.0 [#6460](https://github.com/chef/chef/pull/6460) ([adamleff](https://github.com/adamleff)) <!-- 13.5.6 -->
-- Force encoding to UTF_8 in chef-shell to prevent failures [#6447](https://github.com/chef/chef/pull/6447) ([tas50](https://github.com/tas50)) <!-- 13.5.5 -->
 - only warn about skipping sync once [#6454](https://github.com/chef/chef/pull/6454) ([Happycoil](https://github.com/Happycoil)) <!-- 13.5.4 -->
-- Replace which apt-get check with simple debian check in apt resources [#6409](https://github.com/chef/chef/pull/6409) ([tas50](https://github.com/tas50)) <!-- 13.4.25 -->
-- Quiet the output of the zypper refresh and add force [#6408](https://github.com/chef/chef/pull/6408) ([tas50](https://github.com/tas50)) <!-- 13.4.26 -->
-- Remove unused requires in yum_repository [#6413](https://github.com/chef/chef/pull/6413) ([tas50](https://github.com/tas50)) <!-- 13.4.27 -->
-- Open apt resources up to prevent breaking change [#6417](https://github.com/chef/chef/pull/6417) ([tas50](https://github.com/tas50)) <!-- 13.4.28 -->
-- Don&#39;t catch SIGCHLD from dnf_helper.py [#6416](https://github.com/chef/chef/pull/6416) ([nemith](https://github.com/nemith)) <!-- 13.4.29 -->
-- Add throttle and metalink options to yum_repository [#6431](https://github.com/chef/chef/pull/6431) ([tas50](https://github.com/tas50)) <!-- 13.4.31 -->
-- Fix Knife search ID only option to actually filter result set [#6438](https://github.com/chef/chef/pull/6438) ([dimsh99](https://github.com/dimsh99)) <!-- 13.4.32 -->
-- Update dependencies to pull in InSpec v1.39.1 [#6440](https://github.com/chef/chef/pull/6440) ([adamleff](https://github.com/adamleff)) <!-- 13.4.34 -->
-- Only accept MM/DD/YYYY for windows_task start_day [#6434](https://github.com/chef/chef/pull/6434) ([jaym](https://github.com/jaym)) <!-- 13.4.35 -->
-- fix password property is sensitive for mount resource  [#6442](https://github.com/chef/chef/pull/6442) ([dimsh99](https://github.com/dimsh99)) <!-- 13.4.36 -->
+- Force encoding to UTF_8 in chef-shell to prevent failures [#6447](https://github.com/chef/chef/pull/6447) ([tas50](https://github.com/tas50)) <!-- 13.5.5 -->
+- Bump InSpec to v1.40.0 [#6460](https://github.com/chef/chef/pull/6460) ([adamleff](https://github.com/adamleff)) <!-- 13.5.6 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
-## [v12.21.14](https://github.com/chef/chef/tree/v12.21.14) (2017-09-27)
+## [v13.5.3](https://github.com/chef/chef/tree/v13.5.3) (2017-10-03)
+
+#### Merged Pull Requests
+- fix password property is sensitive for mount resource  [#6442](https://github.com/chef/chef/pull/6442) ([dimsh99](https://github.com/dimsh99))
+- Only accept MM/DD/YYYY for windows_task start_day [#6434](https://github.com/chef/chef/pull/6434) ([jaym](https://github.com/jaym))
+- Update dependencies to pull in InSpec v1.39.1 [#6440](https://github.com/chef/chef/pull/6440) ([adamleff](https://github.com/adamleff))
+- Fix Knife search ID only option to actually filter result set [#6438](https://github.com/chef/chef/pull/6438) ([dimsh99](https://github.com/dimsh99))
+- Add throttle and metalink options to yum_repository [#6431](https://github.com/chef/chef/pull/6431) ([tas50](https://github.com/tas50))
+- Don&#39;t catch SIGCHLD from dnf_helper.py [#6416](https://github.com/chef/chef/pull/6416) ([nemith](https://github.com/nemith))
+- Open apt resources up to prevent breaking change [#6417](https://github.com/chef/chef/pull/6417) ([tas50](https://github.com/tas50))
+- Remove unused requires in yum_repository [#6413](https://github.com/chef/chef/pull/6413) ([tas50](https://github.com/tas50))
+- Quiet the output of the zypper refresh and add force [#6408](https://github.com/chef/chef/pull/6408) ([tas50](https://github.com/tas50))
+- Replace which apt-get check with simple debian check in apt resources [#6409](https://github.com/chef/chef/pull/6409) ([tas50](https://github.com/tas50))
 <!-- latest_stable_release -->
+
+## [v12.21.14](https://github.com/chef/chef/tree/v12.21.14) (2017-09-27)
 
 ## [v13.4.24](https://github.com/chef/chef/tree/v13.4.24) (2017-09-14)
 
