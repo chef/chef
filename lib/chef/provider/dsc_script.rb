@@ -165,7 +165,11 @@ class Chef
             if resource.changes_state?
               # We ignore the last log message because it only contains the time it took, which looks weird
               cleaned_messages = resource.change_log[0..-2].map { |c| c.sub(/^#{Regexp.escape(resource.name)}/, "").strip }
-              "converge DSC resource #{resource.name} by #{cleaned_messages.find_all { |c| c != '' }.join("\n")}"
+              unless cleaned_messages.empty?
+                "converge DSC resource #{resource.name} by #{cleaned_messages.find_all { |c| c != '' }.join("\n")}"
+              else
+                "converge DSC resource #{resource.name}"
+              end
             else
               # This is needed because a dsc script can have resources that are both converged and not
               "converge DSC resource #{resource.name} by doing nothing because it is already converged"
