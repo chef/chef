@@ -83,16 +83,16 @@ C5986B4F1257FFA86632CBA746181433FBB75451
   end
 
   describe "#is_key_id?" do
-    it "should detect a key" do
+    it "detects a key" do
       expect(provider.is_key_id?("A4FF2279")).to be_truthy
     end
-    it "should detect a key with a hex signifier" do
+    it "detects a key with a hex signifier" do
       expect(provider.is_key_id?("0xA4FF2279")).to be_truthy
     end
-    it "should reject a key with the wrong length" do
+    it "rejects a key with the wrong length" do
       expect(provider.is_key_id?("4FF2279")).to be_falsey
     end
-    it "should reject a key with non-hex characters" do
+    it "rejects a key with non-hex characters" do
       expect(provider.is_key_id?("A4KF2279")).to be_falsey
     end
   end
@@ -102,12 +102,12 @@ C5986B4F1257FFA86632CBA746181433FBB75451
       expect(Mixlib::ShellOut).to receive(:new).and_return(apt_key_finger)
     end
 
-    it "should run the desired command" do
+    it "runs the desired command" do
       expect(apt_key_finger).to receive(:run_command)
       provider.extract_fingerprints_from_cmd(apt_key_finger_cmd)
     end
 
-    it "should return a list of key fingerprints" do
+    it "returns a list of key fingerprints" do
       expect(provider.extract_fingerprints_from_cmd(apt_key_finger_cmd)).to eql(apt_fingerprints)
     end
   end
