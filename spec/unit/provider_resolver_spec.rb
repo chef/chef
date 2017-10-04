@@ -709,18 +709,21 @@ describe Chef::ProviderResolver do
 
           "rhel" => {
     #        service: [ Chef::Resource::SystemdService, Chef::Provider::Service::Systemd ],
-            package:  [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
+            package:  [ Chef::Resource::DnfPackage, Chef::Provider::Package::Dnf ],
             ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig::Redhat ],
 
             %w{amazon xcp xenserver ibm_powerkvm cloudlinux parallels} => {
               "3.1.4" => {
+                package:  [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
     #            service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
               },
             },
             %w{redhat centos scientific oracle} => {
               "7.0" => {
+                package:  [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
               },
               "6.0" => {
+                package:  [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
     #            service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
               },
             },
