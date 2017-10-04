@@ -157,6 +157,35 @@ C5986B4F1257FFA86632CBA746181433FBB75451
     end
   end
 
+  describe "#is_ppa_url" do
+    it "returns true if the URL starts with ppa:" do
+      expect(provider.is_ppa_url?("ppa://example.com")).to be_truthy
+    end
+
+    it "returns false if the URL does not start with ppa:" do
+      expect(provider.is_ppa_url?("example.com")).to be_falsey
+    end
+  end
+
+  describe "#repo_components" do
+    it "returns 'main' if a PPA and components property not set" do
+      expect(provider).to receive(:is_ppa_url?).and_return(true)
+      expect(provider).repo_components.to eq('main')
+    end
+
+    it "returns components property if a PPA and components is set" do
+      new_resource.components('foo')
+      expect(provider).to receive(:is_ppa_url?).and_return(true)
+      expect(provider).repo_components.to eq('foo')
+    end
+
+    it "returns components property if not a PPA" do
+      new_resource.components('foo')
+      expect(provider).to receive(:is_ppa_url?).and_return(false)
+      expect(provider).repo_components.to eq('foo')
+    end
+  end
+
   describe "#install_ppa_key" do
     let(:url) { "https://launchpad.net/api/1.0/~chef/+archive/main" }
     let(:key) { "C5986B4F1257FFA86632CBA746181433FBB75451" }
