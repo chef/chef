@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.5.10 -->
-## [v13.5.10](https://github.com/chef/chef/tree/v13.5.10) (2017-10-03)
+<!-- latest_release 13.5.11 -->
+## [v13.5.11](https://github.com/chef/chef/tree/v13.5.11) (2017-10-04)
 
 #### Merged Pull Requests
-- [Route unit tests]: Ensure we go down the new file path [#6470](https://github.com/chef/chef/pull/6470) ([thommay](https://github.com/thommay))
+- dnf_resource: be more specific for rhel packages [#6435](https://github.com/chef/chef/pull/6435) ([NaomiReeves](https://github.com/NaomiReeves))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- dnf_resource: be more specific for rhel packages [#6435](https://github.com/chef/chef/pull/6435) ([NaomiReeves](https://github.com/NaomiReeves)) <!-- 13.5.11 -->
 - [Route unit tests]: Ensure we go down the new file path [#6470](https://github.com/chef/chef/pull/6470) ([thommay](https://github.com/thommay)) <!-- 13.5.10 -->
 - Tweak the knife banners for multi-arg commands. [#6466](https://github.com/chef/chef/pull/6466) ([coderanger](https://github.com/coderanger)) <!-- 13.5.9 -->
 - Fixes to package upgrade behaviour [#6428](https://github.com/chef/chef/pull/6428) ([jonlives](https://github.com/jonlives)) <!-- 13.5.8 -->
