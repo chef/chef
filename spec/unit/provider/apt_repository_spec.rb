@@ -112,6 +112,13 @@ C5986B4F1257FFA86632CBA746181433FBB75451
     end
   end
 
+  describe "#cookbook_name" do
+    it "returns 'test' when the cookbook property is set" do
+      new_resource.cookbook("test")
+      expect(provider.cookbook_name).to eq("test")
+    end
+  end
+
   describe "#no_new_keys?" do
     before do
       allow(provider).to receive(:extract_fingerprints_from_cmd).with(apt_key_finger_cmd).and_return(apt_fingerprints)
@@ -131,6 +138,22 @@ C5986B4F1257FFA86632CBA746181433FBB75451
         .with("gpg --with-fingerprint --with-colons #{file}")
         .and_return(%w{ F36A89E33CC1BD0F71079007327574EE02A818DD })
       expect(provider.no_new_keys?(file)).to be_falsey
+    end
+  end
+
+  describe "#key_type" do
+    it "returns :remote_file with an http URL" do
+      expect(provider.key_type("https://www.chef.io/key")).to eq(:remote_file)
+    end
+
+    it "returns :cookbook_file with a chef managed file" do
+      expect(provider).to receive(:has_cookbook_file?).and_return(true)
+      expect(provider.key_type("/foo/bar.key")).to eq(:cookbook_file)
+    end
+
+    it "throws exception if an unknown file specified" do
+      expect(provider).to receive(:has_cookbook_file?).and_return(false)
+      expect { provider.key_type("/foo/bar.key") }.to raise_error(Chef::Exceptions::FileNotFound)
     end
   end
 
@@ -185,5 +208,4 @@ C5986B4F1257FFA86632CBA746181433FBB75451
       expect(provider.build_repo("ppa:chef/main", "unstable", "main", false, nil)).to eql(target)
     end
   end
-
 end
