@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 12.21.15 -->
+## [v12.21.15](https://github.com/chef/chef/tree/v12.21.15) (2017-10-04)
+
+#### Merged Pull Requests
+- Backport #6435 to Chef-12: dnf_resource [#6436](https://github.com/chef/chef/pull/6436) ([NaomiReeves](https://github.com/NaomiReeves))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=13.5.3 -->
+### Changes since 13.5.3 release
+
+#### Merged Pull Requests
+- Backport #6435 to Chef-12: dnf_resource [#6436](https://github.com/chef/chef/pull/6436) ([NaomiReeves](https://github.com/NaomiReeves)) <!-- 12.21.15 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
