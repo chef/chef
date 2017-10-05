@@ -140,6 +140,14 @@ describe Chef::Provider::Package::Zypper do
       provider.install_package(["emacs"], ["1.0"])
     end
 
+    it "setting the property should allow downgrade" do
+      new_resource.allow_downgrade true
+      shell_out_expectation!(
+        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
+      )
+      provider.install_package(["emacs"], ["1.0"])
+    end
+
     it "should add user provided options to the command" do
       new_resource.options "--user-provided"
       shell_out_expectation!(
