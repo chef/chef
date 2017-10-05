@@ -25,6 +25,7 @@ class Chef
       provides :package, platform_family: "suse"
 
       property :gpg_check, [ TrueClass, FalseClass ], default: lazy { Chef::Config[:zypper_check_gpg] }
+      property :allow_downgrade, [ true, false ], default: false
     end
   end
 end

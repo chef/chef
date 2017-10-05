@@ -103,7 +103,7 @@ class Chef
         end
 
         def install_package(name, version)
-          zypper_package("install", *options, "--auto-agree-with-licenses", name, version)
+          zypper_package("install", *options, "--auto-agree-with-licenses", allow_downgrade, name, version)
         end
 
         def upgrade_package(name, version)
@@ -146,6 +146,10 @@ class Chef
 
         def gpg_checks
           "--no-gpg-checks" unless new_resource.gpg_check
+        end
+
+        def allow_downgrade
+          "--oldpackage" if new_resource.allow_downgrade
         end
       end
     end
