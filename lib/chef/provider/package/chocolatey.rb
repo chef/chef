@@ -233,16 +233,9 @@ EOS
               begin
                 cmd = [ "list -r #{pkg}" ]
                 cmd.push( "-source #{new_resource.source}" ) if new_resource.source
-                raw = parse_list_output(*cmd).first.each_slice(2).to_h
-                raw1 = parse_list_output(*cmd)
-                if raw1.length > 1
-                  raw1.keys.each_with_object({}) do |name, available|
-                    available[name] = desired_name_versions[name] || raw1[name]
-                  end
-                else
-                  raw.keys.each_with_object({}) do |name, available|
-                    available[name] = desired_name_versions[name] || raw[name]
-                  end
+                raw = parse_list_output(*cmd)
+                raw.keys.each_with_object({}) do |name, available|
+                  available[name] = desired_name_versions[name] || raw[name]
                 end
               end
             @available_packages.merge! available_versions
