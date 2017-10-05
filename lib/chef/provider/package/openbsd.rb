@@ -101,7 +101,7 @@ class Chef
         def candidate_version
           @candidate_version ||= begin
             results = []
-            shell_out_compact_timeout!("pkg_info", "-I", package_string(new_resource.package_name, new_resource.version), env: nil, returns: [0, 1]).stdout.each_line do |line|
+            shell_out_compact_timeout!("pkg_info", "-I", package_string(new_resource.package_name, new_resource.version), env: { "PKG_PATH" => pkg_path }, returns: [0, 1]).stdout.each_line do |line|
               results << if parts = new_resource.package_name.match(/^(.+?)--(.?+)/)
                            line[/^#{Regexp.escape(parts[1])}-(.+?)\s/, 1]
                          else
