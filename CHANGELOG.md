@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.5.11 -->
-## [v13.5.11](https://github.com/chef/chef/tree/v13.5.11) (2017-10-04)
+<!-- latest_release 13.5.12 -->
+## [v13.5.12](https://github.com/chef/chef/tree/v13.5.12) (2017-10-05)
 
 #### Merged Pull Requests
-- dnf_resource: be more specific for rhel packages [#6435](https://github.com/chef/chef/pull/6435) ([NaomiReeves](https://github.com/NaomiReeves))
+- Prevent creation of data bags named node, role, client or environment [#6469](https://github.com/chef/chef/pull/6469) ([sanditiffin](https://github.com/sanditiffin))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- Prevent creation of data bags named node, role, client or environment [#6469](https://github.com/chef/chef/pull/6469) ([sanditiffin](https://github.com/sanditiffin)) <!-- 13.5.12 -->
 - dnf_resource: be more specific for rhel packages [#6435](https://github.com/chef/chef/pull/6435) ([NaomiReeves](https://github.com/NaomiReeves)) <!-- 13.5.11 -->
 - [Route unit tests]: Ensure we go down the new file path [#6470](https://github.com/chef/chef/pull/6470) ([thommay](https://github.com/thommay)) <!-- 13.5.10 -->
 - Tweak the knife banners for multi-arg commands. [#6466](https://github.com/chef/chef/pull/6466) ([coderanger](https://github.com/coderanger)) <!-- 13.5.9 -->
