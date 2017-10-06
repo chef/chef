@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.5.12 -->
-## [v13.5.12](https://github.com/chef/chef/tree/v13.5.12) (2017-10-05)
+<!-- latest_release 13.5.13 -->
+## [v13.5.13](https://github.com/chef/chef/tree/v13.5.13) (2017-10-06)
 
 #### Merged Pull Requests
-- Prevent creation of data bags named node, role, client or environment [#6469](https://github.com/chef/chef/pull/6469) ([sanditiffin](https://github.com/sanditiffin))
+- Remove cookbook_artifacts from CHEF_11_OSS_STATIC_OBJECTS [#6478](https://github.com/chef/chef/pull/6478) ([itmustbejj](https://github.com/itmustbejj))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- Remove cookbook_artifacts from CHEF_11_OSS_STATIC_OBJECTS [#6478](https://github.com/chef/chef/pull/6478) ([itmustbejj](https://github.com/itmustbejj)) <!-- 13.5.13 -->
 - Prevent creation of data bags named node, role, client or environment [#6469](https://github.com/chef/chef/pull/6469) ([sanditiffin](https://github.com/sanditiffin)) <!-- 13.5.12 -->
 - dnf_resource: be more specific for rhel packages [#6435](https://github.com/chef/chef/pull/6435) ([NaomiReeves](https://github.com/NaomiReeves)) <!-- 13.5.11 -->
 - [Route unit tests]: Ensure we go down the new file path [#6470](https://github.com/chef/chef/pull/6470) ([thommay](https://github.com/thommay)) <!-- 13.5.10 -->
