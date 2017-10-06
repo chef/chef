@@ -83,16 +83,16 @@ C5986B4F1257FFA86632CBA746181433FBB75451
   end
 
   describe "#is_key_id?" do
-    it "should detect a key" do
+    it "detects a key" do
       expect(provider.is_key_id?("A4FF2279")).to be_truthy
     end
-    it "should detect a key with a hex signifier" do
+    it "detects a key with a hex signifier" do
       expect(provider.is_key_id?("0xA4FF2279")).to be_truthy
     end
-    it "should reject a key with the wrong length" do
+    it "rejects a key with the wrong length" do
       expect(provider.is_key_id?("4FF2279")).to be_falsey
     end
-    it "should reject a key with non-hex characters" do
+    it "rejects a key with non-hex characters" do
       expect(provider.is_key_id?("A4KF2279")).to be_falsey
     end
   end
@@ -102,13 +102,20 @@ C5986B4F1257FFA86632CBA746181433FBB75451
       expect(Mixlib::ShellOut).to receive(:new).and_return(apt_key_finger)
     end
 
-    it "should run the desired command" do
+    it "runs the desired command" do
       expect(apt_key_finger).to receive(:run_command)
       provider.extract_fingerprints_from_cmd(apt_key_finger_cmd)
     end
 
-    it "should return a list of key fingerprints" do
+    it "returns a list of key fingerprints" do
       expect(provider.extract_fingerprints_from_cmd(apt_key_finger_cmd)).to eql(apt_fingerprints)
+    end
+  end
+
+  describe "#cookbook_name" do
+    it "returns 'test' when the cookbook property is set" do
+      new_resource.cookbook("test")
+      expect(provider.cookbook_name).to eq("test")
     end
   end
 
@@ -131,6 +138,51 @@ C5986B4F1257FFA86632CBA746181433FBB75451
         .with("gpg --with-fingerprint --with-colons #{file}")
         .and_return(%w{ F36A89E33CC1BD0F71079007327574EE02A818DD })
       expect(provider.no_new_keys?(file)).to be_falsey
+    end
+  end
+
+  describe "#key_type" do
+    it "returns :remote_file with an http URL" do
+      expect(provider.key_type("https://www.chef.io/key")).to eq(:remote_file)
+    end
+
+    it "returns :cookbook_file with a chef managed file" do
+      expect(provider).to receive(:has_cookbook_file?).and_return(true)
+      expect(provider.key_type("/foo/bar.key")).to eq(:cookbook_file)
+    end
+
+    it "throws exception if an unknown file specified" do
+      expect(provider).to receive(:has_cookbook_file?).and_return(false)
+      expect { provider.key_type("/foo/bar.key") }.to raise_error(Chef::Exceptions::FileNotFound)
+    end
+  end
+
+  describe "#is_ppa_url" do
+    it "returns true if the URL starts with ppa:" do
+      expect(provider.is_ppa_url?("ppa://example.com")).to be_truthy
+    end
+
+    it "returns false if the URL does not start with ppa:" do
+      expect(provider.is_ppa_url?("example.com")).to be_falsey
+    end
+  end
+
+  describe "#repo_components" do
+    it "returns 'main' if a PPA and components property not set" do
+      expect(provider).to receive(:is_ppa_url?).and_return(true)
+      expect(provider).repo_components.to eq('main')
+    end
+
+    it "returns components property if a PPA and components is set" do
+      new_resource.components('foo')
+      expect(provider).to receive(:is_ppa_url?).and_return(true)
+      expect(provider).repo_components.to eq('foo')
+    end
+
+    it "returns components property if not a PPA" do
+      new_resource.components('foo')
+      expect(provider).to receive(:is_ppa_url?).and_return(false)
+      expect(provider).repo_components.to eq('foo')
     end
   end
 
@@ -185,5 +237,4 @@ C5986B4F1257FFA86632CBA746181433FBB75451
       expect(provider.build_repo("ppa:chef/main", "unstable", "main", false, nil)).to eql(target)
     end
   end
-
 end
