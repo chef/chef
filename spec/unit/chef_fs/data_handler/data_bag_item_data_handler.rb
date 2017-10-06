@@ -55,7 +55,7 @@ describe Chef::ChefFS::DataHandler::DataBagItemDataHandler do
     end
 
     context "using a reserved word for the data bag name" do
-      %w(node role environment client).each do |reserved_word|
+      %w{node role environment client}.each do |reserved_word|
         let(:entry) { TestDataBagItem.new(reserved_word, "bag") }
         let(:object) do
           { "raw_data" => { "id" => "bag" } }
