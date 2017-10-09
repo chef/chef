@@ -501,7 +501,7 @@ class Chef::Application::Client < Chef::Application
       # we need to sleep again after reconfigure to avoid stampeding when logrotate runs out of cron
       if signal == RECONFIGURE_SIGNAL
         reconfigure
-        interval_sleep(sleep)
+        interval_sleep(sec)
       end
     else
       sleep(sec)
