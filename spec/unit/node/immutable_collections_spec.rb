@@ -20,13 +20,18 @@ require "spec_helper"
 require "chef/node/immutable_collections"
 
 describe Chef::Node::ImmutableMash do
+
   before do
-    @data_in = { "top" => { "second_level" => "some value" },
-                 "top_level_2" => %w{array of values},
-                 "top_level_3" => [{ "hash_array" => 1, "hash_array_b" => 2 }],
-                 "top_level_4" => { "level2" => { "key" => "value" } },
+    @data_in = { "key" =>
+                 { "top" => { "second_level" => "some value" },
+                   "top_level_2" => %w{array of values},
+                   "top_level_3" => [{ "hash_array" => 1, "hash_array_b" => 2 }],
+                   "top_level_4" => { "level2" => { "key" => "value" } },
+                 },
     }
-    @immutable_mash = Chef::Node::ImmutableMash.new(@data_in)
+    @node = Chef::Node.new()
+    @node.attributes.default = @data_in
+    @immutable_mash = @node["key"]
   end
 
   it "element references like regular hash" do
@@ -57,9 +62,9 @@ describe Chef::Node::ImmutableMash do
   # we only ever absorb VividMashes from other precedence levels, which already have
   # been coerced to only have string keys, so we do not need to do that work twice (performance).
   it "does not call convert_value like Mash/VividMash" do
-    @mash = Chef::Node::ImmutableMash.new({ test: "foo", "test2" => "bar" })
-    expect(@mash[:test]).to eql("foo")
-    expect(@mash["test2"]).to eql("bar")
+    @node.attributes.default = { test: "foo", "test2" => "bar" }
+    expect(@node[:test]).to eql("foo")
+    expect(@node["test2"]).to eql("bar")
   end
 
   describe "to_hash" do
@@ -80,7 +85,9 @@ describe Chef::Node::ImmutableMash do
     end
 
     it "should create a mash with the same content" do
-      expect(@copy).to eq(@immutable_mash)
+      puts @copy.class
+      puts @immutable_mash.class
+      expect(@immutable_mash).to eq(@copy)
     end
 
     it "should allow mutation" do
@@ -175,9 +182,11 @@ end
 describe Chef::Node::ImmutableArray do
 
   before do
-    @immutable_array = Chef::Node::ImmutableArray.new(%w{foo bar baz} + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ])
-    immutable_mash = Chef::Node::ImmutableMash.new({ "m" => "m" })
-    @immutable_nested_array = Chef::Node::ImmutableArray.new(["level1", @immutable_array, immutable_mash])
+    @node = Chef::Node.new()
+    @node.attributes.default = { "key" => ["level1", %w{foo bar baz} + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ], { "m" => "m" }] }
+    @immutable_array = @node["key"][1]
+    @immutable_mash = @node["key"][2]
+    @immutable_nested_array = @node["key"]
   end
 
   ##
@@ -249,7 +258,7 @@ describe Chef::Node::ImmutableArray do
     end
 
     it "should create an array with the same content" do
-      expect(@copy).to eq(@immutable_nested_array)
+      expect(@immutable_nested_array).to eq(@copy)
     end
 
     it "should allow mutation" do
@@ -312,6 +321,13 @@ describe Chef::Node::ImmutableArray do
   describe "#[]" do
     it "works with array slices" do
       expect(@immutable_array[1, 2]).to eql(%w{bar baz})
+    end
+  end
+
+  describe "uniq" do
+    it "works" do
+      @node.attributes.default = { "key" => %w{foo bar foo baz bar} }
+      expect(@node["key"].uniq).to eql(%w{foo bar baz})
     end
   end
 end
