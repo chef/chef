@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.5.14 -->
-## [v13.5.14](https://github.com/chef/chef/tree/v13.5.14) (2017-10-06)
+<!-- latest_release 13.5.15 -->
+## [v13.5.15](https://github.com/chef/chef/tree/v13.5.15) (2017-10-09)
 
 #### Merged Pull Requests
-- Add allow_downgrade to zypper_package resource  [#6476](https://github.com/chef/chef/pull/6476) ([yeoldegrove](https://github.com/yeoldegrove))
+- [SUSTAIN-731] Don&#39;t spin in powershell module that launches chef processes [#6481](https://github.com/chef/chef/pull/6481) ([ksubrama](https://github.com/ksubrama))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- [SUSTAIN-731] Don&#39;t spin in powershell module that launches chef processes [#6481](https://github.com/chef/chef/pull/6481) ([ksubrama](https://github.com/ksubrama)) <!-- 13.5.15 -->
 - Add allow_downgrade to zypper_package resource  [#6476](https://github.com/chef/chef/pull/6476) ([yeoldegrove](https://github.com/yeoldegrove)) <!-- 13.5.14 -->
 - Remove cookbook_artifacts from CHEF_11_OSS_STATIC_OBJECTS [#6478](https://github.com/chef/chef/pull/6478) ([itmustbejj](https://github.com/itmustbejj)) <!-- 13.5.13 -->
 - Prevent creation of data bags named node, role, client or environment [#6469](https://github.com/chef/chef/pull/6469) ([sanditiffin](https://github.com/sanditiffin)) <!-- 13.5.12 -->
