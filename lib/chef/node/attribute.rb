@@ -207,22 +207,20 @@ class Chef
 
       # check for the existence of attributes
       def attribute?(*args)
-        begin
-          r = nil
-          until args.empty?
-            a = args.shift
-            if r
-              return false unless r.has_key?(a)
-              r = r[a]
-            else
-              return false unless self.has_key?(a)
-              r = self[a]
-            end
+        r = nil
+        until args.empty?
+          a = args.shift
+          if r
+            return false unless r.has_key?(a)
+            r = r[a]
+          else
+            return false unless has_key?(a)
+            r = self[a]
           end
-          true
-        rescue NoMethodError
-          false
         end
+        true
+      rescue NoMethodError
+        false
       end
 
        # Debug what's going on with an attribute. +args+ is a path spec to the
