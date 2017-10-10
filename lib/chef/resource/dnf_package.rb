@@ -35,6 +35,11 @@ class Chef
       # fedora >= 22 uses DNF
       provides :package, platform: "fedora", platform_version: ">= 22"
 
+      # amazon will eventually use DNF
+      provides :package, platform: "amazon" do
+        which("dnf")
+      end
+
       provides :dnf_package
 
       # Install a specific arch
