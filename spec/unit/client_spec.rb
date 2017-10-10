@@ -44,6 +44,17 @@ describe Chef::Client do
     end
   end
 
+  context "when Ohai tells us to fail" do
+    it "fails" do
+      ohai_system = Ohai::System.new
+      module Ohai::Exceptions
+        class CriticalPluginFailure < Error; end
+      end
+      expect(ohai_system).to receive(:all_plugins) { raise Ohai::Exceptions::CriticalPluginFailure }
+      expect { client.run_ohai }.to raise_error(SystemExit)
+    end
+  end
+
   describe "authentication protocol selection" do
     context "when FIPS is disabled" do
       before do
