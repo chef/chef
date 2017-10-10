@@ -205,6 +205,19 @@ class Chef
         super(nil, self, node, :merged)
       end
 
+      # check for the existence of attributes
+      def attribute?(*args)
+        r = self
+        until args.empty?
+          a = args.shift
+          return false unless r.has_key?(a)
+          r = r[a]
+        end
+        true
+      rescue NoMethodError
+        false
+      end
+
        # Debug what's going on with an attribute. +args+ is a path spec to the
        # attribute you're interested in. For example, to debug where the value
        # of `node[:network][:default_interface]` is coming from, use:
@@ -465,7 +478,6 @@ class Chef
         send(level).unlink!(*path)
       end
 
-      alias :attribute? :has_key?
       alias :member? :has_key?
       alias :include? :has_key?
       alias :key? :has_key?
