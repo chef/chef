@@ -234,12 +234,14 @@ describe Chef::Node do
 
     it 'deep attribute? checking' do
       node.normal['deep']['nested']['attribute'] = 'blue'
-      expect(node.attribute?('deep')).to eq(true)
-      expect(node.attribute?('wrong')).to eq(false)
       expect(node.attribute?('deep', 'nested')).to eq(true)
       expect(node.attribute?('deep', 'wrong')).to eq(false)
+      expect(node['deep'].attribute?('nested')).to eq(true)
+      expect(node['deep'].attribute?('wrong')).to eq(false)
       expect(node.attribute?('deep', 'nested', 'attribute')).to eq(true)
       expect(node.attribute?('deep', 'nested', 'wrong')).to eq(false)
+      expect(node['deep']['nested'].attribute?('attribute')).to eq(true)
+      expect(node['deep']['nested'].attribute?('wrong')).to eq(false)
       expect(node.attribute?('deep', 'nested', 'attribute', 'wrong')).to eq(false)
     end
 
