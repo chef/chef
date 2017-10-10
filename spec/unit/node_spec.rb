@@ -232,6 +232,17 @@ describe Chef::Node do
       expect(node.attribute?("no dice")).to eql(false)
     end
 
+    it 'deep attribute? checking' do
+      node.normal['deep']['nested']['attribute'] = 'blue'
+      expect(node.attribute?('deep')).to eq(true)
+      expect(node.attribute?('wrong')).to eq(false)
+      expect(node.attribute?('deep', 'nested')).to eq(true)
+      expect(node.attribute?('deep', 'wrong')).to eq(false)
+      expect(node.attribute?('deep', 'nested', 'attribute')).to eq(true)
+      expect(node.attribute?('deep', 'nested', 'wrong')).to eq(false)
+      expect(node.attribute?('deep', 'nested', 'attribute', 'wrong')).to eq(false)
+    end
+
     it "should let you go deep with attribute?" do
       node.normal["battles"]["people"]["wonkey"] = true
       expect(node["battles"]["people"].attribute?("wonkey")).to eq(true)

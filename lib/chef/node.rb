@@ -244,11 +244,8 @@ class Chef
 
     # Return true if this Node has a given attribute, false if not.  Takes either a symbol or
     # a string.
-    #
-    # Only works on the top level. Preferred way is to use the normal [] style
-    # lookup and call attribute?()
-    def attribute?(attrib)
-      attributes.attribute?(attrib)
+    def attribute?(*attrib)
+      attributes.attribute?(*attrib)
     end
 
     # Yield each key of the top level to the block.

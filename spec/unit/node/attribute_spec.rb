@@ -566,6 +566,25 @@ describe Chef::Node::Attribute do
       expect(@attributes.attribute?("ninja")).to eq(false)
     end
 
+    it "should return true if an attribute exists (nested)" do
+      expect(@attributes.attribute?('music', 'deeper')).to eq(true)
+    end
+
+    it "should return false if an attribute does not exist (nested)" do
+      expect(@attributes.attribute?('music', 'wrong')).to eq(false)
+    end
+
+    it "should return true if an attribute exists (nested - deep)" do
+      expect(@attributes.attribute?('music', 'deeper', 'gates_of_ishtar')).to eq(true)
+    end
+
+    it "should return false if an attribute does not exist (nested - deep)" do
+      expect(@attributes.attribute?('music', 'deeper', 'wrong')).to eq(false)
+    end
+
+    it "should return false if an attribute does not exist (nested - too deep)" do
+      expect(@attributes.attribute?('music', 'deeper', 'gates_of_ishtar', 'wrong')).to eq(false)
+    end
   end
 
   describe "keys" do
