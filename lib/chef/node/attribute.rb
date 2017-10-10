@@ -207,16 +207,11 @@ class Chef
 
       # check for the existence of attributes
       def attribute?(*args)
-        r = nil
+        r = self
         until args.empty?
           a = args.shift
-          if r
-            return false unless r.has_key?(a)
-            r = r[a]
-          else
-            return false unless has_key?(a)
-            r = self[a]
-          end
+          return false unless r.has_key?(a)
+          r = r[a]
         end
         true
       rescue NoMethodError
