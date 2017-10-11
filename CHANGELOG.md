@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.5.17 -->
-## [v13.5.17](https://github.com/chef/chef/tree/v13.5.17) (2017-10-10)
+<!-- latest_release 13.5.18 -->
+## [v13.5.18](https://github.com/chef/chef/tree/v13.5.18) (2017-10-11)
 
 #### Merged Pull Requests
-- Support new CriticalOhaiPlugins [#6486](https://github.com/chef/chef/pull/6486) ([jaymzh](https://github.com/jaymzh))
+- only rhel &gt;= 8 and fedora &gt;= 22 get dnf [#6490](https://github.com/chef/chef/pull/6490) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- only rhel &gt;= 8 and fedora &gt;= 22 get dnf [#6490](https://github.com/chef/chef/pull/6490) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.5.18 -->
 - Support new CriticalOhaiPlugins [#6486](https://github.com/chef/chef/pull/6486) ([jaymzh](https://github.com/jaymzh)) <!-- 13.5.17 -->
 - Sleep for another interval after handling SIGHUP [#6461](https://github.com/chef/chef/pull/6461) ([grekasius](https://github.com/grekasius)) <!-- 13.5.16 -->
 - Don&#39;t spin in powershell module that launches chef processes [#6481](https://github.com/chef/chef/pull/6481) ([ksubrama](https://github.com/ksubrama)) <!-- 13.5.15 -->
