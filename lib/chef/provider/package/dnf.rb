@@ -35,13 +35,18 @@ class Chef
         use_multipackage_api
         use_package_name_for_source
 
-        provides :package, platform_family: %w{fedora amazon} do
-          which("dnf") && shell_out("rpm -q dnf").stdout =~ /^dnf-[1-9]/
+        # all rhel variants >= 8 will use DNF
+        provides :package, platform_family: "rhel", platform_version: ">= 8"
+
+        # fedora >= 22 uses DNF
+        provides :package, platform: "fedora", platform_version: ">= 22"
+
+        # amazon will eventually use DNF
+        provides :package, platform: "amazon" do
+          which("dnf")
         end
 
-        provides :package, platform_family: %w{rhel}, platform_version: ">= 8"
-
-        provides :dnf_package, os: "linux"
+        provides :dnf_package
 
         #
         # Most of the magic in this class happens in the python helper script.  The ruby side of this
