@@ -100,15 +100,11 @@ class Chef
 
         # @see Chef::Provider::Package#package_locked
         def package_locked(name, version)
-          islocked = false
           locked = shell_out_with_timeout!("yum versionlock")
-          locked.stdout.each_line do |line|
-            line_package = line.sub(/-[^-]*-[^-]*$/, "").split(":").last.strip
-            if line_package == name
-              islocked = true
-            end
+          locked_packages = locked.stdout.each_line.map do |line|
+            line.sub(/-[^-]*-[^-]*$/, "").split(":").last.strip
           end
-          islocked
+          name.all? { |n| locked_packages.include? n }
         end
 
         #

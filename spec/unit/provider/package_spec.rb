@@ -27,10 +27,12 @@ describe Chef::Provider::Package do
   end
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:new_resource) { Chef::Resource::Package.new("emacs") }
-  let(:current_resource) { Chef::Resource::Package.new("emacs") }
+  let(:new_resource) { Chef::Resource::Package.new("install emacs") }
+  let(:current_resource) { Chef::Resource::Package.new("install emacs") }
   let(:candidate_version) { "1.0" }
   let(:provider) do
+    new_resource.package_name = "emacs"
+    current_resource.package_name = "emacs"
     provider = Chef::Provider::Package.new(new_resource, run_context)
     provider.current_resource = current_resource
     provider.candidate_version = candidate_version
@@ -57,7 +59,7 @@ describe Chef::Provider::Package do
     it "should call preseed_package if a response_file is given" do
       new_resource.response_file("foo")
       expect(provider).to receive(:get_preseed_file).with(
-        new_resource.name,
+        new_resource.package_name,
         provider.candidate_version
       ).and_return("/var/cache/preseed-test")
 
@@ -74,7 +76,7 @@ describe Chef::Provider::Package do
 
     it "should install the package at the candidate_version if it is not already installed" do
       expect(provider).to receive(:install_package).with(
-        new_resource.name,
+        new_resource.package_name,
         provider.candidate_version
       ).and_return(true)
       provider.run_action(:install)
@@ -84,7 +86,7 @@ describe Chef::Provider::Package do
     it "should install the package at the version specified if it is not already installed" do
       new_resource.version("1.0")
       expect(provider).to receive(:install_package).with(
-        new_resource.name,
+        new_resource.package_name,
         new_resource.version
       ).and_return(true)
       provider.run_action(:install)
@@ -95,7 +97,7 @@ describe Chef::Provider::Package do
       new_resource.version("1.0")
       allow(current_resource).to receive(:version).and_return("0.99")
       expect(provider).to receive(:install_package).with(
-        new_resource.name,
+        new_resource.package_name,
         new_resource.version
       ).and_return(true)
       provider.run_action(:install)
@@ -143,7 +145,7 @@ describe Chef::Provider::Package do
 
     it "should upgrade the package if the current version is not the candidate version" do
       expect(provider).to receive(:upgrade_package).with(
-        new_resource.name,
+        new_resource.package_name,
         provider.candidate_version
       ).and_return(true)
       provider.run_action(:upgrade)
@@ -164,7 +166,7 @@ describe Chef::Provider::Package do
 
     it "should print the word 'uninstalled' if there was no original version" do
       allow(current_resource).to receive(:version).and_return(nil)
-      expect(Chef::Log).to receive(:info).with("package[emacs] upgraded emacs to 1.0")
+      expect(Chef::Log).to receive(:info).with("package[install emacs] upgraded emacs to 1.0")
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -285,7 +287,7 @@ describe Chef::Provider::Package do
       expect(provider).to receive(:get_preseed_file).and_return("/var/cache/preseed-test")
       allow(provider).to receive(:preseed_package).and_return(true)
       allow(provider).to receive(:reconfig_package).and_return(true)
-      expect(Chef::Log).to receive(:info).with("package[emacs] reconfigured")
+      expect(Chef::Log).to receive(:info).with("package[install emacs] reconfigured")
       expect(provider).to receive(:reconfig_package)
       provider.run_action(:reconfig)
       expect(new_resource).to be_updated
@@ -294,7 +296,7 @@ describe Chef::Provider::Package do
 
     it "should debug log and not reconfigure the package if the package is not installed" do
       allow(current_resource).to receive(:version).and_return(nil)
-      expect(Chef::Log).to receive(:debug).with("package[emacs] is NOT installed - nothing to do")
+      expect(Chef::Log).to receive(:debug).with("package[install emacs] is NOT installed - nothing to do")
       expect(provider).not_to receive(:reconfig_package)
       provider.run_action(:reconfig)
       expect(new_resource).not_to be_updated_by_last_action
@@ -303,7 +305,7 @@ describe Chef::Provider::Package do
     it "should debug log and not reconfigure the package if no response_file is given" do
       allow(current_resource).to receive(:version).and_return("1.0")
       allow(new_resource).to receive(:response_file).and_return(nil)
-      expect(Chef::Log).to receive(:debug).with("package[emacs] no response_file provided - nothing to do")
+      expect(Chef::Log).to receive(:debug).with("package[install emacs] no response_file provided - nothing to do")
       expect(provider).not_to receive(:reconfig_package)
       provider.run_action(:reconfig)
       expect(new_resource).not_to be_updated_by_last_action
@@ -314,7 +316,7 @@ describe Chef::Provider::Package do
       allow(new_resource).to receive(:response_file).and_return(true)
       expect(provider).to receive(:get_preseed_file).and_return(false)
       allow(provider).to receive(:preseed_package).and_return(false)
-      expect(Chef::Log).to receive(:debug).with("package[emacs] preseeding has not changed - nothing to do")
+      expect(Chef::Log).to receive(:debug).with("package[install emacs] preseeding has not changed - nothing to do")
       expect(provider).not_to receive(:reconfig_package)
       provider.run_action(:reconfig)
       expect(new_resource).not_to be_updated_by_last_action
@@ -323,24 +325,35 @@ describe Chef::Provider::Package do
 
   describe "When locking the package" do
     before(:each) do
-      allow(provider).to receive(:lock_package).and_return(true)
+      allow(provider).to receive(:lock_package).with(
+        new_resource.package_name,
+        nil
+      ).and_return(true)
     end
 
     it "should lock the package if it is unlocked" do
-      allow(provider).to receive(:package_locked).and_return(false)
-      expect(provider).to receive(:lock_package)
+      allow(provider).to receive(:package_locked).with(
+        new_resource.package_name,
+        nil
+      ).and_return(false)
       provider.run_action(:lock)
     end
 
     it "should not lock the package if it is already locked" do
-      allow(provider).to receive(:package_locked).and_return(true)
+      allow(provider).to receive(:package_locked).with(
+        new_resource.package_name,
+        nil
+      ).and_return(true)
       expect(provider).not_to receive(:lock_package)
       provider.run_action(:lock)
       expect(new_resource).not_to be_updated_by_last_action
     end
 
     it "should set the resource to updated if it locks the package" do
-      allow(provider).to receive(:package_locked).and_return(false)
+      allow(provider).to receive(:package_locked).with(
+        new_resource.package_name,
+        nil
+      ).and_return(false)
       provider.run_action(:lock)
       expect(new_resource).to be_updated
     end
@@ -352,20 +365,29 @@ describe Chef::Provider::Package do
     end
 
     it "should unlock the package if it is locked" do
-      allow(provider).to receive(:package_locked).and_return(true)
+      allow(provider).to receive(:package_locked).with(
+        new_resource.package_name,
+        nil
+      ).and_return(true)
       expect(provider).to receive(:unlock_package)
       provider.run_action(:unlock)
     end
 
     it "should not unlock the package if it is already unlocked" do
-      allow(provider).to receive(:package_locked).and_return(false)
+      allow(provider).to receive(:package_locked).with(
+        new_resource.package_name,
+        nil
+      ).and_return(false)
       expect(provider).not_to receive(:unlock_package)
       provider.run_action(:unlock)
       expect(new_resource).not_to be_updated_by_last_action
     end
 
     it "should set the resource to updated if it unlocks the package" do
-      allow(provider).to receive(:package_locked).and_return(true)
+      allow(provider).to receive(:package_locked).with(
+        new_resource.package_name,
+        nil
+      ).and_return(true)
       provider.run_action(:unlock)
       expect(new_resource).to be_updated
     end
