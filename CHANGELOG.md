@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.21.16 -->
-## [v12.21.16](https://github.com/chef/chef/tree/v12.21.16) (2017-10-10)
+<!-- latest_release 12.21.17 -->
+## [v12.21.17](https://github.com/chef/chef/tree/v12.21.17) (2017-10-12)
 
 #### Merged Pull Requests
-- Support new CriticalOhaiPlugins (backport #6486 to chef-12) [#6487](https://github.com/chef/chef/pull/6487) ([jaymzh](https://github.com/jaymzh))
+- backport of #6490 [#6492](https://github.com/chef/chef/pull/6492) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- backport of #6490 [#6492](https://github.com/chef/chef/pull/6492) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 12.21.17 -->
 - Support new CriticalOhaiPlugins (backport #6486 to chef-12) [#6487](https://github.com/chef/chef/pull/6487) ([jaymzh](https://github.com/jaymzh)) <!-- 12.21.16 -->
 - Backport #6435 to Chef-12: dnf_resource [#6436](https://github.com/chef/chef/pull/6436) ([NaomiReeves](https://github.com/NaomiReeves)) <!-- 12.21.15 -->
 <!-- release_rollup -->
