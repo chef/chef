@@ -51,7 +51,8 @@ class Chef
                                        :once,
                                        :on_logon,
                                        :onstart,
-                                       :on_idle], default: :hourly
+                                       :on_idle,
+                                       :none], default: :hourly
       property :start_day, String
       property :start_time, String
       property :day, [String, Integer]
@@ -81,7 +82,7 @@ class Chef
           execution_time_limit("PT72H")
         end
 
-        validate_start_time(start_time) if frequency == :once
+        validate_start_time(start_time, frequency)
         validate_start_day(start_day, frequency) if start_day
         validate_user_and_password(user, password)
         validate_interactive_setting(interactive_enabled, password)
@@ -94,7 +95,7 @@ class Chef
       private
 
       def validate_random_delay(random_delay, frequency)
-        if [:once, :on_logon, :onstart, :on_idle].include? frequency
+        if [:once, :on_logon, :onstart, :on_idle, :none].include? frequency
           raise ArgumentError, "`random_delay` property is supported only for frequency :minute, :hourly, :daily, :weekly and :monthly"
         end
 
@@ -102,13 +103,17 @@ class Chef
       end
 
       def validate_start_day(start_day, frequency)
-        if [:once, :on_logon, :onstart, :on_idle].include? frequency
+        if [:once, :on_logon, :onstart, :on_idle, :none].include? frequency
           raise ArgumentError, "`start_day` property is not supported with frequency: #{frequency}"
         end
       end
 
-      def validate_start_time(start_time)
-        raise ArgumentError, "`start_time` needs to be provided with `frequency :once`" unless start_time
+      def validate_start_time(start_time, frequency)
+        if frequency == :once
+          raise ArgumentError, "`start_time` needs to be provided with `frequency :once`" unless start_time
+        elsif frequency == :none
+          raise ArgumentError, "`start_time` property is not supported with `frequency :none`" if start_time
+        end
       end
 
       SYSTEM_USERS = ['NT AUTHORITY\SYSTEM', "SYSTEM", 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', "USERS"].freeze
@@ -132,7 +137,7 @@ class Chef
       end
 
       def validate_create_frequency_modifier(frequency, frequency_modifier)
-        # Currently is handled in create action 'frequency_modifier_allowed' line. Does not allow for frequency_modifier for once,onstart,onlogon,onidle
+        # Currently is handled in create action 'frequency_modifier_allowed' line. Does not allow for frequency_modifier for once,onstart,onlogon,onidle,none
         # Note that 'OnEvent' is not a supported frequency.
         unless frequency.nil? || frequency_modifier.nil?
           case frequency
