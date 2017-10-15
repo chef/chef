@@ -66,6 +66,17 @@ describe Chef::Provider::AptRepository do
     double("shell_out", stdout: GPG_FINGER, exitstatus: 0, error?: false)
   end
 
+  let(:gpg_shell_out_success) do
+    double("shell_out", :stdout => "pub  2048R/7BD9BF62 2011-08-19 nginx signing key <signing-key@nginx.com>",
+                        :exitstatus => 0, :error? => false)
+  end
+
+  let(:gpg_shell_out_failure) do
+    double("shell_out", :stderr => "gpg: no valid OpenPGP data found.\n
+                                    gpg: processing message failed: eof",
+                        :exitstatus => 1, :error? => true)
+  end
+
   let(:apt_fingerprints) do
     %w{630239CC130E1A7FD81A27B140976EAF437D05B5
 C5986B4F1257FFA86632CBA746181433FBB75451
@@ -238,6 +249,18 @@ C5986B4F1257FFA86632CBA746181433FBB75451
       target = %Q{deb      "http://ppa.launchpad.net/chef/main/ubuntu" unstable main\n}
       expect(provider).to receive(:make_ppa_url).with("ppa:chef/main").and_return("http://ppa.launchpad.net/chef/main/ubuntu")
       expect(provider.build_repo("ppa:chef/main", "unstable", "main", false, nil)).to eql(target)
+    end
+  end
+
+  describe "#keyfile_is_invalid?" do
+    it "returns true if the file is invalid" do
+      expect(provider).to receive(:shell_out).and_return(gpg_shell_out_failure)
+      expect(provider.keyfile_is_invalid?("/foo/bar.key")).to be_truthy
+    end
+
+    it "returns false if the file is valid" do
+      expect(provider).to receive(:shell_out).and_return(gpg_shell_out_success)
+      expect(provider.keyfile_is_invalid?("/foo/bar.key")).to be_falsey
     end
   end
 end

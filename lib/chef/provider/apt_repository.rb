@@ -29,7 +29,6 @@ class Chef
 
       provides :apt_repository, platform_family: "debian"
 
-      LIST_APT_KEYS = "apt-key list".freeze
       LIST_APT_KEY_FINGERPRINTS = "apt-key adv --list-public-keys --with-fingerprint --with-colons".freeze
 
       def load_current_resource
@@ -120,15 +119,23 @@ class Chef
         end.compact
       end
 
-      # validate the key
-      # @param [String] cmd
+      # see if the keyfile is invalid such as a text file that is not actually a gpg key
+      # @param [String] keyfile the path to the keyfile
+      #
+      # @return [Boolean] is the key file invalid
+      def keyfile_is_invalid?(keyfile)
+        so = shell_out("gpg #{keyfile}")
+        so.error?
+      end
+
+      # validate the key against the apt keystore to see if that version is expired
       # @param [String] key
       #
       # @return [Boolean] is the key valid or not
-      def key_is_valid?(cmd, key)
+      def key_is_valid?(key)
         valid = true
 
-        so = shell_out(cmd)
+        so = shell_out("apt-key list")
         so.stdout.split(/\n/).map do |t|
           if t =~ %r{^\/#{key}.*\[expired: .*\]$}
             Chef::Log.debug "Found expired key: #{t}"
@@ -205,7 +212,7 @@ class Chef
           action :create
         end
 
-        raise "The key #{cached_keyfile} is invalid and cannot be used to verify an apt repository." unless key_is_valid?("gpg #{cached_keyfile}", "")
+        raise "The key #{cached_keyfile} is invalid and cannot be used to verify an apt repository." if keyfile_is_invalid?(cached_keyfile)
 
         declare_resource(:execute, "apt-key add #{cached_keyfile}") do
           sensitive new_resource.sensitive
@@ -248,12 +255,12 @@ class Chef
             present = extract_fingerprints_from_cmd(LIST_APT_KEY_FINGERPRINTS).any? do |fp|
               fp.end_with? key.upcase
             end
-            present && key_is_valid?(LIST_APT_KEYS, key.upcase)
+            present && key_is_valid?(key.upcase)
           end
           notifies :run, "execute[apt-cache gencaches]", :immediately
         end
 
-        raise "The key #{key} is invalid and cannot be used to verify an apt repository." unless key_is_valid?(LIST_APT_KEYS, key.upcase)
+        raise "The key #{key} is invalid and cannot be used to verify an apt repository." unless key_is_valid?(key.upcase)
       end
 
       # @param [String] owner
