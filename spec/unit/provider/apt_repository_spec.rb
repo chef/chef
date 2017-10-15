@@ -47,7 +47,6 @@ EOF
 describe Chef::Provider::AptRepository do
   let(:new_resource) { Chef::Resource::AptRepository.new("multiverse") }
 
-  let(:shellout_env) { { env: { "LANG" => "en_US", "LANGUAGE" => "en_US" } } }
   let(:provider) do
     node = Chef::Node.new
     events = Chef::EventDispatch::Dispatcher.new
@@ -60,15 +59,11 @@ describe Chef::Provider::AptRepository do
   end
 
   let(:apt_key_finger) do
-    r = double("Mixlib::ShellOut", stdout: APT_KEY_FINGER, exitstatus: 0, live_stream: true)
-    allow(r).to receive(:run_command)
-    r
+    double("shell_out", stdout: APT_KEY_FINGER, exitstatus: 0, error?: false)
   end
 
   let(:gpg_finger) do
-    r = double("Mixlib::ShellOut", stdout: GPG_FINGER, exitstatus: 0, live_stream: true)
-    allow(r).to receive(:run_command)
-    r
+    double("shell_out", stdout: GPG_FINGER, exitstatus: 0, error?: false)
   end
 
   let(:apt_fingerprints) do
@@ -98,16 +93,13 @@ C5986B4F1257FFA86632CBA746181433FBB75451
   end
 
   describe "#extract_fingerprints_from_cmd" do
-    before do
-      expect(Mixlib::ShellOut).to receive(:new).and_return(apt_key_finger)
-    end
-
     it "runs the desired command" do
-      expect(apt_key_finger).to receive(:run_command)
+      expect(provider).to receive(:shell_out).and_return(apt_key_finger)
       provider.extract_fingerprints_from_cmd(apt_key_finger_cmd)
     end
 
     it "returns a list of key fingerprints" do
+      expect(provider).to receive(:shell_out).and_return(apt_key_finger)
       expect(provider.extract_fingerprints_from_cmd(apt_key_finger_cmd)).to eql(apt_fingerprints)
     end
   end
@@ -126,14 +118,14 @@ C5986B4F1257FFA86632CBA746181433FBB75451
 
     let(:file) { "/tmp/remote-gpg-keyfile" }
 
-    it "should match a set of keys" do
+    it "matches a set of keys" do
       allow(provider).to receive(:extract_fingerprints_from_cmd)
         .with("gpg --with-fingerprint --with-colons #{file}")
         .and_return(Array(apt_fingerprints.first))
       expect(provider.no_new_keys?(file)).to be_truthy
     end
 
-    it "should notice missing keys" do
+    it "notices missing keys" do
       allow(provider).to receive(:extract_fingerprints_from_cmd)
         .with("gpg --with-fingerprint --with-colons #{file}")
         .and_return(%w{ F36A89E33CC1BD0F71079007327574EE02A818DD })
@@ -157,6 +149,21 @@ C5986B4F1257FFA86632CBA746181433FBB75451
     end
   end
 
+  describe "#keyserver_install_cmd" do
+    it "returns keyserver install command" do
+      expect(provider.keyserver_install_cmd("ABC", "gpg.mit.edu")).to eq("apt-key adv --recv --keyserver hkp://gpg.mit.edu:80 ABC")
+    end
+
+    it "uses proxy if key_proxy property is set" do
+      new_resource.key_proxy("proxy.mycorp.dmz:3128")
+      expect(provider.keyserver_install_cmd("ABC", "gpg.mit.edu")).to eq("apt-key adv --recv --keyserver-options http-proxy=proxy.mycorp.dmz:3128 --keyserver hkp://gpg.mit.edu:80 ABC")
+    end
+
+    it "properly handles keyservers passed with hkp:// URIs" do
+      expect(provider.keyserver_install_cmd("ABC", "hkp://gpg.mit.edu")).to eq("apt-key adv --recv --keyserver hkp://gpg.mit.edu ABC")
+    end
+  end
+
   describe "#is_ppa_url" do
     it "returns true if the URL starts with ppa:" do
       expect(provider.is_ppa_url?("ppa://example.com")).to be_truthy
@@ -170,19 +177,19 @@ C5986B4F1257FFA86632CBA746181433FBB75451
   describe "#repo_components" do
     it "returns 'main' if a PPA and components property not set" do
       expect(provider).to receive(:is_ppa_url?).and_return(true)
-      expect(provider).repo_components.to eq('main')
+      expect(provider.repo_components).to eq("main")
     end
 
     it "returns components property if a PPA and components is set" do
-      new_resource.components('foo')
+      new_resource.components(["foo"])
       expect(provider).to receive(:is_ppa_url?).and_return(true)
-      expect(provider).repo_components.to eq('foo')
+      expect(provider.repo_components).to eq(["foo"])
     end
 
     it "returns components property if not a PPA" do
-      new_resource.components('foo')
+      new_resource.components(["foo"])
       expect(provider).to receive(:is_ppa_url?).and_return(false)
-      expect(provider).repo_components.to eq('foo')
+      expect(provider.repo_components).to eq(["foo"])
     end
   end
 
@@ -190,7 +197,7 @@ C5986B4F1257FFA86632CBA746181433FBB75451
     let(:url) { "https://launchpad.net/api/1.0/~chef/+archive/main" }
     let(:key) { "C5986B4F1257FFA86632CBA746181433FBB75451" }
 
-    it "should get a key" do
+    it "gets a key" do
       simples = double("HTTP")
       allow(simples).to receive(:get).and_return("\"#{key}\"")
       expect(Chef::HTTP::Simple).to receive(:new).with(url).and_return(simples)
@@ -200,38 +207,34 @@ C5986B4F1257FFA86632CBA746181433FBB75451
   end
 
   describe "#make_ppa_url" do
-    it "should ignore non-ppa repositories" do
-      expect(provider.make_ppa_url("some_string")).to be_nil
-    end
-
-    it "should create a URL" do
+    it "creates a URL" do
       expect(provider).to receive(:install_ppa_key).with("chef", "main").and_return(true)
       expect(provider.make_ppa_url("ppa:chef/main")).to eql("http://ppa.launchpad.net/chef/main/ubuntu")
     end
   end
 
   describe "#build_repo" do
-    it "should create a repository string" do
+    it "creates a repository string" do
       target = %Q{deb      "http://test/uri" unstable main\n}
       expect(provider.build_repo("http://test/uri", "unstable", "main", false, nil)).to eql(target)
     end
 
-    it "should create a repository string with no distribution" do
+    it "creates a repository string with no distribution" do
       target = %Q{deb      "http://test/uri" main\n}
       expect(provider.build_repo("http://test/uri", nil, "main", false, nil)).to eql(target)
     end
 
-    it "should create a repository string with source" do
+    it "creates a repository string with source" do
       target = %Q{deb      "http://test/uri" unstable main\ndeb-src  "http://test/uri" unstable main\n}
       expect(provider.build_repo("http://test/uri", "unstable", "main", false, nil, true)).to eql(target)
     end
 
-    it "should create a repository string with options" do
+    it "creates a repository string with options" do
       target = %Q{deb      [trusted=yes] "http://test/uri" unstable main\n}
       expect(provider.build_repo("http://test/uri", "unstable", "main", true, nil)).to eql(target)
     end
 
-    it "should handle a ppa repo" do
+    it "handles a ppa repo" do
       target = %Q{deb      "http://ppa.launchpad.net/chef/main/ubuntu" unstable main\n}
       expect(provider).to receive(:make_ppa_url).with("ppa:chef/main").and_return("http://ppa.launchpad.net/chef/main/ubuntu")
       expect(provider.build_repo("ppa:chef/main", "unstable", "main", false, nil)).to eql(target)
