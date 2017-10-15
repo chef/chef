@@ -121,8 +121,8 @@ class Chef
       end
 
       # validate the key
-      # @param [Sting] cmd
-      # @param [Sting] key
+      # @param [String] cmd
+      # @param [String] key
       #
       # @return [Boolean] is the key valid or not
       def key_is_valid?(cmd, key)
@@ -191,6 +191,8 @@ class Chef
       # and install it with apt-key add
       # @param [String] key the key to install
       #
+      # @raise [RuntimeError] Invalid key which can't verify the apt repository
+      #
       # @return [void]
       def install_key_from_uri(key)
         key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
@@ -214,7 +216,6 @@ class Chef
       end
 
       # build the apt-key command to install the keyserver
-      #
       # @param [String] key the key to install
       # @param [String] keyserver the key server to use
       #
@@ -233,8 +234,11 @@ class Chef
         cmd
       end
 
-      # @param [Sting] key
-      # @param [Sting] keyserver
+      # @param [String] key
+      # @param [String] keyserver
+      #
+      # @raise [RuntimeError] Invalid key which can't verify the apt repository
+      #
       # @return [void]
       def install_key_from_keyserver(key, keyserver = new_resource.keyserver)
         declare_resource(:execute, "install-key #{key}") do
@@ -252,6 +256,12 @@ class Chef
         raise "The key #{key} is invalid and cannot be used to verify an apt repository." unless key_is_valid?(LIST_APT_KEYS, key.upcase)
       end
 
+      # @param [String] owner
+      # @param [String] repo
+      #
+      # @raise [RuntimeError] Could not access the Launchpad PPA API
+      #
+      # @return [void]
       def install_ppa_key(owner, repo)
         url = "https://launchpad.net/api/1.0/~#{owner}/+archive/#{repo}"
         key_id = Chef::HTTP::Simple.new(url).get("signing_key_fingerprint").delete('"')
@@ -282,6 +292,10 @@ class Chef
         end
       end
 
+      # given a PPA return a PPA URL in http://ppa.launchpad.net format
+      # @param [String] ppa the ppa URL
+      #
+      # @return [String] full PPA URL
       def make_ppa_url(ppa)
         owner, repo = ppa[4..-1].split("/")
         repo ||= "ppa"
@@ -290,6 +304,14 @@ class Chef
         "http://ppa.launchpad.net/#{owner}/#{repo}/ubuntu"
       end
 
+      # build complete repo text that will be written to the config
+      # @param [String] uri
+      # @param [Array] components
+      # @param [Boolean] trusted
+      # @param [String] arch
+      # @param [Boolean] add_src
+      #
+      # @return [String] complete repo config text
       def build_repo(uri, distribution, components, trusted, arch, add_src = false)
         uri = make_ppa_url(uri) if is_ppa_url?(uri)
 
