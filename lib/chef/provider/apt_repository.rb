@@ -283,7 +283,6 @@ class Chef
       end
 
       def make_ppa_url(ppa)
-        return unless is_ppa_url?(ppa)
         owner, repo = ppa[4..-1].split("/")
         repo ||= "ppa"
 
