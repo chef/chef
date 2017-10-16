@@ -239,8 +239,7 @@ EOS
         def available_packages
           @available_packages ||=
             begin
-              cmd = [ "list -r #{package_name_array.join ' '}" ]
-              cmd.push( "-source #{new_resource.source}" ) if new_resource.source
+              cmd = [ "list -r #{package_name_array.join ' '}", cmd_args ]
               raw = parse_list_output(*cmd)
               raw.keys.each_with_object({}) do |name, available|
                 available[name] = desired_name_versions[name] || raw[name]
