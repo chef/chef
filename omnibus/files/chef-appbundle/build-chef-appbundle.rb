@@ -50,7 +50,7 @@ module BuildChefAppbundle
       # "test", "changelog" and "guard" come from berkshelf, "maintenance" comes from chef
       # "tools" and "integration" come from inspec
       shellout!("#{bundle_bin} config --local without #{without_groups.join(":")}", env: env, cwd: installed_path)
-      shellout!("#{bundle_bin} config --local frozen 1")
+      shellout!("#{bundle_bin} config --local frozen 1", env: env, cwd: installed_path)
 
       shellout!("#{bundle_bin} check", env: env, cwd: installed_path)
 
