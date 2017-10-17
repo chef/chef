@@ -237,15 +237,20 @@ EOS
         #
         # @return [Hash] name-to-version mapping of available packages
         def available_packages
-          @available_packages ||=
-            begin
-              cmd = [ "list -r #{package_name_array.join ' '}" ]
-              cmd.push( "-source #{new_resource.source}" ) if new_resource.source
-              raw = parse_list_output(*cmd)
-              raw.keys.each_with_object({}) do |name, available|
-                available[name] = desired_name_versions[name] || raw[name]
+          return @available_packages if @available_packages
+          @available_packages = {}
+          package_name_array.each do |pkg|
+            available_versions =
+              begin
+                cmd = [ "list -r #{pkg}" ]
+                cmd.push( "-source #{new_resource.source}" ) if new_resource.source
+                raw = parse_list_output(*cmd)
+                raw.keys.each_with_object({}) do |name, available|
+                  available[name] = desired_name_versions[name] || raw[name]
+                end
               end
-            end
+            @available_packages.merge! available_versions
+          end
           @available_packages
         end
 
