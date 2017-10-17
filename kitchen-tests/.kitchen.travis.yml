@@ -111,7 +111,7 @@ suites:
   - name: base
     run_list:
       - recipe[base::default]
-  - name: learnchef_lamp
+  - name: learnchef
     run_list:
       - recipe[lamp::default]
     data_bags_path: data_bags

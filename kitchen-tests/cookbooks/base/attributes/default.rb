@@ -43,7 +43,7 @@ default["openssh"]["server"]["challenge_response_authentication"] = "no"
 default["openssh"]["server"]["kerberos_authentication"] = "no"
 # tcp keepalives are useful to keep connections up through VPNs and firewalls
 default["openssh"]["server"]["tcp_keepalive"] = "yes"
-default["openssh"]["server"]["use_privilege_separation"] = "yes"
+default["openssh"]["server"]["use_privilege_separation"] = "yes" unless platform?("fedora")
 default["openssh"]["server"]["max_start_ups"] = "10"
 # PAM (i think) already prints the motd on login
 default["openssh"]["server"]["print_motd"] = "no"
