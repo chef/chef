@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.5.20 -->
-## [v13.5.20](https://github.com/chef/chef/tree/v13.5.20) (2017-10-16)
+<!-- latest_release 13.5.21 -->
+## [v13.5.21](https://github.com/chef/chef/tree/v13.5.21) (2017-10-17)
 
 #### Merged Pull Requests
-- fix rebooter for solaris and background reboots [#6497](https://github.com/chef/chef/pull/6497) ([lamont-granquist](https://github.com/lamont-granquist))
+- MSYS-684: Added parser for DSC configuration [#6473](https://github.com/chef/chef/pull/6473) ([piyushawasthi](https://github.com/piyushawasthi))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- MSYS-684: Added parser for DSC configuration [#6473](https://github.com/chef/chef/pull/6473) ([piyushawasthi](https://github.com/piyushawasthi)) <!-- 13.5.21 -->
 - fix rebooter for solaris and background reboots [#6497](https://github.com/chef/chef/pull/6497) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.5.20 -->
 - Windows: Added :none frequency to windows_task resource [#6394](https://github.com/chef/chef/pull/6394) ([NAshwini](https://github.com/NAshwini)) <!-- 13.5.19 -->
 - only rhel &gt;= 8 and fedora &gt;= 22 get dnf [#6490](https://github.com/chef/chef/pull/6490) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.5.18 -->
