@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.21.18 -->
-## [v12.21.18](https://github.com/chef/chef/tree/v12.21.18) (2017-10-16)
+<!-- latest_release 12.21.19 -->
+## [v12.21.19](https://github.com/chef/chef/tree/v12.21.19) (2017-10-17)
 
 #### Merged Pull Requests
-- Add environment/cwd to bundle freeze script [#6499](https://github.com/chef/chef/pull/6499) ([scotthain](https://github.com/scotthain))
+- bump a copyright date to kick off a build [#6501](https://github.com/chef/chef/pull/6501) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- bump a copyright date to kick off a build [#6501](https://github.com/chef/chef/pull/6501) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 12.21.19 -->
 - Add environment/cwd to bundle freeze script [#6499](https://github.com/chef/chef/pull/6499) ([scotthain](https://github.com/scotthain)) <!-- 12.21.18 -->
 - backport of #6490 [#6492](https://github.com/chef/chef/pull/6492) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 12.21.17 -->
 - Support new CriticalOhaiPlugins (backport #6486 to chef-12) [#6487](https://github.com/chef/chef/pull/6487) ([jaymzh](https://github.com/jaymzh)) <!-- 12.21.16 -->
