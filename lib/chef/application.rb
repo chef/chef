@@ -355,7 +355,7 @@ class Chef
       # Log a fatal error message to both STDERR and the Logger, exit the application
       def fatal!(msg, err = nil)
         Chef::Log.fatal(msg)
-        Process.exit(normalize_exit_code(err))
+        Process.exit!(normalize_exit_code(err))
       end
 
       def exit!(msg, err = nil)
