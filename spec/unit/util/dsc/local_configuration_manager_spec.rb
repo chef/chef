@@ -57,6 +57,7 @@ EOH
     context "when interacting with the LCM using a PowerShell cmdlet" do
       before(:each) do
         allow(lcm).to receive(:run_configuration_cmdlet).and_return(lcm_status)
+        allow(lcm).to receive(:ps_version_gte_5?).and_return(false)
       end
       context "that returns successfully" do
         let(:lcm_standard_output) { normal_lcm_output }
@@ -103,7 +104,7 @@ EOH
         let(:common_command_prefix) { "$ProgressPreference = 'SilentlyContinue';" }
         let(:ps4_base_command) { "#{common_command_prefix} Start-DscConfiguration -path tmp -wait -erroraction 'stop' -force" }
         let(:lcm_command_ps4) { ps4_base_command + " -whatif; if (! $?) { exit 1 }" }
-        let(:lcm_command_ps5) { "#{common_command_prefix} Test-DscConfiguration -path tmp" }
+        let(:lcm_command_ps5) { "#{common_command_prefix} Test-DscConfiguration -path tmp | format-list" }
         let(:lcm_standard_output) { normal_lcm_output }
         let(:lcm_standard_error) { nil }
         let(:lcm_cmdlet_success) { true }
