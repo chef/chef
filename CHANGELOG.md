@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.21.22 -->
-## [v12.21.22](https://github.com/chef/chef/tree/v12.21.22) (2017-10-18)
+<!-- latest_release 12.21.23 -->
+## [v12.21.23](https://github.com/chef/chef/tree/v12.21.23) (2017-10-18)
 
 #### Merged Pull Requests
-- Pull in Ohai 8.24.1 [#6506](https://github.com/chef/chef/pull/6506) ([tas50](https://github.com/tas50))
+- Use Rubygems 2.6.14 to fix CVE-2017-0903 [#6507](https://github.com/chef/chef/pull/6507) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- Use Rubygems 2.6.14 to fix CVE-2017-0903 [#6507](https://github.com/chef/chef/pull/6507) ([tas50](https://github.com/tas50)) <!-- 12.21.23 -->
 - Pull in Ohai 8.24.1 [#6506](https://github.com/chef/chef/pull/6506) ([tas50](https://github.com/tas50)) <!-- 12.21.22 -->
 - Don&#39;t use the safe navigation operator which requires Ruby 2.3 [#6508](https://github.com/chef/chef/pull/6508) ([tas50](https://github.com/tas50)) <!-- 12.21.21 -->
 <!-- release_rollup -->
