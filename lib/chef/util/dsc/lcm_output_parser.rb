@@ -85,7 +85,7 @@ class Chef
             resources = []
             lcm_output.lines.each do |line|
               op_action , op_value = line.strip.split(":")
-              op_action&.strip!
+              op_action && op_action.strip!
               case op_action
               when "InDesiredState"
                 current_resource[:skipped] = op_value.strip == "True" ? true : false
