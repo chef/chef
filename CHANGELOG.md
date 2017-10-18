@@ -1,25 +1,23 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.21.20 -->
-## [v12.21.20](https://github.com/chef/chef/tree/v12.21.20) (2017-10-17)
-
-#### Merged Pull Requests
-- MSYS-684: Added parser for DSC configuration [#6500](https://github.com/chef/chef/pull/6500) ([btm](https://github.com/btm))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=13.5.3 -->
-### Changes since 13.5.3 release
-
-#### Merged Pull Requests
-- MSYS-684: Added parser for DSC configuration [#6500](https://github.com/chef/chef/pull/6500) ([btm](https://github.com/btm)) <!-- 12.21.20 -->
-- bump a copyright date to kick off a build [#6501](https://github.com/chef/chef/pull/6501) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 12.21.19 -->
-- Add environment/cwd to bundle freeze script [#6499](https://github.com/chef/chef/pull/6499) ([scotthain](https://github.com/scotthain)) <!-- 12.21.18 -->
-- backport of #6490 [#6492](https://github.com/chef/chef/pull/6492) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 12.21.17 -->
-- Support new CriticalOhaiPlugins (backport #6486 to chef-12) [#6487](https://github.com/chef/chef/pull/6487) ([jaymzh](https://github.com/jaymzh)) <!-- 12.21.16 -->
-- Backport #6435 to Chef-12: dnf_resource [#6436](https://github.com/chef/chef/pull/6436) ([NaomiReeves](https://github.com/NaomiReeves)) <!-- 12.21.15 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v12.21.20](https://github.com/chef/chef/tree/v12.21.20) (2017-10-18)
+
+#### Merged Pull Requests
+- Backport #6435 to Chef-12: dnf_resource [#6436](https://github.com/chef/chef/pull/6436) ([NaomiReeves](https://github.com/NaomiReeves))
+- Support new CriticalOhaiPlugins (backport #6486 to chef-12) [#6487](https://github.com/chef/chef/pull/6487) ([jaymzh](https://github.com/jaymzh))
+- backport of #6490 [#6492](https://github.com/chef/chef/pull/6492) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add environment/cwd to bundle freeze script [#6499](https://github.com/chef/chef/pull/6499) ([scotthain](https://github.com/scotthain))
+- bump a copyright date to kick off a build [#6501](https://github.com/chef/chef/pull/6501) ([lamont-granquist](https://github.com/lamont-granquist))
+- MSYS-684: Added parser for DSC configuration [#6500](https://github.com/chef/chef/pull/6500) ([btm](https://github.com/btm))
 <!-- latest_stable_release -->
+
+
 
 ## [v12.21.11](https://github.com/chef/chef/tree/v12.21.11) (2017-09-13)
 [Full Changelog](https://github.com/chef/chef/compare/v12.21.10...v12.21.11)
