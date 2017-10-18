@@ -23,7 +23,7 @@ class Chef
     module UserContext
 
       def with_user_context(user, password, domain = nil, &block)
-        if node["platform_family"] != "windows"
+        unless Chef::Platform.windows?
           raise Exceptions::UnsupportedPlatform, "User context impersonation is supported only on the Windows platform"
         end
 
