@@ -1,4 +1,4 @@
 source "https://supermarket.chef.io"
 
 cookbook "base", path: "cookbooks/base"
-cookbook "lamp", github: "tas50/lamp" # waiting on PR merge for chef 13 compat
+cookbook "lamp", github: "learn-chef/lamp"

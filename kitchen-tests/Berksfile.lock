@@ -2,8 +2,8 @@ DEPENDENCIES
   base
     path: cookbooks/base
   lamp
-    git: https://github.com/tas50/lamp.git
-    revision: 8d74e6b769f2d74bfee754fb7d686cbfdeb554c6
+    git: https://github.com/learn-chef/lamp.git
+    revision: 36de72d0071557bc3acae18dc297bcda00829e2d
 
 GRAPH
   apt (6.1.4)
