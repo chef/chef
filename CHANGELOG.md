@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.5.23 -->
-## [v13.5.23](https://github.com/chef/chef/tree/v13.5.23) (2017-10-19)
+<!-- latest_release 13.5.24 -->
+## [v13.5.24](https://github.com/chef/chef/tree/v13.5.24) (2017-10-19)
 
 #### Merged Pull Requests
-- Bump dependencies to pull in new InSpec [#6511](https://github.com/chef/chef/pull/6511) ([adamleff](https://github.com/adamleff))
+- Fix remote_file with UNC paths failing [#6510](https://github.com/chef/chef/pull/6510) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- Fix remote_file with UNC paths failing [#6510](https://github.com/chef/chef/pull/6510) ([tas50](https://github.com/tas50)) <!-- 13.5.24 -->
 - Bump dependencies to pull in new InSpec [#6511](https://github.com/chef/chef/pull/6511) ([adamleff](https://github.com/adamleff)) <!-- 13.5.23 -->
 - [MSYS-647] array support for choco pkg from artifactory [#6437](https://github.com/chef/chef/pull/6437) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 13.5.22 -->
 - MSYS-684: Added parser for DSC configuration [#6473](https://github.com/chef/chef/pull/6473) ([piyushawasthi](https://github.com/piyushawasthi)) <!-- 13.5.21 -->
