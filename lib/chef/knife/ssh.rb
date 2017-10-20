@@ -151,7 +151,7 @@ class Chef
         if config[:ssh_gateway]
           gw_host, gw_user = config[:ssh_gateway].split("@").reverse
           gw_host, gw_port = gw_host.split(":")
-          gw_opts = session_options(gw_host, gw_port, gw_user)
+          gw_opts = session_options(gw_host, gw_port, 1, gw_user)
           user = gw_opts.delete(:user)
 
           begin
@@ -247,18 +247,19 @@ class Chef
       # @since 12.5.0
       # @param host [String] Hostname for this session.
       # @param port [String] SSH port for this session.
+      # @param type [Integer] Flag: host or gateway key
       # @param user [String] Optional username for this session.
       # @return [Hash<Symbol, Object>]
-      def session_options(host, port, user = nil)
+      def session_options(host, port, type = 0, user = nil)
         ssh_config = Net::SSH.configuration_for(host, true)
         {}.tap do |opts|
           # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
           opts[:user] = user || config[:ssh_user] || ssh_config[:user]
-          if config[:ssh_gateway_identity]
-            opts[:keys] = File.expand_path(config[:ssh_gateway_identity])
-            opts[:keys_only] = true
-          elsif config[:ssh_identity_file]
+          if type == 0 && config[:ssh_identity_file]
             opts[:keys] = File.expand_path(config[:ssh_identity_file])
+            opts[:keys_only] = true
+          elsif type == 1 && config[:ssh_gateway_identity]
+            opts[:keys] = File.expand_path(config[:ssh_gateway_identity])
             opts[:keys_only] = true
           elsif config[:ssh_password]
             opts[:password] = config[:ssh_password]
@@ -284,7 +285,7 @@ class Chef
         list.each do |item|
           host, ssh_port = item
           Chef::Log.debug("Adding #{host}")
-          session_opts = session_options(host, ssh_port)
+          session_opts = session_options(host, ssh_port, 0)
           # Handle port overrides for the main connection.
           session_opts[:port] = Chef::Config[:knife][:ssh_port] if Chef::Config[:knife][:ssh_port]
           session_opts[:port] = config[:ssh_port] if config[:ssh_port]
