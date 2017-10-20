@@ -1,5 +1,16 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Chef Client Release Notes 13.6:
+
+## `deploy` Resource Is Deprecated
+
+The `deploy` resource (and its alter ego `deploy_revision`) have been deprecated,
+to be removed in Chef 14. This is being done because this resource is considered
+overcomplicated and error-prone in the modern Chef ecosystem. A compatibility
+cookbook will be available to help users migrate during the Chef 14 release
+cycle. See [the deprecation documentation](https://docs.chef.io/deprecations_deploy_resource.html)
+for more information.
+
 # Chef Client Release Notes 13.5:
 
 ## Mount's password property is now marked as sensitive
@@ -74,7 +85,7 @@ It is now possible to set `ETHTOOL_OPTS`, `BONDING_OPTS`, `MASTER` and
     **Platforms:** Fedora, RHEL, Amazon Linux
     Whether the interface is controlled by the channel bonding interface
     defined by `master`, above.
-  
+
 ## Chef Vault is now included
 
 Chef Client 13.4 now includes the `chef-vault` gem, making it easier for
