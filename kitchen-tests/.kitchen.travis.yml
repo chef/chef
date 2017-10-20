@@ -115,3 +115,5 @@ suites:
     run_list:
       - recipe[lamp::default]
     data_bags_path: data_bags
+    includes:
+      - ubuntu-14.04
