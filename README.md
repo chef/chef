@@ -38,7 +38,7 @@ Install these via your platform's preferred method (`apt`, `yum`, `ports`,
 * git
 * C compiler, header files, etc. On Ubuntu/Debian, use the
   `build-essential` package.
-* ruby 2.3.0 or later
+* ruby 2.2.2 or later
 * rubygems
 * bundler gem
 
