@@ -217,24 +217,24 @@ matrix:
     env:
       - CENTOS=7
       - KITCHEN_YAML=.kitchen.travis.yml
-# - rvm: 2.4.2
-#    services: docker
-#    sudo: required
-#    gemfile: kitchen-tests/Gemfile
-#    before_install:
-#      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-#      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
-#    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
-#    before_script:
-#      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-#      - cd kitchen-tests
-#    script:
-#      - bundle exec kitchen test base-fedora-latest
-#    after_failure:
-#      - cat .kitchen/logs/kitchen.log
-#    env:
-#      - FEDORA=latest
-#      - KITCHEN_YAML=.kitchen.travis.yml
+  - rvm: 2.4.2
+    services: docker
+    sudo: required
+    gemfile: kitchen-tests/Gemfile
+    before_install:
+     - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+     - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
+    before_script:
+     - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+     - cd kitchen-tests
+    script:
+     - bundle exec kitchen test base-fedora-latest
+    after_failure:
+     - cat .kitchen/logs/kitchen.log
+    env:
+     - FEDORA=latest
+     - KITCHEN_YAML=.kitchen.travis.yml
 # - rvm: 2.4.2
 #   services: docker
 #   sudo: required
