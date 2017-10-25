@@ -23,13 +23,13 @@ OMNIBUS_OVERRIDES = {
   :bundler => "1.12.5", # until we figure out how to work with 1.13.0
   "libffi" => "3.2.1",
   "libiconv" => "1.15",
-  "liblzma" => "5.2.2",
+  "liblzma" => "5.2.3",
   ## according to comment in omnibus-sw, the very latest versions don't work on solaris
   # https://github.com/chef/omnibus-software/blob/aefb7e79d29ca746c3f843673ef5e317fa3cba54/config/software/libtool.rb#L23
   "libtool" => "2.4.2",
-  "libxml2" => "2.9.4",
-  "libxslt" => "1.1.29",
-  "libyaml" => "0.1.6",
+  "libxml2" => "2.9.5",
+  "libxslt" => "1.1.30",
+  "libyaml" => "0.1.7",
   "makedepend" => "1.0.5",
   "ncurses" => "5.9",
   "pkg-config-lite" => "0.28-1",
@@ -41,11 +41,11 @@ OMNIBUS_OVERRIDES = {
   "ruby-windows-devkit-bash" => "3.1.23-4-msys-1.0.18",
   "util-macros" => "1.19.0",
   "xproto" => "7.0.28",
-  "zlib" => "1.2.8",
+  "zlib" => "1.2.11",
 
   ## These can float as they are frequently updated in a way that works for us
   #override "cacerts" =>"???",
-  "openssl" => "1.0.2j",
+  "openssl" => "1.0.2l",
 }
 
 #
