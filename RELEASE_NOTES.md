@@ -11,6 +11,28 @@ cookbook will be available to help users migrate during the Chef 14 release
 cycle. See [the deprecation documentation](https://docs.chef.io/deprecations_deploy_resource.html)
 for more information.
 
+## Ohai 13.6 Release Notes:
+
+### Critical Plugins
+
+Users can now specify a list of plugins which are `critical`. Critical plugins will cause Ohai to fail if they do not run successfully (and thus cause a Chef run using Ohai to fail). The syntax for this is:
+
+```
+ohai.critical_plugins << :Filesystem
+```
+
+### Filesystem now has a `allow_partial_data` configuration option
+
+The Filesystem plugin now has a `allow_partial_data` configuration option. If set, the filesystem will return whatever data it can even if some commands it ran failed.
+
+### Rackspace detection on Windows
+
+Windows nodes running on Rackspace will now properly detect themselves as running on Rackspace without a hint file.
+
+### Package data on Amazon Linux
+
+The Packages plugin now supports gathering packages data on Amazon Linux
+
 # Chef Client Release Notes 13.5:
 
 ## Mount's password property is now marked as sensitive
