@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-#require "chef/node/mixin/deep_merge_cache"
 require "chef/node/mixin/immutablize_hash"
 require "chef/node/mixin/state_tracking"
 require "chef/node/immutable_collections"
@@ -45,7 +44,6 @@ class Chef
       # expects.  This include should probably be deleted?
       include Enumerable
 
-      #include Chef::Node::Mixin::DeepMergeCache
       include Chef::Node::Mixin::StateTracking
       include Chef::Node::Mixin::ImmutablizeHash
 

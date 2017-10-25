@@ -85,7 +85,6 @@ class Chef
         if array.respond_to?(:internal_to_a, true)
           array.internal_to_a
         else
-          puts array.class
           array.to_a
         end
       end
