@@ -61,9 +61,6 @@ platforms:
     intermediate_instructions:
       - RUN yum -y install sudo
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-  attributes:
-    chef_client:
-      init_style: init
 
 - name: centos-7
   driver:
