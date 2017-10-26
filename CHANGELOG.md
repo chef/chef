@@ -15,11 +15,11 @@
 - Deprecate the deploy resource and family [#6468](https://github.com/chef/chef/pull/6468) ([coderanger](https://github.com/coderanger)) <!-- 13.5.25 -->
 - Fix remote_file with UNC paths failing [#6510](https://github.com/chef/chef/pull/6510) ([tas50](https://github.com/tas50)) <!-- 13.5.24 -->
 - Bump dependencies to pull in new InSpec [#6511](https://github.com/chef/chef/pull/6511) ([adamleff](https://github.com/adamleff)) <!-- 13.5.23 -->
-- [MSYS-647] array support for choco pkg from artifactory [#6437](https://github.com/chef/chef/pull/6437) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 13.5.22 -->
-- MSYS-684: Added parser for DSC configuration [#6473](https://github.com/chef/chef/pull/6473) ([piyushawasthi](https://github.com/piyushawasthi)) <!-- 13.5.21 -->
-- fix rebooter for solaris and background reboots [#6497](https://github.com/chef/chef/pull/6497) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.5.20 -->
+- Add array support for choco pkg from artifactory [#6437](https://github.com/chef/chef/pull/6437) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 13.5.22 -->
+- Added parser for DSC configuration [#6473](https://github.com/chef/chef/pull/6473) ([piyushawasthi](https://github.com/piyushawasthi)) <!-- 13.5.21 -->
+- Fix rebooter for solaris and background reboots [#6497](https://github.com/chef/chef/pull/6497) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.5.20 -->
 - Windows: Added :none frequency to windows_task resource [#6394](https://github.com/chef/chef/pull/6394) ([NAshwini](https://github.com/NAshwini)) <!-- 13.5.19 -->
-- only rhel &gt;= 8 and fedora &gt;= 22 get dnf [#6490](https://github.com/chef/chef/pull/6490) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.5.18 -->
+- Package: only RHEL &gt;= 8 and Fedora &gt;= 22 get dnf [#6490](https://github.com/chef/chef/pull/6490) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.5.18 -->
 - Support new CriticalOhaiPlugins [#6486](https://github.com/chef/chef/pull/6486) ([jaymzh](https://github.com/jaymzh)) <!-- 13.5.17 -->
 - Sleep for another interval after handling SIGHUP [#6461](https://github.com/chef/chef/pull/6461) ([grekasius](https://github.com/grekasius)) <!-- 13.5.16 -->
 - Don&#39;t spin in powershell module that launches chef processes [#6481](https://github.com/chef/chef/pull/6481) ([ksubrama](https://github.com/ksubrama)) <!-- 13.5.15 -->
