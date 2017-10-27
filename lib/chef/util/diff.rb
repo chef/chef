@@ -89,8 +89,8 @@ class Chef
         diff_str = ""
         file_length_difference = 0
 
-        old_data = IO.readlines(old_file).map { |e| e.chomp }
-        new_data = IO.readlines(new_file).map { |e| e.chomp }
+        old_data = IO.readlines(old_file).map { |e| e.strip }
+        new_data = IO.readlines(new_file).map { |e| e.strip }
         diff_data = ::Diff::LCS.diff(old_data, new_data)
 
         return diff_str if old_data.empty? && new_data.empty?
