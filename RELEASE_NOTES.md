@@ -11,6 +11,25 @@ cookbook will be available to help users migrate during the Chef 14 release
 cycle. See [the deprecation documentation](https://docs.chef.io/deprecations_deploy_resource.html)
 for more information.
 
+## zypper\_package supports package downgrades
+
+`zypper_package` now supports downgrading installed packages with the
+`allow_downgrade` property.
+
+## InSpec updated to 1.42.3
+
+## Reserve certain Data Bag names
+
+It's no longer possible to create data bags named `node`, `role`,
+`client`, or `environment`. Existing data bags will continue to work as
+before.
+
+## Properly use yum on RHEL 7
+
+If both dnf and yum were installed, in some circumstances the yum
+provider might choose to run dnf, which is not what we intended it to
+do. It now properly runs yum, all the time.
+
 ## Ohai 13.6 Release Notes:
 
 ### Critical Plugins
