@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.5.28 -->
-## [v13.5.28](https://github.com/chef/chef/tree/v13.5.28) (2017-10-27)
+<!-- latest_release 13.6.1 -->
+## [v13.6.1](https://github.com/chef/chef/tree/v13.6.1) (2017-10-27)
 
 #### Merged Pull Requests
-- Pull in the latest libiconv and nokogiri [#6532](https://github.com/chef/chef/pull/6532) ([tas50](https://github.com/tas50))
+- [MSYS-492]Add missing functional tests for users [#6425](https://github.com/chef/chef/pull/6425) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- [MSYS-492]Add missing functional tests for users [#6425](https://github.com/chef/chef/pull/6425) ([harikesh-kolekar](https://github.com/harikesh-kolekar)) <!-- 13.6.1 -->
 - Pull in the latest libiconv and nokogiri [#6532](https://github.com/chef/chef/pull/6532) ([tas50](https://github.com/tas50)) <!-- 13.5.28 -->
 - Use the latest libxml2, libxslt, libyaml, and openssl [#6520](https://github.com/chef/chef/pull/6520) ([tas50](https://github.com/tas50)) <!-- 13.5.27 -->
 - Include Ohai 13.6 [#6521](https://github.com/chef/chef/pull/6521) ([btm](https://github.com/btm)) <!-- 13.5.26 -->
