@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.21.25 -->
-## [v12.21.25](https://github.com/chef/chef/tree/v12.21.25) (2017-10-23)
+<!-- latest_release 12.21.26 -->
+## [v12.21.26](https://github.com/chef/chef/tree/v12.21.26) (2017-10-27)
 
 #### Merged Pull Requests
-- Update ruby version required in readme [#6517](https://github.com/chef/chef/pull/6517) ([tas50](https://github.com/tas50))
+- Update liblzma, libxml2, libxslt, libyaml, zlib, and openssl [#6531](https://github.com/chef/chef/pull/6531) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.5.3 -->
 ### Changes since 13.5.3 release
 
 #### Merged Pull Requests
+- Update liblzma, libxml2, libxslt, libyaml, zlib, and openssl [#6531](https://github.com/chef/chef/pull/6531) ([tas50](https://github.com/tas50)) <!-- 12.21.26 -->
 - Update ruby version required in readme [#6517](https://github.com/chef/chef/pull/6517) ([tas50](https://github.com/tas50)) <!-- 12.21.25 -->
 - Pull in Ohai 8.25 [#6509](https://github.com/chef/chef/pull/6509) ([tas50](https://github.com/tas50)) <!-- 12.21.24 -->
 - Use Rubygems 2.6.14 to fix CVE-2017-0903 [#6507](https://github.com/chef/chef/pull/6507) ([tas50](https://github.com/tas50)) <!-- 12.21.23 -->
