@@ -1,24 +1,22 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.21.26 -->
-## [v12.21.26](https://github.com/chef/chef/tree/v12.21.26) (2017-10-27)
-
-#### Merged Pull Requests
-- Update liblzma, libxml2, libxslt, libyaml, zlib, and openssl [#6531](https://github.com/chef/chef/pull/6531) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=13.5.3 -->
-### Changes since 13.5.3 release
-
-#### Merged Pull Requests
-- Update liblzma, libxml2, libxslt, libyaml, zlib, and openssl [#6531](https://github.com/chef/chef/pull/6531) ([tas50](https://github.com/tas50)) <!-- 12.21.26 -->
-- Update ruby version required in readme [#6517](https://github.com/chef/chef/pull/6517) ([tas50](https://github.com/tas50)) <!-- 12.21.25 -->
-- Pull in Ohai 8.25 [#6509](https://github.com/chef/chef/pull/6509) ([tas50](https://github.com/tas50)) <!-- 12.21.24 -->
-- Use Rubygems 2.6.14 to fix CVE-2017-0903 [#6507](https://github.com/chef/chef/pull/6507) ([tas50](https://github.com/tas50)) <!-- 12.21.23 -->
-- Pull in Ohai 8.24.1 [#6506](https://github.com/chef/chef/pull/6506) ([tas50](https://github.com/tas50)) <!-- 12.21.22 -->
-- Don&#39;t use the safe navigation operator which requires Ruby 2.3 [#6508](https://github.com/chef/chef/pull/6508) ([tas50](https://github.com/tas50)) <!-- 12.21.21 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v12.21.26](https://github.com/chef/chef/tree/v12.21.26) (2017-10-30)
+
+#### Merged Pull Requests
+- Don&#39;t use the safe navigation operator which requires Ruby 2.3 [#6508](https://github.com/chef/chef/pull/6508) ([tas50](https://github.com/tas50))
+- Pull in Ohai 8.24.1 [#6506](https://github.com/chef/chef/pull/6506) ([tas50](https://github.com/tas50))
+- Use Rubygems 2.6.14 to fix CVE-2017-0903 [#6507](https://github.com/chef/chef/pull/6507) ([tas50](https://github.com/tas50))
+- Pull in Ohai 8.25 [#6509](https://github.com/chef/chef/pull/6509) ([tas50](https://github.com/tas50))
+- Update ruby version required in readme [#6517](https://github.com/chef/chef/pull/6517) ([tas50](https://github.com/tas50))
+- Update liblzma, libxml2, libxslt, libyaml, zlib, and openssl [#6531](https://github.com/chef/chef/pull/6531) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v12.21.20](https://github.com/chef/chef/tree/v12.21.20) (2017-10-18)
 
 #### Merged Pull Requests
@@ -28,7 +26,6 @@
 - Add environment/cwd to bundle freeze script [#6499](https://github.com/chef/chef/pull/6499) ([scotthain](https://github.com/scotthain))
 - bump a copyright date to kick off a build [#6501](https://github.com/chef/chef/pull/6501) ([lamont-granquist](https://github.com/lamont-granquist))
 - MSYS-684: Added parser for DSC configuration [#6500](https://github.com/chef/chef/pull/6500) ([btm](https://github.com/btm))
-<!-- latest_stable_release -->
 
 
 
