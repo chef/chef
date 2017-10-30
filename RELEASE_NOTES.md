@@ -52,6 +52,10 @@ Windows nodes running on Rackspace will now properly detect themselves as runnin
 
 The Packages plugin now supports gathering packages data on Amazon Linux
 
+### Deprecation updates
+
+In Ohai 13 we replaced the filesystem and cloud plugins with the filesystem2 and cloud_v2 plugins. To maintain compatibility with users of the previous V2 plugins we write data to both locations. We had originally planned to continue writing data to both locations until Chef 15. Instead due to the large amount of duplicate node data this introduces we are updating OHAI-11 and OHAI-12 deprecations to remove node['cloud_v2'] and node['filesystem2'] with the release of Chef 14 in April 2018.
+
 # Chef Client Release Notes 13.5:
 
 ## Mount's password property is now marked as sensitive
