@@ -46,6 +46,9 @@ class Chef
                                  default: true, desired_state: false
       property :verify, [TrueClass, FalseClass],
                         default: true, desired_state: false
+      property :unit_name, String, desired_state: false,
+                                   identity: true,
+                                   name_property: true
 
       def to_ini
         case content

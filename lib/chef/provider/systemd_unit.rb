@@ -35,6 +35,7 @@ class Chef
       def load_current_resource
         @current_resource = Chef::Resource::SystemdUnit.new(new_resource.name)
 
+        current_resource.unit_name(new_resource.unit_name)
         current_resource.content(::File.read(unit_path)) if ::File.exist?(unit_path)
         current_resource.user(new_resource.user)
         current_resource.enabled(enabled?)
@@ -57,7 +58,7 @@ class Chef
 
       def action_create
         if current_resource.content != new_resource.to_ini
-          converge_by("creating unit: #{new_resource.name}") do
+          converge_by("creating unit: #{new_resource.unit_name}") do
             manage_unit_file(:create)
             daemon_reload if new_resource.triggers_reload
           end
@@ -66,7 +67,7 @@ class Chef
 
       def action_delete
         if ::File.exist?(unit_path)
-          converge_by("deleting unit: #{new_resource.name}") do
+          converge_by("deleting unit: #{new_resource.unit_name}") do
             manage_unit_file(:delete)
             daemon_reload if new_resource.triggers_reload
           end
@@ -75,117 +76,117 @@ class Chef
 
       def action_enable
         if current_resource.static
-          Chef::Log.debug("#{new_resource.name} is a static unit, enabling is a NOP.")
+          Chef::Log.debug("#{new_resource.unit_name} is a static unit, enabling is a NOP.")
         end
 
         unless current_resource.enabled || current_resource.static
-          converge_by("enabling unit: #{new_resource.name}") do
-            systemctl_execute!(:enable, new_resource.name)
+          converge_by("enabling unit: #{new_resource.unit_name}") do
+            systemctl_execute!(:enable, new_resource.unit_name)
           end
         end
       end
 
       def action_disable
         if current_resource.static
-          Chef::Log.debug("#{new_resource.name} is a static unit, disabling is a NOP.")
+          Chef::Log.debug("#{new_resource.unit_name} is a static unit, disabling is a NOP.")
         end
 
         if current_resource.enabled && !current_resource.static
-          converge_by("disabling unit: #{new_resource.name}") do
-            systemctl_execute!(:disable, new_resource.name)
+          converge_by("disabling unit: #{new_resource.unit_name}") do
+            systemctl_execute!(:disable, new_resource.unit_name)
           end
         end
       end
 
       def action_mask
         unless current_resource.masked
-          converge_by("masking unit: #{new_resource.name}") do
-            systemctl_execute!(:mask, new_resource.name)
+          converge_by("masking unit: #{new_resource.unit_name}") do
+            systemctl_execute!(:mask, new_resource.unit_name)
           end
         end
       end
 
       def action_unmask
         if current_resource.masked
-          converge_by("unmasking unit: #{new_resource.name}") do
-            systemctl_execute!(:unmask, new_resource.name)
+          converge_by("unmasking unit: #{new_resource.unit_name}") do
+            systemctl_execute!(:unmask, new_resource.unit_name)
           end
         end
       end
 
       def action_start
         unless current_resource.active
-          converge_by("starting unit: #{new_resource.name}") do
-            systemctl_execute!(:start, new_resource.name)
+          converge_by("starting unit: #{new_resource.unit_name}") do
+            systemctl_execute!(:start, new_resource.unit_name)
           end
         end
       end
 
       def action_stop
         if current_resource.active
-          converge_by("stopping unit: #{new_resource.name}") do
-            systemctl_execute!(:stop, new_resource.name)
+          converge_by("stopping unit: #{new_resource.unit_name}") do
+            systemctl_execute!(:stop, new_resource.unit_name)
           end
         end
       end
 
       def action_restart
-        converge_by("restarting unit: #{new_resource.name}") do
-          systemctl_execute!(:restart, new_resource.name)
+        converge_by("restarting unit: #{new_resource.unit_name}") do
+          systemctl_execute!(:restart, new_resource.unit_name)
         end
       end
 
       def action_reload
         if current_resource.active
-          converge_by("reloading unit: #{new_resource.name}") do
-            systemctl_execute!(:reload, new_resource.name)
+          converge_by("reloading unit: #{new_resource.unit_name}") do
+            systemctl_execute!(:reload, new_resource.unit_name)
           end
         else
-          Chef::Log.debug("#{new_resource.name} is not active, skipping reload.")
+          Chef::Log.debug("#{new_resource.unit_name} is not active, skipping reload.")
         end
       end
 
       def action_try_restart
-        converge_by("try-restarting unit: #{new_resource.name}") do
-          systemctl_execute!("try-restart", new_resource.name)
+        converge_by("try-restarting unit: #{new_resource.unit_name}") do
+          systemctl_execute!("try-restart", new_resource.unit_name)
         end
       end
 
       def action_reload_or_restart
-        converge_by("reload-or-restarting unit: #{new_resource.name}") do
-          systemctl_execute!("reload-or-restart", new_resource.name)
+        converge_by("reload-or-restarting unit: #{new_resource.unit_name}") do
+          systemctl_execute!("reload-or-restart", new_resource.unit_name)
         end
       end
 
       def action_reload_or_try_restart
-        converge_by("reload-or-try-restarting unit: #{new_resource.name}") do
-          systemctl_execute!("reload-or-try-restart", new_resource.name)
+        converge_by("reload-or-try-restarting unit: #{new_resource.unit_name}") do
+          systemctl_execute!("reload-or-try-restart", new_resource.unit_name)
         end
       end
 
       def active?
-        systemctl_execute("is-active", new_resource.name).exitstatus == 0
+        systemctl_execute("is-active", new_resource.unit_name).exitstatus == 0
       end
 
       def enabled?
-        systemctl_execute("is-enabled", new_resource.name).exitstatus == 0
+        systemctl_execute("is-enabled", new_resource.unit_name).exitstatus == 0
       end
 
       def masked?
-        systemctl_execute(:status, new_resource.name).stdout.include?("masked")
+        systemctl_execute(:status, new_resource.unit_name).stdout.include?("masked")
       end
 
       def static?
-        systemctl_execute("is-enabled", new_resource.name).stdout.include?("static")
+        systemctl_execute("is-enabled", new_resource.unit_name).stdout.include?("static")
       end
 
       private
 
       def unit_path
         if new_resource.user
-          "/etc/systemd/user/#{new_resource.name}"
+          "/etc/systemd/user/#{new_resource.unit_name}"
         else
-          "/etc/systemd/system/#{new_resource.name}"
+          "/etc/systemd/system/#{new_resource.unit_name}"
         end
       end
 
