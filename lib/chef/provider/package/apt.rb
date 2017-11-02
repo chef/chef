@@ -128,10 +128,15 @@ class Chef
         private
 
         def version_compare(v1, v2)
-          gem_v1 =  v1.gsub(/[_+]/, "+" => "-", "_" => "-") unless v1.nil?
-          gem_v2 =  v2.gsub(/[_+]/, "+" => "-", "_" => "-") unless v2.nil?
-
-          Gem::Version.new(gem_v1) <=> Gem::Version.new(gem_v2)
+          dpkg_v1 = v1 || '0'
+          dpkg_v2 = v2 || '0'
+          if shell_out_compact_timeout("dpkg", "--compare-versions", dpkg_v1, "gt", dpkg_v2).status.success?
+            1
+          elsif shell_out_compact_timeout("dpkg", "--compare-versions", dpkg_v1, "eq", dpkg_v2).status.success?
+            0
+          else
+            -1
+          end
         end
 
         # Runs command via shell_out with magic environment to disable
