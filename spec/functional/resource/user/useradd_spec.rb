@@ -646,10 +646,10 @@ describe Chef::Provider::User::Useradd, metadata do
             expect(@error.message).to include("Cannot unlock the password")
           end
         elsif %w{rhel}.include?(OHAI_SYSTEM["platform_family"]) &&
-            OHAI_SYSTEM["platform_version"].to_f == 6.8
-          # usermod -U returns following message for rhel68 on s390x platforms
-          # usermod: unlocking the user's password would result in a passwordless account.
-          #You should set a password with usermod -p to unlock this user's password.
+            (OHAI_SYSTEM["platform_version"].to_f >= 6.8 || OHAI_SYSTEM["platform_version"].to_f >= 7.3)
+          # RHEL 6.8 and 7.3 ship with a fixed `usermod` command
+          # Reference: https://access.redhat.com/errata/RHBA-2016:0864
+          # Reference: https://access.redhat.com/errata/RHBA-2016:2322
           it "errors out trying to unlock the user" do
             expect(@error).to be_a(Mixlib::ShellOut::ShellCommandFailed)
             expect(@error.message).to include("You should set a password")
