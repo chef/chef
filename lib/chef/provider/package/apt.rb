@@ -127,12 +127,16 @@ class Chef
 
         private
 
+        # compare 2 versions to each other to see which is newer.
+        # this differs from the standard package method because we
+        # need to be able to parse debian version strings which contain
+        # tildes which Gem cannot properly parse
+        #
+        # @return [Integer] 1 if v1 > v2. 0 if they're equal. -1 if v1 < v2
         def version_compare(v1, v2)
-          dpkg_v1 = v1 || '0'
-          dpkg_v2 = v2 || '0'
-          if shell_out_compact_timeout("dpkg", "--compare-versions", dpkg_v1, "gt", dpkg_v2).status.success?
+          if !shell_out_compact_timeout("dpkg", "--compare-versions", v1.to_s, "gt", v2.to_s).error?
             1
-          elsif shell_out_compact_timeout("dpkg", "--compare-versions", dpkg_v1, "eq", dpkg_v2).status.success?
+          elsif !shell_out_compact_timeout("dpkg", "--compare-versions", v1.to_s, "eq", v2.to_s).error?
             0
           else
             -1
