@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.1 -->
-## [v13.6.1](https://github.com/chef/chef/tree/v13.6.1) (2017-10-27)
+<!-- latest_release 13.6.2 -->
+## [v13.6.2](https://github.com/chef/chef/tree/v13.6.2) (2017-11-04)
 
 #### Merged Pull Requests
-- [MSYS-492]Add missing functional tests for users [#6425](https://github.com/chef/chef/pull/6425) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
+- Fix the invalid version comparison in apt/dpkg providers [#6558](https://github.com/chef/chef/pull/6558) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.0 -->
 ### Changes since 13.6.0 release
 
 #### Merged Pull Requests
+- Fix the invalid version comparison in apt/dpkg providers [#6558](https://github.com/chef/chef/pull/6558) ([tas50](https://github.com/tas50)) <!-- 13.6.2 -->
 - [MSYS-492]Add missing functional tests for users [#6425](https://github.com/chef/chef/pull/6425) ([harikesh-kolekar](https://github.com/harikesh-kolekar)) <!-- 13.6.1 -->
 <!-- release_rollup -->
 
