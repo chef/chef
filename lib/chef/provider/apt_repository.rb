@@ -71,6 +71,17 @@ class Chef
           new_resource.deb_src
         )
 
+        # /etc/apt/sources.list.d needs to exist before we can create files in it
+        declare_resource(:directory, '/etc/apt/sources.list.d') do
+          owner "root"
+          group "root"
+          mode "0644"
+          # you might question why we even want a guard here. If permissions for
+          # this resource are being defined elsewhere we want to preserve any
+          # configuration that is being specified
+          not_if { ::File.exist? '/etc/apt/sources.list.d' }
+        end
+
         declare_resource(:file, "/etc/apt/sources.list.d/#{new_resource.name}.list") do
           owner "root"
           group "root"
