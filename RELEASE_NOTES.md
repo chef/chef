@@ -1,5 +1,16 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Chef Client Release Notes 13.6.4:
+
+## Bugfixes
+
+  - Resolved a regression in 13.6.0 that prevented upgrading packages on Debian/Ubuntu when the package name contained a tilde. 
+
+## Security Updates
+
+- OpenSSL has been upgraded to 1.0.2m to resolve CVE-2017-3735 and CVE-2017-3736
+- RubyGems has been upgraded to 2.6.14 to resolve CVE-2017-0903
+
 # Chef Client Release Notes 13.6:
 
 ## `deploy` Resource Is Deprecated
