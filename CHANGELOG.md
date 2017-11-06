@@ -1,22 +1,20 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.4 -->
-## [v13.6.4](https://github.com/chef/chef/tree/v13.6.4) (2017-11-06)
-
-#### Merged Pull Requests
-- Bump openssl and rubygems to latest [#6568](https://github.com/chef/chef/pull/6568) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=13.6.0 -->
-### Changes since 13.6.0 release
-
-#### Merged Pull Requests
-- Bump openssl and rubygems to latest [#6568](https://github.com/chef/chef/pull/6568) ([tas50](https://github.com/tas50)) <!-- 13.6.4 -->
-- Fix the invalid version comparison of apt packages. [#6554](https://github.com/chef/chef/pull/6554) ([komazarari](https://github.com/komazarari)) <!-- 13.6.3 -->
-- Fix the invalid version comparison in apt/dpkg providers [#6558](https://github.com/chef/chef/pull/6558) ([tas50](https://github.com/tas50)) <!-- 13.6.2 -->
-- [MSYS-492]Add missing functional tests for users [#6425](https://github.com/chef/chef/pull/6425) ([harikesh-kolekar](https://github.com/harikesh-kolekar)) <!-- 13.6.1 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.6.4](https://github.com/chef/chef/tree/v13.6.4) (2017-11-06)
+
+#### Merged Pull Requests
+- [MSYS-492]Add missing functional tests for users [#6425](https://github.com/chef/chef/pull/6425) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
+- Fix the invalid version comparison in apt/dpkg providers [#6558](https://github.com/chef/chef/pull/6558) ([tas50](https://github.com/tas50))
+- Fix the invalid version comparison of apt packages. [#6554](https://github.com/chef/chef/pull/6554) ([komazarari](https://github.com/komazarari))
+- Bump openssl and rubygems to latest [#6568](https://github.com/chef/chef/pull/6568) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v13.6.0](https://github.com/chef/chef/tree/v13.6.0) (2017-10-30)
 
 #### Merged Pull Requests
@@ -44,7 +42,6 @@
 - Include Ohai 13.6 [#6521](https://github.com/chef/chef/pull/6521) ([btm](https://github.com/btm))
 - Use the latest libxml2, libxslt, libyaml, and openssl [#6520](https://github.com/chef/chef/pull/6520) ([tas50](https://github.com/tas50))
 - Pull in the latest libiconv and nokogiri [#6532](https://github.com/chef/chef/pull/6532) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v13.5.3](https://github.com/chef/chef/tree/v13.5.3) (2017-10-03)
 
