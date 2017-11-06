@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/license_scout
-  revision: b7b1e6c5d027f201fc4fa30c775384112d81c1bd
+  revision: 11f5c3d644be622eb367fe104750dca4f10ce1e5
   specs:
     license_scout (0.1.3)
       ffi-yajl (~> 2.2)
@@ -26,7 +26,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 65a9bed9e37e0b6ba7c8aae0b588f11ce5fc399a
+  revision: 0f8723f83627b40dcf73052ac066baf8f643cce4
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -38,13 +38,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.10.71)
-      aws-sdk-resources (= 2.10.71)
-    aws-sdk-core (2.10.71)
+    aws-sdk (2.10.78)
+      aws-sdk-resources (= 2.10.78)
+    aws-sdk-core (2.10.78)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.10.71)
-      aws-sdk-core (= 2.10.71)
+    aws-sdk-resources (2.10.78)
+      aws-sdk-core (= 2.10.78)
     aws-sigv4 (1.0.2)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -85,12 +85,12 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (13.5.3)
+    chef-config (13.6.0)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
-    chef-sugar (3.5.0)
+    chef-sugar (3.6.0)
     citrus (3.0.2)
     cleanroom (1.0.0)
     coderay (1.1.2)
@@ -130,7 +130,7 @@ GEM
     mixlib-authentication (1.4.2)
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (3.6.0)
+    mixlib-install (3.8.0)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -213,7 +213,7 @@ GEM
       molinillo (~> 0.4.2)
       semverse (~> 1.1)
     systemu (2.6.5)
-    test-kitchen (1.18.0)
+    test-kitchen (1.19.0)
       mixlib-install (~> 3.6)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
@@ -273,4 +273,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   1.15.4
+   1.16.0
