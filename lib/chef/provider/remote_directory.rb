@@ -36,7 +36,7 @@ class Chef
 
       def_delegators :new_resource, :purge, :path, :source, :cookbook, :cookbook_name
       def_delegators :new_resource, :files_rights, :files_mode, :files_group, :files_owner, :files_backup
-      def_delegators :new_resource, :rights, :mode, :group, :owner
+      def_delegators :new_resource, :rights, :mode, :group, :owner, :exclude_extensions
 
       # The overwrite property on the resource.  Delegates to new_resource but can be mutated.
       #
@@ -111,6 +111,9 @@ class Chef
 
             # Skip files that we've sync'd and their parent dirs
             next if managed_files.include?(file)
+
+            # Skip files that have a excluded extensions
+            next if exclude_extensions.find { |ext| file.end_with?(ext) }
 
             if ::File.directory?(file)
               if !Chef::Platform.windows? && file_class.symlink?(file.dup)

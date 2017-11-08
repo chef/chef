@@ -46,6 +46,7 @@ class Chef
         @files_mode = 0644 unless Chef::Platform.windows?
         @overwrite = true
         @cookbook = nil
+        @exclude_extensions = []
       end
 
       if Chef::Platform.windows?
@@ -114,6 +115,14 @@ class Chef
           :cookbook,
           args,
           :kind_of => String
+        )
+      end
+
+      def exclude_extensions(args = nil)
+        set_or_return(
+          :exclude_extensions,
+          args,
+          :kind_of => [ Array ]
         )
       end
 
