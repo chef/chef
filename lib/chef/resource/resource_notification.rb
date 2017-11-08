@@ -26,11 +26,7 @@ class Chef
 
       def initialize(resource, action, notifying_resource)
         @resource = resource
-        @action = if action.respond_to?(:to_sym)
-                    action.to_sym
-                  else
-                    action
-                  end
+        @action = action&.to_sym
         @notifying_resource = notifying_resource
       end
 
