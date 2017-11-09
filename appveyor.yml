@@ -1,8 +1,11 @@
 version: "master-{build}"
 
-os: Visual Studio 2015
+os: Windows Server 2012 R2
 platform:
   - x64
+
+cache:
+  - vendor/bundle
 
 environment:
   matrix:
@@ -20,6 +23,7 @@ branches:
 install:
   - systeminfo
   - winrm quickconfig -q
+  - SET FORCE_FFI_YAJL=ext
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - echo %PATH%
   - ps: $env:OMNIBUS_RUBYGEMS=$(findstr rubygems omnibus_overrides.rb | %{ $_.split(" ")[3] })
@@ -40,6 +44,7 @@ install:
   - bundle env
 
 build_script:
+  - bundle config --local path vendor/bundle
   - bundle install || bundle install || bundle install
 
 test_script:
