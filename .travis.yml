@@ -9,6 +9,8 @@ before_install:
   - rvm @global do gem uninstall bundler -a -x
   - gem install bundler -v 1.15.4
   - $(which bundle) --version
+  - bundle config
+
 
 before_script:
  # force all .rspec tests into progress display to reduce line count
