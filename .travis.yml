@@ -1,6 +1,5 @@
 language: ruby
 sudo: true 
-dist: trusty
 
 # Early warning system to catch if Rubygems breaks something
 before_install:
@@ -34,6 +33,6 @@ matrix:
   - rvm: 2.3.5
     script: sudo -E $(which bundle) exec rake spec;
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
-  - rvm: 2.4.2
+  - rvm: 2.4.1
     script: sudo -E $(which bundle) exec rake spec;
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
