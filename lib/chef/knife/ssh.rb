@@ -125,7 +125,7 @@ class Chef
         :long => "--exit-on-error",
         :description => "Immediately exit if an error is encountered",
         :boolean => true,
-        :proc => Proc.new { :raise }
+        :default => false
 
       option :tmux_split,
         :long => "--tmux-split",
@@ -134,15 +134,13 @@ class Chef
         :default => false
 
       def session
-        config[:on_error] ||= :skip
         ssh_error_handler = Proc.new do |server|
-          case config[:on_error]
-          when :skip
-            ui.warn "Failed to connect to #{server.host} -- #{$!.class.name}: #{$!.message}"
-            $!.backtrace.each { |l| Chef::Log.debug(l) }
-          when :raise
+          if config[:on_error]
             #Net::SSH::Multi magic to force exception to be re-raised.
             throw :go, :raise
+          else
+            ui.warn "Failed to connect to #{server.host} -- #{$!.class.name}: #{$!.message}"
+            $!.backtrace.each { |l| Chef::Log.debug(l) }
           end
         end
 
@@ -347,7 +345,7 @@ class Chef
         command = fixup_sudo(command)
         command.force_encoding("binary") if command.respond_to?(:force_encoding)
         subsession.open_channel do |chan|
-          if config[:on_error] == :raise && exit_status != 0
+          if config[:on_error] && exit_status != 0
             chan.close()
           else
             chan.request_pty
