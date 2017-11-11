@@ -347,7 +347,7 @@ class Chef
         command = fixup_sudo(command)
         command.force_encoding("binary") if command.respond_to?(:force_encoding)
         subsession.open_channel do |chan|
-          if config[:on_error] && exit_status != 0
+          if config[:on_error] == :raise && exit_status != 0
             chan.close()
           else
             chan.request_pty
