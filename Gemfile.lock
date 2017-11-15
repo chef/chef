@@ -17,10 +17,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (13.6.4)
+    chef (13.6.5)
       addressable
       bundler (>= 1.10)
-      chef-config (= 13.6.4)
+      chef-config (= 13.6.5)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -47,10 +47,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (13.6.4-universal-mingw32)
+    chef (13.6.5-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 13.6.4)
+      chef-config (= 13.6.5)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -92,7 +92,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (13.6.4)
+    chef-config (13.6.5)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -300,7 +300,7 @@ GEM
       addressable (>= 2.3.5, < 2.6)
       faraday (~> 0.8, < 1.0)
     semverse (2.0.0)
-    serverspec (2.41.2)
+    serverspec (2.41.3)
       multi_json
       rspec (~> 3.0)
       rspec-its
@@ -312,7 +312,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
     slop (3.6.0)
-    specinfra (2.72.0)
+    specinfra (2.72.1)
       net-scp
       net-ssh (>= 2.7, < 5.0)
       net-telnet

@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 13.6.5 -->
+## [v13.6.5](https://github.com/chef/chef/tree/v13.6.5) (2017-11-15)
+
+#### Merged Pull Requests
+- Add ohai_time to minimal_ohai filter [#6584](https://github.com/chef/chef/pull/6584) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=13.6.4 -->
+### Changes since 13.6.4 release
+
+#### Merged Pull Requests
+- Add ohai_time to minimal_ohai filter [#6584](https://github.com/chef/chef/pull/6584) ([btm](https://github.com/btm)) <!-- 13.6.5 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
