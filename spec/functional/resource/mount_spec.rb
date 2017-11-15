@@ -22,7 +22,7 @@ require "chef/mixin/shell_out"
 require "tmpdir"
 
 # run this test only for following platforms.
-include_flag = !(%w{ubuntu redhat aix solaris2}.include?(ohai[:platform]))
+include_flag = !(%w{fedora amazon redhat centos debian aix solaris2}.include?(ohai[:platform]))
 
 describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => include_flag do
   # Disabled in travis because it refuses to let us mount a ramdisk. /dev/ramX does not
@@ -42,7 +42,7 @@ describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => inclu
       # https://www-304.ibm.com/support/knowledgecenter/ssw_aix_71/com.ibm.aix.performance/namefs_file_sys.htm
       device = "/"
       fstype = "namefs"
-    when "ubuntu", "redhat"
+    when "ubuntu", "redhat", "amazon", "fedora", "debian", "centos"
       device = "/dev/ram1"
       shell_out("ls -1 /dev/ram*").stdout.each_line do |d|
         if shell_out("mount | grep #{d}").exitstatus == "1"

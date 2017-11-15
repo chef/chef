@@ -20,7 +20,7 @@ require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
-include_flag = !(%w{ubuntu redhat aix}.include?(ohai[:platform]))
+include_flag = !(%w{fedora amazon redhat centos debian aix}.include?(ohai[:platform]))
 
 describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => include_flag do
   # This test does not work in travis because there is no eth0
