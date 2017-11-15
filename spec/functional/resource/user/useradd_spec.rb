@@ -646,7 +646,7 @@ describe Chef::Provider::User::Useradd, metadata do
             expect(@error.message).to include("Cannot unlock the password")
           end
         elsif %w{rhel}.include?(OHAI_SYSTEM["platform_family"]) &&
-            (OHAI_SYSTEM["platform_version"].to_f >= 6.8 || OHAI_SYSTEM["platform_version"].to_f >= 7.3)
+            (Chef::VersionConstraint.new("~> 6.8").include?(OHAI_SYSTEM["platform_version"].to_f) || Chef::VersionConstraint.new("~> 7.3").include?(OHAI_SYSTEM["platform_version"].to_f))
           # RHEL 6.8 and 7.3 ship with a fixed `usermod` command
           # Reference: https://access.redhat.com/errata/RHBA-2016:0864
           # Reference: https://access.redhat.com/errata/RHBA-2016:2322
