@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.21.27 -->
-## [v12.21.27](https://github.com/chef/chef/tree/v12.21.27) (2017-11-14)
+<!-- latest_release 12.21.28 -->
+## [v12.21.28](https://github.com/chef/chef/tree/v12.21.28) (2017-11-15)
 
 #### Merged Pull Requests
-- Change a useradd_spec test for RHEL &gt;= 6.8 and &gt;= 7.3 [#6556](https://github.com/chef/chef/pull/6556) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- Use Chef::VersionConstraint in useradd_spec test [#6586](https://github.com/chef/chef/pull/6586) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Use Chef::VersionConstraint in useradd_spec test [#6586](https://github.com/chef/chef/pull/6586) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 12.21.28 -->
 - Change a useradd_spec test for RHEL &gt;= 6.8 and &gt;= 7.3 [#6556](https://github.com/chef/chef/pull/6556) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 12.21.27 -->
 <!-- release_rollup -->
 
