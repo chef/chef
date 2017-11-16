@@ -30,9 +30,9 @@ env:
 
 matrix:
   include:
-  - rvm: 2.3.5
-    script: sudo -E $(which bundle) exec rake spec;
-    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
+    #  - rvm: 2.3.5
+    # script: sudo -E $(which bundle) exec rake spec;
+    # bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - rvm: 2.4.1
     script: sudo -E $(which bundle) exec rake spec;
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
