@@ -72,8 +72,9 @@ class Chef
           end
         end
 
-        case @ifconfig_version
-        when "1.60"
+        if @ifconfig_version.nil?
+          raise "net-tools not found - this is required for ifconfig"
+        elsif @ifconfig_version.to_f < 2.0
           @status = shell_out("ifconfig")
           @status.stdout.each_line do |line|
             if !line[0..9].strip.empty?
@@ -86,10 +87,10 @@ class Chef
               @interfaces[@int_name]["mtu"] = (line =~ /MTU:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /MTU:/
               @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Metric:/
             end
-  
+
             next unless @interfaces.key?(new_resource.device)
             @interface = @interfaces.fetch(new_resource.device)
-  
+
             current_resource.target(new_resource.target)
             current_resource.device(new_resource.device)
             current_resource.inet_addr(@interface["inet_addr"])
@@ -99,7 +100,7 @@ class Chef
             current_resource.mtu(@interface["mtu"])
             current_resource.metric(@interface["metric"])
           end
-        when "2.10"
+        elsif @ifconfig_version.to_f >= 2.0
           @status = shell_out("ifconfig")
           @status.stdout.each_line do |line|
             addr_regex = /^(\w+):?(\d*):?\ .+$/
