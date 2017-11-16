@@ -20,7 +20,7 @@ require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
-include_flag = !(%w{rhel amazon debian aix}.include?(ohai[:platform_family]))
+include_flag = !(%w{amazon debian aix}.include?(ohai[:platform_family]) || (ohai[:platform_family] == "rhel" && ohai[:platform_version].to_i < 7))
 
 describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => include_flag do
   # This test does not work in travis because there is no eth0
