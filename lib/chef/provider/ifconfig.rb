@@ -57,39 +57,77 @@ class Chef
         @ifconfig_success = true
         @interfaces = {}
 
-        @status = shell_out("ifconfig")
-        @status.stdout.each_line do |line|
-          addr_regex = /^(\w+):?(\d*):?\ .+$/
-          if line =~ addr_regex
-            if line.match(addr_regex).nil?
-              @int_name = "nil"
-            elsif line.match(addr_regex)[2] == ""
-              @int_name = line.match(addr_regex)[1]
-              @interfaces[@int_name] = Hash.new
-              @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /mtu/ && @interfaces[@int_name]["mtu"].nil?
-            else
-              @int_name = "#{line.match(addr_regex)[1]}:#{line.match(addr_regex)[2]}"
-              @interfaces[@int_name] = Hash.new
-              @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /mtu/ && @interfaces[@int_name]["mtu"].nil?
-            end
-          else
-            @interfaces[@int_name]["inet_addr"] = (line =~ /inet (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /inet/ && @interfaces[@int_name]["inet_addr"].nil?
-            @interfaces[@int_name]["bcast"] = (line =~ /broadcast (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /broadcast/ && @interfaces[@int_name]["bcast"].nil?
-            @interfaces[@int_name]["mask"] = (line =~ /netmask (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /netmask/ && @interfaces[@int_name]["mask"].nil?
-            @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Metric:/ && @interfaces[@int_name]["metric"].nil?
+        @ifconfig_version = nil
+
+        @net_tools_version = shell_out("ifconfig --version")
+        @net_tools_version.stderr.each_line do |line|
+          if line =~ /^net-tools (\d+.\d+)/
+            @ifconfig_version = line.match(/^net-tools (\d+.\d+)/)[1]
           end
+        end
 
-          next unless @interfaces.key?(new_resource.device)
-          @interface = @interfaces.fetch(new_resource.device)
+        case @ifconfig_version
+        when "1.60"
+          @status = shell_out("ifconfig")
+          @status.stdout.each_line do |line|
+            if !line[0..9].strip.empty?
+              @int_name = line[0..9].strip
+              @interfaces[@int_name] = { "hwaddr" => (line =~ /(HWaddr)/ ? ($') : "nil").strip.chomp }
+            else
+              @interfaces[@int_name]["inet_addr"] = (line =~ /inet addr:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /inet addr:/
+              @interfaces[@int_name]["bcast"] = (line =~ /Bcast:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Bcast:/
+              @interfaces[@int_name]["mask"] = (line =~ /Mask:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Mask:/
+              @interfaces[@int_name]["mtu"] = (line =~ /MTU:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /MTU:/
+              @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Metric:/
+            end
+  
+            next unless @interfaces.key?(new_resource.device)
+            @interface = @interfaces.fetch(new_resource.device)
+  
+            current_resource.target(new_resource.target)
+            current_resource.device(new_resource.device)
+            current_resource.inet_addr(@interface["inet_addr"])
+            current_resource.hwaddr(@interface["hwaddr"])
+            current_resource.bcast(@interface["bcast"])
+            current_resource.mask(@interface["mask"])
+            current_resource.mtu(@interface["mtu"])
+            current_resource.metric(@interface["metric"])
+          end
+        when "2.10"
+          @status = shell_out("ifconfig")
+          @status.stdout.each_line do |line|
+            addr_regex = /^(\w+):?(\d*):?\ .+$/
+            if line =~ addr_regex
+              if line.match(addr_regex).nil?
+                @int_name = "nil"
+              elsif line.match(addr_regex)[2] == ""
+                @int_name = line.match(addr_regex)[1]
+                @interfaces[@int_name] = Hash.new
+                @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /mtu/ && @interfaces[@int_name]["mtu"].nil?
+              else
+                @int_name = "#{line.match(addr_regex)[1]}:#{line.match(addr_regex)[2]}"
+                @interfaces[@int_name] = Hash.new
+                @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /mtu/ && @interfaces[@int_name]["mtu"].nil?
+              end
+            else
+              @interfaces[@int_name]["inet_addr"] = (line =~ /inet (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /inet/ && @interfaces[@int_name]["inet_addr"].nil?
+              @interfaces[@int_name]["bcast"] = (line =~ /broadcast (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /broadcast/ && @interfaces[@int_name]["bcast"].nil?
+              @interfaces[@int_name]["mask"] = (line =~ /netmask (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /netmask/ && @interfaces[@int_name]["mask"].nil?
+              @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Metric:/ && @interfaces[@int_name]["metric"].nil?
+            end
 
-          current_resource.target(new_resource.target)
-          current_resource.device(new_resource.device)
-          current_resource.inet_addr(@interface["inet_addr"])
-          current_resource.hwaddr(@interface["hwaddr"])
-          current_resource.bcast(@interface["bcast"])
-          current_resource.mask(@interface["mask"])
-          current_resource.mtu(@interface["mtu"])
-          current_resource.metric(@interface["metric"])
+            next unless @interfaces.key?(new_resource.device)
+            @interface = @interfaces.fetch(new_resource.device)
+
+            current_resource.target(new_resource.target)
+            current_resource.device(new_resource.device)
+            current_resource.inet_addr(@interface["inet_addr"])
+            current_resource.hwaddr(@interface["hwaddr"])
+            current_resource.bcast(@interface["bcast"])
+            current_resource.mask(@interface["mask"])
+            current_resource.mtu(@interface["mtu"])
+            current_resource.metric(@interface["metric"])
+          end
         end
         current_resource
       end
