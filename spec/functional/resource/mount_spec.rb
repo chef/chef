@@ -44,6 +44,10 @@ describe Chef::Resource::Mount, :requires_root, :skip_travis, :external => inclu
       fstype = "namefs"
     when "debian", "rhel", "amazon"
       device = "/dev/ram1"
+      unless File.exist?(device)
+        shell_out("mknod -m 660 #{device} b 1 0")
+        shell_out("chown root:disk #{device}")
+      end
       shell_out("ls -1 /dev/ram*").stdout.each_line do |d|
         if shell_out("mount | grep #{d}").exitstatus == "1"
           # this device is not mounted, so use it.
