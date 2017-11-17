@@ -75,6 +75,16 @@ class Chef
         if @ifconfig_version.nil?
           raise "net-tools not found - this is required for ifconfig"
         elsif @ifconfig_version.to_f < 2.0
+          # Example output for 1.60 is as follows: (sanitized but format intact)
+          # eth0      Link encap:Ethernet  HWaddr 00:00:00:00:00:00
+          #           inet addr:192.168.1.1  Bcast:192.168.0.1  Mask:255.255.248.0
+          #           inet6 addr: 0000::00:0000:0000:0000/64 Scope:Link
+          #           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          #           RX packets:65158911 errors:0 dropped:0 overruns:0 frame:0
+          #           TX packets:41723949 errors:0 dropped:0 overruns:0 carrier:0
+          #           collisions:0 txqueuelen:1000
+          #           RX bytes:42664658792 (39.7 GiB)  TX bytes:52722603938 (49.1 GiB)
+          #           Interrupt:30          
           @status = shell_out("ifconfig")
           @status.stdout.each_line do |line|
             if !line[0..9].strip.empty?
@@ -101,6 +111,15 @@ class Chef
             current_resource.metric(@interface["metric"])
           end
         elsif @ifconfig_version.to_f >= 2.0
+          # Example output for 2.10-alpha is as follows: (sanitized but format intact)
+          # eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+          #       inet 192.168.1.1  netmask 255.255.240.0  broadcast 192.168.0.1
+          #       inet6 0000::0000:000:0000:0000  prefixlen 64  scopeid 0x20<link>
+          #       ether 00:00:00:00:00:00  txqueuelen 1000  (Ethernet)
+          #       RX packets 2383836  bytes 1642630840 (1.5 GiB)
+          #       RX errors 0  dropped 0  overruns 0  frame 0
+          #       TX packets 1244218  bytes 977339327 (932.0 MiB)
+          #       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
           @status = shell_out("ifconfig")
           @status.stdout.each_line do |line|
             addr_regex = /^(\w+):?(\d*):?\ .+$/
@@ -120,6 +139,7 @@ class Chef
               @interfaces[@int_name]["inet_addr"] = (line =~ /inet (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /inet/ && @interfaces[@int_name]["inet_addr"].nil?
               @interfaces[@int_name]["bcast"] = (line =~ /broadcast (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /broadcast/ && @interfaces[@int_name]["bcast"].nil?
               @interfaces[@int_name]["mask"] = (line =~ /netmask (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /netmask/ && @interfaces[@int_name]["mask"].nil?
+              @interfaces[@int_name]["hwaddr"] = (line =~ /ether (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /ether/ && @interfaces[@int_name]["hwaddr"].nil?
               @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Metric:/ && @interfaces[@int_name]["metric"].nil?
             end
 
