@@ -295,6 +295,23 @@ describe Chef::Knife::Ssh do
     end
   end
 
+  describe "#tmux" do
+    before do
+      ssh_config = { :timeout => 50, :user => "locutus", :port => 23, :keepalive => true, :keepalive_interval => 60 }
+      allow(Net::SSH).to receive(:configuration_for).with("foo.example.org", true).and_return(ssh_config)
+      @query = Chef::Search::Query.new
+      expect(@query).to receive(:search).and_yield(@node_foo)
+      allow(Chef::Search::Query).to receive(:new).and_return(@query)
+      allow(@knife).to receive(:exec).and_return(0)
+    end
+
+    it "filters out invalid characters from tmux session name" do
+      @knife.name_args = ["name:foo.example.org", "tmux"]
+      expect(@knife).to receive(:shell_out!).with("tmux new-session -d -s 'knife ssh name=foo-example-org' -n 'foo.example.org' 'ssh locutus@foo.example.org' ")
+      @knife.run
+    end
+  end
+
   describe "#run" do
     before do
       @query = Chef::Search::Query.new
