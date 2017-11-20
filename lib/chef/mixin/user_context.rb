@@ -34,6 +34,7 @@ class Chef
         login_session = nil
 
         begin
+          puts "UserContext DEBUG: creating new logon session with user: '#{user}'"
           if user
             logon_session = Chef::Util::Windows::LogonSession.new(user, password, domain)
             logon_session.open
@@ -41,7 +42,9 @@ class Chef
           end
           yield
         ensure
+          puts "UserContext DEBUG: about to call logon_session.close, logon_session is: '#{logon_session}'"
           logon_session.close if logon_session
+          puts "UserContext DEBUG: after logon_session.close"
         end
       end
 

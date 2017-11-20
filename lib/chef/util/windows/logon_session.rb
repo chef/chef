@@ -58,9 +58,11 @@ class Chef
         end
 
         def close
+          puts "UserContext DEBUG: in close"
           validate_session_open!
 
           if impersonating
+            puts "UserContext DEBUG: impersonating, calling restore_user_context"
             restore_user_context
           end
 
@@ -91,10 +93,13 @@ class Chef
         end
 
         def restore_user_context
+          puts "UserContext DEBUG: calling restore_user_context"
           validate_session_open!
 
           if impersonating
+            puts "UserContext DEBUG: impersonating, calling RevertToSelf"
             status = Chef::ReservedNames::Win32::API::Security.RevertToSelf
+            puts "UserContext DEBUG: RevertToSelf return: '#{status}'"
 
             if !status
               last_error = FFI::LastError.error
