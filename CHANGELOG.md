@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.9 -->
-## [v13.6.9](https://github.com/chef/chef/tree/v13.6.9) (2017-11-20)
+<!-- latest_release 13.6.10 -->
+## [v13.6.10](https://github.com/chef/chef/tree/v13.6.10) (2017-11-21)
 
 #### Merged Pull Requests
-- Filter out periods from tmux session name [#6593](https://github.com/chef/chef/pull/6593) ([afn](https://github.com/afn))
+- Revert &quot;add missing functional tests for users&quot; [#6588](https://github.com/chef/chef/pull/6588) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Revert &quot;add missing functional tests for users&quot; [#6588](https://github.com/chef/chef/pull/6588) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.6.10 -->
 - Filter out periods from tmux session name [#6593](https://github.com/chef/chef/pull/6593) ([afn](https://github.com/afn)) <!-- 13.6.9 -->
 - Fix mount test, also update ifconfig to work with both common versions. [#6587](https://github.com/chef/chef/pull/6587) ([scotthain](https://github.com/scotthain)) <!-- 13.6.8 -->
 - Change a useradd_spec test for RHEL &gt;= 6.8 and &gt;= 7.3 [#6555](https://github.com/chef/chef/pull/6555) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 13.6.7 -->
