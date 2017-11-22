@@ -28,7 +28,7 @@ describe Chef::Resource::WindowsPath do
     expect(subject.resource_name).to eql(:windows_path)
   end
 
-  it "sets the path as it's name" do
+  it "sets the path as its name" do
     expect(subject.path).to eql("some_path")
   end
 
