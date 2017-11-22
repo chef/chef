@@ -42,16 +42,11 @@ describe Chef::Provider::Ifconfig do
   end
   describe Chef::Provider::Ifconfig, "load_current_resource" do
     before do
-      @status = double(stdout: "", exitstatus: 1)
-      allow(@provider).to receive(:shell_out).and_return(@status)
-      @provider.load_current_resource
-    end
-    it "should track state of ifconfig failure" do
-      expect(@provider.instance_variable_get("@status").exitstatus).not_to eq(0)
+      mixlib = Mixlib::ShellOut.new
+      allow(@provider).to receive(:shell_out).and_return(mixlib)
     end
     it "should thrown an exception when ifconfig fails" do
-      @provider.define_resource_requirements
-      expect { @provider.process_resource_requirements }.to raise_error Chef::Exceptions::Ifconfig
+      expect { @provider.load_current_resource }.to raise_error
     end
   end
   describe Chef::Provider::Ifconfig, "action_add" do
