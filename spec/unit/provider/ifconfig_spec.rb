@@ -38,12 +38,19 @@ describe Chef::Provider::Ifconfig do
     status = double("Status", exitstatus: 0)
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
-
   end
+
   describe Chef::Provider::Ifconfig, "load_current_resource" do
+    let(:net_tools_version) { StringIO.new <<-EOS }
+net-tools 1.60
+ifconfig 1.42 (2001-04-13)
+EOS
+
     before do
-      @status = double(stdout: "", exitstatus: 1)
-      allow(@provider).to receive(:shell_out).and_return(@status)
+      ifconfig = double(stdout: "", exitstatus: 1)
+      allow(@provider).to receive(:shell_out).and_return(ifconfig)
+      ifconfig_version = double(stdout: "", stderr: net_tools_version, exitstatus: 4)
+      allow(@provider).to receive(:shell_out).with("ifconfig --version").and_return(ifconfig_version)
       @provider.load_current_resource
     end
     it "should track state of ifconfig failure" do
