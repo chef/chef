@@ -1,6 +1,7 @@
 language: ruby
-sudo: false
+sudo: required
 cache: bundler
+dist: trusty
 
 # Early warning system to catch if Rubygems breaks something
 before_install:
