@@ -19,6 +19,7 @@
 #
 
 require "chef/provider/service/simple"
+require "chef/win32_service_constants"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require "chef/win32/error"
   require "win32/service"
@@ -30,6 +31,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   include Chef::Mixin::ShellOut
   include Chef::ReservedNames::Win32::API::Error rescue LoadError
+  include Chef::Win32ServiceConstants
 
   #Win32::Service.get_start_type
   AUTO_START = "auto start"
@@ -50,18 +52,36 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   SERVICE_RIGHT = "SeServiceLogonRight"
 
   def load_current_resource
-    @current_resource = Chef::Resource::WindowsService.new(@new_resource.name)
-    @current_resource.service_name(@new_resource.service_name)
-    @current_resource.running(current_state == RUNNING)
-    Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
-    case current_start_type
-    when AUTO_START
-      @current_resource.enabled(true)
-    when DISABLED
-      @current_resource.enabled(false)
+    @current_resource = Chef::Resource::WindowsService.new(new_resource.name)
+    current_resource.service_name(new_resource.service_name)
+
+    if Win32::Service.exists?(current_resource.service_name)
+      current_resource.running(current_state == RUNNING)
+      Chef::Log.debug "#{new_resource} running: #{current_resource.running}"
+      case current_start_type
+      when AUTO_START
+        current_resource.enabled(true)
+      when DISABLED
+        current_resource.enabled(false)
+      end
+      Chef::Log.debug "#{new_resource} enabled: #{current_resource.enabled}"
+
+      config_info = Win32::Service.config_info(current_resource.service_name)
+      current_resource.service_type(get_service_type(config_info[:service_type]))    if config_info[:service_type]
+      current_resource.startup_type(get_start_type(config_info[:start_type]))        if config_info[:start_type]
+      current_resource.error_control(get_error_control(config_info[:error_control])) if config_info[:error_control]
+      current_resource.binary_path_name(config_info[:binary_path_name]) if config_info[:binary_path_name]
+      current_resource.load_order_group(config_info[:load_order_group]) if config_info[:load_order_group]
+      current_resource.dependencies(config_info[:dependencies])         if config_info[:dependencies]
+      current_resource.run_as_user(config_info[:service_start_name])    if config_info[:service_start_name]
+      current_resource.display_name(config_info[:display_name])         if config_info[:display_name]
+
+      if delayed_start = current_delayed_start
+        current_resource.delayed_start(delayed_start)
+      end
     end
-    Chef::Log.debug "#{@new_resource} enabled: #{@current_resource.enabled}"
-    @current_resource
+
+    current_resource
   end
 
   def start_service
@@ -175,6 +195,44 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     end
   end
 
+  action :create do
+    return if Win32::Service.exists?(new_resource.service_name)
+
+    converge_by("create service #{new_resource.service_name}") do
+      Win32::Service.new(windows_service_config)
+    end
+
+    converge_delayed_start
+  end
+
+  action :delete do
+    return unless Win32::Service.exists?(new_resource.service_name)
+
+    converge_by("delete service #{new_resource.service_name}") do
+      Win32::Service.delete(new_resource.service_name)
+    end
+  end
+
+  action :configure do
+    unless Win32::Service.exists?(new_resource.service_name)
+      Chef::Log.debug "#{new_resource} does not exist - nothing to do"
+      return
+    end
+
+    # Until #6300 is solved this is required
+    if new_resource.run_as_user == new_resource.class.properties[:run_as_user].default
+      new_resource.run_as_user = new_resource.class.properties[:run_as_user].default
+    end
+
+    converge_if_changed :service_type, :startup_type, :error_control,
+                        :binary_path_name, :load_order_group, :dependencies,
+                        :run_as_user, :display_name do
+      Win32::Service.configure(windows_service_config(:configure))
+    end
+
+    converge_delayed_start
+  end
+
   def action_enable
     if current_start_type != AUTO_START
       converge_by("enable service #{@new_resource}") do
@@ -234,6 +292,14 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   private
+
+  def current_delayed_start
+    if service = Win32::Service.services.find { |x| x.service_name == @new_resource.service_name }
+      service.delayed_start
+    else
+      nil
+    end
+  end
 
   def grant_service_logon(username)
     begin
@@ -306,4 +372,102 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     )
     @new_resource.updated_by_last_action(true)
   end
+
+  def windows_service_config(action = :create)
+    config = {}
+
+    config[:service_name]       = new_resource.service_name
+    config[:display_name]       = new_resource.display_name     if new_resource.display_name
+    config[:service_type]       = new_resource.service_type     if new_resource.service_type
+    config[:start_type]         = new_resource.startup_type     if new_resource.startup_type
+    config[:error_control]      = new_resource.error_control    if new_resource.error_control
+    config[:binary_path_name]   = new_resource.binary_path_name if new_resource.binary_path_name
+    config[:load_order_group]   = new_resource.load_order_group if new_resource.load_order_group
+    config[:dependencies]       = new_resource.dependencies     if new_resource.dependencies
+    config[:service_start_name] = new_resource.run_as_user      unless new_resource.run_as_user.empty?
+    config[:password]           = new_resource.run_as_password  unless new_resource.run_as_user.empty? or new_resource.run_as_password.empty?
+    config[:description]        = new_resource.description      if new_resource.description
+
+    case action
+    when :create
+      config[:desired_access]   = new_resource.desired_access   if new_resource.desired_access
+    end
+
+    config
+  end
+
+  def converge_delayed_start
+    config = {}
+    config[:service_name]  = new_resource.service_name
+    config[:delayed_start] = new_resource.delayed_start
+
+    # Until #6300 is solved this is required
+    if new_resource.delayed_start == new_resource.class.properties[:delayed_start].default
+      new_resource.delayed_start = new_resource.class.properties[:delayed_start].default
+    end
+
+    converge_if_changed :delayed_start do
+      Win32::Service.configure(config)
+    end
+  end
+
+  def get_service_type(service_type)
+    case service_type
+    when 'file system driver'
+      SERVICE_FILE_SYSTEM_DRIVER
+    when 'kernel driver'
+      SERVICE_KERNEL_DRIVER
+    when 'own process'
+      SERVICE_WIN32_OWN_PROCESS
+    when 'share proces'
+      SERVICE_WIN32_SHARE_PROCESS
+    when 'recognizer driver'
+      SERVICE_RECOGNIZER_DRIVER
+    when 'driver'
+      SERVICE_DRIVER
+    when 'win32'
+      SERVICE_WIN32
+    when 'all'
+      SERVICE_TYPE_ALL
+    when 'own process, interactive'
+      SERVICE_INTERACTIVE_PROCESS | SERVICE_WIN32_OWN_PROCESS
+    when 'share process, interactive'
+      SERVICE_INTERACTIVE_PROCESS | SERVICE_WIN32_SHARE_PROCESS
+    else
+      nil
+    end
+  end
+
+  def get_start_type(start_type)
+    case start_type
+    when 'auto start'
+      SERVICE_AUTO_START
+    when 'boot start'
+      SERVICE_BOOT_START
+    when 'demand start'
+      SERVICE_DEMAND_START
+    when 'disabled'
+      SERVICE_DISABLED
+    when 'system start'
+      SERVICE_SYSTEM_START
+    else
+      nil
+    end
+  end
+
+  def get_error_control(error_control)
+    case error_control
+    when 'critical'
+      SERVICE_ERROR_CRITICAL
+    when 'ignore'
+      SERVICE_ERROR_IGNORE
+    when 'normal'
+      SERVICE_ERROR_NORMAL
+    when 'severe'
+      SERVICE_ERROR_SEVERE
+    else
+      nil
+    end
+  end
+
 end
