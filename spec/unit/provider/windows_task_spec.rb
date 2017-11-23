@@ -110,6 +110,33 @@ describe Chef::Provider::WindowsTask do
       expect(new_resource).not_to be_updated_by_last_action
     end
 
+    it "sets the start_time in 24hr format while updating an existing task" do
+      # task_hash has start_time = "1:12:00 PM"
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+      allow(provider).to receive(:task_need_update?).and_return(true)
+      allow(provider).to receive(:convert_system_date_to_mm_dd_yyyy).and_return("03/30/2017")
+      allow(provider).to receive(:run_schtasks)
+      provider.run_action(:create)
+      # start_time gets set in 24hr format for new_resource
+      expect(new_resource.start_time).to eq("13:12")
+      expect(new_resource).to be_updated_by_last_action
+    end
+
+    it "sets the start_day in mm/dd/yyyy format while updating an existing task" do
+      # start_day in yyyy-MM-dd format
+      task_hash[:StartDate] = "2017-03-30"
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      current_resource = provider.load_current_resource
+      allow(provider).to receive(:task_need_update?).and_return(true)
+      allow(provider).to receive(:convert_system_date_format_to_ruby_date_format).and_return("%Y-%m-%d")
+      allow(provider).to receive(:run_schtasks)
+      provider.run_action(:create)
+      # start_day gets set in mm/dd/yyyy format for new_resource
+      expect(new_resource.start_day).to eq("03/30/2017")
+      expect(new_resource).to be_updated_by_last_action
+    end
+
     context "when task is not existing" do
       before do
         allow(provider).to receive(:load_task_hash)
