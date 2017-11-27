@@ -51,7 +51,6 @@ EOM
     end
 
     it "with a single item and a useless secret" do
-
       knife("data bag show rocket falcon9 --secret=mykey").should_succeed <<EOM, stderr: "WARNING: Unencrypted data bag detected, ignoring any provided secret options.\n"
 heavy: true
 id:    falcon9
