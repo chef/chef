@@ -299,7 +299,7 @@ class Chef
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
-        events.run_completed(node)
+        events.run_completed(node, run_status)
 
         # keep this inside the main loop to get exception backtraces
         end_profiling
@@ -315,7 +315,7 @@ class Chef
           run_status.exception = run_error
           run_failed
         end
-        events.run_failed(run_error)
+        events.run_failed(run_error, run_status)
       ensure
         Chef::RequestID.instance.reset_request_id
         @run_status = nil
