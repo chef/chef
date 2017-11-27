@@ -51,7 +51,7 @@ class Chef
                       ui.warn("Encrypted data bag detected, but no secret provided for decoding. Displaying encrypted data.")
                       format_for_display(raw_data)
                     else
-                      ui.warn("Unencrypted data bag detected, ignoring any provided secret options.")
+                      ui.warn("Unencrypted data bag detected, ignoring any provided secret options.") if secret
                       format_for_display(raw_data)
                     end
 
