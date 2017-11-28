@@ -219,6 +219,53 @@ describe Chef::Knife::Ssh do
     end
   end
 
+  describe "prefix" do
+    context "when knife[:prefix_attribute] is set" do
+      before do
+        setup_knife(["*:*", "uptime"])
+        Chef::Config[:knife][:prefix_attribute] = "name"
+      end
+
+      it "uses the prefix_attribute" do
+        @knife.run
+        expect(@knife.get_prefix_attribute({ "prefix" => "name" })).to eq("name")
+      end
+    end
+
+    context "when knife[:prefix_attribute] is not provided" do
+      before do
+        setup_knife(["*:*", "uptime"])
+        Chef::Config[:knife][:prefix_attribute] = nil
+      end
+
+      it "falls back to nil" do
+        @knife.run
+        expect(@knife.get_prefix_attribute({})).to eq(nil)
+      end
+    end
+
+    context "when --prefix-attribute ec2.public_public_hostname is provided" do
+      before do
+        setup_knife(["--prefix-attribute", "ec2.public_hostname", "*:*", "uptime"])
+        Chef::Config[:knife][:prefix_attribute] = nil
+      end
+
+      it "should use the value on the command line" do
+        @knife.run
+        expect(@knife.config[:prefix_attribute]).to eq("ec2.public_hostname")
+      end
+
+      it "should override what is set in knife.rb" do
+        # This is the setting imported from knife.rb
+        Chef::Config[:knife][:prefix_attribute] = "fqdn"
+        # Then we run knife with the -b flag, which sets the above variable
+        setup_knife(["--prefix-attribute", "ec2.public_hostname", "*:*", "uptime"])
+        @knife.run
+        expect(@knife.config[:prefix_attribute]).to eq("ec2.public_hostname")
+      end
+    end
+  end
+
   describe "gateway" do
     context "when knife[:ssh_gateway] is set" do
       before do

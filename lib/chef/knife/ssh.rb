@@ -58,6 +58,10 @@ class Chef
         :description => "QUERY is a space separated list of servers",
         :default => false
 
+      option :prefix_attribute,
+        :long => "--prefix-attribute ATTR",
+        :description => "The attribute to use for prefixing the ouput - default depends on the context"
+
       option :ssh_user,
         :short => "-x USERNAME",
         :long => "--ssh-user USERNAME",
@@ -180,6 +184,19 @@ class Chef
         session_from_list(list)
       end
 
+      def get_prefix_attribute(item)
+        # Order of precedence for prefix
+        # 1) config value (cli or knife config)
+        # 2) nil
+        msg = "Using node attribute '%s' as the prefix: %s"
+        if item["prefix"]
+          Chef::Log.debug(sprintf(msg, config[:prefix_attribute], item["prefix"]))
+          item["prefix"]
+        else
+          nil
+        end
+      end
+
       def get_ssh_attribute(item)
         # Order of precedence for ssh target
         # 1) config value (cli or knife config)
@@ -205,6 +222,10 @@ class Chef
 
         separator = ui.presenter.attribute_field_separator
 
+        if config[:prefix_attribute]
+          required_attributes[:prefix] = config[:prefix_attribute].split(separator)
+        end
+
         if config[:ssh_attribute]
           required_attributes[:target] = config[:ssh_attribute].split(separator)
         end
@@ -219,8 +240,9 @@ class Chef
           # returned node object
           host = get_ssh_attribute(item)
           next if host.nil?
+          prefix = get_prefix_attribute(item)
           ssh_port = item.dig("cloud", "public_ssh_port")
-          srv = [host, ssh_port]
+          srv = [host, ssh_port, prefix]
           list.push(srv)
         end
 
@@ -269,7 +291,8 @@ class Chef
 
       def session_from_list(list)
         list.each do |item|
-          host, ssh_port = item
+          host, ssh_port, prefix = item
+          prefix = host unless prefix
           Chef::Log.debug("Adding #{host}")
           session_opts = session_options(host, ssh_port)
           # Handle port overrides for the main connection.
@@ -278,12 +301,14 @@ class Chef
           # Handle connection timeout
           session_opts[:timeout] = Chef::Config[:knife][:ssh_timeout] if Chef::Config[:knife][:ssh_timeout]
           session_opts[:timeout] = config[:ssh_timeout] if config[:ssh_timeout]
+          # Handle session prefix
+          session_opts[:properties] = { prefix: prefix }
           # Create the hostspec.
           hostspec = session_opts[:user] ? "#{session_opts.delete(:user)}@#{host}" : host
           # Connect a new session on the multi.
           session.use(hostspec, session_opts)
 
-          @longest = host.length if host.length > @longest
+          @longest = prefix.length if prefix.length > @longest
         end
 
         session
@@ -329,9 +354,9 @@ class Chef
             chan.exec command do |ch, success|
               raise ArgumentError, "Cannot execute #{command}" unless success
               ch.on_data do |ichannel, data|
-                print_data(ichannel[:host], data)
+                print_data(ichannel.connection[:prefix], data)
                 if data =~ /^knife sudo password: /
-                  print_data(ichannel[:host], "\n")
+                  print_data(ichannel.connection[:prefix], "\n")
                   ichannel.send_data("#{get_password}\n")
                 end
               end

@@ -51,26 +51,34 @@ describe Chef::Knife::Ssh do
         it "returns an array of the attributes specified on the command line OR config file, if only one is set" do
           @node_bar["target"] = "10.0.0.2"
           @node_foo["target"] = "10.0.0.1"
+          @node_bar["prefix"] = "bar"
+          @node_foo["prefix"] = "foo"
           @knife.config[:ssh_attribute] = "ipaddress"
+          @knife.config[:prefix_attribute] = "name"
           Chef::Config[:knife][:ssh_attribute] = "ipaddress" # this value will be in the config file
-          expect(@knife).to receive(:session_from_list).with([["10.0.0.1", nil], ["10.0.0.2", nil]])
+          Chef::Config[:knife][:prefix_attribute] = "name" # this value will be in the config file
+          expect(@knife).to receive(:session_from_list).with([["10.0.0.1", nil, "foo"], ["10.0.0.2", nil, "bar"]])
           @knife.configure_session
         end
 
         it "returns an array of the attributes specified on the command line even when a config value is set" do
           @node_bar["target"] = "10.0.0.2"
           @node_foo["target"] = "10.0.0.1"
+          @node_bar["prefix"] = "bar"
+          @node_foo["prefix"] = "foo"
           Chef::Config[:knife][:ssh_attribute] = "config_file" # this value will be in the config file
+          Chef::Config[:knife][:prefix_attribute] = "config_file" # this value will be in the config file
           @knife.config[:ssh_attribute] = "ipaddress" # this is the value of the command line via #configure_attribute
-          expect(@knife).to receive(:session_from_list).with([["10.0.0.1", nil], ["10.0.0.2", nil]])
+          @knife.config[:prefix_attribute] = "name" # this is the value of the command line via #configure_attribute
+          expect(@knife).to receive(:session_from_list).with([["10.0.0.1", nil, "foo"], ["10.0.0.2", nil, "bar"]])
           @knife.configure_session
         end
       end
 
       it "searches for and returns an array of fqdns" do
         expect(@knife).to receive(:session_from_list).with([
-          ["foo.example.org", nil],
-          ["bar.example.org", nil],
+          ["foo.example.org", nil, nil],
+          ["bar.example.org", nil, nil],
         ])
         @knife.configure_session
       end
@@ -84,8 +92,8 @@ describe Chef::Knife::Ssh do
         end
         it "returns an array of cloud public hostnames" do
           expect(@knife).to receive(:session_from_list).with([
-            ["ec2-10-0-0-1.compute-1.amazonaws.com", nil],
-            ["ec2-10-0-0-2.compute-1.amazonaws.com", nil],
+            ["ec2-10-0-0-1.compute-1.amazonaws.com", nil, nil],
+            ["ec2-10-0-0-2.compute-1.amazonaws.com", nil, nil],
           ])
           @knife.configure_session
         end
@@ -101,8 +109,8 @@ describe Chef::Knife::Ssh do
 
         it "returns an array of fqdns" do
           expect(@knife).to receive(:session_from_list).with([
-            ["foo.example.org", nil],
-            ["bar.example.org", nil],
+            ["foo.example.org", nil, nil],
+            ["bar.example.org", nil, nil],
           ])
           @knife.configure_session
         end
@@ -144,6 +152,27 @@ describe Chef::Knife::Ssh do
     end
   end
 
+  describe "#get_prefix_attribute" do
+    # Order of precedence for prefix
+    # 1) config value (cli or knife config)
+    # 2) nil
+    before do
+      Chef::Config[:knife][:prefix_attribute] = nil
+      @knife.config[:prefix_attribute] = nil
+      @node_foo["cloud"]["public_hostname"] = "ec2-10-0-0-1.compute-1.amazonaws.com"
+      @node_bar["cloud"]["public_hostname"] = ""
+    end
+
+    it "should return nil by default" do
+      expect(@knife.get_prefix_attribute({})).to eq(nil)
+    end
+
+    it "should favor config over nil" do
+      @node_foo["prefix"] = "config"
+      expect( @knife.get_prefix_attribute(@node_foo)).to eq("config")
+    end
+  end
+
   describe "#get_ssh_attribute" do
     # Order of precedence for ssh target
     # 1) config value (cli or knife config)
@@ -182,40 +211,50 @@ describe Chef::Knife::Ssh do
     end
 
     it "uses the port from an ssh config file" do
-      @knife.session_from_list([["the.b.org", nil]])
+      @knife.session_from_list([["the.b.org", nil, nil]])
       expect(@knife.session.servers[0].port).to eq(23)
     end
 
     it "uses the port from a cloud attr" do
-      @knife.session_from_list([["the.b.org", 123]])
+      @knife.session_from_list([["the.b.org", 123, nil]])
       expect(@knife.session.servers[0].port).to eq(123)
     end
 
+    it "uses the prefix from list" do
+      @knife.session_from_list([["the.b.org", nil, "b-team"]])
+      expect(@knife.session.servers[0][:prefix]).to eq("b-team")
+    end
+
+    it "defaults to a prefix of host" do
+      @knife.session_from_list([["the.b.org", nil, nil]])
+      expect(@knife.session.servers[0][:prefix]).to eq("the.b.org")
+    end
+
     it "defaults to a timeout of 120 seconds" do
-      @knife.session_from_list([["the.b.org", nil]])
+      @knife.session_from_list([["the.b.org", nil, nil]])
       expect(@knife.session.servers[0].options[:timeout]).to eq(120)
     end
 
     it "uses the timeout from Chef Config" do
       Chef::Config[:knife][:ssh_timeout] = 5
       @knife.config[:ssh_timeout] = nil
-      @knife.session_from_list([["the.b.org", nil]])
+      @knife.session_from_list([["the.b.org", nil, nil]])
       expect(@knife.session.servers[0].options[:timeout]).to eq(5)
     end
 
     it "uses the timeout from knife config" do
       @knife.config[:ssh_timeout] = 6
-      @knife.session_from_list([["the.b.org", nil]])
+      @knife.session_from_list([["the.b.org", nil, nil]])
       expect(@knife.session.servers[0].options[:timeout]).to eq(6)
     end
 
     it "uses the user from an ssh config file" do
-      @knife.session_from_list([["the.b.org", 123]])
+      @knife.session_from_list([["the.b.org", 123, nil]])
       expect(@knife.session.servers[0].user).to eq("locutus")
     end
 
     it "uses keepalive settings from an ssh config file" do
-      @knife.session_from_list([["the.b.org", 123]])
+      @knife.session_from_list([["the.b.org", 123, nil]])
       expect(@knife.session.servers[0].options[:keepalive]).to be true
       expect(@knife.session.servers[0].options[:keepalive_interval]).to eq 60
     end
