@@ -36,7 +36,7 @@ GRAPH
   multipackage (4.0.0)
     compat_resource (>= 0.0.0)
   nscd (5.0.0)
-  ntp (3.5.2)
+  ntp (3.5.4)
   ohai (5.2.0)
   openssh (2.6.0)
     iptables (>= 1.0)
