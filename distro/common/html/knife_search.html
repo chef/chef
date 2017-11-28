@@ -51,7 +51,7 @@
 </div>
 <p>where <tt class="docutils literal"><span class="pre">INDEX</span></tt> is one of <tt class="docutils literal"><span class="pre">client</span></tt>, <tt class="docutils literal"><span class="pre">environment</span></tt>, <tt class="docutils literal"><span class="pre">node</span></tt>, <tt class="docutils literal"><span class="pre">role</span></tt>, or the name of a data bag and <tt class="docutils literal"><span class="pre">SEARCH_QUERY</span></tt> is the search query syntax for the query that will be executed.</p>
 <p><tt class="docutils literal"><span class="pre">INDEX</span></tt> is implied if omitted, and will default to <tt class="docutils literal"><span class="pre">node</span></tt>. For example:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search <span class="s1">&#39;*:*&#39;</span> -i
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search <span class="s1">&quot;*:*&quot;</span> -i
 </pre></div>
 </div>
 <p>will return something similar to:</p>
@@ -68,7 +68,7 @@ win2k8-dev
 </pre></div>
 </div>
 <p>and is the same search as:</p>
-<div class="highlight-bash"><div class="highlight"><pre>$ knife search node &#39;*:*&quot; -i
+<div class="highlight-bash"><div class="highlight"><pre>$ knife search node &quot;*:*&quot; -i
 </pre></div>
 </div>
 <p>If the <tt class="docutils literal"><span class="pre">SEARCH_QUERY</span></tt> does not contain a colon character (<tt class="docutils literal"><span class="pre">:</span></tt>), then the default query pattern is <tt class="docutils literal"><span class="pre">tags:*#{&#64;query}*</span> <span class="pre">OR</span> <span class="pre">roles:*#{&#64;query}*</span> <span class="pre">OR</span> <span class="pre">fqdn:*#{&#64;query}*</span> <span class="pre">OR</span> <span class="pre">addresses:*#{&#64;query}*</span></tt>, which means the following two search queries are effectively the same:</p>
@@ -117,7 +117,7 @@ win2k8-dev
 <p>The following examples show how to use this knife subcommand:</p>
 <p><strong>Search by platform ID</strong></p>
 <p>To search for the IDs of all nodes running on the Amazon EC2 platform, enter:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search node <span class="s1">&#39;ec2:*&#39;</span> -i
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search node <span class="s1">&quot;ec2:*&quot;</span> -i
 </pre></div>
 </div>
 <p>to return something like:</p>
@@ -134,7 +134,7 @@ ip-0A7CFFD5.ec2.internal
 </div>
 <p><strong>Search by instance type</strong></p>
 <p>To search for the instance type (flavor) of all nodes running on the Amazon EC2 platform, enter:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search node <span class="s1">&#39;ec2:*&#39;</span> -a ec2.instance_type
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search node <span class="s1">&quot;ec2:*&quot;</span> -a ec2.instance_type
 </pre></div>
 </div>
 <p>to return something like:</p>
@@ -155,12 +155,12 @@ id:                 ip-0A7CFFD5.ec2.internal
 </div>
 <p><strong>Search by node</strong></p>
 <p>To search for all nodes running Ubuntu, enter:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search node <span class="s1">&#39;platform:ubuntu&#39;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search node <span class="s1">&quot;platform:ubuntu&quot;</span>
 </pre></div>
 </div>
 <p><strong>Search by node and environment</strong></p>
 <p>To search for all nodes running CentOS in the production environment, enter:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search node <span class="s1">&#39;chef_environment:production AND platform:centos&#39;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>knife search node <span class="s1">&quot;chef_environment:production AND platform:centos&quot;</span>
 </pre></div>
 </div>
 <p><strong>Search for nested attributes</strong></p>
