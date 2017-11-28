@@ -67,7 +67,7 @@ describe Chef::Knife::Ssh do
         end
       end
 
-      it "searchs for and returns an array of fqdns" do
+      it "searches for and returns an array of fqdns" do
         expect(@knife).to receive(:session_from_list).with([
           ["foo.example.org", nil],
           ["bar.example.org", nil],

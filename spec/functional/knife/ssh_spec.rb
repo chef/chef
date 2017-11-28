@@ -185,7 +185,7 @@ describe Chef::Knife::Ssh do
       end
     end
 
-    context "when knife[:ssh_attribute] is not provided]" do
+    context "when knife[:ssh_attribute] is not provided" do
       before do
         setup_knife(["*:*", "uptime"])
         Chef::Config[:knife][:ssh_attribute] = nil
