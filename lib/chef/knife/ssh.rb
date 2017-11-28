@@ -46,11 +46,10 @@ class Chef
         :default => nil,
         :proc => lambda { |o| o.to_i }
 
-      option :attribute,
+      option :ssh_attribute,
         :short => "-a ATTR",
         :long => "--attribute ATTR",
-        :description => "The attribute to use for opening the connection - default depends on the context",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_attribute] = key.strip }
+        :description => "The attribute to use for opening the connection - default depends on the context"
 
       option :manual,
         :short => "-m",
@@ -181,27 +180,21 @@ class Chef
         session_from_list(list)
       end
 
-      def get_ssh_attribute(node)
+      def get_ssh_attribute(item)
         # Order of precedence for ssh target
-        # 1) command line attribute
-        # 2) configuration file
-        # 3) cloud attribute
-        # 4) fqdn
-        if node["config"]
-          Chef::Log.debug("Using node attribute '#{config[:attribute]}' as the ssh target: #{node["config"]}")
-          node["config"]
-        elsif Chef::Config[:knife][:ssh_attribute]
-          Chef::Log.debug("Using node attribute #{Chef::Config[:knife][:ssh_attribute]}: #{node["knife_config"]}")
-          node["knife_config"]
-        elsif node["cloud"] &&
-            node["cloud"]["public_hostname"] &&
-            !node["cloud"]["public_hostname"].empty?
-          Chef::Log.debug("Using node attribute 'cloud[:public_hostname]' automatically as the ssh target: #{node["cloud"]["public_hostname"]}")
-          node["cloud"]["public_hostname"]
+        # 1) config value (cli or knife config)
+        # 2) cloud attribute
+        # 3) fqdn
+        msg = "Using node attribute '%s' as the ssh target: %s"
+        if item["target"]
+          Chef::Log.debug(sprintf(msg, config[:ssh_attribute], item["target"]))
+          item["target"]
+        elsif !item.dig("cloud", "public_hostname").to_s.empty?
+          Chef::Log.debug(sprintf(msg, "cloud.public_hostname", item["cloud"]["public_hostname"]))
+          item["cloud"]["public_hostname"]
         else
-          # falling back to default of fqdn
-          Chef::Log.debug("Using node attribute 'fqdn' as the ssh target: #{node["fqdn"]}")
-          node["fqdn"]
+          Chef::Log.debug(sprintf(msg, "fqdn", item["fqdn"]))
+          item["fqdn"]
         end
       end
 
@@ -212,14 +205,8 @@ class Chef
 
         separator = ui.presenter.attribute_field_separator
 
-        # if we've set an attribute to use on the command line
-        if config[:attribute]
-          required_attributes[:config] = config[:attribute].split(separator)
-        end
-
-        # if we've configured an attribute in our config
-        if Chef::Config[:knife][:ssh_attribute]
-          required_attributes[:knife_config] = Chef::Config[:knife][:ssh_attribute].split(separator)
+        if config[:ssh_attribute]
+          required_attributes[:target] = config[:ssh_attribute].split(separator)
         end
 
         @search_count = 0
@@ -232,7 +219,7 @@ class Chef
           # returned node object
           host = get_ssh_attribute(item)
           next if host.nil?
-          ssh_port = item[:cloud].nil? ? nil : item[:cloud][:public_ssh_port]
+          ssh_port = item.dig("cloud", "public_ssh_port")
           srv = [host, ssh_port]
           list.push(srv)
         end

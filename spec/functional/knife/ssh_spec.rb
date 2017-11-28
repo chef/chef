@@ -181,7 +181,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the ssh_attribute" do
         @knife.run
-        expect(@knife.get_ssh_attribute({ "knife_config" => "ec2.public_hostname" })).to eq("ec2.public_hostname")
+        expect(@knife.get_ssh_attribute({ "target" => "ec2.public_hostname" })).to eq("ec2.public_hostname")
       end
     end
 
@@ -199,22 +199,22 @@ describe Chef::Knife::Ssh do
 
     context "when -a ec2.public_public_hostname is provided" do
       before do
-        setup_knife(["-a ec2.public_hostname", "*:*", "uptime"])
+        setup_knife(["-a", "ec2.public_hostname", "*:*", "uptime"])
         Chef::Config[:knife][:ssh_attribute] = nil
       end
 
       it "should use the value on the command line" do
         @knife.run
-        expect(@knife.config[:attribute]).to eq("ec2.public_hostname")
+        expect(@knife.config[:ssh_attribute]).to eq("ec2.public_hostname")
       end
 
       it "should override what is set in knife.rb" do
         # This is the setting imported from knife.rb
         Chef::Config[:knife][:ssh_attribute] = "fqdn"
         # Then we run knife with the -a flag, which sets the above variable
-        setup_knife(["-a ec2.public_hostname", "*:*", "uptime"])
+        setup_knife(["-a", "ec2.public_hostname", "*:*", "uptime"])
         @knife.run
-        expect(@knife.config[:attribute]).to eq("ec2.public_hostname")
+        expect(@knife.config[:ssh_attribute]).to eq("ec2.public_hostname")
       end
     end
   end
@@ -305,7 +305,7 @@ describe Chef::Knife::Ssh do
     Chef::Config[:chef_server_url] = "http://localhost:9000"
 
     @api.post("/search/node?q=*:*&start=0&rows=1000", 200) do
-      %({"total":1, "start":0, "rows":[{"data": {"fqdn":"the.fqdn", "config": "the_public_hostname", "knife_config": "the_public_hostname" }}]})
+      %({"total":1, "start":0, "rows":[{"data": {"fqdn":"the.fqdn", "target": "the_public_hostname"}}]})
     end
   end
 
