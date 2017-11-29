@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.17 -->
-## [v13.6.17](https://github.com/chef/chef/tree/v13.6.17) (2017-11-27)
+<!-- latest_release 13.6.18 -->
+## [v13.6.18](https://github.com/chef/chef/tree/v13.6.18) (2017-11-29)
 
 #### Merged Pull Requests
-- Only warn if a secret was actually given [#6605](https://github.com/chef/chef/pull/6605) ([coderanger](https://github.com/coderanger))
+- Enable Fedora integration testing in Travis [#6523](https://github.com/chef/chef/pull/6523) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Enable Fedora integration testing in Travis [#6523](https://github.com/chef/chef/pull/6523) ([tas50](https://github.com/tas50)) <!-- 13.6.18 -->
 - Only warn if a secret was actually given [#6605](https://github.com/chef/chef/pull/6605) ([coderanger](https://github.com/coderanger)) <!-- 13.6.17 -->
 - Makes life easier for hook authors switching from the older report handler syntax [#6574](https://github.com/chef/chef/pull/6574) ([coderanger](https://github.com/coderanger)) <!-- 13.6.16 -->
 - [MSYS-688] Fixed invalid date and Invalid starttime error [#6544](https://github.com/chef/chef/pull/6544) ([NimishaS](https://github.com/NimishaS)) <!-- 13.6.15 -->
