@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.19 -->
-## [v13.6.19](https://github.com/chef/chef/tree/v13.6.19) (2017-11-29)
+<!-- latest_release 13.6.20 -->
+## [v13.6.20](https://github.com/chef/chef/tree/v13.6.20) (2017-11-29)
 
 #### Merged Pull Requests
-- fix NodeMap to not throw exceptions on platform_versions [#6608](https://github.com/chef/chef/pull/6608) ([lamont-granquist](https://github.com/lamont-granquist))
+- add unit_name name_property to systemd_unit (fixes #6542) [#6546](https://github.com/chef/chef/pull/6546) ([nathwill](https://github.com/nathwill))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- add unit_name name_property to systemd_unit (fixes #6542) [#6546](https://github.com/chef/chef/pull/6546) ([nathwill](https://github.com/nathwill)) <!-- 13.6.20 -->
 - fix NodeMap to not throw exceptions on platform_versions [#6608](https://github.com/chef/chef/pull/6608) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.6.19 -->
 - Enable Fedora integration testing in Travis [#6523](https://github.com/chef/chef/pull/6523) ([tas50](https://github.com/tas50)) <!-- 13.6.18 -->
 - Only warn if a secret was actually given [#6605](https://github.com/chef/chef/pull/6605) ([coderanger](https://github.com/coderanger)) <!-- 13.6.17 -->
