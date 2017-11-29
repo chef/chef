@@ -79,10 +79,19 @@ class Chef
             Chef::Log.info "#{new_resource} task already exists - nothing to do"
             return
           end
-          # To merge current resource and new resource attributes
+          # Setting the attributes of new_resource as current_resource.
+          # This is required to maintain idempotency when the user is not passing start_day and start_time
+          # because SCHTASK.exe sets them by default as the current time and day.
+          # So the current_resource will always have start_time and start_days set for an existing task,
+          # even though the user didn't pass it. So we set the new_resource attributes as the current_resource attributes
           resource_attributes.each do |attribute|
             new_resource_attribute = new_resource.send(attribute)
             current_resource_attribute = current_resource.send(attribute)
+            # We accept start_day in mm/dd/yyyy format only. Hence while copying the start_day from system to new_resource.start_day,
+            # we are converting from system date format to mm/dd/yyyy
+            current_resource_attribute = convert_system_date_to_mm_dd_yyyy(current_resource_attribute) if attribute == "start_day"
+            # Convert start_time into 24hr time format
+            current_resource_attribute = DateTime.parse(current_resource_attribute).strftime("%H:%M") if attribute == "start_time"
             new_resource.send("#{attribute}=", current_resource_attribute ) if current_resource_attribute && new_resource_attribute.nil?
           end
         end
@@ -272,6 +281,14 @@ class Chef
         EOH
         @system_short_date_format = powershell_out(task_script).stdout.force_encoding("UTF-8").gsub(/[\s+\uFEFF]/, "")
         @system_short_date_format
+      end
+
+      def convert_system_date_to_mm_dd_yyyy(system_date)
+        system_date_format = convert_system_date_format_to_ruby_date_format
+        unless system_date_format == "%m/%d/%Y"
+          system_date = Date.strptime(system_date, system_date_format).strftime("%m/%d/%Y")
+        end
+        system_date
       end
 
       def update_task_xml(options = [])

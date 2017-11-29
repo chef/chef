@@ -101,6 +101,24 @@ describe Chef::NodeMap do
     end
   end
 
+  describe "platform version checks" do
+    before do
+      node_map.set(:thing, :foo, platform_family: "rhel", platform_version: ">= 7")
+    end
+
+    it "handles non-x.y.z platform versions without throwing an exception" do
+      allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
+      allow(node).to receive(:[]).with(:platform_version).and_return("7.19.2.2F")
+      expect(node_map.get(node, :thing)).to eql(:foo)
+    end
+
+    it "handles non-x.y.z platform versions without throwing an exception when the match fails" do
+      allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
+      allow(node).to receive(:[]).with(:platform_version).and_return("4.19.2.2F")
+      expect(node_map.get(node, :thing)).to eql(nil)
+    end
+  end
+
   describe "with a block doing platform_version checks" do
     before do
       node_map.set(:thing, :foo, platform_family: "rhel") do |node|

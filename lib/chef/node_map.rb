@@ -143,7 +143,7 @@ class Chef
 
       filter_values.empty? ||
         Array(filter_values).any? do |v|
-          Chef::VersionConstraint::Platform.new(v).include?(value)
+          Gem::Requirement.new(v).satisfied_by?(Gem::Version.new(value))
         end
     end
 

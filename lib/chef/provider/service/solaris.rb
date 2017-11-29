@@ -31,7 +31,7 @@ class Chef
           super
           @init_command   = "/usr/sbin/svcadm"
           @status_command = "/bin/svcs"
-          @maintenace     = false
+          @maintenance    = false
         end
 
         def load_current_resource
@@ -101,7 +101,6 @@ class Chef
           end
 
           # check service state
-          @maintenance = false
           case status["state"]
           when "online"
             @current_resource.enabled(true)
