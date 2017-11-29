@@ -475,6 +475,40 @@ mpg123 1.12.1-0ubuntu1
           end
         end
 
+        describe "#action_install" do
+          it "should run dpkg to compare versions if an existing version is installed" do
+            allow(@provider).to receive(:get_current_versions).and_return("1.4.0")
+            allow(@new_resource).to receive(:allow_downgrade).and_return(false)
+            expect(@provider).to receive(:shell_out_compact_timeout).with(
+              "dpkg", "--compare-versions", "1.4.0", "gt", "0.8.12-7"
+            ).and_return(double(error?: false))
+            @provider.run_action(:upgrade)
+          end
+
+          it "should install the package if the installed version is older" do
+            allow(@provider).to receive(:get_current_versions).and_return("0.4.0")
+            allow(@new_resource).to receive(:allow_downgrade).and_return(false)
+            expect(@provider).to receive(:version_compare).and_return(-1)
+            expect(@provider).to receive(:shell_out!).with(
+              "apt-get", "-q", "-y", "install", "irssi=0.8.12-7",
+              :env => { "DEBIAN_FRONTEND" => "noninteractive" },
+              :timeout => @timeout
+            )
+            @provider.run_action(:upgrade)
+          end
+
+          it "should not compare versions if an existing version is not installed" do
+            allow(@provider).to receive(:get_current_versions).and_return(nil)
+            allow(@new_resource).to receive(:allow_downgrade).and_return(false)
+            expect(@provider).not_to receive(:version_compare)
+            expect(@provider).to receive(:shell_out!).with(
+              "apt-get", "-q", "-y", "install", "irssi=0.8.12-7",
+              :env => { "DEBIAN_FRONTEND" => "noninteractive" },
+              :timeout => @timeout
+            )
+            @provider.run_action(:upgrade)
+          end
+        end
       end
     end
   end
