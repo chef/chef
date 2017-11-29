@@ -37,12 +37,10 @@ class Chef
         # the PATH environment variable. Ruby expects these to be expanded.
         #
         path = expand_path(new_resource.path)
-        converge_by "Adding #{new_resource.path} to path environment variable" do
-          declare_resource(:env, "path") do
-            action :modify
-            delim ::File::PATH_SEPARATOR
-            value path.tr("/", '\\')
-          end
+        declare_resource(:env, "path") do
+          action :modify
+          delim ::File::PATH_SEPARATOR
+          value path.tr("/", '\\')
         end
       end
 
