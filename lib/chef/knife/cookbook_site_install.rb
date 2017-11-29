@@ -101,10 +101,12 @@ class Chef
         #cookbook_path = File.join(vendor_path, name_args[0])
         upstream_file = File.join(@install_path, "#{@cookbook_name}.tar.gz")
 
-        @repo.sanity_check
-        unless config[:use_current_branch] || config[:no_vendor]
-          @repo.reset_to_default_state
-          @repo.prepare_to_import(@cookbook_name)
+        unless config[:no_vendor]
+          @repo.sanity_check
+          unless config[:use_current_branch]
+            @repo.reset_to_default_state
+            @repo.prepare_to_import(@cookbook_name)
+          end
         end
 
         downloader = download_cookbook_to(upstream_file)
