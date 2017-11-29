@@ -258,16 +258,6 @@ class Chef
       end
     end
 
-    class DeployResource < Base
-      def id
-        21
-      end
-
-      def target
-        "deploy_resource.html"
-      end
-    end
-
     class CookbookInstallVendor < Base
       def id
         20
@@ -275,6 +265,16 @@ class Chef
 
       def target
         "cookbook_install_vendor.html"
+      end
+    end
+
+    class DeployResource < Base
+      def id
+        21
+      end
+
+      def target
+        "deploy_resource.html"
       end
     end
 
