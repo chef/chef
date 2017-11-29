@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.20 -->
-## [v13.6.20](https://github.com/chef/chef/tree/v13.6.20) (2017-11-29)
+<!-- latest_release 13.6.21 -->
+## [v13.6.21](https://github.com/chef/chef/tree/v13.6.21) (2017-11-29)
 
 #### Merged Pull Requests
-- add unit_name name_property to systemd_unit (fixes #6542) [#6546](https://github.com/chef/chef/pull/6546) ([nathwill](https://github.com/nathwill))
+- Fix windows_path converging on every run [#6541](https://github.com/chef/chef/pull/6541) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Fix windows_path converging on every run [#6541](https://github.com/chef/chef/pull/6541) ([tas50](https://github.com/tas50)) <!-- 13.6.21 -->
 - add unit_name name_property to systemd_unit (fixes #6542) [#6546](https://github.com/chef/chef/pull/6546) ([nathwill](https://github.com/nathwill)) <!-- 13.6.20 -->
 - fix NodeMap to not throw exceptions on platform_versions [#6608](https://github.com/chef/chef/pull/6608) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.6.19 -->
 - Enable Fedora integration testing in Travis [#6523](https://github.com/chef/chef/pull/6523) ([tas50](https://github.com/tas50)) <!-- 13.6.18 -->
