@@ -250,7 +250,13 @@ class Chef
           properties_str = if new_resource.sensitive
                              specified_properties.join(", ")
                            else
-                             specified_properties.map { |p| "#{p}=#{new_resource.send(p).inspect}" }.join(", ")
+                             specified_properties.map do |property|
+                               "#{property}=" << if new_resource.class.properties[property].sensitive?
+                                                   "(suppressed sensitive property)"
+                                                 else
+                                                   new_resource.send(property).inspect
+                                                 end
+                             end.join(", ")
                            end
           Chef::Log.debug("Skipping update of #{new_resource}: has not changed any of the specified properties #{properties_str}.")
           return false
@@ -259,7 +265,7 @@ class Chef
         # Print the pretty green text and run the block
         property_size = modified.map { |p| p.size }.max
         modified.map! do |p|
-          properties_str = if new_resource.sensitive
+          properties_str = if new_resource.sensitive || new_resource.class.properties[p].sensitive?
                              "(suppressed sensitive property)"
                            else
                              "#{new_resource.send(p).inspect} (was #{current_resource.send(p).inspect})"
@@ -274,7 +280,7 @@ class Chef
         property_size = properties.map { |p| p.size }.max
         created = properties.map do |property|
           default = " (default value)" unless new_resource.property_is_set?(property)
-          properties_str = if new_resource.sensitive
+          properties_str = if new_resource.sensitive || new_resource.class.properties[property].sensitive?
                              "(suppressed sensitive property)"
                            else
                              new_resource.send(property).inspect
