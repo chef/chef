@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.23 -->
-## [v13.6.23](https://github.com/chef/chef/tree/v13.6.23) (2017-11-29)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Hide sensitive properties in converge_if_changed. [#6576](https://github.com/chef/chef/pull/6576) ([cma-arnold](https://github.com/cma-arnold))
+- Add Amazon Linux testing to PRs in Travis [#6611](https://github.com/chef/chef/pull/6611) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Add Amazon Linux testing to PRs in Travis [#6611](https://github.com/chef/chef/pull/6611) ([tas50](https://github.com/tas50)) <!-- 13.6.23 -->
 - Hide sensitive properties in converge_if_changed. [#6576](https://github.com/chef/chef/pull/6576) ([cma-arnold](https://github.com/cma-arnold)) <!-- 13.6.23 -->
 - Bump dependencies to pick up InSpec v1.46.2 [#6609](https://github.com/chef/chef/pull/6609) ([adamleff](https://github.com/adamleff)) <!-- 13.6.22 -->
 - Fix windows_path converging on every run [#6541](https://github.com/chef/chef/pull/6541) ([tas50](https://github.com/tas50)) <!-- 13.6.21 -->
