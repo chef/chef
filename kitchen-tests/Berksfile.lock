@@ -38,7 +38,7 @@ GRAPH
   nscd (5.0.0)
   ntp (3.5.4)
   ohai (5.2.0)
-  openssh (2.6.0)
+  openssh (2.6.1)
     iptables (>= 1.0)
   resolver (2.0.1)
   selinux (2.1.0)
