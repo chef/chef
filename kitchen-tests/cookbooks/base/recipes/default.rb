@@ -53,4 +53,6 @@ include_recipe "nscd"
 
 include_recipe "logrotate"
 
+include_recipe "cron"
+
 include_recipe "::tests"
