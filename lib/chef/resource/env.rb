@@ -31,6 +31,7 @@ class Chef
       property :key_name, String, identity: true, name_property: true
       property :value, String, required: true
       property :delim, [ String, nil, false ], desired_state: false
+      property :user, String, default: "<System>"
     end
   end
 end

@@ -35,7 +35,7 @@ class Chef
           unless obj
             obj = WIN32OLE.connect("winmgmts://").get("Win32_Environment").spawninstance_
             obj.name = @new_resource.key_name
-            obj.username = "<System>"
+            obj.username = new_resource.user
           end
           obj.variablevalue = @new_resource.value
           obj.put_
@@ -58,18 +58,22 @@ class Chef
 
         def env_value(key_name)
           obj = env_obj(key_name)
-          obj ? obj.variablevalue : ENV[key_name]
+          obj.variablevalue if obj
         end
 
         def env_obj(key_name)
+          return @env_obj if @env_obj
           wmi = WmiLite::Wmi.new
           # Note that by design this query is case insensitive with regard to key_name
           environment_variables = wmi.query("select * from Win32_Environment where name = '#{key_name}'")
           if environment_variables && environment_variables.length > 0
-            environment_variables[0].wmi_ole_object
+            environment_variables.each do |env|
+              @env_obj = env.wmi_ole_object
+              return @env_obj if @env_obj.username.split('\\').last.casecmp(new_resource.user) == 0
+            end
           end
+          @env_obj = nil
         end
-
       end
     end
   end
