@@ -29,6 +29,14 @@ verifier:
   format: progress
 
 platforms:
+- name: amazonlinux
+  driver:
+    image: dokken/amazonlinux
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN yum -y install sudo
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
 - name: debian-7
   driver:
     image: dokken/debian-7
@@ -57,7 +65,7 @@ platforms:
 - name: centos-6
   driver:
     image: dokken/centos-6
-    run_command: /sbin/init
+    pid_one_command: /sbin/init
     intermediate_instructions:
       - RUN yum -y install sudo
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
@@ -98,14 +106,6 @@ platforms:
   driver:
     image: dokken/opensuse-leap
     pid_one_command: /bin/systemd
-
-- name: amazonlinux
-  driver:
-    image: dokken/amazonlinux
-    pid_one_command: /sbin/init
-    intermediate_instructions:
-      - RUN yum -y install sudo
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 suites:
   - name: base
