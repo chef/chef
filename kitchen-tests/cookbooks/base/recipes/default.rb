@@ -7,10 +7,9 @@
 
 hostname "chef-travis-ci.chef.io"
 
-if platform_family?("debian")
-  include_recipe "ubuntu"
-  apt_update
-end
+apt_update
+
+include_recipe "ubuntu" if platform?("ubuntu")
 
 if platform_family?("rhel", "fedora", "amazon")
   include_recipe "selinux::disabled"
