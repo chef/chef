@@ -57,7 +57,7 @@ platforms:
 - name: centos-6
   driver:
     image: dokken/centos-6
-    run_command: /sbin/init
+    pid_one_command: /sbin/init
     intermediate_instructions:
       - RUN yum -y install sudo
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
