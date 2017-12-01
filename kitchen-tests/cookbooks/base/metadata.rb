@@ -23,6 +23,8 @@ depends          "sudo"
 depends          "ubuntu"
 depends          "users"
 depends          "cron"
+depends          "git"
+depends          "locale"
 
 supports         "ubuntu"
 supports         "debian"
