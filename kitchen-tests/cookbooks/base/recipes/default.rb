@@ -57,6 +57,4 @@ include_recipe "cron"
 
 include_recipe "git"
 
-include_recipe "locale"
-
 include_recipe "::tests"
