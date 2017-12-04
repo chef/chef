@@ -106,6 +106,8 @@ platforms:
   driver:
     image: dokken/opensuse-leap
     pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/zypper install -y sudo
 
 suites:
   - name: base
