@@ -162,7 +162,7 @@ GEM
     htmlentities (4.3.4)
     httpclient (2.8.3)
     iniparse (1.4.4)
-    inspec (1.46.2)
+    inspec (1.47.0)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
@@ -181,7 +181,7 @@ GEM
       sslshake (~> 1.2)
       thor (~> 0.19)
       tomlrb (~> 1.2)
-      train (~> 0.29, >= 0.29.2)
+      train (~> 0.30)
     ipaddress (0.8.3)
     iso8601 (0.9.1)
     json (2.1.0)
@@ -222,7 +222,7 @@ GEM
     nori (2.6.0)
     octokit (4.7.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (13.6.0)
+    ohai (13.7.0)
       chef-config (>= 12.5.0.alpha.1, < 14)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -319,7 +319,7 @@ GEM
     systemu (2.6.5)
     thor (0.20.0)
     tomlrb (1.2.6)
-    train (0.29.2)
+    train (0.31.0)
       docker-api (~> 1.26)
       json (>= 1.8, < 3.0)
       mixlib-shellout (~> 2.0)
@@ -414,4 +414,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.15.4
+   1.16.0

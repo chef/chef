@@ -1,5 +1,17 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Unreleased
+
+## Ohai 13.7 Release Notes:
+
+### EC2 C5 Detection
+
+The EC2 plugin has been updated to properly detect the new AWS hypervisor used in the C5 instance types
+
+### mdadm
+
+The mdadm plugin has been updated to properly handle arrays with more than 10 disks and to properly handle journal and spare drives in the disk counts
+
 # Chef Client Release Notes 13.6.4:
 
 ## Bugfixes
