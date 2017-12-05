@@ -26,6 +26,7 @@ describe Chef::Provider::Env do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Env.new("FOO")
     @new_resource.value("bar")
+    @new_resource.user("<System>")
     @provider = Chef::Provider::Env.new(@new_resource, @run_context)
   end
 
@@ -47,12 +48,17 @@ describe Chef::Provider::Env do
       expect(@provider.new_resource.name).to eq("FOO")
     end
 
+    it "should create a current resource with the same user as the new resource" do
+      @provider.load_current_resource
+      expect(@provider.new_resource.user).to eq("<System>")
+    end
+
     it "should set the key_name to the key name of the new resource" do
       @provider.load_current_resource
       expect(@provider.current_resource.key_name).to eq("FOO")
     end
 
-    it "should check if the key_name exists" do
+    it "should check if the key_name and user exists" do
       expect(@provider).to receive(:env_key_exists).with("FOO").and_return(true)
       @provider.load_current_resource
       expect(@provider.key_exists).to be_truthy
@@ -76,7 +82,7 @@ describe Chef::Provider::Env do
       allow(@provider).to receive(:modify_env).and_return(true)
     end
 
-    it "should call create_env if the key does not exist" do
+    it "should call create_env if the key does not exist with user" do
       expect(@provider).to receive(:create_env).and_return(true)
       @provider.action_create
     end
@@ -92,7 +98,7 @@ describe Chef::Provider::Env do
       @provider.action_create
     end
 
-    it "should call modify_env if the key exists and values are not equal" do
+    it "should call modify_env if the key exists with provided user and values are not equal" do
       @provider.key_exists = true
       allow(@provider).to receive(:requires_modify_or_create?).and_return(true)
       expect(@provider).to receive(:modify_env).and_return(true)
@@ -152,6 +158,12 @@ describe Chef::Provider::Env do
       @provider.action_modify
     end
 
+    it "should call modify_group if the key exists and user are not equal" do
+      expect(@provider).to receive(:requires_modify_or_create?).and_return(true)
+      expect(@provider).to receive(:modify_env).and_return(true)
+      @provider.action_modify
+    end
+
     it "should set the new resources updated flag to true if modify_env is called" do
       allow(@provider).to receive(:requires_modify_or_create?).and_return(true)
       allow(@provider).to receive(:modify_env).and_return(true)
@@ -159,7 +171,7 @@ describe Chef::Provider::Env do
       expect(@new_resource).to be_updated
     end
 
-    it "should not call modify_env if the key exists but the values are equal" do
+    it "should not call modify_env if the key exists with user but the values are equal" do
       expect(@provider).to receive(:requires_modify_or_create?).and_return(false)
       expect(@provider).not_to receive(:modify_env)
       @provider.action_modify
@@ -178,6 +190,7 @@ describe Chef::Provider::Env do
       @new_resource.delim ";"
       @new_resource.value "C:/bar/bin"
 
+      @current_resource.user "<System>"
       @current_resource.value "C:/foo/bin;C:/bar/bin"
       @provider.current_resource = @current_resource
     end
