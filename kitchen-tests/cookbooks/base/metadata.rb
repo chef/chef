@@ -22,6 +22,8 @@ depends          "selinux"
 depends          "sudo"
 depends          "ubuntu"
 depends          "users"
+depends          "cron"
+depends          "git"
 
 supports         "ubuntu"
 supports         "debian"
