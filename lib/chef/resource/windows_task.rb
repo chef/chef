@@ -121,7 +121,7 @@ class Chef
       def validate_user_and_password(user, password)
         if user && use_password?(user)
           if password.nil?
-            raise ArgumentError, "Can't specify a non-system user without a password!"
+            raise ArgumentError, "Cannot specify a user other than the 'SYSTEM' user without specifying a password!"
           end
         end
       end

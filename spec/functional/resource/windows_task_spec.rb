@@ -339,7 +339,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "raises error" do
         subject.user "Administrator"
         subject.frequency :onstart
-        expect { subject.after_created }.to raise_error("Can't specify a non-system user without a password!")
+        expect { subject.after_created }.to raise_error("Cannot specify a user other than the 'SYSTEM' user without specifying a password!")
       end
     end
 

@@ -124,7 +124,7 @@ describe Chef::Resource::WindowsTask do
     context "when password is not passed" do
       it "raises error with non-system users" do
         allow(resource).to receive(:use_password?).and_return(true)
-        expect { resource.send(:validate_user_and_password, "Testuser", nil) }.to raise_error("Can't specify a non-system user without a password!")
+        expect { resource.send(:validate_user_and_password, "Testuser", nil) }.to raise_error("Cannot specify a user other than the 'SYSTEM' user without specifying a password!")
       end
     end
   end
