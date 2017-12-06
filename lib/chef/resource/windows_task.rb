@@ -143,23 +143,23 @@ class Chef
           case frequency
           when :minute
             unless frequency_modifier.to_i > 0 && frequency_modifier.to_i <= 1439
-              raise ArgumentError, "frequency_modifier value #{frequency_modifier} is invalid.  Valid values for :minute frequency are 1 - 1439."
+              raise ArgumentError, "frequency_modifier value #{frequency_modifier} is invalid. Valid values for :minute frequency are 1 - 1439."
             end
           when :hourly
             unless frequency_modifier.to_i > 0 && frequency_modifier.to_i <= 23
-              raise ArgumentError, "frequency_modifier value #{frequency_modifier} is invalid.  Valid values for :hourly frequency are 1 - 23."
+              raise ArgumentError, "frequency_modifier value #{frequency_modifier} is invalid. Valid values for :hourly frequency are 1 - 23."
             end
           when :daily
             unless frequency_modifier.to_i > 0 && frequency_modifier.to_i <= 365
-              raise ArgumentError, "frequency_modifier value #{frequency_modifier} is invalid.  Valid values for :daily frequency are 1 - 365."
+              raise ArgumentError, "frequency_modifier value #{frequency_modifier} is invalid. Valid values for :daily frequency are 1 - 365."
             end
           when :weekly
             unless frequency_modifier.to_i > 0 && frequency_modifier.to_i <= 52
-              raise ArgumentError, "frequency_modifier value #{frequency_modifier} is invalid.  Valid values for :weekly frequency are 1 - 52."
+              raise ArgumentError, "frequency_modifier value #{frequency_modifier} is invalid. Valid values for :weekly frequency are 1 - 52."
             end
           when :monthly
             unless ("1".."12").to_a.push("FIRST", "SECOND", "THIRD", "FOURTH", "LAST", "LASTDAY").include?(frequency_modifier.to_s.upcase)
-              raise ArgumentError, "frequency_modifier value #{frequency_modifier} is invalid.  Valid values for :monthly frequency are 1 - 12, 'FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST', 'LASTDAY'."
+              raise ArgumentError, "frequency_modifier value #{frequency_modifier} is invalid. Valid values for :monthly frequency are 1 - 12, 'FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST', 'LASTDAY'."
             end
           end
         end
@@ -167,13 +167,13 @@ class Chef
 
       def validate_create_day(day, frequency)
         unless [:weekly, :monthly].include?(frequency)
-          raise "day attribute is only valid for tasks that run monthly or weekly"
+          raise "day property is only valid for tasks that run monthly or weekly"
         end
         if day.is_a?(String) && day.to_i.to_s != day
           days = day.split(",")
           days.each do |d|
             unless ["mon", "tue", "wed", "thu", "fri", "sat", "sun", "*"].include?(d.strip.downcase)
-              raise "day attribute invalid.  Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *.  Multiple values must be separated by a comma."
+              raise "day property invalid. Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *. Multiple values must be separated by a comma."
             end
           end
         end
@@ -181,12 +181,12 @@ class Chef
 
       def validate_create_months(months, frequency)
         unless [:monthly].include?(frequency)
-          raise "months attribute is only valid for tasks that run monthly"
+          raise "months property is only valid for tasks that run monthly"
         end
         if months.is_a? String
           months.split(",").each do |month|
             unless ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "*"].include?(month.strip.upcase)
-              raise "months attribute invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma."
+              raise "months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma."
             end
           end
         end
@@ -194,7 +194,7 @@ class Chef
 
       def validate_idle_time(idle_time, frequency)
         unless [:on_idle].include?(frequency)
-          raise "idle_time attribute is only valid for tasks that run on_idle"
+          raise "idle_time property is only valid for tasks that run on_idle"
         end
 
         unless idle_time.to_i > 0 && idle_time.to_i <= 999
