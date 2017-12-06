@@ -4,7 +4,7 @@ describe "Resources with a no-op provider" do
   include IntegrationSupport
 
   context "with noop provider providing foo" do
-    before(:context) do
+    before(:each) do
       class NoOpFoo < Chef::Resource
         resource_name "hi_there"
         default_action :update
