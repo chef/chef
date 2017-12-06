@@ -75,6 +75,7 @@ class Chef
 
       def action_create
         if current_resource.exists
+          Chef::Log.debug "#{new_resource} task exists."
           if !(task_need_update? || new_resource.force)
             Chef::Log.info "#{new_resource} task already exists - nothing to do"
             return
@@ -129,6 +130,7 @@ class Chef
 
       def action_run
         if current_resource.exists
+          Chef::Log.debug "#{new_resource} task exists."
           if current_resource.status == :running
             Chef::Log.info "#{new_resource} task is currently running, skipping run"
           else
@@ -143,6 +145,7 @@ class Chef
 
       def action_delete
         if current_resource.exists
+          Chef::Log.debug "#{new_resource} task exists."
           # always need to force deletion
           run_schtasks "DELETE", "F" => ""
           new_resource.updated_by_last_action true
@@ -154,6 +157,7 @@ class Chef
 
       def action_end
         if current_resource.exists
+          Chef::Log.debug "#{new_resource} task exists."
           if current_resource.status != :running
             Chef::Log.debug "#{new_resource} is not running - nothing to do"
           else
@@ -168,6 +172,7 @@ class Chef
 
       def action_enable
         if current_resource.exists
+          Chef::Log.debug "#{new_resource} task exists."
           if current_resource.enabled
             Chef::Log.debug "#{new_resource} already enabled - nothing to do"
           else
@@ -183,6 +188,7 @@ class Chef
 
       def action_disable
         if current_resource.exists
+          Chef::Log.info "#{new_resource} task exists."
           if current_resource.enabled
             run_schtasks "CHANGE", "DISABLE" => ""
             new_resource.updated_by_last_action true
