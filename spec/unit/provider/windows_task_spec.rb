@@ -137,6 +137,22 @@ describe Chef::Provider::WindowsTask do
       expect(new_resource).to be_updated_by_last_action
     end
 
+    context "when start_day and start_time are N/A for frequency :on_logon" do
+      it "doesn't update the start_day and start_time of new_resource" do
+        task_hash[:on_logon] = true
+        task_hash[:StartDate] = "N/A"
+        task_hash[:StartTime] = "N/A"
+        allow(provider).to receive(:load_task_hash).and_return(task_hash)
+        current_resource = provider.load_current_resource
+        allow(provider).to receive(:task_need_update?).and_return(true)
+        allow(provider).to receive(:run_schtasks)
+        expect(provider).not_to receive(:convert_system_date_to_mm_dd_yyyy)
+        expect(DateTime).not_to receive(:parse)
+        expect(new_resource.start_day).to eq(nil)
+        expect(new_resource.start_time).to eq(nil)
+      end
+    end
+
     context "when task is not existing" do
       before do
         allow(provider).to receive(:load_task_hash)

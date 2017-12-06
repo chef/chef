@@ -81,18 +81,16 @@ class Chef
             return
           end
           # Setting the attributes of new_resource as current_resource.
-          # This is required to maintain idempotency when the user is not passing start_day and start_time
-          # because SCHTASK.exe sets them by default as the current time and day.
-          # So the current_resource will always have start_time and start_days set for an existing task,
-          # even though the user didn't pass it. So we set the new_resource attributes as the current_resource attributes
+          # This is required to handle update scenarios when the user specifies
+          # only those attributes in the recipe which require update
           resource_attributes.each do |attribute|
             new_resource_attribute = new_resource.send(attribute)
             current_resource_attribute = current_resource.send(attribute)
             # We accept start_day in mm/dd/yyyy format only. Hence while copying the start_day from system to new_resource.start_day,
             # we are converting from system date format to mm/dd/yyyy
-            current_resource_attribute = convert_system_date_to_mm_dd_yyyy(current_resource_attribute) if attribute == "start_day"
+            current_resource_attribute = convert_system_date_to_mm_dd_yyyy(current_resource_attribute) if attribute == "start_day" && current_resource_attribute != "N/A"
             # Convert start_time into 24hr time format
-            current_resource_attribute = DateTime.parse(current_resource_attribute).strftime("%H:%M") if attribute == "start_time"
+            current_resource_attribute = DateTime.parse(current_resource_attribute).strftime("%H:%M") if attribute == "start_time" && current_resource_attribute != "N/A"
             new_resource.send("#{attribute}=", current_resource_attribute ) if current_resource_attribute && new_resource_attribute.nil?
           end
         end
@@ -105,8 +103,8 @@ class Chef
           options["SD"] = convert_user_date_to_system_date "12/12/2012"
         else
           options["SC"] = schedule
-          options["ST"] = new_resource.start_time unless new_resource.start_time.nil?
-          options["SD"] = convert_user_date_to_system_date new_resource.start_day unless new_resource.start_day.nil?
+          options["ST"] = new_resource.start_time unless new_resource.start_time.nil? || new_resource.start_time == "N/A"
+          options["SD"] = convert_user_date_to_system_date new_resource.start_day unless new_resource.start_day.nil? || new_resource.start_day == "N/A"
         end
         options["MO"] = new_resource.frequency_modifier if frequency_modifier_allowed
         options["I"]  = new_resource.idle_time unless new_resource.idle_time.nil?
@@ -227,8 +225,8 @@ class Chef
             current_resource.idle_time != new_resource.idle_time ||
             current_resource.random_delay != new_resource.random_delay ||
             !new_resource.execution_time_limit.include?(current_resource.execution_time_limit) ||
-            (new_resource.start_day && start_day_updated?) ||
-            (new_resource.start_time && start_time_updated?)
+            (new_resource.start_day && new_resource.start_day != "N/A" && start_day_updated?) ||
+            (new_resource.start_time && new_resource.start_time != "N/A" && start_time_updated?)
         begin
           return true if new_resource.day.to_s.casecmp(current_resource.day.to_s) != 0 ||
               new_resource.months.to_s.casecmp(current_resource.months.to_s) != 0
