@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.25 -->
-## [v13.6.25](https://github.com/chef/chef/tree/v13.6.25) (2017-12-05)
+<!-- latest_release 13.6.26 -->
+## [v13.6.26](https://github.com/chef/chef/tree/v13.6.26) (2017-12-06)
 
 #### Merged Pull Requests
-- Update InSpec to 1.47 and Ohai to 13.7 [#6616](https://github.com/chef/chef/pull/6616) ([tas50](https://github.com/tas50))
-- Add openSUSE testing in Travis &amp; expand cookbooks we test [#6614](https://github.com/chef/chef/pull/6614) ([tas50](https://github.com/tas50))
+- Improved windows_task logging [#6617](https://github.com/chef/chef/pull/6617) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Improved windows_task logging [#6617](https://github.com/chef/chef/pull/6617) ([tas50](https://github.com/tas50)) <!-- 13.6.26 -->
 - Update InSpec to 1.47 and Ohai to 13.7 [#6616](https://github.com/chef/chef/pull/6616) ([tas50](https://github.com/tas50)) <!-- 13.6.25 -->
 - Add openSUSE testing in Travis &amp; expand cookbooks we test [#6614](https://github.com/chef/chef/pull/6614) ([tas50](https://github.com/tas50)) <!-- 13.6.24 -->
 - Knife SSH prefix option [#6590](https://github.com/chef/chef/pull/6590) ([mal](https://github.com/mal)) <!-- 13.6.24 -->
