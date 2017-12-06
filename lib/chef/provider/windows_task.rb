@@ -77,7 +77,7 @@ class Chef
         if current_resource.exists
           Chef::Log.debug "#{new_resource} task exists."
           if !(task_need_update? || new_resource.force)
-            Chef::Log.info "#{new_resource} task already exists - nothing to do"
+            Chef::Log.info "#{new_resource} task doesn't need updating and force not specified - nothing to do"
             return
           end
           # Setting the attributes of new_resource as current_resource.
@@ -132,7 +132,7 @@ class Chef
         if current_resource.exists
           Chef::Log.debug "#{new_resource} task exists."
           if current_resource.status == :running
-            Chef::Log.info "#{new_resource} task is currently running, skipping run"
+            Chef::Log.info "#{new_resource} task is currently running, skipping run."
           else
             run_schtasks "RUN"
             new_resource.updated_by_last_action true
