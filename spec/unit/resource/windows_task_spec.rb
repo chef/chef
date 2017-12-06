@@ -30,7 +30,7 @@ describe Chef::Resource::WindowsTask do
     expect(resource.resource_name).to eql(:windows_task)
   end
 
-  it "sets the task_name as it's name" do
+  it "sets the task_name as its name" do
     expect(resource.task_name).to eql("sample_task")
   end
 
@@ -75,7 +75,7 @@ describe Chef::Resource::WindowsTask do
       expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as a String e.g. '60'.")
     end
 
-    it "converts seconds into iso8601 format" do
+    it "converts seconds into iso8601 duration format" do
       resource.frequency :monthly
       resource.random_delay "60"
       resource.after_created
@@ -84,7 +84,7 @@ describe Chef::Resource::WindowsTask do
   end
 
   context "when execution_time_limit is passed" do
-    it "sets the deafult value as PT72H" do
+    it "sets the default value to PT72H" do
       resource.after_created
       expect(resource.execution_time_limit).to eq("PT72H")
     end
@@ -138,42 +138,42 @@ describe Chef::Resource::WindowsTask do
   context "#validate_create_frequency_modifier" do
     context "when frequency is :minute" do
       it "raises error if frequency_modifier > 1439" do
-        expect { resource.send(:validate_create_frequency_modifier, :minute, 1500) }.to raise_error("frequency_modifier value 1500 is invalid.  Valid values for :minute frequency are 1 - 1439.")
+        expect { resource.send(:validate_create_frequency_modifier, :minute, 1500) }.to raise_error("frequency_modifier value 1500 is invalid. Valid values for :minute frequency are 1 - 1439.")
       end
     end
 
     context "when frequency is :hourly" do
       it "raises error if frequency_modifier > 23" do
-        expect { resource.send(:validate_create_frequency_modifier, :hourly, 24) }.to raise_error("frequency_modifier value 24 is invalid.  Valid values for :hourly frequency are 1 - 23.")
+        expect { resource.send(:validate_create_frequency_modifier, :hourly, 24) }.to raise_error("frequency_modifier value 24 is invalid. Valid values for :hourly frequency are 1 - 23.")
       end
     end
 
     context "when frequency is :daily" do
       it "raises error if frequency_modifier > 365" do
-        expect { resource.send(:validate_create_frequency_modifier, :daily, 366) }.to raise_error("frequency_modifier value 366 is invalid.  Valid values for :daily frequency are 1 - 365.")
+        expect { resource.send(:validate_create_frequency_modifier, :daily, 366) }.to raise_error("frequency_modifier value 366 is invalid. Valid values for :daily frequency are 1 - 365.")
       end
     end
 
     context "when frequency is :weekly" do
       it "raises error if frequency_modifier > 52" do
-        expect { resource.send(:validate_create_frequency_modifier, :weekly, 53) }.to raise_error("frequency_modifier value 53 is invalid.  Valid values for :weekly frequency are 1 - 52.")
+        expect { resource.send(:validate_create_frequency_modifier, :weekly, 53) }.to raise_error("frequency_modifier value 53 is invalid. Valid values for :weekly frequency are 1 - 52.")
       end
     end
 
     context "when frequency is :monthly" do
       it "raises error if frequency_modifier > 12" do
-        expect { resource.send(:validate_create_frequency_modifier, :monthly, 14) }.to raise_error("frequency_modifier value 14 is invalid.  Valid values for :monthly frequency are 1 - 12, 'FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST', 'LASTDAY'.")
+        expect { resource.send(:validate_create_frequency_modifier, :monthly, 14) }.to raise_error("frequency_modifier value 14 is invalid. Valid values for :monthly frequency are 1 - 12, 'FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST', 'LASTDAY'.")
       end
 
       it "raises error if frequency_modifier is invalid" do
-        expect { resource.send(:validate_create_frequency_modifier, :monthly, "abc") }.to raise_error("frequency_modifier value abc is invalid.  Valid values for :monthly frequency are 1 - 12, 'FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST', 'LASTDAY'.")
+        expect { resource.send(:validate_create_frequency_modifier, :monthly, "abc") }.to raise_error("frequency_modifier value abc is invalid. Valid values for :monthly frequency are 1 - 12, 'FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST', 'LASTDAY'.")
       end
     end
   end
 
   context "#validate_create_day" do
     it "raises error if frequency is not :weekly or :monthly" do
-      expect  { resource.send(:validate_create_day, "Mon", :once) }.to raise_error("day attribute is only valid for tasks that run monthly or weekly")
+      expect  { resource.send(:validate_create_day, "Mon", :once) }.to raise_error("day property is only valid for tasks that run monthly or weekly")
     end
 
     it "accepts a valid single day" do
@@ -185,13 +185,13 @@ describe Chef::Resource::WindowsTask do
     end
 
     it "raises error for invalid day value" do
-      expect  { resource.send(:validate_create_day, "xyz", :weekly) }.to raise_error("day attribute invalid.  Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *.  Multiple values must be separated by a comma.")
+      expect  { resource.send(:validate_create_day, "xyz", :weekly) }.to raise_error("day property invalid. Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *. Multiple values must be separated by a comma.")
     end
   end
 
   context "#validate_create_months" do
     it "raises error if frequency is not :monthly" do
-      expect  { resource.send(:validate_create_months, "Jan", :once) }.to raise_error("months attribute is only valid for tasks that run monthly")
+      expect  { resource.send(:validate_create_months, "Jan", :once) }.to raise_error("months property is only valid for tasks that run monthly")
     end
 
     it "accepts a valid single month" do
@@ -203,13 +203,13 @@ describe Chef::Resource::WindowsTask do
     end
 
     it "raises error for invalid month value" do
-      expect  { resource.send(:validate_create_months, "xyz", :monthly) }.to raise_error("months attribute invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma.")
+      expect  { resource.send(:validate_create_months, "xyz", :monthly) }.to raise_error("months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma.")
     end
   end
 
   context "#validate_idle_time" do
     it "raises error if frequency is not :on_idle" do
-      expect  { resource.send(:validate_idle_time, 5, :hourly) }.to raise_error("idle_time attribute is only valid for tasks that run on_idle")
+      expect  { resource.send(:validate_idle_time, 5, :hourly) }.to raise_error("idle_time property is only valid for tasks that run on_idle")
     end
 
     it "raises error if idle_time > 999" do
