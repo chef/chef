@@ -328,12 +328,12 @@ class Chef
         end
 
         options.each do |option|
-          Chef::Log.debug 'Removing former #{option} if any'
+          Chef::Log.debug "Removing former #{option} if any"
           doc.root.elements.delete(xml_element_mapping[option])
           option_value = new_resource.send("#{option}")
 
           if option_value
-            Chef::Log.debug "Setting #option as #option_value"
+            Chef::Log.debug "Setting #{option} as #{option_value}"
             split_xml_path = xml_element_mapping[option].split("/") # eg. if xml_element_mapping[option] = "Actions/Exec/WorkingDirectory"
             element_name = split_xml_path.last # element_name = "WorkingDirectory"
             cwd_element = REXML::Element.new(element_name)
