@@ -16,6 +16,25 @@
 # limitations under the License.
 #
 
+#
+# example of a NodeMap entry for the user resource (as typed on the DSL):
+#
+#  :user=>
+#  [{:value=>Chef::Resource::User::AixUser, :filters=>{:os=>"aix"}},
+#   {:value=>Chef::Resource::User::DsclUser, :filters=>{:os=>"darwin"}},
+#   {:value=>Chef::Resource::User::PwUser, :filters=>{:os=>"freebsd"}},
+#   {:value=>Chef::Resource::User::LinuxUser, :filters=>{:os=>"linux"}},
+#   {:value=>Chef::Resource::User::SolarisUser,
+#    :filters=>{:os=>["omnios", "solaris2"]}},
+#   {:value=>Chef::Resource::User::WindowsUser, :filters=>{:os=>"windows"}}],
+#
+# if a block filter were to appear it would be a :block argument (XXX: turn into a filter?)
+#
+# the entries in the array are pre-sorted into priority order (blocks/platform_version/platform/platform_family/os/none) so that
+# the first entry's :value that matches the filter is returned when doing a get.
+#
+# not that as this examples show filter values may be a scalar string or an array of scalar strings.
+#
 class Chef
   class NodeMap
 
@@ -48,7 +67,10 @@ class Chef
       map[key] ||= []
       map[key].each_with_index do |matcher, index|
         cmp = compare_matchers(key, new_matcher, matcher)
-        insert_at ||= index if cmp && cmp <= 0
+        if cmp && cmp <= 0
+          insert_at = index
+          break
+        end
       end
       if insert_at
         map[key].insert(insert_at, new_matcher)
@@ -72,7 +94,11 @@ class Chef
     #
     def get(node, key, canonical: nil)
       raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
-      list(node, key, canonical: canonical).first
+      return nil unless map.has_key?(key)
+      map[key].map do |matcher|
+        return matcher[:value] if node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
+      end
+      nil
     end
 
     #
@@ -206,14 +232,12 @@ class Chef
       a = yield(new_matcher)
       b = yield(matcher)
 
-      # Check for blcacklists ('!windows'). Those always come *after* positive
+      # Check for blacklists ('!windows'). Those always come *after* positive
       # whitelists.
       a_negated = Array(a).any? { |f| f.is_a?(String) && f.start_with?("!") }
       b_negated = Array(b).any? { |f| f.is_a?(String) && f.start_with?("!") }
-      if a_negated != b_negated
-        return 1 if a_negated
-        return -1 if b_negated
-      end
+      return 1 if a_negated && !b_negated
+      return -1 if b_negated && !a_negated
 
       # We treat false / true and nil / not-nil with the same comparison
       a = nil if a == false
