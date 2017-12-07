@@ -108,12 +108,15 @@ class Chef
         if [:once, :on_logon, :onstart, :on_idle, :none].include? frequency
           raise ArgumentError, "`start_day` property is not supported with frequency: #{frequency}"
         end
+
+        # make sure the start_day is in MM/DD/YYYY format: http://rubular.com/r/cgjHemtWl5
+        raise ArgumentError, "`start_day` property must be in the MM/DD/YYYY format." unless /^(0[1-9]|1[012])[- \/.](0[1-9]|[12][0-9]|3[01])[- \/.](19|20)\d\d$/.match?(start_day)
       end
 
       def validate_start_time(start_time, frequency)
         if start_time
           raise ArgumentError, "`start_time` property is not supported with `frequency :none`" if frequency == :none
-          raise ArgumentError, "`start_time` property must be in the HH:mm format." unless /^[0-2][0-3]:[0-5][0-9]$/ =~ start_time
+          raise ArgumentError, "`start_time` property must be in the HH:mm format." unless /^[0-2][0-3]:[0-5][0-9]$/.match?(start_time)
         else
           raise ArgumentError, "`start_time` needs to be provided with `frequency :once`" if frequency == :once
         end

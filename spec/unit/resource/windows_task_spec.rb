@@ -169,7 +169,7 @@ describe Chef::Resource::WindowsTask do
   context "#validate_start_day" do
     it "raise error if start_day is passed with frequency :on_logon" do
       resource.frequency :on_logon
-      expect { resource.send(:validate_start_day, "Wed", :on_logon) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_day` property is not supported with frequency: on_logon")
+      expect { resource.send(:validate_start_day, "02/07/1984", :on_logon) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_day` property is not supported with frequency: on_logon")
     end
   end
 
