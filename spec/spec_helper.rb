@@ -217,7 +217,7 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
 
   config.before(:each) do
-    Dir.mkdir("/home/travis/.chef")
+    Dir.mkdir("/home/travis/.chef") rescue Errno::EEXIST
   end
 
   config.before(:each) do
