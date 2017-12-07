@@ -139,7 +139,14 @@ shared_examples_for "an execute resource" do
     it "should be true if the password is non-nil but the value is explicitly set to false" do
       @resource.password("we.funk!")
       @resource.sensitive false
-      expect(@resource.sensitive).to eq(true)
+      expect(@resource.sensitive).to eq(false)
+    end
+
+    # added this test to ensure setting of password property after or before sensitive does not matter
+    it "should be false if the sensitive is set before password property" do
+      @resource.sensitive false
+      @resource.password("we.funk!")
+      expect(@resource.sensitive).to eq(false)
     end
 
   end

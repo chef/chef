@@ -133,7 +133,8 @@ class Chef
 
       property :password, String, sensitive: true
 
-      property :sensitive, [ TrueClass, FalseClass ], default: false, coerce: proc { |x| password ? true : x }
+      # lazy used to set default value of sensitive to true if password is set
+      property :sensitive, [ TrueClass, FalseClass ], default: lazy { |r| r.password ? true : false }
 
       property :elevated, [ TrueClass, FalseClass ], default: false
 
