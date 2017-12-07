@@ -219,6 +219,22 @@ describe Chef::Resource::WindowsTask do
 
     it "raises error if idle_time > 999" do
       expect  { resource.send(:validate_idle_time, 1000, :on_idle) }.to raise_error("idle_time value 1000 is invalid. Valid values for :on_idle frequency are 1 - 999.")
+
+  context "#sec_to_dur" do
+    it "return PT1S when passed 1" do
+      expect(resource.send(:sec_to_dur, 1)).to eql("PT1S")
+    end
+    it "return PT24H0S when passed 86400" do
+      expect(resource.send(:sec_to_dur, 86400)).to eql("PT24H0S")
+    end
+    it "return P1DT1S when passed 86401" do
+      expect(resource.send(:sec_to_dur, 86401)).to eql("P1DT1S")
+    end
+    it "return P1DT1M40S when passed 86500" do
+      expect(resource.send(:sec_to_dur, 86500)).to eql("P1DT1M40S")
+    end
+    it "return P1WT1S when passed 604801" do
+      expect(resource.send(:sec_to_dur, 604801)).to eql("P1WT1S")
     end
   end
 end
