@@ -33,7 +33,7 @@
 # the entries in the array are pre-sorted into priority order (blocks/platform_version/platform/platform_family/os/none) so that
 # the first entry's :value that matches the filter is returned when doing a get.
 #
-# not that as this examples show filter values may be a scalar string or an array of scalar strings.
+# note that as this examples show filter values may be a scalar string or an array of scalar strings.
 #
 class Chef
   class NodeMap
