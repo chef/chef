@@ -355,7 +355,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "raises error" do
         subject.frequency_modifier 1450
         subject.frequency :minute
-        expect { subject.after_created }.to raise_error("frequency_modifier value 1450 is invalid.  Valid values for :minute frequency are 1 - 1439.")
+        expect { subject.after_created }.to raise_error("frequency_modifier value 1450 is invalid. Valid values for :minute frequency are 1 - 1439.")
       end
     end
 
@@ -371,7 +371,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "raises error" do
         subject.idle_time 1000
         subject.frequency :on_idle
-        expect { subject.after_created }.to raise_error("idle_time value 1000 is invalid.  Valid values for :on_idle frequency are 1 - 999.")
+        expect { subject.after_created }.to raise_error("idle_time value 1000 is invalid. Valid values for :on_idle frequency are 1 - 999.")
       end
     end
 
