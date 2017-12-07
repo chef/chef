@@ -111,6 +111,11 @@ TEST_PLATFORM = TEST_NODE["platform"]
 TEST_PLATFORM_VERSION = TEST_NODE["platform_version"]
 TEST_PLATFORM_FAMILY = TEST_NODE["platform_family"]
 
+provider_priority_map ||= nil
+resource_priority_map ||= nil
+provider_handler_map ||= nil
+resource_handler_map ||= nil
+
 RSpec.configure do |config|
   config.include(Matchers)
   config.include(MockShellout::RSpec)
@@ -233,6 +238,20 @@ RSpec.configure do |config|
 
     # Set environment variable so the setting persists in child processes
     ENV["CHEF_TREAT_DEPRECATION_WARNINGS_AS_ERRORS"] = "1"
+
+    # we don't perfectly reset the priority/handler maps here, but by dup'ing the top level hash we
+    # throw away all the garbage resources and providers that we setup.  if we mutate something like
+    # :package then that'll carry over from test-to-test, but the solution would be to deep-dup on every
+    # single test we run which is much more expensive.  by throwing away the garbage top level keys we
+    # significantly speed up test runs.
+    provider_handler_map ||= Chef.provider_handler_map.send(:map).dup
+    resource_handler_map ||= Chef.resource_handler_map.send(:map).dup
+    provider_priority_map ||= Chef.provider_priority_map.send(:map).dup
+    resource_priority_map ||= Chef.resource_priority_map.send(:map).dup
+    Chef.provider_handler_map.instance_variable_set(:@map, provider_handler_map.dup)
+    Chef.resource_handler_map.instance_variable_set(:@map, resource_handler_map.dup)
+    Chef.provider_priority_map.instance_variable_set(:@map, provider_priority_map.dup)
+    Chef.resource_priority_map.instance_variable_set(:@map, resource_priority_map.dup)
   end
 
   # raise if anyone commits any test to CI with :focus set on it

@@ -12,7 +12,7 @@ describe "Recipe DSL methods" do
   before { Namer.current_index += 1 }
 
   context "with resource 'base_thingy' declared as BaseThingy" do
-    before(:context) do
+    before(:each) do
 
       class BaseThingy < Chef::Resource
         resource_name "base_thingy"
@@ -66,7 +66,7 @@ describe "Recipe DSL methods" do
     end
 
     context "nameless resources" do
-      before(:context) do
+      before(:each) do
         class NamelessThingy < BaseThingy
           resource_name :nameless_thingy
           provides :nameless_thingy
@@ -91,7 +91,7 @@ describe "Recipe DSL methods" do
       end
 
       context "with a resource named RecipeDSLSpecNamespace::Bar::BarThingy" do
-        before(:context) do
+        before(:each) do
 
           class RecipeDSLSpecNamespace::Bar::BarThingy < BaseThingy
           end
@@ -106,7 +106,7 @@ describe "Recipe DSL methods" do
       end
 
       context "with a resource named Chef::Resource::NoNameThingy with resource_name nil" do
-        before(:context) do
+        before(:each) do
 
           class Chef::Resource::NoNameThingy < BaseThingy
             resource_name nil
@@ -122,7 +122,7 @@ describe "Recipe DSL methods" do
       end
 
       context "with a resource named AnotherNoNameThingy with resource_name :another_thingy_name" do
-        before(:context) do
+        before(:each) do
 
           class AnotherNoNameThingy < BaseThingy
             resource_name :another_thingy_name
@@ -146,7 +146,7 @@ describe "Recipe DSL methods" do
       end
 
       context "with a resource named AnotherNoNameThingy2 with resource_name :another_thingy_name2; resource_name :another_thingy_name3" do
-        before(:context) do
+        before(:each) do
 
           class AnotherNoNameThingy2 < BaseThingy
             resource_name :another_thingy_name2
@@ -178,7 +178,7 @@ describe "Recipe DSL methods" do
 
       context "provides overriding resource_name" do
         context "with a resource named AnotherNoNameThingy3 with provides :another_no_name_thingy3, os: 'blarghle'" do
-          before(:context) do
+          before(:each) do
 
             class AnotherNoNameThingy3 < BaseThingy
               resource_name :another_no_name_thingy_3
@@ -207,7 +207,7 @@ describe "Recipe DSL methods" do
         end
 
         context "with a resource named AnotherNoNameThingy4 with two provides" do
-          before(:context) do
+          before(:each) do
 
             class AnotherNoNameThingy4 < BaseThingy
               resource_name :another_no_name_thingy_4
@@ -247,7 +247,7 @@ describe "Recipe DSL methods" do
         end
 
         context "with a resource named AnotherNoNameThingy5, a different resource_name, and a provides with the original resource_name" do
-          before(:context) do
+          before(:each) do
 
             class AnotherNoNameThingy5 < BaseThingy
               resource_name :another_thingy_name_for_another_no_name_thingy5
@@ -284,7 +284,7 @@ describe "Recipe DSL methods" do
         end
 
         context "with a resource named AnotherNoNameThingy6, a provides with the original resource name, and a different resource_name" do
-          before(:context) do
+          before(:each) do
 
             class AnotherNoNameThingy6 < BaseThingy
               provides :another_no_name_thingy6, os: "blarghle"
@@ -321,7 +321,7 @@ describe "Recipe DSL methods" do
         end
 
         context "with a resource named AnotherNoNameThingy7, a new resource_name, and provides with that new resource name" do
-          before(:context) do
+          before(:each) do
 
             class AnotherNoNameThingy7 < BaseThingy
               resource_name :another_thingy_name_for_another_no_name_thingy7
@@ -359,7 +359,7 @@ describe "Recipe DSL methods" do
 
         # opposite order from the previous test (provides, then resource_name)
         context "with a resource named AnotherNoNameThingy8, a provides with a new resource name, and resource_name with that new resource name" do
-          before(:context) do
+          before(:each) do
 
             class AnotherNoNameThingy8 < BaseThingy
               provides :another_thingy_name_for_another_no_name_thingy8, os: "blarghle"
@@ -399,7 +399,7 @@ describe "Recipe DSL methods" do
 
     context "provides" do
       context "when MySupplier provides :hemlock" do
-        before(:context) do
+        before(:each) do
 
           class RecipeDSLSpecNamespace::MySupplier < BaseThingy
             resource_name :hemlock
@@ -422,7 +422,7 @@ describe "Recipe DSL methods" do
       end
 
       context "when Thingy3 has resource_name :thingy3" do
-        before(:context) do
+        before(:each) do
 
           class RecipeDSLSpecNamespace::Thingy3 < BaseThingy
             resource_name :thingy3
@@ -438,7 +438,7 @@ describe "Recipe DSL methods" do
         end
 
         context "and Thingy4 has resource_name :thingy3" do
-          before(:context) do
+          before(:each) do
 
             class RecipeDSLSpecNamespace::Thingy4 < BaseThingy
               resource_name :thingy3
@@ -466,7 +466,7 @@ describe "Recipe DSL methods" do
       end
 
       context "when Thingy5 has resource_name :thingy5 and provides :thingy5reverse, :thingy5_2 and :thingy5_2reverse" do
-        before(:context) do
+        before(:each) do
 
           class RecipeDSLSpecNamespace::Thingy5 < BaseThingy
             resource_name :thingy5
@@ -485,7 +485,7 @@ describe "Recipe DSL methods" do
         end
 
         context "and Thingy6 provides :thingy5" do
-          before(:context) do
+          before(:each) do
 
             class RecipeDSLSpecNamespace::Thingy6 < BaseThingy
               resource_name :thingy6
@@ -513,7 +513,7 @@ describe "Recipe DSL methods" do
           end
 
           context "and AThingy5 provides :thingy5reverse" do
-            before(:context) do
+            before(:each) do
 
               class RecipeDSLSpecNamespace::AThingy5 < BaseThingy
                 resource_name :thingy5reverse
@@ -530,7 +530,7 @@ describe "Recipe DSL methods" do
           end
 
           context "and ZRecipeDSLSpecNamespace::Thingy5 provides :thingy5_2" do
-            before(:context) do
+            before(:each) do
 
               module ZRecipeDSLSpecNamespace
                 class Thingy5 < BaseThingy
@@ -549,7 +549,7 @@ describe "Recipe DSL methods" do
           end
 
           context "and ARecipeDSLSpecNamespace::Thingy5 provides :thingy5_2" do
-            before(:context) do
+            before(:each) do
 
               module ARecipeDSLSpecNamespace
                 class Thingy5 < BaseThingy
@@ -569,7 +569,7 @@ describe "Recipe DSL methods" do
         end
 
         context "when Thingy3 has resource_name :thingy3" do
-          before(:context) do
+          before(:each) do
 
             class RecipeDSLSpecNamespace::Thingy3 < BaseThingy
               resource_name :thingy3
@@ -585,7 +585,7 @@ describe "Recipe DSL methods" do
           end
 
           context "and Thingy4 has resource_name :thingy3" do
-            before(:context) do
+            before(:each) do
 
               class RecipeDSLSpecNamespace::Thingy4 < BaseThingy
                 resource_name :thingy3
@@ -612,7 +612,7 @@ describe "Recipe DSL methods" do
           end
 
           context "and Thingy4 has resource_name :thingy3" do
-            before(:context) do
+            before(:each) do
 
               class RecipeDSLSpecNamespace::Thingy4 < BaseThingy
                 resource_name :thingy3
@@ -642,7 +642,7 @@ describe "Recipe DSL methods" do
       end
 
       context "when Thingy7 provides :thingy8" do
-        before(:context) do
+        before(:each) do
 
           class RecipeDSLSpecNamespace::Thingy7 < BaseThingy
             resource_name :thingy7
@@ -652,7 +652,7 @@ describe "Recipe DSL methods" do
         end
 
         context "and Thingy8 has resource_name :thingy8" do
-          before(:context) do
+          before(:each) do
 
             class RecipeDSLSpecNamespace::Thingy8 < BaseThingy
               resource_name :thingy8
@@ -681,7 +681,7 @@ describe "Recipe DSL methods" do
       end
 
       context "when Thingy12 provides :thingy12, :twizzle and :twizzle2" do
-        before(:context) do
+        before(:each) do
 
           class RecipeDSLSpecNamespace::Thingy12 < BaseThingy
             resource_name :thingy12
@@ -714,7 +714,7 @@ describe "Recipe DSL methods" do
       end
 
       context "with platform-specific resources 'my_super_thingy_foo' and 'my_super_thingy_bar'" do
-        before(:context) do
+        before(:each) do
           class MySuperThingyFoo < BaseThingy
             resource_name :my_super_thingy_foo
             provides :my_super_thingy, platform: "foo"
@@ -760,7 +760,7 @@ describe "Recipe DSL methods" do
       end
 
       context "when Thingy10 provides :thingy10" do
-        before(:context) do
+        before(:each) do
           class RecipeDSLSpecNamespace::Thingy10 < BaseThingy
             resource_name :thingy10
           end
@@ -775,7 +775,7 @@ describe "Recipe DSL methods" do
       end
 
       context "when Thingy11 provides :thingy11" do
-        before(:context) do
+        before(:each) do
           class RecipeDSLSpecNamespace::Thingy11 < BaseThingy
             resource_name :thingy10
           end
@@ -1309,7 +1309,7 @@ describe "Recipe DSL methods" do
     end
 
     context "with UTF-8 provides" do
-      before(:context) do
+      before(:each) do
         class UTF8Thingy < BaseThingy
           resource_name :Straße
           provides :Straße

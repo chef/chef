@@ -229,7 +229,7 @@ module ResourceActionSpec
       end
 
       context "And 'action_jackgrandson' inheriting from ActionJackson and changing nothing" do
-        before(:context) do
+        before(:each) do
           class ActionJackgrandson < ActionJackson
             use_automatic_resource_name
           end

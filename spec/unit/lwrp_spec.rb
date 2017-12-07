@@ -571,14 +571,16 @@ describe "LWRP" do
 
   context "resource class created" do
     let(:test_lwrp_class) { @test_lwrp_class }
-    before(:context) do
-      @tmpdir = Dir.mktmpdir("lwrp_test")
+    before(:each) do
+      @tmpparent = Dir.mktmpdir("lwrp_test")
+      @tmpdir = File.join(@tmpparent, "lwrp")
+      Dir.mkdir(@tmpdir)
       resource_path = File.join(@tmpdir, "once.rb")
       IO.write(resource_path, "default_action :create")
       @test_lwrp_class = Chef::Resource::LWRPBase.build_from_file("lwrp", resource_path, nil)
     end
 
-    after(:context) do
+    after(:each) do
       FileUtils.remove_entry @tmpdir
     end
 
