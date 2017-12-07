@@ -217,6 +217,10 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
 
   config.before(:each) do
+    Dir.mkdir("/home/travis/.chef")
+  end
+
+  config.before(:each) do
     # it'd be nice to run this with connections blocked or only to localhost, but we do make lots
     # of real connections, so cannot.  we reset it to allow connections every time to avoid
     # tests setting connections to be disabled and that state leaking into other tests.
