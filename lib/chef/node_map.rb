@@ -197,17 +197,17 @@ class Chef
 
     # @api private
     def dispatch_compare_matchers(key, new_matcher, matcher)
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:block] }
+      cmp = compare_matcher_properties(new_matcher[:block], matcher[:block])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform_version] }
+      cmp = compare_matcher_properties(new_matcher[:filters][:platform_version], matcher[:filters][:platform_version])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform] }
+      cmp = compare_matcher_properties(new_matcher[:filters][:platform], matcher[:filters][:platform])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform_family] }
+      cmp = compare_matcher_properties(new_matcher[:filters][:platform_family], matcher[:filters][:platform_family])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:os] }
+      cmp = compare_matcher_properties(new_matcher[:filters][:os], matcher[:filters][:os])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:override] }
+      cmp = compare_matcher_properties(new_matcher[:override], matcher[:override])
       return cmp if cmp != 0
       # If all things are identical, return 0
       0
@@ -228,9 +228,14 @@ class Chef
       cmp
     end
 
-    def compare_matcher_properties(new_matcher, matcher)
-      a = yield(new_matcher)
-      b = yield(matcher)
+    def compare_matcher_properties(a, b)
+      # We treat false / true and nil / not-nil with the same comparison
+      a = nil if a == false
+      b = nil if b == false
+
+      return 1 if a.nil? && !b.nil?
+      return -1 if b.nil? && !a.nil?
+      return 0 if a.nil? && b.nil?
 
       # Check for blacklists ('!windows'). Those always come *after* positive
       # whitelists.
@@ -239,17 +244,7 @@ class Chef
       return 1 if a_negated && !b_negated
       return -1 if b_negated && !a_negated
 
-      # We treat false / true and nil / not-nil with the same comparison
-      a = nil if a == false
-      b = nil if b == false
-      cmp = a <=> b
-      # This is the case where one is non-nil, and one is nil. The one that is
-      # nil is "greater" (i.e. it should come last).
-      if cmp.nil?
-        return 1 if a.nil?
-        return -1 if b.nil?
-      end
-      cmp
+      a <=> b
     end
 
     def map
