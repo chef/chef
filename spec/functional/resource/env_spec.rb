@@ -25,6 +25,20 @@ describe Chef::Resource::Env, :windows_only do
     let(:env_dne_key) { "env_dne_key" }
     let(:env_value1) { "value1" }
     let(:env_value2) { "value2" }
+    let(:env_user) { ENV["USERNAME"].upcase }
+    let(:default_env_user) { "<SYSTEM>" }
+
+    let(:env_obj) do
+      wmi = WmiLite::Wmi.new
+      environment_variables = wmi.query("select * from Win32_Environment where name = '#{test_resource.key_name}'")
+      if environment_variables && environment_variables.length > 0
+        environment_variables.each do |env|
+          @env_obj = env.wmi_ole_object
+          return @env_obj if @env_obj.username.split('\\').last.casecmp(test_resource.user) == 0
+        end
+      end
+      @env_obj = nil
+    end
 
     let(:env_value_expandable) { "%SystemRoot%" }
     let(:test_run_context) do
@@ -42,7 +56,13 @@ describe Chef::Resource::Env, :windows_only do
     before(:each) do
       resource_lower = Chef::Resource::Env.new(chef_env_test_lower_case, test_run_context)
       resource_lower.run_action(:delete)
+      resource_lower = Chef::Resource::Env.new(chef_env_test_lower_case, test_run_context)
+      resource_lower.user(env_user)
+      resource_lower.run_action(:delete)
       resource_mixed = Chef::Resource::Env.new(chef_env_test_mixed_case, test_run_context)
+      resource_mixed.run_action(:delete)
+      resource_mixed = Chef::Resource::Env.new(chef_env_test_mixed_case, test_run_context)
+      resource_lower.user(env_user)
       resource_mixed.run_action(:delete)
     end
 
@@ -55,6 +75,25 @@ describe Chef::Resource::Env, :windows_only do
         expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
       end
 
+      it "should create an environment variable with default user System for action create" do
+        expect(ENV[chef_env_test_lower_case]).to eq(nil)
+        test_resource.key_name(chef_env_test_lower_case)
+        test_resource.value(env_value1)
+        test_resource.run_action(:create)
+        env_obj
+        expect(@env_obj.username.upcase).to eq(default_env_user)
+      end
+
+      it "should create an environment variable with user for action create" do
+        expect(ENV[chef_env_test_lower_case]).to eq(nil)
+        test_resource.key_name(chef_env_test_lower_case)
+        test_resource.value(env_value1)
+        test_resource.user(env_user)
+        test_resource.run_action(:create)
+        env_obj
+        expect(@env_obj.username.split('\\').last.upcase).to eq(env_user)
+      end
+
       it "should modify an existing variable's value to a new value" do
         test_resource.key_name(chef_env_test_lower_case)
         test_resource.value(env_value1)
@@ -63,6 +102,20 @@ describe Chef::Resource::Env, :windows_only do
         test_resource.value(env_value2)
         test_resource.run_action(:create)
         expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
+      end
+
+      it "should not modify an existing variable's value to a new value if the user are diff" do
+        test_resource.key_name(chef_env_test_lower_case)
+        test_resource.value(env_value1)
+        test_resource.run_action(:create)
+        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+        test_resource.value(env_value2)
+        test_resource.user(env_user)
+        test_resource.run_action(:create)
+        test_resource.key_name(chef_env_test_lower_case)
+        test_resource.user(default_env_user)
+        env_obj
+        expect(@env_obj.variablevalue).to eq(env_value1)
       end
 
       it "should modify an existing variable's value to a new value if the variable name case differs from the existing variable" do
@@ -152,13 +205,49 @@ describe Chef::Resource::Env, :windows_only do
     end
 
     context "when the delete action is invoked" do
-      it "should delete an environment variable" do
+      it "should delete a System environment variable" do
         test_resource.key_name(chef_env_test_lower_case)
         test_resource.value(env_value1)
         test_resource.run_action(:create)
         expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
         test_resource.run_action(:delete)
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
+      end
+
+      it "should delete a user environment variable" do
+        test_resource.key_name(chef_env_test_lower_case)
+        test_resource.value(env_value1)
+        test_resource.user(env_user)
+        test_resource.run_action(:create)
+        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+        test_resource.run_action(:delete)
+        env_obj
+        expect(@env_obj).to eq(nil)
+      end
+
+      it "should not delete an user environment variable if user are not passed" do
+        test_resource.key_name(chef_env_test_lower_case)
+        test_resource.value(env_value1)
+        test_resource.user(env_user)
+        test_resource.run_action(:create)
+        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+        test_resource.user(default_env_user)
+        test_resource.run_action(:delete)
+        test_resource.user(env_user)
+        env_obj
+        expect(@env_obj).not_to be_nil
+      end
+
+      it "should not delete an System environment variable if user are passed" do
+        test_resource.key_name(chef_env_test_lower_case)
+        test_resource.value(env_value1)
+        test_resource.run_action(:create)
+        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+        test_resource.user(env_user)
+        test_resource.run_action(:delete)
+        test_resource.user(default_env_user)
+        env_obj
+        expect(@env_obj).not_to be_nil
       end
 
       it "should not raise an exception when a non-existent environment variable is deleted" do
@@ -180,13 +269,6 @@ describe Chef::Resource::Env, :windows_only do
         expect(ENV[chef_env_test_mixed_case]).to eq(nil)
       end
 
-      it "should delete a value from the current process even if it is not in the registry" do
-        expect(ENV[env_dne_key]).to eq(nil)
-        ENV[env_dne_key] = env_value1
-        test_resource.key_name(env_dne_key)
-        test_resource.run_action(:delete)
-        expect(ENV[env_dne_key]).to eq(nil)
-      end
     end
   end
 end
