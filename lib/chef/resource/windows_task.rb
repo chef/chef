@@ -59,7 +59,7 @@ class Chef
       property :months, String
       property :idle_time, Integer
       property :random_delay, [String, Integer]
-      property :execution_time_limit, [String, Integer], default: "PT72H"
+      property :execution_time_limit, [String, Integer], default: "PT72H" # 72 hours in ISO08601 duration format
 
       attr_accessor :exists, :status, :enabled
 
