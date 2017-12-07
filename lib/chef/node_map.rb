@@ -221,21 +221,19 @@ class Chef
       if cmp == 0
         # Sort by class name (ascending) as well, if all other properties
         # are exactly equal
+        # XXX: remove this in Chef-14 and use last-writer-wins (prepend if they match)
         if new_matcher[:value].is_a?(Class) && !new_matcher[:override]
-          cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:value].name }
+          cmp = compare_matcher_properties(new_matcher[:value].name, matcher[:value].name)
         end
       end
       cmp
     end
 
     def compare_matcher_properties(a, b)
-      # We treat false / true and nil / not-nil with the same comparison
-      a = nil if a == false
-      b = nil if b == false
-
-      return 1 if a.nil? && !b.nil?
-      return -1 if b.nil? && !a.nil?
-      return 0 if a.nil? && b.nil?
+      # falsity comparisons here handle both "nil" and "false"
+      return 1 if !a && b
+      return -1 if !b && a
+      return 0 if !a && !b
 
       # Check for blacklists ('!windows'). Those always come *after* positive
       # whitelists.

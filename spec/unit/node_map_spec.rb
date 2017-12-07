@@ -119,6 +119,22 @@ describe Chef::NodeMap do
     end
   end
 
+  describe "ordering classes" do
+    class Foo; end
+    class Bar; end
+    it "orders them alphabetically when they're set in the reverse order" do
+      node_map.set(:thing, Foo)
+      node_map.set(:thing, Bar)
+      expect(node_map.get(node, :thing)).to eql(Bar)
+    end
+
+    it "orders them alphabetically when they're set in alphabetic order" do
+      node_map.set(:thing, Bar)
+      node_map.set(:thing, Foo)
+      expect(node_map.get(node, :thing)).to eql(Bar)
+    end
+  end
+
   describe "with a block doing platform_version checks" do
     before do
       node_map.set(:thing, :foo, platform_family: "rhel") do |node|
