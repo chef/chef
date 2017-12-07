@@ -72,7 +72,7 @@ class Chef
 
         if execution_time_limit
           unless execution_time_limit == "PT72H" # don't double convert an iso08601 format duration
-            raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds an Integer or a String with numeric values only e.g. '60'." unless numeric_value_in_string?(execution_time_limit)
+            raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60')." unless numeric_value_in_string?(execution_time_limit)
             duration = sec_to_dur(execution_time_limit)
             execution_time_limit(duration)
           end
@@ -101,7 +101,7 @@ class Chef
           raise ArgumentError, "`random_delay` property is supported only for frequency :minute, :hourly, :daily, :weekly and :monthly"
         end
 
-        raise ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds an Integer or a String with numeric values only e.g. '60'." unless numeric_value_in_string?(random_delay)
+        raise ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60')." unless numeric_value_in_string?(random_delay)
       end
 
       def validate_start_day(start_day, frequency)

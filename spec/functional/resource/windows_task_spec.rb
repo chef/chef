@@ -308,7 +308,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "raises error if invalid random_delay is passed" do
         subject.frequency :minute
         subject.random_delay "abc"
-        expect { subject.after_created }.to raise_error("Invalid value passed for `random_delay`. Please pass seconds as a String e.g. '60'.")
+        expect { subject.after_created }.to raise_error("Invalid value passed for `random_delay`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60').")
       end
 
       it "raises error if random_delay is passed with frequency on_idle" do

@@ -89,13 +89,13 @@ describe Chef::Resource::WindowsTask do
     it "raises error for invalid random_delay" do
       resource.frequency :monthly
       resource.random_delay "xyz"
-      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds an Integer or a String with numeric values only e.g. '60'.")
+      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60').")
     end
 
     it "raises error for invalid random_delay which looks like an Integer" do
       resource.frequency :monthly
       resource.random_delay "5,000"
-      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds an Integer or a String with numeric values only e.g. '60'.")
+      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60').")
     end
 
     it "converts seconds String into iso8601 duration format" do
@@ -123,12 +123,12 @@ describe Chef::Resource::WindowsTask do
   context "when execution_time_limit is passed" do
     it "raises error for invalid execution_time_limit" do
       resource.execution_time_limit "abc"
-      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds an Integer or a String with numeric values only e.g. '60'.")
+      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60').")
     end
 
     it "raises error for invalid execution_time_limit that looks like an Integer" do
       resource.execution_time_limit "5,000"
-      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds an Integer or a String with numeric values only e.g. '60'.")
+      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60').")
     end
 
     it "converts seconds Integer into iso8601 format" do
