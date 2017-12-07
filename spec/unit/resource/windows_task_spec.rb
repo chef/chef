@@ -167,9 +167,28 @@ describe Chef::Resource::WindowsTask do
   end
 
   context "#validate_start_day" do
-    it "raise error if start_day is passed with frequency :on_logon" do
-      resource.frequency :on_logon
+    it "raise error if start_day is passed with invalid frequency (:on_logon)" do
       expect { resource.send(:validate_start_day, "02/07/1984", :on_logon) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_day` property is not supported with frequency: on_logon")
+    end
+
+    it "does not raise error if start_day is passed with valid frequency (:weekly)" do
+      expect { resource.send(:validate_start_day, "02/07/1984", :weekly) }.not_to raise_error
+    end
+
+    it "raise error if start_day is passed with invalid date format (DD/MM/YYYY)" do
+      expect { resource.send(:validate_start_day, "28/12/2009", :weekly) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_day` property must be in the MM/DD/YYYY format.")
+    end
+
+    it "raise error if start_day is passed with invalid date format (M/DD/YYYY)" do
+      expect { resource.send(:validate_start_day, "2/07/1984", :weekly) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_day` property must be in the MM/DD/YYYY format.")
+    end
+
+    it "raise error if start_day is passed with invalid date format (MM/D/YYYY)" do
+      expect { resource.send(:validate_start_day, "02/7/1984", :weekly) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_day` property must be in the MM/DD/YYYY format.")
+    end
+
+    it "raise error if start_day is passed with invalid date format (MM/DD/YY)" do
+      expect { resource.send(:validate_start_day, "02/07/84", :weekly) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_day` property must be in the MM/DD/YYYY format.")
     end
   end
 
