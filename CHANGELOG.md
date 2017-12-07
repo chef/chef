@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.26 -->
-## [v13.6.26](https://github.com/chef/chef/tree/v13.6.26) (2017-12-06)
+<!-- latest_release 13.6.27 -->
+## [v13.6.27](https://github.com/chef/chef/tree/v13.6.27) (2017-12-07)
 
 #### Merged Pull Requests
-- Improved windows_task logging [#6617](https://github.com/chef/chef/pull/6617) ([tas50](https://github.com/tas50))
+- Update for openssl 1.0.2n and inspec 1.48 [#6630](https://github.com/chef/chef/pull/6630) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Update for openssl 1.0.2n and inspec 1.48 [#6630](https://github.com/chef/chef/pull/6630) ([tas50](https://github.com/tas50)) <!-- 13.6.27 -->
 - Improved windows_task logging [#6617](https://github.com/chef/chef/pull/6617) ([tas50](https://github.com/tas50)) <!-- 13.6.26 -->
 - Update InSpec to 1.47 and Ohai to 13.7 [#6616](https://github.com/chef/chef/pull/6616) ([tas50](https://github.com/tas50)) <!-- 13.6.25 -->
 - Add openSUSE testing in Travis &amp; expand cookbooks we test [#6614](https://github.com/chef/chef/pull/6614) ([tas50](https://github.com/tas50)) <!-- 13.6.24 -->
