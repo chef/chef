@@ -119,15 +119,14 @@ class Chef
       SYSTEM_USERS = ['NT AUTHORITY\SYSTEM', "SYSTEM", 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', "USERS"].freeze
 
       def validate_user_and_password(user, password)
-        if user && use_password?(user)
-          if password.nil?
-            raise ArgumentError, "Cannot specify a user other than the 'SYSTEM' user without specifying a password!"
-          end
+        if password_required?(user) && password.nil?
+          raise ArgumentError, %q{Cannot specify a user other than the system users without specifying a password!. Valid passwordless users: 'NT AUTHORITY\SYSTEM', 'SYSTEM', 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', 'USERS'}
         end
       end
 
-      def use_password?(user)
-        @use_password ||= !SYSTEM_USERS.include?(user.upcase)
+      def password_required?(user)
+        return false if user.nil?
+        @password_required ||= !SYSTEM_USERS.include?(user.upcase)
       end
 
       def validate_interactive_setting(interactive_enabled, password)
@@ -198,7 +197,7 @@ class Chef
         end
 
         unless idle_time.to_i > 0 && idle_time.to_i <= 999
-          raise "idle_time value #{idle_time} is invalid.  Valid values for :on_idle frequency are 1 - 999."
+          raise "idle_time value #{idle_time} is invalid. Valid values for :on_idle frequency are 1 - 999."
         end
       end
 

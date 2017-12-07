@@ -62,6 +62,18 @@ describe Chef::Resource::WindowsTask do
     expect(resource.frequency).to eql(:hourly)
   end
 
+  context "when user is set but password is not" do
+    it "raises an error if the user is a non-system user" do
+      resource.user "bob"
+      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, %q{Cannot specify a user other than the system users without specifying a password!. Valid passwordless users: 'NT AUTHORITY\SYSTEM', 'SYSTEM', 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', 'USERS'})
+    end
+
+    it "does not raise an error if the user is a system user" do
+      resource.user 'NT AUTHORITY\SYSTEM'
+      expect { resource.after_created }.to_not raise_error(Chef::Exceptions::ArgumentError)
+    end
+  end
+
   context "when random_delay is passed" do
     it "raises error if frequency is `:once`" do
       resource.frequency :once
@@ -83,12 +95,14 @@ describe Chef::Resource::WindowsTask do
     end
   end
 
-  context "when execution_time_limit is passed" do
+  context "when execution_time_limit isn't specified" do
     it "sets the default value to PT72H" do
       resource.after_created
       expect(resource.execution_time_limit).to eq("PT72H")
     end
+  end
 
+  context "when execution_time_limit is passed" do
     it "raises error for invalid execution_time_limit" do
       resource.execution_time_limit "abc"
       expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as a String e.g. '60'.")
@@ -117,15 +131,6 @@ describe Chef::Resource::WindowsTask do
     it "raise error if start_day is passed with frequency :on_logon" do
       resource.frequency :on_logon
       expect { resource.send(:validate_start_day, "Wed", :on_logon) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_day` property is not supported with frequency: on_logon")
-    end
-  end
-
-  context "#validate_user_and_password" do
-    context "when password is not passed" do
-      it "raises error with non-system users" do
-        allow(resource).to receive(:use_password?).and_return(true)
-        expect { resource.send(:validate_user_and_password, "Testuser", nil) }.to raise_error("Cannot specify a user other than the 'SYSTEM' user without specifying a password!")
-      end
     end
   end
 
@@ -213,7 +218,7 @@ describe Chef::Resource::WindowsTask do
     end
 
     it "raises error if idle_time > 999" do
-      expect  { resource.send(:validate_idle_time, 1000, :on_idle) }.to raise_error("idle_time value 1000 is invalid.  Valid values for :on_idle frequency are 1 - 999.")
+      expect  { resource.send(:validate_idle_time, 1000, :on_idle) }.to raise_error("idle_time value 1000 is invalid. Valid values for :on_idle frequency are 1 - 999.")
     end
   end
 end
