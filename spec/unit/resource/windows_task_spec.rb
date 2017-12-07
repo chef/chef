@@ -89,12 +89,25 @@ describe Chef::Resource::WindowsTask do
     it "raises error for invalid random_delay" do
       resource.frequency :monthly
       resource.random_delay "xyz"
-      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as a String e.g. '60'.")
+      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds an Integer or a String with numeric values only e.g. '60'.")
     end
 
-    it "converts seconds into iso8601 duration format" do
+    it "raises error for invalid random_delay which looks like an Integer" do
+      resource.frequency :monthly
+      resource.random_delay "5,000"
+      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds an Integer or a String with numeric values only e.g. '60'.")
+    end
+
+    it "converts seconds String into iso8601 duration format" do
       resource.frequency :monthly
       resource.random_delay "60"
+      resource.after_created
+      expect(resource.random_delay).to eq("PT60S")
+    end
+
+    it "converts seconds Integer into iso8601 duration format" do
+      resource.frequency :monthly
+      resource.random_delay 60
       resource.after_created
       expect(resource.random_delay).to eq("PT60S")
     end
@@ -110,10 +123,21 @@ describe Chef::Resource::WindowsTask do
   context "when execution_time_limit is passed" do
     it "raises error for invalid execution_time_limit" do
       resource.execution_time_limit "abc"
-      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as a String e.g. '60'.")
+      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds an Integer or a String with numeric values only e.g. '60'.")
     end
 
-    it "converts seconds into iso8601 format" do
+    it "raises error for invalid execution_time_limit that looks like an Integer" do
+      resource.execution_time_limit "5,000"
+      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds an Integer or a String with numeric values only e.g. '60'.")
+    end
+
+    it "converts seconds Integer into iso8601 format" do
+      resource.execution_time_limit 60
+      resource.after_created
+      expect(resource.execution_time_limit).to eq("PT60S")
+    end
+
+    it "converts seconds String into iso8601 format" do
       resource.execution_time_limit "60"
       resource.after_created
       expect(resource.execution_time_limit).to eq("PT60S")
@@ -205,35 +229,37 @@ describe Chef::Resource::WindowsTask do
     end
 
     it "raises error for invalid day value" do
-      expect  { resource.send(:validate_create_day, "xyz", :weekly) }.to raise_error("day property invalid. Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *. Multiple values must be separated by a comma.")
+      expect  { resource.send(:validate_create_day, "xyz", :weekly) }.to raise_error(Chef::Exceptions::RuntimeError, "day property invalid. Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *. Multiple values must be separated by a comma.")
     end
   end
 
   context "#validate_create_months" do
     it "raises error if frequency is not :monthly" do
-      expect  { resource.send(:validate_create_months, "Jan", :once) }.to raise_error("months property is only valid for tasks that run monthly")
+      expect  { resource.send(:validate_create_months, "Jan", :once) }.to raise_error(Chef::Exceptions::RuntimeError, "months property is only valid for tasks that run monthly")
     end
 
     it "accepts a valid single month" do
-      expect  { resource.send(:validate_create_months, "Feb", :monthly) }.not_to raise_error
+      expect  { resource.send(:validate_create_months, "Feb", :monthly) }.not_to raise_error(Chef::Exceptions::ArgumentError)
     end
 
     it "accepts a comma separated list of valid months" do
-      expect  { resource.send(:validate_create_months, "Jan, mar, AUG", :monthly) }.not_to raise_error
+      expect  { resource.send(:validate_create_months, "Jan, mar, AUG", :monthly) }.not_to raise_error(Chef::Exceptions::ArgumentError)
     end
 
     it "raises error for invalid month value" do
-      expect  { resource.send(:validate_create_months, "xyz", :monthly) }.to raise_error("months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma.")
+      expect  { resource.send(:validate_create_months, "xyz", :monthly) }.to raise_error(Chef::Exceptions::RuntimeError, "months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma.")
     end
   end
 
   context "#validate_idle_time" do
     it "raises error if frequency is not :on_idle" do
-      expect  { resource.send(:validate_idle_time, 5, :hourly) }.to raise_error("idle_time property is only valid for tasks that run on_idle")
+      expect  { resource.send(:validate_idle_time, 5, :hourly) }.to raise_error(Chef::Exceptions::RuntimeError, "idle_time property is only valid for tasks that run on_idle")
     end
 
     it "raises error if idle_time > 999" do
-      expect  { resource.send(:validate_idle_time, 1000, :on_idle) }.to raise_error("idle_time value 1000 is invalid. Valid values for :on_idle frequency are 1 - 999.")
+      expect  { resource.send(:validate_idle_time, 1000, :on_idle) }.to raise_error(Chef::Exceptions::RuntimeError, "idle_time value 1000 is invalid. Valid values for :on_idle frequency are 1 - 999.")
+    end
+  end
 
   context "#sec_to_dur" do
     it "return PT1S when passed 1" do

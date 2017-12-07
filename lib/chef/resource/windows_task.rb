@@ -44,22 +44,22 @@ class Chef
       property :interactive_enabled, [TrueClass, FalseClass], default: false
       property :frequency_modifier, [Integer, String], default: 1
       property :frequency, equal_to: [:minute,
-                                       :hourly,
-                                       :daily,
-                                       :weekly,
-                                       :monthly,
-                                       :once,
-                                       :on_logon,
-                                       :onstart,
-                                       :on_idle,
-                                       :none], default: :hourly
+                                      :hourly,
+                                      :daily,
+                                      :weekly,
+                                      :monthly,
+                                      :once,
+                                      :on_logon,
+                                      :onstart,
+                                      :on_idle,
+                                      :none], default: :hourly
       property :start_day, String
       property :start_time, String
       property :day, [String, Integer]
       property :months, String
       property :idle_time, Integer
-      property :random_delay, String
-      property :execution_time_limit, String
+      property :random_delay, [String, Integer]
+      property :execution_time_limit, [String, Integer], default: "PT72H"
 
       attr_accessor :exists, :status, :enabled
 
@@ -71,15 +71,11 @@ class Chef
         end
 
         if execution_time_limit
-          raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as a String e.g. '60'." if execution_time_limit.to_i == 0
-          duration = sec_to_dur(execution_time_limit)
-          execution_time_limit(duration)
-        else
-          # schtask sets execution_time_limit as PT72H by default
-          # We are setting the default value here so that we can do idempotency check later
-          # Note: We can't use `default` in the property
-          # because it will raise error for Invalid values passed as "PT72H" is not in seconds
-          execution_time_limit("PT72H")
+          unless execution_time_limit == "PT72H" # don't double convert an iso08601 format duration
+            raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds an Integer or a String with numeric values only e.g. '60'." unless numeric_value_in_string?(execution_time_limit)
+            duration = sec_to_dur(execution_time_limit)
+            execution_time_limit(duration)
+          end
         end
 
         validate_start_time(start_time, frequency)
@@ -94,12 +90,18 @@ class Chef
 
       private
 
+      # Validate the passed value is numeric values only if it is a string
+      def numeric_value_in_string?(val)
+        return false if val.is_a?(String) && /\D/ =~ val # \D is any non-numeric value
+        true
+      end
+
       def validate_random_delay(random_delay, frequency)
         if [:once, :on_logon, :onstart, :on_idle, :none].include? frequency
           raise ArgumentError, "`random_delay` property is supported only for frequency :minute, :hourly, :daily, :weekly and :monthly"
         end
 
-        raise ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as a String e.g. '60'." if random_delay.to_i == 0
+        raise ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds an Integer or a String with numeric values only e.g. '60'." unless numeric_value_in_string?(random_delay)
       end
 
       def validate_start_day(start_day, frequency)
@@ -197,7 +199,7 @@ class Chef
           raise "idle_time property is only valid for tasks that run on_idle"
         end
 
-        unless idle_time.to_i > 0 && idle_time.to_i <= 999
+        unless idle_time > 0 && idle_time <= 999
           raise "idle_time value #{idle_time} is invalid. Valid values for :on_idle frequency are 1 - 999."
         end
       end
