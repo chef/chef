@@ -72,6 +72,11 @@ describe Chef::Resource::WindowsTask do
       resource.user 'NT AUTHORITY\SYSTEM'
       expect { resource.after_created }.to_not raise_error(Chef::Exceptions::ArgumentError)
     end
+
+    it "does not raise an error if the user is a system user even if lowercase" do
+      resource.user 'nt authority\system'
+      expect { resource.after_created }.to_not raise_error(Chef::Exceptions::ArgumentError)
+    end
   end
 
   context "when random_delay is passed" do
