@@ -109,10 +109,11 @@ class Chef
       end
 
       def validate_start_time(start_time, frequency)
-        if frequency == :once
-          raise ArgumentError, "`start_time` needs to be provided with `frequency :once`" unless start_time
-        elsif frequency == :none
-          raise ArgumentError, "`start_time` property is not supported with `frequency :none`" if start_time
+        if start_time
+          raise ArgumentError, "`start_time` property is not supported with `frequency :none`" if frequency == :none
+          raise ArgumentError, "`start_time` property must be in the HH:mm format." unless /^[0-2][0-3]:[0-5][0-9]$/ =~ start_time
+        else
+          raise ArgumentError, "`start_time` needs to be provided with `frequency :once`" if frequency == :once
         end
       end
 

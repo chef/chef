@@ -130,6 +130,16 @@ describe Chef::Resource::WindowsTask do
       resource.frequency :none
       expect { resource.send(:validate_start_time, "12.00", :none) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_time` property is not supported with `frequency :none`")
     end
+
+    it "raises error if start_time is not HH:mm format" do
+      resource.frequency :once
+      expect { resource.send(:validate_start_time, "2:30", :once) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_time` property must be in the HH:mm format.")
+    end
+
+    it "does not raise error if start_time is in HH:mm format" do
+      resource.frequency :once
+      expect { resource.send(:validate_start_time, "12:30", :once) }.not_to raise_error
+    end
   end
 
   context "#validate_start_day" do
