@@ -327,7 +327,6 @@ matrix:
       - cat /tmp/out.txt
       - sudo cat /var/log/squid3/cache.log
       - sudo cat /var/log/squid3/access.log
-  allow_failures:
   - rvm: 2.4.2
     services: docker
     sudo: required
