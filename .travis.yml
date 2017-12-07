@@ -89,6 +89,10 @@ matrix:
       TEST_GEM: poise/poise
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec
     rvm: 2.4.2
+  - env:
+      TEST_GEM: chef/knife-windows
+    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake unit_spec
+    rvm: 2.4.2
   ### START TEST KITCHEN ONLY ###
   #
   - rvm: 2.4.2
@@ -327,32 +331,6 @@ matrix:
       - cat /tmp/out.txt
       - sudo cat /var/log/squid3/cache.log
       - sudo cat /var/log/squid3/access.log
-  allow_failures:
-  - rvm: 2.4.2
-    services: docker
-    sudo: required
-    gemfile: kitchen-tests/Gemfile
-    before_install:
-      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
-    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
-    before_script:
-      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-      - cd kitchen-tests
-    script:
-      - travis_wait bundle exec kitchen test base-amazonlinux
-    after_failure:
-      - cat .kitchen/logs/kitchen.log
-    env:
-      - AMAZONLINUX=LATEST
-      - KITCHEN_YAML=.kitchen.travis.yml
-  # this has been broken for some time and running incorrectly, see:
-  #
-  # see https://github.com/chef/knife-windows/pull/421
-  - env:
-      TEST_GEM: chef/knife-windows
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake unit_spec
-    rvm: 2.4.2
 
 notifications:
   on_change: true
