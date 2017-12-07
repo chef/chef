@@ -339,7 +339,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "raises error" do
         subject.user "Administrator"
         subject.frequency :onstart
-        expect { subject.after_created }.to raise_error("Can't specify a non-system user without a password!")
+        expect { subject.after_created }.to raise_error(%q{Cannot specify a user other than the system users without specifying a password!. Valid passwordless users: 'NT AUTHORITY\SYSTEM', 'SYSTEM', 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', 'USERS'})
       end
     end
 
@@ -363,7 +363,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "raises error" do
         subject.months "xyz"
         subject.frequency :monthly
-        expect { subject.after_created }.to raise_error("months attribute invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma.")
+        expect { subject.after_created }.to raise_error("months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma.")
       end
     end
 
@@ -379,7 +379,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "raises error" do
         subject.idle_time 300
         subject.frequency :monthly
-        expect { subject.after_created }.to raise_error("idle_time attribute is only valid for tasks that run on_idle")
+        expect { subject.after_created }.to raise_error("idle_time property is only valid for tasks that run on_idle")
       end
     end
   end
