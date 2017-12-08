@@ -92,8 +92,9 @@ class Chef
 
       # Validate the passed value is numeric values only if it is a string
       def numeric_value_in_string?(val)
-        return false if val.is_a?(String) && /\D/ =~ val # \D is any non-numeric value
-        true
+        return true if Integer(val)
+      rescue ArgumentError
+        false
       end
 
       def validate_random_delay(random_delay, frequency)
