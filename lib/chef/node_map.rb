@@ -16,6 +16,25 @@
 # limitations under the License.
 #
 
+#
+# example of a NodeMap entry for the user resource (as typed on the DSL):
+#
+#  :user=>
+#  [{:value=>Chef::Resource::User::AixUser, :filters=>{:os=>"aix"}},
+#   {:value=>Chef::Resource::User::DsclUser, :filters=>{:os=>"darwin"}},
+#   {:value=>Chef::Resource::User::PwUser, :filters=>{:os=>"freebsd"}},
+#   {:value=>Chef::Resource::User::LinuxUser, :filters=>{:os=>"linux"}},
+#   {:value=>Chef::Resource::User::SolarisUser,
+#    :filters=>{:os=>["omnios", "solaris2"]}},
+#   {:value=>Chef::Resource::User::WindowsUser, :filters=>{:os=>"windows"}}],
+#
+# if a block filter were to appear it would be a :block argument (XXX: turn into a filter?)
+#
+# the entries in the array are pre-sorted into priority order (blocks/platform_version/platform/platform_family/os/none) so that
+# the first entry's :value that matches the filter is returned when doing a get.
+#
+# note that as this examples show filter values may be a scalar string or an array of scalar strings.
+#
 class Chef
   class NodeMap
 
@@ -48,7 +67,10 @@ class Chef
       map[key] ||= []
       map[key].each_with_index do |matcher, index|
         cmp = compare_matchers(key, new_matcher, matcher)
-        insert_at ||= index if cmp && cmp <= 0
+        if cmp && cmp <= 0
+          insert_at = index
+          break
+        end
       end
       if insert_at
         map[key].insert(insert_at, new_matcher)
@@ -72,7 +94,11 @@ class Chef
     #
     def get(node, key, canonical: nil)
       raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
-      list(node, key, canonical: canonical).first
+      return nil unless map.has_key?(key)
+      map[key].map do |matcher|
+        return matcher[:value] if node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
+      end
+      nil
     end
 
     #
@@ -171,17 +197,17 @@ class Chef
 
     # @api private
     def dispatch_compare_matchers(key, new_matcher, matcher)
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:block] }
+      cmp = compare_matcher_properties(new_matcher[:block], matcher[:block])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform_version] }
+      cmp = compare_matcher_properties(new_matcher[:filters][:platform_version], matcher[:filters][:platform_version])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform] }
+      cmp = compare_matcher_properties(new_matcher[:filters][:platform], matcher[:filters][:platform])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform_family] }
+      cmp = compare_matcher_properties(new_matcher[:filters][:platform_family], matcher[:filters][:platform_family])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:os] }
+      cmp = compare_matcher_properties(new_matcher[:filters][:os], matcher[:filters][:os])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:override] }
+      cmp = compare_matcher_properties(new_matcher[:override], matcher[:override])
       return cmp if cmp != 0
       # If all things are identical, return 0
       0
@@ -195,37 +221,28 @@ class Chef
       if cmp == 0
         # Sort by class name (ascending) as well, if all other properties
         # are exactly equal
+        # XXX: remove this in Chef-14 and use last-writer-wins (prepend if they match)
         if new_matcher[:value].is_a?(Class) && !new_matcher[:override]
-          cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:value].name }
+          cmp = compare_matcher_properties(new_matcher[:value].name, matcher[:value].name)
         end
       end
       cmp
     end
 
-    def compare_matcher_properties(new_matcher, matcher)
-      a = yield(new_matcher)
-      b = yield(matcher)
+    def compare_matcher_properties(a, b)
+      # falsity comparisons here handle both "nil" and "false"
+      return 1 if !a && b
+      return -1 if !b && a
+      return 0 if !a && !b
 
-      # Check for blcacklists ('!windows'). Those always come *after* positive
+      # Check for blacklists ('!windows'). Those always come *after* positive
       # whitelists.
       a_negated = Array(a).any? { |f| f.is_a?(String) && f.start_with?("!") }
       b_negated = Array(b).any? { |f| f.is_a?(String) && f.start_with?("!") }
-      if a_negated != b_negated
-        return 1 if a_negated
-        return -1 if b_negated
-      end
+      return 1 if a_negated && !b_negated
+      return -1 if b_negated && !a_negated
 
-      # We treat false / true and nil / not-nil with the same comparison
-      a = nil if a == false
-      b = nil if b == false
-      cmp = a <=> b
-      # This is the case where one is non-nil, and one is nil. The one that is
-      # nil is "greater" (i.e. it should come last).
-      if cmp.nil?
-        return 1 if a.nil?
-        return -1 if b.nil?
-      end
-      cmp
+      a <=> b
     end
 
     def map
