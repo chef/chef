@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.28 -->
-## [v13.6.28](https://github.com/chef/chef/tree/v13.6.28) (2017-12-08)
+<!-- latest_release 13.6.29 -->
+## [v13.6.29](https://github.com/chef/chef/tree/v13.6.29) (2017-12-08)
 
 #### Merged Pull Requests
-- speedup node_map get and set operations [#6632](https://github.com/chef/chef/pull/6632) ([lamont-granquist](https://github.com/lamont-granquist))
+- Solaris: Fix svcadm clear to only run in maintenance state [#6631](https://github.com/chef/chef/pull/6631) ([jaymalasinha](https://github.com/jaymalasinha))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Solaris: Fix svcadm clear to only run in maintenance state [#6631](https://github.com/chef/chef/pull/6631) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 13.6.29 -->
 - speedup node_map get and set operations [#6632](https://github.com/chef/chef/pull/6632) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.6.28 -->
 - Update for openssl 1.0.2n and inspec 1.48 [#6630](https://github.com/chef/chef/pull/6630) ([tas50](https://github.com/tas50)) <!-- 13.6.27 -->
 - Improved windows_task logging [#6617](https://github.com/chef/chef/pull/6617) ([tas50](https://github.com/tas50)) <!-- 13.6.26 -->
