@@ -33,6 +33,8 @@
 #
 # note that as this examples show filter values may be a scalar string or an array of scalar strings.
 #
+# XXX: confusingly, in the *_priority_map the :klass may be an array of Strings of class names
+#
 class Chef
   class NodeMap
 
@@ -218,10 +220,10 @@ class Chef
         # are exactly equal
         # XXX: remove this in Chef-14 and use last-writer-wins (prepend if they match)
         if !new_matcher[:override]
+          # we only sort classes, which only sorts the handler array, this magically does not sort
+          # the priority array via the invisible else here.
           if new_matcher[:klass].is_a?(Class)
             cmp = compare_matcher_properties(new_matcher[:klass].name, matcher[:klass].name)
-          else
-            cmp = compare_matcher_properties(new_matcher[:klass], matcher[:klass])
           end
         end
       end
