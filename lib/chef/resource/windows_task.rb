@@ -179,20 +179,18 @@ class Chef
           days = day.split(",")
           days.each do |d|
             unless ["mon", "tue", "wed", "thu", "fri", "sat", "sun", "*"].include?(d.strip.downcase)
-              raise "day property invalid. Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *. Multiple values must be separated by a comma."
+              raise ArgumentError, "day property invalid. Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *. Multiple values must be separated by a comma."
             end
           end
         end
       end
 
       def validate_create_months(months, frequency)
-        unless [:monthly].include?(frequency)
-          raise "months property is only valid for tasks that run monthly"
-        end
+        raise ArgumentError, "months property is only valid for tasks that run monthly" unless frequency == :monthly
         if months.is_a? String
           months.split(",").each do |month|
             unless ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "*"].include?(month.strip.upcase)
-              raise "months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma."
+              raise ArgumentError, "months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma."
             end
           end
         end
@@ -200,11 +198,11 @@ class Chef
 
       def validate_idle_time(idle_time, frequency)
         unless [:on_idle].include?(frequency)
-          raise "idle_time property is only valid for tasks that run on_idle"
+          raise ArgumentError, "idle_time property is only valid for tasks that run on_idle"
         end
 
         unless idle_time > 0 && idle_time <= 999
-          raise "idle_time value #{idle_time} is invalid. Valid values for :on_idle frequency are 1 - 999."
+          raise ArgumentError, "idle_time value #{idle_time} is invalid. Valid values for :on_idle frequency are 1 - 999."
         end
       end
 

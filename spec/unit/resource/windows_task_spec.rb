@@ -70,12 +70,12 @@ describe Chef::Resource::WindowsTask do
 
     it "does not raise an error if the user is a system user" do
       resource.user 'NT AUTHORITY\SYSTEM'
-      expect { resource.after_created }.to_not raise_error(ArgumentError)
+      expect { resource.after_created }.to_not raise_error
     end
 
     it "does not raise an error if the user is a system user even if lowercase" do
       resource.user 'nt authority\system'
-      expect { resource.after_created }.to_not raise_error(ArgumentError)
+      expect { resource.after_created }.to_not raise_error
     end
   end
 
@@ -248,35 +248,35 @@ describe Chef::Resource::WindowsTask do
     end
 
     it "raises error for invalid day value" do
-      expect  { resource.send(:validate_create_day, "xyz", :weekly) }.to raise_error(RuntimeError, "day property invalid. Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *. Multiple values must be separated by a comma.")
+      expect  { resource.send(:validate_create_day, "xyz", :weekly) }.to raise_error(ArgumentError, "day property invalid. Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *. Multiple values must be separated by a comma.")
     end
   end
 
   context "#validate_create_months" do
     it "raises error if frequency is not :monthly" do
-      expect  { resource.send(:validate_create_months, "Jan", :once) }.to raise_error(RuntimeError, "months property is only valid for tasks that run monthly")
+      expect  { resource.send(:validate_create_months, "Jan", :once) }.to raise_error(ArgumentError, "months property is only valid for tasks that run monthly")
     end
 
     it "accepts a valid single month" do
-      expect  { resource.send(:validate_create_months, "Feb", :monthly) }.not_to raise_error(ArgumentError)
+      expect  { resource.send(:validate_create_months, "Feb", :monthly) }.not_to raise_error
     end
 
     it "accepts a comma separated list of valid months" do
-      expect  { resource.send(:validate_create_months, "Jan, mar, AUG", :monthly) }.not_to raise_error(ArgumentError)
+      expect  { resource.send(:validate_create_months, "Jan, mar, AUG", :monthly) }.not_to raise_error
     end
 
     it "raises error for invalid month value" do
-      expect  { resource.send(:validate_create_months, "xyz", :monthly) }.to raise_error(RuntimeError, "months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma.")
+      expect  { resource.send(:validate_create_months, "xyz", :monthly) }.to raise_error(ArgumentError, "months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma.")
     end
   end
 
   context "#validate_idle_time" do
     it "raises error if frequency is not :on_idle" do
-      expect  { resource.send(:validate_idle_time, 5, :hourly) }.to raise_error(RuntimeError, "idle_time property is only valid for tasks that run on_idle")
+      expect  { resource.send(:validate_idle_time, 5, :hourly) }.to raise_error(ArgumentError, "idle_time property is only valid for tasks that run on_idle")
     end
 
     it "raises error if idle_time > 999" do
-      expect  { resource.send(:validate_idle_time, 1000, :on_idle) }.to raise_error(RuntimeError, "idle_time value 1000 is invalid. Valid values for :on_idle frequency are 1 - 999.")
+      expect  { resource.send(:validate_idle_time, 1000, :on_idle) }.to raise_error(ArgumentError, "idle_time value 1000 is invalid. Valid values for :on_idle frequency are 1 - 999.")
     end
   end
 
