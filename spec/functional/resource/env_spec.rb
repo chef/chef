@@ -22,9 +22,13 @@ describe Chef::Resource::Env, :windows_only do
   context "when running on Windows" do
     let(:chef_env_test_lower_case) { "chefenvtest" }
     let(:chef_env_test_mixed_case) { "chefENVtest" }
+    let(:chef_env_with_delim) { "chef_env_with_delim" }
+    let(:chef_env_delim) { ";" }
+    let(:chef_env_test_delim) { "#{value1};#{value2}" }
     let(:env_dne_key) { "env_dne_key" }
     let(:env_value1) { "value1" }
     let(:env_value2) { "value2" }
+    let(:delim_value) { "#{env_value1};#{env_value2}" }
     let(:env_user) { ENV["USERNAME"].upcase }
     let(:default_env_user) { "<SYSTEM>" }
 
@@ -250,6 +254,17 @@ describe Chef::Resource::Env, :windows_only do
         expect(@env_obj).not_to be_nil
       end
 
+      it "should not delete variable when a delim present" do
+        test_resource.key_name(chef_env_with_delim)
+        test_resource.delim(chef_env_delim)
+        test_resource.value(delim_value)
+        test_resource.run_action(:create)
+        expect(ENV[chef_env_with_delim]).to eq(delim_value)
+        test_resource.value(env_value1)
+        test_resource.run_action(:delete)
+        expect(ENV[chef_env_with_delim]).to eq(env_value2)
+      end
+
       it "should not raise an exception when a non-existent environment variable is deleted" do
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
         test_resource.key_name(chef_env_test_lower_case)
@@ -267,6 +282,13 @@ describe Chef::Resource::Env, :windows_only do
         test_resource.run_action(:delete)
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
         expect(ENV[chef_env_test_mixed_case]).to eq(nil)
+      end
+      it "should delete a value from the current process even if it is not in the registry" do
+        expect(ENV[env_dne_key]).to eq(nil)
+        ENV[env_dne_key] = env_value1
+        test_resource.key_name(env_dne_key)
+        test_resource.run_action(:delete)
+        expect(ENV[env_dne_key]).to eq(nil)
       end
 
     end

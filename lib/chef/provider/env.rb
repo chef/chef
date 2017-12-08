@@ -123,7 +123,7 @@ class Chef
       end
 
       def action_delete
-        if @key_exists && !delete_element
+        if ( ENV[new_resource.key_name] || @key_exists ) && !delete_element
           delete_env
           Chef::Log.info("#{new_resource} deleted")
           new_resource.updated_by_last_action(true)
