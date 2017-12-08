@@ -33,7 +33,7 @@ class Chef
     include Chef::Mixin::ParamsValidate
 
     VALID_NAME = /^[\.\-[:alnum:]_]+$/
-    RESERVED_NAMES = /node|role|environment|client/
+    RESERVED_NAMES = /^(node|role|environment|client)$/
 
     attr_accessor :chef_server_rest
 
