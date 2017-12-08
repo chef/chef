@@ -212,7 +212,6 @@ class Chef
       # @param [Integer] seconds The amount of seconds for this duration
       def sec_to_dur(seconds)
         seconds = seconds.to_i
-        return if seconds == 0
         iso_str = "P"
         if seconds > 604_800 # more than a week
           weeks = seconds / 604_800
@@ -224,7 +223,7 @@ class Chef
           seconds -= (86_400 * days)
           iso_str << "#{days}D"
         end
-        if seconds > 0
+        if seconds >= 0
           iso_str << "T"
           if seconds > 3600 # more than an hour
             hours = seconds / 3600
