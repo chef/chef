@@ -65,12 +65,17 @@ describe Chef::Resource::WindowsTask do
   context "when user is set but password is not" do
     it "raises an error if the user is a non-system user" do
       resource.user "bob"
-      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, %q{Cannot specify a user other than the system users without specifying a password!. Valid passwordless users: 'NT AUTHORITY\SYSTEM', 'SYSTEM', 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', 'USERS'})
+      expect { resource.after_created }.to raise_error(ArgumentError, %q{Cannot specify a user other than the system users without specifying a password!. Valid passwordless users: 'NT AUTHORITY\SYSTEM', 'SYSTEM', 'NT AUTHORITY\LOCALSERVICE', 'NT AUTHORITY\NETWORKSERVICE', 'BUILTIN\USERS', 'USERS'})
     end
 
     it "does not raise an error if the user is a system user" do
       resource.user 'NT AUTHORITY\SYSTEM'
-      expect { resource.after_created }.to_not raise_error(Chef::Exceptions::ArgumentError)
+      expect { resource.after_created }.to_not raise_error
+    end
+
+    it "does not raise an error if the user is a system user even if lowercase" do
+      resource.user 'nt authority\system'
+      expect { resource.after_created }.to_not raise_error
     end
   end
 
@@ -78,18 +83,31 @@ describe Chef::Resource::WindowsTask do
     it "raises error if frequency is `:once`" do
       resource.frequency :once
       resource.random_delay "20"
-      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "`random_delay` property is supported only for frequency :minute, :hourly, :daily, :weekly and :monthly")
+      expect { resource.after_created }.to raise_error(ArgumentError, "`random_delay` property is supported only for frequency :minute, :hourly, :daily, :weekly and :monthly")
     end
 
     it "raises error for invalid random_delay" do
       resource.frequency :monthly
       resource.random_delay "xyz"
-      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as a String e.g. '60'.")
+      expect { resource.after_created }.to raise_error(ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60').")
     end
 
-    it "converts seconds into iso8601 duration format" do
+    it "raises error for invalid random_delay which looks like an Integer" do
+      resource.frequency :monthly
+      resource.random_delay "5,000"
+      expect { resource.after_created }.to raise_error(ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60').")
+    end
+
+    it "converts seconds String into iso8601 duration format" do
       resource.frequency :monthly
       resource.random_delay "60"
+      resource.after_created
+      expect(resource.random_delay).to eq("PT60S")
+    end
+
+    it "converts seconds Integer into iso8601 duration format" do
+      resource.frequency :monthly
+      resource.random_delay 60
       resource.after_created
       expect(resource.random_delay).to eq("PT60S")
     end
@@ -105,10 +123,21 @@ describe Chef::Resource::WindowsTask do
   context "when execution_time_limit is passed" do
     it "raises error for invalid execution_time_limit" do
       resource.execution_time_limit "abc"
-      expect { resource.after_created }.to raise_error(Chef::Exceptions::ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as a String e.g. '60'.")
+      expect { resource.after_created }.to raise_error(ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60').")
     end
 
-    it "converts seconds into iso8601 format" do
+    it "raises error for invalid execution_time_limit that looks like an Integer" do
+      resource.execution_time_limit "5,000"
+      expect { resource.after_created }.to raise_error(ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60').")
+    end
+
+    it "converts seconds Integer into iso8601 format" do
+      resource.execution_time_limit 60
+      resource.after_created
+      expect(resource.execution_time_limit).to eq("PT60S")
+    end
+
+    it "converts seconds String into iso8601 format" do
       resource.execution_time_limit "60"
       resource.after_created
       expect(resource.execution_time_limit).to eq("PT60S")
@@ -118,19 +147,48 @@ describe Chef::Resource::WindowsTask do
   context "#validate_start_time" do
     it "raises error if start_time is nil when frequency `:once`" do
       resource.frequency :once
-      expect { resource.send(:validate_start_time, nil, :once) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_time` needs to be provided with `frequency :once`")
+      expect { resource.send(:validate_start_time, nil, :once) }.to raise_error(ArgumentError, "`start_time` needs to be provided with `frequency :once`")
     end
 
     it "raises error if start_time is given when frequency `:none`" do
       resource.frequency :none
-      expect { resource.send(:validate_start_time, "12.00", :none) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_time` property is not supported with `frequency :none`")
+      expect { resource.send(:validate_start_time, "12.00", :none) }.to raise_error(ArgumentError, "`start_time` property is not supported with `frequency :none`")
+    end
+
+    it "raises error if start_time is not HH:mm format" do
+      resource.frequency :once
+      expect { resource.send(:validate_start_time, "2:30", :once) }.to raise_error(ArgumentError, "`start_time` property must be in the HH:mm format (e.g. 6:20pm -> 18:20).")
+    end
+
+    it "does not raise error if start_time is in HH:mm format" do
+      resource.frequency :once
+      expect { resource.send(:validate_start_time, "12:30", :once) }.not_to raise_error
     end
   end
 
   context "#validate_start_day" do
-    it "raise error if start_day is passed with frequency :on_logon" do
-      resource.frequency :on_logon
-      expect { resource.send(:validate_start_day, "Wed", :on_logon) }.to raise_error(Chef::Exceptions::ArgumentError, "`start_day` property is not supported with frequency: on_logon")
+    it "raise error if start_day is passed with invalid frequency (:on_logon)" do
+      expect { resource.send(:validate_start_day, "02/07/1984", :on_logon) }.to raise_error(ArgumentError, "`start_day` property is not supported with frequency: on_logon")
+    end
+
+    it "does not raise error if start_day is passed with valid frequency (:weekly)" do
+      expect { resource.send(:validate_start_day, "02/07/1984", :weekly) }.not_to raise_error
+    end
+
+    it "raise error if start_day is passed with invalid date format (DD/MM/YYYY)" do
+      expect { resource.send(:validate_start_day, "28/12/2009", :weekly) }.to raise_error(ArgumentError, "`start_day` property must be in the MM/DD/YYYY format.")
+    end
+
+    it "raise error if start_day is passed with invalid date format (M/DD/YYYY)" do
+      expect { resource.send(:validate_start_day, "2/07/1984", :weekly) }.to raise_error(ArgumentError, "`start_day` property must be in the MM/DD/YYYY format.")
+    end
+
+    it "raise error if start_day is passed with invalid date format (MM/D/YYYY)" do
+      expect { resource.send(:validate_start_day, "02/7/1984", :weekly) }.to raise_error(ArgumentError, "`start_day` property must be in the MM/DD/YYYY format.")
+    end
+
+    it "raise error if start_day is passed with invalid date format (MM/DD/YY)" do
+      expect { resource.send(:validate_start_day, "02/07/84", :weekly) }.to raise_error(ArgumentError, "`start_day` property must be in the MM/DD/YYYY format.")
     end
   end
 
@@ -190,13 +248,13 @@ describe Chef::Resource::WindowsTask do
     end
 
     it "raises error for invalid day value" do
-      expect  { resource.send(:validate_create_day, "xyz", :weekly) }.to raise_error("day property invalid. Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *. Multiple values must be separated by a comma.")
+      expect  { resource.send(:validate_create_day, "xyz", :weekly) }.to raise_error(ArgumentError, "day property invalid. Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *. Multiple values must be separated by a comma.")
     end
   end
 
   context "#validate_create_months" do
     it "raises error if frequency is not :monthly" do
-      expect  { resource.send(:validate_create_months, "Jan", :once) }.to raise_error("months property is only valid for tasks that run monthly")
+      expect  { resource.send(:validate_create_months, "Jan", :once) }.to raise_error(ArgumentError, "months property is only valid for tasks that run monthly")
     end
 
     it "accepts a valid single month" do
@@ -208,17 +266,38 @@ describe Chef::Resource::WindowsTask do
     end
 
     it "raises error for invalid month value" do
-      expect  { resource.send(:validate_create_months, "xyz", :monthly) }.to raise_error("months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma.")
+      expect  { resource.send(:validate_create_months, "xyz", :monthly) }.to raise_error(ArgumentError, "months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma.")
     end
   end
 
   context "#validate_idle_time" do
     it "raises error if frequency is not :on_idle" do
-      expect  { resource.send(:validate_idle_time, 5, :hourly) }.to raise_error("idle_time property is only valid for tasks that run on_idle")
+      expect  { resource.send(:validate_idle_time, 5, :hourly) }.to raise_error(ArgumentError, "idle_time property is only valid for tasks that run on_idle")
     end
 
     it "raises error if idle_time > 999" do
-      expect  { resource.send(:validate_idle_time, 1000, :on_idle) }.to raise_error("idle_time value 1000 is invalid. Valid values for :on_idle frequency are 1 - 999.")
+      expect  { resource.send(:validate_idle_time, 1000, :on_idle) }.to raise_error(ArgumentError, "idle_time value 1000 is invalid. Valid values for :on_idle frequency are 1 - 999.")
+    end
+  end
+
+  context "#sec_to_dur" do
+    it "return PT0S when passed 0" do
+      expect(resource.send(:sec_to_dur, 0)).to eql("PT0S")
+    end
+    it "return PT1S when passed 1" do
+      expect(resource.send(:sec_to_dur, 1)).to eql("PT1S")
+    end
+    it "return PT24H0S when passed 86400" do
+      expect(resource.send(:sec_to_dur, 86400)).to eql("PT24H0S")
+    end
+    it "return P1DT1S when passed 86401" do
+      expect(resource.send(:sec_to_dur, 86401)).to eql("P1DT1S")
+    end
+    it "return P1DT1M40S when passed 86500" do
+      expect(resource.send(:sec_to_dur, 86500)).to eql("P1DT1M40S")
+    end
+    it "return P1WT1S when passed 604801" do
+      expect(resource.send(:sec_to_dur, 604801)).to eql("P1WT1S")
     end
   end
 end

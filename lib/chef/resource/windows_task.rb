@@ -44,22 +44,22 @@ class Chef
       property :interactive_enabled, [TrueClass, FalseClass], default: false
       property :frequency_modifier, [Integer, String], default: 1
       property :frequency, equal_to: [:minute,
-                                       :hourly,
-                                       :daily,
-                                       :weekly,
-                                       :monthly,
-                                       :once,
-                                       :on_logon,
-                                       :onstart,
-                                       :on_idle,
-                                       :none], default: :hourly
+                                      :hourly,
+                                      :daily,
+                                      :weekly,
+                                      :monthly,
+                                      :once,
+                                      :on_logon,
+                                      :onstart,
+                                      :on_idle,
+                                      :none], default: :hourly
       property :start_day, String
       property :start_time, String
       property :day, [String, Integer]
       property :months, String
       property :idle_time, Integer
-      property :random_delay, String
-      property :execution_time_limit, String
+      property :random_delay, [String, Integer]
+      property :execution_time_limit, [String, Integer], default: "PT72H" # 72 hours in ISO08601 duration format
 
       attr_accessor :exists, :status, :enabled
 
@@ -71,15 +71,11 @@ class Chef
         end
 
         if execution_time_limit
-          raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as a String e.g. '60'." if execution_time_limit.to_i == 0
-          duration = sec_to_dur(execution_time_limit)
-          execution_time_limit(duration)
-        else
-          # schtask sets execution_time_limit as PT72H by default
-          # We are setting the default value here so that we can do idempotency check later
-          # Note: We can't use `default` in the property
-          # because it will raise error for Invalid values passed as "PT72H" is not in seconds
-          execution_time_limit("PT72H")
+          unless execution_time_limit == "PT72H" # don't double convert an iso08601 format duration
+            raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60')." unless numeric_value_in_string?(execution_time_limit)
+            duration = sec_to_dur(execution_time_limit)
+            execution_time_limit(duration)
+          end
         end
 
         validate_start_time(start_time, frequency)
@@ -94,25 +90,36 @@ class Chef
 
       private
 
+      # Validate the passed value is numeric values only if it is a string
+      def numeric_value_in_string?(val)
+        return true if Integer(val)
+      rescue ArgumentError
+        false
+      end
+
       def validate_random_delay(random_delay, frequency)
         if [:once, :on_logon, :onstart, :on_idle, :none].include? frequency
           raise ArgumentError, "`random_delay` property is supported only for frequency :minute, :hourly, :daily, :weekly and :monthly"
         end
 
-        raise ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as a String e.g. '60'." if random_delay.to_i == 0
+        raise ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60')." unless numeric_value_in_string?(random_delay)
       end
 
       def validate_start_day(start_day, frequency)
         if [:once, :on_logon, :onstart, :on_idle, :none].include? frequency
           raise ArgumentError, "`start_day` property is not supported with frequency: #{frequency}"
         end
+
+        # make sure the start_day is in MM/DD/YYYY format: http://rubular.com/r/cgjHemtWl5
+        raise ArgumentError, "`start_day` property must be in the MM/DD/YYYY format." unless /^(0[1-9]|1[012])[- \/.](0[1-9]|[12][0-9]|3[01])[- \/.](19|20)\d\d$/.match?(start_day)
       end
 
       def validate_start_time(start_time, frequency)
-        if frequency == :once
-          raise ArgumentError, "`start_time` needs to be provided with `frequency :once`" unless start_time
-        elsif frequency == :none
-          raise ArgumentError, "`start_time` property is not supported with `frequency :none`" if start_time
+        if start_time
+          raise ArgumentError, "`start_time` property is not supported with `frequency :none`" if frequency == :none
+          raise ArgumentError, "`start_time` property must be in the HH:mm format (e.g. 6:20pm -> 18:20)." unless /^[0-2][0-9]:[0-5][0-9]$/.match?(start_time)
+        else
+          raise ArgumentError, "`start_time` needs to be provided with `frequency :once`" if frequency == :once
         end
       end
 
@@ -172,20 +179,18 @@ class Chef
           days = day.split(",")
           days.each do |d|
             unless ["mon", "tue", "wed", "thu", "fri", "sat", "sun", "*"].include?(d.strip.downcase)
-              raise "day property invalid. Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *. Multiple values must be separated by a comma."
+              raise ArgumentError, "day property invalid. Only valid values are: MON, TUE, WED, THU, FRI, SAT, SUN and *. Multiple values must be separated by a comma."
             end
           end
         end
       end
 
       def validate_create_months(months, frequency)
-        unless [:monthly].include?(frequency)
-          raise "months property is only valid for tasks that run monthly"
-        end
+        raise ArgumentError, "months property is only valid for tasks that run monthly" unless frequency == :monthly
         if months.is_a? String
           months.split(",").each do |month|
             unless ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "*"].include?(month.strip.upcase)
-              raise "months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma."
+              raise ArgumentError, "months property invalid. Only valid values are: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC and *. Multiple values must be separated by a comma."
             end
           end
         end
@@ -193,11 +198,11 @@ class Chef
 
       def validate_idle_time(idle_time, frequency)
         unless [:on_idle].include?(frequency)
-          raise "idle_time property is only valid for tasks that run on_idle"
+          raise ArgumentError, "idle_time property is only valid for tasks that run on_idle"
         end
 
-        unless idle_time.to_i > 0 && idle_time.to_i <= 999
-          raise "idle_time value #{idle_time} is invalid. Valid values for :on_idle frequency are 1 - 999."
+        unless idle_time > 0 && idle_time <= 999
+          raise ArgumentError, "idle_time value #{idle_time} is invalid. Valid values for :on_idle frequency are 1 - 999."
         end
       end
 
@@ -206,7 +211,6 @@ class Chef
       # @param [Integer] seconds The amount of seconds for this duration
       def sec_to_dur(seconds)
         seconds = seconds.to_i
-        return if seconds == 0
         iso_str = "P"
         if seconds > 604_800 # more than a week
           weeks = seconds / 604_800
@@ -218,7 +222,7 @@ class Chef
           seconds -= (86_400 * days)
           iso_str << "#{days}D"
         end
-        if seconds > 0
+        if seconds >= 0
           iso_str << "T"
           if seconds > 3600 # more than an hour
             hours = seconds / 3600
