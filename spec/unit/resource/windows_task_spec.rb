@@ -157,7 +157,7 @@ describe Chef::Resource::WindowsTask do
 
     it "raises error if start_time is not HH:mm format" do
       resource.frequency :once
-      expect { resource.send(:validate_start_time, "2:30", :once) }.to raise_error(ArgumentError, "`start_time` property must be in the HH:mm format.")
+      expect { resource.send(:validate_start_time, "2:30", :once) }.to raise_error(ArgumentError, "`start_time` property must be in the HH:mm format (e.g. 6:20pm -> 18:20).")
     end
 
     it "does not raise error if start_time is in HH:mm format" do
