@@ -20,7 +20,6 @@ require "chef/mixin/shell_out"
 require "rexml/document"
 require "iso8601"
 require "chef/mixin/powershell_out"
-require 'pry'
 
 class Chef
   class Provider
