@@ -20,6 +20,7 @@ require "chef/mixin/shell_out"
 require "rexml/document"
 require "iso8601"
 require "chef/mixin/powershell_out"
+require 'pry'
 
 class Chef
   class Provider
@@ -207,8 +208,14 @@ class Chef
       def run_schtasks(task_action, options = {})
         cmd = "schtasks /#{task_action} /TN \"#{new_resource.task_name}\" "
         options.keys.each do |option|
-          cmd += "/#{option} "
-          cmd += "\"#{options[option].to_s.gsub('"', "\\\"")}\" " unless options[option] == ""
+          unless option == "TR"
+            cmd += "/#{option} "
+            cmd += "\"#{options[option].to_s.gsub('"', "\\\"")}\" " unless options[option] == ""
+          end
+        end
+        # Appending Task Run [TR] option at the end since appending causing sometimes to append other options in option["TR"] value
+        if options["TR"]
+          cmd += "/TR \"#{options["TR"]} \" " unless task_action == "DELETE"
         end
         Chef::Log.debug("running: ")
         Chef::Log.debug("    #{cmd}")
@@ -361,7 +368,6 @@ class Chef
           options["RP"] = new_resource.password if new_resource.password
           options["IT"] = "" if new_resource.interactive_enabled
           options["XML"] = temp_task_file
-
           run_schtasks("DELETE", "F" => "")
           run_schtasks("CREATE", options)
         ensure

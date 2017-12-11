@@ -40,7 +40,7 @@ describe Chef::Provider::WindowsTask do
       :LastRunTime => "3/30/2017 2:27:00 PM",
       :LastResult => "1",
       :Author => "Administrator",
-      :TaskToRun => "chef-client",
+      :TaskToRun => "chef-client -L C:\\tmp\\",
       :StartIn => "N/A",
       :Comment => "N/A",
       :ScheduledTaskState => "Enabled",
@@ -91,7 +91,7 @@ describe Chef::Provider::WindowsTask do
       allow(provider).to receive(:load_task_hash).and_return(task_hash)
       current_resource = provider.load_current_resource
       expect(current_resource.exists).to be(true)
-      expect(current_resource.command).to eq("chef-client")
+      expect(current_resource.command).to eq("chef-client -L C:\\tmp\\")
       expect(current_resource.user).to eq("SYSTEM")
       expect(current_resource.run_level).to eq(:highest)
       expect(current_resource.frequency).to eq(:minute)
@@ -312,7 +312,7 @@ describe Chef::Provider::WindowsTask do
     before do
       @task_action = "CREATE"
       @options = { "F" => "", "SC" => :minute, "MO" => 15, "TR" => "chef-client", "RU" => "SYSTEM", "RL" => "HIGHEST" }
-      @cmd = "schtasks /CREATE /TN \"sample_task\" /F /SC \"minute\" /MO \"15\" /TR \"chef-client\" /RU \"SYSTEM\" /RL \"HIGHEST\" "
+      @cmd = "schtasks /CREATE /TN \"sample_task\" /F /SC \"minute\" /MO \"15\" /RU \"SYSTEM\" /RL \"HIGHEST\" /TR \"chef-client \" "
     end
 
     it "forms the command properly from the given options" do
@@ -363,7 +363,7 @@ describe Chef::Provider::WindowsTask do
         allow(provider).to receive(:get_system_short_date_format).and_return("MM/dd/yyyy")
         provider.load_current_resource
 
-        new_resource.command "chef-client"
+        new_resource.command "chef-client -L C:\\tmp\\"
         new_resource.run_level :highest
         new_resource.frequency :minute
         new_resource.frequency_modifier 15
@@ -403,6 +403,13 @@ describe Chef::Provider::WindowsTask do
       context "when start_time updated" do
         it "returns true" do
           new_resource.start_time "01:01"
+          expect(provider.send(:task_need_update?)).to be(true)
+        end
+      end
+
+      context "when command updated" do
+        it "return true" do
+          new_resource.command "chef-client"
           expect(provider.send(:task_need_update?)).to be(true)
         end
       end
