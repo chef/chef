@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.32 -->
-## [v13.6.32](https://github.com/chef/chef/tree/v13.6.32) (2017-12-11)
+<!-- latest_release 13.6.33 -->
+## [v13.6.33](https://github.com/chef/chef/tree/v13.6.33) (2017-12-11)
 
 #### Merged Pull Requests
-- Fix sneaky chefstyle violations [#6655](https://github.com/chef/chef/pull/6655) ([thommay](https://github.com/thommay))
+- Invalid date error on windows_task with frequency :on_logon [#6618](https://github.com/chef/chef/pull/6618) ([NimishaS](https://github.com/NimishaS))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Invalid date error on windows_task with frequency :on_logon [#6618](https://github.com/chef/chef/pull/6618) ([NimishaS](https://github.com/NimishaS)) <!-- 13.6.33 -->
 - Fix sneaky chefstyle violations [#6655](https://github.com/chef/chef/pull/6655) ([thommay](https://github.com/thommay)) <!-- 13.6.32 -->
 - Ensure data bags names can contain reserved words [#6636](https://github.com/chef/chef/pull/6636) ([EmFl](https://github.com/EmFl)) <!-- 13.6.31 -->
 - windows_task: Add additional input validation to properties [#6628](https://github.com/chef/chef/pull/6628) ([tas50](https://github.com/tas50)) <!-- 13.6.30 -->
