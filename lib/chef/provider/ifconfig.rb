@@ -84,7 +84,7 @@ class Chef
           #           TX packets:41723949 errors:0 dropped:0 overruns:0 carrier:0
           #           collisions:0 txqueuelen:1000
           #           RX bytes:42664658792 (39.7 GiB)  TX bytes:52722603938 (49.1 GiB)
-          #           Interrupt:30          
+          #           Interrupt:30
           @status = shell_out("ifconfig")
           @status.stdout.each_line do |line|
             if !line[0..9].strip.empty?
