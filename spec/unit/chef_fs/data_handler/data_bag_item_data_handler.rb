@@ -66,14 +66,17 @@ describe Chef::ChefFS::DataHandler::DataBagItemDataHandler do
       end
     end
 
-    context "valid data" do
-      let(:entry) { TestDataBagItem.new("luggage", "bag") }
-      let(:object) do
-        { "raw_data" => { "id" => "bag" } }
-      end
-      it "validates the data bag item" do
-        expect(handler.verify_integrity(object, entry)).to be_nil
+    context "using a reserved word as part of the data bag name" do
+      %w{xnode rolex xenvironmentx xclientx}.each do |bag_name|
+        let(:entry) { TestDataBagItem.new("#{bag_name}", "bag") }
+        let(:object) do
+          { "raw_data" => { "id" => "bag" } }
+        end
+        it "allows the data bag name '#{bag_name}'" do
+          expect(handler.verify_integrity(object, entry)).to be_nil
+        end
       end
     end
+
   end
 end

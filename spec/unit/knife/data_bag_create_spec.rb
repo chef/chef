@@ -46,8 +46,8 @@ describe Chef::Knife::DataBagCreate do
     allow(knife).to receive(:config).and_return(config)
   end
 
-  context "when data_bag already exist" do
-    it "doesn't creates a data bag" do
+  context "when data_bag already exists" do
+    it "doesn't create a data bag" do
       expect(knife).to receive(:create_object).and_yield(raw_hash)
       expect(rest).to receive(:get).with("data/#{bag_name}")
       expect(rest).to_not receive(:post).with("data", { "name" => bag_name })
@@ -111,6 +111,23 @@ describe Chef::Knife::DataBagCreate do
         expect(knife.ui).to receive(:info).with("Created data_bag[#{bag_name}]")
 
         knife.run
+      end
+    end
+
+    context "when given a data bag name partially matching a reserved name for search" do
+      %w{xnode rolex xenvironmentx xclientx}.each do |name|
+        let(:bag_name) { name }
+
+        before do
+          knife.name_args = [bag_name]
+        end
+
+        it "creates a data bag named '#{name}'" do
+          expect(rest).to receive(:post).with("data", { "name" => bag_name })
+          expect(knife.ui).to receive(:info).with("Created data_bag[#{bag_name}]")
+
+          knife.run
+        end
       end
     end
 
