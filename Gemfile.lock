@@ -97,6 +97,7 @@ PATH
       fuzzyurl
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
+      tomlrb (~> 1.2)
 
 GEM
   remote: https://rubygems.org/

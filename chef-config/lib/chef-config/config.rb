@@ -592,6 +592,12 @@ module ChefConfig
     # If chef-zero is enabled, this defaults to nil (no authentication).
     default(:client_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/client.pem") }
 
+    # A credentials file may contain a complete client key, rather than the path
+    # to one.
+    #
+    # We'll use this preferentially.
+    default :client_key_contents, nil
+
     # When registering the client, should we allow the client key location to
     # be a symlink?  eg: /etc/chef/client.pem -> /etc/chef/prod-client.pem
     # If the path of the key goes through a directory like /tmp this should
@@ -631,6 +637,7 @@ module ChefConfig
     default(:validation_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/validation.pem") }
     default :validation_client_name, "chef-validator"
 
+    default :validation_key_contents, nil
     # When creating a new client via the validation_client account, Chef 11
     # servers allow the client to generate a key pair locally and send the
     # public key to the server. This is more secure and helps offload work from

@@ -363,4 +363,131 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
       end
     end
   end
+
+  describe "when loading a credentials file" do
+    if windows?
+      let(:home) { "C:/Users/example.user" }
+    else
+      let(:home) { "/Users/example.user" }
+    end
+    let(:credentials_file) { "#{home}/.chef/credentials" }
+    let(:context_file) { "#{home}/.chef/context" }
+
+    before do
+      allow(ChefConfig::PathHelper).to receive(:home).with(".chef").and_return(File.join(home, ".chef"))
+      allow(ChefConfig::PathHelper).to receive(:home).with(".chef", "credentials").and_return(credentials_file)
+      allow(ChefConfig::PathHelper).to receive(:home).with(".chef", "context").and_return(context_file)
+      allow(File).to receive(:file?).with(context_file).and_return false
+    end
+
+    context "when the file exists" do
+      before do
+        expect(File).to receive(:read).with(credentials_file, { encoding: "utf-8" }).and_return(content)
+        allow(File).to receive(:file?).with(credentials_file).and_return true
+      end
+
+      context "and has a default profile" do
+        let(:content) do
+          content = <<EOH
+[default]
+node_name = 'barney'
+client_key = "barney_rubble.pem"
+chef_server_url = "https://api.chef.io/organizations/bedrock"
+EOH
+          content
+        end
+
+        it "applies the expected config" do
+          expect { config_loader.load_credentials }.not_to raise_error
+          expect(ChefConfig::Config.chef_server_url).to eq("https://api.chef.io/organizations/bedrock")
+          expect(ChefConfig::Config.client_key.to_s).to eq("#{home}/.chef/barney_rubble.pem")
+        end
+      end
+
+      context "and has a profile containing a full key" do
+        let(:content) do
+          content = <<EOH
+[default]
+client_key = """
+-----BEGIN RSA PRIVATE KEY-----
+foo
+"""
+EOH
+          content
+        end
+
+        it "applies the expected config" do
+          expect { config_loader.load_credentials }.not_to raise_error
+          expect(ChefConfig::Config.client_key_contents).to eq(<<EOH
+-----BEGIN RSA PRIVATE KEY-----
+foo
+EOH
+)
+        end
+      end
+
+      context "and has several profiles" do
+        let(:content) do
+          content = <<EOH
+[default]
+client_name = "default"
+[environment]
+client_name = "environment"
+[explicit]
+client_name = "explicit"
+[context]
+client_name = "context"
+EOH
+          content
+        end
+
+        let(:env) { {} }
+        before do
+          stub_const("ENV", env)
+        end
+
+        it "selects the correct profile explicitly" do
+          expect { config_loader.load_credentials("explicit") }.not_to raise_error
+          expect(ChefConfig::Config.node_name).to eq("explicit")
+        end
+
+        context "with an environment variable" do
+          let(:env) { { "CHEF_PROFILE" => "environment" } }
+
+          it "selects the correct profile" do
+            expect { config_loader.load_credentials }.not_to raise_error
+            expect(ChefConfig::Config.node_name).to eq("environment")
+          end
+        end
+
+        it "selects the correct profile with a context file" do
+          allow(File).to receive(:file?).with(context_file).and_return true
+          expect(File).to receive(:read).with(context_file).and_return "context"
+          expect { config_loader.load_credentials }.not_to raise_error
+          expect(ChefConfig::Config.node_name).to eq("context")
+        end
+
+        it "falls back to the default" do
+          expect { config_loader.load_credentials }.not_to raise_error
+          expect(ChefConfig::Config.node_name).to eq("default")
+        end
+      end
+
+      context "and has a syntax error" do
+        let(:content) { "<<<<<" }
+
+        it "raises a ConfigurationError" do
+          expect { config_loader.load_credentials }.to raise_error(ChefConfig::ConfigurationError)
+        end
+      end
+    end
+
+    context "when the file does not exist" do
+      it "does not load anything" do
+        allow(File).to receive(:file?).with(credentials_file).and_return false
+        expect(Tomlrb).not_to receive(:load_file)
+        config_loader.load_credentials
+      end
+    end
+  end
 end
