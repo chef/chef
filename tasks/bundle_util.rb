@@ -2,7 +2,7 @@ require "bundler"
 require "shellwords"
 
 module BundleUtil
-  PLATFORMS = { "windows" => %w{ruby x86-mingw32} }
+  PLATFORMS = { "windows" => %w{ruby x64-mingw32 x86-mingw32} }
 
   def project_root
     File.expand_path("../..", __FILE__)

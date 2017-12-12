@@ -19,6 +19,12 @@
 require "chef-config/fips"
 require "spec_helper"
 
+begin
+  require "win32/registry"
+rescue LoadError
+  # not on unix
+end
+
 RSpec.describe "ChefConfig.fips?" do
   let(:enabled) { "0" }
 
