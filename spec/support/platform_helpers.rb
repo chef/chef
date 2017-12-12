@@ -159,6 +159,26 @@ def freebsd?
   !!(RUBY_PLATFORM =~ /freebsd/)
 end
 
+def intel_64bit?
+  !!(ohai[:kernel][:machine] == "x86_64")
+end
+
+def rhel?
+  !!(ohai[:platform_family] == "rhel")
+end
+
+def rhel5?
+  rhel? && !!(ohai[:platform_version].to_i == 5)
+end
+
+def rhel6?
+  rhel? && !!(ohai[:platform_version].to_i == 6)
+end
+
+def rhel7?
+  rhel? && !!(ohai[:platform_version].to_i == 7)
+end
+
 def debian_family?
   !!(ohai[:platform_family] == "debian")
 end

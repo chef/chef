@@ -1,6 +1,5 @@
 #
-# Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2017-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +17,13 @@
 
 require "spec_helper"
 
-describe Chef::Provider::Package::Yum::YumCache do
+# NOTE: most of the tests of this functionality are baked into the func tests for the yum package provider
 
-  it "can find yum-dump.py" do
-    expect(File.exist?(Chef::Provider::Package::Yum::YumCache.instance.yum_dump_path)).to be true
+describe Chef::Provider::Package::Yum::PythonHelper do
+  let(:helper) { Chef::Provider::Package::Yum::PythonHelper.instance }
+
+  it "propagates stacktraces on stderr from the forked subprocess", :rhel do
+    allow(helper).to receive(:yum_command).and_return("ruby -e 'raise \"your hands in the air\"'")
+    expect { helper.package_query(:whatprovides, "tcpdump") }.to raise_error(/your hands in the air/)
   end
-
 end

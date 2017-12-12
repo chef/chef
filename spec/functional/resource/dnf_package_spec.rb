@@ -66,47 +66,47 @@ gpgcheck=0
         flush_cache
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "does not install if the package is installed" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "does not install twice" do
         flush_cache
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "does not install if the prior version package is installed" do
-        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "does not install if the i686 package is installed" do
         skip "FIXME: do nothing, or install the x86_64 version?"
-        preinstall("chef_rpm-1.10-1.fc24.i686.rpm")
+        preinstall("chef_rpm-1.10-1.i686.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.i686")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.i686")
       end
 
       it "does not install if the prior version i686 package is installed" do
         skip "FIXME: do nothing, or install the x86_64 version?"
-        preinstall("chef_rpm-1.2-1.fc24.i686.rpm")
+        preinstall("chef_rpm-1.2-1.i686.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.i686")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.i686")
       end
     end
 
@@ -116,7 +116,7 @@ gpgcheck=0
         dnf_package.package_name("chef_rpm-1.10")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "works with an older version" do
@@ -124,15 +124,15 @@ gpgcheck=0
         dnf_package.package_name("chef_rpm-1.2")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "works with an evr" do
         flush_cache
-        dnf_package.package_name("chef_rpm-0:1.2-1.fc24")
+        dnf_package.package_name("chef_rpm-0:1.2-1")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "works with a version glob" do
@@ -140,7 +140,7 @@ gpgcheck=0
         dnf_package.package_name("chef_rpm-1*")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "works with a name glob + version glob" do
@@ -148,7 +148,7 @@ gpgcheck=0
         dnf_package.package_name("chef_rp*-1*")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
     end
 
@@ -160,7 +160,7 @@ gpgcheck=0
         dnf_package.version("1.10")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "matches with a glob" do
@@ -169,25 +169,25 @@ gpgcheck=0
         dnf_package.version("1*")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "matches the vr" do
         flush_cache
         dnf_package.package_name("chef_rpm")
-        dnf_package.version("1.10-1.fc24")
+        dnf_package.version("1.10-1")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "matches the evr" do
         flush_cache
         dnf_package.package_name("chef_rpm")
-        dnf_package.version("0:1.10-1.fc24")
+        dnf_package.version("0:1.10-1")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "matches with a vr glob" do
@@ -197,7 +197,7 @@ gpgcheck=0
         dnf_package.version("1.10-1*")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "matches with an evr glob" do
@@ -207,28 +207,28 @@ gpgcheck=0
         dnf_package.version("0:1.10-1*")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
     end
 
     context "downgrades" do
       it "just work with DNF" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.version("1.2")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "throws a deprecation warning with allow_downgrade" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
         expect(Chef).to receive(:deprecated).with(:dnf_package_allow_downgrade, /^the allow_downgrade property on the dnf_package provider is not used/)
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.version("1.2")
         dnf_package.run_action(:install)
         dnf_package.allow_downgrade true
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
     end
 
@@ -238,7 +238,7 @@ gpgcheck=0
         dnf_package.package_name("chef_rpm.x86_64")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "installs with 32-bit arch in the name" do
@@ -246,7 +246,7 @@ gpgcheck=0
         dnf_package.package_name("chef_rpm.i686")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.i686")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.i686")
       end
 
       it "installs with 64-bit arch in the property" do
@@ -255,7 +255,7 @@ gpgcheck=0
         dnf_package.arch("x86_64")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "installs with 32-bit arch in the property" do
@@ -264,7 +264,7 @@ gpgcheck=0
         dnf_package.arch("i686")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.i686")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.i686")
       end
     end
 
@@ -274,23 +274,23 @@ gpgcheck=0
         dnf_package.package_name("chef_rpm >= 1.2")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "when it is met, it does nothing" do
-        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.package_name("chef_rpm >= 1.2")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "when it is met, it does nothing" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.package_name("chef_rpm >= 1.2")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "with nothing intalled, it installs the latest version" do
@@ -298,23 +298,23 @@ gpgcheck=0
         dnf_package.package_name("chef_rpm > 1.2")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "when it is not met by an installed rpm, it upgrades" do
-        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.package_name("chef_rpm > 1.2")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "when it is met by an installed rpm, it does nothing" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.package_name("chef_rpm > 1.2")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "when there is no solution to the contraint" do
@@ -324,7 +324,7 @@ gpgcheck=0
       end
 
       it "when there is no solution to the contraint but an rpm is preinstalled" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.package_name("chef_rpm > 2.0")
         expect { dnf_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
@@ -349,61 +349,61 @@ gpgcheck=0
         flush_cache
         dnf_package.name "something"
         dnf_package.package_name "somethingelse"
-        dnf_package.source("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.source("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "installs the package when the name is a path to a file" do
         flush_cache
-        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "does not downgrade the package with :install" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
-        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "does not upgrade the package with :install" do
-        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
-        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.2-1.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "is idempotent when the package is already installed" do
-        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
-        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.2-1.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
     end
 
     context "with no available version" do
       it "works when a package is installed" do
         FileUtils.rm_f "/etc/yum.repos.d/chef-dnf-localtesting.repo"
-        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "works with a local source" do
         FileUtils.rm_f "/etc/yum.repos.d/chef-dnf-localtesting.repo"
         flush_cache
-        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
     end
 
@@ -413,12 +413,12 @@ gpgcheck=0
         dnf_package.package_name([ "chef_rpm.x86_64", "chef_rpm.i686" ] )
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.x86_64/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.i686/)
       end
 
       it "does nothing if both are installed" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm", "chef_rpm-1.10-1.fc24.i686.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm", "chef_rpm-1.10-1.i686.rpm")
         flush_cache
         dnf_package.package_name([ "chef_rpm.x86_64", "chef_rpm.i686" ] )
         dnf_package.run_action(:install)
@@ -426,21 +426,21 @@ gpgcheck=0
       end
 
       it "installs the second rpm if the first is installed" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.package_name([ "chef_rpm.x86_64", "chef_rpm.i686" ] )
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.x86_64/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.i686/)
       end
 
       it "installs the first rpm if the second is installed" do
-        preinstall("chef_rpm-1.10-1.fc24.i686.rpm")
+        preinstall("chef_rpm-1.10-1.i686.rpm")
         dnf_package.package_name([ "chef_rpm.x86_64", "chef_rpm.i686" ] )
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.x86_64/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.i686/)
       end
 
       # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
@@ -450,35 +450,35 @@ gpgcheck=0
         dnf_package.arch(%w{x86_64 i686})
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.x86_64/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.i686/)
       end
 
       # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
       it "installs the second rpm if the first is installed (muti-arch)" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.package_name(%w{chef_rpm chef_rpm} )
         dnf_package.arch(%w{x86_64 i686})
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.x86_64/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.i686/)
       end
 
       # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
       it "installs the first rpm if the second is installed (muti-arch)" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.package_name(%w{chef_rpm chef_rpm} )
         dnf_package.arch(%w{x86_64 i686})
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.i686/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.x86_64/)
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.i686/)
       end
 
       # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
       it "does nothing if both are installed (muti-arch)" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm", "chef_rpm-1.10-1.fc24.i686.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm", "chef_rpm-1.10-1.i686.rpm")
         dnf_package.package_name(%w{chef_rpm chef_rpm} )
         dnf_package.arch(%w{x86_64 i686})
         dnf_package.run_action(:install)
@@ -490,22 +490,22 @@ gpgcheck=0
   describe ":upgrade" do
     context "downgrades" do
       it "just work with DNF" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.version("1.2")
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "throws a deprecation warning with allow_downgrade" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
         expect(Chef).to receive(:deprecated).with(:dnf_package_allow_downgrade, /^the allow_downgrade property on the dnf_package provider is not used/)
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.version("1.2")
         dnf_package.run_action(:install)
         dnf_package.allow_downgrade true
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
     end
 
@@ -514,62 +514,62 @@ gpgcheck=0
         flush_cache
         dnf_package.name "something"
         dnf_package.package_name "somethingelse"
-        dnf_package.source("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.source("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "installs the package when the name is a path to a file" do
         flush_cache
-        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "downgrades the package" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
-        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "upgrades the package" do
-        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
-        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.2-1.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
 
       it "is idempotent when the package is already installed" do
-        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
-        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.2-1.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
     end
 
     context "with no available version" do
       it "works when a package is installed" do
         FileUtils.rm_f "/etc/yum.repos.d/chef-dnf-localtesting.repo"
-        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
-        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.2-1.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
 
       it "works with a local source" do
         FileUtils.rm_f "/etc/yum.repos.d/chef-dnf-localtesting.repo"
         flush_cache
-        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.fc24.x86_64.rpm")
+        dnf_package.package_name("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.x86_64")
       end
     end
   end
@@ -585,14 +585,14 @@ gpgcheck=0
       end
 
       it "removes the package if the package is installed" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
       end
 
       it "does not remove the package twice" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
@@ -602,7 +602,7 @@ gpgcheck=0
       end
 
       it "removes the package if the prior version package is installed" do
-        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
@@ -610,7 +610,7 @@ gpgcheck=0
 
       it "removes the package if the i686 package is installed" do
         skip "FIXME: should this be fixed or is the current behavior correct?"
-        preinstall("chef_rpm-1.10-1.fc24.i686.rpm")
+        preinstall("chef_rpm-1.10-1.i686.rpm")
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
@@ -618,7 +618,7 @@ gpgcheck=0
 
       it "removes the package if the prior version i686 package is installed" do
         skip "FIXME: should this be fixed or is the current behavior correct?"
-        preinstall("chef_rpm-1.2-1.fc24.i686.rpm")
+        preinstall("chef_rpm-1.2-1.i686.rpm")
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
@@ -635,48 +635,48 @@ gpgcheck=0
       end
 
       it "removes the package if the package is installed" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm")
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
       end
 
       it "removes the package if the prior version package is installed" do
-        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
       end
 
       it "does nothing if the i686 package is installed" do
-        preinstall("chef_rpm-1.10-1.fc24.i686.rpm")
+        preinstall("chef_rpm-1.10-1.i686.rpm")
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.i686")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.i686")
       end
 
       it "does nothing if the prior version i686 package is installed" do
-        preinstall("chef_rpm-1.2-1.fc24.i686.rpm")
+        preinstall("chef_rpm-1.2-1.i686.rpm")
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.fc24.i686")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.2-1.i686")
       end
     end
 
     context "with 32-bit arch" do
       let(:package_name) { "chef_rpm.i686" }
       it "removes only the 32-bit arch if both are installed" do
-        preinstall("chef_rpm-1.10-1.fc24.x86_64.rpm", "chef_rpm-1.10-1.fc24.i686.rpm")
+        preinstall("chef_rpm-1.10-1.x86_64.rpm", "chef_rpm-1.10-1.i686.rpm")
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.x86_64")
       end
     end
 
     context "with no available version" do
       it "works when a package is installed" do
         FileUtils.rm_f "/etc/yum.repos.d/chef-dnf-localtesting.repo"
-        preinstall("chef_rpm-1.2-1.fc24.x86_64.rpm")
+        preinstall("chef_rpm-1.2-1.x86_64.rpm")
         dnf_package.run_action(:remove)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("package chef_rpm is not installed")
