@@ -591,12 +591,12 @@ class Chef
 
       # @return [Boolean] if we're doing a multipackage install or not
       def multipackage?
-        new_resource.package_name.is_a?(Array)
+        @multipackage_bool ||= new_resource.package_name.is_a?(Array)
       end
 
       # @return [Array] package_name(s) as an array
       def package_name_array
-        [ new_resource.package_name ].flatten
+        @package_name_array ||= [ new_resource.package_name ].flatten
       end
 
       # @return [Array] candidate_version(s) as an array
@@ -608,12 +608,12 @@ class Chef
 
       # @return [Array] current_version(s) as an array
       def current_version_array
-        [ current_resource.version ].flatten
+        @current_version_array ||= [ current_resource.version ].flatten
       end
 
       # @return [Array] new_version(s) as an array
       def new_version_array
-        [ new_resource.version ].flatten.map { |v| v.to_s.empty? ? nil : v }
+        @new_version_array ||= [ new_resource.version ].flatten.map { |v| v.to_s.empty? ? nil : v }
       end
 
       # TIP: less error prone to simply always call resolved_source_array, even if you
@@ -621,11 +621,14 @@ class Chef
       #
       # @return [Array] new_resource.source as an array
       def source_array
-        if new_resource.source.nil?
-          package_name_array.map { nil }
-        else
-          [ new_resource.source ].flatten
-        end
+        @source_array ||=
+          begin
+            if new_resource.source.nil?
+              package_name_array.map { nil }
+            else
+              [ new_resource.source ].flatten
+            end
+          end
       end
 
       # Helper to handle use_package_name_for_source to convert names into local packages to install.
