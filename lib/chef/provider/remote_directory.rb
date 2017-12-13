@@ -153,7 +153,7 @@ class Chef
       #
       # FIXME: it should do breadth-first, see CHEF-5080 (please use a performant sort)
       #
-      # @return Array<String> The list of files to transfer
+      # @return [Array<String>] The list of files to transfer
       # @api private
       #
       def files_to_transfer

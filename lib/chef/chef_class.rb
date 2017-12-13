@@ -200,8 +200,8 @@ class Chef
     #
     # Emit a deprecation message.
     #
-    # @param type The message to send. This should be a symbol, referring to
-    #   a class defined in Chef::Deprecated
+    # @param [Symbol] type The message to send. This should refer to a class
+    #   defined in Chef::Deprecated
     # @param message  An explicit message to display, rather than the generic one
     #   associated with the deprecation.
     # @param location The location. Defaults to the caller who called you (since

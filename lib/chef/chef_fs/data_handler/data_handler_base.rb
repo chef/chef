@@ -56,8 +56,7 @@ class Chef
         # 2. Put the actual values in the order of the defaults
         # 3. Move any other values to the end
         #
-        # == Example
-        #
+        # @example
         #   normalize_hash({x: 100, c: 2, a: 1}, { a: 10, b: 20, c: 30})
         #   -> { a: 1, b: 20, c: 2, x: 100}
         #
@@ -140,8 +139,7 @@ class Chef
         # the keys specified in "keys"; anything else must be emitted by the
         # caller.
         #
-        # == Example
-        #
+        # @example
         #   to_ruby_keys({"name" => "foo", "environment" => "desert", "foo": "bar"}, [ "name", "environment" ])
         #   ->
         #   'name "foo"
