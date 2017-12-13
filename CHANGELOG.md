@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.34 -->
-## [v13.6.34](https://github.com/chef/chef/tree/v13.6.34) (2017-12-11)
+<!-- latest_release 13.6.35 -->
+## [v13.6.35](https://github.com/chef/chef/tree/v13.6.35) (2017-12-13)
 
 #### Merged Pull Requests
-- windows_task: Fix resource isn&#39;t fully idempotent due to command property [#6654](https://github.com/chef/chef/pull/6654) ([Vasu1105](https://github.com/Vasu1105))
+- Use comments in the github issue template [#6658](https://github.com/chef/chef/pull/6658) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Use comments in the github issue template [#6658](https://github.com/chef/chef/pull/6658) ([tas50](https://github.com/tas50)) <!-- 13.6.35 -->
 - windows_task: Fix resource isn&#39;t fully idempotent due to command property [#6654](https://github.com/chef/chef/pull/6654) ([Vasu1105](https://github.com/Vasu1105)) <!-- 13.6.34 -->
 - Invalid date error on windows_task with frequency :on_logon [#6618](https://github.com/chef/chef/pull/6618) ([NimishaS](https://github.com/NimishaS)) <!-- 13.6.33 -->
 - Fix sneaky chefstyle violations [#6655](https://github.com/chef/chef/pull/6655) ([thommay](https://github.com/thommay)) <!-- 13.6.32 -->
