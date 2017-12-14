@@ -24,14 +24,10 @@ class Chef
     class CabPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
 
+      resource_name :cab_package
       provides :cab_package, os: "windows"
 
       allowed_actions :install, :remove
-
-      def initialize(name, run_context = nil)
-        super
-        @resource_name = :cab_package
-      end
 
       property  :source, String,
                 coerce: (proc do |s|

@@ -24,6 +24,7 @@ class Chef
     class DscScript < Chef::Resource
       include Chef::DSL::Powershell
 
+      resource_name :dsc_script
       provides :dsc_script, os: "windows"
 
       default_action :run

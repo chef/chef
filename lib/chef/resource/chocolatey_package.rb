@@ -22,14 +22,10 @@ class Chef
   class Resource
     class ChocolateyPackage < Chef::Resource::Package
 
+      resource_name :chocolatey_package
       provides :chocolatey_package, os: "windows"
 
       allowed_actions :install, :upgrade, :remove, :uninstall, :purge, :reconfig
-
-      def initialize(name, run_context = nil)
-        super
-        @resource_name = :chocolatey_package
-      end
 
       # windows can't take Array options yet
       property :options, String
