@@ -36,7 +36,7 @@ class Chef
       #
       def self.run_start_message(run_status)
         {
-          "chef_server_fqdn"  => chef_server_fqdn(run_status),
+          "chef_server_fqdn"  => chef_server_fqdn,
           "entity_uuid"       => node_uuid,
           "id"                => run_status.run_id,
           "message_version"   => "1.0.0",
@@ -61,7 +61,7 @@ class Chef
         run_status = reporter_data[:run_status]
 
         message = {
-          "chef_server_fqdn"       => chef_server_fqdn(run_status),
+          "chef_server_fqdn"       => chef_server_fqdn,
           "entity_uuid"            => node_uuid,
           "expanded_run_list"      => reporter_data[:expanded_run_list],
           "id"                     => run_status.run_id,

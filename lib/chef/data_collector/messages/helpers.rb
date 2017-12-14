@@ -31,7 +31,7 @@ class Chef
         #
         # @return [String] FQDN of the configured Chef Server, or node/localhost if not found.
         #
-        def chef_server_fqdn(run_status)
+        def chef_server_fqdn
           if !Chef::Config[:chef_server_url].nil?
             URI(Chef::Config[:chef_server_url]).host
           elsif !Chef::Config[:node_name].nil?
