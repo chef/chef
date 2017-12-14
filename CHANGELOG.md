@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.21.29 -->
-## [v12.21.29](https://github.com/chef/chef/tree/v12.21.29) (2017-12-12)
+<!-- latest_release 12.21.30 -->
+## [v12.21.30](https://github.com/chef/chef/tree/v12.21.30) (2017-12-14)
 
 #### Merged Pull Requests
-- Backport RHEL and ifconfig test fixes [#6659](https://github.com/chef/chef/pull/6659) ([scotthain](https://github.com/scotthain))
+- Update openssl to 1.0.2.n [#6666](https://github.com/chef/chef/pull/6666) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Update openssl to 1.0.2.n [#6666](https://github.com/chef/chef/pull/6666) ([tas50](https://github.com/tas50)) <!-- 12.21.30 -->
 - Backport RHEL and ifconfig test fixes [#6659](https://github.com/chef/chef/pull/6659) ([scotthain](https://github.com/scotthain)) <!-- 12.21.29 -->
 - Use Chef::VersionConstraint in useradd_spec test [#6586](https://github.com/chef/chef/pull/6586) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 12.21.28 -->
 - Change a useradd_spec test for RHEL &gt;= 6.8 and &gt;= 7.3 [#6556](https://github.com/chef/chef/pull/6556) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 12.21.27 -->
