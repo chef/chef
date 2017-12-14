@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/license_scout
-  revision: b7b1e6c5d027f201fc4fa30c775384112d81c1bd
+  revision: d736df0d72f84ed3f0c8e3eb66b12562a3dccbda
   specs:
     license_scout (0.1.3)
       ffi-yajl (~> 2.2)
@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus
-  revision: e3807801e61b9012ea2e0677a60c2bf72c0e4972
+  revision: f6f9973bd65af06a6b3077b3ee094ca203b1d612
   specs:
     omnibus (5.6.1)
       aws-sdk (~> 2)
@@ -26,7 +26,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 65a9bed9e37e0b6ba7c8aae0b588f11ce5fc399a
+  revision: d6accc79f166cc6fc552e07088951bf467c30989
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -38,13 +38,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.10.71)
-      aws-sdk-resources (= 2.10.71)
-    aws-sdk-core (2.10.71)
+    aws-sdk (2.10.102)
+      aws-sdk-resources (= 2.10.102)
+    aws-sdk-core (2.10.102)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.10.71)
-      aws-sdk-core (= 2.10.71)
+    aws-sdk-resources (2.10.102)
+      aws-sdk-core (= 2.10.102)
     aws-sigv4 (1.0.2)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -85,12 +85,12 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (13.5.3)
+    chef-config (13.6.4)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
-    chef-sugar (3.5.0)
+    chef-sugar (3.6.0)
     citrus (3.0.2)
     cleanroom (1.0.0)
     coderay (1.1.2)
@@ -129,7 +129,7 @@ GEM
     mixlib-authentication (1.4.2)
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
-    mixlib-install (3.6.0)
+    mixlib-install (3.8.0)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -151,7 +151,7 @@ GEM
     nori (2.6.0)
     octokit (4.7.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (8.25.0)
+    ohai (8.25.1)
       chef-config (>= 12.5.0.alpha.1, < 14)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -169,18 +169,18 @@ GEM
       multipart-post (~> 2.0.0)
       progressbar
       zhexdump (>= 0.0.2)
-    plist (3.3.0)
+    plist (3.4.0)
     progressbar (1.9.0)
-    pry (0.11.2)
+    pry (0.11.3)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
-    pry-byebug (3.5.0)
+    pry-byebug (3.5.1)
       byebug (~> 9.1)
       pry (~> 0.10)
     pry-stack_explorer (0.4.9.2)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    public_suffix (3.0.0)
+    public_suffix (3.0.1)
     retryable (2.0.4)
     ridley (4.6.1)
       addressable
@@ -212,7 +212,7 @@ GEM
       molinillo (~> 0.4.2)
       semverse (~> 1.1)
     systemu (2.6.5)
-    test-kitchen (1.18.0)
+    test-kitchen (1.19.2)
       mixlib-install (~> 3.6)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
@@ -222,11 +222,11 @@ GEM
       thor (~> 0.19, < 0.19.2)
       winrm (~> 2.0)
       winrm-elevated (~> 1.0)
-      winrm-fs (~> 1.0.2)
+      winrm-fs (~> 1.1.0)
     thor (0.19.1)
     timers (4.0.4)
       hitimes
-    toml-rb (1.1.0)
+    toml-rb (1.1.1)
       citrus (~> 3.0, > 3.0)
     varia_model (0.4.1)
       buff-extensions (~> 1.0)
@@ -245,7 +245,7 @@ GEM
     winrm-elevated (1.1.0)
       winrm (~> 2.0)
       winrm-fs (~> 1.0)
-    winrm-fs (1.0.2)
+    winrm-fs (1.1.1)
       erubis (~> 2.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 1.1)
@@ -271,4 +271,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   1.15.4
+   1.12.5
