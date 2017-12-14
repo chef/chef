@@ -22,7 +22,7 @@ class Chef
   class Resource
     class WindowsTask < Chef::Resource
 
-      resource_name: :windows_task
+      resource_name :windows_task
       provides :windows_task, os: "windows"
 
       allowed_actions :create, :delete, :run, :end, :enable, :disable
