@@ -20,6 +20,7 @@
 class Chef
   class Resource
     class Env < Chef::Resource
+      resource_name :env
       provides :env, os: "windows"
 
       default_action :create

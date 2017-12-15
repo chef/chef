@@ -22,19 +22,13 @@ class Chef
   class Resource
     class WindowsTask < Chef::Resource
 
+      resource_name :windows_task
       provides :windows_task, os: "windows"
 
       allowed_actions :create, :delete, :run, :end, :enable, :disable
       default_action :create
 
-      def initialize(name, run_context = nil)
-        super
-        @resource_name = :windows_task
-        @task_name = name
-        @action = :create
-      end
-
-      property :task_name, String, regex: [/\A[^\/\:\*\?\<\>\|]+\z/]
+      property :task_name, String, regex: [/\A[^\/\:\*\?\<\>\|]+\z/], name_property: true
       property :command, String
       property :cwd, String
       property :user, String, default: "SYSTEM"
@@ -59,7 +53,7 @@ class Chef
       property :months, String
       property :idle_time, Integer
       property :random_delay, [String, Integer]
-      property :execution_time_limit, [String, Integer], default: "PT72H" # 72 hours in ISO08601 duration format
+      property :execution_time_limit, [String, Integer], default: "PT72H" # 72 hours in ISO8601 duration format
 
       attr_accessor :exists, :status, :enabled
 
@@ -71,7 +65,7 @@ class Chef
         end
 
         if execution_time_limit
-          unless execution_time_limit == "PT72H" # don't double convert an iso08601 format duration
+          unless execution_time_limit == "PT72H" # don't double convert an ISO8601 format duration
             raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60')." unless numeric_value_in_string?(execution_time_limit)
             duration = sec_to_dur(execution_time_limit)
             execution_time_limit(duration)

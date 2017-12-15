@@ -24,18 +24,14 @@ class Chef
     class MsuPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
 
+      resource_name :msu_package
       provides :msu_package, os: "windows"
 
       allowed_actions :install, :remove
-
-      def initialize(name, run_context = nil)
-        super
-        @resource_name = :msu_package
-        @source = name
-        @action = :install
-      end
+      default_action :install
 
       property :source, String,
+                name_property: true,
                 coerce: (proc do |s|
                   unless s.nil?
                     uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)

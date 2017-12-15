@@ -31,16 +31,16 @@ describe Chef::Resource::MsuPackage do
     expect(resource.resource_name).to eql(:msu_package)
   end
 
-  it "sets the source as it's name" do
-    expect(resource.source).to eql("test_pkg")
+  it "sets the source as its name and then coerces it to a path" do
+    expect(resource.source).to end_with("test_pkg")
   end
 
   it "sets the default action as :install" do
-    expect(resource.action).to eql(:install)
+    expect(resource.action).to eql([:install])
   end
 
   it "raises error if invalid action is given" do
-    expect { resource.action "abc" }.to raise_error(Chef::Exceptions::ValidationFailed)
+    expect { resource.action :abc }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "coerce its name to a package_name" do
