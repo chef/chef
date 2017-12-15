@@ -6,12 +6,7 @@ class TopCookbooks < Chef::Resource
   # Disabling all windows tests until winrm issue is properly settled.
   #
   action :run do
-    cookbook_kitchen "#{command} docker" do
-    end
-
-    cookbook_kitchen "#{command} git" do
-    end
-
+  
     # FIXME: waiting for https://github.com/learn-chef/learn-chef-acceptance/pull/23
     # cookbook_kitchen "#{command} learn-the-basics-ubuntu" do
     #   repository "learn-chef/learn-chef-acceptance"
