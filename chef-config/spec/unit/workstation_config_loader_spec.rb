@@ -365,7 +365,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
   end
 
   describe "when loading a credentials file" do
-    if windows?
+    if ChefConfig.windows?
       let(:home) { "C:/Users/example.user" }
     else
       let(:home) { "/Users/example.user" }
