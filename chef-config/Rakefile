@@ -11,6 +11,12 @@ begin
   desc "Run standard specs"
   RSpec::Core::RakeTask.new(:spec) do |t|
     t.pattern = FileList["spec/**/*_spec.rb"]
+    t.rspec_opts = if ENV["CIRCLECI"]
+                     "--profile 10 --format RspecJunitFormatter --out ../test_results/rspec_config.xml"
+                   else
+                     %w{--profile}
+                   end
+
   end
 rescue LoadError
   STDERR.puts "\n*** RSpec not available. (sudo) gem install rspec to run unit tests. ***\n\n"

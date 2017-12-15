@@ -22,6 +22,14 @@ require "rake"
 
 CHEF_ROOT = File.join(File.dirname(__FILE__), "..")
 
+def rspec_opts(name)
+  if ENV["CIRCLECI"]
+    " --profile 10 --format RspecJunitFormatter --out test_results/rspec_#{name}.xml"
+  else
+    %w{--profile}
+  end
+end
+
 begin
   require "rspec/core/rake_task"
 
@@ -41,7 +49,7 @@ begin
 
   desc "Run standard specs (minus long running specs)"
   RSpec::Core::RakeTask.new(:spec) do |t|
-    t.rspec_opts = %w{--profile}
+    t.rspec_opts = rspec_opts("all")
     # right now this just limits to functional + unit, but could also remove
     # individual tests marked long-running
     t.pattern = FileList["spec/**/*_spec.rb"]
@@ -50,7 +58,7 @@ begin
   namespace :spec do
     desc "Run all specs in spec directory with RCov"
     RSpec::Core::RakeTask.new(:rcov) do |t|
-      t.rspec_opts = %w{--profile}
+      t.rspec_opts = rspec_opts("rcov")
       t.pattern = FileList["spec/**/*_spec.rb"]
       t.rcov = true
       t.rcov_opts = lambda do
@@ -60,19 +68,19 @@ begin
 
     desc "Run all specs in spec directory"
     RSpec::Core::RakeTask.new(:all) do |t|
-      t.rspec_opts = %w{--profile}
+      t.rspec_opts = rspec_opts("all")
       t.pattern = FileList["spec/**/*_spec.rb"]
     end
 
     desc "Print Specdoc for all specs"
     RSpec::Core::RakeTask.new(:doc) do |t|
-      t.rspec_opts = %w{--format specdoc --dry-run --profile}
+      t.rspec_opts = %w{--format specdoc --dry-run } + rspec_opts("specdoc")
       t.pattern = FileList["spec/**/*_spec.rb"]
     end
 
     desc "Run the specs under spec/unit with activesupport loaded"
     RSpec::Core::RakeTask.new(:activesupport) do |t|
-      t.rspec_opts = %w{--require active_support/core_ext --profile}
+      t.rspec_opts = %w{--require active_support/core_ext} + rspec_opts("active_support")
       # Only node_spec and role_spec specifically have issues, target those tests
       t.pattern = FileList["spec/unit/node_spec.rb", "spec/unit/role_spec.rb"]
     end
@@ -80,7 +88,7 @@ begin
     [:unit, :functional, :integration, :stress].each do |sub|
       desc "Run the specs under spec/#{sub}"
       RSpec::Core::RakeTask.new(sub) do |t|
-        t.rspec_opts = %w{--profile}
+        t.rspec_opts = rspec_opts(sub)
         t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
       end
     end
