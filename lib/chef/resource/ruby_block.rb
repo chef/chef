@@ -23,6 +23,8 @@ require "chef/provider/ruby_block"
 class Chef
   class Resource
     class RubyBlock < Chef::Resource
+      resource_name :ruby_block
+
       default_action :run
       allowed_actions :create, :run
 

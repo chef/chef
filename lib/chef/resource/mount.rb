@@ -22,6 +22,7 @@ require "chef/resource"
 class Chef
   class Resource
     class Mount < Chef::Resource
+      resource_name :mount
 
       identity_attr :device
 

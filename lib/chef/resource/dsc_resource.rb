@@ -20,6 +20,7 @@ require "chef/dsl/powershell"
 class Chef
   class Resource
     class DscResource < Chef::Resource
+      resource_name :dsc_resource
       provides :dsc_resource, os: "windows"
 
       # This class will check if the object responds to

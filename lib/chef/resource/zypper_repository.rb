@@ -22,7 +22,7 @@ class Chef
   class Resource
     class ZypperRepository < Chef::Resource
       resource_name :zypper_repository
-      provides :zypper_repo
+      provides :zypper_repo # backwards compatibility with the existing cookbook resource
 
       property :repo_name, String, name_property: true
       property :description, String

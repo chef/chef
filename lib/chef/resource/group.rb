@@ -20,6 +20,7 @@
 class Chef
   class Resource
     class Group < Chef::Resource
+      resource_name :group
 
       identity_attr :group_name
 

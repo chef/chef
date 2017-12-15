@@ -22,6 +22,7 @@ require "chef/provider/launchd"
 class Chef
   class Resource
     class Launchd < Chef::Resource
+      resource_name :launchd
       provides :launchd, os: "darwin"
 
       identity_attr :label

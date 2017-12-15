@@ -28,6 +28,8 @@ class Chef
     class File < Chef::Resource
       include Chef::Mixin::Securable
 
+      resource_name :file
+
       if Platform.windows?
         # Use Windows rights instead of standard *nix permissions
         state_attrs :checksum, :rights, :deny_rights
