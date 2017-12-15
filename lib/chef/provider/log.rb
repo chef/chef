@@ -17,37 +17,28 @@
 #
 
 class Chef
-
   class Provider
-
     class Log
-
-      # Chef log provider, allows logging to chef's logs from recipes
+      # Chef log provider, allows logging to chef's logs
+      #
+      # @author Cary Penniman <cary@rightscale.com>
+      # @author Tyler Cloke <tyler@chef.io>
       class ChefLog < Chef::Provider
-
-        provides :log
-
         # No concept of a 'current' resource for logs, this is a no-op
         #
-        # === Return
-        # true:: Always return true
+        # @return [true] Always returns true
         def load_current_resource
           true
         end
 
         # Write the log to Chef's log
         #
-        # === Return
-        # true:: Always return true
+        # @return [true] Always returns true
         def action_write
           Chef::Log.send(new_resource.level, new_resource.message)
           new_resource.updated_by_last_action(true) if Chef::Config[:count_log_resource_updates]
         end
-
       end
-
     end
-
   end
-
 end
