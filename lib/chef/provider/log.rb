@@ -24,6 +24,8 @@ class Chef
       # @author Cary Penniman <cary@rightscale.com>
       # @author Tyler Cloke <tyler@chef.io>
       class ChefLog < Chef::Provider
+        provides :log
+
         # No concept of a 'current' resource for logs, this is a no-op
         #
         # @return [true] Always returns true
