@@ -22,7 +22,6 @@ class Chef
   class Resource
     class YumRepository < Chef::Resource
       resource_name :yum_repository
-      provides :yum_repository
 
       # http://linux.die.net/man/5/yum.conf as well as
       # http://dnf.readthedocs.io/en/latest/conf_ref.html

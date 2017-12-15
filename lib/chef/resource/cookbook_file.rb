@@ -33,7 +33,6 @@ class Chef
 
       def initialize(name, run_context = nil)
         super
-        @provider = Chef::Provider::CookbookFile
         @source = ::File.basename(name)
         @cookbook = nil
       end
