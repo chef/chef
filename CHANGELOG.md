@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.36 -->
-## [v13.6.36](https://github.com/chef/chef/tree/v13.6.36) (2017-12-15)
+<!-- latest_release 13.6.37 -->
+## [v13.6.37](https://github.com/chef/chef/tree/v13.6.37) (2017-12-15)
 
 #### Merged Pull Requests
-- Don&#39;t use .match? which is Ruby 2.4+ only in windows_task [#6675](https://github.com/chef/chef/pull/6675) ([tas50](https://github.com/tas50))
+- Avoid a few initializers in resources by using the DSL we have [#6671](https://github.com/chef/chef/pull/6671) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Avoid a few initializers in resources by using the DSL we have [#6671](https://github.com/chef/chef/pull/6671) ([tas50](https://github.com/tas50)) <!-- 13.6.37 -->
 - Don&#39;t use .match? which is Ruby 2.4+ only in windows_task [#6675](https://github.com/chef/chef/pull/6675) ([tas50](https://github.com/tas50)) <!-- 13.6.36 -->
 - Use comments in the github issue template [#6658](https://github.com/chef/chef/pull/6658) ([tas50](https://github.com/tas50)) <!-- 13.6.35 -->
 - windows_task: Fix resource isn&#39;t fully idempotent due to command property [#6654](https://github.com/chef/chef/pull/6654) ([Vasu1105](https://github.com/Vasu1105)) <!-- 13.6.34 -->
