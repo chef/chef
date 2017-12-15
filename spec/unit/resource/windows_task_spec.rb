@@ -35,7 +35,7 @@ describe Chef::Resource::WindowsTask do
   end
 
   it "sets the default action as :create" do
-    expect(resource.action).to eql(:create)
+    expect(resource.action).to eql([:create])
   end
 
   it "sets the default user as System" do
