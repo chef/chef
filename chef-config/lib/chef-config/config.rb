@@ -698,6 +698,9 @@ module ChefConfig
     # on running chef-client
     default :count_log_resource_updates, true
 
+    # The selected profile when using credentials.
+    default :profile, nil
+
     # knife configuration data
     config_context :knife do
       # XXX: none of these default values are applied to knife (and would create a backcompat

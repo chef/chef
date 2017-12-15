@@ -31,7 +31,9 @@ module ChefConfig
 
     # Path to a config file requested by user, (e.g., via command line option). Can be nil
     attr_accessor :explicit_config_file
-    attr_reader :profile
+    # The name of a credentials profile. Can be nil
+    attr_accessor :profile
+    attr_reader :credentials_found
 
     # TODO: initialize this with a logger for Chef and Knife
     def initialize(explicit_config_file, logger = nil, profile: nil)
@@ -40,10 +42,11 @@ module ChefConfig
       @config_location = nil
       @profile = profile
       @logger = logger || NullLogger.new
+      @credentials_found = false
     end
 
     def no_config_found?
-      config_location.nil?
+      config_location.nil? && !credentials_found
     end
 
     def config_location
@@ -152,6 +155,7 @@ module ChefConfig
       extract_key(creds, "validation_key", :validation_key, :validation_key_contents)
       extract_key(creds, "validator_key", :validation_key, :validation_key_contents)
       extract_key(creds, "client_key", :client_key, :client_key_contents)
+      @credentials_found = true
     end
 
     def extract_key(creds, name, config_path, config_contents)

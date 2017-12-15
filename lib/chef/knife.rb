@@ -178,8 +178,9 @@ class Chef
       @config_loader ||= WorkstationConfigLoader.new(nil, Chef::Log)
     end
 
-    def self.load_config(explicit_config_file)
+    def self.load_config(explicit_config_file, profile)
       config_loader.explicit_config_file = explicit_config_file
+      config_loader.profile = profile
       config_loader.load
 
       ui.warn("No knife configuration file found") if config_loader.no_config_found?
@@ -404,7 +405,7 @@ class Chef
     def configure_chef
       # knife needs to send logger output to STDERR by default
       Chef::Config[:log_location] = STDERR
-      config_loader = self.class.load_config(config[:config_file])
+      config_loader = self.class.load_config(config[:config_file], config[:profile])
       config[:config_file] = config_loader.config_location
 
       # For CLI options like `--config-option key=value`. These have to get
