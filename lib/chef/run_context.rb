@@ -29,7 +29,6 @@ require "forwardable"
 
 class Chef
 
-  # == Chef::RunContext
   # Value object that loads and tracks the context of a Chef run
   class RunContext
     #
@@ -312,7 +311,7 @@ class Chef
     #
     # @param recipe_names [Array[String]] The recipe name (e.g 'my_cookbook' or
     #   'my_cookbook::my_resource').
-    # @param current_cookbook The cookbook we are currently running in.
+    # @param current_cookbook [String] The cookbook we are currently running in.
     #
     # @return A truthy value if the load occurred; `false` if already loaded.
     #
@@ -556,11 +555,18 @@ ERROR_MESSAGE
       @reboot_info = reboot_info
     end
 
+    #
+    # Cancels a pending reboot
+    #
     def cancel_reboot
       Chef::Log.info "Changing reboot status from #{reboot_info.inspect} to {}"
       @reboot_info = {}
     end
 
+    #
+    # Checks to see if a reboot has been requested
+    # @return [Boolean]
+    #
     def reboot_requested?
       reboot_info.size > 0
     end

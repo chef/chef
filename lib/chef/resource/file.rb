@@ -43,7 +43,7 @@ class Chef
       # mutate the new_resource.checksum which would change the
       # user intent in the new_resource if the resource is reused.
       #
-      # @returns [String] Checksum of the file we actually rendered
+      # @return [String] Checksum of the file we actually rendered
       attr_accessor :final_checksum
 
       default_action :create

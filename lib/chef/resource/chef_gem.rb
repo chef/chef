@@ -30,6 +30,7 @@ class Chef
                }
       property :compile_time, [ true, false ], default: false, desired_state: false
 
+      # force the resource to compile time if the compile time property has been set
       def after_created
         if compile_time
           Array(action).each do |action|

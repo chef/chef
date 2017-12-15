@@ -42,9 +42,9 @@ class Chef
     extend Chef::Mixin::ConvertToClassName
     extend Forwardable
 
-    # Backwards Compat:
-    # Ideally, we should not vomit all of these methods into this base class;
-    # instead, they should be accessed by hitting the ui object directly.
+    # @note Backwards Compat:
+    #   Ideally, we should not vomit all of these methods into this base class;
+    #   instead, they should be accessed by hitting the ui object directly.
     def_delegator :@ui, :stdout
     def_delegator :@ui, :stderr
     def_delegator :@ui, :stdin
@@ -105,12 +105,11 @@ class Chef
     # Explicitly set the category for the current command to +new_category+
     # The category is normally determined from the first word of the command
     # name, but some commands make more sense using two or more words
-    # ===Arguments
-    # new_category::: A String to set the category to (see examples)
-    # ===Examples:
-    # Data bag commands would be in the 'data' category by default. To put them
-    # in the 'data bag' category:
-    #   category('data bag')
+    # @param new_category [String] value to set the category to (see examples)
+    #
+    # @example Data bag commands would be in the 'data' category by default. To
+    #  put them in the 'data bag' category:
+    #  category('data bag')
     def self.category(new_category)
       @category = new_category
     end
@@ -196,10 +195,11 @@ class Chef
 
     # Run knife for the given +args+ (ARGV), adding +options+ to the list of
     # CLI options that the subcommand knows how to handle.
-    # ===Arguments
-    # args::: usually ARGV
-    # options::: A Mixlib::CLI option parser hash. These +options+ are how
-    # subcommands know about global knife CLI options
+    #
+    # @param args [Array] The arguments. Usually ARGV
+    # @param options [Mixlib::CLI option parser hash] These +options+ are how
+    #   subcommands know about global knife CLI options
+    #
     def self.run(args, options = {})
       # Fallback debug logging. Normally the logger isn't configured until we
       # read the config, but this means any logging that happens before the
