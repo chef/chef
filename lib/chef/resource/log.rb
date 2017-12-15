@@ -18,59 +18,29 @@
 #
 
 require "chef/resource"
-require "chef/provider/log"
 
 class Chef
   class Resource
+    # Sends a string to a log provider.
+    # Allows logging a :debug, :info, :warn, and :error levels
+    # Defaults to :info level
+    #
+    # @example logging at default info level
+    #   log "your string to log"
+    #
+    # @example logging at specified debug level
+    #   log "a debug string" do
+    #     level :debug
+    #   end
+    #
     class Log < Chef::Resource
+      resource_name :log
 
-      identity_attr :message
+      property :message, String, name_property: true
+      property :level, Symbol, equal_to: [ :debug, :info, :warn, :error, :fatal ], default: :info
 
+      allowed_actions :write
       default_action :write
-
-      # Sends a string from a recipe to a log provider
-      #
-      # log "some string to log" do
-      #   level :info  # (default)  also supports :warn, :debug, and :error
-      # end
-      #
-      # === Example
-      # log "your string to log"
-      #
-      # or
-      #
-      # log "a debug string" { level :debug }
-      #
-
-      # Initialize log resource with a name as the string to log
-      #
-      # === Parameters
-      # name<String>:: Message to log
-      # collection<Array>:: Collection of included recipes
-      # node<Chef::Node>:: Node where resource will be used
-      def initialize(name, run_context = nil)
-        super
-        @level = :info
-        @message = name
-      end
-
-      def message(arg = nil)
-        set_or_return(
-          :message,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      # <Symbol> Log level, one of :debug, :info, :warn, :error or :fatal
-      def level(arg = nil)
-        set_or_return(
-          :level,
-          arg,
-          :equal_to => [ :debug, :info, :warn, :error, :fatal ]
-        )
-      end
-
     end
   end
 end
