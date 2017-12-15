@@ -25,9 +25,6 @@ class Chef
     # Allows logging a :debug, :info, :warn, and :error levels
     # Defaults to :info level
     #
-    # @author Cary Penniman <cary@rightscale.com>
-    # @author Tyler Cloke <tyler@chef.io>
-    #
     # @example logging at default info level
     #   log "your string to log"
     #

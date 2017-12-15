@@ -20,9 +20,6 @@ class Chef
   class Provider
     class Log
       # Chef log provider, allows logging to chef's logs
-      #
-      # @author Cary Penniman <cary@rightscale.com>
-      # @author Tyler Cloke <tyler@chef.io>
       class ChefLog < Chef::Provider
         provides :log
 
