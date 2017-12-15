@@ -17,7 +17,6 @@
 #
 
 require "chef/resource/package"
-require "chef/provider/package/paludis"
 
 class Chef
   class Resource

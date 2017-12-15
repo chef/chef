@@ -21,7 +21,6 @@ require "chef/resource"
 class Chef
   class Resource
     class WindowsTask < Chef::Resource
-
       resource_name :windows_task
       provides :windows_task, os: "windows"
 

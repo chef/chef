@@ -18,11 +18,11 @@
 #
 
 require "chef/resource"
-require "chef/provider/http_request"
 
 class Chef
   class Resource
     class HttpRequest < Chef::Resource
+      resource_name :http_request
 
       identity_attr :url
 

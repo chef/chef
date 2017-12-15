@@ -21,7 +21,6 @@ require "chef/resource"
 class Chef
   class Resource
     class Breakpoint < Chef::Resource
-      provides :breakpoint
       resource_name :breakpoint
 
       default_action :break

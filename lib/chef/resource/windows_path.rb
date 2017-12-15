@@ -21,7 +21,7 @@ require "chef/resource"
 class Chef
   class Resource
     class WindowsPath < Chef::Resource
-
+      resource_name :windows_path
       provides :windows_path, os: "windows"
 
       allowed_actions :add, :remove

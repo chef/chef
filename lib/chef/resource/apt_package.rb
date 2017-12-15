@@ -23,7 +23,7 @@ class Chef
   class Resource
     class AptPackage < Chef::Resource::Package
       resource_name :apt_package
-      provides :package, os: "linux", platform_family: "debian"
+      provides :package, platform_family: "debian"
 
       property :default_release, String, desired_state: false
 

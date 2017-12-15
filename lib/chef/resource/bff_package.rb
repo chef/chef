@@ -22,6 +22,7 @@ require "chef/provider/package/aix"
 class Chef
   class Resource
     class BffPackage < Chef::Resource::Package
+      resource_name :bff_package
     end
   end
 end

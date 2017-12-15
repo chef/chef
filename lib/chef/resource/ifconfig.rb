@@ -22,9 +22,9 @@ require "chef/resource"
 class Chef
   class Resource
     class Ifconfig < Chef::Resource
+      resource_name :ifconfig
 
       identity_attr :device
-
       state_attrs :inet_addr, :mask
 
       default_action :add

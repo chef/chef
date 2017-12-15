@@ -22,6 +22,7 @@ require "chef/resource"
 class Chef
   class Resource
     class Mdadm < Chef::Resource
+      resource_name :mdadm
 
       identity_attr :raid_device
 

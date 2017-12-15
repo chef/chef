@@ -21,7 +21,6 @@ class Chef
   class Resource
     class Ohai < Chef::Resource
       resource_name :ohai
-      provides :ohai
 
       property :ohai_name, name_property: true
       property :plugin, [String]

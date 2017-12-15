@@ -23,6 +23,7 @@ require "chef/provider/execute"
 class Chef
   class Resource
     class Execute < Chef::Resource
+      resource_name :execute
 
       identity_attr :command
 
