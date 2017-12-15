@@ -22,7 +22,6 @@ class Chef
   class Resource
     class AptRepository < Chef::Resource
       resource_name :apt_repository
-      provides :apt_repository
 
       property :repo_name, String, name_property: true
       property :uri, String
