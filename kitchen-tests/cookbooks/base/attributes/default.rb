@@ -27,7 +27,7 @@ default["openssh"]["client"]["strict_host_key_checking"] = "no"
 default["openssh"]["client"]["protocol"] = "2"
 
 # it is mostly important that the aes*-ctr ciphers appear first in this list, the cbc ciphers are for compatibility
-default["openssh"]["server"]["ciphers"] = "aes256-ctr,aes192-ctr,aes128-ctr,aes256-cbc,aes192-cbc,aes128-cbc,blowfish-cbc,3des-cbc,cast128-cbc"
+default["openssh"]["server"]["ciphers"] = "aes256-ctr,aes192-ctr,aes128-ctr,aes256-cbc,aes192-cbc,aes128-cbc,3des-cbc"
 # DNS causes long timeouts when connecting clients have busted DNS
 default["openssh"]["server"]["use_dns"] = "no"
 default["openssh"]["server"]["syslog_facility"] = "AUTH"

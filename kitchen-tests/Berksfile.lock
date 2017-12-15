@@ -53,6 +53,6 @@ GRAPH
   sudo (4.0.0)
   ubuntu (2.0.1)
     apt (>= 0.0.0)
-  users (5.2.2)
-  windows (3.4.0)
+  users (5.3.0)
+  windows (3.4.1)
     ohai (>= 4.0.0)
