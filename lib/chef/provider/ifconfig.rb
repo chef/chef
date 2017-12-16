@@ -23,20 +23,14 @@ require "chef/resource/file"
 require "chef/exceptions"
 require "erb"
 
-#  Recipe example:
-#
-#    int = {Hash with your network settings...}
-#
-#    ifconfig  int['ip'] do
-#      ignore_failure  true
-#      device  int['dev']
-#      mask    int['mask']
-#      gateway int['gateway']
-#      mtu     int['mtu']
-#    end
-
 class Chef
   class Provider
+    # use the ifconfig resource to manage interfaces on *nix systems
+    #
+    # @example set a static ip on eth1
+    #   ifconfig '33.33.33.80' do
+    #     device 'eth1'
+    #   end
     class Ifconfig < Chef::Provider
       provides :ifconfig
 

@@ -21,163 +21,37 @@ require "chef/resource"
 
 class Chef
   class Resource
+    # use the ifconfig resource to manage interfaces on *nix systems
+    #
+    # @example set a static ip on eth1
+    #   ifconfig '33.33.33.80' do
+    #     device 'eth1'
+    #   end
     class Ifconfig < Chef::Resource
+      resource_name :ifconfig
 
       identity_attr :device
-
       state_attrs :inet_addr, :mask
 
       default_action :add
       allowed_actions :add, :delete, :enable, :disable
 
-      def initialize(name, run_context = nil)
-        super
-        @target = name
-        @hwaddr = nil
-        @mask = nil
-        @inet_addr = nil
-        @bcast = nil
-        @mtu = nil
-        @metric = nil
-        @device = nil
-        @onboot = nil
-        @network = nil
-        @bootproto = nil
-        @onparent = nil
-        @ethtool_opts = nil
-        @bonding_opts = nil
-        @master = nil
-        @slave = nil
-      end
-
-      def target(arg = nil)
-        set_or_return(
-          :target,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def device(arg = nil)
-        set_or_return(
-          :device,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def hwaddr(arg = nil)
-        set_or_return(
-          :hwaddr,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def inet_addr(arg = nil)
-        set_or_return(
-          :inet_addr,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def bcast(arg = nil)
-        set_or_return(
-          :bcast,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def mask(arg = nil)
-        set_or_return(
-          :mask,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def mtu(arg = nil)
-        set_or_return(
-          :mtu,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def metric(arg = nil)
-        set_or_return(
-          :metric,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def onboot(arg = nil)
-        set_or_return(
-          :onboot,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def network(arg = nil)
-        set_or_return(
-          :network,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def bootproto(arg = nil)
-        set_or_return(
-          :bootproto,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def onparent(arg = nil)
-        set_or_return(
-          :onparent,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def ethtool_opts(arg = nil)
-        set_or_return(
-          :ethtool_opts,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def bonding_opts(arg = nil)
-        set_or_return(
-          :bonding_opts,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def master(arg = nil)
-        set_or_return(
-          :master,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def slave(arg = nil)
-        set_or_return(
-          :slave,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :target, String, name_property: true
+      property :hwaddr, String
+      property :mask, String
+      property :inet_addr, String
+      property :bcast, String
+      property :mtu, String
+      property :metric, String
+      property :device, String
+      property :onboot, String
+      property :network, String
+      property :bootproto, String
+      property :onparent, String
+      property :ethtool_opts, String
+      property :bonding_opts, String
+      property :master, String
+      property :slave, String
     end
-
   end
 end
