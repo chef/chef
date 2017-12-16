@@ -31,12 +31,12 @@ class Chef
       default_action :install
 
       property :source, String,
-                name_property: true,
                 coerce: (proc do |s|
                   unless s.nil?
                     uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)
                   end
-                end)
+                end),
+                default: lazy { |r| r.package_name }
       property :checksum, String, desired_state: false
     end
   end

@@ -34,7 +34,8 @@ class Chef
                   unless s.nil?
                     uri_scheme?(s) ? s : Chef::Util::PathHelper.canonical_path(s, false)
                   end
-                end)
+                end),
+                default: lazy { |r| r.package_name }
     end
   end
 end

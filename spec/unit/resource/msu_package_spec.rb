@@ -31,19 +31,30 @@ describe Chef::Resource::MsuPackage do
     expect(resource.resource_name).to eql(:msu_package)
   end
 
-  it "sets the source as its name and then coerces it to a path" do
-    expect(resource.source).to end_with("test_pkg")
-  end
-
   it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
   end
 
-  it "raises error if invalid action is given" do
-    expect { resource.action :abc }.to raise_error(Chef::Exceptions::ValidationFailed)
+  it "coerces name property to package_name property" do
+    expect(resource.package_name).to eql("test_pkg")
   end
 
-  it "coerce its name to a package_name" do
-    expect(resource.package_name).to eql("test_pkg")
+  it "coerces name property to a source property if source not provided" do
+    expect(resource.source).to end_with("test_pkg")
+  end
+
+  it "coerces name property to a source property if source not provided and package_name is" do
+    resource.package_name("package.msu")
+    expect(resource.source).to end_with("package.msu")
+  end
+
+  it "does not coerce the source property if it looks like a path" do
+    resource.source("/foo/bar/package.msu")
+    expect(resource.source).to eq("/foo/bar/package.msu")
+  end
+
+  it "coerces source property if it does not looks like a path" do
+    resource.source("package.msu")
+    expect(resource.source).not_to eq("package.msu")
   end
 end
