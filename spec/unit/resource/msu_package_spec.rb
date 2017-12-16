@@ -48,11 +48,6 @@ describe Chef::Resource::MsuPackage do
     expect(resource.source).to end_with("package.msu")
   end
 
-  it "does not coerce the source property if it looks like a path" do
-    resource.source("/foo/bar/package.msu")
-    expect(resource.source).to eq("/foo/bar/package.msu")
-  end
-
   it "coerces source property if it does not looks like a path" do
     resource.source("package.msu")
     expect(resource.source).not_to eq("package.msu")
