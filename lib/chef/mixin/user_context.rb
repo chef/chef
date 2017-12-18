@@ -22,7 +22,8 @@ class Chef
   module Mixin
     module UserContext
 
-      def with_user_context(user, password, domain = nil, &block)
+      # valid logon_type values => :remote, :local
+      def with_user_context(user, password, domain = nil, logon_type = :remote, &block)
         unless Chef::Platform.windows?
           raise Exceptions::UnsupportedPlatform, "User context impersonation is supported only on the Windows platform"
         end
@@ -35,7 +36,7 @@ class Chef
 
         begin
           if user
-            logon_session = Chef::Util::Windows::LogonSession.new(user, password, domain)
+            logon_session = Chef::Util::Windows::LogonSession.new(user, password, domain, logon_type)
             logon_session.open
             logon_session.set_user_context
           end

@@ -647,7 +647,14 @@ class Chef
 
           true
         else
-          process_token = open_current_process_token(TOKEN_READ)
+          # a regular user doesn't have privileges to call Chef::ReservedNames::Win32::Security.OpenProcessToken
+          # hence we return false if the open_current_process_token fails with `Access is denied.` error message.
+          begin
+            process_token = open_current_process_token(TOKEN_READ)
+          rescue Exception => run_error
+            return false if run_error.message.match(/Access is denied/)
+            Chef::ReservedNames::Win32::Error.raise!
+          end
 
           # display token elevation details
           token_elevation_type = get_token_information_elevation_type(process_token)

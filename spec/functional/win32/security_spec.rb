@@ -42,7 +42,6 @@ describe "Chef::Win32::Security", :windows_only do
     before do
       allow_any_instance_of(Chef::Mixin::UserContext).to receive(:node).and_return({ "platform_family" => "windows" })
       allow(Chef::Platform).to receive(:windows_server_2003?).and_return(false)
-      allow(Chef::ReservedNames::Win32::Security).to receive(:OpenProcessToken).and_return(true)
       add_user = Mixlib::ShellOut.new("net user #{user} #{password} /ADD")
       add_user.run_command
       add_user.error!
@@ -54,7 +53,7 @@ describe "Chef::Win32::Security", :windows_only do
       delete_user.error!
     end
     it "has_admin_privileges? returns false" do
-      has_admin_privileges = with_user_context(user, password, domain) do
+      has_admin_privileges = with_user_context(user, password, domain, :local) do
         Chef::ReservedNames::Win32::Security.has_admin_privileges?
       end
       expect(has_admin_privileges).to eq(false)
