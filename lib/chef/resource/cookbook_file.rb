@@ -27,23 +27,12 @@ class Chef
     class CookbookFile < Chef::Resource::File
       include Chef::Mixin::Securable
 
+      resource_name :cookbook_file
+
+      property :source, [ String, Array ], default: lazy { ::File.basename(name) }
+      property :cookbook, String
+
       default_action :create
-
-      def initialize(name, run_context = nil)
-        super
-        @provider = Chef::Provider::CookbookFile
-        @source = ::File.basename(name)
-        @cookbook = nil
-      end
-
-      def source(source_filename = nil)
-        set_or_return(:source, source_filename, :kind_of => [ String, Array ])
-      end
-
-      def cookbook(cookbook_name = nil)
-        set_or_return(:cookbook, cookbook_name, :kind_of => String)
-      end
-
     end
   end
 end
