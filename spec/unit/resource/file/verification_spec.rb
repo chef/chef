@@ -68,7 +68,7 @@ describe Chef::Resource::File::Verification do
       end
 
       it "responds to to_s" do
-        v = Chef::Resource::File::Verification.new(parent_resource, nil, {}) { }
+        v = Chef::Resource::File::Verification.new(parent_resource, nil, {}) {}
         expect(v.to_s).to eq("<Proc>")
       end
     end

@@ -122,7 +122,7 @@ class Chef
 
         def to_s
           if @block
-            '<Proc>'
+            "<Proc>"
           elsif @command.is_a?(Symbol)
             "#{@command.inspect} (#{Chef::Resource::File::Verification.lookup(@command).name})"
           elsif @command.is_a?(String)
