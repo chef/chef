@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.42 -->
-## [v13.6.42](https://github.com/chef/chef/tree/v13.6.42) (2017-12-18)
+<!-- latest_release 13.6.43 -->
+## [v13.6.43](https://github.com/chef/chef/tree/v13.6.43) (2017-12-18)
 
 #### Merged Pull Requests
-- implement credential management [#6660](https://github.com/chef/chef/pull/6660) ([thommay](https://github.com/thommay))
+- Modernize cookbook_file resource and expand specs [#6689](https://github.com/chef/chef/pull/6689) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Modernize cookbook_file resource and expand specs [#6689](https://github.com/chef/chef/pull/6689) ([tas50](https://github.com/tas50)) <!-- 13.6.43 -->
 - implement credential management [#6660](https://github.com/chef/chef/pull/6660) ([thommay](https://github.com/thommay)) <!-- 13.6.42 -->
 - Modernize reboot resource and add spec [#6683](https://github.com/chef/chef/pull/6683) ([tas50](https://github.com/tas50)) <!-- 13.6.41 -->
 - Fix bugs in handling &#39;source&#39;  in msu_package and cab_package [#6686](https://github.com/chef/chef/pull/6686) ([tas50](https://github.com/tas50)) <!-- 13.6.40 -->
