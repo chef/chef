@@ -341,6 +341,21 @@ class Chef
         SID.new(group_result[:PrimaryGroup], group_result_storage)
       end
 
+      def self.get_token_information_elevation_type(token)
+        token_result_size = FFI::MemoryPointer.new(:ulong)
+        if GetTokenInformation(token.handle.handle, :TokenElevationType, nil, 0, token_result_size)
+          raise "Expected ERROR_INSUFFICIENT_BUFFER from GetTokenInformation, and got no error!"
+        elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
+          Chef::ReservedNames::Win32::Error.raise!
+        end
+        info_ptr = FFI::MemoryPointer.new(:pointer)
+        token_info_pointer = TOKEN_ELEVATION_TYPE.new info_ptr
+        unless GetTokenInformation(token.handle.handle, :TokenElevationType, token_info_pointer, 4, token_result_size)
+          Chef::ReservedNames::Win32::Error.raise!
+        end
+        token_info_pointer[:ElevationType]
+      end
+
       def self.initialize_acl(acl_size)
         acl = FFI::MemoryPointer.new acl_size
         unless InitializeAcl(acl, acl_size, ACL_REVISION)
@@ -633,6 +648,11 @@ class Chef
           true
         else
           process_token = open_current_process_token(TOKEN_READ)
+
+          # display token elevation details
+          token_elevation_type = get_token_information_elevation_type(process_token)
+          Chef::Log.debug("Token Elevation Type: #{token_elevation_type}")
+
           elevation_result = FFI::Buffer.new(:ulong)
           elevation_result_size = FFI::MemoryPointer.new(:uint32)
           success = GetTokenInformation(process_token.handle.handle, :TokenElevation, elevation_result, 4, elevation_result_size)

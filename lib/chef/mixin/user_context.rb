@@ -31,7 +31,7 @@ class Chef
           raise ArgumentError, "You must supply a block to `with_user_context`"
         end
 
-        login_session = nil
+        logon_session = nil
 
         begin
           if user
