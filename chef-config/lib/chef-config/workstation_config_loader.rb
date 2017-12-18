@@ -146,7 +146,11 @@ module ChefConfig
       a
     end
 
-    def apply_credentials(creds, _profile)
+    def apply_credentials(creds, profile)
+      Config.profile ||= profile
+      if creds.key?("node_name") && creds.key?("client_name")
+        raise ChefConfig::ConfigurationError, "Do not specify both node_name and client_name. You should prefer client_name."
+      end
       Config.node_name = creds.fetch("node_name") if creds.key?("node_name")
       Config.node_name = creds.fetch("client_name") if creds.key?("client_name")
       Config.chef_server_url = creds.fetch("chef_server_url") if creds.key?("chef_server_url")

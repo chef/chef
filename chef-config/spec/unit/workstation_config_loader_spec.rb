@@ -401,6 +401,7 @@ EOH
           expect { config_loader.load_credentials }.not_to raise_error
           expect(ChefConfig::Config.chef_server_url).to eq("https://api.chef.io/organizations/bedrock")
           expect(ChefConfig::Config.client_key.to_s).to eq("#{home}/.chef/barney_rubble.pem")
+          expect(ChefConfig::Config.profile.to_s).to eq("default")
         end
       end
 
@@ -470,6 +471,21 @@ EOH
         it "falls back to the default" do
           expect { config_loader.load_credentials }.not_to raise_error
           expect(ChefConfig::Config.node_name).to eq("default")
+        end
+      end
+
+      context "and contains both node_name and client_name" do
+        let(:content) do
+          content = <<EOH
+[default]
+node_name = 'barney'
+client_name = 'barney'
+EOH
+          content
+        end
+
+        it "raises a ConfigurationError" do
+          expect { config_loader.load_credentials }.to raise_error(ChefConfig::ConfigurationError)
         end
       end
 
