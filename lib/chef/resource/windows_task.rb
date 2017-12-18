@@ -209,34 +209,7 @@ class Chef
       # @see http://tools.ietf.org/html/rfc2445#section-4.3.6
       # @param [Integer] seconds The amount of seconds for this duration
       def sec_to_dur(seconds)
-        seconds = seconds.to_i
-        iso_str = "P"
-        if seconds > 604_800 # more than a week
-          weeks = seconds / 604_800
-          seconds -= (604_800 * weeks)
-          iso_str << "#{weeks}W"
-        end
-        if seconds > 86_400 # more than a day
-          days = seconds / 86_400
-          seconds -= (86_400 * days)
-          iso_str << "#{days}D"
-        end
-        if seconds >= 0
-          iso_str << "T"
-          if seconds > 3600 # more than an hour
-            hours = seconds / 3600
-            seconds -= (3600 * hours)
-            iso_str << "#{hours}H"
-          end
-          if seconds > 60 # more than a minute
-            minutes = seconds / 60
-            seconds -= (60 * minutes)
-            iso_str << "#{minutes}M"
-          end
-          iso_str << "#{seconds}S"
-        end
-
-        iso_str
+        dur = seconds.to_i == 0 ? nil : ISO8601::Duration.new(seconds.to_i).to_s
       end
 
     end

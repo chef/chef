@@ -229,8 +229,8 @@ class Chef
             current_resource.frequency_modifier != new_resource.frequency_modifier ||
             current_resource.frequency != new_resource.frequency ||
             current_resource.idle_time != new_resource.idle_time ||
-            current_resource.random_delay != new_resource.random_delay ||
-            !new_resource.execution_time_limit.include?(current_resource.execution_time_limit) ||
+            random_delay_updated? ||
+            execution_time_limit_updated? ||
             (new_resource.start_day && new_resource.start_day != "N/A" && start_day_updated?) ||
             (new_resource.start_time && new_resource.start_time != "N/A" && start_time_updated?)
         begin
@@ -241,6 +241,20 @@ class Chef
         end
 
         false
+      end
+
+      def random_delay_updated?
+        return false if current_resource.random_delay.nil? && new_resource.random_delay.nil?
+        return true if new_resource.random_delay.nil?
+        current_resource.random_delay = 0 if current_resource.random_delay.nil?
+        ISO8601::Duration.new(current_resource.random_delay) != ISO8601::Duration.new(new_resource.random_delay)
+      end
+
+      def execution_time_limit_updated?
+        return false if current_resource.execution_time_limit.nil? && new_resource.execution_time_limit.nil?
+        return true if new_resource.execution_time_limit.nil?
+        current_resource.execution_time_limit = 0 if current_resource.execution_time_limit.nil?
+        ISO8601::Duration.new(current_resource.execution_time_limit) != ISO8601::Duration.new(new_resource.execution_time_limit)
       end
 
       def start_day_updated?

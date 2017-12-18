@@ -281,23 +281,23 @@ describe Chef::Resource::WindowsTask do
   end
 
   context "#sec_to_dur" do
-    it "return PT0S when passed 0" do
-      expect(resource.send(:sec_to_dur, 0)).to eql("PT0S")
+    it "return nil when passed 0" do
+      expect(resource.send(:sec_to_dur, 0)).to eql(nil)
     end
     it "return PT1S when passed 1" do
       expect(resource.send(:sec_to_dur, 1)).to eql("PT1S")
     end
-    it "return PT24H0S when passed 86400" do
-      expect(resource.send(:sec_to_dur, 86400)).to eql("PT24H0S")
+    it "return PT86400S when passed 86400" do
+      expect(resource.send(:sec_to_dur, 86400)).to eql("PT86400S")
     end
-    it "return P1DT1S when passed 86401" do
-      expect(resource.send(:sec_to_dur, 86401)).to eql("P1DT1S")
+    it "return PT86401S when passed 86401" do
+      expect(resource.send(:sec_to_dur, 86401)).to eql("PT86401S")
     end
-    it "return P1DT1M40S when passed 86500" do
-      expect(resource.send(:sec_to_dur, 86500)).to eql("P1DT1M40S")
+    it "return PT86500S when passed 86500" do
+      expect(resource.send(:sec_to_dur, 86500)).to eql("PT86500S")
     end
-    it "return P1WT1S when passed 604801" do
-      expect(resource.send(:sec_to_dur, 604801)).to eql("P1WT1S")
+    it "return PT604801S when passed 604801" do
+      expect(resource.send(:sec_to_dur, 604801)).to eql("PT604801S")
     end
   end
 end
