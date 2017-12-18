@@ -31,6 +31,7 @@ class Chef
 
     def initialize(url = Chef::Config[:chef_server_url], options = {})
       options[:client_name] ||= Chef::Config[:node_name]
+      options[:raw_key] ||= Chef::Config[:client_key_contents]
       options[:signing_key_filename] ||= Chef::Config[:client_key] unless options[:raw_key]
       options[:signing_key_filename] = nil if chef_zero_uri?(url)
       options[:inflate_json_class] = false

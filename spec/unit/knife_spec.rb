@@ -47,6 +47,7 @@ describe Chef::Knife do
 
     allow(Chef::WorkstationConfigLoader).to receive(:new).and_return(config_loader)
     allow(config_loader).to receive(:explicit_config_file=)
+    allow(config_loader).to receive(:profile=)
 
     # Prevent gratuitous code reloading:
     allow(Chef::Knife).to receive(:load_commands)
@@ -331,6 +332,7 @@ describe Chef::Knife do
           knife.config[:config_file] = fake_config
           config_loader = double("Chef::WorkstationConfigLoader", :load => true, :no_config_found? => false, :chef_config_dir => "/etc/chef", :config_location => fake_config)
           allow(config_loader).to receive(:explicit_config_file=).with(fake_config).and_return(fake_config)
+          allow(config_loader).to receive(:profile=)
           allow(Chef::WorkstationConfigLoader).to receive(:new).and_return(config_loader)
         end
 
