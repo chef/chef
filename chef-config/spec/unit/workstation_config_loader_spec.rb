@@ -38,6 +38,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
   before do
     # We set this to nil so that a dev workstation will
     # not interfere with the tests.
+    ChefConfig::Config.reset
     ChefConfig::Config[:config_d_dir] = nil
   end
 
