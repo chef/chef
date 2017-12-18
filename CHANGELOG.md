@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.39 -->
-## [v13.6.39](https://github.com/chef/chef/tree/v13.6.39) (2017-12-15)
+<!-- latest_release 13.6.40 -->
+## [v13.6.40](https://github.com/chef/chef/tree/v13.6.40) (2017-12-18)
 
 #### Merged Pull Requests
-- Move docker and git top cookbook tests to travis [#6673](https://github.com/chef/chef/pull/6673) ([scotthain](https://github.com/scotthain))
+- Fix bugs in handling &#39;source&#39;  in msu_package and cab_package [#6686](https://github.com/chef/chef/pull/6686) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Fix bugs in handling &#39;source&#39;  in msu_package and cab_package [#6686](https://github.com/chef/chef/pull/6686) ([tas50](https://github.com/tas50)) <!-- 13.6.40 -->
 - Move docker and git top cookbook tests to travis [#6673](https://github.com/chef/chef/pull/6673) ([scotthain](https://github.com/scotthain)) <!-- 13.6.39 -->
 - Modernize the log resource [#6676](https://github.com/chef/chef/pull/6676) ([tas50](https://github.com/tas50)) <!-- 13.6.38 -->
 - Avoid a few initializers in resources by using the DSL we have [#6671](https://github.com/chef/chef/pull/6671) ([tas50](https://github.com/tas50)) <!-- 13.6.37 -->
