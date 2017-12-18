@@ -29,7 +29,7 @@ class Chef
 
       resource_name :cookbook_file
 
-      property :source, [ String, Array ], default: lazy { |r| ::File.basename(r.name) }
+      property :source, [ String, Array ], default: lazy { ::File.basename(name) }
       property :cookbook, String
 
       default_action :create
