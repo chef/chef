@@ -52,8 +52,8 @@ class Chef
       property :mirrorlist, String
       property :mode, default: "0644"
       property :options, Hash
-      property :priority, String, regex: /^(\d?[0-9]|[0-9][0-9])$/
       property :password, String
+      property :priority, String, regex: /^(\d?[1-9]|[0-9][0-9])$/
       property :proxy_password, String
       property :proxy_username, String
       property :proxy, String

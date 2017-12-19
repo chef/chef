@@ -41,6 +41,7 @@ describe Chef::Resource::YumRepository do
     expect { resource.priority "99" }.not_to raise_error(ArgumentError)
     expect { resource.priority "1" }.not_to raise_error(ArgumentError)
     expect { resource.priority "100" }.to raise_error(ArgumentError)
+    expect { resource.priority "0" }.to raise_error(ArgumentError)
   end
 
   it "the failovermethod property accepts 'priority' or 'roundrobin'" do
