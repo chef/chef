@@ -45,16 +45,12 @@
 - Enable Fedora integration testing in Travis [#6523](https://github.com/chef/chef/pull/6523) ([tas50](https://github.com/tas50)) <!-- 13.6.18 -->
 - Only warn if a secret was actually given [#6605](https://github.com/chef/chef/pull/6605) ([coderanger](https://github.com/coderanger)) <!-- 13.6.17 -->
 - Makes life easier for hook authors switching from the older report handler syntax [#6574](https://github.com/chef/chef/pull/6574) ([coderanger](https://github.com/coderanger)) <!-- 13.6.16 -->
-- [MSYS-688] Fixed invalid date and Invalid starttime error [#6544](https://github.com/chef/chef/pull/6544) ([NimishaS](https://github.com/NimishaS)) <!-- 13.6.15 -->
+- Windows_task: Fixed invalid date and Invalid starttime errors on non-English systems [#6544](https://github.com/chef/chef/pull/6544) ([NimishaS](https://github.com/NimishaS)) <!-- 13.6.15 -->
 - Selinux shellout fix (#6346) [#6567](https://github.com/chef/chef/pull/6567) ([deltamualpha](https://github.com/deltamualpha)) <!-- 13.6.14 -->
-- Switch from the Travis container to the VM [#6600](https://github.com/chef/chef/pull/6600) ([btm](https://github.com/btm)) <!-- 13.6.13 -->
-- Don&#39;t try to uninstall bundler on appveyor [#6597](https://github.com/chef/chef/pull/6597) ([btm](https://github.com/btm)) <!-- 13.6.12 -->
 - Fix variable name in solaris service provider [#6596](https://github.com/chef/chef/pull/6596) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 13.6.11 -->
-- Revert &quot;add missing functional tests for users&quot; [#6588](https://github.com/chef/chef/pull/6588) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.6.10 -->
 - Filter out periods from tmux session name [#6593](https://github.com/chef/chef/pull/6593) ([afn](https://github.com/afn)) <!-- 13.6.9 -->
-- Fix mount test, also update ifconfig to work with both common versions. [#6587](https://github.com/chef/chef/pull/6587) ([scotthain](https://github.com/scotthain)) <!-- 13.6.8 -->
-- Change a useradd_spec test for RHEL &gt;= 6.8 and &gt;= 7.3 [#6555](https://github.com/chef/chef/pull/6555) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 13.6.7 -->
-- replace deprecated Dir.exists? with Dir.exist? [#6583](https://github.com/chef/chef/pull/6583) ([thomasdziedzic](https://github.com/thomasdziedzic)) <!-- 13.6.6 -->
+- Fix ifconfig to work with both common versions. [#6587](https://github.com/chef/chef/pull/6587) ([scotthain](https://github.com/scotthain)) <!-- 13.6.8 -->
+- Replace deprecated Dir.exists? with Dir.exist? [#6583](https://github.com/chef/chef/pull/6583) ([thomasdziedzic](https://github.com/thomasdziedzic)) <!-- 13.6.6 -->
 - Add ohai_time to minimal_ohai filter [#6584](https://github.com/chef/chef/pull/6584) ([btm](https://github.com/btm)) <!-- 13.6.5 -->
 <!-- release_rollup -->
 
@@ -62,8 +58,6 @@
 ## [v13.6.4](https://github.com/chef/chef/tree/v13.6.4) (2017-11-06)
 
 #### Merged Pull Requests
-- [MSYS-492]Add missing functional tests for users [#6425](https://github.com/chef/chef/pull/6425) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
-- Fix the invalid version comparison in apt/dpkg providers [#6558](https://github.com/chef/chef/pull/6558) ([tas50](https://github.com/tas50))
 - Fix the invalid version comparison of apt packages. [#6554](https://github.com/chef/chef/pull/6554) ([komazarari](https://github.com/komazarari))
 - Bump openssl and rubygems to latest [#6568](https://github.com/chef/chef/pull/6568) ([tas50](https://github.com/tas50))
 <!-- latest_stable_release -->
