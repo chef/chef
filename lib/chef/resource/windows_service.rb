@@ -20,6 +20,9 @@ require "chef/resource/service"
 
 class Chef
   class Resource
+    # Use the windows_service resource to manage a service on the Microsoft Windows platform.
+    #
+    # @since 12.0
     class WindowsService < Chef::Resource::Service
 
       # Until #1773 is resolved, you need to manually specify the windows_service resource

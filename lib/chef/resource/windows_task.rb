@@ -20,6 +20,9 @@ require "chef/resource"
 
 class Chef
   class Resource
+    # Use the windows_task resource to create, delete or run a Windows scheduled task. Requires Windows Server 2008
+    # or later due to API usage.
+    # @since 13.0
     class WindowsTask < Chef::Resource
 
       resource_name :windows_task

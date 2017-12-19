@@ -20,6 +20,10 @@ require "chef/resource"
 
 class Chef
   class Resource
+    # Use the apt_repository resource to specify additional APT repositories. Adding a new repository will update
+    # APT package cache immediately.
+    #
+    # @since 12.9
     class AptRepository < Chef::Resource
       resource_name :apt_repository
       provides :apt_repository

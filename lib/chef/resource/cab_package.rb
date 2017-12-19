@@ -21,6 +21,9 @@ require "chef/mixin/uris"
 
 class Chef
   class Resource
+    # Use the cab_package resource to install or remove Microsoft Windows cabinet (.cab) packages.
+    #
+    # @since 12.15
     class CabPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
 

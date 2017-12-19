@@ -20,6 +20,9 @@ require "chef/resource/package"
 
 class Chef
   class Resource
+    # Use the chocolatey_package resource to manage packages using Chocolatey on the Microsoft Windows platform.
+    #
+    # @since 12.7
     class ChocolateyPackage < Chef::Resource::Package
 
       resource_name :chocolatey_package
@@ -31,7 +34,6 @@ class Chef
       property :options, String
 
       property :package_name, [String, Array], coerce: proc { |x| [x].flatten }
-
       property :version, [String, Array], coerce: proc { |x| [x].flatten }
       property :returns, [Integer, Array], default: [ 0 ], desired_state: false
     end

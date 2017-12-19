@@ -21,6 +21,7 @@ require "chef/resource"
 
 class Chef
   class Resource
+    # Use the route resource to manage the system routing table in a Linux environment.
     class Route < Chef::Resource
       default_action :add
       allowed_actions :add, :delete

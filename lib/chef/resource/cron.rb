@@ -21,6 +21,8 @@ require "chef/resource"
 
 class Chef
   class Resource
+    # Use the cron resource to manage cron entries for time-based job scheduling. Properties for a schedule will default
+    # to * if not provided. The cron resource requires access to a crontab program, typically cron.
     class Cron < Chef::Resource
 
       identity_attr :command

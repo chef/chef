@@ -20,6 +20,10 @@ require "chef/resource"
 
 class Chef
   class Resource
+    # Use the yum_repository resource to manage a Yum repository configuration file located at /etc/yum.repos.d/repositoryid.repo
+    # on the local machine. This configuration file specifies which repositories to reference, how to handle cached data, etc.
+    #
+    # @since 12.14
     class YumRepository < Chef::Resource
       resource_name :yum_repository
       provides :yum_repository

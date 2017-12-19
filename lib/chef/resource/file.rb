@@ -25,6 +25,7 @@ require "pathname"
 
 class Chef
   class Resource
+    # Use the file resource to manage files directly on a node.
     class File < Chef::Resource
       include Chef::Mixin::Securable
 

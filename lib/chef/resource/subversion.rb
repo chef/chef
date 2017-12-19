@@ -21,6 +21,7 @@ require "chef/resource/scm"
 
 class Chef
   class Resource
+    # Use the subversion resource to manage source control resources that exist in a Subversion repository.
     class Subversion < Chef::Resource::Scm
       allowed_actions :force_export
 

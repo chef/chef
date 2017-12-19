@@ -21,6 +21,9 @@ require "chef/provider/launchd"
 
 class Chef
   class Resource
+    # Use the launchd resource to manage system-wide services (daemons) and per-user services (agents) on the macOS platform.
+    #
+    # @since 12.8
     class Launchd < Chef::Resource
       provides :launchd, os: "darwin"
 

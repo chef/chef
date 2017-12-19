@@ -20,6 +20,8 @@ require "chef/resource/scm"
 
 class Chef
   class Resource
+    # Use the git resource to manage source control resources that exist in a git repository. git version 1.6.5 (or higher)
+    # is required to use all of the functionality in the git resource.
     class Git < Chef::Resource::Scm
 
       def initialize(name, run_context = nil)
