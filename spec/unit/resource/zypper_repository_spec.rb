@@ -38,13 +38,13 @@ describe Chef::Resource::ZypperRepository do
     end
 
     it "aliases the uri property to baseurl" do
-      resource.uri = 'something'
-      expect(resource.baseurl).to eql('something')
+      resource.uri = "something"
+      expect(resource.baseurl).to eql("something")
     end
 
     it "aliases the key property to gpgkey" do
-      resource.key = 'something'
-      expect(resource.gpgkey).to eql('something')
+      resource.key = "something"
+      expect(resource.gpgkey).to eql("something")
     end
 
     it "supports all valid actions" do
