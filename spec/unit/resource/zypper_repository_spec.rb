@@ -24,37 +24,27 @@ describe Chef::Resource::ZypperRepository do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::ZypperRepository.new("repo-source", run_context) }
 
+  it "has a resource_name of :zypper_repository" do
+    expect(resource.resource_name).to eq(:zypper_repository)
+  end
+
+  it "repo_name is the name_property" do
+    expect(resource.repo_name).to eql("repo-source")
+  end
+
+  it "has a default action of create" do
+    expect(resource.action).to eql([:create])
+  end
+
+  it "supports all valid actions" do
+    expect { resource.action :add }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :refresh }.not_to raise_error
+    expect { resource.action :delete }.to raise_error(ArgumentError)
+  end
+
   context "on linux", :linux_only do
-    it "has a resource_name of :zypper_repository" do
-      expect(resource.resource_name).to eq(:zypper_repository)
-    end
-
-    it "repo_name is the name_property" do
-      expect(resource.repo_name).to eql("repo-source")
-    end
-
-    it "has a default action of create" do
-      expect(resource.action).to eql([:create])
-    end
-
-    it "aliases the uri property to baseurl" do
-      resource.uri = "something"
-      expect(resource.baseurl).to eql("something")
-    end
-
-    it "aliases the key property to gpgkey" do
-      resource.key = "something"
-      expect(resource.gpgkey).to eql("something")
-    end
-
-    it "supports all valid actions" do
-      expect { resource.action :add }.not_to raise_error
-      expect { resource.action :remove }.not_to raise_error
-      expect { resource.action :create }.not_to raise_error
-      expect { resource.action :refresh }.not_to raise_error
-      expect { resource.action :delete }.to raise_error(ArgumentError)
-    end
-
     it "resolves to a Noop class when on non-linux OS" do
       node.automatic[:os] = "windows"
       node.automatic[:platform_family] = "windows"
