@@ -37,7 +37,7 @@ class Chef
       default_action :create
       allowed_actions :create, :delete
 
-      property :path, String,name_property: true, identity: true
+      property :path, String, name_property: true, identity: true
       property :recursive, [ TrueClass, FalseClass ], default: false
     end
   end
