@@ -24,19 +24,11 @@ class Chef
     #
     # @since 13.4
     class WindowsPath < Chef::Resource
-
+      resource_name :windows_path
       provides :windows_path, os: "windows"
 
       allowed_actions :add, :remove
       default_action :add
-
-      def initialize(name, run_context = nil)
-        super
-        @resource_name = :windows_path
-        @path = name
-        @provider = Chef::Provider::WindowsPath
-        @action = :add
-      end
 
       property :path, String, name_property: true
     end
