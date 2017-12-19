@@ -636,39 +636,39 @@ describe Chef::Provider::WindowsTask do
       task_hash[:random_delay] = nil
       allow(provider).to receive(:load_task_hash).and_return(task_hash)
       provider.load_current_resource
-      new_resource.random_delay = 'PT0S'
+      new_resource.random_delay = "PT0S"
       expect(provider.send(:random_delay_updated?)).to be(false)
     end
 
     it "returns false if current_resource.random_delay = 'P7D' & random_delay is set to '604800' seconds " do
-      task_hash[:random_delay] = 'P7D'
+      task_hash[:random_delay] = "P7D"
       allow(provider).to receive(:load_task_hash).and_return(task_hash)
       provider.load_current_resource
-      new_resource.random_delay = 'PT604800S'
+      new_resource.random_delay = "PT604800S"
       expect(provider.send(:random_delay_updated?)).to be(false)
     end
 
     it "returns false if current_resource.random_delay = 'P7DT1S' & random_delay is set to '604801' seconds" do
-      task_hash[:random_delay] = 'P7DT1S'
+      task_hash[:random_delay] = "P7DT1S"
       allow(provider).to receive(:load_task_hash).and_return(task_hash)
       provider.load_current_resource
-      new_resource.random_delay = 'PT604801S'
+      new_resource.random_delay = "PT604801S"
       expect(provider.send(:random_delay_updated?)).to be(false)
     end
 
     it "returns true if current_resource.random_delay = 'PT1S' & random_delay is set to '3600' seconds" do
-      task_hash[:random_delay] = 'PT1S'
+      task_hash[:random_delay] = "PT1S"
       allow(provider).to receive(:load_task_hash).and_return(task_hash)
       provider.load_current_resource
-      new_resource.random_delay = 'PT3600S'
+      new_resource.random_delay = "PT3600S"
       expect(provider.send(:random_delay_updated?)).to be(true)
     end
 
     it "returns false if current_resource.random_delay = 'P2Y1MT2H' & random_delay is set to '65707200' seconds" do
-      task_hash[:random_delay] = 'P2Y1MT2H'
+      task_hash[:random_delay] = "P2Y1MT2H"
       allow(provider).to receive(:load_task_hash).and_return(task_hash)
       provider.load_current_resource
-      new_resource.random_delay = 'PT65707200S'
+      new_resource.random_delay = "PT65707200S"
       expect(provider.send(:random_delay_updated?)).to be(false)
     end
   end
@@ -683,34 +683,34 @@ describe Chef::Provider::WindowsTask do
     end
 
     it "returns false if current_resource.execution_time_limit = 'P7D' & execution_time_limit is set to 604800 seconds " do
-      task_hash[:execution_time_limit] = 'P7D'
+      task_hash[:execution_time_limit] = "P7D"
       allow(provider).to receive(:load_task_hash).and_return(task_hash)
       provider.load_current_resource
-      new_resource.execution_time_limit = 'PT604800S'
+      new_resource.execution_time_limit = "PT604800S"
       expect(provider.send(:execution_time_limit_updated?)).to be(false)
     end
 
     it "returns false if current_resource.execution_time_limit = 'P7DT1S' & execution_time_limit is set to 604801 seconds" do
-      task_hash[:execution_time_limit] = 'P7DT1S'
+      task_hash[:execution_time_limit] = "P7DT1S"
       allow(provider).to receive(:load_task_hash).and_return(task_hash)
       provider.load_current_resource
-      new_resource.execution_time_limit = 'PT604801S'
+      new_resource.execution_time_limit = "PT604801S"
       expect(provider.send(:execution_time_limit_updated?)).to be(false)
     end
 
     it "returns true if current_resource.execution_time_limit = 'PT1S' & execution_time_limit is set to '3600' seconds" do
-      task_hash[:execution_time_limit] = 'PT1S'
+      task_hash[:execution_time_limit] = "PT1S"
       allow(provider).to receive(:load_task_hash).and_return(task_hash)
       provider.load_current_resource
-      new_resource.execution_time_limit = 'PT3600S'
+      new_resource.execution_time_limit = "PT3600S"
       expect(provider.send(:execution_time_limit_updated?)).to be(true)
     end
 
     it "returns false if current_resource.execution_time_limit = 'P2Y1MT2H' & execution_time_limit is set to '65707200' seconds" do
-      task_hash[:execution_time_limit] = 'P2Y1MT2H'
+      task_hash[:execution_time_limit] = "P2Y1MT2H"
       allow(provider).to receive(:load_task_hash).and_return(task_hash)
       provider.load_current_resource
-      new_resource.execution_time_limit = 'PT65707200S'
+      new_resource.execution_time_limit = "PT65707200S"
       expect(provider.send(:execution_time_limit_updated?)).to be(false)
     end
   end
