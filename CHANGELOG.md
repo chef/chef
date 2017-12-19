@@ -3,6 +3,7 @@
 ## Unreleased
 
 #### Merged Pull Requests
+- Add descriptions and yard @since comments to all resources [#6696](https://github.com/chef/chef/pull/6696) ([tas50](https://github.com/tas50))
 - Cleanup to some of the resource specs [#6692](https://github.com/chef/chef/pull/6692) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Add descriptions and yard @since comments to all resources [#6696](https://github.com/chef/chef/pull/6696) ([tas50](https://github.com/tas50)) <!-- 13.6.48 -->
 - Cleanup to some of the resource specs [#6692](https://github.com/chef/chef/pull/6692) ([tas50](https://github.com/tas50)) <!-- 13.6.48 -->
 - fix for data bag names partially matching search reserved words [#6652](https://github.com/chef/chef/pull/6652) ([sandratiffin](https://github.com/sandratiffin)) <!-- 13.6.48 -->
 - Modernize directory resource [#6693](https://github.com/chef/chef/pull/6693) ([tas50](https://github.com/tas50)) <!-- 13.6.47 -->
