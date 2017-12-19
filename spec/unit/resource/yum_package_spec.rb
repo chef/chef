@@ -78,7 +78,7 @@ describe Chef::Resource::YumPackage, "arch" do
     @resource = Chef::Resource::YumPackage.new("foo")
   end
 
-  it "should set the arch variable to whatever is passed in" do
+  it "sets the arch variable to whatever is passed in" do
     @resource.arch("i386")
     expect(@resource.arch).to eql("i386")
   end

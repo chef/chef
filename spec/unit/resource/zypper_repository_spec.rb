@@ -25,16 +25,16 @@ describe Chef::Resource::ZypperRepository do
   let(:resource) { Chef::Resource::ZypperRepository.new("repo-source", run_context) }
 
   context "on linux", :linux_only do
-    it "should create a new Chef::Resource::ZypperRepository" do
+    it "creates a new Chef::Resource::ZypperRepository" do
       expect(resource).to be_a_kind_of(Chef::Resource)
       expect(resource).to be_a_kind_of(Chef::Resource::ZypperRepository)
     end
 
-    it "should have a name of repo-source" do
+    it "has a name of repo-source" do
       expect(resource.name).to eql("repo-source")
     end
 
-    it "should have a default action of create" do
+    it "has a default action of create" do
       expect(resource.action).to eql([:create])
     end
 

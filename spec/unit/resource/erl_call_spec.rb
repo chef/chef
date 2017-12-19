@@ -25,44 +25,44 @@ describe Chef::Resource::ErlCall do
     @resource = Chef::Resource::ErlCall.new("fakey_fakerton")
   end
 
-  it "should create a new Chef::Resource::ErlCall" do
+  it "creates a new Chef::Resource::ErlCall" do
     expect(@resource).to be_a_kind_of(Chef::Resource)
     expect(@resource).to be_a_kind_of(Chef::Resource::ErlCall)
   end
 
-  it "should have a resource name of :erl_call" do
+  it "has a resource name of :erl_call" do
     expect(@resource.resource_name).to eql(:erl_call)
   end
 
-  it "should have a default action of run" do
+  it "has a default action of run" do
     expect(@resource.action).to eql([:run])
   end
 
-  it "should accept run as an action" do
+  it "accepts run as an action" do
     expect { @resource.action :run }.not_to raise_error
   end
 
-  it "should allow you to set the code attribute" do
+  it "allows you to set the code attribute" do
     @resource.code "q()."
     expect(@resource.code).to eql("q().")
   end
 
-  it "should allow you to set the cookie attribute" do
+  it "allows you to set the cookie attribute" do
     @resource.cookie "nomnomnom"
     expect(@resource.cookie).to eql("nomnomnom")
   end
 
-  it "should allow you to set the distributed attribute" do
+  it "allows you to set the distributed attribute" do
     @resource.distributed true
     expect(@resource.distributed).to eql(true)
   end
 
-  it "should allow you to set the name_type attribute" do
+  it "allows you to set the name_type attribute" do
     @resource.name_type "sname"
     expect(@resource.name_type).to eql("sname")
   end
 
-  it "should allow you to set the node_name attribute" do
+  it "allows you to set the node_name attribute" do
     @resource.node_name "chef@erlang"
     expect(@resource.node_name).to eql("chef@erlang")
   end

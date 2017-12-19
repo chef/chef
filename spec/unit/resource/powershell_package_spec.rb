@@ -22,46 +22,46 @@ describe Chef::Resource::PowershellPackage do
 
   let(:resource) { Chef::Resource::PowershellPackage.new("test_package") }
 
-  it "should create a new Chef::Resource::PowershellPackage" do
+  it "creates a new Chef::Resource::PowershellPackage" do
     expect(resource).to be_a_kind_of(Chef::Resource)
     expect(resource).to be_a_kind_of(Chef::Resource::Package)
     expect(resource).to be_a_instance_of(Chef::Resource::PowershellPackage)
   end
 
   #to check the value of resource.resource_name
-  it "should have a resource name of :python" do
+  it "has a resource name of :python" do
     expect(resource.resource_name).to eql(:powershell_package)
   end
 
-  it "should coerce its name to a package_name array" do
+  it "coerces its name to a package_name array" do
     expect(resource.package_name).to eql(["test_package"])
   end
 
-  it "the package_name setter should coerce to arrays" do
+  it "the package_name setter coerces to arrays" do
     resource.package_name("git")
     expect(resource.package_name).to eql(["git"])
   end
 
-  it "the package_name setter should accept arrays" do
+  it "the package_name setter accepts arrays" do
     resource.package_name(%w{git unzip})
     expect(resource.package_name).to eql(%w{git unzip})
   end
 
-  it "the name should accept arrays" do
+  it "the name accepts arrays" do
     resource = Chef::Resource::PowershellPackage.new(%w{git unzip})
     expect(resource.package_name).to eql(%w{git unzip})
   end
 
-  it "the default version should be nil" do
+  it "the default version is nil" do
     expect(resource.version).to eql(nil)
   end
 
-  it "the version setter should coerce to arrays" do
+  it "the version setter coerces to arrays" do
     resource.version("1.2.3")
     expect(resource.version).to eql(["1.2.3"])
   end
 
-  it "the version setter should accept arrays" do
+  it "the version setter accepts arrays" do
     resource.version(["1.2.3", "4.5.6"])
     expect(resource.version).to eql(["1.2.3", "4.5.6"])
   end

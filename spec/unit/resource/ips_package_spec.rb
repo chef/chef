@@ -29,12 +29,10 @@ describe Chef::Resource::IpsPackage, "initialize" do
     os: "solaris2"
   )
 
-  before(:each) do
-    @resource = Chef::Resource::IpsPackage.new("crypto/gnupg")
-  end
+  let(:resource) { Chef::Resource::IpsPackage.new("crypto/gnupg") }
 
   it "should support accept_license" do
-    @resource.accept_license(true)
-    expect(@resource.accept_license).to eql(true)
+    resource.accept_license(true)
+    expect(resource.accept_license).to eql(true)
   end
 end

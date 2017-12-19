@@ -25,24 +25,24 @@ describe Chef::Resource::YumRepository do
   let(:resource) { Chef::Resource::YumRepository.new("multiverse", run_context) }
 
   context "on linux", :linux_only do
-    it "should create a new Chef::Resource::YumRepository" do
+    it "creates a new Chef::Resource::YumRepository" do
       expect(resource).to be_a_kind_of(Chef::Resource)
       expect(resource).to be_a_kind_of(Chef::Resource::YumRepository)
     end
 
-    it "should resolve to a Noop class when yum is not found" do
+    it "resolves to a Noop class when yum is not found" do
       expect(Chef::Provider::YumRepository).to receive(:which).with("yum").and_return(false)
       expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
     end
 
-    it "should resolve to a YumRepository class when yum is found" do
+    it "resolves to a YumRepository class when yum is found" do
       expect(Chef::Provider::YumRepository).to receive(:which).with("yum").and_return(true)
       expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::YumRepository)
     end
   end
 
   context "on windows", :windows_only do
-    it "should resolve to a NoOp provider" do
+    it "resolves to a NoOp provider" do
       expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
     end
   end

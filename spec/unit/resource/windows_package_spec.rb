@@ -88,7 +88,7 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     let(:resource_source) { "https://foo.bar/solitare.msi" }
     let(:resource) { Chef::Resource::WindowsPackage.new(resource_source) }
 
-    it "should return the source unmodified" do
+    it "returns the source unmodified" do
       expect(resource.source).to eq(resource_source)
     end
   end

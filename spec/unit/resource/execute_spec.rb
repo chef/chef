@@ -24,7 +24,7 @@ describe Chef::Resource::Execute do
   let(:execute_resource) { Chef::Resource::Execute.new(resource_instance_name) }
   it_behaves_like "an execute resource"
 
-  it "default guard interpreter should be :execute interpreter" do
+  it "default guard interpreter is :execute interpreter" do
     expect(execute_resource.guard_interpreter).to be(:execute)
   end
 
@@ -59,13 +59,13 @@ describe Chef::Resource::Execute do
 
   shared_examples_for "it received valid credentials" do
     describe "the validation method" do
-      it "should not raise an error" do
+      it "does not raise an error" do
         expect { execute_resource.validate_identity_platform(username, password, domain) }.not_to raise_error
       end
     end
 
     describe "the name qualification method" do
-      it "should correctly translate the user and domain" do
+      it "correctly translates the user and domain" do
         identity = nil
         expect { identity = execute_resource.qualify_user(username, password, domain) }.not_to raise_error
         expect(identity[:domain]).to eq(domain)
@@ -76,7 +76,7 @@ describe Chef::Resource::Execute do
 
   shared_examples_for "it received invalid credentials" do
     describe "the validation method" do
-      it "should raise an error" do
+      it "raises an error" do
         expect { execute_resource.validate_identity_platform(username, password, domain, elevated) }.to raise_error(ArgumentError)
       end
     end
@@ -84,7 +84,7 @@ describe Chef::Resource::Execute do
 
   shared_examples_for "it received invalid username and domain" do
     describe "the validation method" do
-      it "should raise an error" do
+      it "raises an error" do
         expect { execute_resource.qualify_user(username, password, domain) }.to raise_error(ArgumentError)
       end
     end
@@ -92,7 +92,7 @@ describe Chef::Resource::Execute do
 
   shared_examples_for "it received credentials that are not valid on the platform" do
     describe "the validation method" do
-      it "should raise an error" do
+      it "raises an error" do
         expect { execute_resource.validate_identity_platform(username, password, domain) }.to raise_error(Chef::Exceptions::UnsupportedPlatform)
       end
     end

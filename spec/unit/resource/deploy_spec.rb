@@ -248,7 +248,7 @@ describe Chef::Resource::Deploy do
   end
 
   describe "when it has no timeout attribute" do
-    it "should have no default timeout" do
+    it "has no default timeout" do
       expect(@resource.timeout).to be_nil
     end
   end
