@@ -282,7 +282,7 @@ describe Chef::Resource::WindowsTask do
 
   context "#sec_to_dur" do
     it "return nil when passed 0" do
-      expect(resource.send(:sec_to_dur, 0)).to eql(nil)
+      expect(resource.send(:sec_to_dur, 0)).to eql('PT0S')
     end
     it "return PT1S when passed 1" do
       expect(resource.send(:sec_to_dur, 1)).to eql("PT1S")

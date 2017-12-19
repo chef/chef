@@ -229,8 +229,7 @@ class Chef
             current_resource.frequency_modifier != new_resource.frequency_modifier ||
             current_resource.frequency != new_resource.frequency ||
             current_resource.idle_time != new_resource.idle_time ||
-            random_delay_updated? ||
-            execution_time_limit_updated? ||
+            random_delay_updated? || execution_time_limit_updated? ||
             (new_resource.start_day && new_resource.start_day != "N/A" && start_day_updated?) ||
             (new_resource.start_time && new_resource.start_time != "N/A" && start_time_updated?)
         begin
@@ -243,18 +242,35 @@ class Chef
         false
       end
 
+      # Comparing random_delay values using ISO8601::Duration object Ref: https://github.com/arnau/ISO8601/blob/master/lib/iso8601/duration.rb#L18-L23
+      # di = ISO8601::Duration.new(65707200)
+      # ds = ISO8601::Duration.new('P65707200S')
+      # dp = ISO8601::Duration.new('P2Y1MT2H')
+      # di == dp # => true
+      # di == ds # => true
       def random_delay_updated?
-        return false if current_resource.random_delay.nil? && new_resource.random_delay.nil?
-        return true if new_resource.random_delay.nil?
-        current_resource.random_delay = 0 if current_resource.random_delay.nil?
-        ISO8601::Duration.new(current_resource.random_delay) != ISO8601::Duration.new(new_resource.random_delay)
+        if new_resource.random_delay.nil?
+          false
+        elsif current_resource.random_delay.nil? &&  new_resource.random_delay == 'PT0S' # when user sets random_dealy to 0 sec
+          false
+        elsif current_resource.random_delay.nil?  && new_resource.random_delay != nil
+          true
+        else
+          ISO8601::Duration.new(current_resource.random_delay) != ISO8601::Duration.new(new_resource.random_delay)
+        end
       end
 
+      # Comparing execution_time_limit values using Ref: https://github.com/arnau/ISO8601/blob/master/lib/iso8601/duration.rb#L18-L23
       def execution_time_limit_updated?
-        return false if current_resource.execution_time_limit.nil? && new_resource.execution_time_limit.nil?
-        return true if new_resource.execution_time_limit.nil?
-        current_resource.execution_time_limit = 0 if current_resource.execution_time_limit.nil?
-        ISO8601::Duration.new(current_resource.execution_time_limit) != ISO8601::Duration.new(new_resource.execution_time_limit)
+        if new_resource.execution_time_limit.nil?
+          false
+        elsif current_resource.execution_time_limit.nil? &&  new_resource.execution_time_limit == 'PT0S' # when user sets random_dealy to 0 sec
+          false
+        elsif current_resource.execution_time_limit.nil?  && new_resource.execution_time_limit != nil
+          true
+        else
+          ISO8601::Duration.new(current_resource.execution_time_limit) != ISO8601::Duration.new(new_resource.execution_time_limit)
+        end
       end
 
       def start_day_updated?
