@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) 2016-2017 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,49 +30,49 @@ class Chef
 
       # http://linux.die.net/man/5/yum.conf as well as
       # http://dnf.readthedocs.io/en/latest/conf_ref.html
-      property :baseurl, [String, Array], regex: /.*/
+      property :baseurl, [String, Array]
       property :clean_headers, [TrueClass, FalseClass], default: false # deprecated
       property :clean_metadata, [TrueClass, FalseClass], default: true
       property :cost, String, regex: /^\d+$/
-      property :description, String, regex: /.*/, default: "Yum Repository"
+      property :description, String, default: "Yum Repository"
       property :enabled, [TrueClass, FalseClass], default: true
       property :enablegroups, [TrueClass, FalseClass]
-      property :exclude, String, regex: /.*/
+      property :exclude, String
       property :failovermethod, String, equal_to: %w{priority roundrobin}
       property :fastestmirror_enabled, [TrueClass, FalseClass]
       property :gpgcheck, [TrueClass, FalseClass], default: true
-      property :gpgkey, [String, Array], regex: /.*/
+      property :gpgkey, [String, Array]
       property :http_caching, String, equal_to: %w{packages all none}
-      property :include_config, String, regex: /.*/
-      property :includepkgs, String, regex: /.*/
+      property :include_config, String
+      property :includepkgs, String
       property :keepalive, [TrueClass, FalseClass]
       property :make_cache, [TrueClass, FalseClass], default: true
       property :max_retries, [String, Integer]
       property :metadata_expire, String, regex: [/^\d+$/, /^\d+[mhd]$/, /never/]
-      property :metalink, String, regex: /.*/
+      property :metalink, String
       property :mirror_expire, String, regex: [/^\d+$/, /^\d+[mhd]$/]
-      property :mirrorexpire, String, regex: /.*/
+      property :mirrorexpire, String
       property :mirrorlist_expire, String, regex: [/^\d+$/, /^\d+[mhd]$/]
-      property :mirrorlist, String, regex: /.*/
+      property :mirrorlist, String
       property :mode, default: "0644"
       property :options, Hash
-      property :password, String, regex: /.*/
-      property :priority, String, regex: /^(\d?[0-9]|[0-9][0-9])$/
-      property :proxy_password, String, regex: /.*/
-      property :proxy_username, String, regex: /.*/
-      property :proxy, String, regex: /.*/
+      property :password, String
+      property :priority, String, regex: /^(\d?[1-9]|[0-9][0-9])$/
+      property :proxy_password, String
+      property :proxy_username, String
+      property :proxy, String
       property :repo_gpgcheck, [TrueClass, FalseClass]
       property :report_instanceid, [TrueClass, FalseClass]
-      property :repositoryid, String, regex: /.*/, name_property: true
+      property :repositoryid, String, name_property: true
       property :skip_if_unavailable, [TrueClass, FalseClass]
-      property :source, String, regex: /.*/
-      property :sslcacert, String, regex: /.*/
-      property :sslclientcert, String, regex: /.*/
-      property :sslclientkey, String, regex: /.*/
+      property :source, String
+      property :sslcacert, String
+      property :sslclientcert, String
+      property :sslclientkey, String
       property :sslverify, [TrueClass, FalseClass]
-      property :timeout, String, regex: /^\d+$/
       property :throttle, [String, Integer]
-      property :username, String, regex: /.*/
+      property :timeout, String, regex: /^\d+$/
+      property :username, String
 
       default_action :create
       allowed_actions :create, :remove, :makecache, :add, :delete
