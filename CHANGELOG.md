@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.47 -->
-## [v13.6.47](https://github.com/chef/chef/tree/v13.6.47) (2017-12-19)
+<!-- latest_release 13.6.48 -->
+## [v13.6.48](https://github.com/chef/chef/tree/v13.6.48) (2017-12-19)
 
 #### Merged Pull Requests
-- Modernize directory resource [#6693](https://github.com/chef/chef/pull/6693) ([tas50](https://github.com/tas50))
+- fix for data bag names partially matching search reserved words [#6652](https://github.com/chef/chef/pull/6652) ([sandratiffin](https://github.com/sandratiffin))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- fix for data bag names partially matching search reserved words [#6652](https://github.com/chef/chef/pull/6652) ([sandratiffin](https://github.com/sandratiffin)) <!-- 13.6.48 -->
 - Modernize directory resource [#6693](https://github.com/chef/chef/pull/6693) ([tas50](https://github.com/tas50)) <!-- 13.6.47 -->
 - Modernize the ifconfig resource [#6684](https://github.com/chef/chef/pull/6684) ([tas50](https://github.com/tas50)) <!-- 13.6.46 -->
 - Slight improvements to validation failures [#6690](https://github.com/chef/chef/pull/6690) ([thommay](https://github.com/thommay)) <!-- 13.6.45 -->
