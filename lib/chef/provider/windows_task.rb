@@ -251,9 +251,9 @@ class Chef
       def random_delay_updated?
         if new_resource.random_delay.nil?
           false
-        elsif current_resource.random_delay.nil? &&  new_resource.random_delay == "PT0S" # when user sets random_dealy to 0 sec
+        elsif current_resource.random_delay.nil? && new_resource.random_delay == "PT0S" # when user sets random_dealy to 0 sec
           false
-        elsif current_resource.random_delay.nil?  && !new_resource.random_delay.nil?
+        elsif current_resource.random_delay.nil? && !new_resource.random_delay.nil?
           true
         else
           ISO8601::Duration.new(current_resource.random_delay) != ISO8601::Duration.new(new_resource.random_delay)
@@ -264,9 +264,9 @@ class Chef
       def execution_time_limit_updated?
         if new_resource.execution_time_limit.nil?
           false
-        elsif current_resource.execution_time_limit.nil? &&  new_resource.execution_time_limit == "PT0S" # when user sets random_dealy to 0 sec
+        elsif current_resource.execution_time_limit.nil? && new_resource.execution_time_limit == "PT0S" # when user sets random_dealy to 0 sec
           false
-        elsif current_resource.execution_time_limit.nil?  && !new_resource.execution_time_limit.nil?
+        elsif current_resource.execution_time_limit.nil? && !new_resource.execution_time_limit.nil?
           true
         else
           ISO8601::Duration.new(current_resource.execution_time_limit) != ISO8601::Duration.new(new_resource.execution_time_limit)
