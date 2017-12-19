@@ -35,6 +35,10 @@ describe Chef::Resource::Subversion do
     expect(resource).to be_a_kind_of(Chef::Resource::Scm)
   end
 
+  it "set destination property to the name_property" do
+    expect(resource.destination).to eq("ohai, svn project!")
+  end
+
   it "allows the force_export action" do
     expect(resource.allowed_actions).to include(:force_export)
   end
