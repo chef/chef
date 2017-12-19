@@ -29,8 +29,8 @@ class Chef
       class Yum < Chef::Provider::Package
         include Chef::Mixin::GetSourceFromPackage
 
-        provides :package, platform_family: %w{rhel fedora amazon aix}
-        provides :yum_package, os: %{linux aix}
+        provides :package, platform_family: %w{rhel fedora amazon}
+        provides :yum_package, os: "linux"
 
         # Multipackage API
         allow_nils
