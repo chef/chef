@@ -25,17 +25,26 @@ describe Chef::Resource::ZypperRepository do
   let(:resource) { Chef::Resource::ZypperRepository.new("repo-source", run_context) }
 
   context "on linux", :linux_only do
-    it "creates a new Chef::Resource::ZypperRepository" do
-      expect(resource).to be_a_kind_of(Chef::Resource)
-      expect(resource).to be_a_kind_of(Chef::Resource::ZypperRepository)
+    it "has a resource_name of :zypper_repository" do
+      expect(resource.resource_name).to eq(:zypper_repository)
     end
 
-    it "has a name of repo-source" do
-      expect(resource.name).to eql("repo-source")
+    it "repo_name is the name_property" do
+      expect(resource.repo_name).to eql("repo-source")
     end
 
     it "has a default action of create" do
       expect(resource.action).to eql([:create])
+    end
+
+    it "aliases the uri property to baseurl" do
+      resource.uri = 'something'
+      expect(resource.baseurl).to eql('something')
+    end
+
+    it "aliases the key property to gpgkey" do
+      resource.key = 'something'
+      expect(resource.gpgkey).to eql('something')
     end
 
     it "supports all valid actions" do
