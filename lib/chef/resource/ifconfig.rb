@@ -30,7 +30,6 @@ class Chef
     class Ifconfig < Chef::Resource
       resource_name :ifconfig
 
-      identity_attr :device
       state_attrs :inet_addr, :mask
 
       default_action :add
@@ -43,7 +42,7 @@ class Chef
       property :bcast, String
       property :mtu, String
       property :metric, String
-      property :device, String
+      property :device, String, identity: true
       property :onboot, String
       property :network, String
       property :bootproto, String
