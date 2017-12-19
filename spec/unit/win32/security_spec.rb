@@ -63,4 +63,19 @@ describe "Chef::Win32::Security", :windows_only do
       end
     end
   end
+
+  describe "self.get_token_information_elevation_type" do
+    let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_READ }
+
+    let(:token) do
+      Chef::ReservedNames::Win32::Security.open_process_token(
+        Chef::ReservedNames::Win32::Process.get_current_process,
+        token_rights)
+    end
+
+    it "raises error if GetTokenInformation fails" do
+      allow(Chef::ReservedNames::Win32::Security).to receive(:GetTokenInformation).and_return(false)
+      expect { Chef::ReservedNames::Win32::Security.get_token_information_elevation_type(token) }.to raise_error(Chef::Exceptions::Win32APIError)
+    end
+  end
 end

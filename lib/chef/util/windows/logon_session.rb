@@ -25,7 +25,7 @@ class Chef
       class LogonSession
         include Chef::Mixin::WideString
 
-        def initialize(username, password, domain = nil, logon_type)
+        def initialize(username, password, domain = nil, logon_type = :remote)
           if username.nil? || password.nil?
             raise ArgumentError, "The logon session must be initialize with non-nil user name and password parameters"
           end

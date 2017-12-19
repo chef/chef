@@ -652,7 +652,7 @@ class Chef
           begin
             process_token = open_current_process_token(TOKEN_READ)
           rescue Exception => run_error
-            return false if run_error.message.match(/Access is denied/)
+            return false if run_error.message =~ /Access is denied/
             Chef::ReservedNames::Win32::Error.raise!
           end
 

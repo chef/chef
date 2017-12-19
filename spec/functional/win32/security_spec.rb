@@ -122,4 +122,31 @@ describe "Chef::Win32::Security", :windows_only do
       end
     end
   end
+
+  describe ".get_token_information_elevation_type" do
+    let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_READ }
+
+    let(:token) do
+      Chef::ReservedNames::Win32::Security.open_process_token(
+        Chef::ReservedNames::Win32::Process.get_current_process,
+        token_rights)
+    end
+
+    context "when the token is valid" do
+      let(:token_elevation_type) { [:TokenElevationTypeDefault, :TokenElevationTypeFull, :TokenElevationTypeLimited] }
+
+      it "returns the token elevation type" do
+        elevation_type = Chef::ReservedNames::Win32::Security.get_token_information_elevation_type(token)
+        expect(token_elevation_type).to include(elevation_type)
+      end
+    end
+
+    context "when the token is invalid" do
+      it "raises `handle invalid` error" do
+        # If `OpenProcessToken` is stubbed, `open_process_token` returns an invalid token
+        allow(Chef::ReservedNames::Win32::Security).to receive(:OpenProcessToken).and_return(true)
+        expect { Chef::ReservedNames::Win32::Security.get_token_information_elevation_type(token) }.to raise_error(Chef::Exceptions::Win32APIError)
+      end
+    end
+  end
 end
