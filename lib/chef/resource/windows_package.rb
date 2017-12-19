@@ -23,6 +23,8 @@ require "chef/win32/error" if RUBY_PLATFORM =~ /mswin|mingw|windows/
 
 class Chef
   class Resource
+    # Use the windows_package resource to manage Microsoft Installer Package (MSI) packages for the Microsoft Windows
+    # platform.
     class WindowsPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
 

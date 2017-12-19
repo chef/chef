@@ -21,6 +21,9 @@ require "iniparse"
 
 class Chef
   class Resource
+    # Use the systemd_unit resource to create, manage, and run systemd units.
+    #
+    # @since 12.11
     class SystemdUnit < Chef::Resource
       resource_name :systemd_unit
 

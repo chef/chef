@@ -20,6 +20,7 @@ require "chef/resource/package"
 
 class Chef
   class Resource
+    # Use the macports_package resource to manage packages for the macOS platform.
     class MacportsPackage < Chef::Resource::Package
       resource_name :macports_package
     end

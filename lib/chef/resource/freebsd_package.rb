@@ -26,6 +26,7 @@ require "chef/mixin/shell_out"
 
 class Chef
   class Resource
+    # Use the freebsd_package resource to manage packages for the FreeBSD platform.
     class FreebsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 

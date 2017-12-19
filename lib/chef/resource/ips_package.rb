@@ -21,6 +21,7 @@ require "chef/provider/package/ips"
 
 class Chef
   class Resource
+    # Use the ips_package resource to manage packages (using Image Packaging System (IPS)) on the Solaris 11 platform.
     class IpsPackage < ::Chef::Resource::Package
       resource_name :ips_package
       provides :package, os: "solaris2"

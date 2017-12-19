@@ -21,6 +21,7 @@ require "chef/digester"
 
 class Chef
   class Resource
+    # Use the registry_key resource to create and delete registry keys in Microsoft Windows.
     class RegistryKey < Chef::Resource
       identity_attr :key
       state_attrs :values

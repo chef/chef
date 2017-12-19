@@ -20,6 +20,7 @@ require "chef/resource"
 
 class Chef
   class Resource
+    # Use the user resource to add users, update existing users, remove users, and to lock/unlock user passwords.
     class User < Chef::Resource
       resource_name :user_resource_abstract_base_class # this prevents magickal class name DSL wiring
       identity_attr :username

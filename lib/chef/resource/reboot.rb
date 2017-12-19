@@ -28,7 +28,7 @@ class Chef
     # immediate notifications. Delayed notifications produce unintuitive and
     # probably undesired results.
     #
-    # @since 12.0.0
+    # @since 12.0
     class Reboot < Chef::Resource
       resource_name :reboot
 

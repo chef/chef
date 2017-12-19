@@ -21,6 +21,7 @@ require "chef/provider/package/apt"
 
 class Chef
   class Resource
+    # Use the apt_package resource to manage packages on Debian and Ubuntu platforms.
     class AptPackage < Chef::Resource::Package
       resource_name :apt_package
       provides :package, os: "linux", platform_family: "debian"

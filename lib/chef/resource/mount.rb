@@ -21,6 +21,7 @@ require "chef/resource"
 
 class Chef
   class Resource
+    # Use the mount resource to manage a mounted file system.
     class Mount < Chef::Resource
 
       identity_attr :device

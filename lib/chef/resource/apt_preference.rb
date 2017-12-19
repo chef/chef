@@ -20,6 +20,10 @@ require "chef/resource"
 
 class Chef
   class Resource
+    # The apt_preference resource allows for the creation of APT preference files. Preference files are used to control
+    # which package versions and sources are prioritized during installation.
+    #
+    # @since 13.3
     class AptPreference < Chef::Resource
       resource_name :apt_preference
       provides :apt_preference

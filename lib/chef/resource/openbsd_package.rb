@@ -25,6 +25,9 @@ require "chef/mixin/shell_out"
 
 class Chef
   class Resource
+    # Use the openbsd_package resource to manage packages for the OpenBSD platform.
+    #
+    # @since 12.1
     class OpenbsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
