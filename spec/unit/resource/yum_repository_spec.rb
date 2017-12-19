@@ -24,25 +24,77 @@ describe Chef::Resource::YumRepository do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::YumRepository.new("multiverse", run_context) }
 
-  context "on linux", :linux_only do
-    it "should create a new Chef::Resource::YumRepository" do
-      expect(resource).to be_a_kind_of(Chef::Resource)
-      expect(resource).to be_a_kind_of(Chef::Resource::YumRepository)
-    end
+  it "has a resource_name of :yum_repository" do
+    expect(resource.resource_name).to eq(:yum_repository)
+  end
 
-    it "should resolve to a Noop class when yum is not found" do
+  it "the repositoryid property is the name_property" do
+    expect(resource.repositoryid).to eq("multiverse")
+  end
+
+  it "the timeout property expects numeric Strings" do
+    expect { resource.timeout "123" }.not_to raise_error(ArgumentError)
+    expect { resource.timeout "123foo" }.to raise_error(ArgumentError)
+  end
+
+  it "the priority property expects numeric Strings from '1' to '99'" do
+    expect { resource.priority "99" }.not_to raise_error(ArgumentError)
+    expect { resource.priority "1" }.not_to raise_error(ArgumentError)
+    expect { resource.priority "100" }.to raise_error(ArgumentError)
+  end
+
+  it "the failovermethod property accepts 'priority' or 'roundrobin'" do
+    expect { resource.failovermethod "priority" }.not_to raise_error(ArgumentError)
+    expect { resource.failovermethod "roundrobin" }.not_to raise_error(ArgumentError)
+    expect { resource.failovermethod "bob" }.to raise_error(ArgumentError)
+  end
+
+  it "the http_caching property accepts 'packages', 'all', or 'none'" do
+    expect { resource.http_caching "packages" }.not_to raise_error(ArgumentError)
+    expect { resource.http_caching "all" }.not_to raise_error(ArgumentError)
+    expect { resource.http_caching "none" }.not_to raise_error(ArgumentError)
+    expect { resource.http_caching "bob" }.to raise_error(ArgumentError)
+  end
+
+  it "the metadata_expire property accepts a time value or 'never'" do
+    expect { resource.metadata_expire "100" }.not_to raise_error(ArgumentError)
+    expect { resource.metadata_expire "100d" }.not_to raise_error(ArgumentError)
+    expect { resource.metadata_expire "100h" }.not_to raise_error(ArgumentError)
+    expect { resource.metadata_expire "100m" }.not_to raise_error(ArgumentError)
+    expect { resource.metadata_expire "never" }.not_to raise_error(ArgumentError)
+    expect { resource.metadata_expire "100s" }.to raise_error(ArgumentError)
+  end
+
+  it "the mirror_expire property accepts a time value" do
+    expect { resource.mirror_expire "100" }.not_to raise_error(ArgumentError)
+    expect { resource.mirror_expire "100d" }.not_to raise_error(ArgumentError)
+    expect { resource.mirror_expire "100h" }.not_to raise_error(ArgumentError)
+    expect { resource.mirror_expire "100m" }.not_to raise_error(ArgumentError)
+    expect { resource.mirror_expire "never" }.to raise_error(ArgumentError)
+  end
+
+  it "the mirrorlist_expire property accepts a time value" do
+    expect { resource.mirrorlist_expire "100" }.not_to raise_error(ArgumentError)
+    expect { resource.mirrorlist_expire "100d" }.not_to raise_error(ArgumentError)
+    expect { resource.mirrorlist_expire "100h" }.not_to raise_error(ArgumentError)
+    expect { resource.mirrorlist_expire "100m" }.not_to raise_error(ArgumentError)
+    expect { resource.mirrorlist_expire "never" }.to raise_error(ArgumentError)
+  end
+
+  context "on linux", :linux_only do
+    it "resolves to a Noop class when yum is not found" do
       expect(Chef::Provider::YumRepository).to receive(:which).with("yum").and_return(false)
       expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
     end
 
-    it "should resolve to a YumRepository class when yum is found" do
+    it "resolves to a YumRepository class when yum is found" do
       expect(Chef::Provider::YumRepository).to receive(:which).with("yum").and_return(true)
       expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::YumRepository)
     end
   end
 
   context "on windows", :windows_only do
-    it "should resolve to a NoOp provider" do
+    it "resolves to a NoOp provider" do
       expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
     end
   end

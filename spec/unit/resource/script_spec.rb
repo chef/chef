@@ -24,7 +24,7 @@ describe Chef::Resource::Script do
   let(:script_resource) { Chef::Resource::Script.new(resource_instance_name) }
   let(:resource_name) { :script }
 
-  it "should accept a string for the interpreter" do
+  it "accepts a string for the interpreter" do
     script_resource.interpreter "naaaaNaNaNaaNaaNaaNaa"
     expect(script_resource.interpreter).to eql("naaaaNaNaNaaNaaNaaNaa")
   end

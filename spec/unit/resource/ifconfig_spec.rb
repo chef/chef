@@ -55,7 +55,7 @@ describe Chef::Resource::Ifconfig do
       @node.automatic_attrs[:platform_version] = version
     end
 
-    it "should use an ordinary Provider::Ifconfig as a provider for #{platform} #{version}" do
+    it "uses an ordinary Provider::Ifconfig as a provider for #{platform} #{version}" do
       expect(@resource.provider_for_action(:add).class).to eq(Chef::Provider::Ifconfig)
     end
   end
@@ -68,7 +68,7 @@ describe Chef::Resource::Ifconfig do
       @node.automatic_attrs[:platform_version] = version
     end
 
-    it "should use an Provider::Ifconfig::Redhat as a provider for #{platform} #{version}" do
+    it "uses an Provider::Ifconfig::Redhat as a provider for #{platform} #{version}" do
       expect(@resource.provider_for_action(:add)).to be_a_kind_of(Chef::Provider::Ifconfig::Redhat)
     end
   end
@@ -81,7 +81,7 @@ describe Chef::Resource::Ifconfig do
       @node.automatic_attrs[:platform_version] = version
     end
 
-    it "should use an Ifconfig::Debian as a provider for #{platform} #{version}" do
+    it "uses an Ifconfig::Debian as a provider for #{platform} #{version}" do
       expect(@resource.provider_for_action(:add)).to be_a_kind_of(Chef::Provider::Ifconfig::Debian)
     end
   end

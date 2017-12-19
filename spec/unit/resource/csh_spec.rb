@@ -20,21 +20,19 @@ require "spec_helper"
 
 describe Chef::Resource::Csh do
 
-  before(:each) do
-    @resource = Chef::Resource::Csh.new("fakey_fakerton")
+  let(:resource) { Chef::Resource::Csh.new("fakey_fakerton") }
+
+  it "creates a new Chef::Resource::Csh" do
+    expect(resource).to be_a_kind_of(Chef::Resource)
+    expect(resource).to be_a_kind_of(Chef::Resource::Csh)
   end
 
-  it "should create a new Chef::Resource::Csh" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::Csh)
+  it "has a resource name of :csh" do
+    expect(resource.resource_name).to eql(:csh)
   end
 
-  it "should have a resource name of :csh" do
-    expect(@resource.resource_name).to eql(:csh)
-  end
-
-  it "should have an interpreter of csh" do
-    expect(@resource.interpreter).to eql("csh")
+  it "has an interpreter of csh" do
+    expect(resource.interpreter).to eql("csh")
   end
 
 end

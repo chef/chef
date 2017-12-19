@@ -99,7 +99,7 @@ describe Chef::Resource::Conditional do
         expect(@conditional.continue?).to be_falsey
       end
 
-      it "should log a warning" do
+      it "logs a warning" do
         expect(Chef::Log).to receive(:warn).with("Command 'false' timed out")
         @conditional.continue?
       end
@@ -202,7 +202,7 @@ describe Chef::Resource::Conditional do
         expect(@conditional.continue?).to be_truthy
       end
 
-      it "should log a warning" do
+      it "logs a warning" do
         expect(Chef::Log).to receive(:warn).with("Command 'false' timed out")
         @conditional.continue?
       end

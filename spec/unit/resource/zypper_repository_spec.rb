@@ -24,28 +24,27 @@ describe Chef::Resource::ZypperRepository do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::ZypperRepository.new("repo-source", run_context) }
 
+  it "has a resource_name of :zypper_repository" do
+    expect(resource.resource_name).to eq(:zypper_repository)
+  end
+
+  it "repo_name is the name_property" do
+    expect(resource.repo_name).to eql("repo-source")
+  end
+
+  it "has a default action of create" do
+    expect(resource.action).to eql([:create])
+  end
+
+  it "supports all valid actions" do
+    expect { resource.action :add }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :refresh }.not_to raise_error
+    expect { resource.action :delete }.to raise_error(ArgumentError)
+  end
+
   context "on linux", :linux_only do
-    it "should create a new Chef::Resource::ZypperRepository" do
-      expect(resource).to be_a_kind_of(Chef::Resource)
-      expect(resource).to be_a_kind_of(Chef::Resource::ZypperRepository)
-    end
-
-    it "should have a name of repo-source" do
-      expect(resource.name).to eql("repo-source")
-    end
-
-    it "should have a default action of create" do
-      expect(resource.action).to eql([:create])
-    end
-
-    it "supports all valid actions" do
-      expect { resource.action :add }.not_to raise_error
-      expect { resource.action :remove }.not_to raise_error
-      expect { resource.action :create }.not_to raise_error
-      expect { resource.action :refresh }.not_to raise_error
-      expect { resource.action :delete }.to raise_error(ArgumentError)
-    end
-
     it "resolves to a Noop class when on non-linux OS" do
       node.automatic[:os] = "windows"
       node.automatic[:platform_family] = "windows"

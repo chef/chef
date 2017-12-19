@@ -25,16 +25,16 @@ describe Chef::Resource::Env do
     @resource = Chef::Resource::Env.new("FOO")
   end
 
-  it "should create a new Chef::Resource::Env" do
+  it "creates a new Chef::Resource::Env" do
     expect(@resource).to be_a_kind_of(Chef::Resource)
     expect(@resource).to be_a_kind_of(Chef::Resource::Env)
   end
 
-  it "should have a name" do
+  it "has a name" do
     expect(@resource.name).to eql("FOO")
   end
 
-  it "should have a default action of 'create'" do
+  it "has a default action of 'create'" do
     expect(@resource.action).to eql([:create])
   end
 
@@ -48,19 +48,19 @@ describe Chef::Resource::Env do
     end
   end
 
-  it "should use the object name as the key_name by default" do
+  it "uses the object name as the key_name by default" do
     expect(@resource.key_name).to eql("FOO")
   end
 
-  it "should accept a string as the env value via 'value'" do
+  it "accepts a string as the env value via 'value'" do
     expect { @resource.value "bar" }.not_to raise_error
   end
 
-  it "should not accept a Hash for the env value via 'to'" do
+  it "does not accept a Hash for the env value via 'to'" do
     expect { @resource.value Hash.new }.to raise_error(ArgumentError)
   end
 
-  it "should allow you to set an env value via 'to'" do
+  it "allows you to set an env value via 'to'" do
     @resource.value "bar"
     expect(@resource.value).to eql("bar")
   end

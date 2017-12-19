@@ -32,15 +32,15 @@ describe Chef::Resource::OpenbsdPackage do
   end
 
   describe "Initialization" do
-    it "should return a Chef::Resource::OpenbsdPackage" do
+    it "returns a Chef::Resource::OpenbsdPackage" do
       expect(@resource).to be_a_kind_of(Chef::Resource::OpenbsdPackage)
     end
 
-    it "should set the resource_name to :openbsd_package" do
+    it "sets the resource_name to :openbsd_package" do
       expect(@resource.resource_name).to eql(:openbsd_package)
     end
 
-    it "should not set the provider" do
+    it "does not set the provider" do
       expect(@resource.provider).to be_nil
     end
   end
