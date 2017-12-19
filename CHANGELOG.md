@@ -1,23 +1,21 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.21.31 -->
-## [v12.21.31](https://github.com/chef/chef/tree/v12.21.31) (2017-12-19)
-
-#### Merged Pull Requests
-- Backport acceptance changes  [#6681](https://github.com/chef/chef/pull/6681) ([scotthain](https://github.com/scotthain))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=13.6.4 -->
-### Changes since 13.6.4 release
-
-#### Merged Pull Requests
-- Backport acceptance changes  [#6681](https://github.com/chef/chef/pull/6681) ([scotthain](https://github.com/scotthain)) <!-- 12.21.31 -->
-- Update openssl to 1.0.2.n [#6666](https://github.com/chef/chef/pull/6666) ([tas50](https://github.com/tas50)) <!-- 12.21.30 -->
-- Backport RHEL and ifconfig test fixes [#6659](https://github.com/chef/chef/pull/6659) ([scotthain](https://github.com/scotthain)) <!-- 12.21.29 -->
-- Use Chef::VersionConstraint in useradd_spec test [#6586](https://github.com/chef/chef/pull/6586) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 12.21.28 -->
-- Change a useradd_spec test for RHEL &gt;= 6.8 and &gt;= 7.3 [#6556](https://github.com/chef/chef/pull/6556) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 12.21.27 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v12.21.31](https://github.com/chef/chef/tree/v12.21.31) (2017-12-19)
+
+#### Merged Pull Requests
+- Change a useradd_spec test for RHEL &gt;= 6.8 and &gt;= 7.3 [#6556](https://github.com/chef/chef/pull/6556) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- Use Chef::VersionConstraint in useradd_spec test [#6586](https://github.com/chef/chef/pull/6586) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- Backport RHEL and ifconfig test fixes [#6659](https://github.com/chef/chef/pull/6659) ([scotthain](https://github.com/scotthain))
+- Update openssl to 1.0.2.n [#6666](https://github.com/chef/chef/pull/6666) ([tas50](https://github.com/tas50))
+- Backport acceptance changes  [#6681](https://github.com/chef/chef/pull/6681) ([scotthain](https://github.com/scotthain))
+<!-- latest_stable_release -->
+
 ## [v12.21.26](https://github.com/chef/chef/tree/v12.21.26) (2017-10-30)
 
 #### Merged Pull Requests
@@ -27,7 +25,6 @@
 - Pull in Ohai 8.25 [#6509](https://github.com/chef/chef/pull/6509) ([tas50](https://github.com/tas50))
 - Update ruby version required in readme [#6517](https://github.com/chef/chef/pull/6517) ([tas50](https://github.com/tas50))
 - Update liblzma, libxml2, libxslt, libyaml, zlib, and openssl [#6531](https://github.com/chef/chef/pull/6531) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v12.21.20](https://github.com/chef/chef/tree/v12.21.20) (2017-10-18)
 
