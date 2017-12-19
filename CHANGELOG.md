@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.45 -->
-## [v13.6.45](https://github.com/chef/chef/tree/v13.6.45) (2017-12-19)
+<!-- latest_release 13.6.46 -->
+## [v13.6.46](https://github.com/chef/chef/tree/v13.6.46) (2017-12-19)
 
 #### Merged Pull Requests
-- Slight improvements to validation failures [#6690](https://github.com/chef/chef/pull/6690) ([thommay](https://github.com/thommay))
+- Modernize the ifconfig resource [#6684](https://github.com/chef/chef/pull/6684) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Modernize the ifconfig resource [#6684](https://github.com/chef/chef/pull/6684) ([tas50](https://github.com/tas50)) <!-- 13.6.46 -->
 - Slight improvements to validation failures [#6690](https://github.com/chef/chef/pull/6690) ([thommay](https://github.com/thommay)) <!-- 13.6.45 -->
 - Modernize osx_profile resource [#6685](https://github.com/chef/chef/pull/6685) ([tas50](https://github.com/tas50)) <!-- 13.6.44 -->
 - Modernize cookbook_file resource and expand specs [#6689](https://github.com/chef/chef/pull/6689) ([tas50](https://github.com/tas50)) <!-- 13.6.43 -->
