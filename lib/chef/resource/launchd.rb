@@ -17,7 +17,6 @@
 #
 
 require "chef/resource"
-require "chef/provider/launchd"
 
 class Chef
   class Resource
@@ -25,14 +24,13 @@ class Chef
     #
     # @since 12.8
     class Launchd < Chef::Resource
+      resource_name :launchd
       provides :launchd, os: "darwin"
-
-      identity_attr :label
 
       default_action :create
       allowed_actions :create, :create_if_missing, :delete, :enable, :disable, :restart
 
-      property :label, String, default: lazy { name }, identity: true
+      property :label, String, identity: true, name_property: true
       property :backup, [Integer, FalseClass]
       property :cookbook, String
       property :group, [String, Integer]
