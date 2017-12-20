@@ -1,17 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.49 -->
-## [v13.6.49](https://github.com/chef/chef/tree/v13.6.49) (2017-12-19)
+<!-- latest_release 13.6.50 -->
+## [v13.6.50](https://github.com/chef/chef/tree/v13.6.50) (2017-12-20)
 
 #### Merged Pull Requests
-- Fix yum_repository allowing priority of 0 and remove string regexes [#6697](https://github.com/chef/chef/pull/6697) ([tas50](https://github.com/tas50))
-- Add descriptions and yard @since comments to all resources [#6696](https://github.com/chef/chef/pull/6696) ([tas50](https://github.com/tas50))
-- Cleanup to some of the resource specs [#6692](https://github.com/chef/chef/pull/6692) ([tas50](https://github.com/tas50))
+- Add an &#39;s&#39; for quantity of 0 cookbooks. [#6552](https://github.com/chef/chef/pull/6552) ([anoadragon453](https://github.com/anoadragon453))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Add an &#39;s&#39; for quantity of 0 cookbooks. [#6552](https://github.com/chef/chef/pull/6552) ([anoadragon453](https://github.com/anoadragon453)) <!-- 13.6.50 -->
 - Fix yum_repository allowing priority of 0 and remove string regexes [#6697](https://github.com/chef/chef/pull/6697) ([tas50](https://github.com/tas50)) <!-- 13.6.49 -->
 - Add descriptions and yard @since comments to all resources [#6696](https://github.com/chef/chef/pull/6696) ([tas50](https://github.com/tas50)) <!-- 13.6.48 -->
 - Cleanup to some of the resource specs [#6692](https://github.com/chef/chef/pull/6692) ([tas50](https://github.com/tas50)) <!-- 13.6.48 -->
