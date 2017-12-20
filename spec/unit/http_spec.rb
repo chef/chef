@@ -93,6 +93,15 @@ describe Chef::HTTP do
       expect { http.send(:stream_to_tempfile, uri, resp) }.to raise_error("TestError")
     end
 
+    it "accepts a tempfile" do
+      resp = Net::HTTPOK.new("1.1", 200, "OK")
+      http = Chef::HTTP.new(uri)
+      tempfile = Tempfile.open("tempy-mctempfile")
+      expect(Tempfile).not_to receive(:open)
+      expect(resp).to receive(:read_body).and_yield("conty-mccontent")
+      http.send(:stream_to_tempfile, uri, resp, tempfile)
+      expect(IO.read(tempfile.path)).to eql("conty-mccontent")
+    end
   end
 
   describe "head" do
