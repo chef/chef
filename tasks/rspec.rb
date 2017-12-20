@@ -25,7 +25,7 @@ CHEF_ROOT = File.join(File.dirname(__FILE__), "..")
 begin
   require "rspec/core/rake_task"
 
-  desc "Run specs for Chef's Components"
+  desc "Run specs for Chef's Components (chef-config)"
   task :component_specs do
     Dir.chdir("chef-config") do
       Bundler.with_clean_env do
