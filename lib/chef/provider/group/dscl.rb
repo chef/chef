@@ -88,8 +88,12 @@ class Chef
 
         def gid_used?(gid)
           return false unless gid
-          search_gids = safe_dscl('search', '/Groups', 'gid', gid.to_s)
-          !search_gids.strip.empty?
+          search_gids = safe_dscl("search", "/Groups", "PrimaryGroupID", gid.to_s)
+
+          # dscl -search should not return anything if the gid doesn't exist,
+          # but on the off-chance that it does, check whether the given gid is
+          # in the output.
+          !!(search_gids =~ /\b#{gid.to_s}\b/)
         end
 
         def set_gid
