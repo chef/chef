@@ -117,7 +117,9 @@ describe Chef::Provider::Group::Dscl do
     before do
       @node = Chef::Node.new
       @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
-      allow(@provider).to receive(:safe_dscl).and_return("\naj      500\n")
+      allow(@provider).to receive(:safe_dscl).and_return(
+        "\naj      500\nab      518\n"
+      )
     end
 
     it "should run safe_dscl with list /Groups gid" do
@@ -131,6 +133,7 @@ describe Chef::Provider::Group::Dscl do
 
     it "should return false for an unused gid number" do
       expect(@provider.gid_used?(501)).to be_falsey
+      expect(@provider.gid_used?(18)).to be_falsey
     end
 
     it "should return false if not given any valid gid number" do
