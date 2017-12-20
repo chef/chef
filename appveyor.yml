@@ -4,6 +4,9 @@ os: Visual Studio 2015
 platform:
   - x64
 
+cache:
+- vendor/bundle
+
 environment:
   matrix:
     - ruby_version: "24-x64"
@@ -31,6 +34,7 @@ install:
   - appveyor DownloadFile http://curl.haxx.se/ca/cacert.pem -FileName C:\cacert.pem
   - set SSL_CERT_FILE=C:\cacert.pem
   - SET BUNDLE_WITHOUT=server:docgen:maintenance:pry:travis:integration:ci
+  - bundle config --local path vendor/bundle # use the cache we define above
   - bundle install || bundle install || bundle install
 
 build: off
