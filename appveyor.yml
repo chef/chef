@@ -26,18 +26,20 @@ install:
   - echo %OMNIBUS_RUBYGEMS%
   - ps: $env:OMNIBUS_BUNDLER=$(findstr bundler omnibus_overrides.rb | %{ $_.split(" ")[3] })
   - echo %OMNIBUS_BUNDLER%
-  - ruby --version
   - gem --version
   - gem update --system %OMNIBUS_RUBYGEMS% || gem update --system %OMNIBUS_RUBYGEMS% || gem update --system %OMNIBUS_RUBYGEMS%
-  - gem --version
-  - bundler --version
-  - SET BUNDLE_WITHOUT=server:docgen:maintenance:pry:travis:integration:ci
   - appveyor DownloadFile http://curl.haxx.se/ca/cacert.pem -FileName C:\cacert.pem
   - set SSL_CERT_FILE=C:\cacert.pem
-  - bundle env
-
-build_script:
+  - SET BUNDLE_WITHOUT=server:docgen:maintenance:pry:travis:integration:ci
   - bundle install || bundle install || bundle install
+
+build: off
+
+before_test:
+  - ruby --version
+  - gem --version
+  - bundler --version
+  - bundle env
 
 test_script:
   - SET SPEC_OPTS=--format progress
