@@ -39,6 +39,7 @@ describe "Chef::Win32::Security", :windows_only do
       whoami.error!
       whoami.stdout.split("\\")[0]
     end
+
     before do
       allow_any_instance_of(Chef::Mixin::UserContext).to receive(:node).and_return({ "platform_family" => "windows" })
       allow(Chef::Platform).to receive(:windows_server_2003?).and_return(false)
