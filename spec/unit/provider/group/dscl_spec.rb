@@ -177,7 +177,7 @@ describe Chef::Provider::Group::Dscl do
     describe "with a valid gid number which is not already in use" do
       it "should run safe_dscl with create /Groups/group PrimaryGroupID gid" do
         allow(@provider).to receive(:get_free_gid).and_return(50)
-        expect(@provider).to receive(:safe_dscl).with(*"search /Groups PrimaryGroupID 50".split(" ")).and_return('')
+        expect(@provider).to receive(:safe_dscl).with(*"search /Groups PrimaryGroupID 50".split(" ")).and_return("")
         expect(@provider).to receive(:safe_dscl).with("create", "/Groups/aj", "PrimaryGroupID", 50).and_return(true)
         @provider.set_gid
       end
