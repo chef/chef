@@ -236,7 +236,6 @@ function Run-ExecutableAndWait($AppPath, $ArgumentString) {
     throw "Unable to create process [$ArgumentString].  Error code $reason."
   }
 
-  $sb = New-Object System.Text.StringBuilder
   $buffer = New-Object byte[] 1024
 
   # Initialize reference variables
@@ -270,7 +269,7 @@ function Run-ExecutableAndWait($AppPath, $ArgumentString) {
       while ([Chef.Kernel32]::ReadFile($hReadOut, $buffer, $buffer.Length, [ref] $bytesRead, 0)) {
         $output = [Text.Encoding]::UTF8.GetString($buffer, 0, $bytesRead)
         if ($output) {
-          [void]$sb.Append($output)
+          $output
         }
         if ($bytesRead -lt $buffer.Length) {
           # Partial buffer indicating the end of stream, break out of ReadFile loop
@@ -306,9 +305,6 @@ function Run-ExecutableAndWait($AppPath, $ArgumentString) {
       $isActive = $false
     }
   }
-
-  # Return output obtained from child process stdout/stderr
-  $sb.ToString()
 
   # Cleanup handles
   $success = [Chef.Kernel32]::CloseHandle($pi.hProcess)
