@@ -255,7 +255,7 @@ validation_client_name "#{@chef_config[:validation_client_name]}"
                   content << "mkdir #{file_on_node}\n"
                 else
                   content << "cat > #{file_on_node} <<'EOP'\n" +
-                    f.read + "\nEOP\n"
+                    f.read.gsub("'", "'\\\\''") + "\nEOP\n"
                 end
               end
             end

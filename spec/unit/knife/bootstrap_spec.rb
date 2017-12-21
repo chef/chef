@@ -516,6 +516,11 @@ describe Chef::Knife::Bootstrap do
       end
 
       context "a flat directory structure" do
+        it "escapes single-quotes" do
+          expect(rendered_template).to match("cat > /etc/chef/client.d/02-strings.rb <<'EOP'")
+          expect(rendered_template).to match("something '\\\\''/foo/bar'\\\\''")
+        end
+
         it "creates a file 00-foo.rb" do
           expect(rendered_template).to match("cat > /etc/chef/client.d/00-foo.rb <<'EOP'")
           expect(rendered_template).to match("d6f9b976-289c-4149-baf7-81e6ffecf228")
