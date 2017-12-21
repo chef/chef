@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.52 -->
-## [v13.6.52](https://github.com/chef/chef/tree/v13.6.52) (2017-12-20)
+<!-- latest_release 13.6.53 -->
+## [v13.6.53](https://github.com/chef/chef/tree/v13.6.53) (2017-12-21)
 
 #### Merged Pull Requests
-- Allow injecting tempfiles into Chef::HTTP [#6701](https://github.com/chef/chef/pull/6701) ([lamont-granquist](https://github.com/lamont-granquist))
+- Escape single-quoted strings from the context in knife bootstrap [#6695](https://github.com/chef/chef/pull/6695) ([aespinosa](https://github.com/aespinosa))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Escape single-quoted strings from the context in knife bootstrap [#6695](https://github.com/chef/chef/pull/6695) ([aespinosa](https://github.com/aespinosa)) <!-- 13.6.53 -->
 - Allow injecting tempfiles into Chef::HTTP [#6701](https://github.com/chef/chef/pull/6701) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.6.52 -->
 - Modernize launchd resource [#6698](https://github.com/chef/chef/pull/6698) ([tas50](https://github.com/tas50)) <!-- 13.6.51 -->
 - Add an &#39;s&#39; for quantity of 0 cookbooks. [#6552](https://github.com/chef/chef/pull/6552) ([anoadragon453](https://github.com/anoadragon453)) <!-- 13.6.50 -->
