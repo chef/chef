@@ -43,7 +43,7 @@ class Chef
 
         provides :package, platform_family: %w{rhel}, platform_version: ">= 8"
 
-        provides :yum_package, os: "linux"
+        provides :yum_package
 
         #
         # Most of the magic in this class happens in the python helper script.  The ruby side of this
