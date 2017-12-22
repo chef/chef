@@ -58,7 +58,7 @@ describe Chef::Provider::Env do
       expect(@provider.current_resource.key_name).to eq("FOO")
     end
 
-    it "should check if the key_name and user exists" do
+    it "should check if the key_name and user exist" do
       expect(@provider).to receive(:env_key_exists).with("FOO").and_return(true)
       @provider.load_current_resource
       expect(@provider.key_exists).to be_truthy
@@ -158,7 +158,7 @@ describe Chef::Provider::Env do
       @provider.action_modify
     end
 
-    it "should call modify_group if the key exists and user are not equal" do
+    it "should call modify_group if the key exists and users are not equal" do
       expect(@provider).to receive(:requires_modify_or_create?).and_return(true)
       expect(@provider).to receive(:modify_env).and_return(true)
       @provider.action_modify

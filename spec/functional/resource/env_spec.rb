@@ -37,11 +37,11 @@ describe Chef::Resource::Env, :windows_only do
       environment_variables = wmi.query("select * from Win32_Environment where name = '#{test_resource.key_name}'")
       if environment_variables && environment_variables.length > 0
         environment_variables.each do |env|
-          @env_obj = env.wmi_ole_object
-          return @env_obj if @env_obj.username.split('\\').last.casecmp(test_resource.user) == 0
+          env_obj = env.wmi_ole_object
+          return env_obj if env_obj.username.split('\\').last.casecmp(test_resource.user) == 0
         end
       end
-      @env_obj = nil
+      nil
     end
 
     let(:env_value_expandable) { "%SystemRoot%" }
@@ -84,8 +84,7 @@ describe Chef::Resource::Env, :windows_only do
         test_resource.key_name(chef_env_test_lower_case)
         test_resource.value(env_value1)
         test_resource.run_action(:create)
-        env_obj
-        expect(@env_obj.username.upcase).to eq(default_env_user)
+        expect(env_obj.username.upcase).to eq(default_env_user)
       end
 
       it "should create an environment variable with user for action create" do
@@ -94,43 +93,39 @@ describe Chef::Resource::Env, :windows_only do
         test_resource.value(env_value1)
         test_resource.user(env_user)
         test_resource.run_action(:create)
-        env_obj
-        expect(@env_obj.username.split('\\').last.upcase).to eq(env_user)
+        expect(env_obj.username.split('\\').last.upcase).to eq(env_user)
       end
 
-      it "should modify an existing variable's value to a new value" do
-        test_resource.key_name(chef_env_test_lower_case)
-        test_resource.value(env_value1)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
-        test_resource.value(env_value2)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
-      end
+      context "when env variable exist with same name" do
+        before(:each) do
+          test_resource.key_name(chef_env_test_lower_case)
+          test_resource.value(env_value1)
+          test_resource.run_action(:create)
+        end
+        it "should modify an existing variable's value to a new value" do
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+          test_resource.value(env_value2)
+          test_resource.run_action(:create)
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
+        end
 
-      it "should not modify an existing variable's value to a new value if the user are diff" do
-        test_resource.key_name(chef_env_test_lower_case)
-        test_resource.value(env_value1)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
-        test_resource.value(env_value2)
-        test_resource.user(env_user)
-        test_resource.run_action(:create)
-        test_resource.key_name(chef_env_test_lower_case)
-        test_resource.user(default_env_user)
-        env_obj
-        expect(@env_obj.variablevalue).to eq(env_value1)
-      end
+        it "should not modify an existing variable's value to a new value if the users are different" do
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+          test_resource.value(env_value2)
+          test_resource.user(env_user)
+          test_resource.run_action(:create)
+          test_resource.key_name(chef_env_test_lower_case)
+          test_resource.user(default_env_user)
+          expect(env_obj.variablevalue).to eq(env_value1)
+        end
 
-      it "should modify an existing variable's value to a new value if the variable name case differs from the existing variable" do
-        test_resource.key_name(chef_env_test_lower_case)
-        test_resource.value(env_value1)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
-        test_resource.key_name(chef_env_test_mixed_case)
-        test_resource.value(env_value2)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
+        it "should modify an existing variable's value to a new value if the variable name case differs from the existing variable" do
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+          test_resource.key_name(chef_env_test_mixed_case)
+          test_resource.value(env_value2)
+          test_resource.run_action(:create)
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
+        end
       end
 
       it "should not expand environment variables if the variable is not PATH" do
@@ -150,36 +145,35 @@ describe Chef::Resource::Env, :windows_only do
         expect { test_resource.run_action(:modify) }.to raise_error(Chef::Exceptions::Env)
       end
 
-      it "should modify an existing variable's value to a new value" do
-        test_resource.key_name(chef_env_test_lower_case)
-        test_resource.value(env_value1)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
-        test_resource.value(env_value2)
-        test_resource.run_action(:modify)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
-      end
+      context "when env variable exist with same name" do
+        before(:each) do
+          test_resource.key_name(chef_env_test_lower_case)
+          test_resource.value(env_value1)
+          test_resource.run_action(:create)
+        end
 
-      # This examlpe covers Chef Issue #1754
-      it "should modify an existing variable's value to a new value if the variable name case differs from the existing variable" do
-        test_resource.key_name(chef_env_test_lower_case)
-        test_resource.value(env_value1)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
-        test_resource.key_name(chef_env_test_mixed_case)
-        test_resource.value(env_value2)
-        test_resource.run_action(:modify)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
-      end
+        it "should modify an existing variable's value to a new value" do
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+          test_resource.value(env_value2)
+          test_resource.run_action(:modify)
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
+        end
 
-      it "should not expand environment variables if the variable is not PATH" do
-        test_resource.key_name(chef_env_test_lower_case)
-        test_resource.value(env_value1)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
-        test_resource.value(env_value_expandable)
-        test_resource.run_action(:modify)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value_expandable)
+        # This examlpe covers Chef Issue #1754
+        it "should modify an existing variable's value to a new value if the variable name case differs from the existing variable" do
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+          test_resource.key_name(chef_env_test_mixed_case)
+          test_resource.value(env_value2)
+          test_resource.run_action(:modify)
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
+        end
+
+        it "should not expand environment variables if the variable is not PATH" do
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+          test_resource.value(env_value_expandable)
+          test_resource.run_action(:modify)
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value_expandable)
+        end
       end
 
       context "when using PATH" do
@@ -209,60 +203,65 @@ describe Chef::Resource::Env, :windows_only do
     end
 
     context "when the delete action is invoked" do
-      it "should delete a System environment variable" do
-        test_resource.key_name(chef_env_test_lower_case)
-        test_resource.value(env_value1)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
-        test_resource.run_action(:delete)
-        expect(ENV[chef_env_test_lower_case]).to eq(nil)
+      context "when env variable exist with same name" do
+        before(:each) do
+          test_resource.key_name(chef_env_test_lower_case)
+          test_resource.value(env_value1)
+          test_resource.run_action(:create)
+        end
+
+        it "should delete a System environment variable" do
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+          test_resource.run_action(:delete)
+          expect(ENV[chef_env_test_lower_case]).to eq(nil)
+        end
+
+        it "should not delete an System environment variable if user are passed" do
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+          test_resource.user(env_user)
+          test_resource.run_action(:delete)
+          test_resource.user(default_env_user)
+          expect(env_obj).not_to be_nil
+        end
       end
 
-      it "should delete a user environment variable" do
-        test_resource.key_name(chef_env_test_lower_case)
-        test_resource.value(env_value1)
-        test_resource.user(env_user)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
-        test_resource.run_action(:delete)
-        env_obj
-        expect(@env_obj).to eq(nil)
+      context "when env variable exist with same name" do
+        before(:each) do
+          test_resource.key_name(chef_env_test_lower_case)
+          test_resource.value(env_value1)
+          test_resource.user(env_user)
+          test_resource.run_action(:create)
+        end
+
+        it "should delete a user environment variable" do
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+          test_resource.run_action(:delete)
+          expect(env_obj).to eq(nil)
+        end
+
+        it "should not delete an user environment variable if user is not passed" do
+          expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
+          test_resource.user(default_env_user)
+          test_resource.run_action(:delete)
+          test_resource.user(env_user)
+          expect(env_obj).not_to be_nil
+        end
       end
 
-      it "should not delete an user environment variable if user are not passed" do
-        test_resource.key_name(chef_env_test_lower_case)
-        test_resource.value(env_value1)
-        test_resource.user(env_user)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
-        test_resource.user(default_env_user)
-        test_resource.run_action(:delete)
-        test_resource.user(env_user)
-        env_obj
-        expect(@env_obj).not_to be_nil
-      end
+      context "when env variable exist with same name" do
+        before(:each) do
+          test_resource.key_name(chef_env_with_delim)
+          test_resource.delim(chef_env_delim)
+          test_resource.value(delim_value)
+          test_resource.run_action(:create)
+        end
 
-      it "should not delete an System environment variable if user are passed" do
-        test_resource.key_name(chef_env_test_lower_case)
-        test_resource.value(env_value1)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
-        test_resource.user(env_user)
-        test_resource.run_action(:delete)
-        test_resource.user(default_env_user)
-        env_obj
-        expect(@env_obj).not_to be_nil
-      end
-
-      it "should not delete variable when a delim present" do
-        test_resource.key_name(chef_env_with_delim)
-        test_resource.delim(chef_env_delim)
-        test_resource.value(delim_value)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_with_delim]).to eq(delim_value)
-        test_resource.value(env_value1)
-        test_resource.run_action(:delete)
-        expect(ENV[chef_env_with_delim]).to eq(env_value2)
+        it "should not delete variable when a delim present" do
+          expect(ENV[chef_env_with_delim]).to eq(delim_value)
+          test_resource.value(env_value1)
+          test_resource.run_action(:delete)
+          expect(ENV[chef_env_with_delim]).to eq(env_value2)
+        end
       end
 
       it "should not raise an exception when a non-existent environment variable is deleted" do
@@ -273,16 +272,6 @@ describe Chef::Resource::Env, :windows_only do
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
       end
 
-      it "should delete an existing variable's value to a new value if the specified variable name case differs from the existing variable" do
-        test_resource.key_name(chef_env_test_lower_case)
-        test_resource.value(env_value1)
-        test_resource.run_action(:create)
-        expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
-        test_resource.key_name(chef_env_test_mixed_case)
-        test_resource.run_action(:delete)
-        expect(ENV[chef_env_test_lower_case]).to eq(nil)
-        expect(ENV[chef_env_test_mixed_case]).to eq(nil)
-      end
       it "should delete a value from the current process even if it is not in the registry" do
         expect(ENV[env_dne_key]).to eq(nil)
         ENV[env_dne_key] = env_value1
