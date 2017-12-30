@@ -93,7 +93,7 @@ describe "Chef::Resource.property" do
       expect(resource.bare_property).to eq 20
     end
     it "can be set with =" do
-      expect(resource.bare_property 10).to eq 10
+      expect(resource.bare_property = 10).to eq 10
       expect(resource.bare_property).to eq 10
     end
     it "can be set to nil with =" do
@@ -1037,20 +1037,20 @@ describe "Chef::Resource.property" do
 
       context "default ordering deprecation warnings" do
         it "emits an error for property :x, default: 10, #{name}: true" do
-          expect { resource_class.property :x, :default => 10, name.to_sym => true }.to raise_error Chef::Exceptions::ArgumentError,
-            /Cannot specify both default and name_property\/name_attribute together on property x of resource chef_resource_property_spec_(\d+)/
+          expect { resource_class.property :x, :default => 10, name.to_sym => true }.to raise_error ArgumentError,
+            /A property cannot be both a name_property\/name_attribute and have a default value. Use one or the other on property x of resource chef_resource_property_spec_(\d+)/
         end
         it "emits an error for property :x, default: nil, #{name}: true" do
-          expect { resource_class.property :x, :default => nil, name.to_sym => true }.to raise_error Chef::Exceptions::ArgumentError,
-            /Cannot specify both default and name_property\/name_attribute together on property x of resource chef_resource_property_spec_(\d+)/
+          expect { resource_class.property :x, :default => nil, name.to_sym => true }.to raise_error ArgumentError,
+            /A property cannot be both a name_property\/name_attribute and have a default value. Use one or the other on property x of resource chef_resource_property_spec_(\d+)/
         end
         it "emits an error for property :x, #{name}: true, default: 10" do
-          expect { resource_class.property :x, name.to_sym => true, :default => 10 }.to raise_error Chef::Exceptions::ArgumentError,
-            /Cannot specify both default and name_property\/name_attribute together on property x of resource chef_resource_property_spec_(\d+)/
+          expect { resource_class.property :x, name.to_sym => true, :default => 10 }.to raise_error ArgumentError,
+            /A property cannot be both a name_property\/name_attribute and have a default value. Use one or the other on property x of resource chef_resource_property_spec_(\d+)/
         end
         it "emits an error for property :x, #{name}: true, default: nil" do
-          expect { resource_class.property :x, name.to_sym => true, :default => nil }.to raise_error Chef::Exceptions::ArgumentError,
-            /Cannot specify both default and name_property\/name_attribute together on property x of resource chef_resource_property_spec_(\d+)/
+          expect { resource_class.property :x, name.to_sym => true, :default => nil }.to raise_error ArgumentError,
+            /A property cannot be both a name_property\/name_attribute and have a default value. Use one or the other on property x of resource chef_resource_property_spec_(\d+)/
         end
       end
     end
@@ -1058,13 +1058,13 @@ describe "Chef::Resource.property" do
 
   it "raises an error if both name_property and name_attribute are specified" do
     expect { resource_class.property :x, :name_property => false, :name_attribute => 1 }.to raise_error ArgumentError,
-      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+      /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)./
     expect { resource_class.property :x, :name_property => false, :name_attribute => nil }.to raise_error ArgumentError,
-      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+      /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)./
     expect { resource_class.property :x, :name_property => false, :name_attribute => false }.to raise_error ArgumentError,
-      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+      /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)./
     expect { resource_class.property :x, :name_property => true, :name_attribute => true }.to raise_error ArgumentError,
-      /Cannot specify both name_property and name_attribute together on property x of resource chef_resource_property_spec_(\d+)./
+      /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)./
   end
 
   context "property_type" do
