@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (mmzyk@chef.io)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -238,16 +238,9 @@ class Chef::Application::Solo < Chef::Application
 
     Chef::Config[:solo] = true
 
-    Chef::Log.deprecation("-r MUST be changed to --recipe-url, the -r option will be changed in Chef 13.0") if ARGV.include?("-r")
-
     if !Chef::Config[:solo_legacy_mode]
       # Because we re-parse ARGV when we move to chef-client, we need to tidy up some options first.
       ARGV.delete("--ez")
-
-      # -r means something entirely different in chef-client land, so let's replace it with a "safe" value
-      if dash_r = ARGV.index("-r")
-        ARGV[dash_r] = "--recipe-url"
-      end
 
       # For back compat reasons, we need to ensure that we try and use the cache_path as a repo first
       Chef::Log.debug "Current chef_repo_path is #{Chef::Config.chef_repo_path}"
