@@ -509,7 +509,7 @@ module ResourceActionSpec
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
         expect_converge do
           has_property_named_template "hi"
-        end.to raise_error(/Property `template` of `has_property_named_template\[hi\]` was incorrectly passed a block.  Possible property-resource collision.  To call a resource named `template` either rename the property or else use `declare_resource\(:template, ...\)`/)
+        end.to raise_error(/Property `template` of `has_property_named_template\[hi\]` was incorrectly passed a block. Possible property-resource collision. To call a resource named `template` either rename the property or else use `declare_resource\(:template, ...\)`/)
       end
     end
 
