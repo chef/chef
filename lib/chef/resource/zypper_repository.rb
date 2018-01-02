@@ -43,7 +43,7 @@ class Chef
       property :keeppackages, [true, false], default: false
       property :mode, default: "0644"
       property :refresh_cache, [true, false], default: true
-      property :source, String, regex: /.*/
+      property :source, String
       property :cookbook, String
       property :gpgautoimportkeys, [true, false], default: true
 
