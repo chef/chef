@@ -80,6 +80,11 @@ class Chef
         )
       end
 
+      # This resource is deprecated.
+      def after_created
+        Chef.deprecated(:erl_resource, "The #{resource_name} resource (#{source_line}) is deprecated and will be removed from Chef core in 14.0 (April 2018).")
+      end
+
     end
   end
 end
