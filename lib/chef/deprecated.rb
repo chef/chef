@@ -268,6 +268,16 @@ class Chef
       end
     end
 
+    class ErlResource < Base
+      def id
+        22
+      end
+
+      def target
+        "erl_resource.html"
+      end
+    end
+
     # id 3694 was deleted
 
     class Generic < Base
