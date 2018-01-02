@@ -53,7 +53,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { @so_priority.exitstatus == 0 }
-            a.failure_message Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{current_resource.service_name} failed - #{@so_priority.inspect}"
+            a.failure_message Chef::Exceptions::Service, "/usr/sbin/update-rc.d -f #{current_resource.service_name} failed - #{@so_priority.inspect}"
             # This can happen if the service is not yet installed,so we'll fake it.
             a.whyrun ["Unable to determine priority of service, assuming service would have been correctly installed earlier in the run.",
                       "Assigning temporary priorities to continue.",
@@ -73,7 +73,7 @@ class Chef
         def get_priority
           priority = {}
 
-          @so_priority = shell_out!("/usr/sbin/update-rc.d -n -f #{current_resource.service_name} remove")
+          @so_priority = shell_out!("/usr/sbin/update-rc.d -f #{current_resource.service_name} remove")
 
           [@so_priority.stdout, @so_priority.stderr].each do |iop|
             iop.each_line do |line|
