@@ -3,7 +3,7 @@
 #           Bryan McLellan (btm@loftninjas.org)
 #           Matthew Landauer (matthew@openaustralia.org)
 #           Ben Rockwood (benr@joyent.com)
-# Copyright:: Copyright 2009-2016, Bryan McLellan, Matthew Landauer
+# Copyright:: Copyright 2009-2018, Bryan McLellan, Matthew Landauer
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,7 @@ class Chef
         attr_accessor :is_virtual_package
 
         provides :package, platform: "smartos"
-        provides :smartos_package, platform: "smartos"
+        provides :smartos_package, platform_family: "smartos"
 
         def load_current_resource
           Chef::Log.debug("#{new_resource} loading current resource")
