@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.6.57 -->
-## [v13.6.57](https://github.com/chef/chef/tree/v13.6.57) (2018-01-02)
+<!-- latest_release 13.7.1 -->
+## [v13.7.1](https://github.com/chef/chef/tree/v13.7.1) (2018-01-02)
 
 #### Merged Pull Requests
-- Deprecate erl_call resource [#6720](https://github.com/chef/chef/pull/6720) ([tas50](https://github.com/tas50))
+- Remove a useless regex in zypper_repository resource [#6710](https://github.com/chef/chef/pull/6710) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Remove a useless regex in zypper_repository resource [#6710](https://github.com/chef/chef/pull/6710) ([tas50](https://github.com/tas50)) <!-- 13.7.1 -->
 - Deprecate erl_call resource [#6720](https://github.com/chef/chef/pull/6720) ([tas50](https://github.com/tas50)) <!-- 13.6.57 -->
 - Improve property warnings in resources [#6717](https://github.com/chef/chef/pull/6717) ([tas50](https://github.com/tas50)) <!-- 13.6.56 -->
 - Remove lock files and test github masters in Kitchen Tests [#6709](https://github.com/chef/chef/pull/6709) ([tas50](https://github.com/tas50)) <!-- 13.6.55 -->
