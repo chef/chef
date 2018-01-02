@@ -58,7 +58,7 @@ class Chef
 
             # Let the user edit the temporary file
             if !system("#{config[:editor]} #{file.path}")
-              raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_using.html for details."
+              raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_setup.html for details."
             end
 
             result_text = IO.read(file.path)
