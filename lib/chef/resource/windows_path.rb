@@ -25,7 +25,7 @@ class Chef
     # @since 13.4
     class WindowsPath < Chef::Resource
       resource_name :windows_path
-      provides :windows_path, os: "windows"
+      provides :windows_path
 
       allowed_actions :add, :remove
       default_action :add
