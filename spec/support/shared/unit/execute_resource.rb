@@ -20,142 +20,135 @@
 require "spec_helper"
 
 shared_examples_for "an execute resource" do
-
-  before(:each) do
-    @resource = execute_resource
+  it "resource_name should equal :execute" do
+    expect(resource.resource_name).to eq(:execute)
   end
 
-  it "should create a new Chef::Resource::Execute" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::Execute)
-  end
-
-  it "should set the command to the first argument to new" do
-    expect(@resource.command).to eql(resource_instance_name)
+  it "should set the command to the resource name" do
+    expect(resource.command).to eql("some command")
   end
 
   it "should accept an array on instantiation, too" do
     resource = Chef::Resource::Execute.new(%w{something else})
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Execute)
+    expect(resource.resource_name).to eq(:execute)
     expect(resource.command).to eql(%w{something else})
   end
 
   it "should accept a string for the command to run" do
-    @resource.command "something"
-    expect(@resource.command).to eql("something")
+    resource.command "something"
+    expect(resource.command).to eql("something")
   end
 
   it "should accept an array for the command to run" do
-    @resource.command %w{something else}
-    expect(@resource.command).to eql(%w{something else})
+    resource.command %w{something else}
+    expect(resource.command).to eql(%w{something else})
   end
 
   it "should accept a string for the cwd" do
-    @resource.cwd "something"
-    expect(@resource.cwd).to eql("something")
+    resource.cwd "something"
+    expect(resource.cwd).to eql("something")
   end
 
   it "should accept a hash for the environment" do
     test_hash = { :one => :two }
-    @resource.environment(test_hash)
-    expect(@resource.environment).to eql(test_hash)
+    resource.environment(test_hash)
+    expect(resource.environment).to eql(test_hash)
   end
 
   it "allows the environment to be specified with #env" do
-    expect(@resource).to respond_to(:env)
+    expect(resource).to respond_to(:env)
   end
 
   it "should accept a string for the group" do
-    @resource.group "something"
-    expect(@resource.group).to eql("something")
+    resource.group "something"
+    expect(resource.group).to eql("something")
   end
 
   it "should accept an integer for the group" do
-    @resource.group 1
-    expect(@resource.group).to eql(1)
+    resource.group 1
+    expect(resource.group).to eql(1)
   end
 
   it "the old path property (that never worked) is not supported in chef >= 13" do
-    expect { @resource.path [ "woot" ] }.to raise_error
+    expect { resource.path [ "woot" ] }.to raise_error
   end
 
   it "should accept an integer for the return code" do
-    @resource.returns 1
-    expect(@resource.returns).to eql(1)
+    resource.returns 1
+    expect(resource.returns).to eql(1)
   end
 
   it "should accept an integer for the timeout" do
-    @resource.timeout 1
-    expect(@resource.timeout).to eql(1)
+    resource.timeout 1
+    expect(resource.timeout).to eql(1)
   end
 
   it "should accept a string for the user" do
-    @resource.user "something"
-    expect(@resource.user).to eql("something")
+    resource.user "something"
+    expect(resource.user).to eql("something")
   end
 
   it "should accept an integer for the user" do
-    @resource.user 1
-    expect(@resource.user).to eql(1)
+    resource.user 1
+    expect(resource.user).to eql(1)
   end
 
   it "should accept a string for the domain" do
-    @resource.domain "mothership"
-    expect(@resource.domain).to eql("mothership")
+    resource.domain "mothership"
+    expect(resource.domain).to eql("mothership")
   end
 
   it "should accept a string for the password" do
-    @resource.password "we.funk!"
-    expect(@resource.password).to eql("we.funk!")
+    resource.password "we.funk!"
+    expect(resource.password).to eql("we.funk!")
   end
 
   it "should accept a string for creates" do
-    @resource.creates "something"
-    expect(@resource.creates).to eql("something")
+    resource.creates "something"
+    expect(resource.creates).to eql("something")
   end
 
   it "should accept a boolean for live streaming" do
-    @resource.live_stream true
-    expect(@resource.live_stream).to be true
+    resource.live_stream true
+    expect(resource.live_stream).to be true
   end
 
   describe "the resource's sensitive attribute" do
     it "should be false by default" do
-      expect(@resource.sensitive).to eq(false)
+      expect(resource.sensitive).to eq(false)
     end
 
     it "should be true if set to true" do
-      expect(@resource.sensitive).to eq(false)
-      @resource.sensitive true
-      expect(@resource.sensitive).to eq(true)
+      expect(resource.sensitive).to eq(false)
+      resource.sensitive true
+      expect(resource.sensitive).to eq(true)
     end
 
     it "should be true if the password is non-nil" do
-      @resource.password("we.funk!")
-      expect(@resource.sensitive).to eq(true)
+      resource.password("we.funk!")
+      expect(resource.sensitive).to eq(true)
     end
 
     it "should be true if the password is non-nil but the value is explicitly set to false" do
-      @resource.password("we.funk!")
-      @resource.sensitive false
-      expect(@resource.sensitive).to eq(true)
+      resource.password("we.funk!")
+      resource.sensitive false
+      expect(resource.sensitive).to eq(true)
     end
 
   end
 
   describe "when it has cwd, environment, group, path, return value, and a user" do
     before do
-      @resource.command("grep")
-      @resource.cwd("/tmp/")
-      @resource.environment({ :one => :two })
-      @resource.group("legos")
-      @resource.returns(1)
-      @resource.user("root")
+      resource.command("grep")
+      resource.cwd("/tmp/")
+      resource.environment({ :one => :two })
+      resource.group("legos")
+      resource.returns(1)
+      resource.user("root")
     end
 
     it "returns the command as its identity" do
-      expect(@resource.identity).to eq("grep")
+      expect(resource.identity).to eq("grep")
     end
   end
 end
