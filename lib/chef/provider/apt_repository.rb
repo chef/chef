@@ -27,7 +27,7 @@ class Chef
     class AptRepository < Chef::Provider
       include Chef::Mixin::ShellOut
 
-      provides :apt_repository, os: "linux", platform_family: "debian"
+      provides :apt_repository, platform_family: "debian"
 
       LIST_APT_KEYS = "apt-key list".freeze
       LIST_APT_KEY_FINGERPRINTS = "apt-key adv --list-public-keys --with-fingerprint --with-colons".freeze
