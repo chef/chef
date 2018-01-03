@@ -30,7 +30,7 @@ describe Chef::Resource::WindowsPath do
   end
 
   it "sets the default action as :add" do
-    expect(resource.action).to eql(:add)
+    expect(resource.action).to eql([:add])
   end
 
   it "supports :add and :remove actions" do

@@ -23,8 +23,9 @@ require "chef/exceptions"
 class Chef
   class Provider
     class WindowsPath < Chef::Provider
-
       include Chef::Mixin::WindowsEnvHelper if Chef::Platform.windows?
+
+      provides :windows_path
 
       def load_current_resource
         @current_resource = Chef::Resource::WindowsPath.new(new_resource.name)
