@@ -30,10 +30,6 @@ shared_examples_for "a script resource" do
     expect(script_resource.resource_name).to eql(resource_name)
   end
 
-  it "should set command to nil on the resource", chef: ">= 13" do
-    expect(script_resource.command).to be nil
-  end
-
   it "should accept a string for the code" do
     script_resource.code "hey jude"
     expect(script_resource.code).to eql("hey jude")
@@ -42,10 +38,6 @@ shared_examples_for "a script resource" do
   it "should accept a string for the flags" do
     script_resource.flags "-f"
     expect(script_resource.flags).to eql("-f")
-  end
-
-  it "should raise an exception if users set command on the resource", chef: ">= 13" do
-    expect { script_resource.command("foo") }.to raise_error(Chef::Exceptions::Script)
   end
 
   describe "when executing guards" do
