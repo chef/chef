@@ -134,7 +134,7 @@ describe Chef::Provider::Package::Zypper do
       provider.install_package(["emacs"], ["1.0"])
     end
     it "should install with the package name and version and even allow downgrade" do
-      allow(Chef::Config).to receive(:[]).with(:zypper_check_gpg).and_return(true)
+      new_resource.allow_downgrade true
       shell_out_expectation!(
         "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
