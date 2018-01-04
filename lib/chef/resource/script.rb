@@ -27,26 +27,12 @@ class Chef
     # that are executed with this resource are (by their nature) not idempotent, as they are typically unique to the
     # environment in which they are run. Use not_if and only_if to guard this resource for idempotence.
     class Script < Chef::Resource::Execute
-      identity_attr :name
-
-      def initialize(name, run_context = nil)
-        super
-        @command = nil
-        @default_guard_interpreter = :default
-      end
-
-      # FIXME: remove this and use an execute sub-resource instead of inheriting from Execute
-      def command(arg = nil)
-        unless arg.nil?
-          raise Chef::Exceptions::Script, "Do not use the command attribute on a #{resource_name} resource, use the 'code' attribute instead."
-        end
-        super
-      end
+      resource_name :script
 
       property :code, String, required: true
       property :interpreter, String
       property :flags, String
-
+      property :default_guard_interpreter, default: :default
     end
   end
 end

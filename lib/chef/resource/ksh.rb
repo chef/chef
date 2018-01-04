@@ -27,12 +27,8 @@ class Chef
     #
     # @since 12.6
     class Ksh < Chef::Resource::Script
-
-      def initialize(name, run_context = nil)
-        super
-        @interpreter = "ksh"
-      end
-
+      resource_name :ksh
+      property :interpreter, default: "ksh"
     end
   end
 end

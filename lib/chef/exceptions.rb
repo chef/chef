@@ -65,6 +65,10 @@ class Chef
       end
     end
 
+    class ValidationFailed < ArgumentError; end
+    # Attempting to access a 64-bit only resource on a 32-bit Windows system
+    class Win32ArchitectureIncorrect < ValidationFailed; end
+
     class User < RuntimeError; end
     class Group < RuntimeError; end
     class Link < RuntimeError; end
@@ -156,8 +160,6 @@ class Chef
     # Attempting to run windows code on a not-windows node
     class Win32NotWindows < RuntimeError; end
     class WindowsNotAdmin < RuntimeError; end
-    # Attempting to access a 64-bit only resource on a 32-bit Windows system
-    class Win32ArchitectureIncorrect < RuntimeError; end
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end
     class DuplicateDataBagItem < RuntimeError; end

@@ -26,13 +26,11 @@ class Chef
     # typically unique to the environment in which they are run. Use not_if and only_if to guard this resource for
     # idempotence.
     class Batch < Chef::Resource::WindowsScript
-
+      resource_name :batch
       provides :batch, os: "windows"
 
-      def initialize(name, run_context = nil)
-        super(name, run_context, nil, "cmd.exe")
-      end
-
+      property :interpreter, default: "cmd.exe"
+      property :default_guard_interpreter, default: :batch
     end
   end
 end

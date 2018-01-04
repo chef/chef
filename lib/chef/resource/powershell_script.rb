@@ -28,20 +28,11 @@ class Chef
     # idempotent, as they are typically unique to the environment in which they are run. Use not_if and only_if to guard
     # this resource for idempotence.
     class PowershellScript < Chef::Resource::WindowsScript
+      resource_name :powershell_script
       provides :powershell_script, os: "windows"
 
-      def initialize(name, run_context = nil)
-        super(name, run_context, :powershell_script, "powershell.exe")
-        @convert_boolean_return = false
-      end
-
-      def convert_boolean_return(arg = nil)
-        set_or_return(
-          :convert_boolean_return,
-          arg,
-          :kind_of => [ FalseClass, TrueClass ]
-        )
-      end
+      property :interpreter, default: "powershell.exe"
+      property :convert_boolean_return, [ true, false ], default: false
 
       # Allow callers evaluating guards to request default
       # attribute values. This is needed to allow

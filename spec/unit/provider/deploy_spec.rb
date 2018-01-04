@@ -582,7 +582,6 @@ describe Chef::Provider::Deploy do
       @resource.user("notCoolMan")
       expect(mock_execution).to receive(:user).with("notCoolMan")
       expect(mock_execution).to receive(:cwd).with(no_args()).and_return("/some/value")
-      expect(mock_execution).to receive(:environment).with(no_args()).and_return({})
       @provider.run("iGoToHell4this")
     end
 
