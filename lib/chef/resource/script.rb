@@ -29,17 +29,7 @@ class Chef
     class Script < Chef::Resource::Execute
       resource_name :script
 
-      # Chef-13: go back to using :name as the identity attr
-      # Chef-13: the command variable should be initialized to nil
-
-      property :command, coerce: proc { |v|
-        # Chef-13: change this to raise if the user is trying to set a value here
-        Chef::Log.warn "Specifying command attribute on a script resource is a coding error, use the 'code' attribute, or the execute resource"
-        Chef::Log.warn "This attribute is deprecated and must be fixed or this code will fail on Chef 13"
-        v
-      }
-
-      property :code, String
+      property :code, String, required: true
       property :interpreter, String
       property :flags, String
       property :default_guard_interpreter, default: :default
