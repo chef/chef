@@ -1,5 +1,4 @@
 language: ruby
-sudo: required
 cache: bundler
 dist: trusty
 
