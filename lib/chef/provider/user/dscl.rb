@@ -318,7 +318,7 @@ user password using shadow hash.")
         end
 
         def current_home_exists?
-          ::File.exist?(current_resource.home)
+          !!current_resource.home && ::File.exist?(current_resource.home)
         end
 
         def new_home_exists?

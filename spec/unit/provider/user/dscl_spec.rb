@@ -213,6 +213,32 @@ ea18e18b720e358e7fbe3cfbeaa561456f6ba008937a30"
     end
   end
 
+  describe "current_home_exists?" do
+    let(:current_resource) do
+      new_resource.dup
+    end
+
+    before do
+      provider.current_resource = current_resource
+    end
+
+    it "returns false for nil home dir" do
+      current_resource.home nil
+      expect(provider.current_home_exists?).to be_falsey
+    end
+
+    it "is false for empty string" do
+      current_resource.home ""
+      expect(provider.current_home_exists?).to be_falsey
+    end
+
+    it "is true for existing directory" do
+      current_resource.home "/Users/blah"
+      allow(::File).to receive(:exist?).with("/Users/blah").and_return(true)
+      expect(provider.current_home_exists?).to be_truthy
+    end
+  end
+
   describe "when modifying the home directory" do
     let(:current_resource) do
       new_resource.dup
