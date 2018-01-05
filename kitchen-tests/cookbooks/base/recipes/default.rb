@@ -63,7 +63,7 @@ include_recipe "git"
 directory "/etc/ssl"
 
 # Generate new key and certificate
-openssl_dhparam "/etc/ssl_test/dhparam.pem" do
+openssl_dhparam "/etc/ssl/dhparam.pem" do
   key_length 1024
   action :create
 end

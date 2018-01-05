@@ -19,7 +19,7 @@ class Chef
   module Mixin
     module OpenSSL
       def self.included(_base)
-        require "openssl" unless defined?(OpenSSL)
+        require "openssl" unless defined?(::OpenSSL)
       end
 
       # determine the key filename from the cert filename
@@ -45,7 +45,7 @@ class Chef
         # Check if the dhparam.pem file exists
         # Verify the dhparam.pem file contains a key
         return false unless ::File.exist?(dhparam_pem_path)
-        dhparam = OpenSSL::PKey::DH.new File.read(dhparam_pem_path)
+        dhparam = ::OpenSSL::PKey::DH.new File.read(dhparam_pem_path)
         dhparam.params_ok?
       end
 
@@ -60,8 +60,8 @@ class Chef
         key_content = ::File.exist?(key_file) ? File.read(key_file) : key_file
 
         begin
-          key = OpenSSL::PKey::RSA.new key_content, key_password
-        rescue OpenSSL::PKey::RSAError
+          key = ::OpenSSL::PKey::RSA.new key_content, key_password
+        rescue ::OpenSSL::PKey::RSAError
           return false
         end
         key.private?
@@ -75,7 +75,7 @@ class Chef
         raise ArgumentError, "Key length must be a power of 2 greater than or equal to 1024" unless key_length_valid?(key_length)
         raise TypeError, "Generator must be an integer" unless generator.is_a?(Integer)
 
-        OpenSSL::PKey::DH.new(key_length, generator)
+        ::OpenSSL::PKey::DH.new(key_length, generator)
       end
 
       # generate an RSA private key given key length
@@ -84,7 +84,7 @@ class Chef
       def gen_rsa_priv_key(key_length)
         raise ArgumentError, "Key length must be a power of 2 greater than or equal to 1024" unless key_length_valid?(key_length)
 
-        OpenSSL::PKey::RSA.new(key_length)
+        ::OpenSSL::PKey::RSA.new(key_length)
       end
 
       # generate pem format of the public key given a private key
@@ -95,7 +95,7 @@ class Chef
         # if the file exists try to read the content
         # if not assume we were passed the key and set the string to the content
         key_content = ::File.exist?(priv_key) ? File.read(priv_key) : priv_key
-        key = OpenSSL::PKey::RSA.new key_content, priv_key_password
+        key = ::OpenSSL::PKey::RSA.new key_content, priv_key_password
         key.public_key.to_pem
       end
 
@@ -105,12 +105,12 @@ class Chef
       # @param [String] key_cipher the cipher to use
       # @return [String] pem contents
       def encrypt_rsa_key(rsa_key, key_password, key_cipher)
-        raise TypeError, "rsa_key must be a Ruby OpenSSL::PKey::RSA object" unless rsa_key.is_a?(OpenSSL::PKey::RSA)
+        raise TypeError, "rsa_key must be a Ruby OpenSSL::PKey::RSA object" unless rsa_key.is_a?(::OpenSSL::PKey::RSA)
         raise TypeError, "key_password must be a string" unless key_password.is_a?(String)
         raise TypeError, "key_cipher must be a string" unless key_cipher.is_a?(String)
-        raise ArgumentError, "Specified key_cipher is not available on this system" unless OpenSSL::Cipher.ciphers.include?(key_cipher)
+        raise ArgumentError, "Specified key_cipher is not available on this system" unless ::OpenSSL::Cipher.ciphers.include?(key_cipher)
 
-        cipher = OpenSSL::Cipher.new(key_cipher)
+        cipher = ::OpenSSL::Cipher.new(key_cipher)
         rsa_key.to_pem(cipher, key_password)
       end
     end
