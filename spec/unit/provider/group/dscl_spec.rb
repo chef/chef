@@ -135,7 +135,10 @@ describe Chef::Provider::Group::Dscl do
     end
 
     it "should return false for an unused gid number" do
-      expect(@provider.gid_used?(501)).to be_falsey
+      expect(@provider.gid_used?(0)).to be_falsey
+      expect(@provider.gid_used?(50)).to be_falsey
+      expect(@provider.gid_used?(5000)).to be_falsey
+      expect(@provider.gid_used?(1500)).to be_falsey
       expect(@provider.gid_used?(18)).to be_falsey
     end
 

@@ -93,7 +93,7 @@ class Chef
           # dscl -search should not return anything if the gid doesn't exist,
           # but on the off-chance that it does, check whether the given gid is
           # in the output.
-          !!(search_gids =~ /\b#{gid.to_s}\b/)
+          !!(search_gids =~ /\b#{gid}\b/)
         end
 
         def set_gid
