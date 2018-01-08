@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.7.5 -->
-## [v13.7.5](https://github.com/chef/chef/tree/v13.7.5) (2018-01-05)
+<!-- latest_release 13.7.6 -->
+## [v13.7.6](https://github.com/chef/chef/tree/v13.7.6) (2018-01-08)
 
 #### Merged Pull Requests
-- DSCL: Check for set home property before file existence (fixes #5777) [#6735](https://github.com/chef/chef/pull/6735) ([get9](https://github.com/get9))
+- Update to Ruby 2.4.3 [#6737](https://github.com/chef/chef/pull/6737) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Update to Ruby 2.4.3 [#6737](https://github.com/chef/chef/pull/6737) ([tas50](https://github.com/tas50)) <!-- 13.7.6 -->
 - DSCL: Check for set home property before file existence (fixes #5777) [#6735](https://github.com/chef/chef/pull/6735) ([get9](https://github.com/get9)) <!-- 13.7.5 -->
 - Modernize windows_path resource [#6699](https://github.com/chef/chef/pull/6699) ([tas50](https://github.com/tas50)) <!-- 13.7.4 -->
 - Don&#39;t check both platform_family / os in provides when platform_family will do [#6711](https://github.com/chef/chef/pull/6711) ([tas50](https://github.com/tas50)) <!-- 13.7.3 -->
