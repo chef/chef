@@ -117,11 +117,16 @@ describe Chef::Provider::Group::Dscl do
     before do
       @node = Chef::Node.new
       @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
-      allow(@provider).to receive(:safe_dscl).and_return("\naj      500\n")
+      allow(@provider).to receive(:safe_dscl).and_return(<<-eos
+        someprogram		somethingElse:gid = (
+            500
+        )
+        eos
+      )
     end
 
-    it "should run safe_dscl with list /Groups gid" do
-      expect(@provider).to receive(:safe_dscl).with(*"list /Groups gid".split(" "))
+    it "should run safe_dscl with search /Groups gid" do
+      expect(@provider).to receive(:safe_dscl).with(*"search /Groups PrimaryGroupID 500".split(" "))
       @provider.gid_used?(500)
     end
 
@@ -130,7 +135,11 @@ describe Chef::Provider::Group::Dscl do
     end
 
     it "should return false for an unused gid number" do
-      expect(@provider.gid_used?(501)).to be_falsey
+      expect(@provider.gid_used?(0)).to be_falsey
+      expect(@provider.gid_used?(50)).to be_falsey
+      expect(@provider.gid_used?(5000)).to be_falsey
+      expect(@provider.gid_used?(1500)).to be_falsey
+      expect(@provider.gid_used?(18)).to be_falsey
     end
 
     it "should return false if not given any valid gid number" do
@@ -171,7 +180,7 @@ describe Chef::Provider::Group::Dscl do
     describe "with a valid gid number which is not already in use" do
       it "should run safe_dscl with create /Groups/group PrimaryGroupID gid" do
         allow(@provider).to receive(:get_free_gid).and_return(50)
-        expect(@provider).to receive(:safe_dscl).with(*"list /Groups gid".split(" "))
+        expect(@provider).to receive(:safe_dscl).with(*"search /Groups PrimaryGroupID 50".split(" ")).and_return("")
         expect(@provider).to receive(:safe_dscl).with("create", "/Groups/aj", "PrimaryGroupID", 50).and_return(true)
         @provider.set_gid
       end
