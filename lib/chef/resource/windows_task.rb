@@ -205,38 +205,13 @@ class Chef
         end
       end
 
-      # Convert the number of seconds to an ISO8601 duration format
-      # @see http://tools.ietf.org/html/rfc2445#section-4.3.6
-      # @param [Integer] seconds The amount of seconds for this duration
+      # Converts the number of seconds to an ISO8601 duration format and returns it.
+      # Ref : https://github.com/arnau/ISO8601/blob/master/lib/iso8601/duration.rb#L18-L23
+      # e.g.
+      # ISO8601::Duration.new(65707200)
+      # returns 'P65707200S'
       def sec_to_dur(seconds)
-        seconds = seconds.to_i
-        iso_str = "P"
-        if seconds > 604_800 # more than a week
-          weeks = seconds / 604_800
-          seconds -= (604_800 * weeks)
-          iso_str << "#{weeks}W"
-        end
-        if seconds > 86_400 # more than a day
-          days = seconds / 86_400
-          seconds -= (86_400 * days)
-          iso_str << "#{days}D"
-        end
-        if seconds >= 0
-          iso_str << "T"
-          if seconds > 3600 # more than an hour
-            hours = seconds / 3600
-            seconds -= (3600 * hours)
-            iso_str << "#{hours}H"
-          end
-          if seconds > 60 # more than a minute
-            minutes = seconds / 60
-            seconds -= (60 * minutes)
-            iso_str << "#{minutes}M"
-          end
-          iso_str << "#{seconds}S"
-        end
-
-        iso_str
+        ISO8601::Duration.new(seconds.to_i).to_s
       end
 
     end

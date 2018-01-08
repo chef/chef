@@ -620,4 +620,98 @@ describe Chef::Provider::WindowsTask do
       expect(provider.send(:frequency_modifier_allowed)).to be(false)
     end
   end
+
+  # In windows_task resource sec_to_dur method converts seconds to duration in format 60 == 'PT60S'
+  # random_delay_updated? method use the value return by sec_to_dur as input for comparison for new_resource.random_delay mocking the same here
+  describe "#random_delay_updated?" do
+    before do
+      new_resource.command "chef-client"
+      new_resource.run_level :highest
+      new_resource.frequency :minute
+      new_resource.frequency_modifier 15
+      new_resource.user "SYSTEM"
+    end
+
+    it "returns false if current_resource.random_delay = nil & random_delay is set to '0' seconds" do
+      task_hash[:random_delay] = nil
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+      new_resource.random_delay = "PT0S"
+      expect(provider.send(:random_delay_updated?)).to be(false)
+    end
+
+    it "returns false if current_resource.random_delay = 'P7D' & random_delay is set to '604800' seconds " do
+      task_hash[:random_delay] = "P7D"
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+      new_resource.random_delay = "PT604800S"
+      expect(provider.send(:random_delay_updated?)).to be(false)
+    end
+
+    it "returns false if current_resource.random_delay = 'P7DT1S' & random_delay is set to '604801' seconds" do
+      task_hash[:random_delay] = "P7DT1S"
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+      new_resource.random_delay = "PT604801S"
+      expect(provider.send(:random_delay_updated?)).to be(false)
+    end
+
+    it "returns true if current_resource.random_delay = 'PT1S' & random_delay is set to '3600' seconds" do
+      task_hash[:random_delay] = "PT1S"
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+      new_resource.random_delay = "PT3600S"
+      expect(provider.send(:random_delay_updated?)).to be(true)
+    end
+
+    it "returns false if current_resource.random_delay = 'P2Y1MT2H' & random_delay is set to '65707200' seconds" do
+      task_hash[:random_delay] = "P2Y1MT2H"
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+      new_resource.random_delay = "PT65707200S"
+      expect(provider.send(:random_delay_updated?)).to be(false)
+    end
+  end
+
+  describe "#execution_time_limit_updated?" do
+    before do
+      new_resource.command "chef-client"
+      new_resource.run_level :highest
+      new_resource.frequency :minute
+      new_resource.frequency_modifier 15
+      new_resource.user "SYSTEM"
+    end
+
+    it "returns false if current_resource.execution_time_limit = 'P7D' & execution_time_limit is set to 604800 seconds " do
+      task_hash[:execution_time_limit] = "P7D"
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+      new_resource.execution_time_limit = "PT604800S"
+      expect(provider.send(:execution_time_limit_updated?)).to be(false)
+    end
+
+    it "returns false if current_resource.execution_time_limit = 'P7DT1S' & execution_time_limit is set to 604801 seconds" do
+      task_hash[:execution_time_limit] = "P7DT1S"
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+      new_resource.execution_time_limit = "PT604801S"
+      expect(provider.send(:execution_time_limit_updated?)).to be(false)
+    end
+
+    it "returns true if current_resource.execution_time_limit = 'PT1S' & execution_time_limit is set to '3600' seconds" do
+      task_hash[:execution_time_limit] = "PT1S"
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+      new_resource.execution_time_limit = "PT3600S"
+      expect(provider.send(:execution_time_limit_updated?)).to be(true)
+    end
+
+    it "returns false if current_resource.execution_time_limit = 'P2Y1MT2H' & execution_time_limit is set to '65707200' seconds" do
+      task_hash[:execution_time_limit] = "P2Y1MT2H"
+      allow(provider).to receive(:load_task_hash).and_return(task_hash)
+      provider.load_current_resource
+      new_resource.execution_time_limit = "PT65707200S"
+      expect(provider.send(:execution_time_limit_updated?)).to be(false)
+    end
+  end
 end
