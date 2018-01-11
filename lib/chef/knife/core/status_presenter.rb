@@ -112,12 +112,12 @@ class Chef
             elsif hours >= 1
               color = :yellow
               text = hours_text
-	    elsif minutes >= 1
+            elsif minutes >= 1
               color = :green
               text = minutes_text
-	    else
-	      color = :green
-	      text = seconds_text	      
+            else
+              color = :green
+              text = seconds_text
             end
 
             line_parts = Array.new
