@@ -101,9 +101,10 @@ class Chef
             fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
             name = node["name"] || node.name
 
-            hours, minutes, = time_difference_in_hms(node["ohai_time"])
+            hours, minutes, seconds = time_difference_in_hms(node["ohai_time"])
             hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
             minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
+            seconds_text = "#{seconds} second#{seconds == 1 ? ' ' : 's'}"
             run_list = "#{node['run_list']}" if config[:run_list]
             if hours > 24
               color = :red
@@ -111,9 +112,12 @@ class Chef
             elsif hours >= 1
               color = :yellow
               text = hours_text
-            else
+	    elsif minutes >= 1
               color = :green
               text = minutes_text
+	    else
+	      color = :green
+	      text = seconds_text	      
             end
 
             line_parts = Array.new
