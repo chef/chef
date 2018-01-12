@@ -24,6 +24,8 @@ class Chef
     # will be created. If the RSA key file cannot be opened, either because it
     # does not exist or because the password to the RSA key file does not match
     # the password in the recipe, it will be overwritten.
+    #
+    # @since 14.0
     class OpensslRsaPrivateKey < Chef::Resource
       require "chef/mixin/openssl"
       include Chef::Mixin::OpenSSL
@@ -36,8 +38,8 @@ class Chef
       property :key_length,  equal_to: [1024, 2048, 4096, 8192], default: 2048
       property :key_pass,    String
       property :key_cipher,  String, default: "des3", equal_to: OpenSSL::Cipher.ciphers
-      property :owner,       String, default: lazy {  node["platform"] == "windows" ? "Adminstrator" : "root" }
-      property :group,       String, default: lazy {  node["root_group"] }
+      property :owner,       [String, nil]
+      property :group,       [String, nil]
       property :mode,        [Integer, String], default: "0600"
       property :force,       [true, false], default: false
 
@@ -54,8 +56,8 @@ class Chef
 
           declare_resource(:file, new_resource.path) do
             action :create
-            owner new_resource.owner
-            group new_resource.group
+            owner new_resource.owner unless new_resource.owner.nil?
+            group new_resource.group unless new_resource.group.nil?
             mode new_resource.mode
             sensitive true
             content rsa_key_content

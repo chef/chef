@@ -23,6 +23,8 @@ class Chef
     # If a valid dhparam.pem file is found at the specified location, no new
     # file will be created. If a file is found at the specified location but it
     # is not a valid dhparam file, it will be overwritten.
+    #
+    # @since 14.0
     class OpensslDhparam < Chef::Resource
       require "chef/mixin/openssl"
       include Chef::Mixin::OpenSSL
@@ -32,8 +34,8 @@ class Chef
       property :path,        String, name_property: true
       property :key_length,  equal_to: [1024, 2048, 4096, 8192], default: 2048
       property :generator,   equal_to: [2, 5], default: 2
-      property :owner,       String, default: lazy { node["platform"] == "windows" ? "Adminstrator" : "root" }
-      property :group,       String, default: lazy { node["root_group"] }
+      property :owner,       [String, nil]
+      property :group,       [String, nil]
       property :mode,        [Integer, String], default: "0640"
 
       action :create do
@@ -43,8 +45,8 @@ class Chef
 
             declare_resource(:file, new_resource.path) do
               action :create
-              owner new_resource.owner
-              group new_resource.group
+              owner new_resource.owner unless new_resource.owner.nil?
+              group new_resource.group unless new_resource.group.nil?
               mode new_resource.mode
               sensitive true
               content dhparam_content
