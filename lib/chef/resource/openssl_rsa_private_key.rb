@@ -38,7 +38,7 @@ class Chef
       property :key_cipher,  String, default: "des3", equal_to: OpenSSL::Cipher.ciphers
       property :owner,       String, default: lazy {  node["platform"] == "windows" ? "Adminstrator" : "root" }
       property :group,       String, default: lazy {  node["root_group"] }
-      property :mode,        [Integer, String], default: "0640"
+      property :mode,        [Integer, String], default: "0600"
       property :force,       [true, false], default: false
 
       action :create do
