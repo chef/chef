@@ -34,11 +34,11 @@ describe Chef::Resource::OpensslRsaPrivateKey do
   end
 
   it "has a default key_cipher of 'des3'" do
-    expect(resource.key_cipher).to eql('des3')
+    expect(resource.key_cipher).to eql("des3")
   end
 
   it "only accepts valid key_cipher values" do
-    expect { resource.key_cipher 'fako' }.to raise_error(ArgumentError)
+    expect { resource.key_cipher "fako" }.to raise_error(ArgumentError)
   end
 
   it "has a default key_length of 2048" do
