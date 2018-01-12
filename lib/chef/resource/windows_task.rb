@@ -61,7 +61,6 @@ class Chef
       attr_accessor :exists, :status, :enabled
 
       def after_created
-
         if random_delay
           validate_random_delay(random_delay, frequency)
           duration = sec_to_dur(random_delay)

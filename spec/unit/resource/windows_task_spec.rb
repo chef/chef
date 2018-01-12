@@ -113,7 +113,7 @@ describe Chef::Resource::WindowsTask do
     end
 
     it "raises error that random_delay is not supported" do
-      expect  { resource.send(:validate_random_delay, 60, :on_idle) }.to raise_error(ArgumentError, "`random_delay` property is supported only for frequency :minute, :hourly, :daily, :weekly and :monthly")
+      expect { resource.send(:validate_random_delay, 60, :on_idle) }.to raise_error(ArgumentError, "`random_delay` property is supported only for frequency :minute, :hourly, :daily, :weekly and :monthly")
     end
   end
 
