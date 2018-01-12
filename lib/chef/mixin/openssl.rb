@@ -35,7 +35,7 @@ class Chef
       # @param [Integer] number
       # @return [Boolean] is length valid
       def key_length_valid?(number)
-        number >= 1024 && number & (number - 1) == 0
+        number >= 1024 && ( number & (number - 1) == 0 )
       end
 
       # validate a dhparam file from path
