@@ -20,7 +20,6 @@ require "spec_helper"
 describe Chef::Resource::OpensslDhparam do
 
   let(:resource) { Chef::Resource::OpensslDhparam.new("dhparam") }
-  let(:node) { Chef::Node.new }
 
   it "has a resource name of :openssl_dhparam" do
     expect(resource.resource_name).to eql(:openssl_dhparam)

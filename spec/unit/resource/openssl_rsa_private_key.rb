@@ -20,7 +20,6 @@ require "spec_helper"
 describe Chef::Resource::OpensslRsaPrivateKey do
 
   let(:resource) { Chef::Resource::OpensslRsaPrivateKey.new("key") }
-  let(:node) { Chef::Node.new }
 
   it "has a resource name of :openssl_rsa_private_key" do
     expect(resource.resource_name).to eql(:openssl_rsa_private_key)
