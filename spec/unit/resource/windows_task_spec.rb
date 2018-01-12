@@ -111,6 +111,10 @@ describe Chef::Resource::WindowsTask do
       resource.after_created
       expect(resource.random_delay).to eq("PT60S")
     end
+
+    it "raises error that random_delay is not supported" do
+      expect  { resource.send(:validate_random_delay, 60, :on_idle) }.to raise_error(ArgumentError, "`random_delay` property is supported only for frequency :minute, :hourly, :daily, :weekly and :monthly")
+    end
   end
 
   context "when execution_time_limit isn't specified" do

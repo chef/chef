@@ -61,6 +61,7 @@ class Chef
       attr_accessor :exists, :status, :enabled
 
       def after_created
+
         if random_delay
           validate_random_delay(random_delay, frequency)
           duration = sec_to_dur(random_delay)
@@ -82,7 +83,7 @@ class Chef
         validate_create_frequency_modifier(frequency, frequency_modifier)
         validate_create_day(day, frequency) if day
         validate_create_months(months, frequency) if months
-        validate_idle_time(idle_time, frequency) if idle_time.nil? || !(idle_time > 0 && idle_time <= 999)
+        validate_idle_time(idle_time, frequency) if (idle_time.nil? || !(idle_time > 0 && idle_time <= 999)) && !([:minute, :hourly, :daily, :weekly, :monthly].include? frequency)
       end
 
       private
