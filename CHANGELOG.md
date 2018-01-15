@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.7.9 -->
-## [v13.7.9](https://github.com/chef/chef/tree/v13.7.9) (2018-01-08)
+<!-- latest_release 13.7.10 -->
+## [v13.7.10](https://github.com/chef/chef/tree/v13.7.10) (2018-01-15)
 
 #### Merged Pull Requests
-- Enable the deprecation for use_inline_resource [#6732](https://github.com/chef/chef/pull/6732) ([tas50](https://github.com/tas50))
+- Fix knife status to show seconds when needed #5055 [#6738](https://github.com/chef/chef/pull/6738) ([cramaechi](https://github.com/cramaechi))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Fix knife status to show seconds when needed #5055 [#6738](https://github.com/chef/chef/pull/6738) ([cramaechi](https://github.com/cramaechi)) <!-- 13.7.10 -->
 - Enable the deprecation for use_inline_resource [#6732](https://github.com/chef/chef/pull/6732) ([tas50](https://github.com/tas50)) <!-- 13.7.9 -->
 - Fix dscl group provider gid_used? [#6703](https://github.com/chef/chef/pull/6703) ([get9](https://github.com/get9)) <!-- 13.7.8 -->
 - Fix windows_task resource not being idempotent for random_delay and execution_time_limit [#6688](https://github.com/chef/chef/pull/6688) ([Vasu1105](https://github.com/Vasu1105)) <!-- 13.7.7 -->
