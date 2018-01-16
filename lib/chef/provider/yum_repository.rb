@@ -88,7 +88,12 @@ class Chef
         end
 
         declare_resource(:ruby_block, "package-cache-reload-#{new_resource.repositoryid}") do
-          block { Chef::Provider::Package::Yum::YumCache.instance.reload }
+          if ( platform?("fedora") && node["platform_version"].to_i >= 22 ) ||
+              ( platform_family?("rhel") && node["platform_version"].to_i >= 8 )
+            block { Chef::Provider::Package::Dnf::PythonHelper.instance.restart }
+          else
+            block { Chef::Provider::Package::Yum::YumCache.instance.reload }
+          end
           action :nothing
         end
       end
@@ -101,7 +106,12 @@ class Chef
         end
 
         declare_resource(:ruby_block, "package-cache-reload-#{new_resource.repositoryid}") do
-          block { Chef::Provider::Package::Yum::YumCache.instance.reload }
+          if ( platform?("fedora") && node["platform_version"].to_i >= 22 ) ||
+              ( platform_family?("rhel") && node["platform_version"].to_i >= 8 )
+            block { Chef::Provider::Package::Dnf::PythonHelper.instance.restart }
+          else
+            block { Chef::Provider::Package::Yum::YumCache.instance.reload }
+          end
           action :run
         end
       end
