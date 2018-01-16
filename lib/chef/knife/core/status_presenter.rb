@@ -101,6 +101,11 @@ class Chef
             fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
             name = node["name"] || node.name
 
+            if !node["ohai_time"]
+              ui.error("Ohai has not yet ran on node #{name}.")
+              exit(1)
+            end
+
             hours, minutes, seconds = time_difference_in_hms(node["ohai_time"])
             hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
             minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
