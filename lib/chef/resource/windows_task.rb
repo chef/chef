@@ -82,7 +82,7 @@ class Chef
         validate_create_frequency_modifier(frequency, frequency_modifier)
         validate_create_day(day, frequency) if day
         validate_create_months(months, frequency) if months
-        validate_idle_time(idle_time, frequency) if (idle_time.nil? || !(idle_time > 0 && idle_time <= 999)) && !([:minute, :hourly, :daily, :weekly, :monthly].include? frequency)
+        validate_idle_time(idle_time, frequency) if ( !idle_time.nil? && ([:minute, :hourly, :daily, :weekly, :monthly].include? frequency)) || (idle_time.nil? || !(idle_time > 0 && idle_time <= 999)) && !([:minute, :hourly, :daily, :weekly, :monthly].include? frequency)
       end
 
       private
