@@ -5,7 +5,7 @@ set -evx
 # Set up a custom tmpdir, and clean it up before and after the tests
 TMPDIR="${TMPDIR:-/tmp}/cheftest"
 export TMPDIR
-rm -rf $TMPDIR
+sudo rm -rf $TMPDIR
 mkdir -p $TMPDIR
 
 # $PROJECT_NAME is set by Jenkins, this allows us to use the same script to verify
