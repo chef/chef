@@ -1,6 +1,6 @@
 #
 # Author:: Prabhu Das (<prabhu.das@clogeny.com>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,7 +62,7 @@ describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform
 
   context "package install action with options" do
     it "should install a package" do
-      new_resource.options("-e/tmp/installp.log")
+      new_resource.options("-e#{Dir.tmpdir}/installp.log")
       new_resource.run_action(:install)
       bff_pkg_should_be_installed(new_resource)
     end
@@ -108,7 +108,7 @@ describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform
     end
 
     it "should remove an installed package" do
-      new_resource.options("-e/tmp/installp.log")
+      new_resource.options("-e#{Dir.tmpdir}/installp.log")
       new_resource.run_action(:remove)
       bff_pkg_should_be_removed(new_resource)
     end
