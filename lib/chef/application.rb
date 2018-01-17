@@ -90,6 +90,7 @@ class Chef
       load_config_file
       Chef::Config.export_proxies
       Chef::Config.init_openssl
+      File.umask Chef::Config[:umask]
     end
 
     # Parse the config file
