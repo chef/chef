@@ -18,7 +18,7 @@
 
 require "chef/mixin/shell_out"
 require "rexml/document"
-require "iso8601"
+require "chef/mixin/sec_to_dur"
 require "chef/mixin/powershell_out"
 
 class Chef
@@ -26,6 +26,7 @@ class Chef
     class WindowsTask < Chef::Provider
       include Chef::Mixin::ShellOut
       include Chef::Mixin::PowershellOut
+      include Chef::Mixin::SecToDur
 
       provides :windows_task, os: "windows"
 

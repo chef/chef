@@ -17,6 +17,7 @@
 #
 
 require "chef/resource"
+require "chef/mixin/sec_to_dur"
 
 class Chef
   class Resource
@@ -24,6 +25,7 @@ class Chef
     # or later due to API usage.
     # @since 13.0
     class WindowsTask < Chef::Resource
+      include Chef::Mixin::SecToDur
 
       resource_name :windows_task
       provides :windows_task, os: "windows"
@@ -204,16 +206,6 @@ class Chef
           raise ArgumentError, "idle_time value #{idle_time} is invalid. Valid values for :on_idle frequency are 1 - 999."
         end
       end
-
-      # Converts the number of seconds to an ISO8601 duration format and returns it.
-      # Ref : https://github.com/arnau/ISO8601/blob/master/lib/iso8601/duration.rb#L18-L23
-      # e.g.
-      # ISO8601::Duration.new(65707200)
-      # returns 'P65707200S'
-      def sec_to_dur(seconds)
-        ISO8601::Duration.new(seconds.to_i).to_s
-      end
-
     end
   end
 end
