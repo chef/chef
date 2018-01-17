@@ -2,7 +2,7 @@
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,9 +47,7 @@ class Chef
     def_delegators :attributes, :default_unless, :normal_unless, :override_unless, :set_unless
     def_delegators :attributes, :read, :read!, :write, :write!, :unlink, :unlink!
 
-    attr_accessor :recipe_list, :run_state, :override_runlist
-
-    attr_accessor :chef_server_rest
+    attr_accessor :recipe_list, :run_state
 
     # RunContext will set itself as run_context via this setter when
     # initialized. This is needed so DSL::IncludeAttribute (in particular,
@@ -300,6 +298,7 @@ class Chef
       @primary_runlist
     end
 
+    attr_writer :override_runlist
     def override_runlist(*args)
       args.length > 0 ? @override_runlist.reset!(args) : @override_runlist
     end

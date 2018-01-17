@@ -2,7 +2,7 @@
 # Author:: Prajakta Purohit (<prajakta@chef.io>)
 # Author:: Lamont Granquist (<lamont@chef.io>)
 #
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class Chef
       extend Chef::Mixin::WideString
 
       attr_accessor :run_context
-      attr_accessor :architecture
+      attr_reader :architecture
 
       def initialize(run_context = nil, user_architecture = :machine)
         @run_context = run_context

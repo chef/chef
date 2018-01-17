@@ -13,7 +13,6 @@ class Chef
 
       attr_reader :cookbook_settings
       attr_reader :cookbook_paths
-      attr_reader :metadata_filenames
       attr_reader :frozen
       attr_reader :uploaded_cookbook_version_file
 

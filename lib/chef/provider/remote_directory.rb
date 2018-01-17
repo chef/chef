@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,8 +46,6 @@ class Chef
         @overwrite = new_resource.overwrite if @overwrite.nil?
         !!@overwrite
       end
-
-      attr_accessor :managed_files
 
       # Hash containing keys of the paths for all the files that we sync, plus all their
       # parent directories.

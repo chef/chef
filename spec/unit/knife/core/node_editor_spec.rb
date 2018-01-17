@@ -55,7 +55,7 @@ describe Chef::Knife::NodeEditor do
     context "when config[:all_attributes] == true" do
       let(:config) { base_config.merge(all_attributes: true) }
 
-      it 'returns a Hash with all of the node\'s properties' do
+      it "returns a Hash with all of the node's properties" do
         expect(subject.view).to eq(node_data)
       end
     end
@@ -188,7 +188,7 @@ describe Chef::Knife::NodeEditor do
             subject.edit_node
           end
 
-          it 'returns an array of property names that doesn\'t include ' +
+          it "returns an array of property names that doesn't include " +
             "the non-editable properties" do
             expect(subject.updated?).to eql %w{ normal policy_name policy_group run_list }
           end

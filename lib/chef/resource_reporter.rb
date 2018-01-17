@@ -3,7 +3,7 @@
 # Author:: Prajakta Purohit (prajakta@chef.io>)
 # Auther:: Tyler Cloke (<tyler@opscode.com>)
 #
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -94,7 +94,6 @@ class Chef
     attr_reader :updated_resources
     attr_reader :status
     attr_reader :exception
-    attr_reader :run_id
     attr_reader :error_descriptions
 
     PROTOCOL_VERSION = "0.1.0"

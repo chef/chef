@@ -4,7 +4,7 @@
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,11 +53,6 @@ class Chef
     # metadata to add descriptions of the recipes contained in this
     # CookbookVersion.
     attr_reader :metadata
-
-    attr_reader :recipe_filenames_by_name
-    attr_reader :attribute_filenames_by_short_filename
-
-    attr_accessor :chef_server_rest
 
     # The `identifier` field is used for cookbook_artifacts, which are
     # organized on the chef server according to their content. If the
@@ -157,7 +152,6 @@ class Chef
     def metadata=(metadata)
       @metadata = metadata
       @metadata.recipes_from_cookbook_version(self)
-      @metadata
     end
 
     def manifest

@@ -181,7 +181,7 @@ class Chef
               conf[dev] << config_file_contents(:delete)
             end
           end
-          conf.each do |k, v|
+          conf.each_key do |k|
             if new_resource.target == "default"
               network_file_name = "/etc/sysconfig/network"
               converge_by("write route default route to #{network_file_name}") do

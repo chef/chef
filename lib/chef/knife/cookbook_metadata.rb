@@ -1,7 +1,7 @@
 #
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,7 +47,7 @@ class Chef
         if config[:all]
           cl = Chef::CookbookLoader.new(config[:cookbook_path])
           cl.load_cookbooks
-          cl.each do |cname, cookbook|
+          cl.each_key do |cname|
             generate_metadata(cname.to_s)
           end
         else

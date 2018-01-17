@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2017, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -315,7 +315,7 @@ class Chef
       end
 
       def fixup_sudo(command)
-        command.sub(/^sudo/, 'sudo -p \'knife sudo password: \'')
+        command.sub(/^sudo/, "sudo -p 'knife sudo password: '")
       end
 
       def print_data(host, data)

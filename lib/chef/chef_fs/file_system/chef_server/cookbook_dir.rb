@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,7 +76,7 @@ class Chef
             if @children.nil?
               @children = []
               manifest = chef_object.cookbook_manifest
-              manifest.by_parent_directory.each do |segment, files|
+              manifest.by_parent_directory.each_value do |files|
                 files.each do |file|
                   parts = file[:path].split("/")
                   # Get or create the path to the file

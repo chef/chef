@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Nuo Yan (<nuo@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software, Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,8 +38,6 @@ class Chef
 
     VALID_ID = /^[\.\-[:alnum:]_]+$/
 
-    attr_accessor :chef_server_rest
-
     def self.validate_id!(id_str)
       if id_str.nil? || ( id_str !~ VALID_ID )
         raise Exceptions::InvalidDataBagItemID, "Data Bag items must have an id matching #{VALID_ID.inspect}, you gave: #{id_str.inspect}"
@@ -64,10 +62,6 @@ class Chef
 
     def self.chef_server_rest
       Chef::ServerAPI.new(Chef::Config[:chef_server_url])
-    end
-
-    def raw_data
-      @raw_data
     end
 
     def validate_id!(id_str)

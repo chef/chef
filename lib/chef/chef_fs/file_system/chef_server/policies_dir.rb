@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,7 +71,7 @@ class Chef
               result = []
               data = root.get_json(api_path)
               data.keys.sort.each do |policy_name|
-                data[policy_name]["revisions"].keys.each do |policy_revision|
+                data[policy_name]["revisions"].each_key do |policy_revision|
                   filename = "#{policy_name}-#{policy_revision}.json"
                   result << make_child_entry(filename, true)
                 end

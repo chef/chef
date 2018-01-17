@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -87,7 +87,7 @@ describe Chef::CookbookLoader do
     describe "each" do
       it "should allow you to iterate over cookbooks with each" do
         seen = Hash.new
-        cookbook_loader.each do |cookbook_name, cookbook|
+        cookbook_loader.each_key do |cookbook_name|
           seen[cookbook_name] = true
         end
         expect(seen).to have_key("openldap")
@@ -96,7 +96,7 @@ describe Chef::CookbookLoader do
 
       it "should iterate in alphabetical order" do
         seen = Array.new
-        cookbook_loader.each do |cookbook_name, cookbook|
+        cookbook_loader.each_key do |cookbook_name|
           seen << cookbook_name
         end
         expect(seen).to eq %w{angrybash apache2 borken ignorken java name-mismatch openldap preseed supports-platform-constraints}
@@ -206,7 +206,7 @@ describe Chef::CookbookLoader do
 
     it "should have loaded the correct cookbook" do
       seen = Hash.new
-      cookbook_loader.each do |cookbook_name, cookbook|
+      cookbook_loader.each_key do |cookbook_name|
         seen[cookbook_name] = true
       end
       expect(seen).to have_key("openldap")
@@ -234,7 +234,7 @@ describe Chef::CookbookLoader do
 
     it "should not load the other cookbooks" do
       seen = Hash.new
-      cookbook_loader.each do |cookbook_name, cookbook|
+      cookbook_loader.each_key do |cookbook_name|
         seen[cookbook_name] = true
       end
       expect(seen).not_to have_key("apache2")
@@ -272,7 +272,7 @@ describe Chef::CookbookLoader do
 
       it "should load all cookbooks" do
         seen = Hash.new
-        cookbook_loader.each do |cookbook_name, cookbook|
+        cookbook_loader.each_key do |cookbook_name|
           seen[cookbook_name] = true
         end
         expect(seen).to have_key("openldap")

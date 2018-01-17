@@ -5,7 +5,7 @@
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2009-2016, 2010-2016 Chef Software, Inc.
+# Copyright:: Copyright 2009-2016, 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,7 +71,7 @@ class Chef
         @user_agent ||= DEFAULT_UA
       end
 
-      attr_reader :method, :url, :headers, :http_client, :http_request
+      attr_reader :method, :url, :headers, :http_request
 
       def initialize(method, url, req_body, base_headers = {})
         @method, @url = method, url

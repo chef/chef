@@ -140,7 +140,7 @@ describe Chef::ChefFS::FileSystem do
       it "is empty /y" do
         expect(Chef::ChefFS::FileSystem.resolve_path(fs, "/y").empty?).to be true
       end
-      it 'is not a directory and can\'t be tested /x' do
+      it "is not a directory and can't be tested /x" do
         expect { Chef::ChefFS::FileSystem.resolve_path(fs, "/x").empty? }.to raise_error(NoMethodError)
       end
     end

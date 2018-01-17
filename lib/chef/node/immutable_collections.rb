@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2012-2017, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -286,8 +286,6 @@ class Chef
         super
       end
 
-      alias_method :to_hash, :to_h
-
       def reset
         @generated_cache = false
         @short_circuit_attr_level = nil
@@ -315,7 +313,7 @@ class Chef
           unless subhash.nil? # FIXME: nil is used for not present
             tracked_components << component
             if subhash.kind_of?(Hash)
-              subhash.keys.each do |key|
+              subhash.each_key do |key|
                 next if internal_key?(key)
                 internal_set(key, subhash[key])
               end

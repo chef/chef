@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -133,7 +133,7 @@ class Chef
         511 => "Network Authentication Required",
       }
 
-      STATUS_MESSAGE.values.each { |v| v.freeze }
+      STATUS_MESSAGE.each_value { |v| v.freeze }
       STATUS_MESSAGE.freeze
 
       def initialize(base_url)

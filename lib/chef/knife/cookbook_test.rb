@@ -2,7 +2,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Matthew Kent (<mkent@magoazul.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # Copyright:: Copyright 2010-2016, Matthew Kent
 # License:: Apache License, Version 2.0
 #
@@ -50,7 +50,7 @@ class Chef
         if config[:all]
           cl = cookbook_loader
           cl.load_cookbooks
-          cl.each do |key, cookbook|
+          cl.each_key do |key|
             checked_a_cookbook = true
             test_cookbook(key)
           end

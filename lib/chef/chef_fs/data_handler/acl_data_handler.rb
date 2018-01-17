@@ -13,7 +13,7 @@ class Chef
             "delete" => {},
             "grant" => {},
             })
-          result.keys.each do |key|
+          result.each_key do |key|
             result[key] = normalize_hash(result[key], { "actors" => [], "groups" => [] })
             result[key]["actors"] = result[key]["actors"].sort
             result[key]["groups"] = result[key]["groups"].sort

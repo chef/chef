@@ -1,7 +1,7 @@
 #--
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2010-2016 Chef Software, Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,7 +50,7 @@ class Chef
     # @raise [Chef::Exceptions::CookbookChefVersionMismatch] if the Chef::VERSION fails validation
     # @raise [Chef::Exceptions::CookbookOhaiVersionMismatch] if the Ohai::VERSION fails validation
     def validate!
-      each do |cookbook_name, cookbook_version|
+      each_value do |cookbook_version|
         cookbook_version.metadata.validate_chef_version!
         cookbook_version.metadata.validate_ohai_version!
       end

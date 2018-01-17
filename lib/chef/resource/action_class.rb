@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io)
-# Copyright:: Copyright 2015-2017, Chef Software Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ class Chef
           # We clear desired state in the copy, because it is supposed to be actual state.
           # We keep identity properties and non-desired-state, which are assumed to be
           # "control" values like `recurse: true`
-          current_resource.class.properties.each do |name, property|
+          current_resource.class.properties.each_value do |property|
             if property.desired_state? && !property.identity? && !property.name_property?
               property.reset(current_resource)
             end
