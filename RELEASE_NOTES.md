@@ -2,6 +2,29 @@ _This file holds "in progress" release notes for the current release under devel
 
 # Unreleased
 
+# Chef Client Release Notes 13.7:
+
+## `erl_call` Resource is Deprecated
+
+We introduced `erl_call` to help us to manage CouchDB servers back in
+the olden times of Chef. Since then, we've noticed that no-one uses it,
+and so `erl_call` will be removed in Chef 14.
+
+## The `windows_task` Resource should be better behaved
+
+We've spent a considerable amount of time testing and fixing the
+`windows_task` resource to ensure that it is properly idempotent and
+correct in more situations.
+
+## Credentials handling
+
+Previously, chef on the workstation used `knife.rb` or `config.rb` to
+handle credentials. This didn't do a great job when interacting with
+multiple Chef servers, leading to the need for tools like `knife_block`.
+We've added support for a credentials file that can contain
+configuration for many Chef servers (or organizations), and we've made
+it easy to indicate which account you mean to use.
+
 ## Ohai 13.7 Release Notes:
 
 ### EC2 C5 Detection
