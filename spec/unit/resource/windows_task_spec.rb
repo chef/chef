@@ -111,6 +111,10 @@ describe Chef::Resource::WindowsTask do
       resource.after_created
       expect(resource.random_delay).to eq("PT60S")
     end
+
+    it "raises error that random_delay is not supported" do
+      expect { resource.send(:validate_random_delay, 60, :on_idle) }.to raise_error(ArgumentError, "`random_delay` property is supported only for frequency :minute, :hourly, :daily, :weekly and :monthly")
+    end
   end
 
   context "when execution_time_limit isn't specified" do
@@ -277,6 +281,14 @@ describe Chef::Resource::WindowsTask do
 
     it "raises error if idle_time > 999" do
       expect  { resource.send(:validate_idle_time, 1000, :on_idle) }.to raise_error(ArgumentError, "idle_time value 1000 is invalid. Valid values for :on_idle frequency are 1 - 999.")
+    end
+
+    it "raises error if idle_time < 0" do
+      expect  { resource.send(:validate_idle_time, -5, :on_idle) }.to raise_error(ArgumentError, "idle_time value -5 is invalid. Valid values for :on_idle frequency are 1 - 999.")
+    end
+
+    it "raises error if idle_time is not set" do
+      expect  { resource.send(:validate_idle_time, nil, :on_idle) }.to raise_error(ArgumentError, "idle_time value should be set for :on_idle frequency.")
     end
   end
 
