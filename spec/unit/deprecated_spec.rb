@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +29,7 @@ describe Chef::Deprecated do
 
   context "loading a deprecation class" do
     it "loads the correct class" do
-      expect(Chef::Deprecated.create(:test_deprecation)).to be_an_instance_of(Chef::Deprecated::TestDeprecation)
+      expect(Chef::Deprecated.create(:test_deprecation)).to be_an_instance_of(TestDeprecation)
     end
 
     it "optionally sets a message" do
@@ -49,11 +49,11 @@ describe Chef::Deprecated do
     let(:location) { "the location" }
 
     it "displays the full URL" do
-      expect(Chef::Deprecated::TestDeprecation.new().url).to eql("#{base_url}test.html")
+      expect(TestDeprecation.new().url).to eql("#{base_url}test.html")
     end
 
     it "formats a complete deprecation message" do
-      expect(Chef::Deprecated::TestDeprecation.new(message, location).inspect).to eql("#{message} (CHEF-999)#{location}.\nhttps://docs.chef.io/deprecations_test.html")
+      expect(TestDeprecation.new(message, location).inspect).to eql("#{message} (CHEF-999)#{location}.\nhttps://docs.chef.io/deprecations_test.html")
     end
   end
 end
