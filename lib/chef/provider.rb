@@ -71,10 +71,10 @@ class Chef
 
     # Deprecation stub for the old use_inline_resources mode.
     #
-    # @deprecated
     # @return [void]
     def self.use_inline_resources
-      Chef.deprecated(:use_inline_resources, "The use_inline_resources mode is no longer optional and the line enabling it can be removed")
+      # Uncomment this in Chef 13.6.
+      # Chef.deprecated(:use_inline_resources, "The use_inline_resources mode is no longer optional and the line enabling it can be removed")
     end
 
     #--
@@ -96,14 +96,10 @@ class Chef
       self.class.include_resource_dsl_module(new_resource)
     end
 
-    # are we currently running in why-run mode?
-    # @return [Boolean]
     def whyrun_mode?
       Chef::Config[:why_run]
     end
 
-    # is why run mode supported by the provider? We assume yes by default since 13.0
-    # @return [Boolean]
     def whyrun_supported?
       true
     end
@@ -117,8 +113,6 @@ class Chef
       run_context && run_context.resource_collection
     end
 
-    # the name of the current cookbook
-    # @return [String]
     def cookbook_name
       new_resource.cookbook_name
     end
