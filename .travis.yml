@@ -22,6 +22,7 @@ before_script:
 branches:
   only:
   - master
+  - chef-13
   - chef-12
 
 env:
@@ -43,12 +44,6 @@ matrix:
     script: sudo -E $(which bundle) exec rake spec:integration;
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
-      INTEGRATION_SPECS_25: 1
-    rvm: 2.5.0
-    sudo: true
-    script: sudo -E $(which bundle) exec rake spec:integration;
-    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
-  - env:
       FUNCTIONAL_SPECS_23: 1
     rvm: 2.3.5
     sudo: true
@@ -57,12 +52,6 @@ matrix:
   - env:
       FUNCTIONAL_SPECS_24: 1
     rvm: 2.4.3
-    sudo: true
-    script: sudo -E $(which bundle) exec rake spec:functional;
-    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
-  - env:
-      FUNCTIONAL_SPECS_25: 1
-    rvm: 2.5.0
     sudo: true
     script: sudo -E $(which bundle) exec rake spec:functional;
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
@@ -77,14 +66,6 @@ matrix:
   - env:
       UNIT_SPECS_24: 1
     rvm: 2.4.3
-    sudo: true
-    script:
-      - sudo -E $(which bundle) exec rake spec:unit;
-      - sudo -E $(which bundle) exec rake component_specs
-    bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
-  - env:
-      UNIT_SPECS_25: 1
-    rvm: 2.5.0
     sudo: true
     script:
       - sudo -E $(which bundle) exec rake spec:unit;
@@ -373,6 +354,3 @@ notifications:
   on_failure: true
   on_success: change
   on_pull_requests: false
-  irc:
-    channels:
-    - chat.freenode.net#chef-hacking
