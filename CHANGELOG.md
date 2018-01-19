@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.7.13 -->
-## [v13.7.13](https://github.com/chef/chef/tree/v13.7.13) (2018-01-18)
+<!-- latest_release 13.7.14 -->
+## [v13.7.14](https://github.com/chef/chef/tree/v13.7.14) (2018-01-19)
 
 #### Merged Pull Requests
-- Add a warning that Chef 11 server support in knife user is deprecated [#6725](https://github.com/chef/chef/pull/6725) ([tas50](https://github.com/tas50))
+- fix double-logging bug [#6752](https://github.com/chef/chef/pull/6752) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- fix double-logging bug [#6752](https://github.com/chef/chef/pull/6752) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.14 -->
 - Add a warning that Chef 11 server support in knife user is deprecated [#6725](https://github.com/chef/chef/pull/6725) ([tas50](https://github.com/tas50)) <!-- 13.7.13 -->
 - fix non-daemonized umask [#6745](https://github.com/chef/chef/pull/6745) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.12 -->
 - simplify node_map logic [#6637](https://github.com/chef/chef/pull/6637) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.11 -->
