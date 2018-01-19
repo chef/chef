@@ -83,6 +83,11 @@ module KnifeSupport
         # running test scenarios against a real chef server. If things don't
         # smell right, abort.
 
+        # To ensure that we don't pick up a user's credentials file we lie through our teeth about
+        # it's existence.
+        allow(File).to receive(:file?).and_call_original
+        allow(File).to receive(:file?).with(File.expand_path("~/.chef/credentials")).and_return(false)
+
         $__KNIFE_INTEGRATION_FAILSAFE_CHECK = "ole"
         instance.configure_chef
 
