@@ -22,9 +22,8 @@ describe Chef::Resource::Perl do
 
   let(:resource) { Chef::Resource::Perl.new("fakey_fakerton") }
 
-  it "creates a new Chef::Resource::Perl" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Perl)
+  it "is a subclass of Chef::Resource::Script" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Script)
   end
 
   it "has a resource name of :perl" do

@@ -20,65 +20,57 @@
 require "spec_helper"
 
 describe Chef::Resource::Env do
+  let(:resource) { Chef::Resource::Env.new("FOO") }
 
-  before(:each) do
-    @resource = Chef::Resource::Env.new("FOO")
-  end
-
-  it "creates a new Chef::Resource::Env" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::Env)
-  end
-
-  it "has a name" do
-    expect(@resource.name).to eql("FOO")
+  it "has a name property" do
+    expect(resource.name).to eql("FOO")
   end
 
   it "has a default action of 'create'" do
-    expect(@resource.action).to eql([:create])
+    expect(resource.action).to eql([:create])
   end
 
   { :create => false, :delete => false, :modify => false, :flibber => true }.each do |action, bad_value|
     it "should #{bad_value ? 'not' : ''} accept #{action}" do
       if bad_value
-        expect { @resource.action action }.to raise_error(ArgumentError)
+        expect { resource.action action }.to raise_error(ArgumentError)
       else
-        expect { @resource.action action }.not_to raise_error
+        expect { resource.action action }.not_to raise_error
       end
     end
   end
 
   it "uses the object name as the key_name by default" do
-    expect(@resource.key_name).to eql("FOO")
+    expect(resource.key_name).to eql("FOO")
   end
 
   it "accepts a string as the env value via 'value'" do
-    expect { @resource.value "bar" }.not_to raise_error
+    expect { resource.value "bar" }.not_to raise_error
   end
 
   it "does not accept a Hash for the env value via 'to'" do
-    expect { @resource.value Hash.new }.to raise_error(ArgumentError)
+    expect { resource.value Hash.new }.to raise_error(ArgumentError)
   end
 
   it "allows you to set an env value via 'to'" do
-    @resource.value "bar"
-    expect(@resource.value).to eql("bar")
+    resource.value "bar"
+    expect(resource.value).to eql("bar")
   end
 
   describe "when it has key name and value" do
     before do
-      @resource.key_name("charmander")
-      @resource.value("level7")
-      @resource.delim("hi")
+      resource.key_name("charmander")
+      resource.value("level7")
+      resource.delim("hi")
     end
 
     it "describes its state" do
-      state = @resource.state_for_resource_reporter
+      state = resource.state_for_resource_reporter
       expect(state[:value]).to eq("level7")
     end
 
     it "returns the key name as its identity" do
-      expect(@resource.identity).to eq("charmander")
+      expect(resource.identity).to eq("charmander")
     end
   end
 

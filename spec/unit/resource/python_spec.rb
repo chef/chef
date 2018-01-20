@@ -22,11 +22,6 @@ describe Chef::Resource::Python do
 
   let(:resource) { Chef::Resource::Python.new("fakey_fakerton") }
 
-  it "creates a new Chef::Resource::Python" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Python)
-  end
-
   it "has a resource name of :python" do
     expect(resource.resource_name).to eql(:python)
   end

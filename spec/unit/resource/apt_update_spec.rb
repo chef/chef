@@ -24,11 +24,6 @@ describe Chef::Resource::AptUpdate do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::AptUpdate.new("update", run_context) }
 
-  it "creates a new Chef::Resource::AptUpdate" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::AptUpdate)
-  end
-
   it "default frequency is set to be 1 day" do
     expect(resource.frequency).to eql(86_400)
   end

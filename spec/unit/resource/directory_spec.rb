@@ -22,12 +22,7 @@ require "spec_helper"
 describe Chef::Resource::Directory do
   let(:resource) { Chef::Resource::Directory.new("fakey_fakerton") }
 
-  it "creates a new Chef::Resource::Directory" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Directory)
-  end
-
-  it "has a name" do
+  it "has a name property" do
     expect(resource.name).to eql("fakey_fakerton")
   end
 

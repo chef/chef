@@ -23,11 +23,6 @@ describe Chef::Resource::RubyBlock do
 
   let(:resource) { Chef::Resource::RubyBlock.new("fakey_fakerton") }
 
-  it "creates a new Chef::Resource::RubyBlock" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::RubyBlock)
-  end
-
   it "has a default action of 'run'" do
     expect(resource.action).to eql([:run])
   end

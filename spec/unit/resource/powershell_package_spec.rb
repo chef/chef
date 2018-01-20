@@ -22,10 +22,8 @@ describe Chef::Resource::PowershellPackage do
 
   let(:resource) { Chef::Resource::PowershellPackage.new("test_package") }
 
-  it "creates a new Chef::Resource::PowershellPackage" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
+  it "is a subclass of Chef::Resource::Package" do
     expect(resource).to be_a_kind_of(Chef::Resource::Package)
-    expect(resource).to be_a_instance_of(Chef::Resource::PowershellPackage)
   end
 
   #to check the value of resource.resource_name

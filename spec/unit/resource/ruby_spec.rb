@@ -21,11 +21,6 @@ require "spec_helper"
 describe Chef::Resource::Ruby do
   let(:resource) { Chef::Resource::Ruby.new("fakey_fakerton") }
 
-  it "creates a new Chef::Resource::Ruby" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Ruby)
-  end
-
   it "has a resource name of :ruby" do
     expect(resource.resource_name).to eql(:ruby)
   end

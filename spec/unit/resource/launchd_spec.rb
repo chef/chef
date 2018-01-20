@@ -17,11 +17,6 @@ require "spec_helper"
 describe Chef::Resource::Launchd do
   let(:resource) { Chef::Resource::Launchd.new("io.chef.chef-client" ) }
 
-  it "creates a new Chef::Resource::Launchd" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Launchd)
-  end
-
   it "has a resource name of Launchd" do
     expect(resource.resource_name).to eql(:launchd)
   end

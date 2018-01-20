@@ -22,10 +22,6 @@ require "spec_helper"
 describe Chef::Resource::Scm do
   let(:resource) { Chef::Resource::Scm.new("my awesome app") }
 
-  it "is a SCM resource" do
-    expect(resource).to be_a_kind_of(Chef::Resource::Scm)
-  end
-
   it "supports :checkout, :export, :sync, :diff, and :log actions" do
     expect(resource.allowed_actions).to include(:checkout)
     expect(resource.allowed_actions).to include(:export)

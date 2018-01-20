@@ -24,11 +24,6 @@ describe Chef::Resource::Log do
   let(:log_str) { "this is my string to log" }
   let(:resource) { Chef::Resource::Log.new(log_str) }
 
-  it "creates a new Chef::Resource::Log" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Log)
-  end
-
   it "supports the :write actions" do
     expect(resource.allowed_actions).to include(:write)
   end

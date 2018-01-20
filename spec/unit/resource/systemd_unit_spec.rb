@@ -35,12 +35,7 @@ describe Chef::Resource::SystemdUnit do
     }
   end
 
-  it "creates a new Chef::Resource::SystemdUnit" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::SystemdUnit)
-  end
-
-  it "has a name" do
+  it "has a name property" do
     expect(resource.name).to eql("sysstat-collect.timer")
   end
 

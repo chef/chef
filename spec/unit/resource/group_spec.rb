@@ -22,11 +22,6 @@ require "spec_helper"
 describe Chef::Resource::Group, "initialize" do
   let(:resource) { Chef::Resource::Group.new("admin") }
 
-  it "creates a new Chef::Resource::Group" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Group)
-  end
-
   it "sets the resource_name to :group" do
     expect(resource.resource_name).to eql(:group)
   end

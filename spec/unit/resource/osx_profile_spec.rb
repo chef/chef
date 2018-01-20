@@ -25,11 +25,6 @@ describe Chef::Resource::OsxProfile do
     run_context)
   end
 
-  it "creates a new Chef::Resource::OsxProfile" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::OsxProfile)
-  end
-
   it "has a resource name of profile" do
     expect(resource.resource_name).to eql(:osx_profile)
   end

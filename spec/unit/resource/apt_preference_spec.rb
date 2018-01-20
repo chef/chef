@@ -24,11 +24,6 @@ describe Chef::Resource::AptPreference do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::AptPreference.new("libmysqlclient16", run_context) }
 
-  it "creates a new Chef::Resource::AptPreference" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::AptPreference)
-  end
-
   it "resolves to a Noop class when on non-linux OS" do
     node.automatic[:os] = "windows"
     node.automatic[:platform_family] = "windows"

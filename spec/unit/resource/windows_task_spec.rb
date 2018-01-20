@@ -21,11 +21,6 @@ require "spec_helper"
 describe Chef::Resource::WindowsTask do
   let(:resource) { Chef::Resource::WindowsTask.new("sample_task") }
 
-  it "creates a new Chef::Resource::WindowsTask" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_instance_of(Chef::Resource::WindowsTask)
-  end
-
   it "sets resource name as :windows_task" do
     expect(resource.resource_name).to eql(:windows_task)
   end

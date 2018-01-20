@@ -22,8 +22,8 @@ describe Chef::Resource::PortagePackage, "initialize" do
 
   let(:resource) { Chef::Resource::PortagePackage.new("foo") }
 
-  it "returns a Chef::Resource::PortagePackage" do
-    expect(resource).to be_a_kind_of(Chef::Resource::PortagePackage)
+  it "is a subclass of Chef::Resource::Package" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Package)
   end
 
   it "sets the resource_name to :portage_package" do

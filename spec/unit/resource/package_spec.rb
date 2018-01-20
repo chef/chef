@@ -22,11 +22,6 @@ require "spec_helper"
 describe Chef::Resource::Package do
   let(:resource) { Chef::Resource::Package.new("emacs") }
 
-  it "creates a new Chef::Resource::Package" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Package)
-  end
-
   it "sets the package_name to the first argument to new" do
     expect(resource.package_name).to eql("emacs")
   end

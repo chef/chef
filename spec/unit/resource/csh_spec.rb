@@ -22,9 +22,8 @@ describe Chef::Resource::Csh do
 
   let(:resource) { Chef::Resource::Csh.new("fakey_fakerton") }
 
-  it "creates a new Chef::Resource::Csh" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Csh)
+  it "is a subclass of Chef::Resource::Script" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Script)
   end
 
   it "has a resource name of :csh" do

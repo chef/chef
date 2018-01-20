@@ -22,11 +22,6 @@ require "spec_helper"
 describe Chef::Resource::Service do
   let(:resource) { Chef::Resource::Service.new("chef") }
 
-  it "creates a new Chef::Resource::Service" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Service)
-  end
-
   it "does not set a provider unless node[:init_package] is defined as systemd" do
     expect(resource.provider).to eq(nil)
   end

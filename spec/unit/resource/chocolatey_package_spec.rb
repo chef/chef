@@ -22,10 +22,8 @@ describe Chef::Resource::ChocolateyPackage do
 
   let(:resource) { Chef::Resource::ChocolateyPackage.new("fakey_fakerton") }
 
-  it "creates a new Chef::Resource::ChocolateyPackage" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
+  it "is a subclass of Chef::Resource::Package" do
     expect(resource).to be_a_kind_of(Chef::Resource::Package)
-    expect(resource).to be_a_instance_of(Chef::Resource::ChocolateyPackage)
   end
 
   it "has a resource name of :python" do

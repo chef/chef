@@ -21,11 +21,6 @@ require "spec_helper"
 describe Chef::Resource::User, "initialize" do
   let(:resource) { Chef::Resource::User.new("adam") }
 
-  it "creates a new Chef::Resource::User" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::User)
-  end
-
   it "sets the resource_name to :user" do
     expect(resource.resource_name).to eql(:user_resource_abstract_base_class)
   end

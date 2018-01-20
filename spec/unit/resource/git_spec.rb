@@ -30,9 +30,8 @@ describe Chef::Resource::Git do
 
   let(:resource) { Chef::Resource::Git.new("my awesome webapp") }
 
-  it "is a kind of Scm Resource" do
+  it "is a subclass of Chef::Resource::Scm" do
     expect(resource).to be_a_kind_of(Chef::Resource::Scm)
-    expect(resource).to be_an_instance_of(Chef::Resource::Git)
   end
 
   it "uses aliases revision as branch" do

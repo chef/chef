@@ -22,7 +22,7 @@ describe Chef::Resource::File do
 
   let(:resource) { Chef::Resource::File.new("fakey_fakerton") }
 
-  it "has a name" do
+  it "has a name property" do
     expect(resource.name).to eql("fakey_fakerton")
   end
 

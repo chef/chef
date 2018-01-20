@@ -22,11 +22,6 @@ describe Chef::Resource::RemoteDirectory do
 
   let(:resource) { Chef::Resource::RemoteDirectory.new("/etc/dunk") }
 
-  it "creates a new Chef::Resource::RemoteDirectory" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::RemoteDirectory)
-  end
-
   it "sets the path to the first argument to new" do
     expect(resource.path).to eql("/etc/dunk")
   end

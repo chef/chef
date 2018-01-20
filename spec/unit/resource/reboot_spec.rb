@@ -21,11 +21,6 @@ describe Chef::Resource::Reboot do
 
   let(:resource) { Chef::Resource::Reboot.new("reboot me!") }
 
-  it "creates a new Chef::Resource::Reboot" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Reboot)
-  end
-
   it "has a default action of :nothing" do
     expect(resource.action).to eql([:nothing])
   end
