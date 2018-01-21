@@ -21,11 +21,6 @@ require "spec_helper"
 describe Chef::Resource::RegistryKey, "initialize" do
   let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
 
-  it "creates a new Chef::Resource::RegistryKey" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::RegistryKey)
-  end
-
   it "sets the resource_name to :registry_key" do
     expect(resource.resource_name).to eql(:registry_key)
   end

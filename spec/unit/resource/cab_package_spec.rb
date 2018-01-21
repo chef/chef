@@ -22,10 +22,8 @@ describe Chef::Resource::CabPackage do
 
   let(:resource) { Chef::Resource::CabPackage.new("test_pkg") }
 
-  it "creates a new Chef::Resource::CabPackage" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
+  it "is a subclass of Chef::Resource::Package" do
     expect(resource).to be_a_kind_of(Chef::Resource::Package)
-    expect(resource).to be_a_instance_of(Chef::Resource::CabPackage)
   end
 
   it "sets resource name as :cab_package" do

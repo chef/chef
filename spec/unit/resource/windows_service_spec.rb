@@ -29,10 +29,6 @@ describe Chef::Resource::WindowsService, "initialize" do
 
   let(:resource) { Chef::Resource::WindowsService.new("BITS") }
 
-  it "returns a Chef::Resource::WindowsService" do
-    expect(resource).to be_a_kind_of(Chef::Resource::WindowsService)
-  end
-
   it "sets the resource_name to :windows_service" do
     expect(resource.resource_name).to eql(:windows_service)
   end

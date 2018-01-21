@@ -22,10 +22,8 @@ describe Chef::Resource::Template do
   let(:resource) { Chef::Resource::Template.new("fakey_fakerton") }
 
   describe "initialize" do
-    it "creates a new Chef::Resource::Template" do
-      expect(resource).to be_a_kind_of(Chef::Resource)
+    it "is a subclass of Chef::Resource::File" do
       expect(resource).to be_a_kind_of(Chef::Resource::File)
-      expect(resource).to be_a_kind_of(Chef::Resource::Template)
     end
   end
 

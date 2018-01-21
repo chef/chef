@@ -22,12 +22,7 @@ require "spec_helper"
 describe Chef::Resource::Mount do
   let(:resource) { Chef::Resource::Mount.new("filesystem") }
 
-  it "creates a new Chef::Resource::Mount" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Mount)
-  end
-
-  it "has a name" do
+  it "has a name property" do
     expect(resource.name).to eql("filesystem")
   end
 

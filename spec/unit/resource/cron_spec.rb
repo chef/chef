@@ -22,11 +22,6 @@ require "spec_helper"
 describe Chef::Resource::Cron do
   let(:resource) { Chef::Resource::Cron.new("cronify") }
 
-  it "creates a new Chef::Resource::Cron" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Cron)
-  end
-
   it "has a name property" do
     expect(resource.name).to eql("cronify")
   end

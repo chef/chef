@@ -31,6 +31,10 @@ describe Chef::Resource::IpsPackage, "initialize" do
 
   let(:resource) { Chef::Resource::IpsPackage.new("crypto/gnupg") }
 
+  it "is a subclass of Chef::Resource::Package" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Package)
+  end
+
   it "should support accept_license" do
     resource.accept_license(true)
     expect(resource.accept_license).to eql(true)

@@ -22,11 +22,6 @@ describe Chef::Resource::Ohai do
 
   let(:resource) { Chef::Resource::Ohai.new("ohai_reload") }
 
-  it "creates a new Chef::Resource::Ohai" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Ohai)
-  end
-
   it "has a resource name of :ohai" do
     expect(resource.resource_name).to eql(:ohai)
   end

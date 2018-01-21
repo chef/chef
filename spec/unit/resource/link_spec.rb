@@ -26,12 +26,7 @@ describe Chef::Resource::Link do
     expect_any_instance_of(Chef::Resource::Link).to receive(:verify_links_supported!).and_return(true)
   end
 
-  it "creates a new Chef::Resource::Link" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Link)
-  end
-
-  it "has a name" do
+  it "has a name property" do
     expect(resource.name).to eql("fakey_fakerton")
   end
 

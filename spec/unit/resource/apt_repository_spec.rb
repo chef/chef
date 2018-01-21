@@ -24,11 +24,6 @@ describe Chef::Resource::AptRepository do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::AptRepository.new("multiverse", run_context) }
 
-  it "creates a new Chef::Resource::AptRepository" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::AptRepository)
-  end
-
   it "uses keyserver.ubuntu.com as the keyserver" do
     expect(resource.keyserver).to eql("keyserver.ubuntu.com")
   end

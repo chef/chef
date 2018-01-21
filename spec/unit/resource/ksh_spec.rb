@@ -22,9 +22,8 @@ describe Chef::Resource::Ksh do
 
   let(:resource) { Chef::Resource::Ksh.new("fakey_fakerton") }
 
-  it "creates a new Chef::Resource::Ksh" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Ksh)
+  it "is a subclass of Chef::Resource::Script" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Script)
   end
 
   it "has a resource name of :ksh" do

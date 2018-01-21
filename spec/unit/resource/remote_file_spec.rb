@@ -24,10 +24,8 @@ describe Chef::Resource::RemoteFile do
   let(:resource) { Chef::Resource::RemoteFile.new("fakey_fakerton") }
 
   describe "initialize" do
-    it "creates a new Chef::Resource::RemoteFile" do
-      expect(resource).to be_a_kind_of(Chef::Resource)
+    it "is a subclass of Chef::Resource::File" do
       expect(resource).to be_a_kind_of(Chef::Resource::File)
-      expect(resource).to be_a_kind_of(Chef::Resource::RemoteFile)
     end
   end
 

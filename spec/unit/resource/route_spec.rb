@@ -23,12 +23,7 @@ describe Chef::Resource::Route do
 
   let(:resource) { Chef::Resource::Route.new("10.0.0.10") }
 
-  it "creates a new Chef::Resource::Route" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Route)
-  end
-
-  it "has a name" do
+  it "has a name property" do
     expect(resource.name).to eql("10.0.0.10")
   end
 

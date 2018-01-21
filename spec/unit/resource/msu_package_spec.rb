@@ -21,10 +21,8 @@ require "spec_helper"
 describe Chef::Resource::MsuPackage do
   let(:resource) { Chef::Resource::MsuPackage.new("test_pkg") }
 
-  it "creates a new Chef::Resource::MsuPackage" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
+  it "is a subclass of Chef::Resource::Package" do
     expect(resource).to be_a_kind_of(Chef::Resource::Package)
-    expect(resource).to be_a_instance_of(Chef::Resource::MsuPackage)
   end
 
   it "sets resource name as :msu_package" do

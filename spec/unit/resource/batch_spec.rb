@@ -19,18 +19,15 @@
 require "spec_helper"
 
 describe Chef::Resource::Batch do
+  let(:node) { Chef::Node.new }
 
   before(:each) do
-    node = Chef::Node.new
-
     node.default["kernel"] = Hash.new
     node.default["kernel"][:machine] = :x86_64.to_s
     node.automatic[:os] = "windows"
 
     run_context = Chef::RunContext.new(node, nil, nil)
-
     @resource = Chef::Resource::Batch.new("batch_unit_test", run_context)
-
   end
 
   it "creates a new Chef::Resource::Batch" do

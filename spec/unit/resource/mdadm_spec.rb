@@ -23,11 +23,6 @@ describe Chef::Resource::Mdadm do
 
   let(:resource) { Chef::Resource::Mdadm.new("fakey_fakerton") }
 
-  it "creates a new Chef::Resource::Mdadm" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::Mdadm)
-  end
-
   it "has a resource name of :mdadm" do
     expect(resource.resource_name).to eql(:mdadm)
   end

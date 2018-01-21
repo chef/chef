@@ -22,11 +22,6 @@ require "spec_helper"
 describe Chef::Resource::HttpRequest do
   let(:resource) { Chef::Resource::HttpRequest.new("fakey_fakerton") }
 
-  it "creates a new Chef::Resource::HttpRequest" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::HttpRequest)
-  end
-
   it "sets url to a string" do
     resource.url "http://slashdot.org"
     expect(resource.url).to eql("http://slashdot.org")
