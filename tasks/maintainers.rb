@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -131,7 +131,7 @@ begin
     else
       %w{maintainers lieutenant title}.each { |k| cmp.delete(k) }
     end
-    cmp.each { |_k, v| prepare_teams(v) }
+    cmp.each_value { |v| prepare_teams(v) }
   end
 
   def update_team(team, additions, deletions)
@@ -189,7 +189,7 @@ begin
     end
     out << format_maintainers(cmp.delete("maintainers")) + "\n" if cmp.has_key?("maintainers")
     cmp.delete("paths")
-    cmp.each { |k, v| out << format_components(v) }
+    cmp.each_value { |v| out << format_components(v) }
     out
   end
 

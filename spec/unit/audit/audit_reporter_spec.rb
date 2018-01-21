@@ -2,7 +2,7 @@
 # Author:: Tyler Ball (<tball@chef.io>)
 # Author:: Claire McQuin (<claire@chef.io>)
 #
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -319,7 +319,7 @@ EOM
     end
 
     it "collects audit data" do
-      ordered_control_groups.each do |_name, group|
+      ordered_control_groups.each_value do |group|
         expect(audit_data).to receive(:add_control_group).with(group)
       end
       reporter.audit_phase_complete("Output from audit mode")
@@ -337,7 +337,7 @@ EOM
     end
 
     it "collects audit data" do
-      ordered_control_groups.each do |_name, group|
+      ordered_control_groups.each_value do |group|
         expect(audit_data).to receive(:add_control_group).with(group)
       end
       reporter.audit_phase_failed(error, "Output from audit mode")

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -116,7 +116,7 @@ class Chef
         end
 
         unless config[:no_deps]
-          preferred_metadata.dependencies.each do |cookbook, version_list|
+          preferred_metadata.dependencies.each_key do |cookbook|
             # Doesn't do versions.. yet
             nv = self.class.new
             nv.config = config

@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -98,14 +98,6 @@ class Chef
     # @return [Chef::ServerAPI]
     #
     attr_reader :rest
-
-    #
-    # A rest object with validate_utf8 set to false.  This will not throw exceptions
-    # on non-UTF8 strings in JSON but will sanitize them so that e.g. POSTs will
-    # never fail.  Cannot be configured on a request-by-request basis, so we carry
-    # around another rest object for it.
-    #
-    attr_reader :rest_clean
 
     #
     # The runner used to converge.
@@ -398,8 +390,10 @@ class Chef
       end
     end
 
-    # Rest client for use by API reporters.  This rest client will not fail with an exception if
-    # it is fed non-UTF8 data.
+    # A rest object with validate_utf8 set to false.  This will not throw exceptions
+    # on non-UTF8 strings in JSON but will sanitize them so that e.g. POSTs will
+    # never fail.  Cannot be configured on a request-by-request basis, so we carry
+    # around another rest object for it.
     #
     # @api private
     def rest_clean(client_name = node_name, config = Chef::Config)

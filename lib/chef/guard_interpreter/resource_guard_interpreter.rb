@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -108,7 +108,7 @@ class Chef
 
       def block_from_attributes(attributes)
         Proc.new do
-          attributes.keys.each do |attribute_name|
+          attributes.each_key do |attribute_name|
             send(attribute_name, attributes[attribute_name]) if respond_to?(attribute_name)
           end
         end

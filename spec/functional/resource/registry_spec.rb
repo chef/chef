@@ -1,7 +1,7 @@
 #
 # Author:: Prajakta Purohit (<prajakta@chef.io>)
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -244,7 +244,7 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
       @new_resource.recursive(true)
       @new_resource.run_action(:create)
 
-      @new_resource.values.each do |value|
+      @new_resource.each_value do |value|
         expect(@registry.value_exists?(reg_child, value)).to eq(true)
       end
     end
@@ -430,7 +430,7 @@ describe Chef::Resource::RegistryKey, :windows_only, :broken => true do
       @new_resource.recursive(true)
       @new_resource.run_action(:create_if_missing)
 
-      @new_resource.values.each do |value|
+      @new_resource.each_value do |value|
         expect(@registry.value_exists?(reg_child + '\Adipose', value)).to eq(true)
       end
     end

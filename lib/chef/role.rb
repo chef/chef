@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Nuo Yan (<nuo@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,8 +32,6 @@ class Chef
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-
-    attr_accessor :chef_server_rest
 
     # Create a new Chef::Role object.
     def initialize(chef_server_rest: nil)

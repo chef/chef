@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,8 +40,6 @@ class Chef
 
         include Chef::Mixin::ConvertToClassName
         include Chef::Mixin::FromFile
-
-        attr_accessor :loaded_lwrps
 
         def build_from_file(cookbook_name, filename, run_context)
           if LWRPBase.loaded_lwrps[filename]
@@ -102,6 +100,7 @@ class Chef
 
         protected
 
+        attr_writer :loaded_lwrps
         def loaded_lwrps
           @loaded_lwrps ||= {}
         end

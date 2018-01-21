@@ -145,7 +145,6 @@ class Chef
         Chef::Log.info("Validating templates")
         exit(1) unless syntax_checker.validate_templates
         Chef::Log.info("Syntax OK")
-        true
       end
     end
 

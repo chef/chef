@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -595,7 +595,7 @@ describe Chef::Node::Attribute do
 
     it "should yield each top level key" do
       collect = Array.new
-      @attributes.keys.each do |k|
+      @attributes.each_key do |k|
         collect << k
       end
       expect(collect.include?("one")).to eq(true)
@@ -608,7 +608,7 @@ describe Chef::Node::Attribute do
 
     it "should yield lower if we go deeper" do
       collect = Array.new
-      @attributes["one"].keys.each do |k|
+      @attributes["one"].each_key do |k|
         collect << k
       end
       expect(collect.include?("two")).to eq(true)

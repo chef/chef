@@ -1,7 +1,7 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
 #
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +49,7 @@ class Chef
 
       def audit_phase_complete(audit_output)
         Chef::Log.debug("Audit Reporter completed successfully without errors.")
-        ordered_control_groups.each do |name, control_group|
+        ordered_control_groups.each_value do |control_group|
           audit_data.add_control_group(control_group)
         end
       end
@@ -62,7 +62,7 @@ class Chef
         # The stacktrace information has already been logged elsewhere
         @audit_phase_error = error
         Chef::Log.debug("Audit Reporter failed.")
-        ordered_control_groups.each do |name, control_group|
+        ordered_control_groups.each_value do |control_group|
           audit_data.add_control_group(control_group)
         end
       end

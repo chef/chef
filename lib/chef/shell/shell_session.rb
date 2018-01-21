@@ -2,7 +2,7 @@
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Copyright:: Copyright 2009-2016, Daniel DeLeo
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,7 @@ module Shell
       @session_type
     end
 
-    attr_accessor :node, :compile, :recipe, :run_context, :json_configuration
+    attr_accessor :node, :compile, :recipe, :json_configuration
     attr_reader :node_attributes, :client
     def initialize
       @node_built = false
@@ -73,6 +73,7 @@ module Shell
       run_context.resource_collection
     end
 
+    attr_writer :run_context
     def run_context
       @run_context ||= rebuild_context
     end

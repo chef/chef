@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright (c) 2010-2017, Chef Software Inc.
+# Copyright:: Copyright (c) 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,7 @@ class Chef
       def install
         cookbook_gems = Hash.new { |h, k| h[k] = [] }
 
-        cookbook_collection.each do |cookbook_name, cookbook_version|
+        cookbook_collection.each_value do |cookbook_version|
           cookbook_version.metadata.gems.each do |args|
             cookbook_gems[args.first] += args[1..-1]
           end

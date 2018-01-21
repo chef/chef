@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, 2009-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2016, 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,6 @@ class Chef
     attr_accessor :run_context
 
     attr_reader :recipe_name
-    attr_reader :cookbook_name
 
     include Chef::Mixin::WhyRun
     extend Chef::Mixin::Provides
@@ -331,7 +330,7 @@ class Chef
           define_singleton_method(:inspect) { to_s }
           # Add a delegator for each explicit property that will get the *current* value
           # of the property by default instead of the *actual* value.
-          resource.class.properties.each do |name, property|
+          resource.class.properties.each_key do |name|
             class_eval(<<-EOM, __FILE__, __LINE__)
               def #{name}(*args, &block)
                 # If no arguments were passed, we process "get" by defaulting

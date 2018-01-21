@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,6 @@ class Chef
   class Search
     class Query
 
-      attr_accessor :rest
       attr_reader :config
 
       def initialize(url = nil, config: Chef::Config)

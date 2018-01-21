@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Nuo Yan (<yan.nuo@gmail.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -172,7 +172,7 @@ class Chef
                 if ! upload_set.has_key?(cookbook_name)
                   upload_set[cookbook_name] = cookbook_repo[cookbook_name]
                   if config[:depends]
-                    upload_set[cookbook_name].metadata.dependencies.each { |dep, ver| @name_args << dep }
+                    upload_set[cookbook_name].metadata.dependencies.each_key { |dep| @name_args << dep }
                   end
                 end
               rescue Exceptions::CookbookNotFoundInRepo => e

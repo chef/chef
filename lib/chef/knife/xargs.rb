@@ -181,7 +181,7 @@ class Chef
 
       def destroy_tempfiles(tempfiles)
         # Unlink the files now that we're done with them
-        tempfiles.keys.each { |tempfile| tempfile.close! }
+        tempfiles.each_key { |tempfile| tempfile.close! }
       end
 
       def xargs_files(command, tempfiles)

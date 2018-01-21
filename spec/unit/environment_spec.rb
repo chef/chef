@@ -3,7 +3,7 @@
 # Author:: Seth Falcon (<seth@ospcode.com>)
 # Author:: John Keiser (<jkeiser@ospcode.com>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -250,7 +250,7 @@ describe Chef::Environment do
     end
 
     it "should validate the version string of each cookbook" do
-      @cookbook_versions.each do |cookbook, version|
+      @cookbook_versions.each_value do |version|
         expect(Chef::Environment).to receive(:validate_cookbook_version).with(version).and_return true
       end
       Chef::Environment.validate_cookbook_versions(@cookbook_versions)

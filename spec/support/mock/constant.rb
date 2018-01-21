@@ -15,7 +15,7 @@ def mock_constants(constants)
   begin
     yield
   ensure
-    constants.each do |constant, val|
+    constants.each_key do |constant|
       source_object, const_name = parse_constant(constant)
       with_warnings(nil) { source_object.const_set(const_name, saved_constants[constant]) }
     end

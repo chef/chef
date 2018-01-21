@@ -46,8 +46,4 @@ class Chef::Util::Windows::Volume < Chef::Util::Windows
   rescue Chef::Exceptions::Win32APIError => e
     raise ArgumentError, e
   end
-
-  def mount_point
-    @mount_point
-  end
 end

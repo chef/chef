@@ -861,7 +861,7 @@ class Chef
     # @return [Array<Symbol>] The list of actions this Resource is allowed to
     #   have.
     #
-    attr_accessor :allowed_actions
+    attr_writer :allowed_actions
     def allowed_actions(value = NOT_PASSED)
       if value != NOT_PASSED
         self.allowed_actions = value

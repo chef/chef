@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -162,7 +162,7 @@ describe Chef::CookbookManifest do
       cookbook_manifest_hash = cookbook_manifest.to_hash
 
       expect(cookbook_manifest_hash.keys).to match_array(expected_hash.keys)
-      cookbook_manifest_hash.each do |key, value|
+      cookbook_manifest_hash.each_key do |key|
         expect(cookbook_manifest_hash[key]).to eq(expected_hash[key])
       end
     end
