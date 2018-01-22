@@ -30,7 +30,7 @@ class Chef
 
       def initialize(resource, action, notifying_resource)
         @resource = resource
-        @action = action
+        @action = action&.to_sym
         @notifying_resource = notifying_resource
       end
 
