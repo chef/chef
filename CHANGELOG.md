@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.10 -->
-## [v14.0.10](https://github.com/chef/chef/tree/v14.0.10) (2018-01-22)
+<!-- latest_release 14.0.11 -->
+## [v14.0.11](https://github.com/chef/chef/tree/v14.0.11) (2018-01-22)
 
 #### Merged Pull Requests
-- Fixing missing and/or inconsistent quoting in knife search documentation [#6607](https://github.com/chef/chef/pull/6607) ([andyfeller](https://github.com/andyfeller))
+- add create and delete actions for windows_service [#6595](https://github.com/chef/chef/pull/6595) ([jasonwbarnett](https://github.com/jasonwbarnett))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- add create and delete actions for windows_service [#6595](https://github.com/chef/chef/pull/6595) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 14.0.11 -->
 - Fixing missing and/or inconsistent quoting in knife search documentation [#6607](https://github.com/chef/chef/pull/6607) ([andyfeller](https://github.com/andyfeller)) <!-- 14.0.10 -->
 - Remove unused chef_server_fqdn argument: run_status [#6670](https://github.com/chef/chef/pull/6670) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 14.0.9 -->
 - Remove update-rc.d -n (dryrun) option. [#6723](https://github.com/chef/chef/pull/6723) ([vinsonlee](https://github.com/vinsonlee)) <!-- 14.0.8 -->
