@@ -105,10 +105,6 @@ class Chef
         :description => "Enable SSH agent forwarding",
         :boolean => true
 
-      option :identity_file,
-        :long => "--identity-file IDENTITY_FILE",
-        :description => "The SSH identity file used for authentication. [DEPRECATED] Use --ssh-identity-file instead."
-
       option :ssh_identity_file,
         :short => "-i IDENTITY_FILE",
         :long => "--ssh-identity-file IDENTITY_FILE",
@@ -569,8 +565,7 @@ class Chef
       end
 
       def configure_ssh_identity_file
-        # config[:identity_file] is DEPRECATED in favor of :ssh_identity_file
-        config[:ssh_identity_file] = get_stripped_unfrozen_value(config[:ssh_identity_file] || config[:identity_file] || Chef::Config[:knife][:ssh_identity_file])
+        config[:ssh_identity_file] = get_stripped_unfrozen_value(config[:ssh_identity_file] || Chef::Config[:knife][:ssh_identity_file])
       end
 
       def configure_ssh_gateway_identity
