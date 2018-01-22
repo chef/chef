@@ -60,4 +60,24 @@ include_recipe "cron"
 
 include_recipe "git"
 
+directory "/etc/ssl"
+
+# Generate new key and certificate
+openssl_dhparam "/etc/ssl/dhparam.pem" do
+  key_length 1024
+  action :create
+end
+
+# Generate new key with aes-128-cbc cipher
+openssl_rsa_private_key "/etc/ssl/rsakey_aes128cbc.pem" do
+  key_length 1024
+  key_cipher "aes-128-cbc"
+  action :create
+end
+
+openssl_rsa_public_key "/etc/ssl/rsakey_aes128cbc.pub" do
+  private_key_path "/etc/ssl/rsakey_aes128cbc.pem"
+  action :create
+end
+
 include_recipe "::tests"
