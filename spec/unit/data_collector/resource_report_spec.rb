@@ -1,7 +1,7 @@
 #
 # Author:: Salim Afiune (<afiune@chef.io)
 #
-# Copyright:: Copyright 2012-2017, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -110,7 +110,7 @@ describe Chef::DataCollector::ResourceReport do
     context "for a lazy_resource that got skipped" do
       let(:resource) do
         klass = Class.new(Chef::Resource) do
-          resource_name "link"
+          resource_name "butters"
           property :sword, String, name_property: true, identity: true
         end
         resource = klass.new("hyrule")
@@ -129,7 +129,7 @@ describe Chef::DataCollector::ResourceReport do
           "name" => "hyrule",
           "result" => "create",
           "status" => "skipped",
-          "type" => :link,
+          "type" => :butters,
         }
       end
       let(:conditional) do

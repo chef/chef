@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2017, Chef Software Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -122,16 +122,16 @@ describe Chef::NodeMap do
   describe "ordering classes" do
     class Foo; end
     class Bar; end
-    it "orders them alphabetically when they're set in the reverse order" do
+    it "last writer wins when its reverse alphabetic order" do
       node_map.set(:thing, Foo)
       node_map.set(:thing, Bar)
       expect(node_map.get(node, :thing)).to eql(Bar)
     end
 
-    it "orders them alphabetically when they're set in alphabetic order" do
+    it "last writer wins when its alphabetic order" do
       node_map.set(:thing, Bar)
       node_map.set(:thing, Foo)
-      expect(node_map.get(node, :thing)).to eql(Bar)
+      expect(node_map.get(node, :thing)).to eql(Foo)
     end
   end
 
