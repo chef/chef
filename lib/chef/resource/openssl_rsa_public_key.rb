@@ -23,8 +23,8 @@ class Chef
     #
     # @since 14.0
     class OpensslRsaPublicKey < Chef::Resource
-      require "chef/mixin/openssl"
-      include Chef::Mixin::OpenSSL
+      require "chef/mixin/openssl_helper"
+      include Chef::Mixin::OpenSSLHelper
 
       resource_name :openssl_rsa_public_key
 

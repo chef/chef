@@ -14,11 +14,11 @@
 # limitations under the License.
 
 require "spec_helper"
-require "chef/mixin/openssl"
+require "chef/mixin/openssl_helper"
 
-describe Chef::Mixin::OpenSSL do
+describe Chef::Mixin::OpenSSLHelper do
   let(:instance) do
-    Class.new { include Chef::Mixin::OpenSSL }.new
+    Class.new { include Chef::Mixin::OpenSSLHelper }.new
   end
 
   describe ".included" do
