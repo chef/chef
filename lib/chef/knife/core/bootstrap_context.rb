@@ -88,7 +88,7 @@ class Chef
         def config_content
           client_rb = <<-CONFIG
 chef_server_url  "#{@chef_config[:chef_server_url]}"
-validation_client_name "#{@chef_config[:validation_client_name]}"
+validation_client_name "#{@chef_config[:validation_client_name]}".gsub(/'/) { "\'" }
           CONFIG
 
           if !(@chef_config[:config_log_level].nil? || @chef_config[:config_log_level].empty?)
