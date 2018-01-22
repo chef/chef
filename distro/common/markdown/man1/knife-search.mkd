@@ -50,7 +50,7 @@ query syntax. The following data types are indexed for search:
 Data bags are indexed by the data bag's name. For example, to search a
 data bag named "admins":
 
-    knife search admins "field:search_pattern"
+    knife search admins 'field:search_pattern'
 
 ## QUERY SYNTAX
 
@@ -95,7 +95,7 @@ within a search pattern.
 Range searches allows one to match values between two given values.  To
 match values between X and Y, inclusively, use square brackets:
 
-    knife search INDEX 'field:[X TO Y]
+    knife search INDEX 'field:[X TO Y]'
 
 To match values between X and Y, exclusively, use curly brackets:
 

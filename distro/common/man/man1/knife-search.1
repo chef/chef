@@ -57,7 +57,7 @@ where \fBINDEX\fP is one of \fBclient\fP, \fBenvironment\fP, \fBnode\fP, \fBrole
 .sp
 .nf
 .ft C
-$ knife search \(aq*:*\(aq \-i
+$ knife search "*:*" \-i
 .ft P
 .fi
 .UNINDENT
@@ -90,7 +90,7 @@ and is the same search as:
 .sp
 .nf
 .ft C
-$ knife search node \(aq*:*" \-i
+$ knife search node "*:*" \-i
 .ft P
 .fi
 .UNINDENT
@@ -218,7 +218,7 @@ To search for the IDs of all nodes running on the Amazon EC2 platform, enter:
 .sp
 .nf
 .ft C
-$ knife search node \(aqec2:*\(aq \-i
+$ knife search node "ec2:*" \-i
 .ft P
 .fi
 .UNINDENT
@@ -250,7 +250,7 @@ To search for the instance type (flavor) of all nodes running on the Amazon EC2 
 .sp
 .nf
 .ft C
-$ knife search node \(aqec2:*\(aq \-a ec2.instance_type
+$ knife search node "ec2:*" \-a ec2.instance_type
 .ft P
 .fi
 .UNINDENT
@@ -286,7 +286,7 @@ To search for all nodes running Ubuntu, enter:
 .sp
 .nf
 .ft C
-$ knife search node \(aqplatform:ubuntu\(aq
+$ knife search node "platform:ubuntu"
 .ft P
 .fi
 .UNINDENT
@@ -298,7 +298,7 @@ To search for all nodes running CentOS in the production environment, enter:
 .sp
 .nf
 .ft C
-$ knife search node \(aqchef_environment:production AND platform:centos\(aq
+$ knife search node "chef_environment:production AND platform:centos"
 .ft P
 .fi
 .UNINDENT
