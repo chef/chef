@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.6 -->
-## [v14.0.6](https://github.com/chef/chef/tree/v14.0.6) (2018-01-22)
+<!-- latest_release 14.0.7 -->
+## [v14.0.7](https://github.com/chef/chef/tree/v14.0.7) (2018-01-22)
 
 #### Merged Pull Requests
-- Remove deprecated knife ssh --identity-file option [#6445](https://github.com/chef/chef/pull/6445) ([tas50](https://github.com/tas50))
+- Prevent knife search --id-only from outputting IDs in the same format… [#6742](https://github.com/chef/chef/pull/6742) ([zanecodes](https://github.com/zanecodes))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Prevent knife search --id-only from outputting IDs in the same format… [#6742](https://github.com/chef/chef/pull/6742) ([zanecodes](https://github.com/zanecodes)) <!-- 14.0.7 -->
 - Remove deprecated knife ssh --identity-file option [#6445](https://github.com/chef/chef/pull/6445) ([tas50](https://github.com/tas50)) <!-- 14.0.6 -->
 - Add dhparam, rsa_private_key and rsa_public_key resources [#6736](https://github.com/chef/chef/pull/6736) ([tas50](https://github.com/tas50)) <!-- 14.0.5 -->
 - Chef 14: Remove deprecated knife ssh csshx command [#6444](https://github.com/chef/chef/pull/6444) ([tas50](https://github.com/tas50)) <!-- 14.0.4 -->
