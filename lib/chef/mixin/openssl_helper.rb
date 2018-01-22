@@ -17,7 +17,7 @@
 
 class Chef
   module Mixin
-    module OpenSSL
+    module OpenSSLHelper
       def self.included(_base)
         require "openssl" unless defined?(::OpenSSL)
       end
