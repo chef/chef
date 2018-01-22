@@ -446,11 +446,11 @@ describe "Recipe DSL methods" do
 
           end
 
-          it "thingy3 works in a recipe and yields Thingy3 (the alphabetical one)" do
+          it "thingy3 works in a recipe and yields Thingy4 (the last one)" do
             recipe = converge do
               thingy3("blah") {}
             end
-            expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy3
+            expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy4
           end
 
           it "thingy4 does not work in a recipe" do
@@ -460,7 +460,7 @@ describe "Recipe DSL methods" do
           end
 
           it "resource_matching_short_name returns Thingy4" do
-            expect(Chef::Resource.resource_matching_short_name(:thingy3)).to eq RecipeDSLSpecNamespace::Thingy3
+            expect(Chef::Resource.resource_matching_short_name(:thingy3)).to eq RecipeDSLSpecNamespace::Thingy4
           end
         end
       end
@@ -501,14 +501,14 @@ describe "Recipe DSL methods" do
             expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy6
           end
 
-          it "thingy5 works in a recipe and yields Foo::Thingy5 (the alphabetical one)" do
+          it "thingy5 works in a recipe and yields Foo::Thingy6 (the last one)" do
             recipe = converge do
               thingy5("blah") {}
             end
-            expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy5
+            expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy6
           end
 
-          it "resource_matching_short_name returns Thingy5" do
+          it "resource_matching_short_name returns Thingy6" do
             expect(Chef::Resource.resource_matching_short_name(:thingy5)).to eq RecipeDSLSpecNamespace::Thingy5
           end
 
@@ -540,11 +540,11 @@ describe "Recipe DSL methods" do
 
             end
 
-            it "thingy5_2 works in a recipe and yields the RecipeDSLSpaceNamespace one (the alphabetical one)" do
+            it "thingy5_2 works in a recipe and yields the ZRecipeDSLSpaceNamespace one (the last one)" do
               recipe = converge do
                 thingy5_2("blah") {}
               end
-              expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy5
+              expect(BaseThingy.created_resource).to eq ZRecipeDSLSpecNamespace::Thingy5
             end
           end
 
@@ -593,11 +593,11 @@ describe "Recipe DSL methods" do
 
             end
 
-            it "thingy3 works in a recipe and yields Thingy3 (the alphabetical one)" do
+            it "thingy3 works in a recipe and yields Thingy4 (the last one)" do
               recipe = converge do
                 thingy3("blah") {}
               end
-              expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy3
+              expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy4
             end
 
             it "thingy4 does not work in a recipe" do
@@ -607,7 +607,7 @@ describe "Recipe DSL methods" do
             end
 
             it "resource_matching_short_name returns Thingy4" do
-              expect(Chef::Resource.resource_matching_short_name(:thingy3)).to eq RecipeDSLSpecNamespace::Thingy3
+              expect(Chef::Resource.resource_matching_short_name(:thingy3)).to eq RecipeDSLSpecNamespace::Thingy4
             end
           end
 
@@ -620,11 +620,11 @@ describe "Recipe DSL methods" do
 
             end
 
-            it "thingy3 works in a recipe and yields Thingy3 (the alphabetical one)" do
+            it "thingy3 works in a recipe and yields Thingy4 (the last one)" do
               recipe = converge do
                 thingy3("blah") {}
               end
-              expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy3
+              expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy4
             end
 
             it "thingy4 does not work in a recipe" do
@@ -634,7 +634,7 @@ describe "Recipe DSL methods" do
             end
 
             it "resource_matching_short_name returns Thingy4" do
-              expect(Chef::Resource.resource_matching_short_name(:thingy3)).to eq RecipeDSLSpecNamespace::Thingy3
+              expect(Chef::Resource.resource_matching_short_name(:thingy3)).to eq RecipeDSLSpecNamespace::Thingy4
             end
           end
         end
@@ -667,11 +667,11 @@ describe "Recipe DSL methods" do
             expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy7
           end
 
-          it "thingy8 works in a recipe and yields Thingy7 (alphabetical)" do
+          it "thingy8 works in a recipe and yields Thingy7 (last)" do
             recipe = converge do
               thingy8("blah") {}
             end
-            expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy7
+            expect(BaseThingy.created_resource).to eq RecipeDSLSpecNamespace::Thingy8
           end
 
           it "resource_matching_short_name returns Thingy8" do
@@ -853,17 +853,17 @@ describe "Recipe DSL methods" do
         end
         before { resource_class_z } # pull on it so it gets defined before the recipe runs
 
-        it "two_classes_one_dsl resolves to B (alphabetically earliest)" do
+        it "two_classes_one_dsl resolves to Z (last)" do
           temp_two_classes_one_dsl = two_classes_one_dsl
           recipe = converge do
             instance_eval("#{temp_two_classes_one_dsl} 'blah'")
           end
           expect(recipe.logged_warnings).to eq ""
-          expect(BaseThingy.created_resource).to eq resource_class
+          expect(BaseThingy.created_resource).to eq resource_class_z
         end
 
-        it "resource_matching_short_name returns B" do
-          expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class
+        it "resource_matching_short_name returns Z" do
+          expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class_z
         end
 
         context "and a priority array [ Z, B ]" do
@@ -880,8 +880,8 @@ describe "Recipe DSL methods" do
             expect(BaseThingy.created_resource).to eq resource_class_z
           end
 
-          it "resource_matching_short_name returns B" do
-            expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class
+          it "resource_matching_short_name returns Z" do
+            expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class_z
           end
 
           context "when Z provides(:two_classes_one_dsl) { false }" do
@@ -919,8 +919,8 @@ describe "Recipe DSL methods" do
             expect(BaseThingy.created_resource).to eq resource_class_z
           end
 
-          it "resource_matching_short_name returns B" do
-            expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class
+          it "resource_matching_short_name returns Z" do
+            expect(Chef::Resource.resource_matching_short_name(two_classes_one_dsl)).to eq resource_class_z
           end
 
           context "when Z provides(:two_classes_one_dsl) { false }" do
@@ -1047,13 +1047,13 @@ describe "Recipe DSL methods" do
           context "which provides :two_classes_one_dsl" do
             before { provider_class_z.provides two_classes_one_dsl }
 
-            it "two_classes_one_dsl resolves to B (alphabetically earliest)" do
+            it "two_classes_one_dsl resolves to Z (last)" do
               temp_two_classes_one_dsl = two_classes_one_dsl
               recipe = converge do
                 instance_eval("#{temp_two_classes_one_dsl} 'blah'")
               end
               expect(recipe.logged_warnings).to eq ""
-              expect(BaseThingy.created_provider).to eq provider_class
+              expect(BaseThingy.created_provider).to eq provider_class_z
             end
 
             context "with a priority array [ Z, B ]" do
