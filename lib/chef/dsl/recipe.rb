@@ -1,7 +1,7 @@
-#--
+#
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,19 +74,9 @@ class Chef
       def exec(args)
         raise Chef::Exceptions::ResourceNotFound, "exec was called, but you probably meant to use an execute resource.  If not, please call Kernel#exec explicitly.  The exec block called was \"#{args}\""
       end
-
-      # @deprecated Use Chef::DSL::Recipe instead, will be removed in Chef 13
-      module FullDSL
-        include Chef::DSL::Recipe
-        extend Chef::Mixin::LazyModuleInclude
-      end
     end
   end
 end
 
 # Avoid circular references for things that are only used in instance methods
 require "chef/resource"
-
-# **DEPRECATED**
-# This used to be part of chef/mixin/recipe_definition_dsl_core. Load the file to activate the deprecation code.
-require "chef/mixin/recipe_definition_dsl_core"
