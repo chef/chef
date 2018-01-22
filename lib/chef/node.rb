@@ -199,11 +199,6 @@ class Chef
       attributes.normal
     end
 
-    def set
-      Chef.deprecated(:attributes, "node.set is deprecated and will be removed in Chef 14, please use node.default/node.override (or node.normal only if you really need persistence)")
-      normal
-    end
-
     # Set a default of this node, but auto-vivify any Mashes that might
     # be missing
     def default

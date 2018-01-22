@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -444,11 +444,6 @@ class Chef
       def override_unless(*args)
         return Decorator::Unchain.new(self, :override_unless) unless args.length > 0
         write(:override, *args) if override.read(*args[0...-1]).nil?
-      end
-
-      def set_unless(*args)
-        Chef.deprecated(:attributes, "node.set_unless is deprecated and will be removed in Chef 14, please use node.default_unless/node.override_unless (or node.normal_unless if you really need persistence)")
-        normal_unless(*args)
       end
 
       def has_key?(key)

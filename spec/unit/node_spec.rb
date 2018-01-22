@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -301,20 +301,6 @@ describe Chef::Node do
         node.normal["tags"] = %w{one two}
         node.tag("three", "four")
         expect(node["tags"]).to eq(%w{one two three four})
-      end
-
-      it "set is a deprecated alias for normal" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        expect(Chef).to receive(:deprecated).with(:attributes, /set is deprecated/)
-        node.set[:snoopy][:is_a_puppy] = true
-        expect(node.normal[:snoopy][:is_a_puppy]).to eq(true)
-      end
-
-      it "set_unless is a deprecated alias for normal_unless" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        expect(Chef).to receive(:deprecated).with(:attributes, /set_unless is deprecated/)
-        node.set_unless[:snoopy][:is_a_puppy] = false
-        expect(node.normal[:snoopy][:is_a_puppy]).to eq(false)
       end
 
       it "normal_unless sets a value even if default or override attrs are set" do
