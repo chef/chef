@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.7.16 -->
-## [v13.7.16](https://github.com/chef/chef/tree/v13.7.16) (2018-01-19)
+<!-- latest_release 14.0.1 -->
+## [v14.0.1](https://github.com/chef/chef/tree/v14.0.1) (2018-01-22)
 
 #### Merged Pull Requests
-- Update release notes for 13.7 [#6751](https://github.com/chef/chef/pull/6751) ([thommay](https://github.com/thommay))
+- Remove erl_call and deploy resources [#6753](https://github.com/chef/chef/pull/6753) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Remove erl_call and deploy resources [#6753](https://github.com/chef/chef/pull/6753) ([tas50](https://github.com/tas50)) <!-- 14.0.1 -->
 - Update release notes for 13.7 [#6751](https://github.com/chef/chef/pull/6751) ([thommay](https://github.com/thommay)) <!-- 13.7.16 -->
 - Revert deprecation of use_inline_resources [#6754](https://github.com/chef/chef/pull/6754) ([tas50](https://github.com/tas50)) <!-- 13.7.15 -->
 - fix double-logging bug [#6752](https://github.com/chef/chef/pull/6752) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.14 -->
