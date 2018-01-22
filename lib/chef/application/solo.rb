@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (mmzyk@chef.io)
-# Copyright:: Copyright 2008-2018, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -263,8 +263,7 @@ class Chef::Application::Solo < Chef::Application
 
     if Chef::Config[:interval]
       if Chef::Platform.windows?
-        Chef::Log.warn("Use of chef-solo interval runs on Windows is discouraged. " +
-          "Please install chef-solo as a Windows service or scheduled task instead.")
+        Chef::Application.fatal!(windows_interval_error_message)
       elsif !Chef::Config[:client_fork]
         Chef::Application.fatal!(unforked_interval_error_message)
       end
@@ -368,6 +367,13 @@ EOH
         f.write(r.read)
       end
     end
+  end
+
+  def windows_interval_error_message
+    "Windows chef-solo interval runs are disabled in Chef 14." +
+      "\nConfiguration settings:" +
+      "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
+      "\nPlease install chef-solo as a Windows service or scheduled task instead."
   end
 
   def unforked_interval_error_message

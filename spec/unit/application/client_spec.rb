@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -209,8 +209,8 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
         allow(ChefConfig).to receive(:windows?).and_return(true)
       end
 
-      it "should not terminate" do
-        expect(Chef::Application).not_to receive(:fatal!)
+      it "should terminate" do
+        expect(Chef::Application).to receive(:fatal!)
         app.reconfigure
       end
     end
