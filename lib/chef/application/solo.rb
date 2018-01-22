@@ -261,7 +261,14 @@ class Chef::Application::Solo < Chef::Application
       Chef::Config[:interval] ||= 1800
     end
 
-    Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
+    if Chef::Config[:interval]
+      if Chef::Platform.windows?
+        Chef::Log.warn("Use of chef-solo interval runs on Windows is discouraged. " +
+          "Please install chef-solo as a Windows service or scheduled task instead.")
+      elsif !Chef::Config[:client_fork]
+        Chef::Application.fatal!(unforked_interval_error_message)
+      end
+    end
 
     if Chef::Config[:recipe_url]
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect { |e| Pathname.new(e).cleanpath.to_s =~ /\/cookbooks\/*$/ }
@@ -364,9 +371,9 @@ EOH
   end
 
   def unforked_interval_error_message
-    "Unforked chef-client interval runs are disabled in Chef 12." +
+    "Unforked chef-solo interval runs are disabled in Chef 12." +
       "\nConfiguration settings:" +
       "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
-      "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+      "\nEnable chef-solo interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 end
