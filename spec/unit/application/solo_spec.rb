@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -202,13 +202,6 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
         ARGV << "--ez"
         app.reconfigure
         expect(ARGV.include?("--ez")).to be_falsey
-      end
-
-      it "replaces -r with --recipe-url" do
-        ARGV.push("-r", "http://junglist.gen.nz/recipes.tgz")
-        app.reconfigure
-        expect(ARGV.include?("-r")).to be_falsey
-        expect(ARGV.include?("--recipe-url")).to be_truthy
       end
     end
 
