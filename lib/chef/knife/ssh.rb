@@ -177,6 +177,13 @@ class Chef
           end
           exit 10
         end
+        ips = list.map { |v| v.first }
+        if ips.count != ips.uniq.count
+          duplicated_ips = ips.uniq
+          ui.fatal("SSH #{duplicated_ips.count > 1 ? 'nodes are' : 'node is'} " +
+                   "duplicated: #{duplicated_ips.join(',')}")
+          exit 10
+        end
         session_from_list(list)
       end
 
