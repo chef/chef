@@ -60,6 +60,7 @@ class Chef
       #
       def search(type, query = "*:*", *args, &block)
         validate_type(type)
+        query = build_query(type, query)
 
         args_h = hashify_args(*args)
         if args_h[:fuzz]
@@ -119,6 +120,13 @@ class Chef
             "        `knife search environment QUERY (options)`"
           raise Chef::Exceptions::InvalidSearchQuery, msg
         end
+      end
+
+      def build_query(type, query)
+        if query[-1] == "*" && type == "node"
+          query = query.gsub(/(?:\/\/\*)|(?:\/\*)/, "//*")
+        end
+        query
       end
 
       def hashify_args(*args)

@@ -253,6 +253,20 @@ describe Chef::Search::Query do
       query.search(:client, "messi", fuzz: true)
     end
 
+    it "returns search results when the query contains a forward slash with asterisk as (/*)" do
+      rows, start, total = query.search(:node, "platform:rhel/*")
+      expect(rows).to equal(response["rows"])
+      expect(start).to equal(response["start"])
+      expect(total).to equal(response["total"])
+    end
+
+    it "returns search results when the query contains a double forward slash with asterisk as (//*)" do
+      rows, start, total = query.search(:node, "platform:rhel//*")
+      expect(rows).to equal(response["rows"])
+      expect(start).to equal(response["start"])
+      expect(total).to equal(response["total"])
+    end
+
     context "when :filter_result is provided as a result" do
       include_context "filtered search" do
         let(:filter_key) { :filter_result }
