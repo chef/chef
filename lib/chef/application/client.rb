@@ -2,7 +2,7 @@
 # Author:: AJ Christensen (<aj@chef.io)
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Mark Mzyk (mmzyk@chef.io)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -360,8 +360,12 @@ class Chef::Application::Client < Chef::Application
       Chef::Config[:splay] = nil
     end
 
-    if !Chef::Config[:client_fork] && Chef::Config[:interval] && !Chef::Platform.windows?
-      Chef::Application.fatal!(unforked_interval_error_message)
+    if Chef::Config[:interval]
+      if Chef::Platform.windows?
+        Chef::Application.fatal!(windows_interval_error_message)
+      elsif !Chef::Config[:client_fork]
+        Chef::Application.fatal!(unforked_interval_error_message)
+      end
     end
 
     if Chef::Config[:json_attribs]
@@ -506,6 +510,13 @@ class Chef::Application::Client < Chef::Application
     else
       sleep(sec)
     end
+  end
+
+  def windows_interval_error_message
+    "Windows chef-client interval runs are disabled in Chef 14." +
+      "\nConfiguration settings:" +
+      "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
+      "\nPlease install chef-client as a Windows service or scheduled task instead."
   end
 
   def unforked_interval_error_message
