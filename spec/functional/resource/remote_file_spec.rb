@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,9 @@ describe Chef::Resource::RemoteFile do
   before(:each) do
     @old_file_cache = Chef::Config[:file_cache_path]
     Chef::Config[:file_cache_path] = file_cache_path
+    Chef::Config[:rest_timeout] = 2
+    Chef::Config[:http_retry_delay] = 0
+    Chef::Config[:http_retry_count] = 0
   end
 
   after(:each) do
@@ -55,11 +58,11 @@ describe Chef::Resource::RemoteFile do
   let(:default_mode) { (0666 & ~File.umask).to_s(8) }
 
   context "when fetching files over HTTP" do
-    before(:each) do
-      start_tiny_server
+    before(:all) do
+      start_tiny_server(RequestTimeout: 1)
     end
 
-    after(:each) do
+    after(:all) do
       stop_tiny_server
     end
 
@@ -97,21 +100,22 @@ describe Chef::Resource::RemoteFile do
 
   context "when fetching files over HTTPS" do
 
-    before(:each) do
+    before(:all) do
       cert_text = File.read(File.expand_path("ssl/chef-rspec.cert", CHEF_SPEC_DATA))
       cert = OpenSSL::X509::Certificate.new(cert_text)
       key_text = File.read(File.expand_path("ssl/chef-rspec.key", CHEF_SPEC_DATA))
       key = OpenSSL::PKey::RSA.new(key_text)
 
-      server_opts = { :SSLEnable => true,
-                      :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE,
-                      :SSLCertificate => cert,
-                      :SSLPrivateKey => key }
+      server_opts = { SSLEnable: true,
+                      SSLVerifyClient: OpenSSL::SSL::VERIFY_NONE,
+                      SSLCertificate: cert,
+                      SSLPrivateKey: key,
+                      RequestTimeout: 1 }
 
       start_tiny_server(server_opts)
     end
 
-    after(:each) do
+    after(:all) do
       stop_tiny_server
     end
 
@@ -295,11 +299,11 @@ describe Chef::Resource::RemoteFile do
   end
 
   context "when dealing with content length checking" do
-    before(:each) do
-      start_tiny_server
+    before(:all) do
+      start_tiny_server(RequestTimeout: 1)
     end
 
-    after(:each) do
+    after(:all) do
       stop_tiny_server
     end
 
