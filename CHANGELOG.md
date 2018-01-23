@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.18 -->
-## [v14.0.18](https://github.com/chef/chef/tree/v14.0.18) (2018-01-23)
+<!-- latest_release 14.0.19 -->
+## [v14.0.19](https://github.com/chef/chef/tree/v14.0.19) (2018-01-23)
 
 #### Merged Pull Requests
-- Fail on interval runs on windows [#6766](https://github.com/chef/chef/pull/6766) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump to ruby 2.5.0 [#6770](https://github.com/chef/chef/pull/6770) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Bump to ruby 2.5.0 [#6770](https://github.com/chef/chef/pull/6770) ([thommay](https://github.com/thommay)) <!-- 14.0.19 -->
 - Fail on interval runs on windows [#6766](https://github.com/chef/chef/pull/6766) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.18 -->
 - [MSYS-727] Added support for setting node policy name and group from knife [#6656](https://github.com/chef/chef/pull/6656) ([piyushawasthi](https://github.com/piyushawasthi)) <!-- 14.0.17 -->
 - Convert node map to last-writer-wins for ties [#6765](https://github.com/chef/chef/pull/6765) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.16 -->
