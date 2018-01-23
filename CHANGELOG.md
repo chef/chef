@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.19 -->
-## [v14.0.19](https://github.com/chef/chef/tree/v14.0.19) (2018-01-23)
+<!-- latest_release 14.0.20 -->
+## [v14.0.20](https://github.com/chef/chef/tree/v14.0.20) (2018-01-23)
 
 #### Merged Pull Requests
-- Bump to ruby 2.5.0 [#6770](https://github.com/chef/chef/pull/6770) ([thommay](https://github.com/thommay))
+- Fix the changelog for the 13.7 release [#6772](https://github.com/chef/chef/pull/6772) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Fix the changelog for the 13.7 release [#6772](https://github.com/chef/chef/pull/6772) ([tas50](https://github.com/tas50)) <!-- 14.0.20 -->
 - Bump to ruby 2.5.0 [#6770](https://github.com/chef/chef/pull/6770) ([thommay](https://github.com/thommay)) <!-- 14.0.19 -->
 - Fail on interval runs on windows [#6766](https://github.com/chef/chef/pull/6766) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.18 -->
 - [MSYS-727] Added support for setting node policy name and group from knife [#6656](https://github.com/chef/chef/pull/6656) ([piyushawasthi](https://github.com/piyushawasthi)) <!-- 14.0.17 -->
