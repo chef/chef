@@ -2,10 +2,14 @@
 <!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=13.7.16 -->
+### Changes since 13.7.16 release
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.7.16](https://github.com/chef/chef/tree/v13.7.16) (2018-01-23)
+<!-- latest_stable_release -->
+
 ## [v13.7.16](https://github.com/chef/chef/tree/v13.7.16) (2018-01-23)
 
 #### Merged Pull Requests
@@ -81,7 +85,6 @@
 - fix double-logging bug [#6752](https://github.com/chef/chef/pull/6752) ([lamont-granquist](https://github.com/lamont-granquist))
 - Revert deprecation of use_inline_resources [#6754](https://github.com/chef/chef/pull/6754) ([tas50](https://github.com/tas50))
 - Update release notes for 13.7 [#6751](https://github.com/chef/chef/pull/6751) ([thommay](https://github.com/thommay))
-<!-- latest_stable_release -->
 
 ## [v13.6.4](https://github.com/chef/chef/tree/v13.6.4) (2017-11-06)
 
