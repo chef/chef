@@ -6,8 +6,8 @@
 - Bump to ruby 2.5.0 [#6770](https://github.com/chef/chef/pull/6770) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
-<!-- release_rollup since=13.6.4 -->
-### Changes since 13.6.4 release
+<!-- release_rollup since=13.7.16 -->
+### Changes since 13.7.16 release
 
 #### Merged Pull Requests
 - Bump to ruby 2.5.0 [#6770](https://github.com/chef/chef/pull/6770) ([thommay](https://github.com/thommay)) <!-- 14.0.19 -->
@@ -29,81 +29,86 @@
 - Remove deprecated -r option for Solo mode [#6719](https://github.com/chef/chef/pull/6719) ([tas50](https://github.com/tas50)) <!-- 14.0.3 -->
 - Remove knife index rebuild command that requires Chef &lt; 11 [#6728](https://github.com/chef/chef/pull/6728) ([tas50](https://github.com/tas50)) <!-- 14.0.2 -->
 - Remove erl_call and deploy resources [#6753](https://github.com/chef/chef/pull/6753) ([tas50](https://github.com/tas50)) <!-- 14.0.1 -->
-- Update release notes for 13.7 [#6751](https://github.com/chef/chef/pull/6751) ([thommay](https://github.com/thommay)) <!-- 13.7.16 -->
-- Revert deprecation of use_inline_resources [#6754](https://github.com/chef/chef/pull/6754) ([tas50](https://github.com/tas50)) <!-- 13.7.15 -->
-- fix double-logging bug [#6752](https://github.com/chef/chef/pull/6752) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.14 -->
-- Add a warning that Chef 11 server support in knife user is deprecated [#6725](https://github.com/chef/chef/pull/6725) ([tas50](https://github.com/tas50)) <!-- 13.7.13 -->
-- fix non-daemonized umask [#6745](https://github.com/chef/chef/pull/6745) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.12 -->
-- simplify node_map logic [#6637](https://github.com/chef/chef/pull/6637) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.11 -->
-- Fix knife status to show seconds when needed #5055 [#6738](https://github.com/chef/chef/pull/6738) ([cramaechi](https://github.com/cramaechi)) <!-- 13.7.10 -->
-- Enable the deprecation for use_inline_resource [#6732](https://github.com/chef/chef/pull/6732) ([tas50](https://github.com/tas50)) <!-- 13.7.9 -->
-- Fix dscl group provider gid_used? [#6703](https://github.com/chef/chef/pull/6703) ([get9](https://github.com/get9)) <!-- 13.7.8 -->
-- Fix windows_task resource not being idempotent for random_delay and execution_time_limit [#6688](https://github.com/chef/chef/pull/6688) ([Vasu1105](https://github.com/Vasu1105)) <!-- 13.7.7 -->
-- Update to Ruby 2.4.3 [#6737](https://github.com/chef/chef/pull/6737) ([tas50](https://github.com/tas50)) <!-- 13.7.6 -->
-- DSCL: Check for set home property before file existence (fixes #5777) [#6735](https://github.com/chef/chef/pull/6735) ([get9](https://github.com/get9)) <!-- 13.7.5 -->
-- Modernize windows_path resource [#6699](https://github.com/chef/chef/pull/6699) ([tas50](https://github.com/tas50)) <!-- 13.7.4 -->
-- Don&#39;t check both platform_family / os in provides when platform_family will do [#6711](https://github.com/chef/chef/pull/6711) ([tas50](https://github.com/tas50)) <!-- 13.7.3 -->
-- Update the knife editor error message to point to the correct document [#6726](https://github.com/chef/chef/pull/6726) ([tas50](https://github.com/tas50)) <!-- 13.7.2 -->
-- Remove a useless regex in zypper_repository resource [#6710](https://github.com/chef/chef/pull/6710) ([tas50](https://github.com/tas50)) <!-- 13.7.1 -->
-- Deprecate erl_call resource [#6720](https://github.com/chef/chef/pull/6720) ([tas50](https://github.com/tas50)) <!-- 13.6.57 -->
-- Improve property warnings in resources [#6717](https://github.com/chef/chef/pull/6717) ([tas50](https://github.com/tas50)) <!-- 13.6.56 -->
-- Remove lock files and test github masters in Kitchen Tests [#6709](https://github.com/chef/chef/pull/6709) ([tas50](https://github.com/tas50)) <!-- 13.6.55 -->
-- [MSYS-692] Fix issue with PowerShell function buffer [#6664](https://github.com/chef/chef/pull/6664) ([TheLunaticScripter](https://github.com/TheLunaticScripter)) <!-- 13.6.54 -->
-- Escape single-quoted strings from the context in knife bootstrap [#6695](https://github.com/chef/chef/pull/6695) ([aespinosa](https://github.com/aespinosa)) <!-- 13.6.53 -->
-- Allow injecting tempfiles into Chef::HTTP [#6701](https://github.com/chef/chef/pull/6701) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.6.52 -->
-- Modernize launchd resource [#6698](https://github.com/chef/chef/pull/6698) ([tas50](https://github.com/tas50)) <!-- 13.6.51 -->
-- Add an &#39;s&#39; for quantity of 0 cookbooks. [#6552](https://github.com/chef/chef/pull/6552) ([anoadragon453](https://github.com/anoadragon453)) <!-- 13.6.50 -->
-- Fix yum_repository allowing priority of 0 and remove string regexes [#6697](https://github.com/chef/chef/pull/6697) ([tas50](https://github.com/tas50)) <!-- 13.6.49 -->
-- Add descriptions and yard @since comments to all resources [#6696](https://github.com/chef/chef/pull/6696) ([tas50](https://github.com/tas50)) <!-- 13.6.48 -->
-- Cleanup to some of the resource specs [#6692](https://github.com/chef/chef/pull/6692) ([tas50](https://github.com/tas50)) <!-- 13.6.48 -->
-- fix for data bag names partially matching search reserved words [#6652](https://github.com/chef/chef/pull/6652) ([sandratiffin](https://github.com/sandratiffin)) <!-- 13.6.48 -->
-- Modernize directory resource [#6693](https://github.com/chef/chef/pull/6693) ([tas50](https://github.com/tas50)) <!-- 13.6.47 -->
-- Modernize the ifconfig resource [#6684](https://github.com/chef/chef/pull/6684) ([tas50](https://github.com/tas50)) <!-- 13.6.46 -->
-- Slight improvements to validation failures [#6690](https://github.com/chef/chef/pull/6690) ([thommay](https://github.com/thommay)) <!-- 13.6.45 -->
-- Modernize osx_profile resource [#6685](https://github.com/chef/chef/pull/6685) ([tas50](https://github.com/tas50)) <!-- 13.6.44 -->
-- Modernize cookbook_file resource and expand specs [#6689](https://github.com/chef/chef/pull/6689) ([tas50](https://github.com/tas50)) <!-- 13.6.43 -->
-- implement credential management [#6660](https://github.com/chef/chef/pull/6660) ([thommay](https://github.com/thommay)) <!-- 13.6.42 -->
-- Modernize reboot resource and add spec [#6683](https://github.com/chef/chef/pull/6683) ([tas50](https://github.com/tas50)) <!-- 13.6.41 -->
-- Fix bugs in handling &#39;source&#39;  in msu_package and cab_package [#6686](https://github.com/chef/chef/pull/6686) ([tas50](https://github.com/tas50)) <!-- 13.6.40 -->
-- Move docker and git top cookbook tests to travis [#6673](https://github.com/chef/chef/pull/6673) ([scotthain](https://github.com/scotthain)) <!-- 13.6.39 -->
-- Modernize the log resource [#6676](https://github.com/chef/chef/pull/6676) ([tas50](https://github.com/tas50)) <!-- 13.6.38 -->
-- Avoid a few initializers in resources by using the DSL we have [#6671](https://github.com/chef/chef/pull/6671) ([tas50](https://github.com/tas50)) <!-- 13.6.37 -->
-- Don&#39;t use .match? which is Ruby 2.4+ only in windows_task [#6675](https://github.com/chef/chef/pull/6675) ([tas50](https://github.com/tas50)) <!-- 13.6.36 -->
-- windows_task: Fix resource isn&#39;t fully idempotent due to command property [#6654](https://github.com/chef/chef/pull/6654) ([Vasu1105](https://github.com/Vasu1105)) <!-- 13.6.34 -->
-- Invalid date error on windows_task with frequency :on_logon [#6618](https://github.com/chef/chef/pull/6618) ([NimishaS](https://github.com/NimishaS)) <!-- 13.6.33 -->
-- Fix sneaky chefstyle violations [#6655](https://github.com/chef/chef/pull/6655) ([thommay](https://github.com/thommay)) <!-- 13.6.32 -->
-- Ensure data bags names can contain reserved words [#6636](https://github.com/chef/chef/pull/6636) ([EmFl](https://github.com/EmFl)) <!-- 13.6.31 -->
-- windows_task: Add additional input validation to properties [#6628](https://github.com/chef/chef/pull/6628) ([tas50](https://github.com/tas50)) <!-- 13.6.30 -->
-- Solaris: Fix svcadm clear to only run in maintenance state [#6631](https://github.com/chef/chef/pull/6631) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 13.6.29 -->
-- speedup node_map get and set operations [#6632](https://github.com/chef/chef/pull/6632) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.6.28 -->
-- Update for openssl 1.0.2n and inspec 1.48 [#6630](https://github.com/chef/chef/pull/6630) ([tas50](https://github.com/tas50)) <!-- 13.6.27 -->
-- Improved windows_task logging [#6617](https://github.com/chef/chef/pull/6617) ([tas50](https://github.com/tas50)) <!-- 13.6.26 -->
-- Update InSpec to 1.47 and Ohai to 13.7 [#6616](https://github.com/chef/chef/pull/6616) ([tas50](https://github.com/tas50)) <!-- 13.6.25 -->
-- Add openSUSE testing in Travis &amp; expand cookbooks we test [#6614](https://github.com/chef/chef/pull/6614) ([tas50](https://github.com/tas50)) <!-- 13.6.24 -->
-- Knife SSH prefix option [#6590](https://github.com/chef/chef/pull/6590) ([mal](https://github.com/mal)) <!-- 13.6.24 -->
-- Add Amazon Linux testing to PRs in Travis [#6611](https://github.com/chef/chef/pull/6611) ([tas50](https://github.com/tas50)) <!-- 13.6.23 -->
-- Hide sensitive properties in converge_if_changed. [#6576](https://github.com/chef/chef/pull/6576) ([cma-arnold](https://github.com/cma-arnold)) <!-- 13.6.23 -->
-- Bump dependencies to pick up InSpec v1.46.2 [#6609](https://github.com/chef/chef/pull/6609) ([adamleff](https://github.com/adamleff)) <!-- 13.6.22 -->
-- Fix windows_path converging on every run [#6541](https://github.com/chef/chef/pull/6541) ([tas50](https://github.com/tas50)) <!-- 13.6.21 -->
-- add unit_name name_property to systemd_unit (fixes #6542) [#6546](https://github.com/chef/chef/pull/6546) ([nathwill](https://github.com/nathwill)) <!-- 13.6.20 -->
-- fix NodeMap to not throw exceptions on platform_versions [#6608](https://github.com/chef/chef/pull/6608) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.6.19 -->
-- Enable Fedora integration testing in Travis [#6523](https://github.com/chef/chef/pull/6523) ([tas50](https://github.com/tas50)) <!-- 13.6.18 -->
-- Only warn if a secret was actually given [#6605](https://github.com/chef/chef/pull/6605) ([coderanger](https://github.com/coderanger)) <!-- 13.6.17 -->
-- Makes life easier for hook authors switching from the older report handler syntax [#6574](https://github.com/chef/chef/pull/6574) ([coderanger](https://github.com/coderanger)) <!-- 13.6.16 -->
-- [MSYS-688] Fixed invalid date and Invalid starttime error [#6544](https://github.com/chef/chef/pull/6544) ([NimishaS](https://github.com/NimishaS)) <!-- 13.6.15 -->
-- Selinux shellout fix (#6346) [#6567](https://github.com/chef/chef/pull/6567) ([deltamualpha](https://github.com/deltamualpha)) <!-- 13.6.14 -->
-- Switch from the Travis container to the VM [#6600](https://github.com/chef/chef/pull/6600) ([btm](https://github.com/btm)) <!-- 13.6.13 -->
-- Don&#39;t try to uninstall bundler on appveyor [#6597](https://github.com/chef/chef/pull/6597) ([btm](https://github.com/btm)) <!-- 13.6.12 -->
-- Fix variable name in solaris service provider [#6596](https://github.com/chef/chef/pull/6596) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 13.6.11 -->
-- Revert &quot;add missing functional tests for users&quot; [#6588](https://github.com/chef/chef/pull/6588) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.6.10 -->
-- Filter out periods from tmux session name [#6593](https://github.com/chef/chef/pull/6593) ([afn](https://github.com/afn)) <!-- 13.6.9 -->
-- Fix mount test, also update ifconfig to work with both common versions. [#6587](https://github.com/chef/chef/pull/6587) ([scotthain](https://github.com/scotthain)) <!-- 13.6.8 -->
-- Change a useradd_spec test for RHEL &gt;= 6.8 and &gt;= 7.3 [#6555](https://github.com/chef/chef/pull/6555) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 13.6.7 -->
-- replace deprecated Dir.exists? with Dir.exist? [#6583](https://github.com/chef/chef/pull/6583) ([thomasdziedzic](https://github.com/thomasdziedzic)) <!-- 13.6.6 -->
-- Add ohai_time to minimal_ohai filter [#6584](https://github.com/chef/chef/pull/6584) ([btm](https://github.com/btm)) <!-- 13.6.5 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.7.16](https://github.com/chef/chef/tree/v13.7.16) (2018-01-23)
+
+#### Merged Pull Requests
+- Update release notes for 13.7 [#6751](https://github.com/chef/chef/pull/6751) ([thommay](https://github.com/thommay))
+- Revert deprecation of use_inline_resources [#6754](https://github.com/chef/chef/pull/6754) ([tas50](https://github.com/tas50))
+- fix double-logging bug [#6752](https://github.com/chef/chef/pull/6752) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add a warning that Chef 11 server support in knife user is deprecated [#6725](https://github.com/chef/chef/pull/6725) ([tas50](https://github.com/tas50))
+- fix non-daemonized umask [#6745](https://github.com/chef/chef/pull/6745) ([lamont-granquist](https://github.com/lamont-granquist))
+- simplify node_map logic [#6637](https://github.com/chef/chef/pull/6637) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix knife status to show seconds when needed #5055 [#6738](https://github.com/chef/chef/pull/6738) ([cramaechi](https://github.com/cramaechi))
+- Enable the deprecation for use_inline_resource [#6732](https://github.com/chef/chef/pull/6732) ([tas50](https://github.com/tas50))
+- Fix dscl group provider gid_used? [#6703](https://github.com/chef/chef/pull/6703) ([get9](https://github.com/get9))
+- Fix windows_task resource not being idempotent for random_delay and execution_time_limit [#6688](https://github.com/chef/chef/pull/6688) ([Vasu1105](https://github.com/Vasu1105))
+- Update to Ruby 2.4.3 [#6737](https://github.com/chef/chef/pull/6737) ([tas50](https://github.com/tas50))
+- DSCL: Check for set home property before file existence (fixes #5777) [#6735](https://github.com/chef/chef/pull/6735) ([get9](https://github.com/get9))
+- Modernize windows_path resource [#6699](https://github.com/chef/chef/pull/6699) ([tas50](https://github.com/tas50))
+- Don&#39;t check both platform_family / os in provides when platform_family will do [#6711](https://github.com/chef/chef/pull/6711) ([tas50](https://github.com/tas50))
+- Update the knife editor error message to point to the correct document [#6726](https://github.com/chef/chef/pull/6726) ([tas50](https://github.com/tas50))
+- Remove a useless regex in zypper_repository resource [#6710](https://github.com/chef/chef/pull/6710) ([tas50](https://github.com/tas50))
+- Deprecate erl_call resource [#6720](https://github.com/chef/chef/pull/6720) ([tas50](https://github.com/tas50))
+- Improve property warnings in resources [#6717](https://github.com/chef/chef/pull/6717) ([tas50](https://github.com/tas50))
+- Remove lock files and test github masters in Kitchen Tests [#6709](https://github.com/chef/chef/pull/6709) ([tas50](https://github.com/tas50))
+- [MSYS-692] Fix issue with PowerShell function buffer [#6664](https://github.com/chef/chef/pull/6664) ([TheLunaticScripter](https://github.com/TheLunaticScripter))
+- Escape single-quoted strings from the context in knife bootstrap [#6695](https://github.com/chef/chef/pull/6695) ([aespinosa](https://github.com/aespinosa))
+- Allow injecting tempfiles into Chef::HTTP [#6701](https://github.com/chef/chef/pull/6701) ([lamont-granquist](https://github.com/lamont-granquist))
+- Modernize launchd resource [#6698](https://github.com/chef/chef/pull/6698) ([tas50](https://github.com/tas50))
+- Add an &#39;s&#39; for quantity of 0 cookbooks. [#6552](https://github.com/chef/chef/pull/6552) ([anoadragon453](https://github.com/anoadragon453))
+- Fix yum_repository allowing priority of 0 and remove string regexes [#6697](https://github.com/chef/chef/pull/6697) ([tas50](https://github.com/tas50))
+- Add descriptions and yard @since comments to all resources [#6696](https://github.com/chef/chef/pull/6696) ([tas50](https://github.com/tas50))
+- Cleanup to some of the resource specs [#6692](https://github.com/chef/chef/pull/6692) ([tas50](https://github.com/tas50))
+- fix for data bag names partially matching search reserved words [#6652](https://github.com/chef/chef/pull/6652) ([sandratiffin](https://github.com/sandratiffin))
+- Modernize directory resource [#6693](https://github.com/chef/chef/pull/6693) ([tas50](https://github.com/tas50))
+- Modernize the ifconfig resource [#6684](https://github.com/chef/chef/pull/6684) ([tas50](https://github.com/tas50))
+- Slight improvements to validation failures [#6690](https://github.com/chef/chef/pull/6690) ([thommay](https://github.com/thommay))
+- Modernize osx_profile resource [#6685](https://github.com/chef/chef/pull/6685) ([tas50](https://github.com/tas50))
+- Modernize cookbook_file resource and expand specs [#6689](https://github.com/chef/chef/pull/6689) ([tas50](https://github.com/tas50))
+- implement credential management [#6660](https://github.com/chef/chef/pull/6660) ([thommay](https://github.com/thommay))
+- Modernize reboot resource and add spec [#6683](https://github.com/chef/chef/pull/6683) ([tas50](https://github.com/tas50))
+- Fix bugs in handling &#39;source&#39;  in msu_package and cab_package [#6686](https://github.com/chef/chef/pull/6686) ([tas50](https://github.com/tas50))
+- Move docker and git top cookbook tests to travis [#6673](https://github.com/chef/chef/pull/6673) ([scotthain](https://github.com/scotthain))
+- Modernize the log resource [#6676](https://github.com/chef/chef/pull/6676) ([tas50](https://github.com/tas50))
+- Avoid a few initializers in resources by using the DSL we have [#6671](https://github.com/chef/chef/pull/6671) ([tas50](https://github.com/tas50))
+- Don&#39;t use .match? which is Ruby 2.4+ only in windows_task [#6675](https://github.com/chef/chef/pull/6675) ([tas50](https://github.com/tas50))
+- windows_task: Fix resource isn&#39;t fully idempotent due to command property [#6654](https://github.com/chef/chef/pull/6654) ([Vasu1105](https://github.com/Vasu1105))
+- Invalid date error on windows_task with frequency :on_logon [#6618](https://github.com/chef/chef/pull/6618) ([NimishaS](https://github.com/NimishaS))
+- Fix sneaky chefstyle violations [#6655](https://github.com/chef/chef/pull/6655) ([thommay](https://github.com/thommay))
+- Ensure data bags names can contain reserved words [#6636](https://github.com/chef/chef/pull/6636) ([EmFl](https://github.com/EmFl))
+- windows_task: Add additional input validation to properties [#6628](https://github.com/chef/chef/pull/6628) ([tas50](https://github.com/tas50))
+- Solaris: Fix svcadm clear to only run in maintenance state [#6631](https://github.com/chef/chef/pull/6631) ([jaymalasinha](https://github.com/jaymalasinha))
+- speedup node_map get and set operations [#6632](https://github.com/chef/chef/pull/6632) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update for openssl 1.0.2n and inspec 1.48 [#6630](https://github.com/chef/chef/pull/6630) ([tas50](https://github.com/tas50))
+- Improved windows_task logging [#6617](https://github.com/chef/chef/pull/6617) ([tas50](https://github.com/tas50))
+- Update InSpec to 1.47 and Ohai to 13.7 [#6616](https://github.com/chef/chef/pull/6616) ([tas50](https://github.com/tas50))
+- Add openSUSE testing in Travis &amp; expand cookbooks we test [#6614](https://github.com/chef/chef/pull/6614) ([tas50](https://github.com/tas50))
+- Knife SSH prefix option [#6590](https://github.com/chef/chef/pull/6590) ([mal](https://github.com/mal))
+- Add Amazon Linux testing to PRs in Travis [#6611](https://github.com/chef/chef/pull/6611) ([tas50](https://github.com/tas50))
+- Hide sensitive properties in converge_if_changed. [#6576](https://github.com/chef/chef/pull/6576) ([cma-arnold](https://github.com/cma-arnold))
+- Bump dependencies to pick up InSpec v1.46.2 [#6609](https://github.com/chef/chef/pull/6609) ([adamleff](https://github.com/adamleff))
+- Fix windows_path converging on every run [#6541](https://github.com/chef/chef/pull/6541) ([tas50](https://github.com/tas50))
+- add unit_name name_property to systemd_unit (fixes #6542) [#6546](https://github.com/chef/chef/pull/6546) ([nathwill](https://github.com/nathwill))
+- fix NodeMap to not throw exceptions on platform_versions [#6608](https://github.com/chef/chef/pull/6608) ([lamont-granquist](https://github.com/lamont-granquist))
+- Enable Fedora integration testing in Travis [#6523](https://github.com/chef/chef/pull/6523) ([tas50](https://github.com/tas50))
+- Only warn if a secret was actually given [#6605](https://github.com/chef/chef/pull/6605) ([coderanger](https://github.com/coderanger))
+- Makes life easier for hook authors switching from the older report handler syntax [#6574](https://github.com/chef/chef/pull/6574) ([coderanger](https://github.com/coderanger))
+- [MSYS-688] Fixed invalid date and Invalid starttime error [#6544](https://github.com/chef/chef/pull/6544) ([NimishaS](https://github.com/NimishaS))
+- Selinux shellout fix (#6346) [#6567](https://github.com/chef/chef/pull/6567) ([deltamualpha](https://github.com/deltamualpha))
+- Switch from the Travis container to the VM [#6600](https://github.com/chef/chef/pull/6600) ([btm](https://github.com/btm))
+- Don&#39;t try to uninstall bundler on appveyor [#6597](https://github.com/chef/chef/pull/6597) ([btm](https://github.com/btm))
+- Fix variable name in solaris service provider [#6596](https://github.com/chef/chef/pull/6596) ([jaymalasinha](https://github.com/jaymalasinha))
+- Revert &quot;add missing functional tests for users&quot; [#6588](https://github.com/chef/chef/pull/6588) ([lamont-granquist](https://github.com/lamont-granquist))
+- Filter out periods from tmux session name [#6593](https://github.com/chef/chef/pull/6593) ([afn](https://github.com/afn))
+- Fix mount test, also update ifconfig to work with both common versions. [#6587](https://github.com/chef/chef/pull/6587) ([scotthain](https://github.com/scotthain))
+- Change a useradd_spec test for RHEL &gt;= 6.8 and &gt;= 7.3 [#6555](https://github.com/chef/chef/pull/6555) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- replace deprecated Dir.exists? with Dir.exist? [#6583](https://github.com/chef/chef/pull/6583) ([thomasdziedzic](https://github.com/thomasdziedzic))
+- Add ohai_time to minimal_ohai filter [#6584](https://github.com/chef/chef/pull/6584) ([btm](https://github.com/btm))
+<!-- latest_stable_release -->
+
 ## [v13.6.4](https://github.com/chef/chef/tree/v13.6.4) (2017-11-06)
 
 #### Merged Pull Requests
@@ -111,7 +116,6 @@
 - Fix the invalid version comparison in apt/dpkg providers [#6558](https://github.com/chef/chef/pull/6558) ([tas50](https://github.com/tas50))
 - Fix the invalid version comparison of apt packages. [#6554](https://github.com/chef/chef/pull/6554) ([komazarari](https://github.com/komazarari))
 - Bump openssl and rubygems to latest [#6568](https://github.com/chef/chef/pull/6568) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v13.6.0](https://github.com/chef/chef/tree/v13.6.0) (2017-10-30)
 
