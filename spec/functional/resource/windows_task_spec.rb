@@ -18,7 +18,6 @@
 
 require "spec_helper"
 require "chef/provider/windows_task"
-require "byebug"
 
 describe Chef::Resource::WindowsTask, :windows_only do
   let(:task_name) { "chef-client" }
@@ -492,7 +491,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
       it "create task by adding start_day" do
         skip "This functionality needs to be handle"
-        subject.start_day '12/28/2018'
+        subject.start_day "12/28/2018"
         subject.run_action(:create)
         subject.run_action(:create)
         expect(subject).not_to be_updated_by_last_action
@@ -501,7 +500,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       it "create task by adding frequency_modifier and random_delay" do
         skip "This functionality needs to be handle"
         subject.frequency_modifier 3
-        subject.random_delay '60'
+        subject.random_delay "60"
         subject.run_action(:create)
         subject.run_action(:create)
         expect(subject).not_to be_updated_by_last_action
@@ -541,7 +540,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.run_level :highest
         new_resource.frequency :hourly
         new_resource.frequency_modifier 5
-        new_resource.random_delay '2400'
+        new_resource.random_delay "2400"
         new_resource
       end
 
@@ -560,7 +559,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.run_level :highest
         new_resource.frequency :daily
         new_resource.frequency_modifier 2
-        new_resource.random_delay '2400'
+        new_resource.random_delay "2400"
         new_resource
       end
 
