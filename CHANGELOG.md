@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.15 -->
-## [v14.0.15](https://github.com/chef/chef/tree/v14.0.15) (2018-01-22)
+<!-- latest_release 14.0.16 -->
+## [v14.0.16](https://github.com/chef/chef/tree/v14.0.16) (2018-01-23)
 
 #### Merged Pull Requests
-- Remove node.set and node.set_unless attribute levels [#6762](https://github.com/chef/chef/pull/6762) ([lamont-granquist](https://github.com/lamont-granquist))
+- Convert node map to last-writer-wins for ties [#6765](https://github.com/chef/chef/pull/6765) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.6.4 -->
 ### Changes since 13.6.4 release
 
 #### Merged Pull Requests
+- Convert node map to last-writer-wins for ties [#6765](https://github.com/chef/chef/pull/6765) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.16 -->
 - Remove node.set and node.set_unless attribute levels [#6762](https://github.com/chef/chef/pull/6762) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.15 -->
 - Rename the OpenSSL mixin to avoid name conflicts [#6764](https://github.com/chef/chef/pull/6764) ([tas50](https://github.com/tas50)) <!-- 14.0.14 -->
 - Revert &quot;add create and delete actions for windows_service&quot; [#6763](https://github.com/chef/chef/pull/6763) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.13 -->
