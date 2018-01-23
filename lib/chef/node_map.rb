@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2017, Chef Software Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -192,8 +192,10 @@ class Chef
       !!canonical == !!matcher[:canonical]
     end
 
-    # @api private
-    def dispatch_compare_matchers(key, new_matcher, matcher)
+    #
+    # "provides" lines with identical filters sort by class name (ascending).
+    #
+    def compare_matchers(key, new_matcher, matcher)
       cmp = compare_matcher_properties(new_matcher[:block], matcher[:block])
       return cmp if cmp != 0
       cmp = compare_matcher_properties(new_matcher[:platform_version], matcher[:platform_version])
@@ -208,26 +210,6 @@ class Chef
       return cmp if cmp != 0
       # If all things are identical, return 0
       0
-    end
-
-    #
-    # "provides" lines with identical filters sort by class name (ascending).
-    #
-    def compare_matchers(key, new_matcher, matcher)
-      cmp = dispatch_compare_matchers(key, new_matcher, matcher)
-      if cmp == 0
-        # Sort by class name (ascending) as well, if all other properties
-        # are exactly equal
-        # XXX: remove this in Chef-14 and use last-writer-wins (prepend if they match)
-        if !new_matcher[:override]
-          # we only sort classes, which only sorts the handler array, this magically does not sort
-          # the priority array via the invisible else here.
-          if new_matcher[:klass].is_a?(Class)
-            cmp = compare_matcher_properties(new_matcher[:klass].name, matcher[:klass].name)
-          end
-        end
-      end
-      cmp
     end
 
     def compare_matcher_properties(a, b)

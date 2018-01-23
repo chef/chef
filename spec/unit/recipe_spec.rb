@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -141,16 +141,16 @@ describe Chef::Recipe do
             Object.send(:remove_const, :TottenhamHotspur)
           end
 
-          it "selects the first one alphabetically" do
+          it "selects the last-writer wins" do
             Sounders.provides :football, platform: "nbc_sports"
             TottenhamHotspur.provides :football, platform: "nbc_sports"
 
             res1 = recipe.football "club world cup"
             expect(res1.name).to eql("club world cup")
-            expect(res1).to be_a_kind_of(Sounders)
+            expect(res1).to be_a_kind_of(TottenhamHotspur)
           end
 
-          it "selects the first one alphabetically even if the declaration order is reversed" do
+          it "selects the last-writer wins even if the declaration order is reversed" do
             TottenhamHotspur.provides :football2, platform: "nbc_sports"
             Sounders.provides :football2, platform: "nbc_sports"
 
