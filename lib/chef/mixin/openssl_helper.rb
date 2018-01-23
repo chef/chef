@@ -17,6 +17,7 @@
 
 class Chef
   module Mixin
+    # various helpers for use with openssl. Currently used by the openssl_* resources
     module OpenSSLHelper
       def self.included(_base)
         require "openssl" unless defined?(::OpenSSL)
