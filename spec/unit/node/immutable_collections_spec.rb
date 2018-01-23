@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2017, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +32,11 @@ describe Chef::Node::ImmutableMash do
     @node = Chef::Node.new()
     @node.attributes.default = @data_in
     @immutable_mash = @node["key"]
+  end
+
+  it "does not have any unaudited methods" do
+    unaudited_methods = Hash.instance_methods - Object.instance_methods - Chef::Node::Mixin::ImmutablizeHash::DISALLOWED_MUTATOR_METHODS - Chef::Node::Mixin::ImmutablizeHash::ALLOWED_METHODS
+    expect(unaudited_methods).to be_empty
   end
 
   it "element references like regular hash" do
@@ -226,6 +231,11 @@ describe Chef::Node::ImmutableArray do
     it "does not allow mutation via `#{mutator}" do
       expect { @immutable_array.send(mutator) }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
+  end
+
+  it "does not have any unaudited methods" do
+    unaudited_methods = Array.instance_methods - Object.instance_methods - Chef::Node::Mixin::ImmutablizeArray::DISALLOWED_MUTATOR_METHODS - Chef::Node::Mixin::ImmutablizeArray::ALLOWED_METHODS
+    expect(unaudited_methods).to be_empty
   end
 
   it "can be duped even if some elements can't" do
