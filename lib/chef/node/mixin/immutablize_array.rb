@@ -27,6 +27,7 @@ class Chef
           :+,
           :-,
           :[],
+          :abbrev,
           :all?,
           :any?,
           :assoc,
