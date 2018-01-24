@@ -350,7 +350,8 @@ class Chef
         end
         info_ptr = FFI::MemoryPointer.new(:pointer)
         token_info_pointer = TOKEN_ELEVATION_TYPE.new info_ptr
-        unless GetTokenInformation(token.handle.handle, :TokenElevationType, token_info_pointer, 4, token_result_size)
+        token_info_length = 4
+        unless GetTokenInformation(token.handle.handle, :TokenElevationType, token_info_pointer, token_info_length, token_result_size)
           Chef::ReservedNames::Win32::Error.raise!
         end
         token_info_pointer[:ElevationType]

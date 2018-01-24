@@ -48,11 +48,8 @@ class Chef
           password = wstring(original_password)
           domain = wstring(original_domain)
 
-          if authentication == :remote
-            status = Chef::ReservedNames::Win32::API::Security.LogonUserW(username, domain, password, Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NEW_CREDENTIALS, Chef::ReservedNames::Win32::API::Security::LOGON32_PROVIDER_DEFAULT, token)
-          elsif authentication == :local
-            status = Chef::ReservedNames::Win32::API::Security.LogonUserW(username, domain, password, Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NETWORK, Chef::ReservedNames::Win32::API::Security::LOGON32_PROVIDER_DEFAULT, token)
-          end
+          logon_type = (authentication == :local) ? (Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NETWORK) : (Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NEW_CREDENTIALS)
+          status = Chef::ReservedNames::Win32::API::Security.LogonUserW(username, domain, password, logon_type, Chef::ReservedNames::Win32::API::Security::LOGON32_PROVIDER_DEFAULT, token)
 
           if !status
             last_error = FFI::LastError.error
