@@ -20,6 +20,7 @@ Dir.mktmpdir("chef-external-test") do |dir|
   Dir.chdir(dir) do
     shell_out!("git checkout #{git_thing}", live_stream: STDOUT)
     File.open("Gemfile", "a") { |f| f.write("gem 'chef', path: '#{chef_dir}'") }
+    File.open("Gemfile", "a") { |f| f.write("gem 'ohai', git: 'https://github.com/chef/chef.git', branch: 'master'") }
     Bundler.with_clean_env do
       shell_out!("bundle install", live_stream: STDOUT)
       shell_out!("bundle exec #{ARGV.join(" ")}", live_stream: STDOUT)
