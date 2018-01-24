@@ -158,7 +158,7 @@ class Chef
             disable_fs
           end
           ::File.open("/etc/fstab", "a") do |fstab|
-            fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? "defaults" : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
+            fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? "rw" : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
             Chef::Log.debug("#{@new_resource} is enabled at #{@new_resource.mount_point}")
           end
         end
