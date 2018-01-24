@@ -86,7 +86,7 @@ class Chef
           package_name = name.zip(version).map do |n, v|
             package_data[n][:virtual] ? n : "#{n}=#{v}"
           end
-          run_noninteractive("apt-get", "-q", "-y", default_release_options, options, "install", package_name)
+          run_noninteractive("apt-get", "-q", "-y", "--allow-downgrades", default_release_options, options, "install", package_name)
         end
 
         def upgrade_package(name, version)
@@ -97,14 +97,14 @@ class Chef
           package_name = name.map do |n|
             package_data[n][:virtual] ? resolve_virtual_package_name(n) : n
           end
-          run_noninteractive("apt-get", "-q", "-y", options, "remove", package_name)
+          run_noninteractive("apt-get", "-q", "-y", "--allow-downgrades", options, "remove", package_name)
         end
 
         def purge_package(name, version)
           package_name = name.map do |n|
             package_data[n][:virtual] ? resolve_virtual_package_name(n) : n
           end
-          run_noninteractive("apt-get", "-q", "-y", options, "purge", package_name)
+          run_noninteractive("apt-get", "-q", "-y", "--allow-downgrades", options, "purge", package_name)
         end
 
         def preseed_package(preseed_file)
