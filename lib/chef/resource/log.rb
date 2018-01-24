@@ -39,7 +39,7 @@ class Chef
     class Log < Chef::Resource
       resource_name :log
 
-      property :message, String, name_property: true
+      property :message, String, name_property: true, identity: true
       property :level, Symbol, equal_to: [ :debug, :info, :warn, :error, :fatal ], default: :info
 
       allowed_actions :write
