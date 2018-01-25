@@ -19,8 +19,8 @@ Dir.mktmpdir("chef-external-test") do |dir|
   shell_out!("git clone #{git_url} #{dir}", live_stream: STDOUT)
   Dir.chdir(dir) do
     shell_out!("git checkout #{git_thing}", live_stream: STDOUT)
-    File.open("Gemfile", "a") { |f| f.write("gem 'chef', path: '#{chef_dir}'") }
-    File.open("Gemfile", "a") { |f| f.write("gem 'ohai', git: 'https://github.com/chef/ohai.git', branch: 'master'") }
+    File.open("Gemfile", "a") { |f| f.write("\ngem 'chef', path: '#{chef_dir}'\n") }
+    File.open("Gemfile", "a") { |f| f.write("gem 'ohai', git: 'https://github.com/chef/ohai.git', branch: 'master'\n") }
     Bundler.with_clean_env do
       shell_out!("bundle install", live_stream: STDOUT)
       shell_out!("bundle exec #{ARGV.join(" ")}", live_stream: STDOUT)
