@@ -123,6 +123,11 @@ class Chef
         :boolean => true,
         :proc => Proc.new { :raise }
 
+      option :skip_on_duplicated_fqdns,
+        :long => "--skip-on-duplicated-fqdns",
+        :description => "Skip exits even if FQDNs are duplicated",
+        :boolean => true
+
       option :tmux_split,
         :long => "--tmux-split",
         :description => "Split tmux window.",
@@ -177,11 +182,14 @@ class Chef
           end
           exit 10
         end
-        fqdns = list.map { |v| v[0] }
-        if fqdns.count != fqdns.uniq.count
-          duplicated_fqdns = fqdns.uniq
-          ui.warn("SSH #{duplicated_fqdns.count > 1 ? 'nodes are' : 'node is'} " +
-                  "duplicated: #{duplicated_fqdns.join(',')}")
+        unless config[:skip_on_duplicated_fqdns]
+          fqdns = list.map { |v| v[0] }
+          if fqdns.count != fqdns.uniq.count
+            duplicated_fqdns = fqdns.uniq
+            ui.warn("SSH #{duplicated_fqdns.count > 1 ? 'nodes are' : 'node is'} " +
+                    "duplicated: #{duplicated_fqdns.join(',')}")
+            exit 10
+          end
         end
         session_from_list(list)
       end

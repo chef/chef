@@ -140,12 +140,14 @@ describe Chef::Knife::Ssh do
 
       context "when there are some hosts found but IPs duplicated" do
         before do
+          @knife.config[:skip_on_duplicated_fqdns] = false
           @node_foo["fqdn"] = "foo.example.org"
           @node_bar["fqdn"] = "foo.example.org"
         end
 
-        it "should be warned" do
+        it "should raise a specific error" do
           expect(@knife.ui).to receive(:warn).with(/^SSH node is duplicated: foo\.example\.org/)
+          expect(@knife).to receive(:exit).with(10)
           expect(@knife).to receive(:session_from_list).with([
             ["foo.example.org", nil, nil],
             ["foo.example.org", nil, nil],
