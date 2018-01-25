@@ -180,9 +180,8 @@ class Chef
         fqdns = list.map { |v| v[0] }
         if fqdns.count != fqdns.uniq.count
           duplicated_fqdns = fqdns.uniq
-          ui.fatal("SSH #{duplicated_fqdns.count > 1 ? 'nodes are' : 'node is'} " +
-                   "duplicated: #{duplicated_fqdns.join(',')}")
-          exit 10
+          ui.warn("SSH #{duplicated_fqdns.count > 1 ? 'nodes are' : 'node is'} " +
+                  "duplicated: #{duplicated_fqdns.join(',')}")
         end
         session_from_list(list)
       end

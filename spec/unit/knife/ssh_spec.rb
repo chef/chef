@@ -144,9 +144,8 @@ describe Chef::Knife::Ssh do
           @node_bar["fqdn"] = "foo.example.org"
         end
 
-        it "should raise a specific error" do
-          expect(@knife.ui).to receive(:fatal).with(/^SSH node is duplicated: foo\.example\.org/)
-          expect(@knife).to receive(:exit).with(10)
+        it "should be warned" do
+          expect(@knife.ui).to receive(:warn).with(/^SSH node is duplicated: foo\.example\.org/)
           expect(@knife).to receive(:session_from_list).with([
             ["foo.example.org", nil, nil],
             ["foo.example.org", nil, nil],
