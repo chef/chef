@@ -28,24 +28,24 @@ class Chef
       property :compile_time, [true, false], default: true
 
       action :create do
-        directory ::Ohai::Config.ohai.hints_path.first do
+        declare_resource(:directory, ::Ohai::Config.ohai.hints_path.first) do
           action :create
           recursive true
         end
 
-        file ohai_hint_file_path(new_resource.hint_name) do
+        declare_resource(:file, ohai_hint_file_path(new_resource.hint_name)) do
           action :create
           content format_content(new_resource.content)
         end
       end
 
       action :delete do
-        file ohai_hint_file_path(new_resource.hint_name) do
+        declare_resource(:file, ohai_hint_file_path(new_resource.hint_name)) do
           action :delete
           notifies :reload, ohai[reload ohai post hint removal]
         end
 
-        ohai "reload ohai post hint removal" do
+        declare_resource(:ohai, "reload ohai post hint removal") do
           action :nothing
         end
       end
