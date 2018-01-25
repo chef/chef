@@ -303,6 +303,17 @@ class Chef
              :SecurityDelegation,
         ]
 
+        # https://msdn.microsoft.com/en-us/library/windows/desktop/bb530718%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
+        ELEVATION_TYPE = enum :ELEVATION_TYPE, [
+            :TokenElevationTypeDefault, 1,
+            :TokenElevationTypeFull,
+            :TokenElevationTypeLimited
+        ]
+
+        class TOKEN_ELEVATION_TYPE < FFI::Struct
+          layout :ElevationType, :ELEVATION_TYPE
+        end
+
         # SECURITY_DESCRIPTOR is an opaque structure whose contents can vary.  Pass the
         # pointer around and free it with LocalFree.
         # http://msdn.microsoft.com/en-us/library/windows/desktop/aa379561(v=vs.85).aspx

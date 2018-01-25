@@ -63,4 +63,55 @@ describe "Chef::Win32::Security", :windows_only do
       end
     end
   end
+
+  describe "self.has_admin_privileges?" do
+    it "returns true for windows server 2003" do
+      allow(Chef::Platform).to receive(:windows_server_2003?).and_return(true)
+      expect(Chef::ReservedNames::Win32::Security.has_admin_privileges?).to be true
+    end
+
+    context "when the user doesn't have admin privileges" do
+      it "returns false" do
+        allow(Chef::Platform).to receive(:windows_server_2003?).and_return(false)
+        allow(Chef::ReservedNames::Win32::Security).to receive(:open_current_process_token).and_raise("Access is denied.")
+        expect(Chef::ReservedNames::Win32::Security.has_admin_privileges?).to be false
+      end
+    end
+
+    context "when open_current_process_token fails with some other error than `Access is Denied`" do
+      it "raises error" do
+        allow(Chef::Platform).to receive(:windows_server_2003?).and_return(false)
+        allow(Chef::ReservedNames::Win32::Security).to receive(:open_current_process_token).and_raise("boom")
+        expect { Chef::ReservedNames::Win32::Security.has_admin_privileges? }.to raise_error(Chef::Exceptions::Win32APIError)
+      end
+    end
+
+    context "when the user has admin privileges" do
+      it "returns true" do
+        allow(Chef::Platform).to receive(:windows_server_2003?).and_return(false)
+        allow(Chef::ReservedNames::Win32::Security).to receive(:open_current_process_token)
+        token = Chef::ReservedNames::Win32::Security.open_current_process_token
+        allow(token).to receive_message_chain(:handle, :handle)
+        allow(Chef::ReservedNames::Win32::Security).to receive(:get_token_information_elevation_type)
+        allow(Chef::ReservedNames::Win32::Security).to receive(:GetTokenInformation).and_return(true)
+        allow_any_instance_of(FFI::Buffer).to receive(:read_ulong).and_return(1)
+        expect(Chef::ReservedNames::Win32::Security.has_admin_privileges?).to be true
+      end
+    end
+  end
+
+  describe "self.get_token_information_elevation_type" do
+    let(:token_rights) { Chef::ReservedNames::Win32::Security::TOKEN_READ }
+
+    let(:token) do
+      Chef::ReservedNames::Win32::Security.open_process_token(
+        Chef::ReservedNames::Win32::Process.get_current_process,
+        token_rights)
+    end
+
+    it "raises error if GetTokenInformation fails" do
+      allow(Chef::ReservedNames::Win32::Security).to receive(:GetTokenInformation).and_return(false)
+      expect { Chef::ReservedNames::Win32::Security.get_token_information_elevation_type(token) }.to raise_error(Chef::Exceptions::Win32APIError)
+    end
+  end
 end

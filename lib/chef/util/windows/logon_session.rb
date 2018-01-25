@@ -25,7 +25,7 @@ class Chef
       class LogonSession
         include Chef::Mixin::WideString
 
-        def initialize(username, password, domain = nil)
+        def initialize(username, password, domain = nil, authentication = :remote)
           if username.nil? || password.nil?
             raise ArgumentError, "The logon session must be initialize with non-nil user name and password parameters"
           end
@@ -33,6 +33,7 @@ class Chef
           @original_username = username
           @original_password = password
           @original_domain = domain
+          @authentication = authentication
           @token = FFI::Buffer.new(:pointer)
           @session_opened = false
           @impersonating = false
@@ -47,7 +48,8 @@ class Chef
           password = wstring(original_password)
           domain = wstring(original_domain)
 
-          status = Chef::ReservedNames::Win32::API::Security.LogonUserW(username, domain, password, Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NEW_CREDENTIALS, Chef::ReservedNames::Win32::API::Security::LOGON32_PROVIDER_DEFAULT, token)
+          logon_type = (authentication == :local) ? (Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NETWORK) : (Chef::ReservedNames::Win32::API::Security::LOGON32_LOGON_NEW_CREDENTIALS)
+          status = Chef::ReservedNames::Win32::API::Security.LogonUserW(username, domain, password, logon_type, Chef::ReservedNames::Win32::API::Security::LOGON32_PROVIDER_DEFAULT, token)
 
           if !status
             last_error = FFI::LastError.error
@@ -110,6 +112,7 @@ class Chef
         attr_reader :original_username
         attr_reader :original_password
         attr_reader :original_domain
+        attr_reader :authentication
 
         attr_reader :token
         attr_reader :session_opened

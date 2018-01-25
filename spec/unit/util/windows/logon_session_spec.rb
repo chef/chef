@@ -27,7 +27,8 @@ describe ::Chef::Util::Windows::LogonSession do
     stub_const("Chef::ReservedNames::Win32::API::System", Class.new )
   end
 
-  let(:session) { ::Chef::Util::Windows::LogonSession.new(session_user, password, session_domain) }
+  let(:session) { ::Chef::Util::Windows::LogonSession.new(session_user, password, session_domain, authentication) }
+  let(:authentication) { :remote }
 
   shared_examples_for "it received syntactically invalid credentials" do
     it "does not raisees an exception when it is initialized" do
