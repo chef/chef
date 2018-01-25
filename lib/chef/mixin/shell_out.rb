@@ -131,7 +131,7 @@ class Chef
         cmd
       end
 
-      # Helper for sublcasses to convert an array of string args into a string.  It
+      # Helper for subclasses to convert an array of string args into a string.  It
       # will compact nil or empty strings in the array and will join the array elements
       # with spaces, without introducing any double spaces for nil/empty elements.
       #
@@ -143,7 +143,7 @@ class Chef
         args.flatten.reject { |i| i.nil? || i == "" }.map(&:to_s).join(" ")
       end
 
-      # Helper for sublcasses to reject nil out of an array.  It allows
+      # Helper for subclasses to reject nil out of an array.  It allows
       # using the array form of shell_out (which avoids the need to surround arguments with
       # quote marks to deal with shells).
       #

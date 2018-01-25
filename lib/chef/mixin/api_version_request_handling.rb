@@ -19,11 +19,9 @@
 class Chef
   module Mixin
     module ApiVersionRequestHandling
-      # Input:
-      # exeception:
-      #   Net::HTTPServerException that may or may not contain the x-ops-server-api-version header
+      # @param exeception [Net::HTTPServerException] may or may not contain the x-ops-server-api-version header
       # supported_client_versions:
-      #  An array of Integers that represent the API versions the client supports.
+      # @param supported_client_versions [Array<Integer>] The API versions the client supports.
       #
       # Output:
       # nil:

@@ -34,6 +34,7 @@ class Chef
       # This tries to find the user to execute brew as.  If a user is provided, that overrides the brew
       # executable user.  It is an error condition if the brew executable owner is root or we cannot find
       # the brew executable.
+      # @param provided_user [String]
       def find_homebrew_uid(provided_user = nil)
         # They could provide us a user name or a UID
         if provided_user

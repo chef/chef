@@ -19,14 +19,12 @@ require "chef/client"
 require "forwardable"
 
 class Chef
-  # == Chef::Handler
   # The base class for an Exception or Notification Handler. Create your own
   # handler by subclassing Chef::Handler. When a Chef run fails with an
   # uncaught Exception, Chef will set the +run_status+ on your handler and call
   # +report+
   #
-  # ===Example:
-  #
+  # @example
   #   require 'net/smtp'
   #
   #   module MyOrg
