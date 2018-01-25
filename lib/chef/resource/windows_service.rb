@@ -28,9 +28,9 @@ class Chef
       include Chef::Win32ServiceConstants
 
       ALLOWED_START_TYPES = {
-        :automatic => SERVICE_AUTO_START,
-        :manual    => SERVICE_DEMAND_START,
-        :disabled  => SERVICE_DISABLED,
+        automatic: SERVICE_AUTO_START,
+        manual: SERVICE_DEMAND_START,
+        disabled: SERVICE_DISABLED,
       }
 
       # Until #1773 is resolved, you need to manually specify the windows_service resource
@@ -62,26 +62,27 @@ class Chef
       #   - :manual
       #   - :disabled
       # Reference: https://github.com/djberg96/win32-service/blob/ffi/lib/win32/windows/constants.rb#L49-L54
-      property :startup_type, Integer, default: SERVICE_AUTO_START, coerce: proc { |x|
+      property :startup_type, [Symbol], equal_to: [:automatic, :manual, :disabled], default: :automatic, coerce: proc { |x|
         if x.is_a?(Integer)
-          x
-        elsif x.is_a?(String) or x.is_a?(Symbol)
-          x = x.to_sym
-          ALLOWED_START_TYPES.fetch(x) do
+          ALLOWED_START_TYPES.invert.fetch(x) do
             Chef::Log.warn("Unsupported startup_type #{x}, falling back to :automatic")
-            SERVICE_AUTO_START
+            :automatic
           end
+        elsif x.is_a?(String)
+          x.to_sym
+        else
+          x
         end
       }
 
       # This only applies if startup_type is :automatic
-      property :delayed_start, [Integer], default: false, coerce: proc { |x|
-        if x.is_a?(TrueClass)
-          1
-        elsif x.is_a?(FalseClass)
-          0
-        elsif x.is_a?(Integer)
-          x.zero? ? 0 : 1
+      # 1 == delayed start is enabled
+      # 0 == NO delayed start
+      property :delayed_start, [TrueClass, FalseClass], default: false, coerce: proc { |x|
+        if x.is_a?(Integer)
+          x.zero? ? false : true
+        else
+          x
         end
       }
 
@@ -90,7 +91,10 @@ class Chef
 
       # The fully qualified path to the service binary file. The path can also
       # include arguments for an auto-start service.
-      property :binary_path_name, String, required: true
+      #
+      # This is required for :create and :configure actions -- intentionally
+      # not setting required: true here to support other actions
+      property :binary_path_name, String
 
       # The names of the load ordering group of which this service is a member.
       # Specify nil or an empty string if the service does not belong to a group.

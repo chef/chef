@@ -58,27 +58,24 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     if Win32::Service.exists?(current_resource.service_name)
       current_resource.running(current_state == RUNNING)
       Chef::Log.debug "#{new_resource} running: #{current_resource.running}"
-      case current_start_type
-      when AUTO_START
+      case current_startup_type
+      when :automatic
         current_resource.enabled(true)
-      when DISABLED
+      when :disabled
         current_resource.enabled(false)
       end
       Chef::Log.debug "#{new_resource} enabled: #{current_resource.enabled}"
 
       config_info = Win32::Service.config_info(current_resource.service_name)
-      current_resource.service_type(get_service_type(config_info[:service_type]))    if config_info[:service_type]
-      current_resource.startup_type(get_start_type(config_info[:start_type]))        if config_info[:start_type]
-      current_resource.error_control(get_error_control(config_info[:error_control])) if config_info[:error_control]
-      current_resource.binary_path_name(config_info[:binary_path_name]) if config_info[:binary_path_name]
-      current_resource.load_order_group(config_info[:load_order_group]) if config_info[:load_order_group]
-      current_resource.dependencies(config_info[:dependencies])         if config_info[:dependencies]
-      current_resource.run_as_user(config_info[:service_start_name])    if config_info[:service_start_name]
-      current_resource.display_name(config_info[:display_name])         if config_info[:display_name]
-
-      if delayed_start = current_delayed_start
-        current_resource.delayed_start(delayed_start)
-      end
+      current_resource.service_type(get_service_type(config_info.service_type))    if config_info.service_type
+      current_resource.startup_type(start_type_to_sym(config_info.start_type))     if config_info.start_type
+      current_resource.error_control(get_error_control(config_info.error_control)) if config_info.error_control
+      current_resource.binary_path_name(config_info.binary_path_name) if config_info.binary_path_name
+      current_resource.load_order_group(config_info.load_order_group) if config_info.load_order_group
+      current_resource.dependencies(config_info.dependencies)         if config_info.dependencies
+      current_resource.run_as_user(config_info.service_start_name)    if config_info.service_start_name
+      current_resource.display_name(config_info.display_name)         if config_info.display_name
+      current_resource.delayed_start(current_delayed_start)           if current_delayed_start
     end
 
     current_resource
@@ -196,7 +193,10 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   action :create do
-    return if Win32::Service.exists?(new_resource.service_name)
+    if Win32::Service.exists?(new_resource.service_name)
+      Chef::Log.debug "#{new_resource} already exists - nothing to do"
+      return
+    end
 
     converge_by("create service #{new_resource.service_name}") do
       Win32::Service.new(windows_service_config)
@@ -206,7 +206,10 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   action :delete do
-    return unless Win32::Service.exists?(new_resource.service_name)
+    unless Win32::Service.exists?(new_resource.service_name)
+      Chef::Log.debug "#{new_resource} does not exist - nothing to do"
+      return
+    end
 
     converge_by("delete service #{new_resource.service_name}") do
       Win32::Service.delete(new_resource.service_name)
@@ -215,7 +218,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   action :configure do
     unless Win32::Service.exists?(new_resource.service_name)
-      Chef::Log.debug "#{new_resource} does not exist - nothing to do"
+      Chef::Log.warn "#{new_resource} does not exist. Maybe you need to prepend action :create"
       return
     end
 
@@ -234,7 +237,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   def action_enable
-    if current_start_type != AUTO_START
+    if current_startup_type != :automatic
       converge_by("enable service #{@new_resource}") do
         enable_service
         Chef::Log.info("#{@new_resource} enabled")
@@ -247,7 +250,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   def action_disable
-    if current_start_type != DISABLED
+    if current_startup_type != :disabled
       converge_by("disable service #{@new_resource}") do
         disable_service
         Chef::Log.info("#{@new_resource} disabled")
@@ -260,31 +263,13 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   def action_configure_startup
-    case @new_resource.startup_type
-    when :automatic
-      if current_start_type != AUTO_START
-        converge_by("set service #{@new_resource} startup type to automatic") do
-          set_startup_type(:automatic)
-        end
-      else
-        Chef::Log.debug("#{@new_resource} startup_type already automatic - nothing to do")
+    startup_type = @new_resource.startup_type
+    if current_startup_type != startup_type
+      converge_by("set service #{@new_resource} startup type to #{startup_type}") do
+        set_startup_type(startup_type)
       end
-    when :manual
-      if current_start_type != MANUAL
-        converge_by("set service #{@new_resource} startup type to manual") do
-          set_startup_type(:manual)
-        end
-      else
-        Chef::Log.debug("#{@new_resource} startup_type already manual - nothing to do")
-      end
-    when :disabled
-      if current_start_type != DISABLED
-        converge_by("set service #{@new_resource} startup type to disabled") do
-          set_startup_type(:disabled)
-        end
-      else
-        Chef::Log.debug("#{@new_resource} startup_type already disabled - nothing to do")
-      end
+    else
+      Chef::Log.debug("#{@new_resource} startup_type already #{startup_type} - nothing to do")
     end
 
     # Avoid changing enabled from true/false for now
@@ -294,8 +279,8 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   private
 
   def current_delayed_start
-    if service = Win32::Service.services.find { |x| x.service_name == @new_resource.service_name }
-      service.delayed_start
+    if service = Win32::Service.services.find { |x| x.service_name == new_resource.service_name }
+      service.delayed_start.zero? ? false : true
     else
       nil
     end
@@ -326,8 +311,9 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     Win32::Service.status(@new_resource.service_name).current_state
   end
 
-  def current_start_type
-    Win32::Service.config_info(@new_resource.service_name).start_type
+  def current_startup_type
+    start_type = Win32::Service.config_info(@new_resource.service_name).start_type
+    start_type_to_sym(start_type)
   end
 
   # Helper method that waits for a status to change its state since state
@@ -355,20 +341,25 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     end
   end
 
-  # Takes Win32::Service start_types
-  def set_startup_type(type)
-    # Set-Service Startup Type => Win32::Service Constant
-    allowed_types = { :automatic => Win32::Service::AUTO_START,
-                      :manual    => Win32::Service::DEMAND_START,
-                      :disabled  => Win32::Service::DISABLED }
-    unless allowed_types.keys.include?(type)
+  # @param type [Symbol]
+  # @return [Integer]
+  # @raise [Chef::Exceptions::ConfigurationError] if the startup type is
+  #   not supported.
+  # @see Chef::Resource::WindowsService::ALLOWED_START_TYPES
+  def startup_type_to_int(type)
+    Chef::Resource::WindowsService::ALLOWED_START_TYPES.fetch(type) do
       raise Chef::Exceptions::ConfigurationError, "#{@new_resource.name}: Startup type '#{type}' is not supported"
     end
+  end
+
+  # Takes Win32::Service start_types
+  def set_startup_type(type)
+    startup_type = startup_type_to_int(type)
 
     Chef::Log.debug "#{@new_resource.name} setting start_type to #{type}"
     Win32::Service.configure(
       :service_name => @new_resource.service_name,
-      :start_type => allowed_types[type]
+      :start_type => startup_type
     )
     @new_resource.updated_by_last_action(true)
   end
@@ -377,20 +368,20 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     config = {}
 
     config[:service_name]       = new_resource.service_name
-    config[:display_name]       = new_resource.display_name     if new_resource.display_name
-    config[:service_type]       = new_resource.service_type     if new_resource.service_type
-    config[:start_type]         = new_resource.startup_type     if new_resource.startup_type
-    config[:error_control]      = new_resource.error_control    if new_resource.error_control
-    config[:binary_path_name]   = new_resource.binary_path_name if new_resource.binary_path_name
-    config[:load_order_group]   = new_resource.load_order_group if new_resource.load_order_group
-    config[:dependencies]       = new_resource.dependencies     if new_resource.dependencies
-    config[:service_start_name] = new_resource.run_as_user      unless new_resource.run_as_user.empty?
-    config[:password]           = new_resource.run_as_password  unless new_resource.run_as_user.empty? or new_resource.run_as_password.empty?
-    config[:description]        = new_resource.description      if new_resource.description
+    config[:display_name]       = new_resource.display_name                      if new_resource.display_name
+    config[:service_type]       = new_resource.service_type                      if new_resource.service_type
+    config[:start_type]         = startup_type_to_int(new_resource.startup_type) if new_resource.startup_type
+    config[:error_control]      = new_resource.error_control                     if new_resource.error_control
+    config[:binary_path_name]   = new_resource.binary_path_name                  if new_resource.binary_path_name
+    config[:load_order_group]   = new_resource.load_order_group                  if new_resource.load_order_group
+    config[:dependencies]       = new_resource.dependencies                      if new_resource.dependencies
+    config[:service_start_name] = new_resource.run_as_user                       unless new_resource.run_as_user.empty?
+    config[:password]           = new_resource.run_as_password                   unless new_resource.run_as_user.empty? or new_resource.run_as_password.empty?
+    config[:description]        = new_resource.description                       if new_resource.description
 
     case action
     when :create
-      config[:desired_access]   = new_resource.desired_access   if new_resource.desired_access
+      config[:desired_access]   = new_resource.desired_access                    if new_resource.desired_access
     end
 
     config
@@ -399,7 +390,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   def converge_delayed_start
     config = {}
     config[:service_name]  = new_resource.service_name
-    config[:delayed_start] = new_resource.delayed_start
+    config[:delayed_start] = new_resource.delayed_start ? 1 : 0
 
     # Until #6300 is solved this is required
     if new_resource.delayed_start == new_resource.class.properties[:delayed_start].default
@@ -411,6 +402,24 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     end
   end
 
+  # @return [Symbol]
+  def start_type_to_sym(start_type)
+    case start_type
+    when 'auto start'
+      :automatic
+    when 'boot start'
+      raise("Unsupported start type, #{start_type}. Submit bug request to fix.")
+    when 'demand start'
+      :manual
+    when 'disabled'
+      :disabled
+    when 'system start'
+      raise("Unsupported start type, #{start_type}. Submit bug request to fix.")
+    else
+      raise("Unsupported start type, #{start_type}. Submit bug request to fix.")
+    end
+  end
+
   def get_service_type(service_type)
     case service_type
     when 'file system driver'
@@ -419,7 +428,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       SERVICE_KERNEL_DRIVER
     when 'own process'
       SERVICE_WIN32_OWN_PROCESS
-    when 'share proces'
+    when 'share process'
       SERVICE_WIN32_SHARE_PROCESS
     when 'recognizer driver'
       SERVICE_RECOGNIZER_DRIVER
@@ -434,10 +443,11 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     when 'share process, interactive'
       SERVICE_INTERACTIVE_PROCESS | SERVICE_WIN32_SHARE_PROCESS
     else
-      nil
+      raise("Unsupported service type, #{service_type}. Submit bug request to fix.")
     end
   end
 
+  # @return [Integer]
   def get_start_type(start_type)
     case start_type
     when 'auto start'
@@ -451,7 +461,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     when 'system start'
       SERVICE_SYSTEM_START
     else
-      nil
+      raise("Unsupported start type, #{start_type}. Submit bug request to fix.")
     end
   end
 
