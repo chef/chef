@@ -132,6 +132,12 @@ describe Chef::Role do
     end
   end
 
+  describe "chef_type" do
+    it "should return the correct chef type" do
+      expect(@role.chef_type).to eq("role")
+    end
+  end
+
   describe "update_from!" do
     before(:each) do
       @role.name("mars_volta")

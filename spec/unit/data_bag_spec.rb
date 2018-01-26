@@ -56,6 +56,12 @@ describe Chef::DataBag do
     end
   end
 
+  describe "chef_type" do
+    it "should return the correct chef type" do
+      expect(@data_bag.chef_type).to eq("data_bag")
+    end
+  end
+
   describe "deserialize" do
     before(:each) do
       @data_bag.name("mars_volta")

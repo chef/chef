@@ -271,6 +271,12 @@ describe Chef::ApiClient do
 
   end
 
+  describe "chef_type" do
+    it "should return the current chef type" do
+      expect(@client.chef_type).to eq("client")
+    end
+  end
+
   describe "when requesting a new key" do
     before do
       @http_client = double("Chef::ServerAPI mock")

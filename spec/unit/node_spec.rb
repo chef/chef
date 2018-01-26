@@ -135,6 +135,12 @@ describe Chef::Node do
     end
   end
 
+  describe "chef_type" do
+    it "should return the correct chef type" do
+      expect(node.chef_type).to eq("node")
+    end
+  end
+
   describe "policy_name" do
 
     it "defaults to nil" do

@@ -89,6 +89,12 @@ class Chef
           when /\.(js|json)$/
             r = FFI_Yajl::Parser.parse(IO.read(filename))
 
+            # Ensure JSON file is the correct chef type.
+            if @klass.chef_type != r["chef_type"]
+              ui.error("#{filename} is not a #{@klass.chef_type} type.")
+              exit(1)
+            end
+
             # Chef::DataBagItem doesn't work well with the json_create method
             if @klass == Chef::DataBagItem
               r
@@ -98,6 +104,13 @@ class Chef
           when /\.rb$/
             r = klass.new
             r.from_file(filename)
+
+            # Ensure Ruby file is the correct chef type.
+            if @klass.chef_type != r.chef_type
+              ui.error("#{filename} is not a #{@klass.chef_type} type.")
+              exit(1)
+            end
+
             r
           else
             ui.fatal("File must end in .js, .json, or .rb")

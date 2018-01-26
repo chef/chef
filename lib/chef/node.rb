@@ -80,6 +80,8 @@ class Chef
       @attributes = Chef::Node::Attribute.new({}, {}, {}, {}, self)
 
       @run_state = {}
+
+      @chef_type = "node"
     end
 
     # after the run_context has been set on the node, go through the cookbook_collection
@@ -197,6 +199,11 @@ class Chef
     # might be missing
     def normal
       attributes.normal
+    end
+
+    # Get the chef type.
+    def chef_type
+      @chef_type
     end
 
     # Set a default of this node, but auto-vivify any Mashes that might

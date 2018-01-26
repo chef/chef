@@ -323,6 +323,12 @@ describe Chef::ApiClientV1 do
     end
   end
 
+  describe "chef_type" do
+    it "should return the correct chef type" do
+      expect(@client.chef_type).to eq("client")
+    end
+  end
+
   describe "Versioned API Interactions" do
     let(:response_406) { OpenStruct.new(:code => "406") }
     let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }

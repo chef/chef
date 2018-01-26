@@ -43,6 +43,7 @@ class Chef
       @private_key = nil
       @admin = false
       @validator = false
+      @chef_type = "client"
     end
 
     # Gets or sets the client name.
@@ -67,6 +68,11 @@ class Chef
         arg,
         :kind_of => [ TrueClass, FalseClass ]
       )
+    end
+
+    # Get the chef type.
+    def chef_type
+      @chef_type
     end
 
     # Gets or sets the public key.

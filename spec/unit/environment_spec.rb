@@ -71,6 +71,12 @@ describe Chef::Environment do
     end
   end
 
+  describe "chef_type" do
+    it "should return the correct chef type" do
+      expect(@environment.chef_type).to eq("environment")
+    end
+  end
+
   describe "default attributes" do
     it "should let you set the attributes hash explicitly" do
       expect(@environment.default_attributes({ :one => "two" })).to eq({ :one => "two" })

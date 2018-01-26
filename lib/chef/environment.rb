@@ -43,6 +43,7 @@ class Chef
       @override_attributes = Mash.new
       @cookbook_versions = Hash.new
       @chef_server_rest = chef_server_rest
+      @chef_type = "environment"
     end
 
     def chef_server_rest
@@ -67,6 +68,11 @@ class Chef
         arg,
         :kind_of => String
       )
+    end
+
+    # Get the chef type.
+    def chef_type
+      @chef_type
     end
 
     def default_attributes(arg = nil)

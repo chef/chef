@@ -41,6 +41,7 @@ class Chef
       @override_attributes = Mash.new
       @env_run_lists = { "_default" => Chef::RunList.new }
       @chef_server_rest = chef_server_rest
+      @chef_type = "role"
     end
 
     def chef_server_rest
@@ -128,6 +129,11 @@ class Chef
         arg,
         :kind_of => Hash
       )
+    end
+
+    # Get the chef type.
+    def chef_type
+      @chef_type
     end
 
     def to_hash

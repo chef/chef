@@ -48,6 +48,7 @@ class Chef
     def initialize(chef_server_rest: nil)
       @name = ""
       @chef_server_rest = chef_server_rest
+      @chef_type = "data_bag"
     end
 
     def name(arg = nil)
@@ -56,6 +57,11 @@ class Chef
         arg,
         :regex => VALID_NAME
       )
+    end
+
+    # Get the chef type.
+    def chef_type
+      @chef_type
     end
 
     def to_hash
