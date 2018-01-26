@@ -536,11 +536,6 @@ class Chef
     property :ignore_failure, [ TrueClass, FalseClass ], default: false, desired_state: false
 
     #
-    # Equivalent to #ignore_failure.
-    #
-    alias :epic_fail :ignore_failure
-
-    #
     # Make this resource into an exact (shallow) copy of the other resource.
     #
     # @param resource [Chef::Resource] The resource to copy from.
