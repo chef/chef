@@ -9,9 +9,9 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus
-  revision: f6f9973bd65af06a6b3077b3ee094ca203b1d612
+  revision: fd1451bca299d0d71aa2c58d63fee5120572f739
   specs:
-    omnibus (5.6.1)
+    omnibus (5.6.3)
       aws-sdk (~> 2)
       chef-sugar (~> 3.3)
       cleanroom (~> 1.0)
@@ -26,7 +26,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 918dcb6b883ce2edb1528040875257b8e9b1c79f
+  revision: 45fbdeb158cc16984a65104681d842b3d026e111
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -38,13 +38,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.10.112)
-      aws-sdk-resources (= 2.10.112)
-    aws-sdk-core (2.10.112)
+    aws-sdk (2.10.124)
+      aws-sdk-resources (= 2.10.124)
+    aws-sdk-core (2.10.124)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.10.112)
-      aws-sdk-core (= 2.10.112)
+    aws-sdk-resources (2.10.124)
+      aws-sdk-core (= 2.10.124)
     aws-sigv4 (1.0.2)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -68,7 +68,7 @@ GEM
       faraday (~> 0.9.1)
       httpclient (~> 2.7.0)
       ridley (~> 4.5)
-    binding_of_caller (0.7.3)
+    binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     buff-config (1.0.1)
       buff-extensions (~> 1.0)
@@ -85,11 +85,12 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (13.6.4)
+    chef-config (13.7.16)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
+      tomlrb (~> 1.2)
     chef-sugar (3.6.0)
     citrus (3.0.2)
     cleanroom (1.0.0)
@@ -141,7 +142,7 @@ GEM
       wmi-lite (~> 1.0)
     mixlib-versioning (1.2.2)
     molinillo (0.4.5)
-    multi_json (1.12.2)
+    multi_json (1.13.1)
     multipart-post (2.0.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
@@ -152,7 +153,7 @@ GEM
     nori (2.6.0)
     octokit (4.8.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (8.25.1)
+    ohai (8.26.1)
       chef-config (>= 12.5.0.alpha.1, < 14)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -212,7 +213,7 @@ GEM
       molinillo (~> 0.4.2)
       semverse (~> 1.1)
     systemu (2.6.5)
-    test-kitchen (1.19.2)
+    test-kitchen (1.20.0)
       mixlib-install (~> 3.6)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
@@ -227,6 +228,7 @@ GEM
       hitimes
     toml-rb (1.1.1)
       citrus (~> 3.0, > 3.0)
+    tomlrb (1.2.6)
     varia_model (0.4.1)
       buff-extensions (~> 1.0)
       hashie (>= 2.0.2, < 4.0.0)
