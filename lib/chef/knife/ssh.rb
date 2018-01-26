@@ -560,6 +560,11 @@ class Chef
           config[:ssh_password] = get_stripped_unfrozen_value(ssh_password ||
                              Chef::Config[:knife][:ssh_password])
         end
+
+        # CHEF-4342 Diable host key verification if a password has been given.
+        if config[:ssh_password]
+          config[:host_key_verify] = false
+        end
       end
 
       def configure_ssh_identity_file
