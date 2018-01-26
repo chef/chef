@@ -280,7 +280,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   def current_delayed_start
     if service = Win32::Service.services.find { |x| x.service_name == new_resource.service_name }
-      service.delayed_start.zero? ? false : true
+      service.delayed_start == 0 ? false : true
     else
       nil
     end
@@ -376,12 +376,12 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     config[:load_order_group]   = new_resource.load_order_group                  if new_resource.load_order_group
     config[:dependencies]       = new_resource.dependencies                      if new_resource.dependencies
     config[:service_start_name] = new_resource.run_as_user                       unless new_resource.run_as_user.empty?
-    config[:password]           = new_resource.run_as_password                   unless new_resource.run_as_user.empty? or new_resource.run_as_password.empty?
+    config[:password]           = new_resource.run_as_password                   unless new_resource.run_as_user.empty? || new_resource.run_as_password.empty?
     config[:description]        = new_resource.description                       if new_resource.description
 
     case action
     when :create
-      config[:desired_access]   = new_resource.desired_access                    if new_resource.desired_access
+      config[:desired_access] = new_resource.desired_access if new_resource.desired_access
     end
 
     config
@@ -405,15 +405,15 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   # @return [Symbol]
   def start_type_to_sym(start_type)
     case start_type
-    when 'auto start'
+    when "auto start"
       :automatic
-    when 'boot start'
+    when "boot start"
       raise("Unsupported start type, #{start_type}. Submit bug request to fix.")
-    when 'demand start'
+    when "demand start"
       :manual
-    when 'disabled'
+    when "disabled"
       :disabled
-    when 'system start'
+    when "system start"
       raise("Unsupported start type, #{start_type}. Submit bug request to fix.")
     else
       raise("Unsupported start type, #{start_type}. Submit bug request to fix.")
@@ -422,25 +422,25 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   def get_service_type(service_type)
     case service_type
-    when 'file system driver'
+    when "file system driver"
       SERVICE_FILE_SYSTEM_DRIVER
-    when 'kernel driver'
+    when "kernel driver"
       SERVICE_KERNEL_DRIVER
-    when 'own process'
+    when "own process"
       SERVICE_WIN32_OWN_PROCESS
-    when 'share process'
+    when "share process"
       SERVICE_WIN32_SHARE_PROCESS
-    when 'recognizer driver'
+    when "recognizer driver"
       SERVICE_RECOGNIZER_DRIVER
-    when 'driver'
+    when "driver"
       SERVICE_DRIVER
-    when 'win32'
+    when "win32"
       SERVICE_WIN32
-    when 'all'
+    when "all"
       SERVICE_TYPE_ALL
-    when 'own process, interactive'
+    when "own process, interactive"
       SERVICE_INTERACTIVE_PROCESS | SERVICE_WIN32_OWN_PROCESS
-    when 'share process, interactive'
+    when "share process, interactive"
       SERVICE_INTERACTIVE_PROCESS | SERVICE_WIN32_SHARE_PROCESS
     else
       raise("Unsupported service type, #{service_type}. Submit bug request to fix.")
@@ -450,15 +450,15 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   # @return [Integer]
   def get_start_type(start_type)
     case start_type
-    when 'auto start'
+    when "auto start"
       SERVICE_AUTO_START
-    when 'boot start'
+    when "boot start"
       SERVICE_BOOT_START
-    when 'demand start'
+    when "demand start"
       SERVICE_DEMAND_START
-    when 'disabled'
+    when "disabled"
       SERVICE_DISABLED
-    when 'system start'
+    when "system start"
       SERVICE_SYSTEM_START
     else
       raise("Unsupported start type, #{start_type}. Submit bug request to fix.")
@@ -467,13 +467,13 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   def get_error_control(error_control)
     case error_control
-    when 'critical'
+    when "critical"
       SERVICE_ERROR_CRITICAL
-    when 'ignore'
+    when "ignore"
       SERVICE_ERROR_IGNORE
-    when 'normal'
+    when "normal"
       SERVICE_ERROR_NORMAL
-    when 'severe'
+    when "severe"
       SERVICE_ERROR_SEVERE
     else
       nil

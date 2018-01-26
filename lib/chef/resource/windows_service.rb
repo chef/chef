@@ -80,7 +80,7 @@ class Chef
       # 0 == NO delayed start
       property :delayed_start, [TrueClass, FalseClass], default: false, coerce: proc { |x|
         if x.is_a?(Integer)
-          x.zero? ? false : true
+          x == 0 ? false : true
         else
           x
         end
@@ -110,8 +110,8 @@ class Chef
 
       property :description, String
 
-      property :run_as_user, String, default: 'LocalSystem'
-      property :run_as_password, String, default: ''
+      property :run_as_user, String, default: "LocalSystem"
+      property :run_as_password, String, default: ""
     end
   end
 end
