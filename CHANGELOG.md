@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.30 -->
-## [v14.0.30](https://github.com/chef/chef/tree/v14.0.30) (2018-01-26)
+<!-- latest_release 14.0.31 -->
+## [v14.0.31](https://github.com/chef/chef/tree/v14.0.31) (2018-01-26)
 
 #### Merged Pull Requests
-- use a relative link so that docker does not drop our ca bundle link [#6796](https://github.com/chef/chef/pull/6796) ([thommay](https://github.com/thommay))
+- Force the creation of a relative link for cacerts [#6798](https://github.com/chef/chef/pull/6798) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Force the creation of a relative link for cacerts [#6798](https://github.com/chef/chef/pull/6798) ([thommay](https://github.com/thommay)) <!-- 14.0.31 -->
 - use a relative link so that docker does not drop our ca bundle link [#6796](https://github.com/chef/chef/pull/6796) ([thommay](https://github.com/thommay)) <!-- 14.0.30 -->
 - fix node assignment of ImmutableArrays to VividMashes/AttrArrays [#6790](https://github.com/chef/chef/pull/6790) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.29 -->
 - allow uninstall of bundler to fail [#6789](https://github.com/chef/chef/pull/6789) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.28 -->
