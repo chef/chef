@@ -56,7 +56,7 @@ class Chef
         # @return [String] absolute path to the file
         def ohai_hint_file_path(filename)
           path = ::File.join(::Ohai::Config.ohai.hints_path.first, filename)
-          path << '.json' unless path.end_with?('.json')
+          path << ".json" unless path.end_with?(".json")
           path
         end
 
@@ -64,7 +64,7 @@ class Chef
         # @param content [Hash] the content of the hint file
         # @return [JSON] json representation of the content of an empty string if content was nil
         def format_content(content)
-          return '' if content.nil? || content.empty?
+          return "" if content.nil? || content.empty?
           JSON.pretty_generate(content)
         end
       end
