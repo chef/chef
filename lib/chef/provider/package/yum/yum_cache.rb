@@ -1,6 +1,6 @@
 
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,6 +60,16 @@ class Chef
           def installed_version(name)
             p = python_helper.package_query(:whatinstalled, name)
             "#{p.version}.#{p.arch}"
+          end
+
+          def package_available?(package_name)
+            p = python_helper.package_query(:whatavailable, name)
+            !p.version.nil?
+          end
+
+          def version_available?(package_name, version, arch = nil)
+            p = python_helper.package_query(:whatavailable, name, version, arch)
+            !p.version.nil?
           end
 
           private
