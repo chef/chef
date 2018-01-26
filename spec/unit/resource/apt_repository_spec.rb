@@ -28,11 +28,6 @@ describe Chef::Resource::AptRepository do
     expect(resource.keyserver).to eql("keyserver.ubuntu.com")
   end
 
-  it "default distribution is nillable" do
-    expect(resource.distribution(nil)).to eql(nil)
-    expect(resource.distribution).to eql(nil)
-  end
-
   it "resolves to a Noop class when on non-linux OS" do
     node.automatic[:os] = "windows"
     node.automatic[:platform_family] = "windows"
