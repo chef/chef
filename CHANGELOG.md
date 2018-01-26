@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.7.18 -->
-## [v13.7.18](https://github.com/chef/chef/tree/v13.7.18) (2018-01-25)
+<!-- latest_release 13.7.19 -->
+## [v13.7.19](https://github.com/chef/chef/tree/v13.7.19) (2018-01-26)
 
 #### Merged Pull Requests
-- fix node assignment of ImmutableArrays to VividMashes/AttrArrays (Chef-13 backport) [#6791](https://github.com/chef/chef/pull/6791) ([lamont-granquist](https://github.com/lamont-granquist))
+- Ensure that we create a docker compatible ca-certs symlink [#6799](https://github.com/chef/chef/pull/6799) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Ensure that we create a docker compatible ca-certs symlink [#6799](https://github.com/chef/chef/pull/6799) ([thommay](https://github.com/thommay)) <!-- 13.7.19 -->
 - fix node assignment of ImmutableArrays to VividMashes/AttrArrays (Chef-13 backport) [#6791](https://github.com/chef/chef/pull/6791) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.18 -->
 - Fix regression where message isn&#39;t an identity property in log resource [#6780](https://github.com/chef/chef/pull/6780) ([tas50](https://github.com/tas50)) <!-- 13.7.17 -->
 <!-- release_rollup -->
