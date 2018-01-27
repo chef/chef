@@ -20,8 +20,6 @@
 require "spec_helper"
 require "mixlib/shellout"
 
-class Chef::ReservedNames::Win32::Security; end
-
 describe Chef::Provider::Service::Windows, "load_current_resource" do
   include_context "Win32"
 
