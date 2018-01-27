@@ -380,7 +380,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
       # Attributes that are Strings
       %i{binary_path_name load_order_group dependencies run_as_user
-         display_name}.each do |attr|
+         display_name description}.each do |attr|
         it "configures service if #{attr} has changed" do
           provider.current_resource.send("#{attr}=", "old value")
           provider.new_resource.send("#{attr}=", "new value")

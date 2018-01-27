@@ -229,7 +229,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
     converge_if_changed :service_type, :startup_type, :error_control,
                         :binary_path_name, :load_order_group, :dependencies,
-                        :run_as_user, :display_name do
+                        :run_as_user, :display_name, :description do
       Win32::Service.configure(windows_service_config(:configure))
     end
 
