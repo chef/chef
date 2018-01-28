@@ -374,6 +374,16 @@ describe Chef::Provider::Mount::Mount do
       end
     end
 
+    describe "default_mount_options" do
+      it "should return the correct default mount options for FreeBSD" do
+        expect(@provider.default_mount_options("freebsd")).to eq("rw")
+      end
+
+      it "should return the correct default mount options for Linux" do
+        expect(@provider.default_mount_options("linux")).to eq("defaults")
+      end
+    end
+
     describe "when enabling the fs" do
       it "should enable if enabled isn't true" do
         @current_resource.enabled(false)
