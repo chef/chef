@@ -146,6 +146,15 @@ class Chef
           end
         end
 
+        # Return appropriate default mount options according to the input os.
+        def default_mount_options(os)
+          if os == "freebsd"
+            "rw"
+          else
+            "defaults"
+          end
+        end
+
         def enable_fs
           if @current_resource.enabled && mount_options_unchanged?
             Chef::Log.debug("#{@new_resource} is already enabled - nothing to do")
@@ -158,7 +167,7 @@ class Chef
             disable_fs
           end
           ::File.open("/etc/fstab", "a") do |fstab|
-            fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? "rw" : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
+            fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? default_mount_options(node[:os]) : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
             Chef::Log.debug("#{@new_resource} is enabled at #{@new_resource.mount_point}")
           end
         end
