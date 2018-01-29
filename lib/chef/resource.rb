@@ -591,7 +591,7 @@ class Chef
         elsif remaining_retries > 0
           events.resource_failed_retriable(self, action, remaining_retries, e)
           remaining_retries -= 1
-          Chef::Log.info("Retrying execution of #{self}, #{remaining_retries} attempt(s) left")
+          Chef::Log.info("Retrying execution of #{self}, #{remaining_retries} attempt#{"s" if remaining_retries > 1} left")
           sleep retry_delay
           retry
         else
