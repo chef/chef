@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.32 -->
-## [v14.0.32](https://github.com/chef/chef/tree/v14.0.32) (2018-01-26)
+<!-- latest_release 14.0.33 -->
+## [v14.0.33](https://github.com/chef/chef/tree/v14.0.33) (2018-01-29)
 
 #### Merged Pull Requests
-- Nillable properties are the default now [#6800](https://github.com/chef/chef/pull/6800) ([thommay](https://github.com/thommay))
+- Remove epic_fail alias to ignore_failure [#6801](https://github.com/chef/chef/pull/6801) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Remove epic_fail alias to ignore_failure [#6801](https://github.com/chef/chef/pull/6801) ([tas50](https://github.com/tas50)) <!-- 14.0.33 -->
 - Nillable properties are the default now [#6800](https://github.com/chef/chef/pull/6800) ([thommay](https://github.com/thommay)) <!-- 14.0.32 -->
 - Force the creation of a relative link for cacerts [#6798](https://github.com/chef/chef/pull/6798) ([thommay](https://github.com/thommay)) <!-- 14.0.31 -->
 - use a relative link so that docker does not drop our ca bundle link [#6796](https://github.com/chef/chef/pull/6796) ([thommay](https://github.com/thommay)) <!-- 14.0.30 -->
