@@ -71,15 +71,11 @@ class Chef
         end
 
         def package_locked(name, version)
-          islocked = false
           locked = shell_out_compact_timeout!("apt-mark", "showhold")
-          locked.stdout.each_line do |line|
-            line_package = line.strip
-            if line_package == name
-              islocked = true
-            end
+          locked_packages = locked.stdout.each_line.map do |line|
+            line.strip
           end
-          islocked
+          name.all? { |n| locked_packages.include? n }
         end
 
         def install_package(name, version)

@@ -414,6 +414,17 @@ mpg123 1.12.1-0ubuntu1
             )
             @provider.lock_package("irssi", "0.8.12-7")
           end
+          it "should not lock if the package is already locked" do
+            allow(@provider).to receive(:shell_out_compact_timeout!).with(
+              "apt-mark", "showhold"
+            ).and_return(instance_double(
+              Mixlib::ShellOut, stdout: "irssi")
+            )
+            expect(Chef::Log).to receive(:debug).with("#{@provider.new_resource} is already locked")
+
+            @provider.new_resource.package_name = ["irssi"]
+            @provider.action_lock
+          end
         end
 
         describe "when unlocking a package" do
@@ -424,6 +435,17 @@ mpg123 1.12.1-0ubuntu1
               :timeout => @timeout
             )
             @provider.unlock_package("irssi", "0.8.12-7")
+          end
+          it "should not unlock if the package is already unlocked" do
+            allow(@provider).to receive(:shell_out_compact_timeout!).with(
+              "apt-mark", "showhold"
+            ).and_return(instance_double(
+              Mixlib::ShellOut, stdout: "")
+            )
+            expect(Chef::Log).to receive(:debug).with("#{@provider.new_resource} is already unlocked")
+
+            @provider.new_resource.package_name = ["irssi"]
+            @provider.action_unlock
           end
         end
 

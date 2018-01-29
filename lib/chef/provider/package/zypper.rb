@@ -76,15 +76,11 @@ class Chef
         end
 
         def package_locked(name, version)
-          islocked = false
           locked = shell_out_compact_timeout!("zypper", "locks")
-          locked.stdout.each_line do |line|
-            line_package = line.split("|").shift(2).last.strip
-            if line_package == name
-              islocked = true
-            end
+          locked_packages = locked.stdout.each_line.map do |line|
+            line.split("|").shift(2).last.strip
           end
-          islocked
+          name.all? { |n| locked_packages.include? n }
         end
 
         def load_current_resource

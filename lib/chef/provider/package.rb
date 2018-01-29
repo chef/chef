@@ -220,7 +220,7 @@ class Chef
       end
 
       def action_lock
-        if package_locked(new_resource.name, new_resource.version) == false
+        unless package_locked(new_resource.package_name, new_resource.version)
           description = new_resource.version ? "version #{new_resource.version} of " : ""
           converge_by("lock #{description}package #{current_resource.package_name}") do
             multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
@@ -234,7 +234,7 @@ class Chef
       end
 
       def action_unlock
-        if package_locked(new_resource.name, new_resource.version) == true
+        if package_locked(new_resource.package_name, new_resource.version)
           description = new_resource.version ? "version #{new_resource.version} of " : ""
           converge_by("unlock #{description}package #{current_resource.package_name}") do
             multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
