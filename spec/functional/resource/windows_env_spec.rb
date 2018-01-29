@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::Env, :windows_only do
+describe Chef::Resource::WindowsEnv, :windows_only do
   context "when running on Windows" do
     let(:chef_env_test_lower_case) { "chefenvtest" }
     let(:chef_env_test_mixed_case) { "chefENVtest" }
@@ -54,18 +54,18 @@ describe Chef::Resource::Env, :windows_only do
       Chef::RunContext.new(node, {}, empty_events)
     end
     let(:test_resource) do
-      Chef::Resource::Env.new("unknown", test_run_context)
+      Chef::Resource::WindowsEnv.new("unknown", test_run_context)
     end
 
     before(:each) do
-      resource_lower = Chef::Resource::Env.new(chef_env_test_lower_case, test_run_context)
+      resource_lower = Chef::Resource::WindowsEnv.new(chef_env_test_lower_case, test_run_context)
       resource_lower.run_action(:delete)
-      resource_lower = Chef::Resource::Env.new(chef_env_test_lower_case, test_run_context)
+      resource_lower = Chef::Resource::WindowsEnv.new(chef_env_test_lower_case, test_run_context)
       resource_lower.user(env_user)
       resource_lower.run_action(:delete)
-      resource_mixed = Chef::Resource::Env.new(chef_env_test_mixed_case, test_run_context)
+      resource_mixed = Chef::Resource::WindowsEnv.new(chef_env_test_mixed_case, test_run_context)
       resource_mixed.run_action(:delete)
-      resource_mixed = Chef::Resource::Env.new(chef_env_test_mixed_case, test_run_context)
+      resource_mixed = Chef::Resource::WindowsEnv.new(chef_env_test_mixed_case, test_run_context)
       resource_lower.user(env_user)
       resource_mixed.run_action(:delete)
     end
@@ -142,7 +142,7 @@ describe Chef::Resource::Env, :windows_only do
         expect(ENV[chef_env_test_lower_case]).to eq(nil)
         test_resource.key_name(chef_env_test_lower_case)
         test_resource.value(env_value1)
-        expect { test_resource.run_action(:modify) }.to raise_error(Chef::Exceptions::Env)
+        expect { test_resource.run_action(:modify) }.to raise_error(Chef::Exceptions::WindowsEnv)
       end
 
       context "when env variable exist with same name" do

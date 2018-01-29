@@ -17,14 +17,16 @@
 #
 
 require "chef/provider"
-require "chef/resource/env"
+require "chef/resource/windows_env"
+require "chef/mixin/windows_env_helper"
 
 class Chef
   class Provider
-    class Env < Chef::Provider
+    class WindowsEnv < Chef::Provider
+      include Chef::Mixin::WindowsEnvHelper
       attr_accessor :key_exists
 
-      provides :env, os: "!windows"
+      provides :windows_env, os: "windows"
 
       def whyrun_supported?
         false
@@ -36,7 +38,7 @@ class Chef
       end
 
       def load_current_resource
-        @current_resource = Chef::Resource::Env.new(new_resource.name)
+        @current_resource = Chef::Resource::WindowsEnv.new(new_resource.name)
         current_resource.key_name(new_resource.key_name)
 
         if env_key_exists(new_resource.key_name)
@@ -50,7 +52,7 @@ class Chef
       end
 
       def env_value(key_name)
-        raise Chef::Exceptions::Env, "#{self} provider does not implement env_value!"
+        raise Chef::Exceptions::WindowsEnv, "#{self} provider does not implement env_value!"
       end
 
       def env_key_exists(key_name)
@@ -138,16 +140,34 @@ class Chef
             new_resource.updated_by_last_action(true)
           end
         else
-          raise Chef::Exceptions::Env, "Cannot modify #{new_resource} - key does not exist!"
+          raise Chef::Exceptions::WindowsEnv, "Cannot modify #{new_resource} - key does not exist!"
         end
       end
 
       def create_env
-        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :#{new_resource.action}"
+        obj = env_obj(@new_resource.key_name)
+        unless obj
+          obj = WIN32OLE.connect("winmgmts://").get("Win32_Environment").spawninstance_
+          obj.name = @new_resource.key_name
+          obj.username = new_resource.user
+        end
+        obj.variablevalue = @new_resource.value
+        obj.put_
+        value = @new_resource.value
+        value = expand_path(value) if @new_resource.key_name.casecmp("PATH") == 0
+        ENV[@new_resource.key_name] = value
+        broadcast_env_change
       end
 
       def delete_env
-        raise Chef::Exceptions::UnsupportedAction, "#{self} does not support :delete"
+        obj = env_obj(@new_resource.key_name)
+        if obj
+          obj.delete_
+          broadcast_env_change
+        end
+        if ENV[@new_resource.key_name]
+          ENV.delete(@new_resource.key_name)
+        end
       end
 
       def modify_env
@@ -165,6 +185,25 @@ class Chef
       # Returns the new values to split by delimiter
       def new_values
         @new_values ||= new_resource.value.split(new_resource.delim)
+      end
+
+      def env_value(key_name)
+        obj = env_obj(key_name)
+        obj.variablevalue if obj
+      end
+
+      def env_obj(key_name)
+        return @env_obj if @env_obj
+        wmi = WmiLite::Wmi.new
+        # Note that by design this query is case insensitive with regard to key_name
+        environment_variables = wmi.query("select * from Win32_Environment where name = '#{key_name}'")
+        if environment_variables && environment_variables.length > 0
+          environment_variables.each do |env|
+            @env_obj = env.wmi_ole_object
+            return @env_obj if @env_obj.username.split('\\').last.casecmp(new_resource.user) == 0
+          end
+        end
+        @env_obj = nil
       end
     end
   end
