@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.35 -->
-## [v14.0.35](https://github.com/chef/chef/tree/v14.0.35) (2018-01-29)
+<!-- latest_release 14.0.36 -->
+## [v14.0.36](https://github.com/chef/chef/tree/v14.0.36) (2018-01-29)
 
 #### Merged Pull Requests
-- Add MSIFASTINSTALL property, supported by Windows Installer 5.0 [#6806](https://github.com/chef/chef/pull/6806) ([stuartpreston](https://github.com/stuartpreston))
+- Add create, delete and configure actions to windows_service [#6804](https://github.com/chef/chef/pull/6804) ([jasonwbarnett](https://github.com/jasonwbarnett))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Add create, delete and configure actions to windows_service [#6804](https://github.com/chef/chef/pull/6804) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 14.0.36 -->
 - Add MSIFASTINSTALL property, supported by Windows Installer 5.0 [#6806](https://github.com/chef/chef/pull/6806) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.35 -->
 - Use attempt or attempts in the retries logging [#6802](https://github.com/chef/chef/pull/6802) ([tas50](https://github.com/tas50)) <!-- 14.0.34 -->
 - Remove epic_fail alias to ignore_failure [#6801](https://github.com/chef/chef/pull/6801) ([tas50](https://github.com/tas50)) <!-- 14.0.33 -->
