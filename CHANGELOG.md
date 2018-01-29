@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.37 -->
-## [v14.0.37](https://github.com/chef/chef/tree/v14.0.37) (2018-01-29)
+<!-- latest_release 14.0.38 -->
+## [v14.0.38](https://github.com/chef/chef/tree/v14.0.38) (2018-01-29)
 
 #### Merged Pull Requests
-- Update error handling for &quot;knife status&quot; #3287 [#6756](https://github.com/chef/chef/pull/6756) ([cramaechi](https://github.com/cramaechi))
+- use a stricter comparison so knife ssh only fails if --exit-on-error [#6582](https://github.com/chef/chef/pull/6582) ([sarkis](https://github.com/sarkis))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- use a stricter comparison so knife ssh only fails if --exit-on-error [#6582](https://github.com/chef/chef/pull/6582) ([sarkis](https://github.com/sarkis)) <!-- 14.0.38 -->
 - Update error handling for &quot;knife status&quot; #3287 [#6756](https://github.com/chef/chef/pull/6756) ([cramaechi](https://github.com/cramaechi)) <!-- 14.0.37 -->
 - Add create, delete and configure actions to windows_service [#6804](https://github.com/chef/chef/pull/6804) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 14.0.36 -->
 - Add MSIFASTINSTALL property, supported by Windows Installer 5.0 [#6806](https://github.com/chef/chef/pull/6806) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.35 -->
