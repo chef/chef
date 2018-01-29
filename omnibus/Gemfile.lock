@@ -9,9 +9,9 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus
-  revision: fd1451bca299d0d71aa2c58d63fee5120572f739
+  revision: 9f281bfb7fb44aa5d152b38e73ce04805fdb8958
   specs:
-    omnibus (5.6.3)
+    omnibus (5.6.4)
       aws-sdk (~> 2)
       chef-sugar (~> 3.3)
       cleanroom (~> 1.0)
@@ -26,7 +26,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 45fbdeb158cc16984a65104681d842b3d026e111
+  revision: 4f03b681b46e9d7300dd6764d8b68b1f6b8a16b8
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -38,13 +38,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.10.124)
-      aws-sdk-resources (= 2.10.124)
-    aws-sdk-core (2.10.124)
+    aws-sdk (2.10.125)
+      aws-sdk-resources (= 2.10.125)
+    aws-sdk-core (2.10.125)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.10.124)
-      aws-sdk-core (= 2.10.124)
+    aws-sdk-resources (2.10.125)
+      aws-sdk-core (= 2.10.125)
     aws-sigv4 (1.0.2)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
