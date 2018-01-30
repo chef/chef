@@ -62,12 +62,12 @@ class Chef
             "#{p.version}.#{p.arch}"
           end
 
-          def package_available?(package_name)
+          def package_available?(name)
             p = python_helper.package_query(:whatavailable, name)
             !p.version.nil?
           end
 
-          def version_available?(package_name, version, arch = nil)
+          def version_available?(name, version, arch = nil)
             p = python_helper.package_query(:whatavailable, name, version, arch)
             !p.version.nil?
           end
