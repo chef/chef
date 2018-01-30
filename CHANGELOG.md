@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 12.21.32 -->
+## [v12.21.32](https://github.com/chef/chef/tree/v12.21.32) (2018-01-30)
+
+#### Merged Pull Requests
+- Update Ohai, omnibus, and Ruby versions [#6783](https://github.com/chef/chef/pull/6783) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=12.21.31 -->
+### Changes since 12.21.31 release
+
+#### Merged Pull Requests
+- Update Ohai, omnibus, and Ruby versions [#6783](https://github.com/chef/chef/pull/6783) ([tas50](https://github.com/tas50)) <!-- 12.21.32 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
