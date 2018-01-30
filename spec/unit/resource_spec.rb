@@ -524,11 +524,6 @@ describe Chef::Resource do
       resource.ignore_failure(true)
       expect(resource.ignore_failure).to eq(true)
     end
-
-    it "should allow you to epic_fail" do
-      resource.epic_fail(true)
-      expect(resource.epic_fail).to eq(true)
-    end
   end
 
   describe "retries" do
