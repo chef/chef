@@ -154,15 +154,16 @@ class Chef
         end
 
         def config_file_options
+          # If the user has specified config file options previously, respect those.
+          return if Array(options).any? { |opt| opt =~ /--force-conf/ }
+
           # It doesn't make sense to install packages in a scenario that can
           # result in a prompt. Have users decide up-front whether they want to
           # forcibly overwrite the config file, otherwise preserve it.
-          if new_resource.respond_to?(:overwrite_config_files)
-            if new_resource.overwrite_config_files
-              [ "-o", "Dpkg::Options::=--force-confnew" ]
-            else
-              [ "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold" ]
-            end
+          if new_resource.overwrite_config_files
+            [ "-o", "Dpkg::Options::=--force-confnew" ]
+          else
+            [ "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold" ]
           end
         end
 
