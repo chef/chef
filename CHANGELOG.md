@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.39 -->
-## [v14.0.39](https://github.com/chef/chef/tree/v14.0.39) (2018-01-29)
+<!-- latest_release 14.0.40 -->
+## [v14.0.40](https://github.com/chef/chef/tree/v14.0.40) (2018-01-30)
 
 #### Merged Pull Requests
-- Ensure package (un)locking is idempotent [#6494](https://github.com/chef/chef/pull/6494) ([Rarian](https://github.com/Rarian))
+- Fix Appveyor testing:  the format of this flametest doesn&#39;t matter [#6808](https://github.com/chef/chef/pull/6808) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Fix Appveyor testing:  the format of this flametest doesn&#39;t matter [#6808](https://github.com/chef/chef/pull/6808) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.40 -->
 - Ensure package (un)locking is idempotent [#6494](https://github.com/chef/chef/pull/6494) ([Rarian](https://github.com/Rarian)) <!-- 14.0.39 -->
 - use a stricter comparison so knife ssh only fails if --exit-on-error [#6582](https://github.com/chef/chef/pull/6582) ([sarkis](https://github.com/sarkis)) <!-- 14.0.38 -->
 - Update error handling for &quot;knife status&quot; #3287 [#6756](https://github.com/chef/chef/pull/6756) ([cramaechi](https://github.com/cramaechi)) <!-- 14.0.37 -->
