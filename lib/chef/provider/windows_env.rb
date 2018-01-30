@@ -26,6 +26,7 @@ class Chef
       include Chef::Mixin::WindowsEnvHelper
       attr_accessor :key_exists
 
+      provides :env, os: "windows"
       provides :windows_env, os: "windows"
 
       def whyrun_supported?
@@ -49,10 +50,6 @@ class Chef
         end
 
         current_resource
-      end
-
-      def env_value(key_name)
-        raise Chef::Exceptions::WindowsEnv, "#{self} provider does not implement env_value!"
       end
 
       def env_key_exists(key_name)

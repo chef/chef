@@ -21,17 +21,15 @@ require "spec_helper"
 
 describe Chef::Resource::WindowsEnv do
 
-  before(:each) do
-    @resource = Chef::Resource::WindowsEnv.new("FOO")
-  end
+  let(:resource) { Chef::Resource::WindowsEnv.new("FOO") }
 
   it "creates a new Chef::Resource::WindowsEnv" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::WindowsEnv)
+    expect(resource).to be_a_kind_of(Chef::Resource)
+    expect(resource).to be_a_kind_of(Chef::Resource::WindowsEnv)
   end
 
   it "has a name" do
-    expect(@resource.name).to eql("FOO")
+    expect(resource.name).to eql("FOO")
   end
 
   it "has a default action of 'create'" do

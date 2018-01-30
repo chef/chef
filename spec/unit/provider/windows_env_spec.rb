@@ -328,7 +328,7 @@ describe Chef::Provider::WindowsEnv do
       new_resource
     end
     let(:provider) do
-      provider = Chef::Provider::WindowsEnv::Windows.new(new_resource, run_context)
+      provider = Chef::Provider::WindowsEnv.new(new_resource, run_context)
       allow(provider).to receive(:env_obj).and_return(double("null object").as_null_object)
       provider
     end
@@ -380,7 +380,7 @@ describe Chef::Provider::WindowsEnv do
         new_resource
       end
       let(:provider) do
-        provider = Chef::Provider::WindowsEnv::Windows.new(new_resource, run_context)
+        provider = Chef::Provider::WindowsEnv.new(new_resource, run_context)
         allow(provider).to receive(:env_obj).and_return(double("null object").as_null_object)
         provider
       end
