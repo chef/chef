@@ -20,11 +20,16 @@ require "chef/provider/package/yum/python_helper"
 require "chef/provider/package"
 require "singleton"
 
+#
+# These are largely historical APIs, the YumCache object no longer exists and this is a
+# fascade over the python helper class.  It should be considered deprecated-lite and
+# no new APIs should be added and should be added to the python_helper instead.
+#
+
 class Chef
   class Provider
     class Package
       class Yum < Chef::Provider::Package
-        # Cache for our installed and available packages, pulled in from yum-dump.py
         class YumCache
           include Singleton
 
@@ -54,12 +59,12 @@ class Chef
 
           def available_version(name)
             p = python_helper.package_query(:whatavailable, name)
-            "#{p.version}.#{p.arch}"
+            "#{p.version}.#{p.arch}" unless p.version.nil?
           end
 
           def installed_version(name)
             p = python_helper.package_query(:whatinstalled, name)
-            "#{p.version}.#{p.arch}"
+            "#{p.version}.#{p.arch}" unless p.version.nil?
           end
 
           def package_available?(name)
@@ -67,13 +72,16 @@ class Chef
             !p.version.nil?
           end
 
+          # NOTE that it is the responsibility of the python_helper to get these APIs correct and
+          # we do not do any validation here that the e.g. version or arch matches the requested value
+          # (because the bigger issue there is a buggy+broken python_helper -- so don't try to fix those
+          # kinds of bugs here)
           def version_available?(name, version, arch = nil)
             p = python_helper.package_query(:whatavailable, name, version, arch)
             !p.version.nil?
           end
 
-          private
-
+          # @api private
           def python_helper
             @python_helper ||= PythonHelper.instance
           end
