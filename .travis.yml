@@ -7,6 +7,10 @@ before_install:
   - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
   - gem --version
   - rvm @global do gem uninstall bundler -a -x
+    # travis may preinstall a bundler gem which is later than the one which we pin, which may totally hose us, so we preemtively
+    # uninstall anything they may have installed here.  if they haven't installed anything then we have to ignore the failure
+    # to uninstall the default bundler that ships embedded in ruby itself.
+  - rvm @global do gem uninstall bundler -a -x || true
   - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
   - bundle --version
   - rm -f .bundle/config
@@ -33,24 +37,78 @@ env:
 
 matrix:
   include:
-  - rvm: 2.2.8
+  - env:
+      INTEGRATION_SPECS_22: 1
+    rvm: 2.2.9
     sudo: true
-    script: sudo -E $(which bundle) exec rake spec;
+    script: sudo -E $(which bundle) exec rake spec:integration;
     # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
-  - rvm: 2.3.5
+  - env:
+      INTEGRATION_SPECS_23: 1
+    rvm: 2.3.6
     sudo: true
-    script: sudo -E $(which bundle) exec rake spec;
+    script: sudo -E $(which bundle) exec rake spec:integration;
     # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
-  - rvm: 2.4.2
+  - env:
+      INTEGRATION_SPECS_24: 1
+    rvm: 2.4.3
     sudo: true
-    script: sudo -E $(which bundle) exec rake spec;
+    script: sudo -E $(which bundle) exec rake spec:integration;
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+  - env:
+      FUNCTIONAL_SPECS_22: 1
+    rvm: 2.2.9
+    sudo: true
+    script: sudo -E $(which bundle) exec rake spec:functional;
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+  - env:
+      FUNCTIONAL_SPECS_23: 1
+    rvm: 2.3.6
+    sudo: true
+    script: sudo -E $(which bundle) exec rake spec:functional;
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+  - env:
+      FUNCTIONAL_SPECS_24: 1
+    rvm: 2.4.3
+    sudo: true
+    script: sudo -E $(which bundle) exec rake spec:functional;
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+  - env:
+      UNIT_SPECS_22: 1
+    rvm: 2.2.9
+    sudo: true
+    script:
+      - sudo -E $(which bundle) exec rake spec:unit;
+      - sudo -E $(which bundle) exec rake component_specs
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+  - env:
+      UNIT_SPECS_23: 1
+    rvm: 2.3.6
+    sudo: true
+    script:
+      - sudo -E $(which bundle) exec rake spec:unit;
+      - sudo -E $(which bundle) exec rake component_specs
+    # also remove integration / external tests
+    bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
+  - env:
+      UNIT_SPECS_24: 1
+    rvm: 2.4.3
+    sudo: true
+    script:
+      - sudo -E $(which bundle) exec rake spec:unit;
+      - sudo -E $(which bundle) exec rake component_specs
     # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
   - env:
       CHEFSTYLE: 1
-    rvm: 2.3.5
+    rvm: 2.3.6
     script: bundle exec rake style
     # also remove integration / external tests
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
@@ -60,11 +118,11 @@ matrix:
   - env:
       TEST_GEM: chef-provisioning
     script: tasks/bin/run_external_test $TEST_GEM rake spec
-    rvm: 2.3.5
+    rvm: 2.3.6
   - env:
       TEST_GEM: cheffish
     script: tasks/bin/run_external_test $TEST_GEM rake spec
-    rvm: 2.3.5
+    rvm: 2.3.6
   - env:
       TEST_GEM: chefspec
     # The chefspec tests + bundler cache + "gem update --system" interact badly :/
@@ -74,18 +132,18 @@ matrix:
       - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
       - bundle config --local without server:docgen:maintenance:omnibus_package:development:ruby_prof:pry
     script: tasks/bin/run_external_test $TEST_GEM rake
-    rvm: 2.3.5
+    rvm: 2.3.6
   - env:
       TEST_GEM: knife-windows
     script: tasks/bin/run_external_test $TEST_GEM rake unit_spec
-    rvm: 2.3.5
+    rvm: 2.3.6
   - env:
       TEST_GEM: poise
     script: tasks/bin/run_external_test $TEST_GEM rake spec
-    rvm: 2.3.5
+    rvm: 2.3.6
   ### START TEST KITCHEN ONLY ###
   #
-  - rvm: 2.3.5
+  - rvm: 2.3.6
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -103,7 +161,7 @@ matrix:
     env:
       - UBUNTU=14.04
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.5
+  - rvm: 2.3.6
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -121,7 +179,7 @@ matrix:
     env:
       - UBUNTU=16.04
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.5
+  - rvm: 2.3.6
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -139,7 +197,7 @@ matrix:
     env:
       - DEBIAN=7
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.5
+  - rvm: 2.3.6
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -157,7 +215,7 @@ matrix:
     env:
       - DEBIAN=8
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.5
+  - rvm: 2.3.6
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -175,7 +233,7 @@ matrix:
     env:
       - DEBIAN=9
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.5
+  - rvm: 2.3.6
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -193,7 +251,7 @@ matrix:
     env:
       - CENTOS=6
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.5
+  - rvm: 2.3.6
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -211,7 +269,7 @@ matrix:
     env:
       - CENTOS=7
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.5
+  - rvm: 2.3.6
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -229,7 +287,7 @@ matrix:
     env:
       - AWESOME_CUSTOMERS_UBUNTU=1
       - KITCHEN_YAML=.kitchen.travis.yml
-  - rvm: 2.3.5
+  - rvm: 2.3.6
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
@@ -248,7 +306,7 @@ matrix:
       - AWESOME_CUSTOMERS_RHEL=1
       - KITCHEN_YAML=.kitchen.travis.yml
     ### END TEST KITCHEN ONLY ###
-  - rvm: 2.3.5
+  - rvm: 2.3.6
     sudo: required
     dist: trusty
     before_install:
@@ -268,12 +326,3 @@ matrix:
       - cat /tmp/out.txt
       - sudo cat /var/log/squid3/cache.log
       - sudo cat /var/log/squid3/access.log
-
-notifications:
-  on_change: true
-  on_failure: true
-  on_success: change
-  on_pull_requests: false
-  irc:
-    channels:
-    - chat.freenode.net#chef-hacking
