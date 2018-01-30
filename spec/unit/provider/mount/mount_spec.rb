@@ -374,6 +374,28 @@ describe Chef::Provider::Mount::Mount do
       end
     end
 
+    describe "default_mount_options" do
+      it "should return the correct default mount options for Linux" do
+        @provider.node.override[:os] = "linux"
+        expect(@provider.default_mount_options).to eq("defaults")
+      end
+
+      it "should return the correct default mount options for AIX" do
+        @provider.node.override[:os] = "aix"
+        expect(@provider.default_mount_options).to eq("rw")
+      end
+
+      it "should return the correct default mount options for Darwin" do
+        @provider.node.override[:os] = "darwin"
+        expect(@provider.default_mount_options).to eq("rw")
+      end
+
+      it "should return the correct default mount options for FreeBSD" do
+        @provider.node.override[:os] = "freebsd"
+        expect(@provider.default_mount_options).to eq("rw")
+      end
+    end
+
     describe "when enabling the fs" do
       it "should enable if enabled isn't true" do
         @current_resource.enabled(false)
