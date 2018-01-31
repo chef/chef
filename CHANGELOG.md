@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.21.35 -->
-## [v12.21.35](https://github.com/chef/chef/tree/v12.21.35) (2018-01-31)
+<!-- latest_release 12.21.36 -->
+## [v12.21.36](https://github.com/chef/chef/tree/v12.21.36) (2018-01-31)
 
 #### Merged Pull Requests
-- backport #6746 [#6817](https://github.com/chef/chef/pull/6817) ([thommay](https://github.com/thommay))
+- Fix tests on AIX [#6819](https://github.com/chef/chef/pull/6819) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=12.21.31 -->
 ### Changes since 12.21.31 release
 
 #### Merged Pull Requests
+- Fix tests on AIX [#6819](https://github.com/chef/chef/pull/6819) ([thommay](https://github.com/thommay)) <!-- 12.21.36 -->
 - backport #6746 [#6817](https://github.com/chef/chef/pull/6817) ([thommay](https://github.com/thommay)) <!-- 12.21.35 -->
 - Format omnibus readme markdown [#6814](https://github.com/chef/chef/pull/6814) ([tas50](https://github.com/tas50)) <!-- 12.21.34 -->
 - Fix Dockerfile &amp; Travis/Appveyor failures [#6811](https://github.com/chef/chef/pull/6811) ([tas50](https://github.com/tas50)) <!-- 12.21.33 -->
