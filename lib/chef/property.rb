@@ -60,6 +60,7 @@ class Chef
     #   options).
     #   @option options [Symbol] :name The name of this property.
     #   @option options [Class] :declared_in The class this property comes from.
+    #   @option options [String] :description A description of the property.
     #   @option options [Symbol] :instance_variable_name The instance variable
     #     tied to this property. Must include a leading `@`. Defaults to `@<name>`.
     #     `nil` means the property is opaque and not tied to a specific instance
@@ -158,6 +159,15 @@ class Chef
     end
 
     #
+    # A description of this property.
+    #
+    # @return [String]
+    #
+    def description
+      options[:description]
+    end
+
+    #
     # The instance variable associated with this property.
     #
     # Defaults to `@<name>`
@@ -252,7 +262,7 @@ class Chef
     #
     def validation_options
       @validation_options ||= options.reject do |k, v|
-        [:declared_in, :name, :instance_variable_name, :desired_state, :identity, :default, :name_property, :coerce, :required, :nillable, :sensitive].include?(k)
+        [:declared_in, :name, :instance_variable_name, :desired_state, :identity, :default, :name_property, :coerce, :required, :nillable, :sensitive, :description].include?(k)
       end
     end
 
