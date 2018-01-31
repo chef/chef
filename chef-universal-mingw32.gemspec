@@ -15,6 +15,7 @@ gemspec.add_dependency "win32-process", "~> 0.8.2"
 gemspec.add_dependency "win32-service", "~> 0.8.7"
 gemspec.add_dependency "windows-api", "~> 0.4.4"
 gemspec.add_dependency "wmi-lite", "~> 1.0"
+gemspec.add_dependency "win32-taskscheduler", "~> 0.4.0"
 gemspec.extensions << "ext/win32-eventlog/Rakefile"
 gemspec.files += %w{ext/win32-eventlog/Rakefile ext/win32-eventlog/chef-log.man}
 

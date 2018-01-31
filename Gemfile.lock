@@ -84,6 +84,7 @@ PATH
       win32-mutex (~> 0.4.2)
       win32-process (~> 0.8.2)
       win32-service (~> 0.8.7)
+      win32-taskscheduler (~> 0.4.0)
       windows-api (~> 0.4.4)
       wmi-lite (~> 1.0)
 
@@ -343,6 +344,7 @@ GEM
       net-telnet
       sfl
     sslshake (1.2.0)
+    structured_warnings (0.3.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
     thor (0.20.0)
@@ -397,6 +399,9 @@ GEM
     win32-service (0.8.10)
       ffi
       ffi-win32-extensions
+    win32-taskscheduler (0.4.0)
+      ffi
+      structured_warnings
     windows-api (0.4.4)
       win32-api (>= 1.4.5)
     winrm (2.2.3)
