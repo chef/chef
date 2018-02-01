@@ -82,7 +82,7 @@ class Chef
           package_name = name.zip(version).map do |n, v|
             package_data[n][:virtual] ? n : "#{n}=#{v}"
           end
-          run_noninteractive("apt-get", "-q", "-y", default_release_options, options, "install", package_name)
+          run_noninteractive("apt-get", "-q", "-y", config_file_options, default_release_options, options, "install", package_name)
         end
 
         def upgrade_package(name, version)
@@ -150,6 +150,20 @@ class Chef
           # Use apt::Default-Release option only if provider supports it
           if new_resource.respond_to?(:default_release) && new_resource.default_release
             [ "-o", "APT::Default-Release=#{new_resource.default_release}" ]
+          end
+        end
+
+        def config_file_options
+          # If the user has specified config file options previously, respect those.
+          return if Array(options).any? { |opt| opt =~ /--force-conf/ }
+
+          # It doesn't make sense to install packages in a scenario that can
+          # result in a prompt. Have users decide up-front whether they want to
+          # forcibly overwrite the config file, otherwise preserve it.
+          if new_resource.overwrite_config_files
+            [ "-o", "Dpkg::Options::=--force-confnew" ]
+          else
+            [ "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold" ]
           end
         end
 
