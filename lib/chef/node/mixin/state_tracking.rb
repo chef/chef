@@ -25,14 +25,12 @@ class Chef
         attr_reader :__precedence__
 
         def initialize(data = nil, root = self, node = nil, precedence = nil, path = nil)
-          # __path__ and __root__ must be nil when we call super so it knows
-          # to avoid resetting the cache on construction
-          data.nil? ? super() : super(data)
+          @__node__ = node
+          @__precedence__ = precedence
           @__path__ = path
           @__path__ ||= []
           @__root__ = root
-          @__node__ = node
-          @__precedence__ = precedence
+          data.nil? ? super() : super(data)
         end
 
         def [](*args)

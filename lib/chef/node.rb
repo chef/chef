@@ -77,8 +77,6 @@ class Chef
       @policy_name = nil
       @policy_group = nil
 
-      @attributes = Chef::Node::Attribute.new({}, {}, {}, {}, self)
-
       @run_state = {}
     end
 
@@ -182,7 +180,7 @@ class Chef
     end
 
     def attributes
-      @attributes
+      @attributes ||= Chef::Node::Attribute.new({}, {}, {}, {}, self)
     end
 
     alias :attribute :attributes

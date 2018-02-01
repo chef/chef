@@ -1318,5 +1318,4 @@ describe Chef::Node::Attribute do
       expect(@attributes.default["bar"]["baz"]).to eql({ "one" => "two" })
     end
   end
-
 end

@@ -69,8 +69,9 @@ class Chef
       end
 
       def delete(key, &block)
+        ret = super
         send_reset_cache(__path__)
-        super
+        ret
       end
 
       def initialize(data = [])
@@ -148,14 +149,16 @@ class Chef
       # object.
 
       def delete(key, &block)
+        ret = super
         send_reset_cache(__path__)
-        super
+        ret
       end
 
       MUTATOR_METHODS.each do |mutator|
         define_method(mutator) do |*args, &block|
+          ret = super(*args, &block)
           send_reset_cache(__path__)
-          super(*args, &block)
+          ret
         end
       end
 

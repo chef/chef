@@ -185,9 +185,6 @@ class Chef
        # return the automatic level attribute component
       attr_reader :automatic
 
-      # return the immutablemash deep merge cache
-      attr_reader :deep_merge_cache
-
       def initialize(normal, default, override, automatic, node = nil)
         @default        = VividMash.new(default, self, node, :default)
         @env_default    = VividMash.new({}, self, node, :env_default)
@@ -203,8 +200,11 @@ class Chef
 
         @automatic      = VividMash.new(automatic, self, node, :automatic)
 
-        @deep_merge_cache = ImmutableMash.new({}, self, node, :merged)
         @__node__ = node
+      end
+
+      def deep_merge_cache
+        @deep_merge_cache ||= ImmutableMash.new({}, self, __node__, :merged)
       end
 
        # Debug what's going on with an attribute. +args+ is a path spec to the
@@ -229,7 +229,7 @@ class Chef
       end
 
       def reset
-        @deep_merge_cache = ImmutableMash.new({}, self, @__node__, :merged)
+        @deep_merge_cache = nil
       end
 
       def reset_cache(*path)
@@ -493,11 +493,11 @@ class Chef
       end
 
       def [](key)
-        @deep_merge_cache[key]
+        deep_merge_cache[key]
       end
 
       def merged_attributes
-        @deep_merge_cache
+        deep_merge_cache
       end
 
       def inspect

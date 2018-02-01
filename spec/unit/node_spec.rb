@@ -1809,4 +1809,20 @@ describe Chef::Node do
       expect(node["a"]["key"]).to eql(1)
     end
   end
+
+  describe "lazy ungenerated caches work with ruby internal APIs" do
+    it "works with hashes when first created" do
+      node.default["foo"] = { "one" => "two" }
+      result = {}.merge!(node["foo"])
+      expect(result).to eql({ "one" => "two" })
+    end
+
+    it "works with hashes that receive a reset" do
+      node.default["foo"] = { "one" => "two" }
+      node["foo"].to_h
+      node.default["foo"]["bar"] = "baz"
+      result = {}.merge!(node["foo"])
+      expect(result).to eql({ "one" => "two", "bar" => "baz" })
+    end
+  end
 end
