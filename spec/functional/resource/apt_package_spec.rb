@@ -1,7 +1,7 @@
 # encoding: UTF-8
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software, Inc.
+# Copyright:: Copyright 2013-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,7 +92,7 @@ metadata = { :unix_only => true,
              :arch => "x86_64" # test packages are 64bit
 }
 
-describe Chef::Resource::Package, metadata do
+describe Chef::Resource::AptPackage, metadata do
   include Chef::Mixin::ShellOut
 
   context "with a remote package source" do
@@ -143,7 +143,7 @@ describe Chef::Resource::Package, metadata do
     end
 
     def base_resource
-      r = Chef::Resource::Package.new("chef-integration-test", run_context)
+      r = Chef::Resource::AptPackage.new("chef-integration-test", run_context)
       # The apt repository in the spec data is not gpg signed, so we need to
       # force apt to accept the package:
       r.options("--force-yes")
