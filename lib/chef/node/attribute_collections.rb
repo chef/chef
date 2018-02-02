@@ -178,7 +178,7 @@ class Chef
 
       def []=(key, value)
         ret = super
-        send_reset_cache(__path__)
+        send_reset_cache(__path__ + [ key ])
         ret # rubocop:disable Lint/Void
       end
 

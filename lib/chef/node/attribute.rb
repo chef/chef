@@ -236,10 +236,13 @@ class Chef
         if path.empty?
           reset
         else
+          key = path.pop
           container = read(*path)
           case container
-          when Hash, Array
+          when Array
             container.reset
+          when Hash
+            container.reset_key(key)
           end
         end
       end

@@ -291,6 +291,29 @@ class Chef
         generate_cache
       end
 
+      def reset_key(key)
+        key = key.to_s
+        components = short_circuit_attr_levels ? short_circuit_attr_levels : Attribute::COMPONENTS.reverse
+        # tracked_components is not entirely accurate due to the short-circuit
+        tracked_components = []
+        components.each do |component|
+          subhash = __node__.attributes.instance_variable_get(component).read(*__path__)
+          unless subhash.nil? # FIXME: nil is used for not present
+            tracked_components << component
+            if subhash.kind_of?(Hash)
+              if subhash.key?(key)
+                value = subhash[key]
+                value.short_circuit_attr_levels = short_circuit_attr_levels if value.respond_to?(:short_circuit_attr_levels)
+                internal_set(key, value)
+                break
+              end
+            else
+              break
+            end
+          end
+        end
+      end
+
       # @api private
       def ensure_generated_cache!
         generate_cache unless @generated_cache
