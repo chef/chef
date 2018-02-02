@@ -477,10 +477,9 @@ describe Chef::Node do
 
       context "with array indexes" do
         before do
-          node.role_default["mysql"]["server"][0]["port"] = 1234
-          node.normal["mysql"]["server"][0]["port"] = 2345
-          node.override["mysql"]["server"][0]["port"] = 3456
-          node.override["mysql"]["server"][1]["port"] = 3456
+          node.role_default["mysql"]["server"] = [ { "port" => 1234 } ]
+          node.normal["mysql"]["server"] = [ { "port" => 2345 } ]
+          node.override["mysql"]["server"] = [ { "port" => 3456 }, { "port" => 3456 } ]
         end
 
         it "deletes the array element" do
