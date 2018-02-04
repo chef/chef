@@ -47,9 +47,6 @@ include_recipe "chef-client"
 include_recipe "chef-apt-docker"
 include_recipe "chef-yum-docker"
 
-# hack needed for debian-7 on docker
-directory "/var/run/sshd"
-
 include_recipe "openssh"
 
 include_recipe "nscd"
