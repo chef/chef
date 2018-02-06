@@ -76,6 +76,7 @@ class Chef
         #     be run in the context of the instance (and able to access other
         #     properties).
         #   @option options [String] :description A description of the property.
+        #   @option options [String] :introduced The release that introduced this property
         #   @option options [Boolean] :desired_state `true` if this property is
         #     part of desired state. Defaults to `true`.
         #   @option options [Boolean] :identity `true` if this property

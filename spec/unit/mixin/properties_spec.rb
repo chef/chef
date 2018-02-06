@@ -11,7 +11,7 @@ module ChefMixinPropertiesSpec
         property :a, "a", default: "a"
         property :ab, %w{a b}, default: "a"
         property :ac, %w{a c}, default: "a"
-        property :d, "d", description: "The d property"
+        property :d, "d", description: "The d property", introduced: "14.0"
       end
 
       context "and a module B with properties b, ab and bc" do
@@ -39,6 +39,10 @@ module ChefMixinPropertiesSpec
 
           it "A.properties can get the description of `d`" do
             expect(A.properties[:d].description).to eq "The d property"
+          end
+
+          it "A.properties can get the release that introduced `d`" do
+            expect(A.properties[:d].introduced).to eq "14.0"
           end
 
           it "B.properties has b, ab, and bc with types 'b', nil and ['b', 'c']" do

@@ -65,6 +65,7 @@ class Chef
     #     tied to this property. Must include a leading `@`. Defaults to `@<name>`.
     #     `nil` means the property is opaque and not tied to a specific instance
     #     variable.
+    #   @option options [String] :introduced The release that introduced this property
     #   @option options [Boolean] :desired_state `true` if this property is part of desired
     #     state. Defaults to `true`.
     #   @option options [Boolean] :identity `true` if this property is part of object
@@ -168,6 +169,15 @@ class Chef
     end
 
     #
+    # When this property was introduced
+    #
+    # @return [String]
+    #
+    def introduced
+      options[:introduced]
+    end
+
+    #
     # The instance variable associated with this property.
     #
     # Defaults to `@<name>`
@@ -262,7 +272,7 @@ class Chef
     #
     def validation_options
       @validation_options ||= options.reject do |k, v|
-        [:declared_in, :name, :instance_variable_name, :desired_state, :identity, :default, :name_property, :coerce, :required, :nillable, :sensitive, :description].include?(k)
+        [:declared_in, :name, :instance_variable_name, :desired_state, :identity, :default, :name_property, :coerce, :required, :nillable, :sensitive, :description, :introduced].include?(k)
       end
     end
 
