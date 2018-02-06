@@ -137,7 +137,7 @@ class Chef
             end
           end
         else
-          Chef::Log.warn "#{new_resource} task doesn't exists - nothing to do"
+          Chef::Log.warn "#{new_resource} task doesn't exist - nothing to do"
         end
       end
 
@@ -149,7 +149,7 @@ class Chef
             run_schtasks "DELETE", "F" => ""
           end
         else
-          Chef::Log.warn "#{new_resource} task doesn't exists - nothing to do"
+          Chef::Log.warn "#{new_resource} task doesn't exist - nothing to do"
         end
       end
 
@@ -180,7 +180,7 @@ class Chef
           end
         else
           Chef::Log.fatal "#{new_resource} task doesn't exist - nothing to do"
-          raise Errno::ENOENT, "#{new_resource}: task does not exist, cannot enable"
+          raise Errno::ENOENT, "#{new_resource}: task doesn't exist, cannot enable"
         end
       end
 
