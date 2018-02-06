@@ -25,8 +25,6 @@ verifier:
 platforms:
 <% %w(
 debian-8
-debian-7
-debian-6
 ubuntu-15.10
 ubuntu-14.04
 el-7

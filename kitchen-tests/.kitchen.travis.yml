@@ -37,15 +37,6 @@ platforms:
       - RUN yum -y install sudo
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: debian-7
-  driver:
-    image: dokken/debian-7
-    pid_one_command: /sbin/init
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update
-      - RUN /usr/bin/apt-get -y install sudo
-      - RUN /bin/mkdir /var/run/sshd
-
 - name: debian-8
   driver:
     image: dokken/debian-8

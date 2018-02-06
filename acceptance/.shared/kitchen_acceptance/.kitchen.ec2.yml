@@ -64,17 +64,6 @@ platforms:
         image-type: machine
     transport:
       username: admin
-  - name: debian-7
-    driver:
-      image_search:
-        name: debian-wheezy-*
-        owner-id: "379101102735"
-        architecture: x86_64
-        virtualization-type: hvm
-        block-device-mapping.volume-type: standard
-        image-type: machine
-    transport:
-      username: admin
   #
   # Ubuntu
   #
