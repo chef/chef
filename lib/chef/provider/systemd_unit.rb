@@ -227,10 +227,11 @@ class Chef
       def systemctl_opts
         @systemctl_opts ||=
           if new_resource.user
+            uid = Etc.getpwuid(new_resource.user).uid
             {
               :user => new_resource.user,
               :environment => {
-                "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/#{node['etc']['passwd'][new_resource.user]['uid']}/bus",
+                "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/#{uid}/bus",
               },
             }
           else
