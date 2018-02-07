@@ -52,6 +52,12 @@ module ChefConfig
       configuration.inspect
     end
 
+    # given a *nix style config path return the platform specific path
+    # to that same config file
+    # @example client.pem path on Windows
+    #   platform_specific_path("/etc/chef/client.pem") #=> "C:\\chef\\client.pem"
+    # @param path [String] The unix path to convert to a platform specific path
+    # @return [String] a platform specific path
     def self.platform_specific_path(path)
       path = PathHelper.cleanpath(path)
       if ChefConfig.windows?
@@ -66,6 +72,11 @@ module ChefConfig
       path
     end
 
+    # the drive where Chef is installed on a windows host. This is determined
+    # either by the drive containing the current file or by the SYSTEMDRIVE ENV
+    # variable
+    #
+    # @return [String] the drive letter
     def self.windows_installation_drive
       if ChefConfig.windows?
         drive = File.expand_path(__FILE__).split("/", 2)[0]
@@ -249,7 +260,7 @@ module ChefConfig
     # Defaults to <chef_repo_path>/policies.
     default(:policy_path) { derive_path_from_chef_repo_path("policies") }
 
-    # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
+    # Turn on "path sanity" by default.
     default :enforce_path_sanity, false
 
     # Formatted Chef Client output is a beta feature, disabled by default:
