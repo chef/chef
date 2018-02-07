@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 14.0.47 -->
+## [v14.0.47](https://github.com/chef/chef/tree/v14.0.47) (2018-02-07)
 
 #### Merged Pull Requests
+- Link to the knife docs when the knife config file is missing [#6364](https://github.com/chef/chef/pull/6364) ([tas50](https://github.com/tas50))
 - Grammar fixes in windows_task [#6828](https://github.com/chef/chef/pull/6828) ([Happycoil](https://github.com/Happycoil))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Link to the knife docs when the knife config file is missing [#6364](https://github.com/chef/chef/pull/6364) ([tas50](https://github.com/tas50)) <!-- 14.0.47 -->
 - Grammar fixes in windows_task [#6828](https://github.com/chef/chef/pull/6828) ([Happycoil](https://github.com/Happycoil)) <!-- 14.0.46 -->
 - Fix windows_task idle_time validation [#6807](https://github.com/chef/chef/pull/6807) ([algaut](https://github.com/algaut)) <!-- 14.0.46 -->
 - Remove testing of Debian 7 as it&#39;s going EOL [#6826](https://github.com/chef/chef/pull/6826) ([tas50](https://github.com/tas50)) <!-- 14.0.45 -->
