@@ -148,7 +148,7 @@ class Chef
       # also invalidate the cached `merged_attributes` on the root Attribute
       # object.
 
-      def delete(key, &block)
+      def delete(key, &block) # XXX: why did i do this here and not in define_method below?
         ret = super
         send_reset_cache(__path__)
         ret
@@ -169,15 +169,17 @@ class Chef
       def [](key)
         value = super
         if !key?(key)
-          value = self.class.new({}, __root__)
+          value = convert_value({}, __path__ + [ key ])
           self[key] = value
+          send_reset_cache(__path__ + [ key ])
+          value
         else
           value
         end
       end
 
       def []=(key, value)
-        ret = super
+        ret = regular_writer(convert_key(key), convert_value(value, __path__ + [ key ]))
         send_reset_cache(__path__ + [ key ])
         ret # rubocop:disable Lint/Void
       end
@@ -192,7 +194,7 @@ class Chef
       # We override it here to convert hash or array values to VividMash or
       # AttrArray for consistency and to ensure that the added parts of the
       # attribute tree will have the correct cache invalidation behavior.
-      def convert_value(value)
+      def convert_value(value, path = nil)
         value.ensure_generated_cache! if value.respond_to?(:ensure_generated_cache!)
         case value
         when VividMash
@@ -200,9 +202,9 @@ class Chef
         when AttrArray
           value
         when Hash
-          VividMash.new(value, __root__, __node__, __precedence__)
+          VividMash.new(value, __root__, __node__, __precedence__, path)
         when Array
-          AttrArray.new(value, __root__, __node__, __precedence__)
+          AttrArray.new(value, __root__, __node__, __precedence__, path)
         else
           value
         end
