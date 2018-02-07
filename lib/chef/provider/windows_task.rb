@@ -77,7 +77,7 @@ class Chef
         if current_resource.exists
           Chef::Log.debug "#{new_resource} task exists."
           if !(task_need_update? || new_resource.force)
-            Chef::Log.info "#{new_resource} task doesn't need updating and force not specified - nothing to do"
+            Chef::Log.info "#{new_resource} task does not need updating and force is not specified - nothing to do"
             return
           end
           # Setting the attributes of new_resource as current_resource.
@@ -137,7 +137,7 @@ class Chef
             end
           end
         else
-          Chef::Log.warn "#{new_resource} task doesn't exist - nothing to do"
+          Chef::Log.warn "#{new_resource} task does not exist - nothing to do"
         end
       end
 
@@ -149,7 +149,7 @@ class Chef
             run_schtasks "DELETE", "F" => ""
           end
         else
-          Chef::Log.warn "#{new_resource} task doesn't exist - nothing to do"
+          Chef::Log.warn "#{new_resource} task does not exist - nothing to do"
         end
       end
 
@@ -164,7 +164,7 @@ class Chef
             end
           end
         else
-          Chef::Log.warn "#{new_resource} task doesn't exist - nothing to do"
+          Chef::Log.warn "#{new_resource} task does not exist - nothing to do"
         end
       end
 
@@ -179,8 +179,8 @@ class Chef
             end
           end
         else
-          Chef::Log.fatal "#{new_resource} task doesn't exist - nothing to do"
-          raise Errno::ENOENT, "#{new_resource}: task doesn't exist, cannot enable"
+          Chef::Log.fatal "#{new_resource} task does not exist - nothing to do"
+          raise Errno::ENOENT, "#{new_resource}: task does not exist, cannot enable"
         end
       end
 
@@ -195,7 +195,7 @@ class Chef
             Chef::Log.warn "#{new_resource} already disabled - nothing to do"
           end
         else
-          Chef::Log.warn "#{new_resource} task doesn't exist - nothing to do"
+          Chef::Log.warn "#{new_resource} task does not exist - nothing to do"
         end
       end
 
