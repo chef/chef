@@ -198,6 +198,20 @@ class Chef
       @requirements ||= ResourceRequirements.new(@new_resource, run_context)
     end
 
+    def description(description = "NOT_PASSED")
+      if description != "NOT_PASSED"
+        @description = description
+      end
+      @description
+    end
+
+    def introduced(introduced = "NOT_PASSED")
+      if introduced != "NOT_PASSED"
+        @introduced = introduced
+      end
+      @introduced
+    end
+
     def converge_by(descriptions, &block)
       converge_actions.add_action(descriptions, &block)
     end
