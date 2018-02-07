@@ -75,9 +75,9 @@ class Chef
 
       def action_create
         if current_resource.exists
-          Chef::Log.debug "#{new_resource} task exists."
+          Chef::Log.debug "#{new_resource} task exists"
           if !(task_need_update? || new_resource.force)
-            Chef::Log.info "#{new_resource} task doesn't need updating and force not specified - nothing to do"
+            Chef::Log.info "#{new_resource} task does not need updating and force is not specified - nothing to do"
             return
           end
           # Setting the attributes of new_resource as current_resource.
@@ -128,34 +128,34 @@ class Chef
 
       def action_run
         if current_resource.exists
-          Chef::Log.debug "#{new_resource} task exists."
+          Chef::Log.debug "#{new_resource} task exists"
           if current_resource.status == :running
-            Chef::Log.info "#{new_resource} task is currently running, skipping run."
+            Chef::Log.info "#{new_resource} task is currently running, skipping run"
           else
             converge_by("run scheduled task #{new_resource}") do
               run_schtasks "RUN"
             end
           end
         else
-          Chef::Log.warn "#{new_resource} task doesn't exists - nothing to do"
+          Chef::Log.warn "#{new_resource} task does not exist - nothing to do"
         end
       end
 
       def action_delete
         if current_resource.exists
-          Chef::Log.debug "#{new_resource} task exists."
+          Chef::Log.debug "#{new_resource} task exists"
           converge_by("delete scheduled task #{new_resource}") do
             # always need to force deletion
             run_schtasks "DELETE", "F" => ""
           end
         else
-          Chef::Log.warn "#{new_resource} task doesn't exists - nothing to do"
+          Chef::Log.warn "#{new_resource} task does not exist - nothing to do"
         end
       end
 
       def action_end
         if current_resource.exists
-          Chef::Log.debug "#{new_resource} task exists."
+          Chef::Log.debug "#{new_resource} task exists"
           if current_resource.status != :running
             Chef::Log.debug "#{new_resource} is not running - nothing to do"
           else
@@ -164,13 +164,13 @@ class Chef
             end
           end
         else
-          Chef::Log.warn "#{new_resource} task doesn't exist - nothing to do"
+          Chef::Log.warn "#{new_resource} task does not exist - nothing to do"
         end
       end
 
       def action_enable
         if current_resource.exists
-          Chef::Log.debug "#{new_resource} task exists."
+          Chef::Log.debug "#{new_resource} task exists"
           if current_resource.enabled
             Chef::Log.debug "#{new_resource} already enabled - nothing to do"
           else
@@ -179,14 +179,14 @@ class Chef
             end
           end
         else
-          Chef::Log.fatal "#{new_resource} task doesn't exist - nothing to do"
+          Chef::Log.fatal "#{new_resource} task does not exist - nothing to do"
           raise Errno::ENOENT, "#{new_resource}: task does not exist, cannot enable"
         end
       end
 
       def action_disable
         if current_resource.exists
-          Chef::Log.info "#{new_resource} task exists."
+          Chef::Log.info "#{new_resource} task exists"
           if current_resource.enabled
             converge_by("#{new_resource} task disabled") do
               run_schtasks "CHANGE", "DISABLE" => ""
@@ -195,7 +195,7 @@ class Chef
             Chef::Log.warn "#{new_resource} already disabled - nothing to do"
           end
         else
-          Chef::Log.warn "#{new_resource} task doesn't exist - nothing to do"
+          Chef::Log.warn "#{new_resource} task does not exist - nothing to do"
         end
       end
 
