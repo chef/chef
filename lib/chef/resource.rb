@@ -1179,8 +1179,8 @@ class Chef
     # Internal Resource Interface (for Chef)
     #
 
-    FORBIDDEN_IVARS = [:@run_context, :@not_if, :@only_if, :@enclosing_provider]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
+    FORBIDDEN_IVARS = [:@run_context, :@not_if, :@only_if, :@enclosing_provider, :@description, :@introduced, :@examples]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider, :@description, :@introduced, :@examples]
 
     include Chef::Mixin::ConvertToClassName
     extend Chef::Mixin::ConvertToClassName
@@ -1377,6 +1377,27 @@ class Chef
       else
         "dynamically defined"
       end
+    end
+
+    def self.description(description = "NOT_PASSED")
+      if description != "NOT_PASSED"
+        @description = description
+      end
+      @description
+    end
+
+    def self.introduced(introduced = "NOT_PASSED")
+      if introduced != "NOT_PASSED"
+        @introduced = introduced
+      end
+      @introduced
+    end
+
+    def self.examples(examples = "NOT_PASSED")
+      if examples != "NOT_PASSED"
+        @examples = examples
+      end
+      @examples
     end
 
     #
