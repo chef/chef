@@ -61,11 +61,11 @@ class Chef
         def remove_package(names, versions)
           names.each_with_index do |name, index|
             if versions && !versions[index].nil?
-              powershell_out( "Uninstall-Package '#{name}' -Force -ForceBootstrap -RequiredVersion #{versions[index]}", timeout: new_resource.timeout)
+              powershell_out("Uninstall-Package '#{name}' -Force -ForceBootstrap -RequiredVersion #{versions[index]}", timeout: new_resource.timeout)
             else
               version = "0"
               until version.empty?
-                version = powershell_out( "(Uninstall-Package '#{name}' -Force -ForceBootstrap).Version", timeout: new_resource.timeout).stdout.strip
+                version = powershell_out("(Uninstall-Package '#{name}' -Force -ForceBootstrap).Version", timeout: new_resource.timeout).stdout.strip
                 unless version.empty?
                   Chef::Log.info("Removed package '#{name}' with version #{version}")
                 end
