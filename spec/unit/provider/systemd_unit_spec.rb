@@ -19,17 +19,8 @@
 require "spec_helper"
 
 describe Chef::Provider::SystemdUnit do
-  let(:node) do
-    Chef::Node.new.tap do |n|
-      n.default["etc"] = {}
-      n.default["etc"]["passwd"] = {
-        "joe" => {
-          "uid" => 1_000,
-        },
-      }
-    end
-  end
 
+  let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:unit_name) { "sysstat-collect\\x2d.timer" }
@@ -83,6 +74,7 @@ describe Chef::Provider::SystemdUnit do
   end
 
   before(:each) do
+    allow(Etc).to receive(:getpwuid).and_return(OpenStruct.new(uid: 1000))
     allow(Chef::Resource::SystemdUnit).to receive(:new)
                                             .with(unit_name)
                                             .and_return(current_resource)
