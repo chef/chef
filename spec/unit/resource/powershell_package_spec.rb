@@ -27,7 +27,7 @@ describe Chef::Resource::PowershellPackage do
   end
 
   #to check the value of resource.resource_name
-  it "has a resource name of :python" do
+  it "has a resource name of :powershell_package" do
     expect(resource.resource_name).to eql(:powershell_package)
   end
 
