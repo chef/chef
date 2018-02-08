@@ -76,7 +76,7 @@ class Chef
 
       def initialize(data = [])
         super(data)
-        map! { |e| convert_value(e) }
+        map! { |e| convert_value(e, __path__) }
       end
 
       # For elements like Fixnums, true, nil...
@@ -92,7 +92,7 @@ class Chef
 
       private
 
-      def convert_value(value)
+      def convert_value(value, path = nil)
         value.ensure_generated_cache! if value.respond_to?(:ensure_generated_cache!)
         case value
         when VividMash
@@ -100,9 +100,9 @@ class Chef
         when AttrArray
           value
         when Hash
-          VividMash.new(value, __root__, __node__, __precedence__)
+          VividMash.new(value, __root__, __node__, __precedence__, path)
         when Array
-          AttrArray.new(value, __root__, __node__, __precedence__)
+          AttrArray.new(value, __root__, __node__, __precedence__, path)
         else
           value
         end
