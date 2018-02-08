@@ -65,7 +65,7 @@ class Chef
             else
               version = "0"
               until version.empty?
-                version = powershell_out( "(Uninstall-Package '#{name}' -Force -ForceBootstrap | select version | Format-Table -HideTableHeaders | Out-String).Trim()", timeout: new_resource.timeout).stdout.strip
+                version = powershell_out( "(Uninstall-Package '#{name}' -Force -ForceBootstrap).Version", timeout: new_resource.timeout).stdout.strip
                 unless version.empty?
                   Chef::Log.info("Removed package '#{name}' with version #{version}")
                 end
@@ -79,9 +79,9 @@ class Chef
           versions = []
           new_resource.package_name.each_with_index do |name, index|
             version = if new_resource.version && !new_resource.version[index].nil?
-                        powershell_out("(Find-Package '#{name}' -RequiredVersion #{new_resource.version[index]} -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", timeout: new_resource.timeout).stdout.strip
+                        powershell_out("(Find-Package '#{name}' -RequiredVersion #{new_resource.version[index]} -ForceBootstrap -Force).Version", timeout: new_resource.timeout).stdout.strip
                       else
-                        powershell_out("(Find-Package '#{name}' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", timeout: new_resource.timeout).stdout.strip
+                        powershell_out("(Find-Package '#{name}' -ForceBootstrap -Force).Version", timeout: new_resource.timeout).stdout.strip
                       end
             if version.empty?
               version = nil
@@ -96,9 +96,9 @@ class Chef
           version_list = []
           new_resource.package_name.each_with_index do |name, index|
             version = if new_resource.version && !new_resource.version[index].nil?
-                        powershell_out("(Get-Package -Name '#{name}' -RequiredVersion #{new_resource.version[index]} -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", timeout: new_resource.timeout).stdout.strip
+                        powershell_out("(Get-Package -Name '#{name}' -RequiredVersion #{new_resource.version[index]} -ForceBootstrap -Force).Version", timeout: new_resource.timeout).stdout.strip
                       else
-                        powershell_out("(Get-Package -Name '#{name}' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", timeout: new_resource.timeout).stdout.strip
+                        powershell_out("(Get-Package -Name '#{name}' -ForceBootstrap -Force).Version", timeout: new_resource.timeout).stdout.strip
                       end
             if version.empty?
               version = nil
