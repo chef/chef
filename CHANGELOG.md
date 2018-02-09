@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.7.20 -->
-## [v13.7.20](https://github.com/chef/chef/tree/v13.7.20) (2018-01-31)
+<!-- latest_release 13.7.21 -->
+## [v13.7.21](https://github.com/chef/chef/tree/v13.7.21) (2018-02-09)
 
 #### Merged Pull Requests
-- Backport the powershell spec fix to get Appveyor green again [#6813](https://github.com/chef/chef/pull/6813) ([tas50](https://github.com/tas50))
+- Use the version of LicenseScout that comes with the Omnibus gem. [#6841](https://github.com/chef/chef/pull/6841) ([tduffield](https://github.com/tduffield))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Use the version of LicenseScout that comes with the Omnibus gem. [#6841](https://github.com/chef/chef/pull/6841) ([tduffield](https://github.com/tduffield)) <!-- 13.7.21 -->
 - Backport the powershell spec fix to get Appveyor green again [#6813](https://github.com/chef/chef/pull/6813) ([tas50](https://github.com/tas50)) <!-- 13.7.20 -->
 - Ensure that we create a docker compatible ca-certs symlink [#6799](https://github.com/chef/chef/pull/6799) ([thommay](https://github.com/thommay)) <!-- 13.7.19 -->
 - fix node assignment of ImmutableArrays to VividMashes/AttrArrays (Chef-13 backport) [#6791](https://github.com/chef/chef/pull/6791) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.18 -->
