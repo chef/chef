@@ -229,13 +229,10 @@ class Chef
       end
 
       def reset
-        puts "TOTAL RESET"
-        #puts caller
         @deep_merge_cache = nil
       end
 
       def reset_cache(*path)
-        #puts "PATH: #{path}"
         if path.empty?
           reset
         else
