@@ -93,6 +93,7 @@ class Chef
       private
 
       def convert_value(value, path = nil)
+        puts "CONVERT_VALUE: #{path}"
         value.ensure_generated_cache! if value.respond_to?(:ensure_generated_cache!)
         case value
         when VividMash
@@ -184,6 +185,11 @@ class Chef
         ret # rubocop:disable Lint/Void
       end
 
+      def update(other_hash)
+        other_hash.each_pair { |key, value| regular_writer(convert_key(key), convert_value(value, __path__ + [ key ])) }
+        self
+      end
+
       alias :attribute? :has_key?
 
       def convert_key(key)
@@ -195,6 +201,7 @@ class Chef
       # AttrArray for consistency and to ensure that the added parts of the
       # attribute tree will have the correct cache invalidation behavior.
       def convert_value(value, path = nil)
+        puts "CONVERT_VALUE: #{path}"
         value.ensure_generated_cache! if value.respond_to?(:ensure_generated_cache!)
         case value
         when VividMash

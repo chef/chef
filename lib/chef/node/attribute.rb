@@ -229,7 +229,8 @@ class Chef
       end
 
       def reset
-        #puts "TOTAL RESET"
+        puts "TOTAL RESET"
+        #puts caller
         @deep_merge_cache = nil
       end
 
