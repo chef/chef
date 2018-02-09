@@ -101,67 +101,67 @@ describe Chef::Provider::Package::Powershell do
   describe "#candidate_version" do
 
     it "should set the candidate_version to the latest version when not pinning" do
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
       new_resource.package_name(["xNetworking"])
       new_resource.version(nil)
       expect(provider.candidate_version).to eql(["2.12.0.0"])
     end
 
     it "should set the candidate_version to the latest version when not pinning and package name is space seperated" do
-      allow(provider).to receive(:powershell_out).with("(Find-Package '7-Zip 16.02 (x64)' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_7zip_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package '7-Zip 16.02 (x64)' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_7zip_available)
       new_resource.package_name(["7-Zip 16.02 (x64)"])
       new_resource.version(nil)
       expect(provider.candidate_version).to eql(["16.02"])
     end
 
     it "should set the candidate_version to pinned version if available" do
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -RequiredVersion 2.0.0.0 -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available_2_0_0_0)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -RequiredVersion 2.0.0.0 -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available_2_0_0_0)
       new_resource.package_name(["xCertificate"])
       new_resource.version(["2.0.0.0"])
       expect(provider.candidate_version).to eql(["2.0.0.0"])
     end
 
     it "should set the candidate_version to nil if there is no candidate" do
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
       new_resource.package_name(["xCertificate"])
       expect(provider.candidate_version).to eql([nil])
     end
 
     it "should set the candidate_version correctly when there are two packages to install" do
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(nil)
       expect(provider.candidate_version).to eql(["2.1.0.0", "2.12.0.0"])
     end
 
     it "should set the candidate_version correctly when only the first is installable" do
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(nil)
       expect(provider.candidate_version).to eql(["2.1.0.0", nil])
     end
 
     it "should set the candidate_version correctly when only the last is installable" do
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(nil)
       expect(provider.candidate_version).to eql([nil, "2.12.0.0"])
     end
 
     it "should set the candidate_version correctly when neither are is installable and version is passed as nil array" do
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
       new_resource.package_name(%w{xNetworking xCertificate})
       new_resource.version([nil, nil])
       expect(provider.candidate_version).to eql([nil, nil])
     end
 
     it "should set the candidate_version correctly when neither are is installable and version is not passed" do
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
       new_resource.package_name(%w{xNetworking xCertificate})
       new_resource.version(nil)
       expect(provider.candidate_version).to eql([nil, nil])
@@ -174,8 +174,8 @@ describe Chef::Provider::Package::Powershell do
       provider.load_current_resource
       new_resource.package_name(["xCertificate"])
       new_resource.version(nil)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       expect(provider).to receive(:powershell_out).with("Install-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0", { :timeout => new_resource.timeout })
       provider.run_action(:install)
@@ -186,8 +186,8 @@ describe Chef::Provider::Package::Powershell do
       provider.load_current_resource
       new_resource.package_name(["7-Zip 16.02 (x64)"])
       new_resource.version(nil)
-      allow(provider).to receive(:powershell_out).with("(Find-Package '7-Zip 16.02 (x64)' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_7zip_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name '7-Zip 16.02 (x64)' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_7zip_not_installed)
+      allow(provider).to receive(:powershell_out).with("(Find-Package '7-Zip 16.02 (x64)' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_7zip_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name '7-Zip 16.02 (x64)' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_7zip_not_installed)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       expect(provider).to receive(:powershell_out).with("Install-Package '7-Zip 16.02 (x64)' -Force -ForceBootstrap -RequiredVersion 16.02", { :timeout => new_resource.timeout })
       provider.run_action(:install)
@@ -201,8 +201,8 @@ describe Chef::Provider::Package::Powershell do
         provider.load_current_resource
         new_resource.package_name(["xCertificate"])
         new_resource.version(nil)
-        allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-        allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+        allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+        allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
         allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
         expect(provider).to receive(:powershell_out).with("Install-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0", { :timeout => new_resource.timeout })
         provider.run_action(:install)
@@ -213,8 +213,8 @@ describe Chef::Provider::Package::Powershell do
     it "should not install packages that are up-to-date" do
       new_resource.package_name(["xCertificate"])
       new_resource.version(nil)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
       expect(provider).not_to receive(:install_package)
@@ -225,8 +225,8 @@ describe Chef::Provider::Package::Powershell do
     it "should not install packages that are up-to-date" do
       new_resource.package_name(["xNetworking"])
       new_resource.version(["2.11.0.0"])
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -RequiredVersion 2.11.0.0 -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xNetworking' -RequiredVersion 2.11.0.0 -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available_2_11_0_0)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -RequiredVersion 2.11.0.0 -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xNetworking' -RequiredVersion 2.11.0.0 -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available_2_11_0_0)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
       expect(provider).not_to receive(:install_package)
@@ -239,10 +239,10 @@ describe Chef::Provider::Package::Powershell do
       # new_version.resource[0]
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version([nil, "2.11.0.0"])
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -RequiredVersion 2.11.0.0 -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available_2_11_0_0)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xNetworking' -RequiredVersion 2.11.0.0 -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -RequiredVersion 2.11.0.0 -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available_2_11_0_0)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xNetworking' -RequiredVersion 2.11.0.0 -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       expect(provider).to receive(:powershell_out).with("Install-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0", { :timeout => new_resource.timeout })
       expect(provider).to receive(:powershell_out).with("Install-Package 'xNetworking' -Force -ForceBootstrap -RequiredVersion 2.11.0.0", { :timeout => new_resource.timeout })
@@ -254,10 +254,10 @@ describe Chef::Provider::Package::Powershell do
     it "should split up commands when given two packages, one with a version pin" do
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(["2.1.0.0", nil])
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -RequiredVersion 2.1.0.0 -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -RequiredVersion 2.1.0.0 -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xNetworking' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -RequiredVersion 2.1.0.0 -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -RequiredVersion 2.1.0.0 -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xNetworking' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       expect(provider).to receive(:powershell_out).with("Install-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0", { :timeout => new_resource.timeout })
       expect(provider).to receive(:powershell_out).with("Install-Package 'xNetworking' -Force -ForceBootstrap -RequiredVersion 2.12.0.0", { :timeout => new_resource.timeout })
@@ -270,10 +270,10 @@ describe Chef::Provider::Package::Powershell do
     it "should do multipackage installs when given two packages without constraints" do
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(nil)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xNetworking' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xNetworking' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       expect(provider).to receive(:powershell_out).with("Install-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0", { :timeout => new_resource.timeout })
       expect(provider).to receive(:powershell_out).with("Install-Package 'xNetworking' -Force -ForceBootstrap -RequiredVersion 2.12.0.0", { :timeout => new_resource.timeout })
@@ -288,8 +288,8 @@ describe Chef::Provider::Package::Powershell do
       provider.load_current_resource
       new_resource.package_name(["xCertificate"])
       new_resource.version(["2.1.0.0"])
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -RequiredVersion 2.1.0.0 -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -RequiredVersion 2.1.0.0 -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -RequiredVersion 2.1.0.0 -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -RequiredVersion 2.1.0.0 -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       expect(provider).not_to receive(:remove_package)
       provider.run_action(:remove)
@@ -299,10 +299,10 @@ describe Chef::Provider::Package::Powershell do
     it "does nothing when all the packages are already removed" do
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(nil)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xNetworking' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xNetworking' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xNetworking' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
       expect(provider).not_to receive(:remove_package)
@@ -313,8 +313,8 @@ describe Chef::Provider::Package::Powershell do
     it "removes a package when version is specified" do
       new_resource.package_name(["xCertificate"])
       new_resource.version(["2.1.0.0"])
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -RequiredVersion 2.1.0.0 -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -RequiredVersion 2.1.0.0 -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -RequiredVersion 2.1.0.0 -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -RequiredVersion 2.1.0.0 -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
       expect(provider).to receive(:powershell_out).with("Uninstall-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0", { :timeout => new_resource.timeout })
@@ -325,11 +325,11 @@ describe Chef::Provider::Package::Powershell do
     it "removes a package when version is not specified" do
       new_resource.package_name(["xCertificate"])
       new_resource.version(nil)
-      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Find-Package 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("(Get-Package -Name 'xCertificate' -ForceBootstrap -Force).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
-      expect(provider).to receive(:powershell_out).with("(Uninstall-Package 'xCertificate' -Force -ForceBootstrap | select version | Format-Table -HideTableHeaders | Out-String).Trim()", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      expect(provider).to receive(:powershell_out).with("(Uninstall-Package 'xCertificate' -Force -ForceBootstrap).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
