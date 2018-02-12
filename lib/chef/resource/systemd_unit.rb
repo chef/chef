@@ -1,6 +1,6 @@
 #
 # Author:: Nathan Williams (<nath.e.will@gmail.com>)
-# Copyright:: Copyright 2016, Nathan Williams
+# Copyright:: Copyright 2016-2018, Nathan Williams
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +29,8 @@ class Chef
 
       default_action :nothing
       allowed_actions :create, :delete,
-                      :enable, :disable,
+                      :preset, :revert,
+                      :enable, :disable, :reenable,
                       :mask, :unmask,
                       :start, :stop,
                       :restart, :reload,

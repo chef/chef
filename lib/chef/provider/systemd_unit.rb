@@ -1,6 +1,6 @@
 #
 # Author:: Nathan Williams (<nath.e.will@gmail.com>)
-# Copyright:: Copyright 2016, Nathan Williams
+# Copyright:: Copyright 2016-2018, Nathan Williams
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,6 +74,18 @@ class Chef
         end
       end
 
+      def action_preset
+        converge_by("restoring enable/disable preset configuration for unit: #{new_resource.unit_name}") do
+          systemctl_execute!(:preset, new_resource.unit_name)
+        end
+      end
+
+      def action_revert
+        converge_by("reverting to vendor version of unit: #{new_resource.unit_name}") do
+          systemctl_execute!(:revert, new_resource.unit_name)
+        end
+      end
+
       def action_enable
         if current_resource.static
           Chef::Log.debug("#{new_resource.unit_name} is a static unit, enabling is a NOP.")
@@ -95,6 +107,12 @@ class Chef
           converge_by("disabling unit: #{new_resource.unit_name}") do
             systemctl_execute!(:disable, new_resource.unit_name)
           end
+        end
+      end
+
+      def action_reenable
+        converge_by("reenabling unit: #{new_resource.unit_name}") do
+          systemctl_execute!(:reenable, new_resource.unit_name)
         end
       end
 

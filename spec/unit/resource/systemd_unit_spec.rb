@@ -1,6 +1,6 @@
 #
 # Author:: Nathan Williams (<nath.e.will@gmail.com>)
-# Copyright:: Copyright 2016, Nathan Williams
+# Copyright:: Copyright 2016-2018, Nathan Williams
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,8 +46,11 @@ describe Chef::Resource::SystemdUnit do
   it "supports appropriate unit actions" do
     expect { resource.action :create }.not_to raise_error
     expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :preset }.not_to raise_error
+    expect { resource.action :revert }.not_to raise_error
     expect { resource.action :enable }.not_to raise_error
     expect { resource.action :disable }.not_to raise_error
+    expect { resource.action :reenable }.not_to raise_error
     expect { resource.action :mask }.not_to raise_error
     expect { resource.action :unmask }.not_to raise_error
     expect { resource.action :start }.not_to raise_error
