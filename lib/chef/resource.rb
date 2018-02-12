@@ -1179,8 +1179,8 @@ class Chef
     # Internal Resource Interface (for Chef)
     #
 
-    FORBIDDEN_IVARS = [:@run_context, :@not_if, :@only_if, :@enclosing_provider, :@description, :@introduced, :@examples]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider, :@description, :@introduced, :@examples]
+    FORBIDDEN_IVARS = [:@run_context, :@not_if, :@only_if, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message]
 
     include Chef::Mixin::ConvertToClassName
     extend Chef::Mixin::ConvertToClassName
