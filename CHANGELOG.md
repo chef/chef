@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.53 -->
-## [v14.0.53](https://github.com/chef/chef/tree/v14.0.53) (2018-02-12)
+<!-- latest_release 14.0.54 -->
+## [v14.0.54](https://github.com/chef/chef/tree/v14.0.54) (2018-02-12)
 
 #### Merged Pull Requests
-- invites_sort_fail: Clean the invites array before sorting it [#6463](https://github.com/chef/chef/pull/6463) ([MarkGibbons](https://github.com/MarkGibbons))
+- Fix issue #2351, chef-client doesn&#39;t make /etc/chef if the directory … [#6429](https://github.com/chef/chef/pull/6429) ([jseely](https://github.com/jseely))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Fix issue #2351, chef-client doesn&#39;t make /etc/chef if the directory … [#6429](https://github.com/chef/chef/pull/6429) ([jseely](https://github.com/jseely)) <!-- 14.0.54 -->
 - invites_sort_fail: Clean the invites array before sorting it [#6463](https://github.com/chef/chef/pull/6463) ([MarkGibbons](https://github.com/MarkGibbons)) <!-- 14.0.53 -->
 - Implement resource enhancement RFCs [#6818](https://github.com/chef/chef/pull/6818) ([thommay](https://github.com/thommay)) <!-- 14.0.52 -->
 - add additional systemd_unit actions [#6835](https://github.com/chef/chef/pull/6835) ([nathwill](https://github.com/nathwill)) <!-- 14.0.51 -->
