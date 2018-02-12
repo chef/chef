@@ -22,6 +22,7 @@ require "chef/mixin/powershell_out"
 describe Chef::Provider::Package::Powershell do
   include Chef::Mixin::PowershellOut
   let(:timeout) { 900 }
+  let(:source) { nil }
 
   let(:new_resource) { Chef::Resource::PowershellPackage.new("windows_test_pkg") }
 
@@ -107,6 +108,14 @@ describe Chef::Provider::Package::Powershell do
       expect(provider.candidate_version).to eql(["2.12.0.0"])
     end
 
+    it "should use the candidate_version from the correct source" do
+      allow(provider).to receive(:powershell_out).with("( Find-Package 'xNetworking' -Force -ForceBootstrap -Source MyGallery ).Version", {:timeout => new_resource.timeout }).and_return(package_xnetworking_available)
+      new_resource.package_name(["xNetworking"])
+      new_resource.version(nil)
+      new_resource.source("MyGallery")
+      expect(provider.candidate_version).to eql(["2.12.0.0"])
+    end
+
     it "should set the candidate_version to the latest version when not pinning and package name is space seperated" do
       allow(provider).to receive(:powershell_out).with("( Find-Package '7-Zip 16.02 (x64)' -Force -ForceBootstrap ).Version", { :timeout => new_resource.timeout }).and_return(package_7zip_available)
       new_resource.package_name(["7-Zip 16.02 (x64)"])
@@ -178,6 +187,19 @@ describe Chef::Provider::Package::Powershell do
       allow(provider).to receive(:powershell_out).with("( Get-Package 'xCertificate' -Force -ForceBootstrap ).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       expect(provider).to receive(:powershell_out).with("( Install-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0 ).Version", { :timeout => new_resource.timeout })
+      provider.run_action(:install)
+      expect(new_resource).to be_updated_by_last_action
+    end
+
+    it "should install a single package from a custom source" do
+      provider.load_current_resource
+      new_resource.package_name(["xCertificate"])
+      new_resource.version(nil)
+      new_resource.source("MyGallery")
+      allow(provider).to receive(:powershell_out).with("( Find-Package 'xCertificate' -Force -ForceBootstrap -Source MyGallery ).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("( Get-Package 'xCertificate' -Force -ForceBootstrap ).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_out).with("( Install-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0 -Source MyGallery ).Version", { :timeout => new_resource.timeout })
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -281,6 +303,22 @@ describe Chef::Provider::Package::Powershell do
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
+
+    it "should do multipackage installs from a custom source when given two packages without constraints" do
+      new_resource.package_name(%w{xCertificate xNetworking})
+      new_resource.version(nil)
+      new_resource.source("MyGallery")
+      allow(provider).to receive(:powershell_out).with("( Find-Package 'xCertificate' -Force -ForceBootstrap -Source MyGallery ).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("( Get-Package 'xCertificate' -Force -ForceBootstrap ).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("( Find-Package 'xNetworking' -Force -ForceBootstrap -Source MyGallery ).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_out).with("( Get-Package 'xNetworking' -Force -ForceBootstrap ).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_out).with("( Install-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0 -Source MyGallery ).Version", { :timeout => new_resource.timeout })
+      expect(provider).to receive(:powershell_out).with("( Install-Package 'xNetworking' -Force -ForceBootstrap -RequiredVersion 2.12.0.0 -Source MyGallery ).Version", { :timeout => new_resource.timeout })
+      provider.load_current_resource
+      provider.run_action(:install)
+      expect(new_resource).to be_updated_by_last_action
+    end
   end
 
   describe "#action_remove" do
@@ -294,6 +332,19 @@ describe Chef::Provider::Package::Powershell do
       expect(provider).not_to receive(:remove_package)
       provider.run_action(:remove)
       expect(new_resource).not_to be_updated_by_last_action
+    end
+
+    it "does not pass the source parameter to get or uninstall cmdlets" do
+      new_resource.package_name(["xCertificate"])
+      new_resource.version(["2.1.0.0"])
+      new_resource.source("MyGallery")
+      allow(provider).to receive(:powershell_out).with("( Find-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0 -Source MyGallery).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("( Get-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0 ).Version", { :timeout => new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      provider.load_current_resource
+      expect(provider).to receive(:powershell_out).with("( Uninstall-Package 'xCertificate' -Force -ForceBootstrap -RequiredVersion 2.1.0.0 ).Version", { :timeout => new_resource.timeout })
+      provider.run_action(:remove)
+      expect(new_resource).to be_updated_by_last_action
     end
 
     it "does nothing when all the packages are already removed" do

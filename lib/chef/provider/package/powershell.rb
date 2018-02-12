@@ -115,8 +115,13 @@ class Chef
             command.push(arg)
           end
           command.push("-RequiredVersion #{version}") if version
+          command.push("-Source #{new_resource.source}") if new_resource.source && command[1] =~ Regexp.union(/Install-Package/, /Find-Package/)
           command.push(").Version")
           command.join(" ")
+        end
+
+        def check_resource_semantics!
+          # This validation method from Chef::Provider::Package does not apply here, so no-op it.
         end
       end
     end
