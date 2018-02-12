@@ -25,7 +25,7 @@ describe Chef::Exceptions do
   exception_to_super_class = {
     Chef::Exceptions::Application => RuntimeError,
     Chef::Exceptions::Cron => RuntimeError,
-    Chef::Exceptions::Env => RuntimeError,
+    Chef::Exceptions::WindowsEnv => RuntimeError,
     Chef::Exceptions::Exec => RuntimeError,
     Chef::Exceptions::FileNotFound => RuntimeError,
     Chef::Exceptions::Package => RuntimeError,

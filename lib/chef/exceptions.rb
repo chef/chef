@@ -45,7 +45,7 @@ class Chef
     class SigInt < RuntimeError; end
     class SigTerm < RuntimeError; end
     class Cron < RuntimeError; end
-    class Env < RuntimeError; end
+    class WindowsEnv < RuntimeError; end
     class Exec < RuntimeError; end
     class Execute < RuntimeError; end
     class ErlCall < RuntimeError; end
