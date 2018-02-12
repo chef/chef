@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.50 -->
-## [v14.0.50](https://github.com/chef/chef/tree/v14.0.50) (2018-02-09)
+<!-- latest_release 14.0.51 -->
+## [v14.0.51](https://github.com/chef/chef/tree/v14.0.51) (2018-02-12)
 
 #### Merged Pull Requests
-- Use the license_scout that comes with Omnibus gem [#6839](https://github.com/chef/chef/pull/6839) ([tduffield](https://github.com/tduffield))
+- add additional systemd_unit actions [#6835](https://github.com/chef/chef/pull/6835) ([nathwill](https://github.com/nathwill))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- add additional systemd_unit actions [#6835](https://github.com/chef/chef/pull/6835) ([nathwill](https://github.com/nathwill)) <!-- 14.0.51 -->
 - Use the license_scout that comes with Omnibus gem [#6839](https://github.com/chef/chef/pull/6839) ([tduffield](https://github.com/tduffield)) <!-- 14.0.50 -->
 - Simplify powershell_out calls in powershell_package [#6837](https://github.com/chef/chef/pull/6837) ([Happycoil](https://github.com/Happycoil)) <!-- 14.0.49 -->
 - Don&#39;t rely on the Passwd Ohai plugin in resources [#6833](https://github.com/chef/chef/pull/6833) ([thommay](https://github.com/thommay)) <!-- 14.0.48 -->
