@@ -111,7 +111,7 @@ class Chef
         def build_powershell_command(command, version = nil)
           command = [command] unless command.is_a?(Array)
           command.unshift("(")
-          %w(-Force -ForceBootstrap).each do |arg|
+          %w{-Force -ForceBootstrap}.each do |arg|
             command.push(arg)
           end
           command.push("-RequiredVersion #{version}") if version

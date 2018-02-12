@@ -109,7 +109,7 @@ describe Chef::Provider::Package::Powershell do
     end
 
     it "should use the candidate_version from the correct source" do
-      allow(provider).to receive(:powershell_out).with("( Find-Package 'xNetworking' -Force -ForceBootstrap -Source MyGallery ).Version", {:timeout => new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_out).with("( Find-Package 'xNetworking' -Force -ForceBootstrap -Source MyGallery ).Version", { :timeout => new_resource.timeout }).and_return(package_xnetworking_available)
       new_resource.package_name(["xNetworking"])
       new_resource.version(nil)
       new_resource.source("MyGallery")
