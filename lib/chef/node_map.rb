@@ -118,6 +118,29 @@ class Chef
       end.map { |matcher| matcher[:klass] }
     end
 
+    # Remove a class from all its matchers in the node_map, will remove mappings completely if its the last matcher left
+    #
+    # @param klass [Class] the class to seek and destroy
+    #
+    # @return [Hash] deleted entries in the same format as the @map
+    def delete_class(klass)
+      raise "please use a Class type for the klass argument" unless klass.is_a?(Class)
+      deleted = {}
+      map.each do |key, matchers|
+        deleted_matchers = []
+        matchers.delete_if do |matcher|
+          # because matcher[:klass] may be a string (which needs to die), coerce both to strings to compare somewhat canonically
+          if matcher[:klass].to_s == klass.to_s
+            deleted_matchers << matcher
+            true
+          end
+        end
+        deleted[key] = deleted_matchers unless deleted_matchers.empty?
+        map.delete(key) if matchers.empty?
+      end
+      deleted
+    end
+
     # Seriously, don't use this, it's nearly certain to change on you
     # @return remaining
     # @api private
