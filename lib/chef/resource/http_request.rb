@@ -22,11 +22,13 @@ require "chef/provider/http_request"
 
 class Chef
   class Resource
-    # Use the http_request resource to send an HTTP request (GET, PUT, POST, DELETE, HEAD, or OPTIONS) with an arbitrary
-    # message. This resource is often useful when custom callbacks are necessary.
     class HttpRequest < Chef::Resource
 
       identity_attr :url
+
+      description "Use the http_request resource to send an HTTP request (GET, PUT,"\
+                  " POST, DELETE, HEAD, or OPTIONS) with an arbitrary message. This"\
+                  " resource is often useful when custom callbacks are necessary."
 
       default_action :get
       allowed_actions :get, :patch, :put, :post, :delete, :head, :options

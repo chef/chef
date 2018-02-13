@@ -20,13 +20,15 @@ require "chef/resource"
 
 class Chef
   class Resource
-    # The apt_preference resource allows for the creation of APT preference files. Preference files are used to control
-    # which package versions and sources are prioritized during installation.
-    #
     # @since 13.3
     class AptPreference < Chef::Resource
       resource_name :apt_preference
       provides :apt_preference
+
+      description "The apt_preference resource allows for the creation of APT preference"\
+                  " files. Preference files are used to control which package versions and"\
+                  " sources are prioritized during installation."
+      introduced "13.3"
 
       property :package_name, String, name_property: true, regex: [/^([a-z]|[A-Z]|[0-9]|_|-|\.|\*|\+)+$/]
       property :glob, String
