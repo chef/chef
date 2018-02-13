@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.55 -->
-## [v14.0.55](https://github.com/chef/chef/tree/v14.0.55) (2018-02-12)
+<!-- latest_release 14.0.56 -->
+## [v14.0.56](https://github.com/chef/chef/tree/v14.0.56) (2018-02-13)
 
 #### Merged Pull Requests
-- [MSYS-726] Allow setting environment variables at the user level [#6612](https://github.com/chef/chef/pull/6612) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
+- RemoteFile: unlink tempfile when using cache control shows unchanged [#6822](https://github.com/chef/chef/pull/6822) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- RemoteFile: unlink tempfile when using cache control shows unchanged [#6822](https://github.com/chef/chef/pull/6822) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.56 -->
 - [MSYS-726] Allow setting environment variables at the user level [#6612](https://github.com/chef/chef/pull/6612) ([harikesh-kolekar](https://github.com/harikesh-kolekar)) <!-- 14.0.55 -->
 - Fix issue #2351, chef-client doesn&#39;t make /etc/chef if the directory … [#6429](https://github.com/chef/chef/pull/6429) ([jseely](https://github.com/jseely)) <!-- 14.0.54 -->
 - invites_sort_fail: Clean the invites array before sorting it [#6463](https://github.com/chef/chef/pull/6463) ([MarkGibbons](https://github.com/MarkGibbons)) <!-- 14.0.53 -->
