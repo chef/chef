@@ -602,9 +602,12 @@ class Chef
     # @api private
     #
     def run_ohai
-      filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version os os_version} : nil
+      filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version ohai_time os os_version} : nil
       ohai.all_plugins(filter)
       events.ohai_completed(node)
+    rescue Ohai::Exceptions::CriticalPluginFailure => e
+      Chef::Log.error("Critical Ohai plugins failed: #{e.message}")
+      exit(false)
     end
 
     #

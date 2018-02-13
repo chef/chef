@@ -38,9 +38,20 @@ describe Chef::Client do
     end
 
     it "runs ohai with only the minimum required plugins" do
-      expected_filter = %w{fqdn machinename hostname platform platform_version os os_version}
+      expected_filter = %w{fqdn machinename hostname platform platform_version ohai_time os os_version}
       expect(ohai_system).to receive(:all_plugins).with(expected_filter)
       client.run_ohai
+    end
+  end
+
+  context "when Ohai tells us to fail" do
+    it "fails" do
+      ohai_system = Ohai::System.new
+      module Ohai::Exceptions
+        class CriticalPluginFailure < Error; end
+      end
+      expect(ohai_system).to receive(:all_plugins) { raise Ohai::Exceptions::CriticalPluginFailure }
+      expect { client.run_ohai }.to raise_error(SystemExit)
     end
   end
 

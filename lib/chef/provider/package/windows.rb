@@ -165,6 +165,10 @@ class Chef
         #
         # @return [Boolean] true if new_version is equal to or included in current_version
         def target_version_already_installed?(current_version, new_version)
+          version_equals?(current_version, new_version)
+        end
+
+        def version_equals?(current_version, new_version)
           Chef::Log.debug("Checking if #{new_resource} version '#{new_version}' is already installed. #{current_version} is currently installed")
           if current_version.is_a?(Array)
             current_version.include?(new_version)
@@ -178,6 +182,17 @@ class Chef
         end
 
         private
+
+        def version_compare(v1, v2)
+          if v1 == "latest" || v2 == "latest"
+            return 0
+          end
+
+          gem_v1 = Gem::Version.new(v1)
+          gem_v2 = Gem::Version.new(v2)
+
+          gem_v1 <=> gem_v2
+        end
 
         def uninstall_registry_entries
           @uninstall_registry_entries ||= Chef::Provider::Package::Windows::RegistryUninstallEntry.find_entries(new_resource.package_name)

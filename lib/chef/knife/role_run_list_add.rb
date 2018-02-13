@@ -27,7 +27,7 @@ class Chef
         require "chef/json_compat"
       end
 
-      banner "knife role run_list add [ROLE] [ENTRY[,ENTRY]] (options)"
+      banner "knife role run_list add [ROLE] [ENTRY [ENTRY]] (options)"
 
       option :after,
         :short => "-a ITEM",

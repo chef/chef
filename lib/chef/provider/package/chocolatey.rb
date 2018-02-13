@@ -141,6 +141,17 @@ EOS
 
         private
 
+        def version_compare(v1, v2)
+          if v1 == "latest" || v2 == "latest"
+            return 0
+          end
+
+          gem_v1 = Gem::Version.new(v1)
+          gem_v2 = Gem::Version.new(v2)
+
+          gem_v1 <=> gem_v2
+        end
+
         # Magic to find where chocolatey is installed in the system, and to
         # return the full path of choco.exe
         #
@@ -226,15 +237,20 @@ EOS
         #
         # @return [Hash] name-to-version mapping of available packages
         def available_packages
-          @available_packages ||=
-            begin
-              cmd = [ "list -r #{package_name_array.join ' '}" ]
-              cmd.push( "-source #{new_resource.source}" ) if new_resource.source
-              raw = parse_list_output(*cmd)
-              raw.keys.each_with_object({}) do |name, available|
-                available[name] = desired_name_versions[name] || raw[name]
+          return @available_packages if @available_packages
+          @available_packages = {}
+          package_name_array.each do |pkg|
+            available_versions =
+              begin
+                cmd = [ "list -r #{pkg}" ]
+                cmd.push( "-source #{new_resource.source}" ) if new_resource.source
+                raw = parse_list_output(*cmd)
+                raw.keys.each_with_object({}) do |name, available|
+                  available[name] = desired_name_versions[name] || raw[name]
+                end
               end
-            end
+            @available_packages.merge! available_versions
+          end
           @available_packages
         end
 

@@ -127,6 +127,22 @@ class Chef
 
         private
 
+        # compare 2 versions to each other to see which is newer.
+        # this differs from the standard package method because we
+        # need to be able to parse debian version strings which contain
+        # tildes which Gem cannot properly parse
+        #
+        # @return [Integer] 1 if v1 > v2. 0 if they're equal. -1 if v1 < v2
+        def version_compare(v1, v2)
+          if !shell_out_compact_timeout("dpkg", "--compare-versions", v1.to_s, "gt", v2.to_s).error?
+            1
+          elsif !shell_out_compact_timeout("dpkg", "--compare-versions", v1.to_s, "eq", v2.to_s).error?
+            0
+          else
+            -1
+          end
+        end
+
         # Runs command via shell_out with magic environment to disable
         # interactive prompts. Command is run with default localization rather
         # than forcing locale to "C", so command output may not be stable.

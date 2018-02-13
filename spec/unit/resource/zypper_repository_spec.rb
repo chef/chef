@@ -46,20 +46,22 @@ describe Chef::Resource::ZypperRepository do
       expect { resource.action :delete }.to raise_error(ArgumentError)
     end
 
-    it "should resolve to a Noop class when zypper is not found" do
-      expect(Chef::Provider::ZypperRepository).to receive(:which).with("zypper").and_return(false)
+    it "resolves to a Noop class when on non-linux OS" do
+      node.automatic[:os] = "windows"
+      node.automatic[:platform_family] = "windows"
       expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
     end
 
-    it "should resolve to a ZypperRepository class when zypper is found" do
-      expect(Chef::Provider::ZypperRepository).to receive(:which).with("zypper").and_return(true)
+    it "resolves to a Noop class when on non-suse linux" do
+      node.automatic[:os] = "linux"
+      node.automatic[:platform_family] = "debian"
+      expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
+    end
+
+    it "resolves to a ZypperRepository class when on a suse platform_family" do
+      node.automatic[:os] = "linux"
+      node.automatic[:platform_family] = "suse"
       expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::ZypperRepository)
-    end
-  end
-
-  context "on windows", :windows_only do
-    it "should resolve to a NoOp provider" do
-      expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
     end
   end
 end

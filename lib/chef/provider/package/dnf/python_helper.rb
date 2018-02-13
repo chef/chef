@@ -61,6 +61,15 @@ class Chef
             start if stdin.nil?
           end
 
+          def compare_versions(version1, version2)
+            with_helper do
+              json = build_version_query("versioncompare", [version1, version2])
+              Chef::Log.debug "sending '#{json}' to python helper"
+              stdin.syswrite json + "\n"
+              stdout.sysread(4096).chomp.to_i
+            end
+          end
+
           # @returns Array<Version>
           def query(action, provides, version = nil, arch = nil)
             with_helper do
@@ -106,6 +115,12 @@ class Chef
             hash["provides"] = provides
             add_version(hash, version) unless version.nil?
             hash["arch" ] = arch unless arch.nil?
+            FFI_Yajl::Encoder.encode(hash)
+          end
+
+          def build_version_query(action, versions)
+            hash = { "action" => action }
+            hash["versions"] = versions
             FFI_Yajl::Encoder.encode(hash)
           end
 

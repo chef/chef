@@ -1,5 +1,72 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Chef Client Release Notes 13.6.4:
+
+## Bugfixes
+
+  - Resolved a regression in 13.6.0 that prevented upgrading packages on Debian/Ubuntu when the package name contained a tilde. 
+
+## Security Updates
+
+- OpenSSL has been upgraded to 1.0.2m to resolve CVE-2017-3735 and CVE-2017-3736
+- RubyGems has been upgraded to 2.6.14 to resolve CVE-2017-0903
+
+# Chef Client Release Notes 13.6:
+
+## `deploy` Resource Is Deprecated
+
+The `deploy` resource (and its alter ego `deploy_revision`) have been deprecated,
+to be removed in Chef 14. This is being done because this resource is considered
+overcomplicated and error-prone in the modern Chef ecosystem. A compatibility
+cookbook will be available to help users migrate during the Chef 14 release
+cycle. See [the deprecation documentation](https://docs.chef.io/deprecations_deploy_resource.html)
+for more information.
+
+## zypper\_package supports package downgrades
+
+`zypper_package` now supports downgrading installed packages with the
+`allow_downgrade` property.
+
+## InSpec updated to 1.42.3
+
+## Reserve certain Data Bag names
+
+It's no longer possible to create data bags named `node`, `role`,
+`client`, or `environment`. Existing data bags will continue to work as
+before.
+
+## Properly use yum on RHEL 7
+
+If both dnf and yum were installed, in some circumstances the yum
+provider might choose to run dnf, which is not what we intended it to
+do. It now properly runs yum, all the time.
+
+## Ohai 13.6 Release Notes:
+
+### Critical Plugins
+
+Users can now specify a list of plugins which are `critical`. Critical plugins will cause Ohai to fail if they do not run successfully (and thus cause a Chef run using Ohai to fail). The syntax for this is:
+
+```
+ohai.critical_plugins << :Filesystem
+```
+
+### Filesystem now has a `allow_partial_data` configuration option
+
+The Filesystem plugin now has a `allow_partial_data` configuration option. If set, the filesystem will return whatever data it can even if some commands it ran failed.
+
+### Rackspace detection on Windows
+
+Windows nodes running on Rackspace will now properly detect themselves as running on Rackspace without a hint file.
+
+### Package data on Amazon Linux
+
+The Packages plugin now supports gathering packages data on Amazon Linux
+
+### Deprecation updates
+
+In Ohai 13 we replaced the filesystem and cloud plugins with the filesystem2 and cloud_v2 plugins. To maintain compatibility with users of the previous V2 plugins we write data to both locations. We had originally planned to continue writing data to both locations until Chef 15. Instead due to the large amount of duplicate node data this introduces we are updating OHAI-11 and OHAI-12 deprecations to remove node['cloud_v2'] and node['filesystem2'] with the release of Chef 14 in April 2018.
+
 # Chef Client Release Notes 13.5:
 
 ## Mount's password property is now marked as sensitive
@@ -74,7 +141,7 @@ It is now possible to set `ETHTOOL_OPTS`, `BONDING_OPTS`, `MASTER` and
     **Platforms:** Fedora, RHEL, Amazon Linux
     Whether the interface is controlled by the channel bonding interface
     defined by `master`, above.
-  
+
 ## Chef Vault is now included
 
 Chef Client 13.4 now includes the `chef-vault` gem, making it easier for

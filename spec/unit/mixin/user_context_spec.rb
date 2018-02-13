@@ -41,7 +41,6 @@ describe "a class that mixes in user_context" do
     before do
       allow(::Chef::Platform).to receive(:windows?).and_return(true)
       allow(::Chef::Util::Windows::LogonSession).to receive(:new).and_return(logon_session)
-      allow(instance_with_user_context).to receive(:node).and_return({ "platform_family" => "windows" })
     end
 
     let(:logon_session) { instance_double("::Chef::Util::Windows::LogonSession", :set_user_context => nil, :open => nil, :close => nil) }
@@ -99,7 +98,7 @@ describe "a class that mixes in user_context" do
 
   context "when not running on Windows" do
     before do
-      allow(instance_with_user_context).to receive(:node).and_return({ "platform_family" => "ubuntu" })
+      allow(::Chef::Platform).to receive(:windows?).and_return(false)
     end
 
     it "raises a ::Chef::Exceptions::UnsupportedPlatform exception" do

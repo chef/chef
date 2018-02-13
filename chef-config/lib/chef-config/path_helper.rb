@@ -235,7 +235,7 @@ module ChefConfig
       paths = paths.map { |home_path| home_path.gsub(path_separator, ::File::SEPARATOR) if home_path }
 
       # Filter out duplicate paths and paths that don't exist.
-      valid_paths = paths.select { |home_path| home_path && Dir.exists?(home_path.force_encoding("utf-8")) }
+      valid_paths = paths.select { |home_path| home_path && Dir.exist?(home_path.force_encoding("utf-8")) }
       valid_paths = valid_paths.uniq
 
       # Join all optional path elements at the end.

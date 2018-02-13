@@ -1,39 +1,79 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.5.6 -->
-## [v13.5.6](https://github.com/chef/chef/tree/v13.5.6) (2017-09-29)
+<!-- latest_release 13.6.7 -->
+## [v13.6.7](https://github.com/chef/chef/tree/v13.6.7) (2017-11-15)
 
 #### Merged Pull Requests
-- Bump InSpec to v1.40.0 [#6460](https://github.com/chef/chef/pull/6460) ([adamleff](https://github.com/adamleff))
+- Change a useradd_spec test for RHEL &gt;= 6.8 and &gt;= 7.3 [#6555](https://github.com/chef/chef/pull/6555) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
 <!-- latest_release -->
 
-<!-- release_rollup since=12.21.14 -->
-### Changes since 12.21.14 release
+<!-- release_rollup since=13.6.4 -->
+### Changes since 13.6.4 release
 
 #### Merged Pull Requests
-- Bump InSpec to v1.40.0 [#6460](https://github.com/chef/chef/pull/6460) ([adamleff](https://github.com/adamleff)) <!-- 13.5.6 -->
-- Force encoding to UTF_8 in chef-shell to prevent failures [#6447](https://github.com/chef/chef/pull/6447) ([tas50](https://github.com/tas50)) <!-- 13.5.5 -->
-- only warn about skipping sync once [#6454](https://github.com/chef/chef/pull/6454) ([Happycoil](https://github.com/Happycoil)) <!-- 13.5.4 -->
-- Replace which apt-get check with simple debian check in apt resources [#6409](https://github.com/chef/chef/pull/6409) ([tas50](https://github.com/tas50)) <!-- 13.4.25 -->
-- Quiet the output of the zypper refresh and add force [#6408](https://github.com/chef/chef/pull/6408) ([tas50](https://github.com/tas50)) <!-- 13.4.26 -->
-- Remove unused requires in yum_repository [#6413](https://github.com/chef/chef/pull/6413) ([tas50](https://github.com/tas50)) <!-- 13.4.27 -->
-- Open apt resources up to prevent breaking change [#6417](https://github.com/chef/chef/pull/6417) ([tas50](https://github.com/tas50)) <!-- 13.4.28 -->
-- Don&#39;t catch SIGCHLD from dnf_helper.py [#6416](https://github.com/chef/chef/pull/6416) ([nemith](https://github.com/nemith)) <!-- 13.4.29 -->
-- Add throttle and metalink options to yum_repository [#6431](https://github.com/chef/chef/pull/6431) ([tas50](https://github.com/tas50)) <!-- 13.4.31 -->
-- Fix Knife search ID only option to actually filter result set [#6438](https://github.com/chef/chef/pull/6438) ([dimsh99](https://github.com/dimsh99)) <!-- 13.4.32 -->
-- Update dependencies to pull in InSpec v1.39.1 [#6440](https://github.com/chef/chef/pull/6440) ([adamleff](https://github.com/adamleff)) <!-- 13.4.34 -->
-- Only accept MM/DD/YYYY for windows_task start_day [#6434](https://github.com/chef/chef/pull/6434) ([jaym](https://github.com/jaym)) <!-- 13.4.35 -->
-- fix password property is sensitive for mount resource  [#6442](https://github.com/chef/chef/pull/6442) ([dimsh99](https://github.com/dimsh99)) <!-- 13.4.36 -->
+- Change a useradd_spec test for RHEL &gt;= 6.8 and &gt;= 7.3 [#6555](https://github.com/chef/chef/pull/6555) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 13.6.7 -->
+- replace deprecated Dir.exists? with Dir.exist? [#6583](https://github.com/chef/chef/pull/6583) ([thomasdziedzic](https://github.com/thomasdziedzic)) <!-- 13.6.6 -->
+- Add ohai_time to minimal_ohai filter [#6584](https://github.com/chef/chef/pull/6584) ([btm](https://github.com/btm)) <!-- 13.6.5 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
-## [v12.21.14](https://github.com/chef/chef/tree/v12.21.14) (2017-09-27)
+## [v13.6.4](https://github.com/chef/chef/tree/v13.6.4) (2017-11-06)
+
+#### Merged Pull Requests
+- [MSYS-492]Add missing functional tests for users [#6425](https://github.com/chef/chef/pull/6425) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
+- Fix the invalid version comparison in apt/dpkg providers [#6558](https://github.com/chef/chef/pull/6558) ([tas50](https://github.com/tas50))
+- Fix the invalid version comparison of apt packages. [#6554](https://github.com/chef/chef/pull/6554) ([komazarari](https://github.com/komazarari))
+- Bump openssl and rubygems to latest [#6568](https://github.com/chef/chef/pull/6568) ([tas50](https://github.com/tas50))
 <!-- latest_stable_release -->
+
+## [v13.6.0](https://github.com/chef/chef/tree/v13.6.0) (2017-10-30)
+
+#### Merged Pull Requests
+- Bump InSpec to v1.40.0 [#6460](https://github.com/chef/chef/pull/6460) ([adamleff](https://github.com/adamleff))
+- Force encoding to UTF_8 in chef-shell to prevent failures [#6447](https://github.com/chef/chef/pull/6447) ([tas50](https://github.com/tas50))
+- Only warn about skipping sync once [#6454](https://github.com/chef/chef/pull/6454) ([Happycoil](https://github.com/Happycoil))
+- Import the zypper GPG key before templating the repo [#6410](https://github.com/chef/chef/pull/6410) ([tas50](https://github.com/tas50))
+- Fixes to package upgrade behaviour [#6428](https://github.com/chef/chef/pull/6428) ([jonlives](https://github.com/jonlives))
+- Tweak the knife banners for multi-arg commands. [#6466](https://github.com/chef/chef/pull/6466) ([coderanger](https://github.com/coderanger))
+- dnf_resource: be more specific for rhel packages [#6435](https://github.com/chef/chef/pull/6435) ([NaomiReeves](https://github.com/NaomiReeves))
+- Prevent creation of data bags named node, role, client or environment [#6469](https://github.com/chef/chef/pull/6469) ([sanditiffin](https://github.com/sanditiffin))
+- Remove cookbook_artifacts from CHEF_11_OSS_STATIC_OBJECTS [#6478](https://github.com/chef/chef/pull/6478) ([itmustbejj](https://github.com/itmustbejj))
+- Add allow_downgrade to zypper_package resource  [#6476](https://github.com/chef/chef/pull/6476) ([yeoldegrove](https://github.com/yeoldegrove))
+- Don&#39;t spin in powershell module that launches chef processes [#6481](https://github.com/chef/chef/pull/6481) ([ksubrama](https://github.com/ksubrama))
+- Sleep for another interval after handling SIGHUP [#6461](https://github.com/chef/chef/pull/6461) ([grekasius](https://github.com/grekasius))
+- Support new CriticalOhaiPlugins [#6486](https://github.com/chef/chef/pull/6486) ([jaymzh](https://github.com/jaymzh))
+- Package: only RHEL &gt;= 8 and Fedora &gt;= 22 get dnf [#6490](https://github.com/chef/chef/pull/6490) ([lamont-granquist](https://github.com/lamont-granquist))
+- Windows: Added :none frequency to windows_task resource [#6394](https://github.com/chef/chef/pull/6394) ([NAshwini](https://github.com/NAshwini))
+- Fix rebooter for solaris and background reboots [#6497](https://github.com/chef/chef/pull/6497) ([lamont-granquist](https://github.com/lamont-granquist))
+- Added parser for DSC configuration [#6473](https://github.com/chef/chef/pull/6473) ([piyushawasthi](https://github.com/piyushawasthi))
+- Add array support for choco pkg from artifactory [#6437](https://github.com/chef/chef/pull/6437) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Bump dependencies to pull in new InSpec [#6511](https://github.com/chef/chef/pull/6511) ([adamleff](https://github.com/adamleff))
+- Fix remote_file with UNC paths failing [#6510](https://github.com/chef/chef/pull/6510) ([tas50](https://github.com/tas50))
+- Deprecate the deploy resource and family [#6468](https://github.com/chef/chef/pull/6468) ([coderanger](https://github.com/coderanger))
+- Include Ohai 13.6 [#6521](https://github.com/chef/chef/pull/6521) ([btm](https://github.com/btm))
+- Use the latest libxml2, libxslt, libyaml, and openssl [#6520](https://github.com/chef/chef/pull/6520) ([tas50](https://github.com/tas50))
+- Pull in the latest libiconv and nokogiri [#6532](https://github.com/chef/chef/pull/6532) ([tas50](https://github.com/tas50))
+
+## [v13.5.3](https://github.com/chef/chef/tree/v13.5.3) (2017-10-03)
+
+#### Merged Pull Requests
+- Fix password property is sensitive for mount resource  [#6442](https://github.com/chef/chef/pull/6442) ([dimsh99](https://github.com/dimsh99))
+- Only accept MM/DD/YYYY for windows_task start_day [#6434](https://github.com/chef/chef/pull/6434) ([jaym](https://github.com/jaym))
+- Update dependencies to pull in InSpec v1.39.1 [#6440](https://github.com/chef/chef/pull/6440) ([adamleff](https://github.com/adamleff))
+- Fix Knife search ID only option to actually filter result set [#6438](https://github.com/chef/chef/pull/6438) ([dimsh99](https://github.com/dimsh99))
+- Add throttle and metalink options to yum_repository [#6431](https://github.com/chef/chef/pull/6431) ([tas50](https://github.com/tas50))
+- Don&#39;t catch SIGCHLD from dnf_helper.py [#6416](https://github.com/chef/chef/pull/6416) ([nemith](https://github.com/nemith))
+- Open apt resources up to prevent breaking change [#6417](https://github.com/chef/chef/pull/6417) ([tas50](https://github.com/tas50))
+- Remove unused requires in yum_repository [#6413](https://github.com/chef/chef/pull/6413) ([tas50](https://github.com/tas50))
+- Quiet the output of the zypper refresh and add force [#6408](https://github.com/chef/chef/pull/6408) ([tas50](https://github.com/tas50))
+- Replace which apt-get check with simple debian check in apt resources [#6409](https://github.com/chef/chef/pull/6409) ([tas50](https://github.com/tas50))
+
+## [v12.21.14](https://github.com/chef/chef/tree/v12.21.14) (2017-09-27)
 
 ## [v13.4.24](https://github.com/chef/chef/tree/v13.4.24) (2017-09-14)
 
 #### Merged Pull Requests
-- MSYS-656 - fixed dsc_script for WMF5 [#6383](https://github.com/chef/chef/pull/6383) ([piyushawasthi](https://github.com/piyushawasthi))
-- [MSYS-594] windows_task resource is not idempotent when specifying start_time and start_day [#6312](https://github.com/chef/chef/pull/6312) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
+- Fixed dsc_script for WMF5 [#6383](https://github.com/chef/chef/pull/6383) ([piyushawasthi](https://github.com/piyushawasthi))
+- windows_task resource is not idempotent when specifying start_time and start_day [#6312](https://github.com/chef/chef/pull/6312) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
 - Allow specifying default gateway on RHEL/Centos [#6386](https://github.com/chef/chef/pull/6386) ([tomdoherty](https://github.com/tomdoherty))
 - Use ruby 2.4.2 to addess multiple security vulnerabilities [#6404](https://github.com/chef/chef/pull/6404) ([thommay](https://github.com/thommay))
 
@@ -51,7 +91,7 @@
 - Bump Bundler version to 1.15.4 [#6349](https://github.com/chef/chef/pull/6349) ([jakauppila](https://github.com/jakauppila))
 - dnf_provider: be more specific when we provide `package` [#6351](https://github.com/chef/chef/pull/6351) ([jaymzh](https://github.com/jaymzh))
 - Speed up immutabilization [#6355](https://github.com/chef/chef/pull/6355) ([lamont-granquist](https://github.com/lamont-granquist))
-- node attributes: remove useless dup in merge_all [#6356](https://github.com/chef/chef/pull/6356) ([lamont-granquist](https://github.com/lamont-granquist))
+- Node attributes: remove useless dup in merge_all [#6356](https://github.com/chef/chef/pull/6356) ([lamont-granquist](https://github.com/lamont-granquist))
 - Link to the knife docs in both places where we error on editor [#6363](https://github.com/chef/chef/pull/6363) ([tas50](https://github.com/tas50))
 - Bump rubygems to 2.6.13 [#6365](https://github.com/chef/chef/pull/6365) ([lamont-granquist](https://github.com/lamont-granquist))
 - Ship chef-vault in the omnibus package [#6370](https://github.com/chef/chef/pull/6370) ([thommay](https://github.com/thommay))
@@ -59,20 +99,18 @@
 - Immutablize properly as we deep merge [#6362](https://github.com/chef/chef/pull/6362) ([lamont-granquist](https://github.com/lamont-granquist))
 - Alternate user local logon authentication for remote_file resource [#5832](https://github.com/chef/chef/pull/5832) ([NimishaS](https://github.com/NimishaS))
 - Add support for specifying ETHTOOL_OPTS in the ifconfig resource [#6384](https://github.com/chef/chef/pull/6384) ([tomdoherty](https://github.com/tomdoherty))
-- Cleanup the current changelog [#6387](https://github.com/chef/chef/pull/6387) ([tas50](https://github.com/tas50))
 
 ## [v13.3.42](https://github.com/chef/chef/tree/v13.3.42) (2017-08-16)
 
 #### Merged Pull Requests
-- Update Expeditor config to use new Merge and Artifact Actions [#6287](https://github.com/chef/chef/pull/6287) ([tduffield](https://github.com/tduffield))
 - Apt: Add apt_preference resource from apt cookbooks [#5529](https://github.com/chef/chef/pull/5529) ([tas50](https://github.com/tas50))
 - Fix typos [#6298](https://github.com/chef/chef/pull/6298) ([akitada](https://github.com/akitada))
 - Set explicit page size for every search request [#6299](https://github.com/chef/chef/pull/6299) ([stevendanna](https://github.com/stevendanna))
 - Add .dockerignore to reduce size of resulting images [#6296](https://github.com/chef/chef/pull/6296) ([tduffield](https://github.com/tduffield))
 - Fix git command in DCO sign-off example [#6306](https://github.com/chef/chef/pull/6306) ([edmorley](https://github.com/edmorley))
-- add option to enable unprivileged symlink creation on windows [#6236](https://github.com/chef/chef/pull/6236) ([svmastersamurai](https://github.com/svmastersamurai))
+- Add option to enable unprivileged symlink creation on windows [#6236](https://github.com/chef/chef/pull/6236) ([svmastersamurai](https://github.com/svmastersamurai))
 - Bump omnibus-software version [#6310](https://github.com/chef/chef/pull/6310) ([thommay](https://github.com/thommay))
-- throw readable errors if multiple dsc resources are found [#6307](https://github.com/chef/chef/pull/6307) ([Happycoil](https://github.com/Happycoil))
+- Throw readable errors if multiple dsc resources are found [#6307](https://github.com/chef/chef/pull/6307) ([Happycoil](https://github.com/Happycoil))
 - Add zypper_repository resource [#5948](https://github.com/chef/chef/pull/5948) ([tas50](https://github.com/tas50))
 - Pull in Ohai 13.3 [#6319](https://github.com/chef/chef/pull/6319) ([tas50](https://github.com/tas50))
 - Maintain compat with old zypper_repo resource used in cookbooks [#6318](https://github.com/chef/chef/pull/6318) ([tas50](https://github.com/tas50))
@@ -85,12 +123,11 @@
 
 - Added username/password validation for elevated option [\#6293](https://github.com/chef/chef/pull/6293) ([NimishaS](https://github.com/NimishaS))
 - Bump mixlib-shellout for \#6271 [\#6285](https://github.com/chef/chef/pull/6285) ([btm](https://github.com/btm))
-- Use new Expeditor config format [\#6272](https://github.com/chef/chef/pull/6272) ([tduffield](https://github.com/tduffield))
 - Added :elevated option for powershell\_script resource [\#6271](https://github.com/chef/chef/pull/6271) ([NimishaS](https://github.com/NimishaS))
 - Make mount idempotent on Aix [\#6213](https://github.com/chef/chef/pull/6213) ([NAshwini](https://github.com/NAshwini))
 - Allow windows\_task create action to update tasks. [\#6193](https://github.com/chef/chef/pull/6193) ([harikesh-kolekar](https://github.com/harikesh-kolekar))
 - Use socketless local mode by default [\#6177](https://github.com/chef/chef/pull/6177) ([coderanger](https://github.com/coderanger))
-- convert breakpoint resource to a custom resource [\#6176](https://github.com/chef/chef/pull/6176) ([lamont-granquist](https://github.com/lamont-granquist))
+- Convert breakpoint resource to a custom resource [\#6176](https://github.com/chef/chef/pull/6176) ([lamont-granquist](https://github.com/lamont-granquist))
 - Make non-legacy solo use socketless mode [\#6174](https://github.com/chef/chef/pull/6174) ([coderanger](https://github.com/coderanger))
 - Prefer Systemd with sysvinit script over Upstart for service provider [\#6157](https://github.com/chef/chef/pull/6157) ([shortdudey123](https://github.com/shortdudey123))
 

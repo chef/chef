@@ -282,6 +282,24 @@ function Run-ExecutableAndWait($AppPath, $ArgumentString) {
           break
         }
       }
+    } else {
+      # For some reason, you can't read from the read-end of the read-pipe before the write end has started
+      # to write.  Otherwise the process just blocks forever and never returns from the read.  So we peek
+      # at the pipe until there is something.  But don't peek too eagerly.  This is stupid stupid stupid.
+      # There must be a way to do this without having to peek at a pipe first but I have not found it.
+      #
+      # Note to the future intrepid soul who wants to fix this:
+      # 0) This is related to unreasonable CPU usage by the wrapper PS script on a 1 VCPU VM (either Hyper-V
+      #    or VirtualBox) running a consumer Windows SKU (Windows 10 for example...).  Test it there.
+      # 1) Maybe this entire script is unnecessary and the bugs mentioned below have been fixed or don't need
+      #    to be supported.
+      # 2) The server and consumer windows schedulers have different defaults. I had a hard time reproducing
+      #    any issue on a win 2008 on win 2012 server default setup.  See the "foreground application scheduler
+      #    priority" setting to see if it's relevant.
+      # 3) This entire endeavor is silly anyway - why are we reimplementing process forking all over? Maybe try
+      #    to get the folks above to accept patches instead of extending this crazy script.
+      Start-Sleep -s 1
+      # Start-Sleep -m 100
     }
     
     if ($global:LASTEXITCODE -ne [Chef.Kernel32]::STILL_ACTIVE) {
@@ -434,9 +452,12 @@ Export-ModuleMember -function chef-solo
 Export-ModuleMember -function chef-windows-service
 Export-ModuleMember -function knife
 
-# To debug this module, uncomment the line below and then run the following.
+# To debug this module, uncomment the line below
 # Export-ModuleMember -function Run-RubyCommand
+
+# Then run the following to reload the module.  Use puts_argv as a helpful debug executable.
 # Remove-Module chef
 # Import-Module chef
-# "puts ARGV" | Out-File C:\opscode\chef\bin\puts_args
+# "puts ARGV" | Out-File C:\opscode\chef\bin\puts_args -Encoding ASCII
+# Copy-Item C:\opscode\chef\bin\ohai.bat C:\opscode\chef\bin\puts_args.bat
 # Run-RubyCommand puts_args 'Here' "are" some '"very interesting"' 'arguments[to]' "`"try out`""
