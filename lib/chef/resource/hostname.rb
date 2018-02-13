@@ -6,13 +6,33 @@ class Chef
       provides :hostname
       resource_name :hostname
 
-      property :hostname, String, name_property: true
-      property :compile_time, [ true, false ], default: true
-      property :ipaddress, [ String, nil ], default: lazy { node["ipaddress"] }
-      property :aliases, [ Array, nil ], default: nil
-      property :windows_reboot, [ true, false ], default: true
+      description "Sets the systems hostname, ensures that reboot will preserve the hostname, and re-runs the ohai plugin so the hostname will be available in subsequent cookbooks."
+      introduced "14.0"
 
-      default_action :set
+      property :hostname,
+               String,
+               description: "The hostname if different than the resource's name",
+               name_property: true
+
+      property :compile_time,
+               [ TrueClass, FalseClass ],
+               description: "Should the resource run at compile time or not.",
+               default: true
+
+      property :ipaddress,
+               String,
+               description: "The ip address to use when configuring the hosts file",
+               default: lazy { node["ipaddress"] }
+
+      property :aliases,
+               [ Array, nil ],
+               description: "An array of hostname aliases to use when configuring the hosts file",
+               default: nil
+
+      property :windows_reboot,
+               [ TrueClass, FalseClass ],
+               description: "Should Windows nodes be rebooted upon changing the name so it can take effect",
+               default: true
 
       action_class do
         def append_replacing_matching_lines(path, regex, string)
@@ -47,6 +67,8 @@ class Chef
       end
 
       action :set do
+        description "Sets the node's hostname"
+
         ohai "reload hostname" do
           plugin "hostname"
           action :nothing
