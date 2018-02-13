@@ -120,6 +120,9 @@ class Chef
 
     # Remove a class from all its matchers in the node_map, will remove mappings completely if its the last matcher left
     #
+    # Note that this leaks the internal structure out a bit, but the main consumer of this (poise/halite) cares only about
+    # the keys in the returned Hash.
+    #
     # @param klass [Class] the class to seek and destroy
     #
     # @return [Hash] deleted entries in the same format as the @map
