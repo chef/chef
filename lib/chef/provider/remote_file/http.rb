@@ -61,17 +61,22 @@ class Chef
 
         def fetch
           http = Chef::HTTP::Simple.new(uri, http_client_opts)
-          tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
+          orig_tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
           if want_progress?
-            tempfile = http.streaming_request_with_progress(uri, headers, tempfile) do |size, total|
+            tempfile = http.streaming_request_with_progress(uri, headers, orig_tempfile) do |size, total|
               events.resource_update_progress(new_resource, size, total, progress_interval)
             end
           else
-            tempfile = http.streaming_request(uri, headers, tempfile)
+            tempfile = http.streaming_request(uri, headers, orig_tempfile)
           end
           if tempfile
             update_cache_control_data(tempfile, http.last_response)
             tempfile.close
+          else
+            # cache_control shows the file is unchanged, so we got back nil from the streaming_request above, and it is
+            # now our responsibility to unlink the tempfile we created
+            orig_tempfile.close
+            orig_tempfile.unlink
           end
           tempfile
         end

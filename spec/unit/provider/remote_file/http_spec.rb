@@ -185,14 +185,12 @@ describe Chef::Provider::RemoteFile::HTTP do
       expect(Chef::HTTP::Simple).to receive(:new).with(*expected_http_args).and_return(rest)
     end
 
-    describe "and the request does not return new content" do
-
-      it "should return a nil tempfile for a 304 HTTPNotModifed" do
-        # Streaming request returns nil for 304 errors
-        expect(rest).to receive(:streaming_request).with(uri, {}, tempfile).and_return(nil)
-        expect(fetcher.fetch).to be_nil
-      end
-
+    it "should clean up the tempfile, and return a nil when streaming_request returns nil" do
+      # Streaming request returns nil for a 304 not modified (etags / last-modified)
+      expect(rest).to receive(:streaming_request).with(uri, {}, tempfile).and_return(nil)
+      expect(tempfile).to receive(:close)
+      expect(tempfile).to receive(:unlink)
+      expect(fetcher.fetch).to be_nil
     end
 
     context "with progress reports" do
