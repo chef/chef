@@ -17,17 +17,30 @@
 
 class Chef
   class Resource
-    # Use the ohai_hint resource to pass hint data to ohai.
-    # @since 14.0.0
     class OhaiHint < Chef::Resource
       resource_name :ohai_hint
       provides :ohai_hint
 
-      property :hint_name, String, name_property: true
-      property :content, Hash
-      property :compile_time, [true, false], default: true
+      description "Use the ohai_hint resource to pass hint data to Ohai to aid in configuration detection."
+      introduced "14.0"
+
+      property :hint_name,
+               kind_of: String,
+               description: "The name of hints file if different from the resource name",
+               name_property: true
+
+      property :content,
+               kind_of: Hash,
+               description: "A Hash of values to include in the hint file"
+
+      property :compile_time,
+               kind_of: [true, false],
+               description: "Should the resource execute during the compile time phase",
+               default: true
 
       action :create do
+        description "Create an Ohai hint file"
+
         declare_resource(:directory, ::Ohai::Config.ohai.hints_path.first) do
           action :create
           recursive true
@@ -40,6 +53,8 @@ class Chef
       end
 
       action :delete do
+        description "Delete an Ohai hint file"
+
         declare_resource(:file, ohai_hint_file_path(new_resource.hint_name)) do
           action :delete
           notifies :reload, ohai[reload ohai post hint removal]
