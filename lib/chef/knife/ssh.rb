@@ -576,8 +576,13 @@ class Chef
         configure_user
         configure_password
         @password = config[:ssh_password] if config[:ssh_password]
-        configure_ssh_identity_file
-        configure_ssh_gateway_identity
+
+        # If a password was not given, check for SSH identity file.
+        if !@password
+          configure_ssh_identity_file
+          configure_ssh_gateway_identity
+        end
+
         configure_gateway
         configure_session
 
