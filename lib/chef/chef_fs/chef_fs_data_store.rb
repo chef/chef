@@ -307,11 +307,13 @@ class Chef
 
         # GET /cookbooks/NAME/VERSION or /cookbook_artifacts/NAME/IDENTIFIER
         elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 3
-          with_entry(path) do |entry|
+          with_entry([path[0]]) do |entry|
             cookbook_type = path[0]
+            cookbook_entry = entry.children.select { |child| child.chef_object.full_name == "#{path[1]}-#{path[2]}" }[0]
+            raise ChefZero::DataStore::DataNotFoundError.new(path) if cookbook_entry.nil?
             result = nil
             begin
-              result = Chef::CookbookManifest.new(entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_hash
+              result = Chef::CookbookManifest.new(cookbook_entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_hash
             rescue Chef::ChefFS::FileSystem::NotFoundError => e
               raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
             end
@@ -320,12 +322,7 @@ class Chef
               if value.is_a?(Array)
                 value.each do |file|
                   if file.is_a?(Hash) && file.has_key?("checksum")
-                    relative = ["file_store", "repo", cookbook_type]
-                    if chef_fs.versioned_cookbooks || cookbook_type == "cookbook_artifacts"
-                      relative << "#{path[1]}-#{path[2]}"
-                    else
-                      relative << path[1]
-                    end
+                    relative = ["file_store", "repo", cookbook_type, cookbook_entry.name ]
                     relative += file[:path].split("/")
                     file["url"] = ChefZero::RestBase.build_uri(request.base_uri, relative)
                   end
@@ -519,14 +516,7 @@ class Chef
         elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 1
           with_entry(path) do |entry|
             begin
-              if path[0] == "cookbook_artifacts"
-                entry.children.map { |child| child.name.rpartition("-")[0] }.uniq
-              elsif chef_fs.versioned_cookbooks
-                # /cookbooks/name-version -> /cookbooks/name
-                entry.children.map { |child| split_name_version(child.name)[0] }.uniq
-              else
-                entry.children.map { |child| child.name }
-              end
+              entry.children.map { |child| child.chef_object.name.to_s }.uniq
             rescue Chef::ChefFS::FileSystem::NotFoundError
               # If the cookbooks dir doesn't exist, we have no cookbooks (not 404)
               []
@@ -534,22 +524,15 @@ class Chef
           end
 
         elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 2
-          if chef_fs.versioned_cookbooks || path[0] == "cookbook_artifacts"
-            result = with_entry([ path[0] ]) do |entry|
-              # list /cookbooks/name = filter /cookbooks/name-version down to name
-              entry.children.map { |child| split_name_version(child.name) }.
-              select { |name, version| name == path[1] }.
-              map { |name, version| version }
-            end
-            if result.empty?
-              raise ChefZero::DataStore::DataNotFoundError.new(path)
-            end
-            result
-          else
-            # list /cookbooks/name = <single version>
-            version = get_single_cookbook_version(path)
-            [version]
+          result = with_entry([ path[0] ]) do |entry|
+            cookbooks = entry.children.map { |child| child.chef_object }
+            cookbooks.select { |cookbook| cookbook.name.to_s == path[1] }.
+            map { |cookbook| cookbook.version }
           end
+          if result.empty?
+            raise ChefZero::DataStore::DataNotFoundError.new(path)
+          end
+          result
 
         else
           result = with_entry(path) do |entry|
