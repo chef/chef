@@ -25,16 +25,16 @@ class Chef
       introduced "14.0"
 
       property :hint_name,
-               kind_of: String,
+               String,
                description: "The name of hints file if different from the resource name",
                name_property: true
 
       property :content,
-               kind_of: Hash,
+               Hash,
                description: "A Hash of values to include in the hint file"
 
       property :compile_time,
-               kind_of: [true, false],
+               [TrueClass, FalseClass],
                description: "Should the resource execute during the compile time phase",
                default: true
 
