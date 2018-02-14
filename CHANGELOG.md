@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.57 -->
-## [v14.0.57](https://github.com/chef/chef/tree/v14.0.57) (2018-02-14)
+<!-- latest_release 14.0.58 -->
+## [v14.0.58](https://github.com/chef/chef/tree/v14.0.58) (2018-02-14)
 
 #### Merged Pull Requests
-- only run windows env specs on windows [#6850](https://github.com/chef/chef/pull/6850) ([thommay](https://github.com/thommay))
+- add Chef::NodeMap#delete_class API [#6846](https://github.com/chef/chef/pull/6846) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- add Chef::NodeMap#delete_class API [#6846](https://github.com/chef/chef/pull/6846) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.58 -->
 - only run windows env specs on windows [#6850](https://github.com/chef/chef/pull/6850) ([thommay](https://github.com/thommay)) <!-- 14.0.57 -->
 - RemoteFile: unlink tempfile when using cache control shows unchanged [#6822](https://github.com/chef/chef/pull/6822) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.56 -->
 - [MSYS-726] Allow setting environment variables at the user level [#6612](https://github.com/chef/chef/pull/6612) ([harikesh-kolekar](https://github.com/harikesh-kolekar)) <!-- 14.0.55 -->
