@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::WindowsEnv do
+describe Chef::Provider::WindowsEnv, :windows_only do
 
   before do
     @node = Chef::Node.new
