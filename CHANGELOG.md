@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.7.22 -->
-## [v13.7.22](https://github.com/chef/chef/tree/v13.7.22) (2018-02-13)
+<!-- latest_release 13.7.23 -->
+## [v13.7.23](https://github.com/chef/chef/tree/v13.7.23) (2018-02-14)
 
 #### Merged Pull Requests
-- RemoteFile: unlink tempfile when using cache control shows unchanged (Chef-13 backport) [#6849](https://github.com/chef/chef/pull/6849) ([lamont-granquist](https://github.com/lamont-granquist))
+- add Chef::NodeMap#delete_class API (Chef 13 backport) [#6848](https://github.com/chef/chef/pull/6848) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- add Chef::NodeMap#delete_class API (Chef 13 backport) [#6848](https://github.com/chef/chef/pull/6848) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.23 -->
 - RemoteFile: unlink tempfile when using cache control shows unchanged (Chef-13 backport) [#6849](https://github.com/chef/chef/pull/6849) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.22 -->
 - Use the version of LicenseScout that comes with the Omnibus gem. [#6841](https://github.com/chef/chef/pull/6841) ([tduffield](https://github.com/tduffield)) <!-- 13.7.21 -->
 - Backport the powershell spec fix to get Appveyor green again [#6813](https://github.com/chef/chef/pull/6813) ([tas50](https://github.com/tas50)) <!-- 13.7.20 -->
