@@ -448,7 +448,7 @@ EOM
       end
 
       it "should log and continue on" do
-        expect(Chef::Log).to receive(:debug)
+        expect(logger).to receive(:trace)
         client.load_required_recipe(rest, run_context)
       end
     end
@@ -482,7 +482,7 @@ EOM
         end
 
         it "should not log a warning message" do
-          expect(Chef::Log).not_to receive(:warn)
+          expect(logger).not_to receive(:warn)
           client.do_windows_admin_check
         end
 
@@ -499,7 +499,7 @@ EOM
         end
 
         it "should log a warning message" do
-          expect(Chef::Log).to receive(:warn)
+          expect(logger).to receive(:warn)
           client.do_windows_admin_check
         end
 

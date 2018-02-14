@@ -7,11 +7,8 @@ source "https://rubygems.org"
 # of bundler versions prior to 1.12.0 (https://github.com/bundler/bundler/commit/193a14fe5e0d56294c7b370a0e59f93b2c216eed)
 gem "chef", path: "."
 
-# @todo before shipping 14.0 we need to switch this over to a gem again
-gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
-
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
-gem "cheffish", "~> 13" # required for rspec tests
+gem "cheffish", "~> 14"
 
 group(:omnibus_package) do
   gem "appbundler"

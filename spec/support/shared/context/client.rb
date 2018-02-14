@@ -20,7 +20,7 @@ shared_context "client" do
   end
 
   let(:ohai_system) do
-    ohai = instance_double("Ohai::System", :all_plugins => true, :data => ohai_data)
+    ohai = instance_double("Ohai::System", :all_plugins => true, :data => ohai_data, logger: logger)
     allow(ohai).to receive(:[]) do |k|
       ohai_data[k]
     end
@@ -37,19 +37,24 @@ shared_context "client" do
   let(:json_attribs) { nil }
   let(:client_opts) { {} }
 
+  let(:stdout) { STDOUT }
+  let(:stderr) { STDERR }
+
   let(:client) do
     Chef::Config[:event_loggers] = []
-    Chef::Client.new(json_attribs, client_opts).tap do |c|
+    allow(Ohai::System).to receive(:new).and_return(ohai_system)
+    opts = client_opts.merge({ logger: logger })
+    Chef::Client.new(json_attribs, opts).tap do |c|
       c.node = node
     end
   end
 
-  before do
-    Chef::Log.logger = Logger.new(StringIO.new)
+  let(:logger) { instance_double("Mixlib::Log::Child", trace: nil, debug: nil, warn: nil, info: nil, error: nil, fatal: nil) }
 
-    # Node/Ohai data
-    #Chef::Config[:node_name] = fqdn
-    allow(Ohai::System).to receive(:new).and_return(ohai_system)
+  before do
+    stub_const("Chef::Client::STDOUT_FD", stdout)
+    stub_const("Chef::Client::STDERR_FD", stderr)
+    allow(client).to receive(:logger).and_return(logger)
   end
 end
 
@@ -162,9 +167,6 @@ shared_context "a client run" do
     Chef::Config[:cache_path] = windows? ? 'C:\chef' : "/var/chef"
     Chef::Config[:why_run] = false
     Chef::Config[:audit_mode] = :enabled
-
-    stub_const("Chef::Client::STDOUT_FD", stdout)
-    stub_const("Chef::Client::STDERR_FD", stderr)
 
     stub_rest_clean
     stub_for_register

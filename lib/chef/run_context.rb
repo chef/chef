@@ -153,6 +153,13 @@ class Chef
     #
     attr_reader :delayed_actions
 
+    #
+    # A child of the root Chef::Log logging object.
+    #
+    # @return Mixlib::Log::Child A child logger
+    #
+    attr_reader :logger
+
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
@@ -162,10 +169,11 @@ class Chef
     # @param events [EventDispatch::Dispatcher] The event dispatcher for this
     #   run.
     #
-    def initialize(node, cookbook_collection, events)
+    def initialize(node, cookbook_collection, events, logger = nil)
       @node = node
       @cookbook_collection = cookbook_collection
       @events = events
+      @logger = logger || Chef::Log.with_child
 
       node.run_context = self
       node.set_cookbook_attribute
@@ -244,7 +252,7 @@ class Chef
     #
     def add_delayed_action(notification)
       if delayed_actions.any? { |existing_notification| existing_notification.duplicates?(notification) }
-        Chef::Log.info( "#{notification.notifying_resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
+        logger.info( "#{notification.notifying_resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
                        " (delayed), as it's already been queued")
       else
         delayed_actions << notification
@@ -318,12 +326,13 @@ class Chef
     # @see DSL::IncludeRecipe#load_recipe
     #
     def load_recipe(recipe_name, current_cookbook: nil)
-      Chef::Log.debug("Loading recipe #{recipe_name} via include_recipe")
+      # FIXME(log): Should be trace
+      logger.debug("Loading recipe #{recipe_name} via include_recipe")
 
       cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name, current_cookbook: current_cookbook)
 
       if unreachable_cookbook?(cookbook_name) # CHEF-4367
-        Chef::Log.warn(<<-ERROR_MESSAGE)
+        logger.warn(<<-ERROR_MESSAGE)
 MissingCookbookDependency:
 Recipe `#{recipe_name}` is not in the run_list, and cookbook '#{cookbook_name}'
 is not a dependency of any cookbook in the run_list.  To load this recipe,
@@ -333,7 +342,8 @@ ERROR_MESSAGE
       end
 
       if loaded_fully_qualified_recipe?(cookbook_name, recipe_short_name)
-        Chef::Log.debug("I am not loading #{recipe_name}, because I have already seen it.")
+        # FIXME(log): Should be trace
+        logger.debug("I am not loading #{recipe_name}, because I have already seen it.")
         false
       else
         loaded_recipe(cookbook_name, recipe_short_name)
@@ -357,7 +367,8 @@ ERROR_MESSAGE
         raise Chef::Exceptions::RecipeNotFound, "could not find recipe file #{recipe_file}"
       end
 
-      Chef::Log.debug("Loading recipe file #{recipe_file}")
+      # FIXME(log): Should be trace
+      logger.debug("Loading recipe file #{recipe_file}")
       recipe = Chef::Recipe.new("@recipe_files", recipe_file, self)
       recipe.from_file(recipe_file)
       recipe
@@ -551,7 +562,7 @@ ERROR_MESSAGE
     # 5. raise an exception on any second call.
     # 6. ?
     def request_reboot(reboot_info)
-      Chef::Log.info "Changing reboot status from #{self.reboot_info.inspect} to #{reboot_info.inspect}"
+      logger.info "Changing reboot status from #{self.reboot_info.inspect} to #{reboot_info.inspect}"
       @reboot_info = reboot_info
     end
 
@@ -559,7 +570,7 @@ ERROR_MESSAGE
     # Cancels a pending reboot
     #
     def cancel_reboot
-      Chef::Log.info "Changing reboot status from #{reboot_info.inspect} to {}"
+      logger.info "Changing reboot status from #{reboot_info.inspect} to {}"
       @reboot_info = {}
     end
 
@@ -613,6 +624,7 @@ ERROR_MESSAGE
         loaded_recipe?
         loaded_recipes
         loaded_recipes_hash
+        logger
         node
         open_stream
         reboot_info

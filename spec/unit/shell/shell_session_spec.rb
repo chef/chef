@@ -229,7 +229,6 @@ describe Shell::SoloLegacySession do
 
   it "runs chef with a resource collection from the compiled cookbooks" do
     allow(@session).to receive(:node_built?).and_return(true)
-    allow(Chef::Log).to receive(:level)
     chef_runner = double("Chef::Runner.new", :converge => :converged)
     expect(Chef::Runner).to receive(:new).with(an_instance_of(Chef::RunContext)).and_return(chef_runner)
 

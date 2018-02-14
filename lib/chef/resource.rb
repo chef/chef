@@ -131,6 +131,13 @@ class Chef
     def initialize(name, run_context = nil)
       name(name) unless name.nil?
       @run_context = run_context
+
+      @logger = if run_context
+                  run_context.logger.with_child({ name: name, resource: resource_name })
+                else
+                  Chef::Log.with_child({ name: name, resource: resource_name })
+                end
+
       @before = nil
       @params = Hash.new
       @provider = nil
@@ -567,9 +574,9 @@ class Chef
       resolve_notification_references
       validate_action(action)
 
-      if Chef::Config[:verbose_logging] || Chef::Log.level == :debug
+      if Chef::Config[:verbose_logging] || logger.level == :debug
         # This can be noisy
-        Chef::Log.info("Processing #{self} action #{action} (#{defined_at})")
+        logger.info("Processing #{self} action #{action} (#{defined_at})")
       end
 
       # ensure that we don't leave @updated_by_last_action set to true
@@ -586,12 +593,12 @@ class Chef
         provider_for_action(action).run_action
       rescue StandardError => e
         if ignore_failure
-          Chef::Log.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
+          logger.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
           events.resource_failed(self, action, e)
         elsif remaining_retries > 0
           events.resource_failed_retriable(self, action, remaining_retries, e)
           remaining_retries -= 1
-          Chef::Log.info("Retrying execution of #{self}, #{remaining_retries} attempt#{"s" if remaining_retries > 1} left")
+          logger.info("Retrying execution of #{self}, #{remaining_retries} attempt#{"s" if remaining_retries > 1} left")
           sleep retry_delay
           retry
         else
@@ -1174,8 +1181,8 @@ class Chef
     # Internal Resource Interface (for Chef)
     #
 
-    FORBIDDEN_IVARS = [:@run_context, :@not_if, :@only_if, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message]
+    FORBIDDEN_IVARS = [:@run_context, :@logger, :@not_if, :@only_if, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@logger, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message]
 
     include Chef::Mixin::ConvertToClassName
     extend Chef::Mixin::ConvertToClassName
@@ -1188,6 +1195,10 @@ class Chef
     # where the context for the current Chef run is stored, including the node
     # and the resource collection.
     attr_accessor :run_context
+
+    # @return [Mixlib::Log::Child] The logger for this resources. This is a child
+    # of the run context's logger, if one exists.
+    attr_reader :logger
 
     # @return [String] The cookbook this resource was declared in.
     attr_accessor :cookbook_name
@@ -1456,7 +1467,7 @@ class Chef
           false
         else
           events.resource_skipped(self, action, conditional)
-          Chef::Log.debug("Skipping #{self} due to #{conditional.description}")
+          logger.debug("Skipping #{self} due to #{conditional.description}")
           true
         end
       end

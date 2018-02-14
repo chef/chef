@@ -6,24 +6,6 @@ GIT
     chefstyle (0.8.0)
       rubocop (= 0.52.1)
 
-GIT
-  remote: https://github.com/chef/ohai.git
-  revision: 9a6842a19cc9d46ca9cc42af4bda5e9ca31a0dce
-  branch: master
-  specs:
-    ohai (14.0.27)
-      chef-config (>= 12.8, < 15)
-      ffi (~> 1.9)
-      ffi-yajl (~> 2.2)
-      ipaddress
-      mixlib-cli
-      mixlib-config (~> 2.0)
-      mixlib-log (>= 1.7.1, < 2.0)
-      mixlib-shellout (~> 2.0)
-      plist (~> 3.1)
-      systemu (~> 2.6.4)
-      wmi-lite (~> 1.0)
-
 PATH
   remote: .
   specs:
@@ -41,7 +23,7 @@ PATH
       mixlib-archive (~> 0.4)
       mixlib-authentication (~> 1.4)
       mixlib-cli (~> 1.7)
-      mixlib-log (~> 1.3)
+      mixlib-log (~> 2.0)
       mixlib-shellout (~> 2.0)
       net-sftp (~> 2.1, >= 2.1.2)
       net-ssh (~> 4.2)
@@ -72,7 +54,7 @@ PATH
       mixlib-archive (~> 0.4)
       mixlib-authentication (~> 1.4)
       mixlib-cli (~> 1.7)
-      mixlib-log (~> 1.3)
+      mixlib-log (~> 2.0)
       mixlib-shellout (~> 2.0)
       net-sftp (~> 2.1, >= 2.1.2)
       net-ssh (~> 4.2)
@@ -126,14 +108,14 @@ GEM
       thor (~> 0.18)
     byebug (10.0.0)
     chef-vault (3.3.0)
-    chef-zero (13.1.0)
+    chef-zero (14.0.1)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
-      mixlib-log (~> 1.3)
+      mixlib-log (~> 2)
       rack (~> 2.0)
       uuidtools (~> 2.1)
-    cheffish (13.1.0)
-      chef-zero (~> 13.0)
+    cheffish (14.0.0)
+      chef-zero (~> 14.0)
       net-ssh
     coderay (1.1.2)
     crack (0.4.3)
@@ -141,13 +123,13 @@ GEM
     debug_inspector (0.0.3)
     diff-lcs (1.3)
     docile (1.3.0)
-    docker-api (1.34.1)
+    docker-api (1.34.2)
       excon (>= 0.47.0)
       multi_json
     erubis (2.7.0)
     ethon (0.11.0)
       ffi (>= 1.3.0)
-    excon (0.60.0)
+    excon (0.61.0)
     faraday (0.14.0)
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.12.2)
@@ -212,7 +194,7 @@ GEM
     mixlib-authentication (1.4.2)
     mixlib-cli (1.7.0)
     mixlib-config (2.2.5)
-    mixlib-log (1.7.1)
+    mixlib-log (2.0.1)
     mixlib-shellout (2.3.2)
     mixlib-shellout (2.3.2-universal-mingw32)
       win32-process (~> 0.8.2)
@@ -236,6 +218,18 @@ GEM
     nori (2.6.0)
     octokit (4.8.0)
       sawyer (~> 0.8.0, >= 0.5.3)
+    ohai (14.0.28)
+      chef-config (>= 12.8, < 15)
+      ffi (~> 1.9)
+      ffi-yajl (~> 2.2)
+      ipaddress
+      mixlib-cli
+      mixlib-config (~> 2.0)
+      mixlib-log (~> 2.0, >= 2.0.1)
+      mixlib-shellout (~> 2.0)
+      plist (~> 3.1)
+      systemu (~> 2.6.4)
+      wmi-lite (~> 1.0)
     parallel (1.12.1)
     parser (2.5.0.4)
       ast (~> 2.4.0)
@@ -394,12 +388,11 @@ DEPENDENCIES
   chef!
   chef-config!
   chef-vault
-  cheffish (~> 13)
+  cheffish (~> 14)
   chefstyle!
   inspec (~> 1)
   netrc
   octokit
-  ohai!
   pry
   pry-byebug
   pry-remote

@@ -38,10 +38,12 @@ describe "Chef::Application::WindowsService", :windows_only do
   end
 
   before do
+    monologger = instance_double("MonoLogger", :level= => nil, :add => nil, :formatter= => nil, :formatter => nil)
+    allow(MonoLogger).to receive(:new).and_return(monologger)
+
     Chef::Config.merge!(config_options)
     allow(subject).to receive(:configure_chef)
     allow(subject).to receive(:parse_options)
-    allow(MonoLogger).to receive(:new)
     allow(subject).to receive(:running?).and_return(true, false)
     allow(subject).to receive(:state).and_return(4)
     subject.service_init
@@ -98,7 +100,7 @@ describe "Chef::Application::WindowsService", :windows_only do
     end
   end
 
-  context "configueres a watchdog timeout" do
+  context "configures a watchdog timeout" do
     let(:timeout) { 10 }
 
     before do

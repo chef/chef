@@ -75,18 +75,18 @@ class Chef
 
       unless Chef::Platform.windows?
         trap("QUIT") do
-          log.info("SIGQUIT received, call stack:\n  " + caller.join("\n  "))
+          logger.info("SIGQUIT received, call stack:\n  " + caller.join("\n  "))
         end
 
         trap("HUP") do
-          log.info("SIGHUP received, reconfiguring")
+          logger.info("SIGHUP received, reconfiguring")
           reconfigure
         end
       end
     end
 
     def emit_warnings
-      log.warn "chef_config[:zypper_check_gpg] is set to false which disables security checking on zypper packages" unless chef_config[:zypper_check_gpg]
+      logger.warn "chef_config[:zypper_check_gpg] is set to false which disables security checking on zypper packages" unless chef_config[:zypper_check_gpg]
     end
 
     # Parse configuration (options and config file)
@@ -104,11 +104,11 @@ class Chef
     end
 
     # @api private (test injection)
-    def log
+    def logger
       Chef::Log
     end
 
-    def self.log
+    def self.logger
       Chef::Log
     end
 
@@ -130,11 +130,11 @@ class Chef
       config[:config_file] = config_fetcher.expanded_path
 
       if config[:config_file].nil?
-        log.warn("No config file found or specified on command line, using command line options.")
+        logger.warn("No config file found or specified on command line, using command line options.")
       elsif config_fetcher.config_missing?
-        log.warn("*****************************************")
-        log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
-        log.warn("*****************************************")
+        logger.warn("*****************************************")
+        logger.warn("Did not find config file: #{config[:config_file]}, using command line options.")
+        logger.warn("*****************************************")
       else
         config_content = config_fetcher.read_config
         apply_config(config_content, config[:config_file])
@@ -176,13 +176,13 @@ class Chef
     #
     def configure_logging
       configure_log_location
-      log.init(MonoLogger.new(chef_config[:log_location]))
+      logger.init(MonoLogger.new(chef_config[:log_location]))
       if want_additional_logger?
         configure_stdout_logger
       end
-      log.level = resolve_log_level
+      logger.level = resolve_log_level
     rescue StandardError => error
-      log.fatal("Failed to open or create log file at #{chef_config[:log_location]}: #{error.class} (#{error.message})")
+      logger.fatal("Failed to open or create log file at #{chef_config[:log_location]}: #{error.class} (#{error.message})")
       Chef::Application.fatal!("Aborting due to invalid 'log_location' configuration", error)
     end
 
@@ -194,8 +194,8 @@ class Chef
 
       chef_config[:log_location] =
         case log_location.to_sym
-          when :syslog then log::Syslog.new
-          when :win_evt then log::WinEvt.new
+          when :syslog then logger::Syslog.new
+          when :win_evt then logger::WinEvt.new
           else log_location # Probably a path; let MonoLogger sort it out
         end
     end
@@ -208,8 +208,8 @@ class Chef
 
     def configure_stdout_logger
       stdout_logger = MonoLogger.new(STDOUT)
-      stdout_logger.formatter = log.logger.formatter
-      log.loggers << stdout_logger
+      stdout_logger.formatter = logger.logger.formatter
+      logger.loggers << stdout_logger
     end
 
     # Use of output formatters is assumed if `force_formatter` is set or if `force_logger` is not set
@@ -263,7 +263,8 @@ class Chef
           @chef_client_json,
           override_runlist: override_runlist,
           specific_recipes: specific_recipes,
-          runlist: config[:runlist]
+          runlist: config[:runlist],
+          logger: logger
         )
         @chef_client_json = nil
 
@@ -293,7 +294,7 @@ class Chef
     def run_with_graceful_exit_option
       # Override the TERM signal.
       trap("TERM") do
-        log.debug("SIGTERM received during converge," +
+        logger.debug("SIGTERM received during converge," +
           " finishing converge to exit normally (send SIGINT to terminate immediately)")
       end
 
@@ -302,31 +303,31 @@ class Chef
     end
 
     def fork_chef_client
-      log.info "Forking chef instance to converge..."
+      logger.info "Forking chef instance to converge..."
       pid = fork do
         # Want to allow forked processes to finish converging when
         # TERM singal is received (exit gracefully)
         trap("TERM") do
-          log.debug("SIGTERM received during converge," +
+          logger.debug("SIGTERM received during converge," +
             " finishing converge to exit normally (send SIGINT to terminate immediately)")
         end
 
         client_solo = chef_config[:solo] ? "chef-solo" : "chef-client"
         $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime("%R:%S")};"
         begin
-          log.debug "Forked instance now converging"
+          logger.debug "Forked instance now converging"
           @chef_client.run
         rescue Exception => e
-          log.error(e.to_s)
+          logger.error(e.to_s)
           exit Chef::Application.normalize_exit_code(e)
         else
           exit 0
         end
       end
-      log.debug "Fork successful. Waiting for new chef pid: #{pid}"
+      logger.debug "Fork successful. Waiting for new chef pid: #{pid}"
       result = Process.waitpid2(pid)
       handle_child_exit(result)
-      log.debug "Forked instance successfully reaped (pid: #{pid})"
+      logger.debug "Forked instance successfully reaped (pid: #{pid})"
       true
     end
 
@@ -344,9 +345,9 @@ class Chef
     def apply_config(config_content, config_file_path)
       chef_config.from_string(config_content, config_file_path)
     rescue Exception => error
-      log.fatal("Configuration error #{error.class}: #{error.message}")
+      logger.fatal("Configuration error #{error.class}: #{error.message}")
       filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
-      filtered_trace.each { |line| log.fatal("  " + line ) }
+      filtered_trace.each { |line| logger.fatal("  " + line ) }
       Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", error)
     end
 
@@ -369,9 +370,9 @@ class Chef
         chef_stacktrace_out += message
 
         Chef::FileCache.store("chef-stacktrace.out", chef_stacktrace_out)
-        log.fatal("Stacktrace dumped to #{Chef::FileCache.load("chef-stacktrace.out", false)}")
-        log.fatal("Please provide the contents of the stacktrace.out file if you file a bug report")
-        log.debug(message)
+        logger.fatal("Stacktrace dumped to #{Chef::FileCache.load("chef-stacktrace.out", false)}")
+        logger.fatal("Please provide the contents of the stacktrace.out file if you file a bug report")
+        logger.debug(message)
         true
       end
 
@@ -381,12 +382,12 @@ class Chef
 
       # Log a fatal error message to both STDERR and the Logger, exit the application
       def fatal!(msg, err = nil)
-        log.fatal(msg)
+        logger.fatal(msg)
         Process.exit(normalize_exit_code(err))
       end
 
       def exit!(msg, err = nil)
-        log.debug(msg)
+        logger.debug(msg)
         Process.exit(normalize_exit_code(err))
       end
     end

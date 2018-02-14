@@ -49,7 +49,7 @@ describe "root aliases" do
 
     context "with both an attributes.rb and attributes/default.rb" do
       it "should log an error and ignore attributes/default.rb" do
-        expect(Chef::Log).to receive(:error).with("Cookbook dup_attr contains both attributes.rb and and attributes/default.rb, ignoring attributes/default.rb")
+        expect_any_instance_of(Mixlib::Log::Child).to receive(:error).with("Cookbook dup_attr contains both attributes.rb and and attributes/default.rb, ignoring attributes/default.rb")
         node.run_list << "dup_attr"
         run_context.load(node.run_list.expand("_default"))
         expect(node["aliased"]["attr"]).to eq "value"
