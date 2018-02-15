@@ -3,7 +3,7 @@
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -122,8 +122,10 @@ class Chef
         # consume_external_attrs may add items to the run_list. Save the
         # expanded run_list, which we will pass to the server later to
         # determine which versions of cookbooks to use.
-        node.reset_defaults_and_overrides
-        node.consume_external_attrs(ohai_data, @json_attribs)
+        node.attributes.defer_cache_resetting do
+          node.reset_defaults_and_overrides
+          node.consume_external_attrs(ohai_data, @json_attribs)
+        end
 
         setup_run_list_override
 

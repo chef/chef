@@ -434,11 +434,13 @@ class Chef
                              Chef::Environment.load(chef_environment)
                            end
 
-      attributes.env_default = loaded_environment.default_attributes
-      attributes.env_override = loaded_environment.override_attributes
+      attributes.defer_cache_resetting do
+        attributes.env_default = loaded_environment.default_attributes
+        attributes.env_override = loaded_environment.override_attributes
 
-      attribute.role_default = expansion.default_attrs
-      attributes.role_override = expansion.override_attrs
+        attribute.role_default = expansion.default_attrs
+        attributes.role_override = expansion.override_attrs
+      end
     end
 
     # Transform the node to a Hash

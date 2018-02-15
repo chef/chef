@@ -237,10 +237,21 @@ class Chef
         end
       end
 
+      # @api private
       def reset
         @deep_merge_cache = nil
       end
 
+      # avoid doing cache clearing work for an entire block of code, then nuke the entire cache
+      # @api private
+      def defer_cache_resetting
+        @disable_cache_reset = true
+        yield
+        @disable_cache_reset = false
+        reset
+      end
+
+      # @api private
       def reset_cache(*path)
         return if @disable_cache_reset
         if path.empty?
@@ -637,15 +648,6 @@ class Chef
             merge_with
           end
         end
-      end
-
-      # avoid doing cache clearing work for an entire block of code, then nuke the entire cache
-      # @api private
-      def defer_cache_resetting
-        @disable_cache_reset = true
-        yield
-        @disable_cache_reset = false
-        reset
       end
 
     end
