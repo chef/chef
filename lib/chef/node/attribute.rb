@@ -190,6 +190,8 @@ class Chef
         @__node__ = node
         node.attributes = self
 
+        @disable_cache_reset = false
+
         defer_cache_resetting do
           @default        = VividMash.new({}, self, node, :default)
           @env_default    = VividMash.new({}, self, node, :env_default)
@@ -245,10 +247,11 @@ class Chef
       # avoid doing cache clearing work for an entire block of code, then nuke the entire cache
       # @api private
       def defer_cache_resetting
+        saved = @disable_cache_reset
         @disable_cache_reset = true
         yield
-        @disable_cache_reset = false
-        reset
+        @disable_cache_reset = saved
+        reset_cache
       end
 
       # @api private
