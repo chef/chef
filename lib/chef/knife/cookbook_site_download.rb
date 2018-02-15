@@ -49,9 +49,9 @@ class Chef
           message = "DEPRECATION: This cookbook has been deprecated. "
           replacement = replacement_cookbook
           if !replacement.to_s.strip.empty?
-	  	    message << "It has been replaced by #{replacement}."
-	      else
-	  	    message << "No replacement has been defined."
+            message << "It has been replaced by #{replacement}."
+          else
+            message << "No replacement has been defined."
           end
           ui.warn message
 
