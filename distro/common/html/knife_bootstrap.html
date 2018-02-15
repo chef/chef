@@ -66,6 +66,8 @@
 <dd>Use to enable SSH agent forwarding.</dd>
 <dt><tt class="docutils literal"><span class="pre">--bootstrap-curl-options</span> <span class="pre">OPTIONS</span></tt></dt>
 <dd>Use to specify arbitrary options to be added to the bootstrap command when using cURL. This option may not be used in the same command with <tt class="docutils literal"><span class="pre">--bootstrap-install-command</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">--bootstrap-preinstall-command</span> <span class="pre">COMMAND</span></tt></dt>
+<dd>Use to execute a custom command before installation of the chef-client.</dd>
 <dt><tt class="docutils literal"><span class="pre">--bootstrap-install-command</span> <span class="pre">COMMAND</span></tt></dt>
 <dd>Use to execute a custom installation command sequence for the chef-client. This option may not be used in the same command with <tt class="docutils literal"><span class="pre">--bootstrap-curl-options</span></tt>, <tt class="docutils literal"><span class="pre">--bootstrap-install-sh</span></tt>, or <tt class="docutils literal"><span class="pre">--bootstrap-wget-options</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--bootstrap-install-sh</span> <span class="pre">URL</span></tt></dt>

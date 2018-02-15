@@ -84,6 +84,18 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
+  context "with --bootstrap-preinstall-command" do
+    command = "while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1; do\n   echo 'waiting for dpkg lock';\n   sleep 1;\n  done;"
+    let(:bootstrap_cli_options) { [ "--bootstrap-preinstall-command", command ] }
+    let(:rendered_template) do
+      knife.merge_configs
+      knife.render_template
+    end
+    it "configures the preinstall command in the bootstrap template correctly" do
+      expect(rendered_template).to match(%r{command})
+    end
+  end
+
   context "with :distro and :bootstrap_template cli options" do
     let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "--distro", "other-template" ] }
 

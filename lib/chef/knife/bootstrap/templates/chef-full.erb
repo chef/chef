@@ -162,6 +162,12 @@ do_download() {
   return 16
 }
 
+<%# Run any custom commands before installing chef-client -%>
+<%# Ex. wait for cloud-init to complete -%>
+<% if knife_config[:bootstrap_preinstall_command] %>
+  <%= knife_config[:bootstrap_preinstall_command] %>
+<% end %>
+
 <% if knife_config[:bootstrap_install_command] %>
   <%= knife_config[:bootstrap_install_command] %>
 <% else %>
