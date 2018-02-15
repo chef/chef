@@ -309,7 +309,10 @@ class Chef
         elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 3
           with_entry([path[0]]) do |entry|
             cookbook_type = path[0]
-            cookbook_entry = entry.children.select { |child| child.chef_object.full_name == "#{path[1]}-#{path[2]}" }[0]
+            cookbook_entry = entry.children.select { |child|
+              child.chef_object.full_name == "#{path[1]}-#{path[2]}" ||
+              (child.chef_object.name.to_s == path[1] && child.chef_object.identifier == path[2])
+            }[0]
             raise ChefZero::DataStore::DataNotFoundError.new(path) if cookbook_entry.nil?
             result = nil
             begin
