@@ -179,6 +179,9 @@ class Chef
       policy_group(policy_group)
     end
 
+    # @api private
+    attr_writer :attributes
+
     def attributes
       @attributes ||= Chef::Node::Attribute.new({}, {}, {}, {}, self)
     end
@@ -509,13 +512,12 @@ class Chef
       node = new
       node.name(o["name"])
       node.chef_environment(o["chef_environment"])
+
       if o.has_key?("attributes")
         node.normal_attrs = o["attributes"]
       end
-      node.automatic_attrs = Mash.new(o["automatic"]) if o.has_key?("automatic")
-      node.normal_attrs = Mash.new(o["normal"]) if o.has_key?("normal")
-      node.default_attrs = Mash.new(o["default"]) if o.has_key?("default")
-      node.override_attrs = Mash.new(o["override"]) if o.has_key?("override")
+
+      node.attributes = Chef::Node::Attribute.new(o["normal"] || o["attributes"], o["default"], o["override"], o["automatic"], node)
 
       if o.has_key?("run_list")
         node.run_list.reset!(o["run_list"])

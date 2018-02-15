@@ -21,11 +21,13 @@ require "spec_helper"
 require "chef/node/attribute"
 
 describe Chef::Node::Attribute do
-  let(:events) { instance_double(Chef::EventDispatch::Dispatcher) }
-  let(:run_context) { instance_double(Chef::RunContext, :events => events) }
-  let(:node) { instance_double(Chef::Node, :run_context => run_context) }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:attributes) { Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash, node) }
+
   before(:each) do
-    allow(events).to receive(:attribute_changed)
+    run_context # de-lazy the run_context + the event object + wire to the node
     @attribute_hash =
       { "dmi" => {},
         "command" => { "ps" => "ps -ef" },
@@ -170,8 +172,7 @@ describe Chef::Node::Attribute do
       },
     }
     @automatic_hash = { "week" => "friday" }
-    @attributes = Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash, node)
-    allow(node).to receive(:attributes).and_return(@attributes)
+    @attributes = attributes
   end
 
   describe "initialize" do
