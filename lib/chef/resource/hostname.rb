@@ -53,12 +53,13 @@ class Chef
         # @return [String]
         def updated_ec2_config_xml
           begin
-            require "nokogiri"
+            require "rexml/document"
             config_file = 'C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml'
-            config = ::Nokogiri::XML(::File.read(config_file))
+            config = REXML::Document.new(::File.read(config_file))
             # find an element named State with a sibling element whose value is Ec2SetComputerName
-            setting = config.at_xpath("//Plugin/State[../Name/text() = 'Ec2SetComputerName']")
-            setting.content = "Disabled"
+            REXML::XPath.each(config, "//Plugin/State[../Name/text() = 'Ec2SetComputerName']") do |element|
+              element.text = "Disabled"
+            end
           rescue
             return ""
           end
