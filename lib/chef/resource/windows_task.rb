@@ -82,7 +82,7 @@ class Chef
         validate_create_frequency_modifier(frequency, frequency_modifier)
         validate_create_day(day, frequency) if day
         validate_create_months(months, frequency) if months
-        validate_idle_time(idle_time, frequency) if ( !idle_time.nil? && ([:minute, :hourly, :daily, :weekly, :monthly].include? frequency)) || (idle_time.nil? || !(idle_time > 0 && idle_time <= 999)) && !([:minute, :hourly, :daily, :weekly, :monthly].include? frequency)
+        validate_idle_time(idle_time, frequency)
       end
 
       private
@@ -196,13 +196,13 @@ class Chef
       end
 
       def validate_idle_time(idle_time, frequency)
-        unless [:on_idle].include?(frequency)
+        if !idle_time.nil? && frequency != :on_idle
           raise ArgumentError, "idle_time property is only valid for tasks that run on_idle"
         end
-        if idle_time.nil?
+        if idle_time.nil? && frequency == :on_idle
           raise ArgumentError, "idle_time value should be set for :on_idle frequency."
         end
-        unless idle_time > 0 && idle_time <= 999
+        unless idle_time.nil? || idle_time > 0 && idle_time <= 999
           raise ArgumentError, "idle_time value #{idle_time} is invalid. Valid values for :on_idle frequency are 1 - 999."
         end
       end
