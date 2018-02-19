@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.61 -->
-## [v14.0.61](https://github.com/chef/chef/tree/v14.0.61) (2018-02-19)
+<!-- latest_release 14.0.62 -->
+## [v14.0.62](https://github.com/chef/chef/tree/v14.0.62) (2018-02-19)
 
 #### Merged Pull Requests
-- Add hostname resource from chef_hostname cookbook [#6795](https://github.com/chef/chef/pull/6795) ([tas50](https://github.com/tas50))
+- fix ohai tests after require_plugin removal [#6867](https://github.com/chef/chef/pull/6867) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- fix ohai tests after require_plugin removal [#6867](https://github.com/chef/chef/pull/6867) ([thommay](https://github.com/thommay)) <!-- 14.0.62 -->
 - Add hostname resource from chef_hostname cookbook [#6795](https://github.com/chef/chef/pull/6795) ([tas50](https://github.com/tas50)) <!-- 14.0.61 -->
 - registry_key: Add sensitive property support for suppressing output (fixes #5695) [#6496](https://github.com/chef/chef/pull/6496) ([shoekstra](https://github.com/shoekstra)) <!-- 14.0.60 -->
 - Use the updated inspec gem - 1.51.18 [#6845](https://github.com/chef/chef/pull/6845) ([tas50](https://github.com/tas50)) <!-- 14.0.59 -->
