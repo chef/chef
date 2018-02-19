@@ -248,14 +248,14 @@ class Chef
       # @param host [String] Hostname for this session.
       # @param port [String] SSH port for this session.
       # @param user [String] Optional username for this session.
-      # @param gatway [Boolean] Flag: host or gateway key
+      # @param gateway [Boolean] Flag: host or gateway key
       # @return [Hash<Symbol, Object>]
-      def session_options(host, port, user = nil, gateway = false)
+      def session_options(host, port, user = nil, gateway: false)
         ssh_config = Net::SSH.configuration_for(host, true)
         {}.tap do |opts|
           # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
           opts[:user] = user || config[:ssh_user] || ssh_config[:user]
-          if gateway == false && config[:ssh_identity_file]
+          if !gateway && config[:ssh_identity_file]
             opts[:keys] = File.expand_path(config[:ssh_identity_file])
             opts[:keys_only] = true
           elsif gateway && config[:ssh_gateway_identity]
