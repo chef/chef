@@ -26,8 +26,7 @@ describe Chef::Knife::Configure do
 
   let(:ohai) do
     o = {}
-    allow(o).to receive(:require_plugin)
-    allow(o).to receive(:load_plugins)
+    allow(o).to receive(:all_plugins).with(%w{ os hostname fqdn })
     o[:fqdn] = fqdn
     o
   end
