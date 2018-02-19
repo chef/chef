@@ -93,6 +93,20 @@ describe Chef::Provider::Package::Powershell do
     double("powershell_out", :stdout => "5")
   end
 
+  let(:generated_command) { "( Get-Package posh-git -Force -ForceBootstrap ).Version" }
+  let(:generated_get_cmdlet) { "( Get-Package xNetworking -Force -ForceBootstrap ).Version" }
+  let(:generated_get_cmdlet_with_version) { "( Get-Package xNetworking -Force -ForceBootstrap -RequiredVersion 1.0.0.0 ).Version" }
+  let(:generated_find_cmdlet) { "( Find-Package xNetworking -Force -ForceBootstrap ).Version" }
+  let(:generated_find_cmdlet_with_version) { "( Find-Package xNetworking -Force -ForceBootstrap -RequiredVersion 1.0.0.0 ).Version" }
+  let(:generated_find_cmdlet_with_source) { "( Find-Package xNetworking -Force -ForceBootstrap -Source MyGallery ).Version" }
+  let(:generated_find_cmdlet_with_source_and_version) { "( Find-Package xNetworking -Force -ForceBootstrap -RequiredVersion 1.0.0.0 -Source MyGallery ).Version" }
+  let(:generated_install_cmdlet) { "( Install-Package xNetworking -Force -ForceBootstrap ).Version" }
+  let(:generated_install_cmdlet_with_version) { "( Install-Package xNetworking -Force -ForceBootstrap -RequiredVersion 1.0.0.0 ).Version" }
+  let(:generated_install_cmdlet_with_source) { "( Install-Package xNetworking -Force -ForceBootstrap -Source MyGallery ).Version" }
+  let(:generated_install_cmdlet_with_source_and_version) { "( Install-Package xNetworking -Force -ForceBootstrap -RequiredVersion 1.0.0.0 -Source MyGallery ).Version" }
+  let(:generated_uninstall_cmdlet) { "( Uninstall-Package xNetworking -Force -ForceBootstrap ).Version" }
+  let(:generated_uninstall_cmdlet_with_version) { "( Uninstall-Package xNetworking -Force -ForceBootstrap -RequiredVersion 1.0.0.0 ).Version" }
+
   describe "#initialize" do
     it "should return the correct class" do
       expect(provider).to be_kind_of(Chef::Provider::Package::Powershell)
@@ -176,6 +190,92 @@ describe Chef::Provider::Package::Powershell do
       expect(provider.candidate_version).to eql([nil, nil])
     end
 
+  end
+
+  describe "#build_powershell_command" do
+    it "can build a valid command from a single string" do
+      expect(provider.build_powershell_command("Get-Package posh-git")).to eql(generated_command)
+    end
+
+    it "can build a valid command from an array" do
+      expect(provider.build_powershell_command(["Get-Package", "posh-git"])).to eql(generated_command)
+    end
+
+    context "when source is nil" do
+      it "build get commands correctly" do
+        expect(provider.build_powershell_command("Get-Package xNetworking")).to eql(generated_get_cmdlet)
+      end
+
+      it "build get commands correctly when a version is passed" do
+        expect(provider.build_powershell_command("Get-Package xNetworking", "1.0.0.0")).to eql(generated_get_cmdlet_with_version)
+      end
+
+      it "builds find commands correctly" do
+        expect(provider.build_powershell_command("Find-Package xNetworking")).to eql(generated_find_cmdlet)
+      end
+
+      it "builds find commands correctly when a version is passed" do
+        expect(provider.build_powershell_command("Find-Package xNetworking", "1.0.0.0")).to eql(generated_find_cmdlet_with_version)
+      end
+
+      it "build install commands correctly" do
+        expect(provider.build_powershell_command("Install-Package xNetworking")).to eql(generated_install_cmdlet)
+      end
+
+      it "build install commands correctly when a version is passed" do
+        expect(provider.build_powershell_command("Install-Package xNetworking", "1.0.0.0")).to eql(generated_install_cmdlet_with_version)
+      end
+
+      it "build install commands correctly" do
+        expect(provider.build_powershell_command("Uninstall-Package xNetworking")).to eql(generated_uninstall_cmdlet)
+      end
+
+      it "build install commands correctly when a version is passed" do
+        expect(provider.build_powershell_command("Uninstall-Package xNetworking", "1.0.0.0")).to eql(generated_uninstall_cmdlet_with_version)
+      end
+    end
+
+    context "when source is set" do
+      it "build get commands correctly" do
+        new_resource.source("MyGallery")
+        expect(provider.build_powershell_command("Get-Package xNetworking")).to eql(generated_get_cmdlet)
+      end
+
+      it "build get commands correctly when a version is passed" do
+        new_resource.source("MyGallery")
+        expect(provider.build_powershell_command("Get-Package xNetworking", "1.0.0.0")).to eql(generated_get_cmdlet_with_version)
+      end
+
+      it "builds find commands correctly" do
+        new_resource.source("MyGallery")
+        expect(provider.build_powershell_command("Find-Package xNetworking")).to eql(generated_find_cmdlet_with_source)
+      end
+
+      it "builds find commands correctly when a version is passed" do
+        new_resource.source("MyGallery")
+        expect(provider.build_powershell_command("Find-Package xNetworking", "1.0.0.0")).to eql(generated_find_cmdlet_with_source_and_version)
+      end
+
+      it "build install commands correctly" do
+        new_resource.source("MyGallery")
+        expect(provider.build_powershell_command("Install-Package xNetworking")).to eql(generated_install_cmdlet_with_source)
+      end
+
+      it "build install commands correctly when a version is passed" do
+        new_resource.source("MyGallery")
+        expect(provider.build_powershell_command("Install-Package xNetworking", "1.0.0.0")).to eql(generated_install_cmdlet_with_source_and_version)
+      end
+
+      it "build install commands correctly" do
+        new_resource.source("MyGallery")
+        expect(provider.build_powershell_command("Uninstall-Package xNetworking")).to eql(generated_uninstall_cmdlet)
+      end
+
+      it "build install commands correctly when a version is passed" do
+        new_resource.source("MyGallery")
+        expect(provider.build_powershell_command("Uninstall-Package xNetworking", "1.0.0.0")).to eql(generated_uninstall_cmdlet_with_version)
+      end
+    end
   end
 
   describe "#action_install" do
