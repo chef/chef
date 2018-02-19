@@ -41,6 +41,7 @@ class Chef
 
       property :version, [String, Array], coerce: proc { |x| [x].flatten }
 
+      property :source, [String]
     end
   end
 end

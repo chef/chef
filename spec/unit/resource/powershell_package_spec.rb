@@ -63,4 +63,13 @@ describe Chef::Resource::PowershellPackage do
     resource.version(["1.2.3", "4.5.6"])
     expect(resource.version).to eql(["1.2.3", "4.5.6"])
   end
+
+  it "the default source is nil" do
+    expect(resource.source).to eql(nil)
+  end
+
+  it "the source setter accepts strings" do
+    resource.source("MyGallery")
+    expect(resource.source).to eql("MyGallery")
+  end
 end
