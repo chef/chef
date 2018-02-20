@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.65 -->
-## [v14.0.65](https://github.com/chef/chef/tree/v14.0.65) (2018-02-20)
+<!-- latest_release 14.0.66 -->
+## [v14.0.66](https://github.com/chef/chef/tree/v14.0.66) (2018-02-20)
 
 #### Merged Pull Requests
-- Add ohai_hint resource from ohai cookbook [#6793](https://github.com/chef/chef/pull/6793) ([tas50](https://github.com/tas50))
+- check identifier to resolve exported cookbooks by chef export [#6859](https://github.com/chef/chef/pull/6859) ([sawanoboly](https://github.com/sawanoboly))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- check identifier to resolve exported cookbooks by chef export [#6859](https://github.com/chef/chef/pull/6859) ([sawanoboly](https://github.com/sawanoboly)) <!-- 14.0.66 -->
 - Add ohai_hint resource from ohai cookbook [#6793](https://github.com/chef/chef/pull/6793) ([tas50](https://github.com/tas50)) <!-- 14.0.65 -->
 - Add powershell_package source param [#6843](https://github.com/chef/chef/pull/6843) ([Happycoil](https://github.com/Happycoil)) <!-- 14.0.64 -->
 - Add new Redhat Subscription Manager resources [#6827](https://github.com/chef/chef/pull/6827) ([tas50](https://github.com/tas50)) <!-- 14.0.63 -->
