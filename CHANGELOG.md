@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.67 -->
-## [v14.0.67](https://github.com/chef/chef/tree/v14.0.67) (2018-02-20)
+<!-- latest_release 14.0.68 -->
+## [v14.0.68](https://github.com/chef/chef/tree/v14.0.68) (2018-02-20)
 
 #### Merged Pull Requests
-- fix chefstyle [#6874](https://github.com/chef/chef/pull/6874) ([thommay](https://github.com/thommay))
+- make sure all proxy settings are dealt with [#6875](https://github.com/chef/chef/pull/6875) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- make sure all proxy settings are dealt with [#6875](https://github.com/chef/chef/pull/6875) ([thommay](https://github.com/thommay)) <!-- 14.0.68 -->
 - fix chefstyle [#6874](https://github.com/chef/chef/pull/6874) ([thommay](https://github.com/thommay)) <!-- 14.0.67 -->
 - check identifier to resolve exported cookbooks by chef export [#6859](https://github.com/chef/chef/pull/6859) ([sawanoboly](https://github.com/sawanoboly)) <!-- 14.0.66 -->
 - Add ohai_hint resource from ohai cookbook [#6793](https://github.com/chef/chef/pull/6793) ([tas50](https://github.com/tas50)) <!-- 14.0.65 -->
