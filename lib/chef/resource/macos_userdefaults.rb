@@ -35,7 +35,7 @@ class Chef
       property :domain,
                String,
                description: "The domain the defaults belong to.",
-               name_property: true
+               required: true
 
       property :global,
                [true, false],
