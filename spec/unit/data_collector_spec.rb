@@ -761,7 +761,7 @@ describe Chef::DataCollector::Reporter do
     end
 
     context "when server_url is omitted but output_locations is specified" do
-      it "raises an exception" do
+      it "does not an exception" do
         Chef::Config[:data_collector][:output_locations] = ["http://data_collector", "/tmp/data_collector.json"]
         expect { reporter.send(:validate_data_collector_server_url!) }.not_to raise_error(Chef::Exceptions::ConfigurationError)
       end
@@ -804,15 +804,8 @@ describe Chef::DataCollector::Reporter do
 
     context "when valid output_locations are provided" do
       it "does not raise an exception" do
-        Chef::Config[:data_collector][:output_locations] = { :urls => ["http://data_collector"], :files => ["/tmp/data_collection.json"] }
+        Chef::Config[:data_collector][:output_locations] = { :urls => ["http://data_collector"], :files => ["data_collection.json"] }
         expect { reporter.send(:validate_data_collector_output_locations!) }.not_to raise_error(Chef::Exceptions::ConfigurationError)
-      end
-    end
-
-    context "when output_locations contains an invalid file path" do
-      it "raises an exception" do
-        Chef::Config[:data_collector][:output_locations] = { :urls => ["http://data_collector"], :files => ["/data_collector.json"] }
-        expect { reporter.send(:validate_data_collector_output_locations!) }.to raise_error(Chef::Exceptions::ConfigurationError)
       end
     end
 
