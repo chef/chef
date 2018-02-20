@@ -44,9 +44,6 @@ include_recipe "chef-client::delete_validation"
 include_recipe "chef-client::config"
 include_recipe "chef-client"
 
-include_recipe "chef-apt-docker"
-include_recipe "chef-yum-docker"
-
 include_recipe "openssh"
 
 include_recipe "nscd"
