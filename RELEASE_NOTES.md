@@ -1,5 +1,31 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Chef Client Release Notes 12.22:
+
+## Security Updates
+
+### Ruby
+
+Ruby has been updated to 2.3.6 to resolve CVE-2017-17405
+
+### LibXML2
+
+Libxml2 has been updated to 2.9.7 to resolve CVE-2017-15412
+
+## Ohai 8.26.1
+
+### EC2 detection on C5/M5
+
+Ohai now provides EC2 metadata configuration information on the new C5/M5 instance types running on Amazon's new hypervisor.
+
+### LsPci Plugin
+
+The new LsPci plugin provides a node[:pci] hash with information about the PCI bus based on lspci. Only runs on Linux.
+
+### Docker Detection
+
+The virtualization plugin has been updated to properly detect when running on Docker CE
+
 # Chef Client Release Notes 12.21:
 
 ## Security Fixes
