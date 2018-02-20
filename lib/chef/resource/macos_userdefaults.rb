@@ -49,6 +49,7 @@ class Chef
       property :value,
                [Integer, Float, String, true, false, Hash, Array],
                description: "The value of the key.",
+               coerce: proc { |v| coerce_booleans(v) },
                required: true
 
       property :type,
@@ -72,6 +73,15 @@ class Chef
                default: false,
                desired_state: false
 
+       # coerce various ways of representing a boolean into either 0 (false) or 1 (true)
+       # which is what the defaults CLI expects. Why? Well defaults itself accepts a few
+       # different formats, but when you do a read command it all comes back as 1 or 0.
+      def coerce_booleans(val)
+        return 1 if [true, "TRUE", "1", "true", "YES", "yes"].include?(val)
+        return 0 if [false, "FALSE", "0", "false", "NO", "no"].include?(val)
+        val
+      end
+
       action :write do
         description "Write the setting to the specified domain"
 
@@ -79,14 +89,12 @@ class Chef
         @userdefaults.key(new_resource.key)
         @userdefaults.domain(new_resource.domain)
         Chef::Log.debug("Checking #{new_resource.domain} value")
-        truefalse = 1 if [true, "TRUE", "1", "true", "YES", "yes"].include?(new_resource.value)
-        truefalse = 0 if [false, "FALSE", "0", "false", "NO", "no"].include?(new_resource.value)
 
         drcmd = "defaults read '#{new_resource.domain}' "
         drcmd << "'#{new_resource.key}' " if new_resource.key
         shell_out_opts = {}
         shell_out_opts[:user] = new_resource.user unless new_resource.user.nil?
-        vc = shell_out("#{drcmd} | grep -qx '#{truefalse || new_resource.value}'", shell_out_opts)
+        vc = shell_out("#{drcmd} | grep -qx '#{new_resource.value}'", shell_out_opts)
 
         is_set = vc.exitstatus == 0 ? true : false
         @userdefaults.is_set(is_set)
