@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.64 -->
-## [v14.0.64](https://github.com/chef/chef/tree/v14.0.64) (2018-02-19)
+<!-- latest_release 14.0.65 -->
+## [v14.0.65](https://github.com/chef/chef/tree/v14.0.65) (2018-02-20)
 
 #### Merged Pull Requests
-- Add powershell_package source param [#6843](https://github.com/chef/chef/pull/6843) ([Happycoil](https://github.com/Happycoil))
+- Add ohai_hint resource from ohai cookbook [#6793](https://github.com/chef/chef/pull/6793) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Add ohai_hint resource from ohai cookbook [#6793](https://github.com/chef/chef/pull/6793) ([tas50](https://github.com/tas50)) <!-- 14.0.65 -->
 - Add powershell_package source param [#6843](https://github.com/chef/chef/pull/6843) ([Happycoil](https://github.com/Happycoil)) <!-- 14.0.64 -->
 - Add new Redhat Subscription Manager resources [#6827](https://github.com/chef/chef/pull/6827) ([tas50](https://github.com/tas50)) <!-- 14.0.63 -->
 - fix ohai tests after require_plugin removal [#6867](https://github.com/chef/chef/pull/6867) ([thommay](https://github.com/thommay)) <!-- 14.0.62 -->
