@@ -273,7 +273,7 @@ class Chef
           opts[:port] = port unless port.nil?
           opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
           if !config[:host_key_verify]
-            opts[:paranoid] = false
+            opts[:verify_host_key] = false
             opts[:user_known_hosts_file] = "/dev/null"
           end
           if ssh_config[:keepalive]
