@@ -345,6 +345,8 @@ class Chef::Application::Client < Chef::Application
         tarball_path = File.join(Chef::Config.chef_repo_path, "recipes.tgz")
         fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
         Mixlib::Archive.new(tarball_path).extract(Chef::Config.chef_repo_path, perms: false, ignore: /^\.$/)
+        config_path = File.join(Chef::Config.chef_repo_path, ".chef/config.rb")
+        Chef::Config.from_string(IO.read(config_path), config_path) if File.file?(config_path)
       end
     end
 
