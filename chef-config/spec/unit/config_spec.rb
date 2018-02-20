@@ -852,9 +852,13 @@ RSpec.describe ChefConfig::Config do
     before(:all) do
       @original_env = ENV.to_hash
       ENV["http_proxy"] = nil
+      ENV["HTTP_PROXY"] = nil
       ENV["https_proxy"] = nil
+      ENV["HTTPS_PROXY"] = nil
       ENV["ftp_proxy"] = nil
+      ENV["FTP_PROXY"] = nil
       ENV["no_proxy"] = nil
+      ENV["NO_PROXY"] = nil
     end
 
     after(:all) do
