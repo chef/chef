@@ -1,5 +1,6 @@
 #
 # Copyright:: 2011-2018, Joshua Timberman
+# Copyright:: 2018, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,16 +25,56 @@ class Chef
       provides :mac_os_x_userdefaults
       provides :macos_userdefaults
 
-      property :domain, String, required: true
-      property :global, [true, false], default: false
-      property :key, String
-      property :value, [Integer, Float, String, true, false, Hash, Array], required: true
-      property :type, String, default: ""
-      property :user, String
-      property :sudo, [true, false], default: false
-      property :is_set, [true, false], default: false
+      introduced "14.0"
+
+      description "Use the macos_userdefaults resource to manage the macOS user defaults"\
+                  " system. The properties to the resource are passed to the defaults command"\
+                  " and the parameters follow convention of the macOS command. See the defaults(1)"\
+                  " man page for details on how the tool works."
+
+      property :domain,
+               String,
+               description: "The domain the defaults belong to.",
+               name_property: true
+
+      property :global,
+               [true, false],
+               description: "Whether the domain is global.",
+               default: false
+
+      property :key,
+               String,
+               description: "The preference key."
+
+      property :value,
+               [Integer, Float, String, true, false, Hash, Array],
+               description: "The value of the key.",
+               required: true
+
+      property :type,
+               String,
+               description: "Value type of the preference key.",
+               default: ""
+
+      property :user,
+               String,
+               description: "User for which to set the default."
+
+      property :sudo,
+               [true, false],
+               description: "Set to true if the setting requires privileged access to modify.",
+               default: false,
+               desired_state: false
+
+      property :is_set,
+               [true, false],
+               description: "",
+               default: false,
+               desired_state: false
 
       action :write do
+        description "Write the setting to the specified domain"
+
         @userdefaults = Chef::Resource.resource_for_node(:macos_userdefaults, node).new(new_resource.name)
         @userdefaults.key(new_resource.key)
         @userdefaults.domain(new_resource.domain)
