@@ -38,6 +38,7 @@ class Chef
       property :target, String, name_property: true
       property :hwaddr, String
       property :mask, String
+      property :family, String, default: 'inet'
       property :inet_addr, String
       property :bcast, String
       property :mtu, String
