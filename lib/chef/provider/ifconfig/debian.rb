@@ -36,11 +36,11 @@ class Chef
 <% if new_resource.onboot == "yes" %>auto <%= new_resource.device %><% end %>
 <% case new_resource.bootproto
    when "dhcp" %>
-iface <%= new_resource.device %> inet dhcp
+iface <%= new_resource.device %> <%= new_resource.family %> dhcp
 <% when "bootp" %>
-iface <%= new_resource.device %> inet bootp
+iface <%= new_resource.device %> <%= new_resource.family %> bootp
 <% else %>
-iface <%= new_resource.device %> inet static
+iface <%= new_resource.device %> <%= new_resource.family %> static
     <% if new_resource.target %>address <%= new_resource.target %><% end %>
     <% if new_resource.mask %>netmask <%= new_resource.mask %><% end %>
     <% if new_resource.network %>network <%= new_resource.network %><% end %>
