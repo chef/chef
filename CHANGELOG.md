@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.21.37 -->
-## [v12.21.37](https://github.com/chef/chef/tree/v12.21.37) (2018-02-09)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Use the version of LicenseScout that comes with the Omnibus gem. [#6840](https://github.com/chef/chef/pull/6840) ([tduffield](https://github.com/tduffield))
+- Bump libxml2 to 2.9.7 and prep 12.22 release [#6881](https://github.com/chef/chef/pull/6881) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=12.21.31 -->
 ### Changes since 12.21.31 release
 
 #### Merged Pull Requests
+- Bump libxml2 to 2.9.7 and prep 12.22 release [#6881](https://github.com/chef/chef/pull/6881) ([tas50](https://github.com/tas50)) <!-- 12.22.0 -->
 - Use the version of LicenseScout that comes with the Omnibus gem. [#6840](https://github.com/chef/chef/pull/6840) ([tduffield](https://github.com/tduffield)) <!-- 12.21.37 -->
 - Fix tests on AIX [#6819](https://github.com/chef/chef/pull/6819) ([thommay](https://github.com/thommay)) <!-- 12.21.36 -->
 - backport #6746 [#6817](https://github.com/chef/chef/pull/6817) ([thommay](https://github.com/thommay)) <!-- 12.21.35 -->
