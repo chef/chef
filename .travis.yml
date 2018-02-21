@@ -61,18 +61,18 @@ matrix:
   - env:
       UNIT_SPECS_24: 1
     rvm: 2.4.3
-    sudo: false
+    sudo: true
     script:
-      - bundle exec rake spec:unit;
-      - bundle exec rake component_specs
+      - sudo -E $(which bundle) exec rake spec:unit;
+      - sudo -E $(which bundle) exec rake component_specs
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
       UNIT_SPECS_25: 1
     rvm: 2.5.0
-    sudo: false
+    sudo: true
     script:
-      - bundle exec rake spec:unit;
-      - bundle exec rake component_specs
+      - sudo -E $(which bundle) exec rake spec:unit;
+      - sudo -E $(which bundle) exec rake component_specs
     bundler_args: --without ci docgen guard integration maintenance omnibus_package --frozen
   - env:
       CHEFSTYLE: 1
