@@ -23,39 +23,39 @@ class Chef
       resource_name :cpan_module
       provides :cpan_module
 
-      description "A resource for installing and uninstalling perl CPAN modules."
+      description "Use the cpan_module resource to install or uninstall perl CPAN modules."
       introduced "14.0"
 
       property :module_name,
                String,
-               description: "The name of the module if it's different than the name of the resource",
+               description: "The name of the module if it's different than the name of the resource.",
                name_property: true
 
       property :force,
                [TrueClass, FalseClass],
-               description: "To force the install within cpanm",
+               description: "To force the install within cpanm.",
                default: false
 
       property :test,
                [TrueClass, FalseClass],
-               description: "To do a test install",
+               description: "To do a test install.",
                default: false
 
       property :version,
                String,
-               description: "Any version string cpanm would find acceptable"
+               description: "Any version string cpanm would find acceptable."
 
       property :cwd,
                String,
-               description: "A path to change into before running cpanm"
+               description: "A path to change into before running cpanm."
 
       property :cpanm_binary,
                String,
-               description: "The path of the cpanm binary",
+               description: "The path of the cpanm binary.",
                default: "cpanm"
 
       action :install do
-        description "Install the module"
+        description "Install the module."
 
         declare_resource(:execute, "CPAN :install #{new_resource.module_name}") do
           cwd current_working_dir
@@ -66,7 +66,7 @@ class Chef
       end
 
       action :uninstall do
-        description "Uninstall the module"
+        description "Uninstall the module."
 
         declare_resource(:execute, "CPAN :uninstall #{new_resource.module_name}") do
           cwd current_working_dir
