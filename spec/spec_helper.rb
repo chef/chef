@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -252,6 +252,24 @@ RSpec.configure do |config|
     Chef.resource_handler_map.instance_variable_set(:@map, resource_handler_map.dup)
     Chef.provider_priority_map.instance_variable_set(:@map, provider_priority_map.dup)
     Chef.resource_priority_map.instance_variable_set(:@map, resource_priority_map.dup)
+  end
+
+  # This bit of jankiness guards against specs which accidentally drop privs when running as
+  # root -- which are nearly impossible to debug and so we bail out very hard if this
+  # condition ever happens.  If a spec stubs Process.[e]uid this can throw a false positive
+  # which the spec must work around by unmocking Process.[e]uid to and_call_original in its
+  # after block.
+  if Process.euid == 0 && Process.uid == 0
+    config.after(:each) do
+      if Process.uid != 0
+        RSpec.configure { |c| c.fail_fast = true }
+        raise "rspec was invoked as root, but the last test dropped real uid to #{Process.uid}"
+      end
+      if Process.euid != 0
+        RSpec.configure { |c| c.fail_fast = true }
+        raise "rspec was invoked as root, but the last test dropped effective uid to #{Process.euid}"
+      end
+    end
   end
 
   # raise if anyone commits any test to CI with :focus set on it
