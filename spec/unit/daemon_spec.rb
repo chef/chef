@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,6 +73,7 @@ describe Chef::Daemon do
   describe ".change_privilege" do
 
     before do
+      allow(Chef::Daemon).to receive(:_change_privilege)
       allow(Chef::Application).to receive(:fatal!).and_return(true)
       Chef::Config[:user] = "aj"
       allow(Dir).to receive(:chdir)
@@ -157,6 +158,11 @@ describe Chef::Daemon do
       before do
         allow(Process).to receive(:euid).and_return(999)
         allow(Process).to receive(:egid).and_return(999)
+      end
+
+      after do
+        allow(Process).to receive(:euid).and_call_original
+        allow(Process).to receive(:egid).and_call_original
       end
 
       it "should log an appropriate error message and fail miserably" do
