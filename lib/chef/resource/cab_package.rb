@@ -21,14 +21,15 @@ require "chef/mixin/uris"
 
 class Chef
   class Resource
-    # Use the cab_package resource to install or remove Microsoft Windows cabinet (.cab) packages.
-    #
-    # @since 12.15
     class CabPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
 
       resource_name :cab_package
       provides :cab_package, os: "windows"
+
+      description "Use the cab_package resource to install or remove Microsoft Windows"\
+                  " cabinet (.cab) packages."
+      introduced "12.15"
 
       allowed_actions :install, :remove
 

@@ -19,12 +19,11 @@
 
 class Chef
   class Resource
-    # Use the group resource to manage a local group.
     class Group < Chef::Resource
-
       identity_attr :group_name
-
       state_attrs :members
+
+      description "Use the group resource to manage a local group."
 
       allowed_actions :create, :remove, :modify, :manage
       default_action :create

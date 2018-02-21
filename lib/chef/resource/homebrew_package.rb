@@ -23,12 +23,12 @@ require "chef/resource/package"
 
 class Chef
   class Resource
-    # Use the homebrew_package resource to manage packages for the macOS platform.
-    #
-    # @since 12.0
     class HomebrewPackage < Chef::Resource::Package
       resource_name :homebrew_package
       provides :package, os: "darwin"
+
+      description "Use the homebrew_package resource to manage packages for the macOS platform."
+      introduced "12.0"
 
       property :homebrew_user, [ String, Integer ]
 

@@ -20,12 +20,13 @@ require "chef/resource"
 
 class Chef
   class Resource
-    # Use the apt_update resource to manage APT repository updates on Debian and Ubuntu platforms.
-    #
-    # @since 12.7
     class AptUpdate < Chef::Resource
       resource_name :apt_update
       provides :apt_update
+
+      description "Use the apt_update resource to manage APT repository updates on"\
+                  " Debian and Ubuntu platforms."
+      introduced "12.7"
 
       # allow bare apt_update with no name
       property :name, String, default: ""

@@ -20,13 +20,13 @@ require "chef/resource/package"
 
 class Chef
   class Resource
-    # Use the chocolatey_package resource to manage packages using Chocolatey on the Microsoft Windows platform.
-    #
-    # @since 12.7
     class ChocolateyPackage < Chef::Resource::Package
-
       resource_name :chocolatey_package
       provides :chocolatey_package, os: "windows"
+
+      description "Use the chocolatey_package resource to manage packages using Chocolatey"\
+                  " on the Microsoft Windows platform."
+      introduced "12.7"
 
       allowed_actions :install, :upgrade, :remove, :uninstall, :purge, :reconfig
 

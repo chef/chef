@@ -25,9 +25,10 @@ require "pathname"
 
 class Chef
   class Resource
-    # Use the file resource to manage files directly on a node.
     class File < Chef::Resource
       include Chef::Mixin::Securable
+
+      description "Use the file resource to manage files directly on a node."
 
       if Platform.windows?
         # Use Windows rights instead of standard *nix permissions

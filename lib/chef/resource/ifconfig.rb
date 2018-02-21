@@ -21,14 +21,14 @@ require "chef/resource"
 
 class Chef
   class Resource
-    # use the ifconfig resource to manage interfaces on *nix systems
-    #
     # @example set a static ip on eth1
     #   ifconfig '33.33.33.80' do
     #     device 'eth1'
     #   end
     class Ifconfig < Chef::Resource
       resource_name :ifconfig
+
+      description "Use the ifconfig resource to manage interfaces on *nix systems."
 
       state_attrs :inet_addr, :mask
 

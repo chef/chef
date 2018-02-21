@@ -20,12 +20,12 @@ require "chef/resource"
 
 class Chef
   class Resource
-    # Use the launchd resource to manage system-wide services (daemons) and per-user services (agents) on the macOS platform.
-    #
-    # @since 12.8
     class Launchd < Chef::Resource
       resource_name :launchd
       provides :launchd, os: "darwin"
+
+      description "Use the launchd resource to manage system-wide services (daemons) and per-user services (agents) on the macOS platform."
+      introduced "12.8"
 
       default_action :create
       allowed_actions :create, :create_if_missing, :delete, :enable, :disable, :restart
