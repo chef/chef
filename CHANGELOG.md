@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.69 -->
-## [v14.0.69](https://github.com/chef/chef/tree/v14.0.69) (2018-02-20)
+<!-- latest_release 14.0.70 -->
+## [v14.0.70](https://github.com/chef/chef/tree/v14.0.70) (2018-02-21)
 
 #### Merged Pull Requests
-- updating paranoid to verify_host_key [#6869](https://github.com/chef/chef/pull/6869) ([tarcinil](https://github.com/tarcinil))
+- Add macos_user_defaults resource from mac_os_x cookbook [#6878](https://github.com/chef/chef/pull/6878) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Add macos_user_defaults resource from mac_os_x cookbook [#6878](https://github.com/chef/chef/pull/6878) ([tas50](https://github.com/tas50)) <!-- 14.0.70 -->
 - updating paranoid to verify_host_key [#6869](https://github.com/chef/chef/pull/6869) ([tarcinil](https://github.com/tarcinil)) <!-- 14.0.69 -->
 - make sure all proxy settings are dealt with [#6875](https://github.com/chef/chef/pull/6875) ([thommay](https://github.com/thommay)) <!-- 14.0.68 -->
 - fix chefstyle [#6874](https://github.com/chef/chef/pull/6874) ([thommay](https://github.com/thommay)) <!-- 14.0.67 -->
