@@ -448,7 +448,7 @@ class Chef
         ssh.config[:ssh_identity_file] = config[:ssh_identity_file] || config[:identity_file]
         ssh.config[:manual] = true
         ssh.config[:host_key_verify] = config[:host_key_verify]
-        ssh.config[:on_error] = :raise
+        ssh.config[:on_error] = true
         ssh
       end
 
