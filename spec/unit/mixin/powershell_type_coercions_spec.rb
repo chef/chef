@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
-# Copyright:: Copyright 2015-2017, Chef Software Inc.
+# Copyright:: Copyright 2015-2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,15 +64,14 @@ describe Chef::Mixin::PowershellTypeCoercions do
     end
 
     it "translates a Chef::Node::ImmutableMash like a hash" do
-      node = Chef::Node.new
-      node.default[:test] = { "a" => 1, "b" => 1.2, "c" => false, "d" => true }
-      expect(test_class.translate_type(node[:test])).to eq("@{a=1;b=1.2;c=$false;d=$true}")
+      test_mash = Chef::Node::ImmutableMash.new({ "a" => 1, "b" => 1.2,
+                                                  "c" => false, "d" => true })
+      expect(test_class.translate_type(test_mash)).to eq("@{a=1;b=1.2;c=$false;d=$true}")
     end
 
     it "translates a Chef::Node::ImmutableArray like an array" do
-      node = Chef::Node.new
-      node.default[:test] = [ true, false ]
-      expect(test_class.translate_type(node[:test])).to eq("@($true,$false)")
+      test_array = Chef::Node::ImmutableArray.new([true, false])
+      expect(test_class.translate_type(test_array)).to eq("@($true,$false)")
     end
 
     it "falls back :to_psobject if we have not defined at explicit rule" do
