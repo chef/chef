@@ -92,7 +92,6 @@ class Chef
       private
 
       def convert_value(value)
-        value.ensure_generated_cache! if value.respond_to?(:ensure_generated_cache!)
         case value
         when VividMash
           value
@@ -190,7 +189,6 @@ class Chef
       # AttrArray for consistency and to ensure that the added parts of the
       # attribute tree will have the correct cache invalidation behavior.
       def convert_value(value)
-        value.ensure_generated_cache! if value.respond_to?(:ensure_generated_cache!)
         case value
         when VividMash
           value
