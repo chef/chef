@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.7.25 -->
-## [v13.7.25](https://github.com/chef/chef/tree/v13.7.25) (2018-02-21)
+<!-- latest_release 13.7.26 -->
+## [v13.7.26](https://github.com/chef/chef/tree/v13.7.26) (2018-02-22)
 
 #### Merged Pull Requests
-- Update libxml2 to 2.9.7 [#6886](https://github.com/chef/chef/pull/6886) ([tas50](https://github.com/tas50))
+- use a stricter comparison so knife ssh only fails if --exit-on-error [#6894](https://github.com/chef/chef/pull/6894) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- use a stricter comparison so knife ssh only fails if --exit-on-error [#6894](https://github.com/chef/chef/pull/6894) ([tas50](https://github.com/tas50)) <!-- 13.7.26 -->
 - Update libxml2 to 2.9.7 [#6886](https://github.com/chef/chef/pull/6886) ([tas50](https://github.com/tas50)) <!-- 13.7.25 -->
 - Fix windows_task idle_time validation [#6856](https://github.com/chef/chef/pull/6856) ([tas50](https://github.com/tas50)) <!-- 13.7.24 -->
 - add Chef::NodeMap#delete_class API (Chef 13 backport) [#6848](https://github.com/chef/chef/pull/6848) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.23 -->
