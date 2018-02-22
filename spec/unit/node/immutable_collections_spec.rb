@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2017, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -275,7 +275,7 @@ describe Chef::Node::ImmutableArray do
     end
 
     it "should create an array with the same content" do
-      expect(@copy).to eq(@immutable_nested_array)
+      expect(@copy).to eql(@immutable_nested_array)
     end
 
     it "should allow mutation" do
