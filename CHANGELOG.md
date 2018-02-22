@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.71 -->
-## [v14.0.71](https://github.com/chef/chef/tree/v14.0.71) (2018-02-21)
+<!-- latest_release 14.0.72 -->
+## [v14.0.72](https://github.com/chef/chef/tree/v14.0.72) (2018-02-22)
 
 #### Merged Pull Requests
-- Disable sudo on unit tests [#6879](https://github.com/chef/chef/pull/6879) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update libxml2 to 2.9.7 [#6885](https://github.com/chef/chef/pull/6885) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Update libxml2 to 2.9.7 [#6885](https://github.com/chef/chef/pull/6885) ([tas50](https://github.com/tas50)) <!-- 14.0.72 -->
 - Disable sudo on unit tests [#6879](https://github.com/chef/chef/pull/6879) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.71 -->
 - Add macos_user_defaults resource from mac_os_x cookbook [#6878](https://github.com/chef/chef/pull/6878) ([tas50](https://github.com/tas50)) <!-- 14.0.70 -->
 - updating paranoid to verify_host_key [#6869](https://github.com/chef/chef/pull/6869) ([tarcinil](https://github.com/tarcinil)) <!-- 14.0.69 -->
