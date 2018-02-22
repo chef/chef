@@ -85,7 +85,9 @@ describe Chef::Node::ImmutableMash do
     end
 
     it "should create a mash with the same content" do
-      expect(@copy).to eql(@immutable_mash)
+      puts @copy.class
+      puts @immutable_mash.class
+      expect(@immutable_mash).to eq(@copy)
     end
 
     it "should allow mutation" do
@@ -308,7 +310,7 @@ describe Chef::Node::ImmutableArray do
     end
 
     it "should create an array with the same content" do
-      expect(@immutable_nested_array).to eq(@copy)
+      expect(@copy).to eq(@immutable_nested_array)
     end
 
     it "should allow mutation" do
