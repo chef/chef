@@ -132,7 +132,6 @@ class Chef
 
       def reset
         @generated_cache = false
-        @short_circuit_attr_level = nil
         internal_clear # redundant?
       end
 
@@ -142,26 +141,13 @@ class Chef
         @generated_cache = true
       end
 
-      # This can be set to e.g. [ :@default ] by the parent container to cause this container
-      # to only use the default level and to bypass deep merging (the common case is either
-      # default-level or automatic-level and we aren't doing any deep merging).  Right now it
-      # "optimized" for the case where we're no longer merging anything and only tracking a
-      # single level, and setting this to anything other than a size=1 array would behave
-      # in a broken fashion.  That could be fixed, but the perf boost would likely not be
-      # that large in the typical case.
-      #
-      # @api private
-      attr_accessor :short_circuit_attr_levels
-
       private
 
-      # deep merging of array attribute within normal and override where they are merged together
       def combined_components(components)
         combined_values = nil
         components.each do |component|
           values = __node__.attributes.instance_variable_get(component).read(*__path__)
           next unless values.is_a?(Array)
-          @tracked_components << component
           combined_values ||= []
           combined_values += values
         end
@@ -171,7 +157,6 @@ class Chef
       def get_array(component)
         array = __node__.attributes.instance_variable_get(component).read(*__path__)
         if array.is_a?(Array)
-          @tracked_components << component
           array
         end # else nil
       end
@@ -179,24 +164,13 @@ class Chef
       def generate_cache
         internal_clear
         components = []
-        @tracked_components = []
-        if short_circuit_attr_levels
-          components << get_array(short_circuit_attr_levels.first)
-        else
-          components << combined_components(Attribute::DEFAULT_COMPONENTS)
-          components << get_array(:@normal)
-          components << combined_components(Attribute::OVERRIDE_COMPONENTS)
-          components << get_array(:@automatic)
-        end
+        components << combined_components(Attribute::DEFAULT_COMPONENTS)
+        components << get_array(:@normal)
+        components << combined_components(Attribute::OVERRIDE_COMPONENTS)
+        components << get_array(:@automatic)
         highest = components.compact.last
         if highest.is_a?(Array)
           internal_replace( highest.each_with_index.map { |x, i| convert_value(x, __path__ + [ i ] ) } )
-        end
-        if @tracked_components.size == 1
-          # tracked_components is accurate enough to tell us if we're not really merging
-          internal_each do |key, value|
-            value.short_circuit_attr_levels = @tracked_components if value.respond_to?(:short_circuit_attr_levels)
-          end
         end
       end
 
@@ -309,12 +283,12 @@ class Chef
       def generate_cache
         internal_clear
         components = short_circuit_attr_levels ? short_circuit_attr_levels : Attribute::COMPONENTS.reverse
-        # tracked_components is not entirely accurate due to the short-circuit
-        tracked_components = []
+        # merged_components is not entirely accurate due to the short-circuit
+        merged_components = []
         components.each do |component|
           subhash = __node__.attributes.instance_variable_get(component).read(*__path__)
           unless subhash.nil? # FIXME: nil is used for not present
-            tracked_components << component
+            merged_components << component
             if subhash.kind_of?(Hash)
               subhash.keys.each do |key|
                 next if internal_key?(key)
@@ -325,10 +299,10 @@ class Chef
             end
           end
         end
-        if tracked_components.size == 1
-          # tracked_components is accurate enough to tell us if we're not really merging
+        if merged_components.size == 1
+          # merged_components is accurate enough to tell us if we're not really merging
           internal_each do |key, value|
-            value.short_circuit_attr_levels = tracked_components if value.respond_to?(:short_circuit_attr_levels)
+            value.short_circuit_attr_levels = merged_components if value.respond_to?(:short_circuit_attr_levels)
           end
         end
       end
