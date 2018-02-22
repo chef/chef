@@ -185,26 +185,37 @@ class Chef
        # return the automatic level attribute component
       attr_reader :automatic
 
-      # return the immutablemash deep merge cache
-      attr_reader :deep_merge_cache
-
       def initialize(normal, default, override, automatic, node = nil)
-        @default        = VividMash.new(default, self, node, :default)
-        @env_default    = VividMash.new({}, self, node, :env_default)
-        @role_default   = VividMash.new({}, self, node, :role_default)
-        @force_default  = VividMash.new({}, self, node, :force_default)
-
-        @normal         = VividMash.new(normal, self, node, :normal)
-
-        @override       = VividMash.new(override, self, node, :override)
-        @role_override  = VividMash.new({}, self, node, :role_override)
-        @env_override   = VividMash.new({}, self, node, :env_override)
-        @force_override = VividMash.new({}, self, node, :force_override)
-
-        @automatic      = VividMash.new(automatic, self, node, :automatic)
-
-        @deep_merge_cache = ImmutableMash.new({}, self, node, :merged)
+        # Chef::Node and Chef::Node::Attribute are very tightly coupled
         @__node__ = node
+        node.attributes = self
+
+        @disable_cache_reset = false
+
+        defer_cache_resetting do
+          @default        = VividMash.new({}, self, node, :default)
+          @env_default    = VividMash.new({}, self, node, :env_default)
+          @role_default   = VividMash.new({}, self, node, :role_default)
+          @force_default  = VividMash.new({}, self, node, :force_default)
+
+          @normal         = VividMash.new({}, self, node, :normal)
+
+          @override       = VividMash.new({}, self, node, :override)
+          @role_override  = VividMash.new({}, self, node, :role_override)
+          @env_override   = VividMash.new({}, self, node, :env_override)
+          @force_override = VividMash.new({}, self, node, :force_override)
+
+          @automatic      = VividMash.new({}, self, node, :automatic)
+
+          @default        = VividMash.new(default, self, node, :default)
+          @normal         = VividMash.new(normal, self, node, :normal)
+          @override       = VividMash.new(override, self, node, :override)
+          @automatic      = VividMash.new(automatic, self, node, :automatic)
+        end
+      end
+
+      def deep_merge_cache
+        @deep_merge_cache ||= ImmutableMash.new({}, self, __node__, :merged)
       end
 
        # Debug what's going on with an attribute. +args+ is a path spec to the
@@ -228,78 +239,104 @@ class Chef
         end
       end
 
+      # @api private
       def reset
-        @deep_merge_cache = ImmutableMash.new({}, self, @__node__, :merged)
+        @deep_merge_cache = nil
       end
 
+      # avoid doing cache clearing work for an entire block of code, then nuke the entire cache
+      # @api private
+      def defer_cache_resetting
+        saved = @disable_cache_reset
+        @disable_cache_reset = true
+        yield
+        @disable_cache_reset = saved
+        reset_cache
+      end
+
+      # @api private
       def reset_cache(*path)
+        return if @disable_cache_reset
         if path.empty?
           reset
         else
+          key = path.pop
           container = read(*path)
           case container
-          when Hash, Array
+          when Array
             container.reset
+          when Hash
+            container.reset_key(key)
           end
         end
       end
 
        # Set the cookbook level default attribute component to +new_data+.
       def default=(new_data)
-        reset
-        @default = VividMash.new(new_data, self, __node__, :default)
+        defer_cache_resetting do
+          @default = VividMash.new(new_data, self, __node__, :default)
+        end
       end
 
        # Set the role level default attribute component to +new_data+
       def role_default=(new_data)
-        reset
-        @role_default = VividMash.new(new_data, self, __node__, :role_default)
+        defer_cache_resetting do
+          @role_default = VividMash.new(new_data, self, __node__, :role_default)
+        end
       end
 
        # Set the environment level default attribute component to +new_data+
       def env_default=(new_data)
-        reset
-        @env_default = VividMash.new(new_data, self, __node__, :env_default)
+        defer_cache_resetting do
+          @env_default = VividMash.new(new_data, self, __node__, :env_default)
+        end
       end
 
        # Set the force_default (+default!+) level attributes to +new_data+
       def force_default=(new_data)
-        reset
-        @force_default = VividMash.new(new_data, self, __node__, :force_default)
+        defer_cache_resetting do
+          @force_default = VividMash.new(new_data, self, __node__, :force_default)
+        end
       end
 
        # Set the normal level attribute component to +new_data+
       def normal=(new_data)
-        reset
-        @normal = VividMash.new(new_data, self, __node__, :normal)
+        defer_cache_resetting do
+          @normal = VividMash.new(new_data, self, __node__, :normal)
+        end
       end
 
        # Set the cookbook level override attribute component to +new_data+
       def override=(new_data)
-        reset
-        @override = VividMash.new(new_data, self, __node__, :override)
+        defer_cache_resetting do
+          @override = VividMash.new(new_data, self, __node__, :override)
+        end
       end
 
        # Set the role level override attribute component to +new_data+
       def role_override=(new_data)
-        reset
-        @role_override = VividMash.new(new_data, self, __node__, :role_override)
+        defer_cache_resetting do
+          @role_override = VividMash.new(new_data, self, __node__, :role_override)
+        end
       end
 
        # Set the environment level override attribute component to +new_data+
       def env_override=(new_data)
-        reset
-        @env_override = VividMash.new(new_data, self, __node__, :env_override)
+        defer_cache_resetting do
+          @env_override = VividMash.new(new_data, self, __node__, :env_override)
+        end
       end
 
       def force_override=(new_data)
-        reset
-        @force_override = VividMash.new(new_data, self, __node__, :force_override)
+        defer_cache_resetting do
+          @force_override = VividMash.new(new_data, self, __node__, :force_override)
+        end
       end
 
       def automatic=(new_data)
-        reset
-        @automatic = VividMash.new(new_data, self, __node__, :automatic)
+        defer_cache_resetting do
+          @automatic = VividMash.new(new_data, self, __node__, :automatic)
+        end
       end
 
        #
@@ -493,11 +530,11 @@ class Chef
       end
 
       def [](key)
-        @deep_merge_cache[key]
+        deep_merge_cache[key]
       end
 
       def merged_attributes
-        @deep_merge_cache
+        deep_merge_cache
       end
 
       def inspect

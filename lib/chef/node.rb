@@ -77,8 +77,6 @@ class Chef
       @policy_name = nil
       @policy_group = nil
 
-      @attributes = Chef::Node::Attribute.new({}, {}, {}, {}, self)
-
       @run_state = {}
     end
 
@@ -181,8 +179,11 @@ class Chef
       policy_group(policy_group)
     end
 
+    # @api private
+    attr_writer :attributes
+
     def attributes
-      @attributes
+      @attributes ||= Chef::Node::Attribute.new({}, {}, {}, {}, self)
     end
 
     alias :attribute :attributes
@@ -433,11 +434,13 @@ class Chef
                              Chef::Environment.load(chef_environment)
                            end
 
-      attributes.env_default = loaded_environment.default_attributes
-      attributes.env_override = loaded_environment.override_attributes
+      attributes.defer_cache_resetting do
+        attributes.env_default = loaded_environment.default_attributes
+        attributes.env_override = loaded_environment.override_attributes
 
-      attribute.role_default = expansion.default_attrs
-      attributes.role_override = expansion.override_attrs
+        attribute.role_default = expansion.default_attrs
+        attributes.role_override = expansion.override_attrs
+      end
     end
 
     # Transform the node to a Hash
@@ -511,13 +514,12 @@ class Chef
       node = new
       node.name(o["name"])
       node.chef_environment(o["chef_environment"])
+
       if o.has_key?("attributes")
         node.normal_attrs = o["attributes"]
       end
-      node.automatic_attrs = Mash.new(o["automatic"]) if o.has_key?("automatic")
-      node.normal_attrs = Mash.new(o["normal"]) if o.has_key?("normal")
-      node.default_attrs = Mash.new(o["default"]) if o.has_key?("default")
-      node.override_attrs = Mash.new(o["override"]) if o.has_key?("override")
+
+      node.attributes = Chef::Node::Attribute.new(o["normal"] || o["attributes"], o["default"], o["override"], o["automatic"], node)
 
       if o.has_key?("run_list")
         node.run_list.reset!(o["run_list"])

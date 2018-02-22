@@ -95,7 +95,7 @@ class Chef
       end
 
       def initialize(array_data = [])
-        # Immutable collections no longer have initialized state
+        ensure_generated_cache!
       end
 
       # For elements like Fixnums, true, nil...
@@ -130,15 +130,13 @@ class Chef
       end
 
       def reset
-        @generated_cache = false
         @short_circuit_attr_level = nil
-        internal_clear # redundant?
+        generate_cache
       end
 
       # @api private
       def ensure_generated_cache!
         generate_cache unless @generated_cache
-        @generated_cache = true
       end
 
       # This can be set to e.g. [ :@default ] by the parent container to cause this container
@@ -197,6 +195,7 @@ class Chef
             value.short_circuit_attr_levels = @tracked_components if value.respond_to?(:short_circuit_attr_levels)
           end
         end
+        @generated_cache = true
       end
 
       # needed for __path__
@@ -245,7 +244,7 @@ class Chef
       end
 
       def initialize(mash_data = {})
-        # Immutable collections no longer have initialized state
+        ensure_generated_cache!
       end
 
       alias :attribute? :has_key?
@@ -287,15 +286,36 @@ class Chef
       end
 
       def reset
-        @generated_cache = false
         @short_circuit_attr_level = nil
-        internal_clear # redundant?
+        generate_cache
+      end
+
+      def reset_key(key)
+        key = key.to_s
+        components = short_circuit_attr_levels ? short_circuit_attr_levels : Attribute::COMPONENTS.reverse
+        # tracked_components is not entirely accurate due to the short-circuit
+        tracked_components = []
+        components.each do |component|
+          subhash = __node__.attributes.instance_variable_get(component).read(*__path__)
+          unless subhash.nil? # FIXME: nil is used for not present
+            tracked_components << component
+            if subhash.kind_of?(Hash)
+              if subhash.key?(key)
+                value = subhash[key]
+                value.short_circuit_attr_levels = short_circuit_attr_levels if value.respond_to?(:short_circuit_attr_levels)
+                internal_set(key, value)
+                break
+              end
+            else
+              break
+            end
+          end
+        end
       end
 
       # @api private
       def ensure_generated_cache!
         generate_cache unless @generated_cache
-        @generated_cache = true
       end
 
       # @api private
@@ -328,6 +348,7 @@ class Chef
             value.short_circuit_attr_levels = tracked_components if value.respond_to?(:short_circuit_attr_levels)
           end
         end
+        @generated_cache = true
       end
 
       prepend Chef::Node::Mixin::StateTracking
