@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.7.27 -->
-## [v13.7.27](https://github.com/chef/chef/tree/v13.7.27) (2018-02-22)
+<!-- latest_release 13.7.28 -->
+## [v13.7.28](https://github.com/chef/chef/tree/v13.7.28) (2018-02-23)
 
 #### Merged Pull Requests
--  Prevent knife search --id-only from outputting IDs in the same format as an empty hash [#6893](https://github.com/chef/chef/pull/6893) ([tas50](https://github.com/tas50))
+- Chef-13 revert lazy attributes [#6898](https://github.com/chef/chef/pull/6898) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Chef-13 revert lazy attributes [#6898](https://github.com/chef/chef/pull/6898) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.28 -->
 -  Prevent knife search --id-only from outputting IDs in the same format as an empty hash [#6893](https://github.com/chef/chef/pull/6893) ([tas50](https://github.com/tas50)) <!-- 13.7.27 -->
 - use a stricter comparison so knife ssh only fails if --exit-on-error [#6894](https://github.com/chef/chef/pull/6894) ([tas50](https://github.com/tas50)) <!-- 13.7.26 -->
 - Update libxml2 to 2.9.7 [#6886](https://github.com/chef/chef/pull/6886) ([tas50](https://github.com/tas50)) <!-- 13.7.25 -->
