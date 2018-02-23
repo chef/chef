@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2016-2018, Chef Software Inc.
+# Copyright:: Copyright 2016, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,12 +24,11 @@ class Chef
         attr_reader :__node__
         attr_reader :__precedence__
 
-        def initialize(data = nil, root = self, node = nil, precedence = nil, path = nil)
+        def initialize(data = nil, root = self, node = nil, precedence = nil)
           # __path__ and __root__ must be nil when we call super so it knows
           # to avoid resetting the cache on construction
           data.nil? ? super() : super(data)
-          @__path__ = path
-          @__path__ ||= []
+          @__path__ = []
           @__root__ = root
           @__node__ = node
           @__precedence__ = precedence
@@ -77,8 +76,9 @@ class Chef
           end
         end
 
-        def send_reset_cache(path)
-          __root__.reset_cache(*path) if !__root__.nil? && __root__.respond_to?(:reset_cache) && !path.nil?
+        def send_reset_cache(path = nil, key = nil)
+          next_path = [ path, key ].flatten.compact
+          __root__.reset_cache(next_path.first) if !__root__.nil? && __root__.respond_to?(:reset_cache) && !next_path.nil?
         end
 
         def copy_state_to(ret, next_path)

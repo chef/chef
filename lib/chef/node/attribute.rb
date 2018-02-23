@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require "chef/node/mixin/deep_merge_cache"
 require "chef/node/mixin/immutablize_hash"
 require "chef/node/mixin/state_tracking"
 require "chef/node/immutable_collections"
@@ -44,6 +45,7 @@ class Chef
       # expects.  This include should probably be deleted?
       include Enumerable
 
+      include Chef::Node::Mixin::DeepMergeCache
       include Chef::Node::Mixin::StateTracking
       include Chef::Node::Mixin::ImmutablizeHash
 
@@ -185,9 +187,6 @@ class Chef
        # return the automatic level attribute component
       attr_reader :automatic
 
-      # return the immutablemash deep merge cache
-      attr_reader :deep_merge_cache
-
       def initialize(normal, default, override, automatic, node = nil)
         @default        = VividMash.new(default, self, node, :default)
         @env_default    = VividMash.new({}, self, node, :env_default)
@@ -203,8 +202,7 @@ class Chef
 
         @automatic      = VividMash.new(automatic, self, node, :automatic)
 
-        @deep_merge_cache = ImmutableMash.new({}, self, node, :merged)
-        @__node__ = node
+        super(nil, self, node, :merged)
       end
 
        # Debug what's going on with an attribute. +args+ is a path spec to the
@@ -225,22 +223,6 @@ class Chef
               :not_present
             end
           [component.to_s.sub(/^@/, ""), value]
-        end
-      end
-
-      def reset
-        @deep_merge_cache = ImmutableMash.new({}, self, @__node__, :merged)
-      end
-
-      def reset_cache(*path)
-        if path.empty?
-          reset
-        else
-          container = read(*path)
-          case container
-          when Hash, Array
-            container.reset
-          end
         end
       end
 
@@ -308,7 +290,7 @@ class Chef
 
        # clears attributes from all precedence levels
       def rm(*args)
-        with_deep_merged_return_value(combined_all, *args) do
+        with_deep_merged_return_value(self, *args) do
           rm_default(*args)
           rm_normal(*args)
           rm_override(*args)
@@ -355,9 +337,6 @@ class Chef
       def with_deep_merged_return_value(obj, *path, last)
         hash = obj.read(*path)
         return nil unless hash.is_a?(Hash)
-        # coerce from immutablemash/vividmash to plain-old Hash
-        # also de-immutablizes and dup's the return value correctly in chef-13
-        hash = hash.to_hash
         ret = hash[last]
         yield
         ret
@@ -419,16 +398,16 @@ class Chef
        # all of node['foo'] even if the user only requires node['foo']['bar']['baz'].
        #
 
-      def combined_override(*path)
-        merge_overrides(path)
+      def merged_attributes(*path)
+        merge_all(path)
       end
 
-      def combined_all(*path)
-        path.empty? ? self : read(*path)
+      def combined_override(*path)
+        immutablize(merge_overrides(path))
       end
 
       def combined_default(*path)
-        merge_defaults(path)
+        immutablize(merge_defaults(path))
       end
 
       def normal_unless(*args)
@@ -497,14 +476,6 @@ class Chef
         merged_attributes.to_s
       end
 
-      def [](key)
-        @deep_merge_cache[key]
-      end
-
-      def merged_attributes
-        @deep_merge_cache
-      end
-
       def inspect
         "#<#{self.class} " << (COMPONENTS + [:@merged_attributes, :@properties]).map do |iv|
           "#{iv}=#{instance_variable_get(iv).inspect}"
@@ -513,14 +484,7 @@ class Chef
 
       private
 
-      # For elements like Fixnums, true, nil...
-      def safe_dup(e)
-        e.dup
-      rescue TypeError
-        e
-      end
-
-       # Helper method for merge_defaults/merge_overrides.
+       # Helper method for merge_all/merge_defaults/merge_overrides.
        #
        # apply_path(thing, [ "foo", "bar", "baz" ]) = thing["foo"]["bar"]["baz"]
        #
@@ -548,6 +512,34 @@ class Chef
             nil
           end
         end
+      end
+
+       # For elements like Fixnums, true, nil...
+      def safe_dup(e)
+        e.dup
+      rescue TypeError
+        e
+      end
+
+       # Deep merge all attribute levels using hash-only merging between different precidence
+       # levels (so override arrays completely replace arrays set at any default level).
+       #
+       # The path allows for selectively deep-merging a subtree of the node object.
+       #
+       # @param path [Array] Array of args to method chain to descend into the node object
+       # @return [attr] Deep Merged values (may be VividMash, Hash, Array, etc) from the node object
+      def merge_all(path)
+        components = [
+          merge_defaults(path),
+          apply_path(@normal, path),
+          merge_overrides(path),
+          apply_path(@automatic, path),
+        ]
+
+        ret = components.inject(NIL) do |merged, component|
+          hash_only_merge!(merged, component)
+        end
+        ret == NIL ? nil : ret
       end
 
        # Deep merge the default attribute levels with array merging.
@@ -621,6 +613,38 @@ class Chef
         end
       end
 
+      # @api private
+      def hash_only_merge!(merge_onto, merge_with)
+        # If there are two Hashes, recursively merge.
+        if merge_onto.kind_of?(Hash) && merge_with.kind_of?(Hash)
+          merge_with.each do |key, merge_with_value|
+            value =
+              if merge_onto.has_key?(key)
+                hash_only_merge!(safe_dup(merge_onto[key]), merge_with_value)
+              else
+                merge_with_value
+              end
+
+            # internal_set bypasses converting keys, does convert values and allows writing to immutable mashes
+            merge_onto.internal_set(key, value)
+          end
+          merge_onto
+
+        # If merge_with is nil, don't replace merge_onto
+        elsif merge_with.nil?
+          merge_onto
+
+        # In all other cases, replace merge_onto with merge_with
+        else
+          if merge_with.kind_of?(Hash)
+            Chef::Node::ImmutableMash.new(merge_with)
+          elsif merge_with.kind_of?(Array)
+            Chef::Node::ImmutableArray.new(merge_with)
+          else
+            merge_with
+          end
+        end
+      end
     end
   end
 end

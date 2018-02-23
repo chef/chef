@@ -30,15 +30,21 @@ class Chef
         e
       end
 
-      def convert_value(value, path = nil)
+      def convert_value(value)
         case value
         when Hash
-          ImmutableMash.new({}, __root__, __node__, __precedence__, path)
+          ImmutableMash.new(value, __root__, __node__, __precedence__)
         when Array
-          ImmutableArray.new([], __root__, __node__, __precedence__, path)
+          ImmutableArray.new(value, __root__, __node__, __precedence__)
+        when ImmutableMash, ImmutableArray
+          value
         else
           safe_dup(value).freeze
         end
+      end
+
+      def immutablize(value)
+        convert_value(value)
       end
     end
 
@@ -53,49 +59,15 @@ class Chef
     #   Chef::Node::Attribute's values, it overrides all reader methods to
     #   detect staleness and raise an error if accessed when stale.
     class ImmutableArray < Array
-      alias_method :internal_clear, :clear
-      alias_method :internal_replace, :replace
-      alias_method :internal_push, :<<
-      alias_method :internal_to_a, :to_a
-      alias_method :internal_each, :each
-      private :internal_push, :internal_replace, :internal_clear, :internal_each
-      protected :internal_to_a
-
       include Immutablize
 
-      methods = Array.instance_methods - Object.instance_methods +
-        [ :!, :!=, :<=>, :==, :===, :eql?, :to_s, :hash, :key, :has_key?, :inspect, :pretty_print, :pretty_print_inspect, :pretty_print_cycle, :pretty_print_instance_variables ]
-
-      methods.each do |method|
-        define_method method do |*args, &block|
-          ensure_generated_cache!
-          super(*args, &block)
-        end
-      end
-
-      def each
-        ensure_generated_cache!
-        # aggressively pre generate the cache, works around ruby being too smart and fiddling with internals
-        internal_each { |i| i.ensure_generated_cache! if i.respond_to?(:ensure_generated_cache!) }
-        super
-      end
-
-      # because sometimes ruby gives us back Arrays or ImmutableArrays out of objects from things like #uniq or array slices
-      def return_normal_array(array)
-        if array.respond_to?(:internal_to_a, true)
-          array.internal_to_a
-        else
-          array.to_a
-        end
-      end
-
-      def uniq
-        ensure_generated_cache!
-        return_normal_array(super)
-      end
+      alias :internal_push :<<
+      private :internal_push
 
       def initialize(array_data = [])
-        # Immutable collections no longer have initialized state
+        array_data.each do |value|
+          internal_push(immutablize(value))
+        end
       end
 
       # For elements like Fixnums, true, nil...
@@ -124,80 +96,7 @@ class Chef
 
       alias_method :to_array, :to_a
 
-      def [](*args)
-        ensure_generated_cache!
-        args.length > 1 ? return_normal_array(super) : super # correctly handle array slices
-      end
-
-      def reset
-        @generated_cache = false
-        @short_circuit_attr_level = nil
-        internal_clear # redundant?
-      end
-
-      # @api private
-      def ensure_generated_cache!
-        generate_cache unless @generated_cache
-        @generated_cache = true
-      end
-
-      # This can be set to e.g. [ :@default ] by the parent container to cause this container
-      # to only use the default level and to bypass deep merging (the common case is either
-      # default-level or automatic-level and we aren't doing any deep merging).  Right now it
-      # "optimized" for the case where we're no longer merging anything and only tracking a
-      # single level, and setting this to anything other than a size=1 array would behave
-      # in a broken fashion.  That could be fixed, but the perf boost would likely not be
-      # that large in the typical case.
-      #
-      # @api private
-      attr_accessor :short_circuit_attr_levels
-
       private
-
-      # deep merging of array attribute within normal and override where they are merged together
-      def combined_components(components)
-        combined_values = nil
-        components.each do |component|
-          values = __node__.attributes.instance_variable_get(component).read(*__path__)
-          next unless values.is_a?(Array)
-          @tracked_components << component
-          combined_values ||= []
-          combined_values += values
-        end
-        combined_values
-      end
-
-      def get_array(component)
-        array = __node__.attributes.instance_variable_get(component).read(*__path__)
-        if array.is_a?(Array)
-          @tracked_components << component
-          array
-        end # else nil
-      end
-
-      def generate_cache
-        internal_clear
-        components = []
-        @tracked_components = []
-        if short_circuit_attr_levels
-          components << get_array(short_circuit_attr_levels.first)
-        else
-          components << combined_components(Attribute::DEFAULT_COMPONENTS)
-          components << get_array(:@normal)
-          components << combined_components(Attribute::OVERRIDE_COMPONENTS)
-          components << get_array(:@automatic)
-        end
-        highest = components.compact.last
-        if highest.is_a?(Array)
-          internal_replace( highest.each_with_index.map { |x, i| convert_value(x, __path__ + [ i ] ) } )
-        end
-        if @tracked_components.size == 1
-          # tracked_components is accurate enough to tell us if we're not really merging
-          internal_each do |key, value|
-            value.short_circuit_attr_levels = @tracked_components if value.respond_to?(:short_circuit_attr_levels)
-          end
-        end
-      end
 
       # needed for __path__
       def convert_key(key)
@@ -221,31 +120,19 @@ class Chef
     #   it is stale.
     # * Values can be accessed in attr_reader-like fashion via method_missing.
     class ImmutableMash < Mash
-      alias_method :internal_clear, :clear
-      alias_method :internal_key?, :key? # FIXME: could bypass convert_key in Mash for perf
-      alias_method :internal_each, :each
-
       include Immutablize
       include CommonAPI
-
-      methods = Hash.instance_methods - Object.instance_methods +
-        [ :!, :!=, :<=>, :==, :===, :eql?, :to_s, :hash, :key, :has_key?, :inspect, :pretty_print, :pretty_print_inspect, :pretty_print_cycle, :pretty_print_instance_variables ]
-
-      methods.each do |method|
-        define_method method do |*args, &block|
-          ensure_generated_cache!
-          super(*args, &block)
-        end
-      end
 
       # this is for deep_merge usage, chef users must never touch this API
       # @api private
       def internal_set(key, value)
-        regular_writer(key, convert_value(value, __path__ + [ key ]))
+        regular_writer(key, convert_value(value))
       end
 
       def initialize(mash_data = {})
-        # Immutable collections no longer have initialized state
+        mash_data.each do |key, value|
+          internal_set(key, value)
+        end
       end
 
       alias :attribute? :has_key?
@@ -281,55 +168,11 @@ class Chef
 
       alias_method :to_hash, :to_h
 
-      def [](key)
-        ensure_generated_cache!
-        super
-      end
-
-      alias_method :to_hash, :to_h
-
-      def reset
-        @generated_cache = false
-        @short_circuit_attr_level = nil
-        internal_clear # redundant?
-      end
-
-      # @api private
-      def ensure_generated_cache!
-        generate_cache unless @generated_cache
-        @generated_cache = true
-      end
-
-      # @api private
-      attr_accessor :short_circuit_attr_levels
-
-      private
-
-      def generate_cache
-        internal_clear
-        components = short_circuit_attr_levels ? short_circuit_attr_levels : Attribute::COMPONENTS.reverse
-        # tracked_components is not entirely accurate due to the short-circuit
-        tracked_components = []
-        components.each do |component|
-          subhash = __node__.attributes.instance_variable_get(component).read(*__path__)
-          unless subhash.nil? # FIXME: nil is used for not present
-            tracked_components << component
-            if subhash.kind_of?(Hash)
-              subhash.keys.each do |key|
-                next if internal_key?(key)
-                internal_set(key, subhash[key])
-              end
-            else
-              break
-            end
-          end
-        end
-        if tracked_components.size == 1
-          # tracked_components is accurate enough to tell us if we're not really merging
-          internal_each do |key, value|
-            value.short_circuit_attr_levels = tracked_components if value.respond_to?(:short_circuit_attr_levels)
-          end
-        end
+      # For elements like Fixnums, true, nil...
+      def safe_dup(e)
+        e.dup
+      rescue TypeError
+        e
       end
 
       prepend Chef::Node::Mixin::StateTracking
