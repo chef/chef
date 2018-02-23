@@ -35,10 +35,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (14.0.77)
+    chef (14.0.78)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.0.77)
+      chef-config (= 14.0.78)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -65,10 +65,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (14.0.77-universal-mingw32)
+    chef (14.0.78-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.0.77)
+      chef-config (= 14.0.78)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -110,7 +110,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (14.0.77)
+    chef-config (14.0.78)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -156,9 +156,9 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.12.2)
       faraday (>= 0.7.4, < 1.0)
-    ffi (1.9.21)
-    ffi (1.9.21-x64-mingw32)
-    ffi (1.9.21-x86-mingw32)
+    ffi (1.9.22)
+    ffi (1.9.22-x64-mingw32)
+    ffi (1.9.22-x86-mingw32)
     ffi-win32-extensions (1.0.3)
       ffi
     ffi-yajl (2.3.1)
