@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.79 -->
-## [v14.0.79](https://github.com/chef/chef/tree/v14.0.79) (2018-02-23)
+<!-- latest_release 14.0.80 -->
+## [v14.0.80](https://github.com/chef/chef/tree/v14.0.80) (2018-02-23)
 
 #### Merged Pull Requests
-- Modernize mdadm [#6905](https://github.com/chef/chef/pull/6905) ([tas50](https://github.com/tas50))
+- Simplify how we define the powershell_package resource_name [#6901](https://github.com/chef/chef/pull/6901) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Simplify how we define the powershell_package resource_name [#6901](https://github.com/chef/chef/pull/6901) ([tas50](https://github.com/tas50)) <!-- 14.0.80 -->
 - Modernize mdadm [#6905](https://github.com/chef/chef/pull/6905) ([tas50](https://github.com/tas50)) <!-- 14.0.79 -->
 - Modernize macosx_service [#6908](https://github.com/chef/chef/pull/6908) ([tas50](https://github.com/tas50)) <!-- 14.0.78 -->
 - Add chef_handler resource from chef_handler cookbook [#6895](https://github.com/chef/chef/pull/6895) ([tas50](https://github.com/tas50)) <!-- 14.0.77 -->
