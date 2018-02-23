@@ -63,13 +63,13 @@ class Chef
       MUTATOR_METHODS.each do |mutator|
         define_method(mutator) do |*args, &block|
           ret = super(*args, &block)
-          send_reset_cache(__path__)
+          send_reset_cache
           ret
         end
       end
 
       def delete(key, &block)
-        send_reset_cache(__path__)
+        send_reset_cache(__path__, key)
         super
       end
 
@@ -147,13 +147,13 @@ class Chef
       # object.
 
       def delete(key, &block)
-        send_reset_cache(__path__)
+        send_reset_cache(__path__, key)
         super
       end
 
       MUTATOR_METHODS.each do |mutator|
         define_method(mutator) do |*args, &block|
-          send_reset_cache(__path__)
+          send_reset_cache
           super(*args, &block)
         end
       end
@@ -174,7 +174,7 @@ class Chef
 
       def []=(key, value)
         ret = super
-        send_reset_cache(__path__)
+        send_reset_cache(__path__, key)
         ret # rubocop:disable Lint/Void
       end
 

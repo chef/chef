@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016-2017, Chef Software Inc.
+# Copyright:: Copyright 2016, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,7 +60,7 @@ describe Chef::Node::VividMash do
     end
 
     it "deep converts values through arrays" do
-      expect(root).to receive(:reset_cache).with(no_args)
+      expect(root).to receive(:reset_cache).with("foo")
       vivid["foo"] = [ { :bar => true } ]
       expect(vivid["foo"].class).to eql(Chef::Node::AttrArray)
       expect(vivid["foo"][0].class).to eql(Chef::Node::VividMash)
@@ -68,7 +68,7 @@ describe Chef::Node::VividMash do
     end
 
     it "deep converts values through nested arrays" do
-      expect(root).to receive(:reset_cache).with(no_args)
+      expect(root).to receive(:reset_cache).with("foo")
       vivid["foo"] = [ [ { :bar => true } ] ]
       expect(vivid["foo"].class).to eql(Chef::Node::AttrArray)
       expect(vivid["foo"][0].class).to eql(Chef::Node::AttrArray)
@@ -77,7 +77,7 @@ describe Chef::Node::VividMash do
     end
 
     it "deep converts values through hashes" do
-      expect(root).to receive(:reset_cache).with(no_args)
+      expect(root).to receive(:reset_cache).with("foo")
       vivid["foo"] = { baz: { :bar => true } }
       expect(vivid["foo"]).to be_an_instance_of(Chef::Node::VividMash)
       expect(vivid["foo"]["baz"]).to be_an_instance_of(Chef::Node::VividMash)
@@ -184,55 +184,42 @@ describe Chef::Node::VividMash do
 
     it "should deeply autovivify" do
       expect(root).to receive(:reset_cache).at_least(:once).with("one")
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "five")
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "five", "six")
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "five", "six", "seven")
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "five", "six", "seven", "eight")
       vivid.write("one", "five", "six", "seven", "eight", "nine", "ten")
       expect(vivid["one"]["five"]["six"]["seven"]["eight"]["nine"]).to eql("ten")
     end
 
     it "should raise an exception if you overwrite an array with a hash" do
-      expect(root).to receive(:reset_cache).at_least(:once).with(no_args)
       expect(root).to receive(:reset_cache).at_least(:once).with("array")
       vivid.write("array", "five", "six")
       expect(vivid).to eql({ "one" => { "two" => { "three" => "four" } }, "array" => { "five" => "six" }, "nil" => nil })
     end
 
     it "should raise an exception if you traverse through an array with a hash" do
-      expect(root).to receive(:reset_cache).at_least(:once).with(no_args)
       expect(root).to receive(:reset_cache).at_least(:once).with("array")
-      expect(root).to receive(:reset_cache).at_least(:once).with("array", "five")
       vivid.write("array", "five", "six", "seven")
       expect(vivid).to eql({ "one" => { "two" => { "three" => "four" } }, "array" => { "five" => { "six" => "seven" } }, "nil" => nil })
     end
 
     it "should raise an exception if you overwrite a string with a hash" do
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "two")
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "two", "three")
+      expect(root).to receive(:reset_cache).at_least(:once).with("one")
       vivid.write("one", "two", "three", "four", "five")
       expect(vivid).to eql({ "one" => { "two" => { "three" => { "four" => "five" } } }, "array" => [ 0, 1, 2 ], "nil" => nil })
     end
 
     it "should raise an exception if you traverse through a string with a hash" do
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "two")
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "two", "three")
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "two", "three", "four")
+      expect(root).to receive(:reset_cache).at_least(:once).with("one")
       vivid.write("one", "two", "three", "four", "five", "six")
       expect(vivid).to eql({ "one" => { "two" => { "three" => { "four" => { "five" => "six" } } } }, "array" => [ 0, 1, 2 ], "nil" => nil })
     end
 
     it "should raise an exception if you overwrite a nil with a hash" do
-      expect(root).to receive(:reset_cache).at_least(:once).with(no_args)
       expect(root).to receive(:reset_cache).at_least(:once).with("nil")
       vivid.write("nil", "one", "two")
       expect(vivid).to eql({ "one" => { "two" => { "three" => "four" } }, "array" => [ 0, 1, 2 ], "nil" => { "one" => "two" } })
     end
 
     it "should raise an exception if you traverse through a nil with a hash" do
-      expect(root).to receive(:reset_cache).at_least(:once).with(no_args)
       expect(root).to receive(:reset_cache).at_least(:once).with("nil")
-      expect(root).to receive(:reset_cache).at_least(:once).with("nil", "one")
       vivid.write("nil", "one", "two", "three")
       expect(vivid).to eql({ "one" => { "two" => { "three" => "four" } }, "array" => [ 0, 1, 2 ], "nil" => { "one" => { "two" => "three" } } })
     end
@@ -253,10 +240,6 @@ describe Chef::Node::VividMash do
 
     it "should deeply autovivify" do
       expect(root).to receive(:reset_cache).at_least(:once).with("one")
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "five")
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "five", "six")
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "five", "six", "seven")
-      expect(root).to receive(:reset_cache).at_least(:once).with("one", "five", "six", "seven", "eight")
       vivid.write!("one", "five", "six", "seven", "eight", "nine", "ten")
       expect(vivid["one"]["five"]["six"]["seven"]["eight"]["nine"]).to eql("ten")
     end
@@ -312,7 +295,7 @@ describe Chef::Node::VividMash do
     end
 
     it "should unlink hashes" do
-      expect(root).to receive(:reset_cache).at_least(:once).with(no_args)
+      expect(root).to receive(:reset_cache).at_least(:once).with("one")
       expect( vivid.unlink("one") ).to eql({ "two" => { "three" => "four" } })
       expect(vivid).to eql({ "array" => [ 0, 1, 2 ], "nil" => nil })
     end
@@ -324,7 +307,7 @@ describe Chef::Node::VividMash do
     end
 
     it "should unlink nil" do
-      expect(root).to receive(:reset_cache).at_least(:once).with(no_args)
+      expect(root).to receive(:reset_cache).at_least(:once).with("nil")
       expect(vivid.unlink("nil")).to eql(nil)
       expect(vivid).to eql({ "one" => { "two" => { "three" => "four" } }, "array" => [ 0, 1, 2 ] })
     end
@@ -344,7 +327,7 @@ describe Chef::Node::VividMash do
     end
 
     it "should unlink! hashes" do
-      expect(root).to receive(:reset_cache).at_least(:once).with(no_args)
+      expect(root).to receive(:reset_cache).at_least(:once).with("one")
       expect( vivid.unlink!("one") ).to eql({ "two" => { "three" => "four" } })
       expect(vivid).to eql({ "array" => [ 0, 1, 2 ], "nil" => nil })
     end
@@ -356,7 +339,7 @@ describe Chef::Node::VividMash do
     end
 
     it "should unlink! nil" do
-      expect(root).to receive(:reset_cache).at_least(:once).with(no_args)
+      expect(root).to receive(:reset_cache).at_least(:once).with("nil")
       expect(vivid.unlink!("nil")).to eql(nil)
       expect(vivid).to eql({ "one" => { "two" => { "three" => "four" } }, "array" => [ 0, 1, 2 ] })
     end
