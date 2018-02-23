@@ -198,7 +198,6 @@ class Chef
     class ImmutableMash < Mash
       alias_method :internal_clear, :clear
       alias_method :internal_key?, :key? # FIXME: could bypass convert_key in Mash for perf
-      alias_method :internal_each, :each
 
       include Immutablize
       include CommonAPI
@@ -263,7 +262,6 @@ class Chef
 
       def reset
         @generated_cache = false
-        @short_circuit_attr_level = nil
         internal_clear # redundant?
       end
 
@@ -273,20 +271,13 @@ class Chef
         @generated_cache = true
       end
 
-      # @api private
-      attr_accessor :short_circuit_attr_levels
-
       private
 
       def generate_cache
         internal_clear
-        components = short_circuit_attr_levels ? short_circuit_attr_levels : Attribute::COMPONENTS.reverse
-        # merged_components is not entirely accurate due to the short-circuit
-        merged_components = []
-        components.each do |component|
+        Attribute::COMPONENTS.reverse.each do |component|
           subhash = __node__.attributes.instance_variable_get(component).read(*__path__)
           unless subhash.nil? # FIXME: nil is used for not present
-            merged_components << component
             if subhash.kind_of?(Hash)
               subhash.each_key do |key|
                 next if internal_key?(key)
@@ -295,12 +286,6 @@ class Chef
             else
               break
             end
-          end
-        end
-        if merged_components.size == 1
-          # merged_components is accurate enough to tell us if we're not really merging
-          internal_each do |key, value|
-            value.short_circuit_attr_levels = merged_components if value.respond_to?(:short_circuit_attr_levels)
           end
         end
       end
