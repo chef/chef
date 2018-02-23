@@ -1,6 +1,19 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
-# Unreleased
+# Chef Client Release Notes 13.8:
+
+## Revert attributes changes from 13.7
+
+Per https://discourse.chef.io/t/regression-in-chef-client-13-7-16/12518/1 , there was a regression in how arrays and hashes were handled in 13.7. In 13.8, we've reverted to the same code as 13.6.
+
+## Continuing work on `windows_task`
+
+13.8 has better validation for the `idle_time` property, when using the
+`on_idle` frequency.
+
+## Security Updates
+ 
+ * Updated libxml2 to 2.9.7; fixes: CVE-2017-15412
 
 # Chef Client Release Notes 13.7:
 
