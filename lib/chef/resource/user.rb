@@ -30,130 +30,21 @@ class Chef
       default_action :create
       allowed_actions :create, :remove, :modify, :manage, :lock, :unlock
 
-      def initialize(name, run_context = nil)
-        super
-        @username = name
-        @comment = nil
-        @uid = nil
-        @gid = nil
-        @home = nil
-        @shell = nil
-        @password = nil
-        @system = false
-        @manage_home = false
-        @force = false
-        @non_unique = false
-        @iterations = 27855
-        @salt = nil
-      end
-
-      def username(arg = nil)
-        set_or_return(
-          :username,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def comment(arg = nil)
-        set_or_return(
-          :comment,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def uid(arg = Chef::NOT_PASSED)
-        set_or_return(
-          :uid,
-          arg,
-          :kind_of => [ String, Integer, NilClass ],
-          :coerce => proc { |x| x || nil }
-        )
-      end
-
-      def gid(arg = Chef::NOT_PASSED)
-        set_or_return(
-          :gid,
-          arg,
-          :kind_of => [ String, Integer, NilClass ],
-          :coerce => proc { |x| x || nil }
-        )
-      end
+      property :username, String, name_property: true
+      property :comment, String
+      property :uid, [ String, Integer, NilClass ], default: nil
+      property :gid, [ String, Integer, NilClass ], default: nil
+      property :home, String
+      property :shell, String
+      property :password, String
+      property :salt, String
+      property :iterations, Integer, default: 27855
+      property :system, [ TrueClass, FalseClass ], default: false
+      property :manage_home, [ TrueClass, FalseClass ], default: false
+      property :force, [ TrueClass, FalseClass ], default: false
+      property :non_unique, [ TrueClass, FalseClass ], default: false
 
       alias_method :group, :gid
-
-      def home(arg = nil)
-        set_or_return(
-          :home,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def shell(arg = nil)
-        set_or_return(
-          :shell,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def password(arg = nil)
-        set_or_return(
-          :password,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def salt(arg = nil)
-        set_or_return(
-          :salt,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def iterations(arg = nil)
-        set_or_return(
-          :iterations,
-          arg,
-          :kind_of => [ Integer ]
-        )
-      end
-
-      def system(arg = nil)
-        set_or_return(
-          :system,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def manage_home(arg = nil)
-        set_or_return(
-          :manage_home,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def force(arg = nil)
-        set_or_return(
-          :force,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def non_unique(arg = nil)
-        set_or_return(
-          :non_unique,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
     end
   end
 end
