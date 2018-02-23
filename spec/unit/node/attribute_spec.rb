@@ -171,7 +171,6 @@ describe Chef::Node::Attribute do
     }
     @automatic_hash = { "week" => "friday" }
     @attributes = Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash, node)
-    allow(node).to receive(:attributes).and_return(@attributes)
   end
 
   describe "initialize" do
@@ -180,14 +179,13 @@ describe Chef::Node::Attribute do
     end
 
     it "should take an Automatioc, Normal, Default and Override hash" do
-      expect { Chef::Node::Attribute.new({}, {}, {}, {}, node) }.not_to raise_error
+      expect { Chef::Node::Attribute.new({}, {}, {}, {}) }.not_to raise_error
     end
 
     [ :normal, :default, :override, :automatic ].each do |accessor|
       it "should set #{accessor}" do
-        @attributes = Chef::Node::Attribute.new({ :normal => true }, { :default => true }, { :override => true }, { :automatic => true }, node)
-        allow(node).to receive(:attributes).and_return(@attributes)
-        expect(@attributes.send(accessor)).to eq({ accessor.to_s => true })
+        na = Chef::Node::Attribute.new({ :normal => true }, { :default => true }, { :override => true }, { :automatic => true })
+        expect(na.send(accessor)).to eq({ accessor.to_s => true })
       end
     end
 
@@ -332,8 +330,7 @@ describe Chef::Node::Attribute do
     end
 
     it "merges nested hashes between precedence levels" do
-      @attributes = Chef::Node::Attribute.new({}, {}, {}, {}, node)
-      allow(node).to receive(:attributes).and_return(@attributes)
+      @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
       @attributes.env_default = { "a" => { "b" => { "default" => "default" } } }
       @attributes.normal = { "a" => { "b" => { "normal" => "normal" } } }
       @attributes.override = { "a" => { "override" => "role" } }
@@ -587,10 +584,8 @@ describe Chef::Node::Attribute do
           "one" => { "six" => "seven" },
           "snack" => "cookies",
         },
-        {},
-        node
+        {}
       )
-      allow(node).to receive(:attributes).and_return(@attributes)
     end
 
     it "should yield each top level key" do
@@ -637,10 +632,8 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
-        node
+        {}
       )
-      allow(node).to receive(:attributes).and_return(@attributes)
     end
 
     it "should yield each top level key and value, post merge rules" do
@@ -677,10 +670,8 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
-        node
+        {}
       )
-      allow(node).to receive(:attributes).and_return(@attributes)
     end
 
     it "should respond to each_key" do
@@ -715,10 +706,8 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
-        node
+        {}
       )
-      allow(node).to receive(:attributes).and_return(@attributes)
     end
 
     it "should respond to each_pair" do
@@ -753,10 +742,8 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
-        node
+        {}
       )
-      allow(node).to receive(:attributes).and_return(@attributes)
     end
 
     it "should respond to each_value" do
@@ -799,10 +786,9 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
-        node
+        {}
       )
-      allow(node).to receive(:attributes).and_return(@attributes)
+      @empty = Chef::Node::Attribute.new({}, {}, {}, {})
     end
 
     it "should respond to empty?" do
@@ -810,9 +796,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should return true when there are no keys" do
-      @attributes = Chef::Node::Attribute.new({}, {}, {}, {}, node)
-      allow(node).to receive(:attributes).and_return(@attributes)
-      expect(@attributes.empty?).to eq(true)
+      expect(@empty.empty?).to eq(true)
     end
 
     it "should return false when there are keys" do
@@ -836,10 +820,8 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
-        node
+        {}
       )
-      allow(node).to receive(:attributes).and_return(@attributes)
     end
 
     it "should respond to fetch" do
@@ -895,10 +877,8 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
-        node
+        {}
       )
-      allow(node).to receive(:attributes).and_return(@attributes)
     end
 
     it "should respond to has_value?" do
@@ -942,10 +922,8 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
-        node
+        {}
       )
-      allow(node).to receive(:attributes).and_return(@attributes)
     end
 
     it "should respond to index" do
@@ -985,10 +963,8 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
-        node
+        {}
       )
-      allow(node).to receive(:attributes).and_return(@attributes)
     end
 
     it "should respond to values" do
@@ -1023,10 +999,8 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
-        node
+        {}
       )
-      allow(node).to receive(:attributes).and_return(@attributes)
     end
 
     it "should respond to select" do
@@ -1075,11 +1049,10 @@ describe Chef::Node::Attribute do
           "one" => "six",
           "snack" => "cookies",
         },
-        {},
-        node
+        {}
       )
-      allow(node).to receive(:attributes).and_return(@attributes)
 
+      @empty = Chef::Node::Attribute.new({}, {}, {}, {})
     end
 
     it "should respond to size" do
@@ -1091,9 +1064,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should return 0 for an empty attribute" do
-      @attributes = Chef::Node::Attribute.new({}, {}, {}, {}, node)
-      allow(node).to receive(:attributes).and_return(@attributes)
-      expect(@attributes.size).to eq(0)
+      expect(@empty.size).to eq(0)
     end
 
     it "should return the number of pairs" do
@@ -1121,9 +1092,8 @@ describe Chef::Node::Attribute do
 
   describe "to_s" do
     it "should output simple attributes" do
-      @attributes = Chef::Node::Attribute.new(nil, nil, nil, nil, node)
-      allow(node).to receive(:attributes).and_return(@attributes)
-      expect(@attributes.to_s).to eq("{}")
+      attributes = Chef::Node::Attribute.new(nil, nil, nil, nil)
+      expect(attributes.to_s).to eq("{}")
     end
 
     it "should output merged attributes" do
@@ -1135,9 +1105,8 @@ describe Chef::Node::Attribute do
           "b" => 3,
           "c" => 4,
       }
-      @attributes = Chef::Node::Attribute.new(nil, default_hash, override_hash, nil, node)
-      allow(node).to receive(:attributes).and_return(@attributes)
-      expect(@attributes.to_s).to eq('{"b"=>3, "c"=>4, "a"=>1}')
+      attributes = Chef::Node::Attribute.new(nil, default_hash, override_hash, nil)
+      expect(attributes.to_s).to eq('{"a"=>1, "b"=>3, "c"=>4}')
     end
   end
 
@@ -1304,19 +1273,4 @@ describe Chef::Node::Attribute do
       expect { @attributes["foo"]["bar"][0] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
     end
   end
-
-  describe "assigning lazy ungenerated caches to other attributes" do
-    it "works with arrays" do
-      @attributes.default["foo"]["baz"] = %w{one two}
-      @attributes.default["bar"]["baz"] = @attributes["foo"]["baz"]
-      expect(@attributes.default["bar"]["baz"]).to eql(%w{one two})
-    end
-
-    it "works with hashes" do
-      @attributes.default["foo"]["baz"] = { "one" => "two" }
-      @attributes.default["bar"]["baz"] = @attributes["foo"]["baz"]
-      expect(@attributes.default["bar"]["baz"]).to eql({ "one" => "two" })
-    end
-  end
-
 end
