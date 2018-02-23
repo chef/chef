@@ -20,11 +20,13 @@ require "chef/resource/package"
 
 class Chef
   class Resource
-    # Use the zypper_package resource to install, upgrade, and remove packages with Zypper for the SUSE Enterprise and
-    # OpenSUSE platforms.
+
     class ZypperPackage < Chef::Resource::Package
       resource_name :zypper_package
       provides :package, platform_family: "suse"
+
+      description "Use the zypper_package resource to install, upgrade, and remove"\
+                  " packages with Zypper for the SUSE Enterprise and OpenSUSE platforms."
 
       property :gpg_check, [ TrueClass, FalseClass ], default: lazy { Chef::Config[:zypper_check_gpg] }
       property :allow_downgrade, [ true, false ], default: false

@@ -23,12 +23,12 @@ class Chef
     # Use the powershell_package resource to install and manage packages via the Powershell Package Manager for the
     # Microsoft Windows platform. The powershell_package resource requires administrative access, and a source must be
     # configured in the Powershell Package Manager via the Register-PackageSource command
-    #
-    # @since 12.16
     class PowershellPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
 
       provides :powershell_package, os: "windows"
+
+      introduced "12.16"
 
       allowed_actions :install, :remove
 

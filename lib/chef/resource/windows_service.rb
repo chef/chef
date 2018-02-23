@@ -21,9 +21,6 @@ require "chef/win32_service_constants"
 
 class Chef
   class Resource
-    # Use the windows_service resource to manage a service on the Microsoft Windows platform.
-    #
-    # @since 12.0
     class WindowsService < Chef::Resource::Service
       include Chef::Win32ServiceConstants
 
@@ -38,6 +35,9 @@ class Chef
 
       provides :windows_service, os: "windows"
       provides :service, os: "windows"
+
+      description "Use the windows_service resource to manage a service on the Microsoft Windows platform."
+      introduced "12.0"
 
       allowed_actions :configure_startup, :create, :delete, :configure
 

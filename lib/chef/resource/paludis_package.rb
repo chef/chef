@@ -21,12 +21,12 @@ require "chef/provider/package/paludis"
 
 class Chef
   class Resource
-    # Use the paludis_package resource to manage packages for the Paludis platform.
-    #
-    # @since 12.1
     class PaludisPackage < Chef::Resource::Package
       resource_name :paludis_package
       provides :paludis_package, os: "linux"
+
+      description "Use the paludis_package resource to manage packages for the Paludis platform."
+      introduced "12.1"
 
       allowed_actions :install, :remove, :upgrade
 

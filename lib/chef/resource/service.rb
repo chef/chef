@@ -22,11 +22,12 @@ require "shellwords"
 
 class Chef
   class Resource
-    # Use the service resource to manage a service.
     class Service < Chef::Resource
       identity_attr :service_name
 
       state_attrs :enabled, :running, :masked
+
+      description "Use the service resource to manage a service."
 
       default_action :nothing
       allowed_actions :enable, :disable, :start, :stop, :restart, :reload,

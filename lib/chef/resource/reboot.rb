@@ -27,10 +27,10 @@ class Chef
     # In using this resource via notifications, it's important to *only* use
     # immediate notifications. Delayed notifications produce unintuitive and
     # probably undesired results.
-    #
-    # @since 12.0
     class Reboot < Chef::Resource
       resource_name :reboot
+
+      introduced "12.0"
 
       allowed_actions :request_reboot, :reboot_now, :cancel
       default_action :nothing # make sure people are quite clear what they want

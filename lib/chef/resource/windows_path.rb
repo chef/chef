@@ -20,12 +20,12 @@ require "chef/resource"
 
 class Chef
   class Resource
-    # Use the windows_path resource to manage the path environment variable on Microsoft Windows.
-    #
-    # @since 13.4
     class WindowsPath < Chef::Resource
       resource_name :windows_path
       provides :windows_path
+
+      description "Use the windows_path resource to manage the path environment variable on Microsoft Windows."
+      introduced "13.4"
 
       allowed_actions :add, :remove
       default_action :add
