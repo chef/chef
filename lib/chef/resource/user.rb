@@ -38,7 +38,7 @@ class Chef
       property :shell, String
       property :password, String
       property :salt, String
-      property :iterations, Integer, default: 27855
+      property :iterations, [Integer, nil], default: 27855
       property :system, [ TrueClass, FalseClass ], default: false
       property :manage_home, [ TrueClass, FalseClass ], default: false
       property :force, [ TrueClass, FalseClass ], default: false
