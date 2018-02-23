@@ -1304,19 +1304,4 @@ describe Chef::Node::Attribute do
       expect { @attributes["foo"]["bar"][0] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
     end
   end
-
-  describe "assigning lazy ungenerated caches to other attributes" do
-    it "works with arrays" do
-      @attributes.default["foo"]["baz"] = %w{one two}
-      @attributes.default["bar"]["baz"] = @attributes["foo"]["baz"]
-      expect(@attributes.default["bar"]["baz"]).to eql(%w{one two})
-    end
-
-    it "works with hashes" do
-      @attributes.default["foo"]["baz"] = { "one" => "two" }
-      @attributes.default["bar"]["baz"] = @attributes["foo"]["baz"]
-      expect(@attributes.default["bar"]["baz"]).to eql({ "one" => "two" })
-    end
-  end
-
 end
