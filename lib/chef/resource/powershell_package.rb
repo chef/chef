@@ -28,19 +28,13 @@ class Chef
     class PowershellPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
 
+      resource_name :powershell_package
       provides :powershell_package, os: "windows"
 
       allowed_actions :install, :remove
 
-      def initialize(name, run_context = nil)
-        super
-        @resource_name = :powershell_package
-      end
-
       property :package_name, [String, Array], coerce: proc { |x| [x].flatten }
-
       property :version, [String, Array], coerce: proc { |x| [x].flatten }
-
       property :source, [String]
     end
   end
