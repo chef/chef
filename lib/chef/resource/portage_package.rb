@@ -22,13 +22,9 @@ class Chef
   class Resource
     class PortagePackage < Chef::Resource::Package
       resource_name :portage_package
+      provides :portage_package
+
       description "Use the portage_package resource to manage packages for the Gentoo platform."
-
-      def initialize(name, run_context = nil)
-        super
-        @provider = Chef::Provider::Package::Portage
-      end
-
     end
   end
 end
