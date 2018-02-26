@@ -166,6 +166,10 @@ describe Chef::Application::Client, "reconfigure" do
         it_behaves_like "sets the configuration", "--interval 1800", client_fork: true
       end
 
+      context "with once" do
+        it_behaves_like "sets the configuration", "--once", client_fork: false
+      end
+
       context "with daemonize" do
         it_behaves_like "sets the configuration", "--daemonize", client_fork: true
       end
