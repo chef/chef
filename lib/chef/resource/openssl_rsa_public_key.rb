@@ -19,24 +19,41 @@ require "chef/resource"
 
 class Chef
   class Resource
-    # A resource for generating rsa public key files given a rsa private key.
-    #
-    # @since 14.0
     class OpensslRsaPublicKey < Chef::Resource
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
       resource_name :openssl_rsa_public_key
 
-      property :path,                String, name_property: true
-      property :private_key_path,    String
-      property :private_key_content, String
-      property :private_key_pass,    String
-      property :owner,               [String, nil]
-      property :group,               [String, nil]
-      property :mode,                [Integer, String], default: "0640"
+      description "Use the openssl_rsa_public_key resource to generate RSA public key files given a RSA private key"
+      introduced "14.0"
+
+      property :path, String,
+               description: "The path to write the file to if different than the resource's name.",
+               name_property: true
+
+      property :private_key_path, String,
+               description: "The path to the private key."
+
+      property :private_key_content, String,
+               description: "The content of the private key including new lines. Used instead of private_key_path to avoid having to first write a key to disk."
+
+      property :private_key_pass, String,
+               description: "The passphrase of the provided private key."
+
+      property :owner, [String, nil],
+               description: "The owner of all files created by the resource."
+
+      property :group, [String, nil],
+               description: "The group of all files created by the resource."
+
+      property :mode, [Integer, String],
+               description: "The permission mode of all files created by the resource.",
+               default: "0640"
 
       action :create do
+        description "Create the RSA public key."
+
         raise ArgumentError, "You cannot specify both 'private_key_path' and 'private_key_content' properties at the same time." if new_resource.private_key_path && new_resource.private_key_content
         raise ArgumentError, "You must specify the private key with either 'private_key_path' or 'private_key_content' properties." unless new_resource.private_key_path || new_resource.private_key_content
         raise "#{new_resource.private_key_path} not a valid private RSA key or password is invalid" unless priv_key_file_valid?((new_resource.private_key_path || new_resource.private_key_content), new_resource.private_key_pass)

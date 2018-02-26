@@ -19,26 +19,47 @@ require "chef/resource"
 
 class Chef
   class Resource
-    # a resource for generating dhparam.pem files.
-    # If a valid dhparam.pem file is found at the specified location, no new
-    # file will be created. If a file is found at the specified location but it
-    # is not a valid dhparam file, it will be overwritten.
-    #
-    # @since 14.0
     class OpensslDhparam < Chef::Resource
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
       resource_name :openssl_dhparam
 
-      property :path,        String, name_property: true
-      property :key_length,  equal_to: [1024, 2048, 4096, 8192], default: 2048
-      property :generator,   equal_to: [2, 5], default: 2
-      property :owner,       [String, nil]
-      property :group,       [String, nil]
-      property :mode,        [Integer, String], default: "0640"
+      description "Use the openssl_dhparam resource to generate dhparam.pem files. If a"\
+                  " valid dhparam.pem file is found at the specified location, no new file"\
+                  " will be created. If a file is found at the specified location but it is"\
+                  " not a valid dhparam file, it will be overwritten."
+      introduced "14.0"
+
+      property :path, String,
+               description: "The path to write the file to if it's different than the resource name.",
+               name_property: true
+
+      property :key_length, Integer,
+               equal_to: [1024, 2048, 4096, 8192],
+               validation_message: "key_length must be 1024, 2048, 4096, or 8192.",
+               description: "The desired bit length of the generated key.",
+               default: 2048
+
+      property :generator, Integer,
+               equal_to: [2, 5],
+               validation_message: "generator must be either 2 or 5.",
+               description: "The desired Diffie-Hellmann generator.",
+               default: 2
+
+      property :owner, [String, nil],
+               description: "The owner of all files created by the resource."
+
+      property :group, [String, nil],
+               description: "The group of all files created by the resource."
+
+      property :mode, [Integer, String],
+               description: "The permission mode of all files created by the resource.",
+               default: "0640"
 
       action :create do
+        description "Create the dhparam file"
+
         unless dhparam_pem_valid?(new_resource.path)
           converge_by("Create a dhparam file #{new_resource.path}") do
             dhparam_content = gen_dhparam(new_resource.key_length, new_resource.generator).to_pem

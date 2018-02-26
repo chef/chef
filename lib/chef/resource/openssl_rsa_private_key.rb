@@ -19,13 +19,6 @@ require "chef/resource"
 
 class Chef
   class Resource
-    # A resource for generating rsa private key files.
-    # If a valid rsa key file can be opened at the specified location, no new file
-    # will be created. If the RSA key file cannot be opened, either because it
-    # does not exist or because the password to the RSA key file does not match
-    # the password in the recipe, it will be overwritten.
-    #
-    # @since 14.0
     class OpensslRsaPrivateKey < Chef::Resource
       require "chef/mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
@@ -34,14 +27,45 @@ class Chef
       provides :openssl_rsa_private_key
       provides :openssl_rsa_key # legacy cookbook resource name
 
-      property :path,        String, name_property: true
-      property :key_length,  equal_to: [1024, 2048, 4096, 8192], default: 2048
-      property :key_pass,    String
-      property :key_cipher,  String, default: "des3", equal_to: OpenSSL::Cipher.ciphers
-      property :owner,       [String, nil]
-      property :group,       [String, nil]
-      property :mode,        [Integer, String], default: "0600"
-      property :force,       [true, false], default: false
+      introduced "14.0"
+      description "Use the openssl_rsa_private_key resource to generate RSA private key files."\
+                  " If a valid RSA key file can be opened at the specified location, no new file"\
+                  " will be created. If the RSA key file cannot be opened, either because it does"\
+                  " not exist or because the password to the RSA key file does not match the"\
+                  " password in the recipe, it will be overwritten."
+
+      property :path, String,
+               description: "The path to write the file to it's different than the resource name.",
+               name_property: true
+
+      property :key_length, Integer,
+               equal_to: [1024, 2048, 4096, 8192],
+               validation_message: "key_length must be 1024, 2048, 4096, or 8192.",
+               description: "The desired bit length of the generated key.",
+               default: 2048
+
+      property :key_pass, String,
+               description: "The desired passphrase for the key."
+
+      property :key_cipher, String,
+               equal_to: OpenSSL::Cipher.ciphers,
+               validation_message: "key_cipher must be a cipher known to openssl. Run `openssl list-cipher-algorithms` to see available options.",
+               description: "The designed cipher to use when generating your key. Run `openssl list-cipher-algorithms` to see available options.",
+               default: "des3"
+
+      property :owner, [String, nil],
+               description: "The owner of all files created by the resource."
+
+      property :group, [String, nil],
+               description: "The group of all files created by the resource."
+
+      property :mode, [Integer, String],
+               description: "The permission mode of all files created by the resource.",
+               default: "0600"
+
+      property :force, [true, false],
+               description: "Force creating the key even if the existing key exists.",
+               default: false
 
       action :create do
         return if new_resource.force || priv_key_file_valid?(new_resource.path, new_resource.key_pass)
