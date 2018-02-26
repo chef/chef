@@ -20,10 +20,11 @@ require "chef/resource/package"
 
 class Chef
   class Resource
-    # Use the pacman_package resource to manage packages (using pacman) on the Arch Linux platform.
     class PacmanPackage < Chef::Resource::Package
       resource_name :pacman_package
       provides :pacman_package, os: "linux"
+
+      description "Use the pacman_package resource to manage packages (using pacman) on the Arch Linux platform."
     end
   end
 end

@@ -22,11 +22,12 @@ require "chef/provider/package/solaris"
 
 class Chef
   class Resource
-    # The solaris_package resource is used to manage packages for the Solaris platform.
     class SolarisPackage < Chef::Resource::Package
       resource_name :solaris_package
       provides :package, os: "solaris2", platform_family: "nexentacore"
       provides :package, os: "solaris2", platform_family: "solaris2", platform_version: "<= 5.10"
+
+      description "The solaris_package resource is used to manage packages for the Solaris platform."
     end
   end
 end

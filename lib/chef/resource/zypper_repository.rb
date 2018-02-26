@@ -20,14 +20,15 @@ require "chef/resource"
 
 class Chef
   class Resource
-    # The zypper_repository resource allows for the creation of Zypper package repositories on SUSE Enterprise Linux and
-    # openSUSE systems. This resource maintains full compatibility with the zypper_repository resource in the existing
-    # zypper cookbook.
-    #
-    # @since 13.3
     class ZypperRepository < Chef::Resource
       resource_name :zypper_repository
       provides :zypper_repo
+
+      description "Use the zypper_repository resource to create Zypper package repositories"\
+                  " on SUSE Enterprise Linux and openSUSE systems. This resource maintains"\
+                  " full compatibility with the zypper_repository resource in the existing"\
+                  " zypper cookbook."
+      introduced "13.3"
 
       property :repo_name, String, name_property: true
       property :description, String
