@@ -285,7 +285,7 @@ class Chef
         list.each do |item|
           host, ssh_port = item
           Chef::Log.debug("Adding #{host}")
-          session_opts = session_options(host, ssh_port, 0)
+          session_opts = session_options(host, ssh_port, gateway: false)
           # Handle port overrides for the main connection.
           session_opts[:port] = Chef::Config[:knife][:ssh_port] if Chef::Config[:knife][:ssh_port]
           session_opts[:port] = config[:ssh_port] if config[:ssh_port]
