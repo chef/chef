@@ -79,7 +79,7 @@ class Chef
         # install the font into the appropriate fonts directory
         def install_font
           require "win32ole" if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-          fonts_dir = WIN32OLE.new("WScript.Shell").SpecialFolders("Fonts")
+          fonts_dir = Chef::Util::PathHelper.join(ENV["windir"], "fonts")
           folder = WIN32OLE.new("Shell.Application").Namespace(fonts_dir)
           converge_by("install font #{new_resource.font_name} to #{fonts_dir}") do
             folder.CopyHere(Chef::Util::PathHelper.join(ENV["TEMP"], new_resource.font_name))
