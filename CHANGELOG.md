@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.81 -->
-## [v14.0.81](https://github.com/chef/chef/tree/v14.0.81) (2018-02-23)
+<!-- latest_release 14.0.82 -->
+## [v14.0.82](https://github.com/chef/chef/tree/v14.0.82) (2018-02-26)
 
 #### Merged Pull Requests
-- revert lazy attributes [#6911](https://github.com/chef/chef/pull/6911) ([lamont-granquist](https://github.com/lamont-granquist))
+- Convert parts of cron resource to use properties [#6904](https://github.com/chef/chef/pull/6904) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Convert parts of cron resource to use properties [#6904](https://github.com/chef/chef/pull/6904) ([tas50](https://github.com/tas50)) <!-- 14.0.82 -->
 - revert lazy attributes [#6911](https://github.com/chef/chef/pull/6911) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.81 -->
 - Simplify how we define the powershell_package resource_name [#6901](https://github.com/chef/chef/pull/6901) ([tas50](https://github.com/tas50)) <!-- 14.0.80 -->
 - Modernize mdadm [#6905](https://github.com/chef/chef/pull/6905) ([tas50](https://github.com/tas50)) <!-- 14.0.79 -->
