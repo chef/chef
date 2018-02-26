@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.8.1 -->
-## [v13.8.1](https://github.com/chef/chef/tree/v13.8.1) (2018-02-23)
+<!-- latest_release 13.8.2 -->
+## [v13.8.2](https://github.com/chef/chef/tree/v13.8.2) (2018-02-26)
 
 #### Merged Pull Requests
-- Revert &quot;Revert &quot;fixup some unit tests&quot;&quot; [#6912](https://github.com/chef/chef/pull/6912) ([lamont-granquist](https://github.com/lamont-granquist))
+- Link to the knife.rb docs when the knife.rb file is missing [#6892](https://github.com/chef/chef/pull/6892) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Link to the knife.rb docs when the knife.rb file is missing [#6892](https://github.com/chef/chef/pull/6892) ([tas50](https://github.com/tas50)) <!-- 13.8.2 -->
 - Revert &quot;Revert &quot;fixup some unit tests&quot;&quot; [#6912](https://github.com/chef/chef/pull/6912) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.8.1 -->
 - Chef-13 revert lazy attributes [#6898](https://github.com/chef/chef/pull/6898) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.28 -->
 -  Prevent knife search --id-only from outputting IDs in the same format as an empty hash [#6893](https://github.com/chef/chef/pull/6893) ([tas50](https://github.com/tas50)) <!-- 13.7.27 -->
