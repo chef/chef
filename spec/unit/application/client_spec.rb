@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -107,6 +107,7 @@ describe Chef::Application::Client, "reconfigure" do
     shared_examples "sets the configuration" do |cli_arguments, expected_config|
       describe cli_arguments do
         before do
+          cli_arguments ||= ""
           ARGV.replace(cli_arguments.split)
           app.reconfigure
         end
@@ -141,6 +142,32 @@ describe Chef::Application::Client, "reconfigure" do
       context "with a non-integer value" do
         it_behaves_like "sets the configuration", "--daemonize foo",
                         :daemonize => true
+      end
+    end
+
+    describe "--[no]-fork" do
+      before do
+        Chef::Config[:interval] = nil # FIXME: we're overriding the before block setting this
+      end
+
+      context "by default" do
+        it_behaves_like "sets the configuration", "", client_fork: false
+      end
+
+      context "with --fork" do
+        it_behaves_like "sets the configuration", "--fork", client_fork: true
+      end
+
+      context "with --no-fork" do
+        it_behaves_like "sets the configuration", "--no-fork", client_fork: false
+      end
+
+      context "with an interval" do
+        it_behaves_like "sets the configuration", "--interval 1800", client_fork: true
+      end
+
+      context "with daemonize" do
+        it_behaves_like "sets the configuration", "--daemonize", client_fork: true
       end
     end
 
@@ -186,21 +213,16 @@ describe Chef::Application::Client, "reconfigure" do
       Chef::Config[:splay] = nil
     end
 
-    context "when interval is given" do
-      before do
-        Chef::Config[:interval] = 600
-        allow(ChefConfig).to receive(:windows?).and_return(false)
-      end
-
-      it "should terminate with message" do
-        expect(Chef::Application).to receive(:fatal!).with(
-"Unforked chef-client interval runs are disabled in Chef 12.
+    it "should terminal with message when interval is given" do
+      Chef::Config[:interval] = 600
+      allow(ChefConfig).to receive(:windows?).and_return(false)
+      expect(Chef::Application).to receive(:fatal!).with(
+        "Unforked chef-client interval runs are disabled in Chef 12.
 Configuration settings:
   interval  = 600 seconds
 Enable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
-        )
-        app.reconfigure
-      end
+      )
+      app.reconfigure
     end
 
     context "when interval is given on windows" do
