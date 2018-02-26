@@ -187,7 +187,7 @@ class Chef
           @available_version[index] ||= if new_resource.source
                                           resolve_source_to_version_obj
                                         else
-                                          python_helper.package_query(:whatavailable, package_name_array[index], safe_version_array[index], safe_arch_array[index], options)
+                                          python_helper.package_query(:whatavailable, package_name_array[index], version: safe_version_array[index], arch: safe_arch_array[index], options: options)
                                         end
 
           @available_version[index]
@@ -197,9 +197,9 @@ class Chef
         def installed_version(index)
           @installed_version ||= []
           @installed_version[index] ||= if new_resource.source
-                                          python_helper.package_query(:whatinstalled, available_version(index).name, safe_version_array[index], safe_arch_array[index])
+                                          python_helper.package_query(:whatinstalled, available_version(index).name, version: safe_version_array[index], arch: safe_arch_array[index])
                                         else
-                                          python_helper.package_query(:whatinstalled, package_name_array[index], safe_version_array[index], safe_arch_array[index])
+                                          python_helper.package_query(:whatinstalled, package_name_array[index], version: safe_version_array[index], arch: safe_arch_array[index])
                                         end
           @installed_version[index]
         end

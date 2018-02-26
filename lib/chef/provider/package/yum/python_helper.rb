@@ -107,9 +107,9 @@ class Chef
           end
 
           # @returns Array<Version>
-          def package_query(action, provides, version = nil, arch = nil, options = nil)
+          def package_query(action, provides, version: nil, arch: nil, options: {})
             parameters = { "provides" => provides, "version" => version, "arch" => arch }
-            repo_opts = options_params(options || {})
+            repo_opts = options_params(options)
             parameters.merge!(repo_opts)
             query_output = query(action, parameters)
             version = parse_response(query_output.lines.last)

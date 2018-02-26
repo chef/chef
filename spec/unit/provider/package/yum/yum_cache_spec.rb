@@ -31,32 +31,32 @@ describe Chef::Provider::Package::Yum::YumCache do
   end
 
   it "package_available? returns false if the helper reports the available version is nil" do
-    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo").and_return( yum_version("foo", nil, nil) )
+    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", arch: nil).and_return( yum_version("foo", nil, nil) )
     expect( yum_cache.package_available?("foo") ).to be false
   end
 
   it "package_available? returns true if the helper returns an available version" do
-    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo").and_return( yum_version("foo", "1.2.3-1", "x86_64") )
+    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", arch: nil).and_return( yum_version("foo", "1.2.3-1", "x86_64") )
     expect( yum_cache.package_available?("foo") ).to be true
   end
 
   it "version_available? returns false if the helper reports the available version is nil" do
-    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", "1.2.3", nil).and_return( yum_version("foo", nil, nil) )
+    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", version: "1.2.3", arch: nil).and_return( yum_version("foo", nil, nil) )
     expect( yum_cache.version_available?("foo", "1.2.3") ).to be false
   end
 
   it "version_available? returns true if the helper returns an available version" do
-    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", "1.2.3", nil).and_return( yum_version("foo", "1.2.3-1", "x86_64") )
+    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", version: "1.2.3", arch: nil).and_return( yum_version("foo", "1.2.3-1", "x86_64") )
     expect( yum_cache.version_available?("foo", "1.2.3") ).to be true
   end
 
   it "version_available? with an arch returns false if the helper reports the available version is nil" do
-    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", "1.2.3", "x86_64").and_return( yum_version("foo", nil, nil) )
+    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", version: "1.2.3", arch: "x86_64").and_return( yum_version("foo", nil, nil) )
     expect( yum_cache.version_available?("foo", "1.2.3", "x86_64") ).to be false
   end
 
   it "version_available? with an arch returns true if the helper returns an available version" do
-    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", "1.2.3", "x86_64").and_return( yum_version("foo", "1.2.3-1", "x86_64") )
+    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", version: "1.2.3", arch: "x86_64").and_return( yum_version("foo", "1.2.3-1", "x86_64") )
     expect( yum_cache.version_available?("foo", "1.2.3", "x86_64") ).to be true
   end
 
@@ -68,22 +68,42 @@ describe Chef::Provider::Package::Yum::YumCache do
   end
 
   it "installed_version? returns nil if the helper reports the installed version is nil" do
-    expect( python_helper ).to receive(:package_query).with(:whatinstalled, "foo").and_return( yum_version("foo", nil, nil) )
+    expect( python_helper ).to receive(:package_query).with(:whatinstalled, "foo", arch: nil).and_return( yum_version("foo", nil, nil) )
     expect( yum_cache.installed_version("foo") ).to be nil
   end
 
   it "installed_version? returns version string if the helper returns an installed version" do
-    expect( python_helper ).to receive(:package_query).with(:whatinstalled, "foo").and_return( yum_version("foo", "1.2.3-1", "x86_64") )
+    expect( python_helper ).to receive(:package_query).with(:whatinstalled, "foo", arch: nil).and_return( yum_version("foo", "1.2.3-1", "x86_64") )
     expect( yum_cache.installed_version("foo") ).to eql("1.2.3-1.x86_64")
   end
 
+  it "installed_version? returns nil if the helper reports the installed version is nil" do
+    expect( python_helper ).to receive(:package_query).with(:whatinstalled, "foo", arch: "x86_64").and_return( yum_version("foo", nil, nil) )
+    expect( yum_cache.installed_version("foo", "x86_64") ).to be nil
+  end
+
+  it "installed_version? returns version string if the helper returns an installed version" do
+    expect( python_helper ).to receive(:package_query).with(:whatinstalled, "foo", arch: "x86_64").and_return( yum_version("foo", "1.2.3-1", "x86_64") )
+    expect( yum_cache.installed_version("foo", "x86_64") ).to eql("1.2.3-1.x86_64")
+  end
+
   it "available_version? returns nil if the helper reports the available version is nil" do
-    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo").and_return( yum_version("foo", nil, nil) )
+    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", arch: nil).and_return( yum_version("foo", nil, nil) )
     expect( yum_cache.available_version("foo") ).to be nil
   end
 
   it "available_version? returns version string if the helper returns an available version" do
-    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo").and_return( yum_version("foo", "1.2.3-1", "x86_64") )
+    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", arch: nil).and_return( yum_version("foo", "1.2.3-1", "x86_64") )
     expect( yum_cache.available_version("foo") ).to eql("1.2.3-1.x86_64")
+  end
+
+  it "available_version? returns nil if the helper reports the available version is nil" do
+    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", arch: "x86_64").and_return( yum_version("foo", nil, nil) )
+    expect( yum_cache.available_version("foo", "x86_64") ).to be nil
+  end
+
+  it "available_version? returns version string if the helper returns an available version" do
+    expect( python_helper ).to receive(:package_query).with(:whatavailable, "foo", arch: "x86_64").and_return( yum_version("foo", "1.2.3-1", "x86_64") )
+    expect( yum_cache.available_version("foo", "x86_64") ).to eql("1.2.3-1.x86_64")
   end
 end

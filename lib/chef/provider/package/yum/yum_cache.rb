@@ -57,18 +57,18 @@ class Chef
             python_helper.restart
           end
 
-          def available_version(name)
-            p = python_helper.package_query(:whatavailable, name)
+          def available_version(name, arch = nil)
+            p = python_helper.package_query(:whatavailable, name, arch: arch)
             "#{p.version}.#{p.arch}" unless p.version.nil?
           end
 
-          def installed_version(name)
-            p = python_helper.package_query(:whatinstalled, name)
+          def installed_version(name, arch = nil)
+            p = python_helper.package_query(:whatinstalled, name, arch: arch)
             "#{p.version}.#{p.arch}" unless p.version.nil?
           end
 
-          def package_available?(name)
-            p = python_helper.package_query(:whatavailable, name)
+          def package_available?(name, arch = nil)
+            p = python_helper.package_query(:whatavailable, name, arch: arch)
             !p.version.nil?
           end
 
@@ -77,7 +77,7 @@ class Chef
           # (because the bigger issue there is a buggy+broken python_helper -- so don't try to fix those
           # kinds of bugs here)
           def version_available?(name, version, arch = nil)
-            p = python_helper.package_query(:whatavailable, name, version, arch)
+            p = python_helper.package_query(:whatavailable, name, version: version, arch: arch)
             !p.version.nil?
           end
 
