@@ -1,0 +1,83 @@
+build: &build
+  steps:
+    - checkout
+    - run:
+        name: Install Ruby
+        environment:
+          CIRCLECI_USER: circleci
+        command: |
+          sudo ln -sf /opt/circleci /home/travis
+          source /opt/circleci/.rvm/scripts/rvm
+          rvm use 2.5.0
+          echo '2.5.0' > ~/project/.ruby-version
+    - type: cache-restore
+      name: Restore bundle cache
+      key: chef-v1-{{ .Environment.CIRCLE_JOB }}-bundle-{{ checksum "Gemfile.lock" }}
+    - run:
+        name: Bundle Install
+        command: |
+          echo $PATH
+          source /opt/circleci/.rvm/scripts/rvm
+          rvm use 2.5.0
+          bundle install --path vendor/bundle --without ci docgen guard integration maintenance omnibus_package --frozen
+          cd chef-config
+          bundle install --path ../vendor/bundle --without ci docgen guard integration maintenance omnibus_package
+    - type: cache-save
+      name: Save bundle cache
+      key: chef-v1-{{ .Environment.CIRCLE_JOB }}-bundle-{{ checksum "Gemfile.lock" }}
+      paths:
+        - vendor/bundle
+    - type: shell
+      name: chef-config rspec
+      command: |
+        mkdir -p test_results
+        cd chef-config
+        source /opt/circleci/.rvm/scripts/rvm
+        rvm use 2.5.0
+        sudo -E $(which bundle) exec rake spec
+    - type: shell
+      name: chef rspec
+      command: |
+        mkdir -p test_results
+        source /opt/circleci/.rvm/scripts/rvm
+        rvm use 2.5.0
+        sudo -E $(which bundle) exec rake spec:unit
+        sudo -E $(which bundle) exec rake spec:functional
+        sudo -E $(which bundle) exec rake spec:integration
+    # Save test results for timing analysis
+    - store_test_results:
+        path: test_results
+
+version: 2
+jobs:
+  ruby_2_4:
+    <<: *build
+    machine: true
+  ruby_2_5:
+    <<: *build
+    machine: true
+  chefstyle:
+    docker:
+      - image: circleci/ruby:2.5
+    steps:
+      - checkout
+      - type: cache-restore
+        name: Restore bundle cache
+        key: chef-v1-chefstyle-bundle-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Bundle Install
+          command: bundle install --path vendor/bundle --without ci docgen guard integration maintenance omnibus_package --frozen
+      - type: cache-save
+        name: Save bundle cache
+        key: chef-v1-chefstyle-bundle-{{ checksum "Gemfile.lock" }}
+        paths:
+          - vendor/bundle
+      - run:
+          name: ChefStyle
+          command: bundle exec rake style
+workflows:
+  version: 2
+  test:
+    jobs:
+      - ruby_2_5
+      - chefstyle
