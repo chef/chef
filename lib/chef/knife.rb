@@ -182,7 +182,7 @@ class Chef
       config_loader.profile = profile
       config_loader.load
 
-      ui.warn("No knife configuration file found") if config_loader.no_config_found?
+      ui.warn("No knife configuration file found. See https://docs.chef.io/config_rb_knife.html for details.") if config_loader.no_config_found?
 
       config_loader
     rescue Exceptions::ConfigurationError => e
