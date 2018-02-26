@@ -46,7 +46,7 @@ describe "chef-client" do
   # we're running `chef-client` from the source tree and not the external one.
   # cf. CHEF-4914
   let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
-  let(:chef_solo) { "ruby '#{chef_dir}/chef-solo' --minimal-ohai" }
+  let(:chef_solo) { "ruby '#{chef_dir}/chef-solo' --legacy-mode --minimal-ohai" }
 
   let(:critical_env_vars) { %w{_ORIGINAL_GEM_PATH GEM_PATH GEM_HOME GEM_ROOT BUNDLE_BIN_PATH BUNDLE_GEMFILE RUBYLIB RUBYOPT RUBY_ENGINE RUBY_ROOT RUBY_VERSION PATH}.map { |o| "#{o}=#{ENV[o]}" } .join(" ") }
 
