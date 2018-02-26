@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -601,13 +601,12 @@ describe Chef::ProviderResolver do
         windows_package:        [ Chef::Resource::WindowsPackage, Chef::Provider::Package::Windows ],
         windows_service:        [ Chef::Resource::WindowsService, Chef::Provider::Service::Windows ],
         windows_user:           [ Chef::Resource::User::WindowsUser, Chef::Provider::User::Windows ],
+        yum_package:            [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
 
         # We want to check that these are unsupported:
         yum_package: nil,
 
         "linux" => {
-          yum_package:     [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
-
           "debian" => {
             ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig::Debian ],
             package:  [ Chef::Resource::AptPackage, Chef::Provider::Package::Apt ],
