@@ -22,11 +22,12 @@ require "chef/resource"
 class Chef
   class Resource
     class Cron < Chef::Resource
+      resource_name :cron
+      provides :cron
+
       description "Use the cron resource to manage cron entries for time-based job scheduling."\
                   " Properties for a schedule will default to * if not provided. The cron resource"\
                   " requires access to a crontab program, typically cron."
-
-      identity_attr :command
 
       state_attrs :minute, :hour, :day, :month, :weekday, :user
 
@@ -40,14 +41,6 @@ class Chef
         @day = "*"
         @month = "*"
         @weekday = "*"
-        @command = nil
-        @user = "root"
-        @mailto = nil
-        @path = nil
-        @shell = nil
-        @home = nil
-        @time = nil
-        @environment = {}
       end
 
       def minute(arg = nil)
@@ -150,65 +143,16 @@ class Chef
         )
       end
 
-      def mailto(arg = nil)
-        set_or_return(
-          :mailto,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def path(arg = nil)
-        set_or_return(
-          :path,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def home(arg = nil)
-        set_or_return(
-          :home,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def shell(arg = nil)
-        set_or_return(
-          :shell,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def command(arg = nil)
-        set_or_return(
-          :command,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def user(arg = nil)
-        set_or_return(
-          :user,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def environment(arg = nil)
-        set_or_return(
-          :environment,
-          arg,
-          :kind_of => Hash
-        )
-      end
+      property :mailto, String
+      property :path, String
+      property :home, String
+      property :shell, String
+      property :command, String, identity: true
+      property :user, String, default: "root"
+      property :environment, Hash, default: {}
 
       private
 
-      # On Ruby 1.8, Kernel#Integer will happily do this for you. On 1.9, no.
       def integerize(integerish)
         Integer(integerish)
       rescue TypeError
