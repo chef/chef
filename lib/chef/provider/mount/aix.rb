@@ -1,6 +1,5 @@
 #
-# Author::
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,11 +40,11 @@ class Chef
           enabled = false
 
           regex_arr = device_fstab_regex.split(":")
-          if regex_arr.size.eql?(2)
+          if regex_arr.size == 2
             nodename = regex_arr[0]
-            devicename   = regex_arr[1]
+            devicename = regex_arr[1]
           else
-            devicename   = regex_arr[0]
+            devicename = regex_arr[0]
           end
           # lsfs o/p = #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
           # search only for current mount point
@@ -77,9 +76,9 @@ class Chef
               Chef::Log.debug("Found mount point #{@new_resource.mount_point} :: device_type #{@current_resource.device_type} in /etc/filesystems")
               next
             when /^#{Regexp.escape(@new_resource.mount_point)}:(.*?):(.*?):(.*?):(.*?):(.*?):(.*?):(.*?):(.*?)/
-              if $3.split("=")[0].eql?("LABEL") || $1.split("=")[0].eql?("LABEL")
+              if $3.split("=")[0] == "LABEL" || $1.split("=")[0] == "LABEL"
                 @current_resource.device_type("label")
-              elsif $3.split("=")[0].eql?("UUID") || $1.split("=")[0].eql?("UUID")
+              elsif $3.split("=")[0] == "UUID" || $1.split("=")[0] == "UUID"
                 @current_resource.device_type("uuid")
               else
                 @current_resource.device_type("device")
