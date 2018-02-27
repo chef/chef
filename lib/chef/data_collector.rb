@@ -302,7 +302,7 @@ class Chef
       end
 
       def setup_http_output_locations
-        Chef::Config[:data_collector][:output_locations][:urls].each_with_object({}) do |location_url,http_output_locations|
+        Chef::Config[:data_collector][:output_locations][:urls].each_with_object({}) do |location_url, http_output_locations|
           http_output_locations[location_url] = setup_http_client(location_url)
         end
       end
