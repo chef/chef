@@ -519,10 +519,14 @@ class Chef
       def validate_and_create_file(file)
         send_to_file_location(file, "")
         return true
+      # Rescue exceptions raised by the file path being non-existent or not writeable and re-raise them to the user
+      # with clearer explanatory text.
       rescue Errno::ENOENT
-        return false
+        raise Chef::Exceptions::ConfigurationError,
+              "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which is a non existent file path."
       rescue Errno::EACCES
-        return false
+        raise Chef::Exceptions::ConfigurationError,
+              "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which cannnot be written to by Chef."
       end
 
       def validate_data_collector_server_url!
