@@ -219,6 +219,11 @@ class Chef
         :description => "Custom command to install chef-client",
         :proc        => Proc.new { |ic| Chef::Config[:knife][:bootstrap_install_command] = ic }
 
+      option :bootstrap_preinstall_command,
+             :long        => "--bootstrap-preinstall-command COMMANDS",
+             :description => "Custom commands to run before installing chef-client",
+             :proc        => Proc.new { |preic| Chef::Config[:knife][:bootstrap_preinstall_command] = preic }
+
       option :bootstrap_wget_options,
         :long        => "--bootstrap-wget-options OPTIONS",
         :description => "Add options to wget when installing chef-client",
