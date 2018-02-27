@@ -123,6 +123,12 @@ class Chef
         :boolean => true,
         :default => false
 
+      option :duplicated_fqdns,
+        :long => "--duplicated-fqdns",
+        :description => "Behavior if FQDNs are duplicated, ignored by default",
+        :proc => Proc.new { |key| Chef::Config[:knife][:duplicated_fqdns] = key.strip.to_sym },
+        :default => :ignore
+
       option :tmux_split,
         :long => "--tmux-split",
         :description => "Split tmux window.",
@@ -174,6 +180,16 @@ class Chef
                      "Try setting another attribute to open the connection using --attribute.")
           end
           exit 10
+        end
+        if %i{warn fatal}.include?(config[:duplicated_fqdns])
+          fqdns = list.map { |v| v[0] }
+          if fqdns.count != fqdns.uniq.count
+            duplicated_fqdns = fqdns.uniq
+            ui.send(config[:duplicated_fqdns],
+              "SSH #{duplicated_fqdns.count > 1 ? 'nodes are' : 'node is'} " +
+              "duplicated: #{duplicated_fqdns.join(',')}")
+            exit 10 if config[:duplicated_fqdns] == :fatal
+          end
         end
         session_from_list(list)
       end
