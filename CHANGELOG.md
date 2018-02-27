@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.86 -->
-## [v14.0.86](https://github.com/chef/chef/tree/v14.0.86) (2018-02-26)
+<!-- latest_release 14.0.87 -->
+## [v14.0.87](https://github.com/chef/chef/tree/v14.0.87) (2018-02-27)
 
 #### Merged Pull Requests
-- Add description, validation_message, and introduced fields into openssl resources [#6855](https://github.com/chef/chef/pull/6855) ([tas50](https://github.com/tas50))
+- Added Flag to distinguish between gateway and host key to fix issue #6210 [#6514](https://github.com/chef/chef/pull/6514) ([erikparra](https://github.com/erikparra))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Added Flag to distinguish between gateway and host key to fix issue #6210 [#6514](https://github.com/chef/chef/pull/6514) ([erikparra](https://github.com/erikparra)) <!-- 14.0.87 -->
 - Add description, validation_message, and introduced fields into openssl resources [#6855](https://github.com/chef/chef/pull/6855) ([tas50](https://github.com/tas50)) <!-- 14.0.86 -->
 - Add windows auto_run, font, pagefile, printer, printer_port, and shortcut resources [#6767](https://github.com/chef/chef/pull/6767) ([tas50](https://github.com/tas50)) <!-- 14.0.85 -->
 - surface default guard interpreter errors [#5972](https://github.com/chef/chef/pull/5972) ([nathwill](https://github.com/nathwill)) <!-- 14.0.84 -->
