@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.88 -->
-## [v14.0.88](https://github.com/chef/chef/tree/v14.0.88) (2018-02-27)
+<!-- latest_release 14.0.89 -->
+## [v14.0.89](https://github.com/chef/chef/tree/v14.0.89) (2018-02-27)
 
 #### Merged Pull Requests
-- Don&#39;t use .eql? in the aix mount provider [#6915](https://github.com/chef/chef/pull/6915) ([tas50](https://github.com/tas50))
+- [knife] Don&#39;t crash when a deprecated cookbook has no replacement [#6853](https://github.com/chef/chef/pull/6853) ([rlyders](https://github.com/rlyders))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- [knife] Don&#39;t crash when a deprecated cookbook has no replacement [#6853](https://github.com/chef/chef/pull/6853) ([rlyders](https://github.com/rlyders)) <!-- 14.0.89 -->
 - Don&#39;t use .eql? in the aix mount provider [#6915](https://github.com/chef/chef/pull/6915) ([tas50](https://github.com/tas50)) <!-- 14.0.88 -->
 - Added Flag to distinguish between gateway and host key to fix issue #6210 [#6514](https://github.com/chef/chef/pull/6514) ([erikparra](https://github.com/erikparra)) <!-- 14.0.87 -->
 - Add description, validation_message, and introduced fields into openssl resources [#6855](https://github.com/chef/chef/pull/6855) ([tas50](https://github.com/tas50)) <!-- 14.0.86 -->
