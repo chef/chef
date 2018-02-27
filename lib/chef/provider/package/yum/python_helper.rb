@@ -107,9 +107,10 @@ class Chef
           end
 
           # @returns Array<Version>
+          # NB: "options" here is the yum_package options hash and is deliberately not **opts
           def package_query(action, provides, version: nil, arch: nil, options: {})
             parameters = { "provides" => provides, "version" => version, "arch" => arch }
-            repo_opts = options_params(options)
+            repo_opts = options_params(options || {})
             parameters.merge!(repo_opts)
             query_output = query(action, parameters)
             version = parse_response(query_output.lines.last)
