@@ -302,11 +302,9 @@ class Chef
       end
 
       def setup_http_output_locations
-        http_output_locations = {}
-        Chef::Config[:data_collector][:output_locations][:urls].each do |location_url|
+        Chef::Config[:data_collector][:output_locations][:urls].each_with_object({}) do |location_url,http_output_locations|
           http_output_locations[location_url] = setup_http_client(location_url)
         end
-        http_output_locations
       end
 
       #
@@ -544,7 +542,7 @@ class Chef
       def validate_data_collector_output_locations!
         if data_collector_output_locations.empty?
           raise Chef::Exceptions::ConfigurationError,
-                "Chef::Config[:data_collector][:output_loations] is empty. Please supply an hash of valid URLs and / or local file paths."
+                "Chef::Config[:data_collector][:output_locations] is empty. Please supply an hash of valid URLs and / or local file paths."
         end
 
         data_collector_output_locations.each do |type, locations|
