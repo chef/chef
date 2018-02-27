@@ -183,7 +183,7 @@ class Chef
           end
           exit 10
         end
-        if %i(warn fatal).include?(config[:duplicated_fqdns])
+        if %i{warn fatal}.include?(config[:duplicated_fqdns])
           fqdns = list.map { |v| v[0] }
           if fqdns.count != fqdns.uniq.count
             duplicated_fqdns = fqdns.uniq
