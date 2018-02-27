@@ -6,29 +6,33 @@
 - Link to the knife.rb docs when the knife.rb file is missing [#6892](https://github.com/chef/chef/pull/6892) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup since=13.7.16 -->
-### Changes since 13.7.16 release
+<!-- release_rollup since=13.8.0 -->
+### Changes since 13.8.0 release
 
 #### Merged Pull Requests
-- Link to the knife.rb docs when the knife.rb file is missing [#6892](https://github.com/chef/chef/pull/6892) ([tas50](https://github.com/tas50)) <!-- 13.8.2 -->
 - Revert &quot;Revert &quot;fixup some unit tests&quot;&quot; [#6912](https://github.com/chef/chef/pull/6912) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.8.1 -->
-- Chef-13 revert lazy attributes [#6898](https://github.com/chef/chef/pull/6898) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.28 -->
--  Prevent knife search --id-only from outputting IDs in the same format as an empty hash [#6893](https://github.com/chef/chef/pull/6893) ([tas50](https://github.com/tas50)) <!-- 13.7.27 -->
-- use a stricter comparison so knife ssh only fails if --exit-on-error [#6894](https://github.com/chef/chef/pull/6894) ([tas50](https://github.com/tas50)) <!-- 13.7.26 -->
-- Update libxml2 to 2.9.7 [#6886](https://github.com/chef/chef/pull/6886) ([tas50](https://github.com/tas50)) <!-- 13.7.25 -->
-- Fix windows_task idle_time validation [#6856](https://github.com/chef/chef/pull/6856) ([tas50](https://github.com/tas50)) <!-- 13.7.24 -->
-- add Chef::NodeMap#delete_class API (Chef 13 backport) [#6848](https://github.com/chef/chef/pull/6848) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.23 -->
-- RemoteFile: unlink tempfile when using cache control shows unchanged (Chef-13 backport) [#6849](https://github.com/chef/chef/pull/6849) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.22 -->
-- Use the version of LicenseScout that comes with the Omnibus gem. [#6841](https://github.com/chef/chef/pull/6841) ([tduffield](https://github.com/tduffield)) <!-- 13.7.21 -->
-- Backport the powershell spec fix to get Appveyor green again [#6813](https://github.com/chef/chef/pull/6813) ([tas50](https://github.com/tas50)) <!-- 13.7.20 -->
-- Ensure that we create a docker compatible ca-certs symlink [#6799](https://github.com/chef/chef/pull/6799) ([thommay](https://github.com/thommay)) <!-- 13.7.19 -->
-- fix node assignment of ImmutableArrays to VividMashes/AttrArrays (Chef-13 backport) [#6791](https://github.com/chef/chef/pull/6791) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.7.18 -->
-- Fix regression where message isn&#39;t an identity property in log resource [#6780](https://github.com/chef/chef/pull/6780) ([tas50](https://github.com/tas50)) <!-- 13.7.17 -->
+- Link to the knife.rb docs when the knife.rb file is missing [#6892](https://github.com/chef/chef/pull/6892) ([tas50](https://github.com/tas50)) <!-- 13.8.2 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
-## [v13.7.16](https://github.com/chef/chef/tree/v13.7.16) (2018-01-23)
+## [v13.8.0](https://github.com/chef/chef/tree/v13.8.0) (2018-02-27)
+
+#### Merged Pull Requests
+- Fix regression where message isn&#39;t an identity property in log resource [#6780](https://github.com/chef/chef/pull/6780) ([tas50](https://github.com/tas50))
+- fix node assignment of ImmutableArrays to VividMashes/AttrArrays (Chef-13 backport) [#6791](https://github.com/chef/chef/pull/6791) ([lamont-granquist](https://github.com/lamont-granquist))
+- Ensure that we create a docker compatible ca-certs symlink [#6799](https://github.com/chef/chef/pull/6799) ([thommay](https://github.com/thommay))
+- Backport the powershell spec fix to get Appveyor green again [#6813](https://github.com/chef/chef/pull/6813) ([tas50](https://github.com/tas50))
+- Use the version of LicenseScout that comes with the Omnibus gem. [#6841](https://github.com/chef/chef/pull/6841) ([tduffield](https://github.com/tduffield))
+- RemoteFile: unlink tempfile when using cache control shows unchanged (Chef-13 backport) [#6849](https://github.com/chef/chef/pull/6849) ([lamont-granquist](https://github.com/lamont-granquist))
+- add Chef::NodeMap#delete_class API (Chef 13 backport) [#6848](https://github.com/chef/chef/pull/6848) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix windows_task idle_time validation [#6856](https://github.com/chef/chef/pull/6856) ([tas50](https://github.com/tas50))
+- Update libxml2 to 2.9.7 [#6886](https://github.com/chef/chef/pull/6886) ([tas50](https://github.com/tas50))
+- use a stricter comparison so knife ssh only fails if --exit-on-error [#6894](https://github.com/chef/chef/pull/6894) ([tas50](https://github.com/tas50))
+-  Prevent knife search --id-only from outputting IDs in the same format as an empty hash [#6893](https://github.com/chef/chef/pull/6893) ([tas50](https://github.com/tas50))
+- Chef-13 revert lazy attributes [#6898](https://github.com/chef/chef/pull/6898) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_stable_release -->
+
+## [v13.7.16](https://github.com/chef/chef/tree/v13.7.16) (2018-01-23)
 
 ## [v13.7.16](https://github.com/chef/chef/tree/v13.7.16) (2018-01-23)
 
