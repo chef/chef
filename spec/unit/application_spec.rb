@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
 # Author:: Mark Mzyk (mmzyk@chef.io)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -171,7 +171,7 @@ describe Chef::Application do
           @app.config[:config_file] = "/etc/chef/notfound"
         end
         it "should use the passed in command line options and defaults" do
-          expect(Chef::Config).to receive(:merge!)
+          expect(Chef::Config).to receive(:merge!).at_least(:once)
           @app.configure_chef
         end
       end
@@ -416,6 +416,70 @@ describe Chef::Application do
         create_config_file("text that should break the config parsing")
         raises_informative_fatals_on_configure_chef
       end
+    end
+  end
+
+  describe "merged config" do
+    class MyTestConfig < Chef::Config
+      extend Mixlib::Config
+
+      default :test_config_1, "config default"
+      default :test_config_2, "config default"
+    end
+
+    class MyAppClass < Chef::Application
+      # there's an implicit test here that mixlib-cli's separate_default_options is being inherited
+      option :test_config_2, long: "--test-config2 CONFIG", default: "cli default"
+    end
+
+    before(:each) do
+      MyTestConfig.reset
+      @original_argv = ARGV.dup
+      ARGV.clear
+      @app = MyAppClass.new
+      expect(@app).to receive(:chef_config).at_least(:once).and_return(MyTestConfig)
+      expect(Chef::ConfigFetcher).to receive(:new).and_return(fake_config_fetcher)
+      allow(@app).to receive(:log).and_return(instance_double(Mixlib::Log, warn: nil)) # ignorken
+    end
+
+    after(:each) do
+      ARGV.replace(@original_argv)
+    end
+
+    let(:fake_config_fetcher) { instance_double(Chef::ConfigFetcher, expanded_path: "/thisbetternotexist", :"config_missing?" => false, read_config: "" ) }
+
+    it "reading a mixlib-config default works" do
+      @app.parse_options
+      @app.load_config_file
+      expect(MyTestConfig[:test_config_1]).to eql("config default")
+    end
+
+    it "a mixlib-cli default overrides a mixlib-config default" do
+      @app.parse_options
+      @app.load_config_file
+      expect(MyTestConfig[:test_config_2]).to eql("cli default")
+    end
+
+    it "a set mixlib-config value overrides a mixlib-config default" do
+      expect(fake_config_fetcher).to receive(:read_config).and_return(%q{test_config_1 "config setting"})
+      @app.parse_options
+      @app.load_config_file
+      expect(MyTestConfig[:test_config_1]).to eql("config setting")
+    end
+
+    it "a set mixlib-config value overrides a mixlib-cli default" do
+      expect(fake_config_fetcher).to receive(:read_config).and_return(%q{test_config_2 "config setting"})
+      @app.parse_options
+      @app.load_config_file
+      expect(MyTestConfig[:test_config_2]).to eql("config setting")
+    end
+
+    it "a set mixlib-cli value overrides everything else" do
+      expect(fake_config_fetcher).to receive(:read_config).and_return(%q{test_config_2 "config setting"})
+      ARGV.replace("--test-config2 cli-setting".split)
+      @app.parse_options
+      @app.load_config_file
+      expect(MyTestConfig[:test_config_2]).to eql("cli-setting")
     end
   end
 end
