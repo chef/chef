@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.95 -->
-## [v14.0.95](https://github.com/chef/chef/tree/v14.0.95) (2018-02-28)
+<!-- latest_release 14.0.96 -->
+## [v14.0.96](https://github.com/chef/chef/tree/v14.0.96) (2018-02-28)
 
 #### Merged Pull Requests
-- fixing red omnibus builds [#6921](https://github.com/chef/chef/pull/6921) ([lamont-granquist](https://github.com/lamont-granquist))
+- Revert appbundler to 0.10.0 [#6922](https://github.com/chef/chef/pull/6922) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Revert appbundler to 0.10.0 [#6922](https://github.com/chef/chef/pull/6922) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.96 -->
 - fixing red omnibus builds [#6921](https://github.com/chef/chef/pull/6921) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.95 -->
 - fix for master of chefstyle [#6919](https://github.com/chef/chef/pull/6919) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.93 -->
 - Stop mixlib-cli default clobbering mixlib-config settings [#6916](https://github.com/chef/chef/pull/6916) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.92 -->
