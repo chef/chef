@@ -56,7 +56,7 @@ group(:development, :test) do
 
   # for testing new chefstyle rules
   # gem 'chefstyle', github: 'chef/chefstyle'
-  gem "chefstyle"
+  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 end
 
 group(:travis) do

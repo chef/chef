@@ -1,9 +1,17 @@
 GIT
-  remote: https://github.com/chef/ohai.git
-  revision: 8f699a2404e135165a93f8bc171ea74c51fe9524
+  remote: https://github.com/chef/chefstyle.git
+  revision: 6177d8b414add867bc89c8bab374f2e39cc717fe
   branch: master
   specs:
-    ohai (14.0.17)
+    chefstyle (0.7.0)
+      rubocop (= 0.52.1)
+
+GIT
+  remote: https://github.com/chef/ohai.git
+  revision: 8cdfbfe462ef0850333095f31a6ef1a23dda6b73
+  branch: master
+  specs:
+    ohai (14.0.18)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -132,8 +140,6 @@ GEM
     cheffish (13.1.0)
       chef-zero (~> 13.0)
       net-ssh
-    chefstyle (0.6.0)
-      rubocop (= 0.49.1)
     coderay (1.1.2)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
@@ -258,8 +264,7 @@ GEM
       json
       websocket (~> 1.0)
     rack (2.0.4)
-    rainbow (2.2.2)
-      rake
+    rainbow (3.0.0)
     rake (12.3.0)
     rb-readline (0.5.5)
     rspec (3.7.0)
@@ -281,11 +286,11 @@ GEM
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.49.1)
+    rubocop (0.52.1)
       parallel (~> 1.10)
-      parser (>= 2.3.3.1, < 3.0)
+      parser (>= 2.4.0.2, < 3.0)
       powerpack (~> 0.1)
-      rainbow (>= 1.99.1, < 3.0)
+      rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-prof (0.17.0)
@@ -395,7 +400,7 @@ DEPENDENCIES
   chef-config!
   chef-vault
   cheffish (~> 13)
-  chefstyle
+  chefstyle!
   inspec (~> 1)
   netrc
   octokit

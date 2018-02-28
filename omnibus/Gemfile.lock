@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: bc76c699bc8b85959bb546933efa6b5cf0ff1823
-  branch: lcg/improve-appbundling
+  revision: 9a3a97bb0c6b437524fdea15b4cd15a65ff6ac29
+  branch: master
   specs:
     omnibus (5.6.10)
       aws-sdk (~> 2)
@@ -18,8 +18,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 3f6f9836cb041ad6187b7b52a25cf759fc830bc6
-  branch: lcg/appbundle-0.11-without
+  revision: f0c34cd3a21c4da6207721914213ac775b44570f
+  branch: master
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -150,8 +150,8 @@ GEM
     nori (2.6.0)
     octokit (4.8.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (13.7.1)
-      chef-config (>= 12.5.0.alpha.1, < 14)
+    ohai (14.0.0)
+      chef-config (>= 12.5.0.alpha.1, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
