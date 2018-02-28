@@ -3,6 +3,7 @@
 # try to keep it machine-parsable.
 override :rubygems, version: "2.7.6"
 override :bundler, version: "1.16.1"
+override "appbundler", version: "0.10.0"
 override "nokogiri", version: "1.8.1"
 override "libffi", version: "3.2.1"
 override "libiconv", version: "1.15"
