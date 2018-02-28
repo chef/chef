@@ -81,7 +81,7 @@ class Chef
 
       def constraint_list(environments)
         constraints = {}
-        environments.each_key do |env|
+        environments.each do |env, url| # rubocop:disable Performance/HashEachMethods
           # Because you cannot modify the default environment I filter it out here.
           unless env == "_default"
             envdata = Chef::Environment.load(env)
