@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 8cdfbfe462ef0850333095f31a6ef1a23dda6b73
+  revision: a7a9e6f59f4fe9a78af095e28717679422a5a631
   branch: master
   specs:
-    ohai (14.0.18)
+    ohai (14.0.19)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -121,9 +121,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.4.0)
-    appbundler (0.11.0)
+    appbundler (0.10.0)
       mixlib-cli (~> 1.4)
-      mixlib-shellout (~> 2.0)
     ast (2.4.0)
     backports (3.11.1)
     binding_of_caller (0.8.0)
@@ -394,7 +393,7 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  appbundler
+  appbundler (= 0.10.0)
   bundler-audit!
   chef!
   chef-config!
