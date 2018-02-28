@@ -439,19 +439,6 @@ munin-node|1.6.1.20130823
       expect(new_resource).to be_updated_by_last_action
     end
   end
-
-  describe "#action_uninstall" do
-    it "should call :remove with a deprecation warning" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect(Chef::Log).to receive(:deprecation).with(/please use :remove/)
-      allow_remote_list(["ConEmu"])
-      new_resource.package_name("ConEmu")
-      provider.load_current_resource
-      expect(provider).to receive(:remove_package)
-      provider.run_action(:uninstall)
-      expect(new_resource).to be_updated_by_last_action
-    end
-  end
 end
 
 describe "behavior when Chocolatey is not installed" do
