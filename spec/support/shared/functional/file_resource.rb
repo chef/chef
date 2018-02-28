@@ -399,7 +399,7 @@ shared_examples_for "a configured file resource" do
     content
   end
 
-  context "when the target file is a symlink", :not_supported_on_win2k3 do
+  context "when the target file is a symlink" do
     let(:symlink_target) do
       File.join(CHEF_SPEC_DATA, "file-test-target")
     end
