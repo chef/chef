@@ -13,6 +13,9 @@ group :development do
   # Use Berkshelf for resolving cookbook dependencies
   gem "berkshelf", "~> 4.0"
 
+  # temp pin for chef 14 development
+  gem "ohai", "~> 13.0"
+
   # Use Test Kitchen with Vagrant for converging the build environment
   gem "test-kitchen",    "~> 1.13"
   gem "kitchen-vagrant", "~> 0.19.0"
