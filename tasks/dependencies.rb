@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2016-2017, Chef Software Inc.
+# Copyright:: Copyright (c) 2016-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require "bundler"
 
 desc "Tasks to update and check dependencies"
 namespace :dependencies do
