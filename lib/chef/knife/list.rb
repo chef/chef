@@ -69,7 +69,7 @@ class Chef
 
         # Flatten out directory results if necessary
         if config[:flat]
-          dir_results.each do |result, children|
+          dir_results.each_value do |children|
             results += children
           end
           dir_results = []
