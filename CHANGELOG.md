@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.93 -->
-## [v14.0.93](https://github.com/chef/chef/tree/v14.0.93) (2018-02-28)
+<!-- latest_release 14.0.95 -->
+## [v14.0.95](https://github.com/chef/chef/tree/v14.0.95) (2018-02-28)
 
 #### Merged Pull Requests
-- fix for master of chefstyle [#6919](https://github.com/chef/chef/pull/6919) ([lamont-granquist](https://github.com/lamont-granquist))
+- fixing red omnibus builds [#6921](https://github.com/chef/chef/pull/6921) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- fixing red omnibus builds [#6921](https://github.com/chef/chef/pull/6921) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.95 -->
 - fix for master of chefstyle [#6919](https://github.com/chef/chef/pull/6919) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.93 -->
 - Stop mixlib-cli default clobbering mixlib-config settings [#6916](https://github.com/chef/chef/pull/6916) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.92 -->
 - Raise fatal error If FQDN duplicated [#6781](https://github.com/chef/chef/pull/6781) ([linyows](https://github.com/linyows)) <!-- 14.0.91 -->
