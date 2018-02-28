@@ -16,7 +16,7 @@ gem "cheffish", "~> 13" # required for rspec tests
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec"
+  gem "inspec", "~> 1"
   gem "chef-vault"
 end
 
