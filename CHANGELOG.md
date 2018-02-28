@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.91 -->
-## [v14.0.91](https://github.com/chef/chef/tree/v14.0.91) (2018-02-27)
+<!-- latest_release 14.0.92 -->
+## [v14.0.92](https://github.com/chef/chef/tree/v14.0.92) (2018-02-28)
 
 #### Merged Pull Requests
-- Raise fatal error If FQDN duplicated [#6781](https://github.com/chef/chef/pull/6781) ([linyows](https://github.com/linyows))
+- Stop mixlib-cli default clobbering mixlib-config settings [#6916](https://github.com/chef/chef/pull/6916) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Stop mixlib-cli default clobbering mixlib-config settings [#6916](https://github.com/chef/chef/pull/6916) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.92 -->
 - Raise fatal error If FQDN duplicated [#6781](https://github.com/chef/chef/pull/6781) ([linyows](https://github.com/linyows)) <!-- 14.0.91 -->
 - Add support for knife bootstrap-preinstall-command [#6861](https://github.com/chef/chef/pull/6861) ([smcavallo](https://github.com/smcavallo)) <!-- 14.0.90 -->
 - [knife] Don&#39;t crash when a deprecated cookbook has no replacement [#6853](https://github.com/chef/chef/pull/6853) ([rlyders](https://github.com/rlyders)) <!-- 14.0.89 -->
