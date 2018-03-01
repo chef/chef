@@ -134,7 +134,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -151,7 +151,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -168,7 +168,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -185,7 +185,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -202,7 +202,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -219,7 +219,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -236,7 +236,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
       - cd kitchen-tests
@@ -253,7 +253,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-     - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+     - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     before_script:
      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
      - cd kitchen-tests
@@ -270,7 +270,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-     - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+     - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     before_script:
      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
      - cd kitchen-tests
@@ -287,7 +287,7 @@ matrix:
 #    gemfile: kitchen-tests/Gemfile
 #    before_install:
 #      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-#      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+#      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
 #    before_script:
 #      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
 #      - cd kitchen-tests
@@ -304,7 +304,7 @@ matrix:
 #    gemfile: kitchen-tests/Gemfile
 #    before_install:
 #      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-#      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+#      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
 #    before_script:
 #      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
 #      - cd kitchen-tests
@@ -321,7 +321,7 @@ matrix:
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
       - rvm @global do gem uninstall bundler -a -x || true
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
       - sudo apt-get update
       - sudo apt-get -y install squid3 git curl
     env:
