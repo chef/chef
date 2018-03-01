@@ -113,8 +113,9 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.4.0)
-    appbundler (0.10.0)
+    appbundler (0.11.1)
       mixlib-cli (~> 1.4)
+      mixlib-shellout (~> 2.0)
     ast (2.4.0)
     backports (3.11.1)
     binding_of_caller (0.8.0)
@@ -388,7 +389,7 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  appbundler (= 0.10.0)
+  appbundler
   bundler-audit
   chef!
   chef-config!

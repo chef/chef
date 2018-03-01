@@ -14,7 +14,7 @@ gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.ex
 gem "cheffish", "~> 13" # required for rspec tests
 
 group(:omnibus_package) do
-  gem "appbundler", "= 0.10.0"
+  gem "appbundler"
   gem "rb-readline"
   gem "inspec", "~> 1"
   gem "chef-vault"
