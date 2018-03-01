@@ -61,7 +61,7 @@ end
 
 group(:travis) do
   # See `bundler-audit` in .travis.yml
-  gem "bundler-audit", git: "https://github.com/rubysec/bundler-audit.git"
+  gem "bundler-audit"
   gem "travis"
 end
 

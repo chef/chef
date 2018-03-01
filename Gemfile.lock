@@ -24,14 +24,6 @@ GIT
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
 
-GIT
-  remote: https://github.com/rubysec/bundler-audit.git
-  revision: b84d88f76c4d656421c1d810c9760b0fdea5d13a
-  specs:
-    bundler-audit (0.6.0)
-      bundler (~> 1.2)
-      thor (~> 0.18)
-
 PATH
   remote: .
   specs:
@@ -128,6 +120,9 @@ GEM
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
+    bundler-audit (0.6.0)
+      bundler (~> 1.2)
+      thor (~> 0.18)
     byebug (10.0.0)
     chef-vault (3.3.0)
     chef-zero (13.1.0)
@@ -394,7 +389,7 @@ PLATFORMS
 
 DEPENDENCIES
   appbundler (= 0.10.0)
-  bundler-audit!
+  bundler-audit
   chef!
   chef-config!
   chef-vault
