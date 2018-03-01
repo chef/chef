@@ -10,7 +10,7 @@ before_install:
     # uninstall anything they may have installed here.  if they haven't installed anything then we have to ignore the failure
     # to uninstall the default bundler that ships embedded in ruby itself.
   - rvm @global do gem uninstall bundler -a -x || true
-  - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+  - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
   - bundle --version
   - rm -f .bundle/config
 
