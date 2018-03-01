@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.98 -->
-## [v14.0.98](https://github.com/chef/chef/tree/v14.0.98) (2018-03-01)
+<!-- latest_release 14.0.99 -->
+## [v14.0.99](https://github.com/chef/chef/tree/v14.0.99) (2018-03-01)
 
 #### Merged Pull Requests
-- Remove git ref on bundler-audit [#6925](https://github.com/chef/chef/pull/6925) ([lamont-granquist](https://github.com/lamont-granquist))
+- this really needs to be turned into a yml file... [#6926](https://github.com/chef/chef/pull/6926) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- this really needs to be turned into a yml file... [#6926](https://github.com/chef/chef/pull/6926) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.99 -->
 - Remove git ref on bundler-audit [#6925](https://github.com/chef/chef/pull/6925) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.98 -->
 - need to pin appbundler in omnibus [#6924](https://github.com/chef/chef/pull/6924) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.97 -->
 - Revert appbundler to 0.10.0 [#6922](https://github.com/chef/chef/pull/6922) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.96 -->
