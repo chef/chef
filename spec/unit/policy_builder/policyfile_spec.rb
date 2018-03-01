@@ -70,8 +70,44 @@ describe Chef::PolicyBuilder::Policyfile do
     }
   end
 
-  let(:policyfile_default_attributes) { { "policyfile_default_attr" => "policyfile_default_value" } }
-  let(:policyfile_override_attributes) { { "policyfile_override_attr" => "policyfile_override_value" } }
+  let(:policyfile_default_attributes) do
+    {
+        "policyfile_default_attr" => "policyfile_default_value",
+        "top_level_attr" => "hat",
+        "baseline_attr" => {
+          "one" => 1,
+          "two" => 2,
+          "deep" => {
+              "three" => 3,
+              "four" => [4],
+              "five" => [5],
+          },
+        },
+        "policy_group_value" => {
+          "baseline_attr" => {
+            "one" => 111,
+          },
+        },
+      }
+  end
+
+  let(:policyfile_override_attributes) do
+    {
+       "policyfile_override_attr" => "policyfile_override_value",
+       "baseline_attr" => {
+         "deep" => {
+           "three" => 333 },
+       },
+       "policy_group_value" => {
+         "top_level_attr" => "cat",
+         "baseline_attr" => {
+           "deep" => {
+             "four" => [444],
+           },
+         },
+       },
+    }
+  end
 
   let(:policyfile_run_list) { ["recipe[example1::default]", "recipe[example2::server]"] }
 
@@ -635,6 +671,41 @@ describe Chef::PolicyBuilder::Policyfile do
 
           end
 
+        end
+
+        describe "hoisting attribute values" do
+          context "with no policy group set" do
+            it "does not hoist policy_group specific attributes" do
+              expect( node["top_level_attr"] ).to eql("hat")
+              expect( node["baseline_attr"]["one"] ).to eql(1)
+              expect( node["baseline_attr"]["two"] ).to eql(2)
+              expect( node["baseline_attr"]["deep"]["three"] ).to eql(333)
+              expect( node["baseline_attr"]["deep"]["four"] ).to eql([4])
+              expect( node["baseline_attr"]["deep"]["five"] ).to eql([5])
+            end
+          end
+
+          context "with a policy group set" do
+            before do
+              Chef::Config[:policy_group] = "policy_group_value"
+              policy_builder.apply_policyfile_attributes
+            end
+
+            it "hoists default attributes" do
+              expect( node["top_level_attr"] ).to eql("cat")
+              expect( node["baseline_attr"]["one"]).to eql(111)
+              expect( node["baseline_attr"]["two"] ).to eql(2)
+              expect( node["baseline_attr"]["deep"]["five"] ).to eql([5])
+            end
+
+            it "hoists override attributes" do
+              expect( node["top_level_attr"] ).to eql("cat")
+              expect( node["baseline_attr"]["two"] ).to eql(2)
+              expect( node["baseline_attr"]["deep"]["three"] ).to eql(333)
+              expect( node["baseline_attr"]["deep"]["four"] ).to eql([444])
+              expect( node["baseline_attr"]["deep"]["five"] ).to eql([5])
+            end
+          end
         end
       end
 
