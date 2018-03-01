@@ -1,27 +1,24 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.22.1 -->
-## [v12.22.1](https://github.com/chef/chef/tree/v12.22.1) (2018-03-01)
-
-#### Merged Pull Requests
-- One last Chef 12 dependency bump [#6918](https://github.com/chef/chef/pull/6918) ([tas50](https://github.com/tas50))
-- Bump libxml2 to 2.9.7 and prep 12.22 release [#6881](https://github.com/chef/chef/pull/6881) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=12.21.31 -->
-### Changes since 12.21.31 release
-
-#### Merged Pull Requests
-- One last Chef 12 dependency bump [#6918](https://github.com/chef/chef/pull/6918) ([tas50](https://github.com/tas50)) <!-- 12.22.1 -->
-- Bump libxml2 to 2.9.7 and prep 12.22 release [#6881](https://github.com/chef/chef/pull/6881) ([tas50](https://github.com/tas50)) <!-- 12.22.0 -->
-- Use the version of LicenseScout that comes with the Omnibus gem. [#6840](https://github.com/chef/chef/pull/6840) ([tduffield](https://github.com/tduffield)) <!-- 12.21.37 -->
-- Fix tests on AIX [#6819](https://github.com/chef/chef/pull/6819) ([thommay](https://github.com/thommay)) <!-- 12.21.36 -->
-- backport #6746 [#6817](https://github.com/chef/chef/pull/6817) ([thommay](https://github.com/thommay)) <!-- 12.21.35 -->
-- Format omnibus readme markdown [#6814](https://github.com/chef/chef/pull/6814) ([tas50](https://github.com/tas50)) <!-- 12.21.34 -->
-- Fix Dockerfile &amp; Travis/Appveyor failures [#6811](https://github.com/chef/chef/pull/6811) ([tas50](https://github.com/tas50)) <!-- 12.21.33 -->
-- Update Ohai, omnibus, and Ruby versions [#6783](https://github.com/chef/chef/pull/6783) ([tas50](https://github.com/tas50)) <!-- 12.21.32 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v12.22.1](https://github.com/chef/chef/tree/v12.22.1) (2018-03-01)
+
+#### Merged Pull Requests
+- Update Ohai, omnibus, and Ruby versions [#6783](https://github.com/chef/chef/pull/6783) ([tas50](https://github.com/tas50))
+- Fix Dockerfile &amp; Travis/Appveyor failures [#6811](https://github.com/chef/chef/pull/6811) ([tas50](https://github.com/tas50))
+- Format omnibus readme markdown [#6814](https://github.com/chef/chef/pull/6814) ([tas50](https://github.com/tas50))
+- backport #6746 [#6817](https://github.com/chef/chef/pull/6817) ([thommay](https://github.com/thommay))
+- Fix tests on AIX [#6819](https://github.com/chef/chef/pull/6819) ([thommay](https://github.com/thommay))
+- Use the version of LicenseScout that comes with the Omnibus gem. [#6840](https://github.com/chef/chef/pull/6840) ([tduffield](https://github.com/tduffield))
+- Bump libxml2 to 2.9.7 and prep 12.22 release [#6881](https://github.com/chef/chef/pull/6881) ([tas50](https://github.com/tas50))
+- One last Chef 12 dependency bump [#6918](https://github.com/chef/chef/pull/6918) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v12.21.31](https://github.com/chef/chef/tree/v12.21.31) (2017-12-19)
 
 #### Merged Pull Requests
@@ -30,7 +27,6 @@
 - Backport RHEL and ifconfig test fixes [#6659](https://github.com/chef/chef/pull/6659) ([scotthain](https://github.com/scotthain))
 - Update openssl to 1.0.2.n [#6666](https://github.com/chef/chef/pull/6666) ([tas50](https://github.com/tas50))
 - Backport acceptance changes  [#6681](https://github.com/chef/chef/pull/6681) ([scotthain](https://github.com/scotthain))
-<!-- latest_stable_release -->
 
 ## [v12.21.26](https://github.com/chef/chef/tree/v12.21.26) (2017-10-30)
 
