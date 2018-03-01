@@ -124,14 +124,6 @@ EOS
           choco_command("uninstall -y", cmd_args(include_source: false), *names)
         end
 
-        # Support :uninstall as an action in order for users to easily convert
-        # from the `chocolatey` provider in the cookbook.  It is, however,
-        # already deprecated.
-        def action_uninstall
-          Chef::Log.deprecation "The use of action :uninstall on the chocolatey_package provider is deprecated, please use :remove"
-          action_remove
-        end
-
         # Choco does not have dpkg's distinction between purge and remove
         alias purge_package remove_package
 

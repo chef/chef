@@ -28,7 +28,7 @@ class Chef
                   " on the Microsoft Windows platform."
       introduced "12.7"
 
-      allowed_actions :install, :upgrade, :remove, :uninstall, :purge, :reconfig
+      allowed_actions :install, :upgrade, :remove, :purge, :reconfig
 
       # windows can't take Array options yet
       property :options, String
