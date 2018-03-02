@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.102 -->
-## [v14.0.102](https://github.com/chef/chef/tree/v14.0.102) (2018-03-02)
+<!-- latest_release 14.0.103 -->
+## [v14.0.103](https://github.com/chef/chef/tree/v14.0.103) (2018-03-02)
 
 #### Merged Pull Requests
-- bump appbundler again, again [#6931](https://github.com/chef/chef/pull/6931) ([lamont-granquist](https://github.com/lamont-granquist))
+- Allow specifying a comment for routes [#6929](https://github.com/chef/chef/pull/6929) ([tomdoherty](https://github.com/tomdoherty))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Allow specifying a comment for routes [#6929](https://github.com/chef/chef/pull/6929) ([tomdoherty](https://github.com/tomdoherty)) <!-- 14.0.103 -->
 - bump appbundler again, again [#6931](https://github.com/chef/chef/pull/6931) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.102 -->
 - use appbundler 0.11.1 for omnibus builds [#6930](https://github.com/chef/chef/pull/6930) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.101 -->
 - Remove the :uninstall action from chocolatey_package - CHEF-21 [#6920](https://github.com/chef/chef/pull/6920) ([tas50](https://github.com/tas50)) <!-- 14.0.100 -->
