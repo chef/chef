@@ -24,7 +24,7 @@ install:
   - echo %PATH%
   - ps: $env:OMNIBUS_RUBYGEMS=$(findstr rubygems omnibus_overrides.rb | %{ $_.split(" ")[3] })
   - echo %OMNIBUS_RUBYGEMS%
-  - ps: $env:OMNIBUS_BUNDLER=$(findstr bundler omnibus_overrides.rb | %{ $_.split(" ")[3] })
+  - ps: $env:OMNIBUS_BUNDLER=$(findstr :bundler omnibus_overrides.rb | %{ $_.split(" ")[3] })
   - echo %OMNIBUS_BUNDLER%
   - ruby --version
   - gem --version

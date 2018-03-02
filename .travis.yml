@@ -11,7 +11,7 @@ before_install:
     # uninstall anything they may have installed here.  if they haven't installed anything then we have to ignore the failure
     # to uninstall the default bundler that ships embedded in ruby itself.
   - rvm @global do gem uninstall bundler -a -x || true
-  - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+  - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
   - bundle --version
   - rm -f .bundle/config
 
@@ -129,7 +129,7 @@ matrix:
     # (Cucumber doesn't start.)
     before_install:
       - rvm @global do gem uninstall bundler -a -x
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
       - bundle config --local without server:docgen:maintenance:omnibus_package:development:ruby_prof:pry
     script: tasks/bin/run_external_test $TEST_GEM rake
     rvm: 2.3.6
@@ -149,7 +149,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
@@ -167,7 +167,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
@@ -185,7 +185,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
@@ -203,7 +203,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
@@ -221,7 +221,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
@@ -239,7 +239,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
@@ -257,7 +257,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
@@ -275,7 +275,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
@@ -293,7 +293,7 @@ matrix:
     gemfile: kitchen-tests/Gemfile
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
     before_script:
       - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
@@ -311,7 +311,7 @@ matrix:
     dist: trusty
     before_install:
       - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
       - sudo apt-get update
       - sudo apt-get -y install squid3 git curl
     bundler_args: --without changelog development docgen guard integration maintenance omnibus_package tools aix bsd mac_os_x solaris windows --frozen
