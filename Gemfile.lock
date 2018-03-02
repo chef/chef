@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: a7a9e6f59f4fe9a78af095e28717679422a5a631
+  revision: e2fe5ce19f4c253f3e00028486df57610f69c7f0
   branch: master
   specs:
-    ohai (14.0.19)
+    ohai (14.0.20)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -113,7 +113,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.4.0)
-    appbundler (0.11.1)
+    appbundler (0.11.2)
       mixlib-cli (~> 1.4)
       mixlib-shellout (~> 2.0)
     ast (2.4.0)
