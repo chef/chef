@@ -22,15 +22,39 @@ class Chef
       resource_name :windows_feature_powershell
       provides :windows_feature_powershell
 
-      property :feature_name, [Array, String], coerce: proc { |x| Array(x) }, name_property: true
-      property :source, String
-      property :all, [true, false], default: false
-      property :timeout, Integer, default: 600
-      property :management_tools, [true, false], default: false
+      description "Use the windows_feature_powershell resource to add, remove or "\
+                  "delete Windows features and roles using PowerShell. This resource"\
+                  "offers significant speed benefits over the windows_feature_dism resource,"\
+                  "but requires installing the Remote Server Administration Tools on"\
+                  "non-server releases of Windows"
+      introduced "14.0"
+
+      property :feature_name, [Array, String],
+               description: "The name of the feature/role(s) to install if it differs from the resource name.",
+               coerce: proc { |x| Array(x) },
+               name_property: true
+
+      property :source, String,
+               description: "Use a local repository for the feature install."
+
+      property :all, [true, false],
+               description: "Install all sub features. This is equivalent to using the"\
+                            " -InstallAllSubFeatures switch with Add-WindowsFeature.",
+               default: false
+
+      property :timeout, Integer,
+               description: "Specifies a timeout (in seconds) for feature install.",
+               default: 600
+
+      property :management_tools, [true, false],
+               description: "",
+               default: false
 
       include Chef::Mixin::PowershellOut
 
       action :install do
+        description "Install a Windows role/feature using PowerShell"
+
         Chef::Log.warn("Requested feature #{new_resource.feature_name.join(',')} is not available on this system.") unless available?
         unless !available? || installed?
           converge_by("install Windows feature#{'s' if new_resource.feature_name.count > 1} #{new_resource.feature_name.join(',')}") do
@@ -48,6 +72,8 @@ class Chef
       end
 
       action :remove do
+        description "Remove a Windows role/feature using PowerShell"
+
         if installed?
           converge_by("remove Windows feature#{'s' if new_resource.feature_name.count > 1} #{new_resource.feature_name.join(',')}") do
             cmd = powershell_out!("#{remove_feature_cmdlet} #{new_resource.feature_name.join(',')}", timeout: new_resource.timeout)
@@ -57,6 +83,8 @@ class Chef
       end
 
       action :delete do
+        description "Remove a Windows role/feature from the image using Powershell"
+
         if available?
           converge_by("delete Windows feature#{'s' if new_resource.feature_name.count > 1} #{new_resource.feature_name.join(',')} from the image") do
             cmd = powershell_out!("Uninstall-WindowsFeature #{new_resource.feature_name.join(',')} -Remove", timeout: new_resource.timeout)

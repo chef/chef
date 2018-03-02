@@ -22,12 +22,29 @@ class Chef
       resource_name :windows_feature_dism
       provides :windows_feature_dism
 
-      property :feature_name, [Array, String], coerce: proc { |x| Array(x) }, name_property: true
-      property :source, String
-      property :all, [true, false], default: false
-      property :timeout, Integer, default: 600
+      description "Using the windows_feature_dism resource to add, remove or "\
+                  "delete Windows features and roles using DISM"
+      introduced "14.0"
+
+      property :feature_name, [Array, String],
+               description: "The name of the feature/role(s) to install if it differs from the resource name.",
+               coerce: proc { |x| Array(x) },
+               name_property: true
+
+      property :source, String,
+               description: "Use a local repository for the feature install."
+
+      property :all, [true, false],
+               description: "Install all sub features. This is the equivalent of specifying the /All switch to dism.exe",
+               default: false
+
+      property :timeout, Integer,
+               description: "Specifies a timeout (in seconds) for feature install.",
+               default: 600
 
       action :install do
+        description "Install a Windows role/feature using DISM"
+
         reload_cached_dism_data unless node["dism_features_cache"]
         fail_if_unavailable # fail if the features don't exist
         fail_if_removed # fail if the features are in removed state
@@ -46,6 +63,8 @@ class Chef
       end
 
       action :remove do
+        description "Remove a Windows role/feature using DISM"
+
         reload_cached_dism_data unless node["dism_features_cache"]
 
         Chef::Log.debug("Windows features needing removal: #{features_to_remove.empty? ? 'none' : features_to_remove.join(',')}")
@@ -61,6 +80,8 @@ class Chef
       end
 
       action :delete do
+        description "Remove a Windows role/feature from the image using DISM"
+
         fail_if_delete_unsupported
 
         reload_cached_dism_data unless node["dism_features_cache"]

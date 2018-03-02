@@ -21,22 +21,50 @@ class Chef
       resource_name :windows_feature
       provides :windows_feature
 
-      property :feature_name, [Array, String], name_property: true
-      property :source, String
-      property :all, [true, false], default: false
-      property :management_tools, [true, false], default: false
-      property :install_method, Symbol, equal_to: [:windows_feature_dism, :windows_feature_powershell, :windows_feature_servermanagercmd]
-      property :timeout, Integer, default: 600
+      description "Using the windows_feature resource to add, remove or delete Windows features and roles"
+      introduced "14.0"
+
+      property :feature_name, [Array, String],
+               description: "The name of the feature/role(s) to install. The same feature may have different"\
+                            " names depending on the underlying resource being used (ie DHCPServer vs DHCP;"\
+                            " DNS-Server-Full-Role vs DNS).",
+               name_property: true
+
+      property :source, String,
+               description: "Use a local repository for the feature install."
+
+      property :all, [true, false],
+               description: "Install all sub features.",
+               default: false
+
+      property :management_tools, [true, false],
+               description: "Install all applicable management tools of the roles, role services, or features (PowerShell only).",
+               default: false
+
+      property :install_method, Symbol,
+               description: "If DISM or PowerShell should be used for the installation. Note feature names differ"\
+                            "between the two installation methods.",
+               equal_to: [:windows_feature_dism, :windows_feature_powershell, :windows_feature_servermanagercmd]
+
+      property :timeout, Integer,
+               description: "Specifies a timeout (in seconds) for feature install.",
+               default: 600
 
       action :install do
+        description "Install a Windows role/feature"
+
         run_default_subresource :install
       end
 
       action :remove do
+        description "Remove a Windows role/feature"
+
         run_default_subresource :remove
       end
 
       action :delete do
+        description "Remove a Windows role/feature from the image"
+
         run_default_subresource :delete
       end
 
