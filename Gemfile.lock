@@ -1,12 +1,4 @@
 GIT
-  remote: https://github.com/chef/chefstyle.git
-  revision: 4eb575a63ce5679d9166211d684c9e3fff168d2a
-  branch: master
-  specs:
-    chefstyle (0.6.0)
-      rubocop (= 0.49.1)
-
-GIT
   remote: https://github.com/rubysec/bundler-audit.git
   revision: b84d88f76c4d656421c1d810c9760b0fdea5d13a
   specs:
@@ -103,14 +95,15 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.4.0)
-    appbundler (0.10.0)
+    appbundler (0.11.2)
       mixlib-cli (~> 1.4)
-    ast (2.3.0)
-    backports (3.11.0)
-    binding_of_caller (0.7.3)
+      mixlib-shellout (~> 2.0)
+    ast (2.4.0)
+    backports (3.11.1)
+    binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
-    byebug (9.1.0)
+    byebug (10.0.0)
     chef-vault (3.3.0)
     chef-zero (13.1.0)
       ffi-yajl (~> 2.2)
@@ -121,20 +114,22 @@ GEM
     cheffish (13.1.0)
       chef-zero (~> 13.0)
       net-ssh
+    chefstyle (0.6.0)
+      rubocop (= 0.49.1)
     coderay (1.1.2)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     debug_inspector (0.0.3)
     diff-lcs (1.3)
     docile (1.1.5)
-    docker-api (1.34.0)
+    docker-api (1.34.1)
       excon (>= 0.47.0)
       multi_json
     erubis (2.7.0)
     ethon (0.11.0)
       ffi (>= 1.3.0)
     excon (0.60.0)
-    faraday (0.13.1)
+    faraday (0.14.0)
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.12.2)
       faraday (>= 0.7.4, < 1.0)
@@ -163,7 +158,7 @@ GEM
     htmlentities (4.3.4)
     httpclient (2.8.3)
     iniparse (1.4.4)
-    inspec (1.49.2)
+    inspec (1.51.21)
       addressable (~> 2.4)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
@@ -222,7 +217,7 @@ GEM
     nori (2.6.0)
     octokit (4.8.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (13.7.1)
+    ohai (13.8.0)
       chef-config (>= 12.5.0.alpha.1, < 14)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -235,17 +230,17 @@ GEM
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
     parallel (1.12.1)
-    parser (2.4.0.2)
-      ast (~> 2.3)
-    parslet (1.8.1)
+    parser (2.5.0.2)
+      ast (~> 2.4.0)
+    parslet (1.8.2)
     plist (3.4.0)
     powerpack (0.1.1)
     proxifier (1.0.3)
     pry (0.11.3)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
-    pry-byebug (3.5.1)
-      byebug (~> 9.1)
+    pry-byebug (3.6.0)
+      byebug (~> 10.0)
       pry (~> 0.10)
     pry-remote (0.1.8)
       pry (~> 0.9)
@@ -340,7 +335,7 @@ GEM
       ethon (>= 0.8.0)
     unicode-display_width (1.3.0)
     uuidtools (2.1.5)
-    webmock (3.2.1)
+    webmock (3.3.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
@@ -374,7 +369,7 @@ GEM
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
       rubyntlm (~> 0.6.0, >= 0.6.1)
-    winrm-fs (1.1.1)
+    winrm-fs (1.2.0)
       erubis (~> 2.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 1.1)
@@ -394,8 +389,8 @@ DEPENDENCIES
   chef-config!
   chef-vault
   cheffish (~> 13)
-  chefstyle!
-  inspec
+  chefstyle (= 0.6.0)
+  inspec (~> 1)
   netrc
   octokit
   ohai (~> 13)
