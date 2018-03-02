@@ -170,7 +170,7 @@ describe Chef::Application::Client, "reconfigure" do
         it_behaves_like "sets the configuration", "--once", client_fork: false
       end
 
-      context "with daemonize" do
+      context "with daemonize", :unix_only do
         it_behaves_like "sets the configuration", "--daemonize", client_fork: true
       end
     end
