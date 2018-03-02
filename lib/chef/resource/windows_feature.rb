@@ -29,20 +29,20 @@ class Chef
       property :timeout, Integer, default: 600
 
       action :install do
-        run_default_provider :install
+        run_default_subresource :install
       end
 
       action :remove do
-        run_default_provider :remove
+        run_default_subresource :remove
       end
 
       action :delete do
-        run_default_provider :delete
+        run_default_subresource :delete
       end
 
       action_class do
-        # @return [Symbol] :windows_feature_dism or the provider specified in install_method property
-        def locate_default_provider
+        # @return [Symbol] :windows_feature_dism or the subresource specified in install_method property
+        def locate_default_subresource
           if new_resource.install_method
             new_resource.install_method
           else
@@ -50,10 +50,10 @@ class Chef
           end
         end
 
-        # call the appropriate windows_feature resource based on the specified provider
+        # call the appropriate windows_feature resource based on the specified subresource
         # @return [void]
-        def run_default_provider(desired_action)
-          case locate_default_provider
+        def run_default_subresource(desired_action)
+          case locate_default_subresource
           when :windows_feature_dism
             windows_feature_dism new_resource.name do
               action desired_action
