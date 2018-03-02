@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.8.2 -->
-## [v13.8.2](https://github.com/chef/chef/tree/v13.8.2) (2018-02-26)
+<!-- latest_release 13.8.3 -->
+## [v13.8.3](https://github.com/chef/chef/tree/v13.8.3) (2018-03-02)
 
 #### Merged Pull Requests
-- Link to the knife.rb docs when the knife.rb file is missing [#6892](https://github.com/chef/chef/pull/6892) ([tas50](https://github.com/tas50))
+- Bump depenencies to pull in Ohai 13.8 / InSpec 1.51.21 [#6934](https://github.com/chef/chef/pull/6934) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.0 -->
 ### Changes since 13.8.0 release
 
 #### Merged Pull Requests
+- Bump depenencies to pull in Ohai 13.8 / InSpec 1.51.21 [#6934](https://github.com/chef/chef/pull/6934) ([tas50](https://github.com/tas50)) <!-- 13.8.3 -->
 - Revert &quot;Revert &quot;fixup some unit tests&quot;&quot; [#6912](https://github.com/chef/chef/pull/6912) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 13.8.1 -->
 - Link to the knife.rb docs when the knife.rb file is missing [#6892](https://github.com/chef/chef/pull/6892) ([tas50](https://github.com/tas50)) <!-- 13.8.2 -->
 <!-- release_rollup -->
