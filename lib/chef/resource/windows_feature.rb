@@ -43,7 +43,7 @@ class Chef
 
       property :install_method, Symbol,
                description: "If DISM or PowerShell should be used for the installation. Note feature names differ"\
-                            "between the two installation methods.",
+                            " between the two installation methods.",
                equal_to: [:windows_feature_dism, :windows_feature_powershell, :windows_feature_servermanagercmd]
 
       property :timeout, Integer,

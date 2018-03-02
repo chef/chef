@@ -22,8 +22,8 @@ class Chef
       resource_name :windows_feature_dism
       provides :windows_feature_dism
 
-      description "Using the windows_feature_dism resource to add, remove or "\
-                  "delete Windows features and roles using DISM"
+      description "Using the windows_feature_dism resource to add, remove or"\
+                  " delete Windows features and roles using DISM"
       introduced "14.0"
 
       property :feature_name, [Array, String],
