@@ -93,6 +93,14 @@ platforms:
       - RUN /usr/bin/apt-get update
       - RUN /usr/bin/apt-get -y install sudo
 
+- name: ubuntu-18.04
+  driver:
+    image: dokken/ubuntu-18.04
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get -y install sudo
+
 - name: opensuse-leap
   driver:
     image: dokken/opensuse-leap
@@ -105,7 +113,7 @@ suites:
     run_list:
       - recipe[base::default]
   - name: awesome_customers_ubuntu
-    includes: [ubuntu-14.04, ubuntu-16.04]
+    includes: [ubuntu-14.04, ubuntu-16.04, ubuntu-18.04]
     run_list:
       - recipe[awesome_customers_ubuntu_wrapper::default]
   - name: awesome_customers_rhel
