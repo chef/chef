@@ -72,16 +72,16 @@ class Chef
         # call the appropriate windows_feature resource based on the specified subresource
         # @return [void]
         def run_default_subresource(desired_action)
-          raise "Support for Windows feature installation via servermanagercmd.exe has been removed as this support is no longer needed in Windows 2008 R2 and above. You will need to update your cookbook to install either via dism or powershell (preferred)." if  new_resource.install_method == :windows_feature_servermanagercmd
+          raise "Support for Windows feature installation via servermanagercmd.exe has been removed as this support is no longer needed in Windows 2008 R2 and above. You will need to update your cookbook to install either via dism or powershell (preferred)." if new_resource.install_method == :windows_feature_servermanagercmd
 
           subresource = new_resource.install_method || :windows_feature_dism
           declare_resource(subresource, new_resource.name) do
             action desired_action
             feature_name new_resource.feature_name
             source new_resource.source if new_resource.source
-             all new_resource.all
-             timeout new_resource.timeout
-             management_tools new_resource.management_tools if subresource == :windows_feature_powershell
+            all new_resource.all
+            timeout new_resource.timeout
+            management_tools new_resource.management_tools if subresource == :windows_feature_powershell
           end
         end
       end
