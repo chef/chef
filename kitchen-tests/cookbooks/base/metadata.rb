@@ -8,8 +8,6 @@ version          "0.1.0"
 
 gem              "chef-sugar"
 
-depends          "apt"
-depends          "build-essential"
 depends          "chef-client"
 depends          "logrotate"
 depends          "multipackage"
@@ -31,6 +29,6 @@ supports         "opensuse"
 supports         "fedora"
 supports         "amazon"
 
-chef_version     ">= 13"
+chef_version     ">= 14"
 issues_url       "https://github.com/chef/chef/issues"
 source_url       "https://github.com/chef/chef"
