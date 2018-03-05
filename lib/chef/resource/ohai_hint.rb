@@ -21,17 +21,15 @@ class Chef
       resource_name :ohai_hint
       provides :ohai_hint
 
-      description "A resource to pass hint data to Ohai to aid in configuration detection."
+      description "Use the ohai_hint resource to pass hint data to Ohai to aid in configuration detection."
       introduced "14.0"
 
-      property :hint_name,
-               String,
-               description: "The name of hints file if different from the resource name",
+      property :hint_name, String,
+               description: "The name of hints file if different from the resource name.",
                name_property: true
 
-      property :content,
-               Hash,
-               description: "Values to include in the hint file"
+      property :content, Hash,
+               description: "Values to include in the hint file."
 
       property :compile_time,
                [TrueClass, FalseClass],

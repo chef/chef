@@ -30,7 +30,7 @@ class Chef
 
       allowed_actions :install, :remove, :upgrade
 
-      property :accept_license, [ true, false ], default: false, desired_state: false
+      property :accept_license, [TrueClass, FalseClass], default: false, desired_state: false
     end
   end
 end

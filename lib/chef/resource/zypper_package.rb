@@ -29,7 +29,7 @@ class Chef
                   " packages with Zypper for the SUSE Enterprise and OpenSUSE platforms."
 
       property :gpg_check, [ TrueClass, FalseClass ], default: lazy { Chef::Config[:zypper_check_gpg] }
-      property :allow_downgrade, [ true, false ], default: false
+      property :allow_downgrade, [ TrueClass, FalseClass ], default: false
     end
   end
 end

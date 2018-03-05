@@ -27,8 +27,7 @@ class Chef
                   " to mitigate a single vulnerability must be installed on your hosts."
       introduced "14.0"
 
-      property :errata_id,
-               String,
+      property :errata_id, String,
                description: "An optional property for specifying the errata ID if not using the resource's name.",
                name_property: true
 

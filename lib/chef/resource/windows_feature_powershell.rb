@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require "chef/resource"
+
 class Chef
   class Resource
     class WindowsFeaturePowershell < Chef::Resource
@@ -37,7 +39,7 @@ class Chef
       property :source, String,
                description: "Use a local repository for the feature install."
 
-      property :all, [true, false],
+      property :all, [TrueClass, FalseClass],
                description: "Install all sub features. This is equivalent to using the"\
                             " -InstallAllSubFeatures switch with Add-WindowsFeature.",
                default: false
@@ -46,7 +48,7 @@ class Chef
                description: "Specifies a timeout (in seconds) for feature install.",
                default: 600
 
-      property :management_tools, [true, false],
+      property :management_tools, [TrueClass, FalseClass],
                description: "",
                default: false
 

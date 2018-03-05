@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require "chef/resource"
+
 class Chef
   class Resource
     class WindowsFeatureDism < Chef::Resource
@@ -34,7 +36,7 @@ class Chef
       property :source, String,
                description: "Use a local repository for the feature install."
 
-      property :all, [true, false],
+      property :all, [TrueClass, FalseClass],
                description: "Install all sub features. This is the equivalent of specifying the /All switch to dism.exe",
                default: false
 
