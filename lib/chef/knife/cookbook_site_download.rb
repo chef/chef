@@ -47,7 +47,12 @@ class Chef
       def run
         if current_cookbook_deprecated?
           message = "DEPRECATION: This cookbook has been deprecated. "
-          message << "It has been replaced by #{replacement_cookbook}."
+          replacement = replacement_cookbook
+          if !replacement.to_s.strip.empty?
+            message << "It has been replaced by #{replacement}."
+          else
+            message << "No replacement has been defined."
+          end
           ui.warn message
 
           unless config[:force]
@@ -105,7 +110,7 @@ class Chef
       end
 
       def replacement_cookbook
-        File.basename(current_cookbook_data["replacement"])
+        File.basename(current_cookbook_data["replacement"] || "")
       end
 
       def specific_cookbook_version_url
