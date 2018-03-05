@@ -18,6 +18,7 @@
 #
 
 require "chef/resource"
+require "chef/provider/cron" # do not remove. we actually need this below
 
 class Chef
   class Resource
@@ -135,14 +136,7 @@ class Chef
         )
       end
 
-      def time(arg = nil)
-        set_or_return(
-          :time,
-          arg,
-          :equal_to => Chef::Provider::Cron::SPECIAL_TIME_VALUES
-        )
-      end
-
+      property :time, Symbol, equal_to: Chef::Provider::Cron::SPECIAL_TIME_VALUES
       property :mailto, String
       property :path, String
       property :home, String

@@ -29,13 +29,6 @@ class Chef
       default_action :run
       allowed_actions :create, :run
 
-      identity_attr :block_name
-
-      def initialize(name, run_context = nil)
-        super
-        @block_name = name
-      end
-
       def block(&block)
         if block_given? && block
           @block = block
@@ -44,13 +37,7 @@ class Chef
         end
       end
 
-      def block_name(arg = nil)
-        set_or_return(
-          :block_name,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :block_name, String, name_property: true, identity: true
     end
   end
 end

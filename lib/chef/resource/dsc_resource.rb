@@ -74,13 +74,7 @@ class Chef
         end
       end
 
-      def module_version(arg = nil)
-        set_or_return(
-          :module_version,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :module_version, String
 
       def property(property_name, value = nil)
         if not property_name.is_a?(Symbol)
@@ -113,13 +107,7 @@ class Chef
         end
       end
 
-      def timeout(arg = nil)
-        set_or_return(
-          :timeout,
-          arg,
-          :kind_of => [ Integer ]
-        )
-      end
+      property :timeout, Integer
 
       private
 

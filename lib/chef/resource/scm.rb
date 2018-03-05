@@ -21,8 +21,6 @@ require "chef/resource"
 class Chef
   class Resource
     class Scm < Chef::Resource
-      identity_attr :destination
-
       state_attrs :revision
 
       default_action :sync
@@ -30,10 +28,8 @@ class Chef
 
       def initialize(name, run_context = nil)
         super
-        @destination = name
         @enable_submodules = false
         @enable_checkout = true
-        @revision = "HEAD"
         @remote = "origin"
         @ssh_wrapper = nil
         @depth = nil
@@ -41,54 +37,12 @@ class Chef
         @environment = nil
       end
 
-      def destination(arg = nil)
-        set_or_return(
-          :destination,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def repository(arg = nil)
-        set_or_return(
-          :repository,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def revision(arg = nil)
-        set_or_return(
-          :revision,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def user(arg = nil)
-        set_or_return(
-          :user,
-          arg,
-          :kind_of => [String, Integer]
-        )
-      end
-
-      def group(arg = nil)
-        set_or_return(
-          :group,
-          arg,
-          :kind_of => [String, Integer]
-        )
-      end
-
-      def svn_username(arg = nil)
-        set_or_return(
-          :svn_username,
-          arg,
-          :kind_of => String
-        )
-      end
-
+      property :destination, String, name_property: true, identity: true
+      property :repository, String
+      property :revision, String, default: "HEAD"
+      property :user, [String, Integer]
+      property :group, [String, Integer]
+      property :svn_username, String
       property :svn_password, String, sensitive: true, desired_state: false
 
       def svn_arguments(arg = nil)
