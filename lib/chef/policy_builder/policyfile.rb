@@ -263,10 +263,7 @@ class Chef
       def apply_policyfile_attributes
         node.attributes.role_default = policy["default_attributes"]
         node.attributes.role_override = policy["override_attributes"]
-        policy_group = (defined?(node.policy_group) && node.policy_group) || \
-          Chef::Config[:policy_group] || \
-          (Chef::Config[:deployment_group] && Chef::Config[:deployment_group].split(/-/).last)
-        hoist_policyfile_attributes(policy_group) if policy_group
+        hoist_policyfile_attributes(node.policy_group) if node.policy_group
       end
 
       # @api private
