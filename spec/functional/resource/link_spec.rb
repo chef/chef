@@ -172,7 +172,7 @@ describe Chef::Resource::Link do
     create_resource
   end
 
-  describe "when supported on platform", :not_supported_on_win2k3 do
+  describe "when supported on platform" do
     shared_examples_for "delete errors out" do
       it "delete errors out" do
         expect { resource.run_action(:delete) }.to raise_error(Chef::Exceptions::Link)
@@ -692,12 +692,6 @@ describe Chef::Resource::Link do
           include_context "delete is noop"
         end
       end
-    end
-  end
-
-  describe "when not supported on platform", :win2k3_only do
-    it "raises error" do
-      expect { resource }.to raise_error(Chef::Exceptions::Win32APIFunctionNotImplemented)
     end
   end
 end
