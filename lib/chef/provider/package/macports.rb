@@ -49,21 +49,21 @@ class Chef
           unless current_resource.version == version
             command = [ "port", options, "install", name ]
             command << "@#{version}" if version && !version.empty?
-            shell_out_compact_timeout!(command)
+            shell_out_compact_timeout!(*command)
           end
         end
 
         def purge_package(name, version)
           command = [ "port", options, "uninstall", name ]
           command << "@#{version}" if version && !version.empty?
-          shell_out_compact_timeout!(command)
+          shell_out_compact_timeout!(*command)
         end
 
         def remove_package(name, version)
           command = [ "port", options, "deactivate", name ]
           command << "@#{version}" if version && !version.empty?
 
-          shell_out_compact_timeout!(command)
+          shell_out_compact_timeout!(*command)
         end
 
         def upgrade_package(name, version)
@@ -84,7 +84,7 @@ class Chef
 
         def get_response_from_command(command)
           output = nil
-          status = shell_out_compact_timeout(command)
+          status = shell_out_compact_timeout(*command)
           begin
             output = status.stdout
           rescue Exception
