@@ -2,7 +2,7 @@
 # Author:: AJ Christensen (<aj@chef.io)
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Mark Mzyk (mmzyk@chef.io)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -228,8 +228,7 @@ class Chef::Application::Client < Chef::Application
   option :client_fork,
     :short        => "-f",
     :long         => "--[no-]fork",
-    :description  => "Fork client",
-    :boolean      => true
+    :description  => "Fork client"
 
   option :recipe_url,
     :long         => "--recipe-url=RECIPE_URL",
@@ -360,6 +359,11 @@ class Chef::Application::Client < Chef::Application
     if Chef::Config[:once]
       Chef::Config[:interval] = nil
       Chef::Config[:splay] = nil
+    end
+
+    # supervisor processes are enabled by default for interval-running processes but not for one-shot runs
+    if Chef::Config[:client_fork].nil?
+      Chef::Config[:client_fork] = !!Chef::Config[:interval]
     end
 
     if !Chef::Config[:client_fork] && Chef::Config[:interval] && !Chef::Platform.windows?

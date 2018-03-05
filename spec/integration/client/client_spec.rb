@@ -46,7 +46,7 @@ describe "chef-client" do
   # we're running `chef-client` from the source tree and not the external one.
   # cf. CHEF-4914
   let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
-  let(:chef_solo) { "ruby '#{chef_dir}/chef-solo' --minimal-ohai" }
+  let(:chef_solo) { "ruby '#{chef_dir}/chef-solo' --legacy-mode --minimal-ohai" }
 
   let(:critical_env_vars) { %w{_ORIGINAL_GEM_PATH GEM_PATH GEM_HOME GEM_ROOT BUNDLE_BIN_PATH BUNDLE_GEMFILE RUBYLIB RUBYOPT RUBY_ENGINE RUBY_ROOT RUBY_VERSION PATH}.map { |o| "#{o}=#{ENV[o]}" } .join(" ") }
 
@@ -622,6 +622,104 @@ EOM
       command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork | tee #{path_to('chefrun.out')}", :cwd => chef_dir)
       command.error!
       expect(command.stdout).not_to include("INFO")
+    end
+  end
+
+  when_the_repository "has a cookbook that knows if we're running forked" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<~EOM
+        puts Chef::Config[:client_fork] ? "WITHFORK" : "NOFORK"
+EOM
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+EOM
+    end
+
+    it "chef-client runs by default with no supervisor" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("NOFORK")
+    end
+
+    it "chef-solo runs by default with no supervisor" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("NOFORK")
+    end
+
+    it "chef-client --no-fork does not fork" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("NOFORK")
+    end
+
+    it "chef-solo --no-fork does not fork" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --no-fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("NOFORK")
+    end
+
+    it "chef-client with --fork uses a supervisor" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("WITHFORK")
+    end
+
+    it "chef-solo with --fork uses a supervisor" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default' --fork", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("WITHFORK")
+    end
+  end
+
+  when_the_repository "has a cookbook that knows if we're running forked, and configures forking in config.rb" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<~EOM
+        puts Chef::Config[:client_fork] ? "WITHFORK" : "NOFORK"
+EOM
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+client_fork true
+EOM
+    end
+
+    it "chef-client uses a supervisor" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("WITHFORK")
+    end
+
+    it "chef-solo uses a supervisor" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("WITHFORK")
+    end
+  end
+
+  when_the_repository "has a cookbook that knows if we're running forked, and configures no-forking in config.rb" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<~EOM
+        puts Chef::Config[:client_fork] ? "WITHFORK" : "NOFORK"
+EOM
+      file "config/client.rb", <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
+client_fork false
+EOM
+    end
+
+    it "chef-client uses a supervisor" do
+      command = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("NOFORK")
+    end
+
+    it "chef-solo uses a supervisor" do
+      command = shell_out("#{chef_solo} -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      command.error!
+      expect(command.stdout).to include("NOFORK")
     end
   end
 end

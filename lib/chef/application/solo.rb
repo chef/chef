@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (mmzyk@chef.io)
-# Copyright:: Copyright 2008-2018, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -175,8 +175,7 @@ class Chef::Application::Solo < Chef::Application
   option :client_fork,
     :short        => "-f",
     :long         => "--[no-]fork",
-    :description  => "Fork client",
-    :boolean      => true
+    :description  => "Fork client"
 
   option :why_run,
     :short        => "-W",
@@ -259,6 +258,11 @@ class Chef::Application::Solo < Chef::Application
   def configure_legacy_mode!
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
+    end
+
+    # supervisor processes are enabled by default for interval-running processes but not for one-shot runs
+    if Chef::Config[:client_fork].nil?
+      Chef::Config[:client_fork] = !!Chef::Config[:interval]
     end
 
     Chef::Application.fatal!(unforked_interval_error_message) if !Chef::Config[:client_fork] && Chef::Config[:interval]
