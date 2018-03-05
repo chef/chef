@@ -41,11 +41,9 @@ class Chef
 
       allowed_actions :configure_startup, :create, :delete, :configure
 
-      identity_attr :service_name
-
       state_attrs :enabled, :running
 
-      property :service_name, name_property: true
+      property :service_name, name_property: true, identity: true
 
       # The display name to be used by user interface programs to identify the
       # service. This string has a maximum length of 256 characters.
