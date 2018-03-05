@@ -28,15 +28,13 @@ class Chef
       provides :osx_profile, os: "darwin"
       provides :osx_config_profile, os: "darwin"
 
-      identity_attr :profile_name
-
       description "12.7"
 
       default_action :install
 
       allowed_actions :install, :remove
 
-      property :profile_name, String, name_property: true
+      property :profile_name, String, name_property: true, identity: true
       property :profile, [ String, Hash ]
       property :identifier, String
       property :path, String
