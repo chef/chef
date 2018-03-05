@@ -251,16 +251,4 @@ C5986B4F1257FFA86632CBA746181433FBB75451
       expect(provider.build_repo("ppa:chef/main", "unstable", "main", false, nil)).to eql(target)
     end
   end
-
-  describe "#keyfile_is_invalid?" do
-    it "returns true if the file is invalid" do
-      expect(provider).to receive(:shell_out).and_return(gpg_shell_out_failure)
-      expect(provider.keyfile_is_invalid?("/foo/bar.key")).to be_truthy
-    end
-
-    it "returns false if the file is valid" do
-      expect(provider).to receive(:shell_out).and_return(gpg_shell_out_success)
-      expect(provider.keyfile_is_invalid?("/foo/bar.key")).to be_falsey
-    end
-  end
 end

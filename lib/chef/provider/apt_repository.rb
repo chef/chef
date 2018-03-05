@@ -119,15 +119,6 @@ class Chef
         end.compact
       end
 
-      # see if the keyfile is invalid such as a text file that is not actually a gpg key
-      # @param [String] keyfile the path to the keyfile
-      #
-      # @return [Boolean] is the key file invalid
-      def keyfile_is_invalid?(keyfile)
-        so = shell_out("gpg #{keyfile}")
-        so.error?
-      end
-
       # validate the key against the apt keystore to see if that version is expired
       # @param [String] key
       #
@@ -210,9 +201,8 @@ class Chef
           mode "0644"
           sensitive new_resource.sensitive
           action :create
+          verify "gpg %{path}"
         end
-
-        raise "The key #{cached_keyfile} is invalid and cannot be used to verify an apt repository." if keyfile_is_invalid?(cached_keyfile)
 
         declare_resource(:execute, "apt-key add #{cached_keyfile}") do
           sensitive new_resource.sensitive
