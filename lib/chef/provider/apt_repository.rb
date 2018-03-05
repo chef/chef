@@ -201,12 +201,7 @@ class Chef
           mode "0644"
           sensitive new_resource.sensitive
           action :create
-          notifies :run, "execute[validate keyfile]", :immediately
-        end
-
-        declare_resource(:execute, "validate keyfile") do
-          action :nothing
-          command "gpg #{cached_keyfile}"
+          verify "gpg %{path}"
         end
 
         declare_resource(:execute, "apt-key add #{cached_keyfile}") do
