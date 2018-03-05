@@ -41,7 +41,7 @@ class Chef
       return true if errors.count > 0
       false
     end
-    
+
     private
 
     def exec(script)
