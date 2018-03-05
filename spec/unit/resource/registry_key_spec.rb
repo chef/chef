@@ -25,7 +25,7 @@ describe Chef::Resource::RegistryKey, "initialize" do
     expect(resource.resource_name).to eql(:registry_key)
   end
 
-  it "sets the key equal to the argument to initialize" do
+  it "sets the key property to the resource name" do
     expect(resource.key).to eql('HKCU\Software\Raxicoricofallapatorius')
   end
 
@@ -157,6 +157,10 @@ describe Chef::Resource::RegistryKey, "architecture" do
       resource.architecture(arch)
       expect(resource.architecture).to eql(arch)
     end
+  end
+
+  it "does not allow other symbols" do
+    expect { resource.architecture(:nope) }.to raise_error(ArgumentError)
   end
 
   it "does not allow a hash" do
