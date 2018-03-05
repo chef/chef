@@ -688,7 +688,8 @@ describe Chef::PolicyBuilder::Policyfile do
           context "with a policy group set" do
             before do
               Chef::Config[:policy_group] = "policy_group_value"
-              policy_builder.apply_policyfile_attributes
+              policy_builder.finish_load_node(node)
+              policy_builder.build_node
             end
 
             it "hoists default attributes" do
