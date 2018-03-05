@@ -25,12 +25,11 @@ class Chef
       provides :mac_os_x_userdefaults
       provides :macos_userdefaults
 
-      introduced "14.0"
-
       description "Use the macos_userdefaults resource to manage the macOS user defaults"\
                   " system. The properties to the resource are passed to the defaults command"\
                   " and the parameters follow convention of the macOS command. See the defaults(1)"\
                   " man page for details on how the tool works."
+      introduced "14.0"
 
       property :domain,
                String,

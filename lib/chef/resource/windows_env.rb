@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+require "chef/resource"
+
 class Chef
   class Resource
     class WindowsEnv < Chef::Resource

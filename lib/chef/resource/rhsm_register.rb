@@ -27,29 +27,23 @@ class Chef
                   " or a local Red Hat Satellite server."
       introduced "14.0"
 
-      property :activation_key,
-               [String, Array],
+      property :activation_key, [String, Array],
                coerce: proc { |x| Array(x) },
                description: "A String or array of the activation keys to use when registering. You must also specify the organization property if using activation_key."
 
-      property :satellite_host,
-               String,
+      property :satellite_host, String,
                description: "The FQDN of the Satellite host to register with. If not specified, the host will be registered with Red Hat's public RHSM service."
 
-      property :organization,
-               String,
+      property :organization, String,
                description: "The organization to use when registering, required when using an activation key"
 
-      property :environment,
-               String,
+      property :environment, String,
                description: "The environment to use when registering, required when using username and password"
 
-      property :username,
-               String,
+      property :username, String,
                description: "The username to use when registering. Not applicable if using an activation key. If specified, password and environment are also required."
 
-      property :password,
-               String,
+      property :password, String,
                description: "The password to use when registering. Not applicable if using an activation key. If specified, username and environment are also required."
 
       property :auto_attach,
@@ -57,13 +51,11 @@ class Chef
                description: "If true, RHSM will attempt to automatically attach the host to applicable subscriptions. It is generally better to use an activation key with the subscriptions pre-defined.",
                default: false
 
-      property :install_katello_agent,
-               [TrueClass, FalseClass],
+      property :install_katello_agent, [TrueClass, FalseClass],
                description: "If true, the 'katello-agent' RPM will be installed.",
                default: true
 
-      property :force,
-               [TrueClass, FalseClass],
+      property :force, [TrueClass, FalseClass],
                description: "If true, the system will be registered even if it is already registered. Normally, any register operations will fail if the machine is has already registered.",
                default: false
 

@@ -25,6 +25,8 @@ class Chef
       provides :macosx_service, os: "darwin"
       provides :service, os: "darwin"
 
+      description "Use the macosx_service resource to manage services on the macOS platform."
+
       identity_attr :service_name
 
       state_attrs :enabled, :running

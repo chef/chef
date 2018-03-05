@@ -26,8 +26,7 @@ class Chef
                   " repositories that are made available via attached subscriptions."
       introduced "14.0"
 
-      property :repo_name,
-               String,
+      property :repo_name, String,
                description: "An optional property for specifying the repository name if not using the resource's name.",
                name_property: true
 

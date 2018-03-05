@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require "chef/resource"
+
 class Chef
   class Resource
     class WindowsFeatureDism < Chef::Resource

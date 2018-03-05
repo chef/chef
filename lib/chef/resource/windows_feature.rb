@@ -15,6 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require "chef/resource"
+
 class Chef
   class Resource
     class WindowsFeature < Chef::Resource

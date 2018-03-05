@@ -22,7 +22,12 @@ class Chef
       resource_name :build_essential
       provides :build_essential
 
-      property :compile_time, [true, false], default: false
+      description "Use the build_essential resource to install packages required for compiling C software from source"
+      introduced "14.0"
+
+      property :compile_time, [true, false],
+               description: "Install build essential packages at compile time.",
+               default: false
 
       action :install do
         case node["platform_family"]

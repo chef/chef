@@ -27,12 +27,12 @@ class Chef
       provides :openssl_rsa_private_key
       provides :openssl_rsa_key # legacy cookbook resource name
 
-      introduced "14.0"
       description "Use the openssl_rsa_private_key resource to generate RSA private key files."\
                   " If a valid RSA key file can be opened at the specified location, no new file"\
                   " will be created. If the RSA key file cannot be opened, either because it does"\
                   " not exist or because the password to the RSA key file does not match the"\
                   " password in the recipe, it will be overwritten."
+      introduced "14.0"
 
       property :path, String,
                description: "The path to write the file to it's different than the resource name.",
