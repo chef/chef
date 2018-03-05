@@ -28,11 +28,8 @@ class Chef
       #
       # @param script [String] script to run
       # @return [Chef::PowerShell] output
-      def powershell_exec(*command_args)
-        script = command_args.first
-        options = command_args.last.is_a?(Hash) ? command_args.last : nil
-
-        Chef::PowerShell.new(script, options)
+      def powershell_exec(script)
+        Chef::PowerShell.new(script)
       end
     end
   end

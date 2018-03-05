@@ -32,10 +32,17 @@ class Chef
     #
     # @param script [String] script to run
     # @return [Object] output
-    def initialize(*command_args)
-      raise "This class can only be used on the Windows platform." unless RUBY_PLATFORM =~ /mswin|mingw32|windows/
-      exec(command_args.first)
+    def initialize(script)
+      raise "Chef::PowerShell can only be used on the Windows platform." unless RUBY_PLATFORM =~ /mswin|mingw32|windows/
+      exec(script)
     end
+
+    def error?
+      return true if errors.count > 0
+      false
+    end
+    
+    private
 
     def exec(script)
       ps = WIN32OLE.new("Chef.PowerShell")
@@ -43,11 +50,6 @@ class Chef
       hashed_outcome = Chef::JSONCompat.parse(outcome)
       @result = Chef::JSONCompat.parse(hashed_outcome["result"])
       @errors = hashed_outcome["errors"]
-    end
-
-    def error?
-      return true if errors.count > 0
-      false
     end
   end
 end
