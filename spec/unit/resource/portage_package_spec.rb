@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,9 +28,5 @@ describe Chef::Resource::PortagePackage, "initialize" do
 
   it "sets the resource_name to :portage_package" do
     expect(resource.resource_name).to eql(:portage_package)
-  end
-
-  it "sets the provider to Chef::Provider::Package::Portage" do
-    expect(resource.provider).to eql(Chef::Provider::Package::Portage)
   end
 end
