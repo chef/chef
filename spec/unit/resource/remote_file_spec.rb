@@ -31,13 +31,11 @@ describe Chef::Resource::RemoteFile do
 
   it "says its provider is RemoteFile when the source is an absolute URI" do
     resource.source("http://www.google.com/robots.txt")
-    expect(resource.provider).to eq(Chef::Provider::RemoteFile)
     expect(resource.provider_for_action(:create)).to be_kind_of(Chef::Provider::RemoteFile)
   end
 
   it "says its provider is RemoteFile when the source is a network share" do
     resource.source("\\\\fakey\\fakerton\\fake.txt")
-    expect(resource.provider).to eq(Chef::Provider::RemoteFile)
     expect(resource.provider_for_action(:create)).to be_kind_of(Chef::Provider::RemoteFile)
   end
 
