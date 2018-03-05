@@ -63,7 +63,7 @@ class Chef
                description: "The permission mode of all files created by the resource.",
                default: "0600"
 
-      property :force, [true, false],
+      property :force, [TrueClass, FalseClass],
                description: "Force creating the key even if the existing key exists.",
                default: false
 

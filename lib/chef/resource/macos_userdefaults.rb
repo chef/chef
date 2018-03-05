@@ -31,43 +31,35 @@ class Chef
                   " man page for details on how the tool works."
       introduced "14.0"
 
-      property :domain,
-               String,
+      property :domain, String,
                description: "The domain the defaults belong to.",
                required: true
 
-      property :global,
-               [true, false],
+      property :global, [TrueClass, FalseClass],
                description: "Whether the domain is global.",
                default: false
 
-      property :key,
-               String,
+      property :key, String,
                description: "The preference key."
 
-      property :value,
-               [Integer, Float, String, true, false, Hash, Array],
+      property :value, [Integer, Float, String, TrueClass, FalseClass, Hash, Array],
                description: "The value of the key.",
                coerce: proc { |v| coerce_booleans(v) },
                required: true
 
-      property :type,
-               String,
+      property :type, String,
                description: "Value type of the preference key.",
                default: ""
 
-      property :user,
-               String,
+      property :user, String,
                description: "User for which to set the default."
 
-      property :sudo,
-               [true, false],
+      property :sudo, [TrueClass, FalseClass],
                description: "Set to true if the setting requires privileged access to modify.",
                default: false,
                desired_state: false
 
-      property :is_set,
-               [true, false],
+      property :is_set, [TrueClass, FalseClass],
                description: "",
                default: false,
                desired_state: false

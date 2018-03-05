@@ -25,7 +25,7 @@ class Chef
       description "Use the build_essential resource to install packages required for compiling C software from source"
       introduced "14.0"
 
-      property :compile_time, [true, false],
+      property :compile_time, [TrueClass, FalseClass],
                description: "Install build essential packages at compile time.",
                default: false
 

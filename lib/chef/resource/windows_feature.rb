@@ -36,11 +36,11 @@ class Chef
       property :source, String,
                description: "Use a local repository for the feature install."
 
-      property :all, [true, false],
+      property :all, [TrueClass, FalseClass],
                description: "Install all sub features.",
                default: false
 
-      property :management_tools, [true, false],
+      property :management_tools, [TrueClass, FalseClass],
                description: "Install all applicable management tools of the roles, role services, or features (PowerShell only).",
                default: false
 
