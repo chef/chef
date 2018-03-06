@@ -53,7 +53,7 @@ Install:
 
 * git
 * C compiler, header files, etc.
-* ruby 2.3.3 or later
+* ruby 2.4 or later
 * rubygems
 * bundler gem
 
