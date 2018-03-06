@@ -342,45 +342,16 @@ class Chef
           extend Forwardable
           define_singleton_method(:to_s) { "forwarder module for #{provider_class}" }
           define_singleton_method(:inspect) { to_s }
-          # Add a delegator for each explicit property that will get the *current* value
-          # of the property by default instead of the *actual* value.
-          resource.class.properties.each_key do |name|
-            class_eval(<<-EOM, __FILE__, __LINE__)
-              def #{name}(*args, &block)
-                # If no arguments were passed, we process "get" by defaulting
-                # the value to current_resource, not new_resource. This helps
-                # avoid issues where resources accidentally overwrite perfectly
-                # valid stuff with default values.
-                #
-                # This magic is to make this kind of thing easy:
-                #
-                # FileUtils.chown new_resource.mode.nil? ? current_resource.mode : new_resource.mode, new_resource.path
-                #
-                # We do this in the file provider where we need to construct a new filesystem object and
-                # when the new_resource is nil/default that means "preserve the current stuff" and does not
-                # mean to ignore it which will wind up defaulting to changing the file to have a "root"
-                # ownership if anything else changes.  Its kind of overly clever and magical, and most likely
-                # gets the use case wrong where someone has a property that they really mean to default to
-                # some value which /should/ get set if its left as the default and where the default is
-                # meant to be declarative.  Instead of property_is_set? we should most likely be using
-                # nil? but we're going to deprecate all of it anyway.  Just type out what you really mean longhand.
-                #
-                if args.empty? && !block
-                  if !new_resource.property_is_set?(__method__) && current_resource
-                    Chef.deprecated(:namespace_collisions, "rename #{name} to current_resource.#{name}")
-                    return current_resource.public_send(__method__)
-                  end
-                end
-                Chef.deprecated(:namespace_collisions, "rename #{name} to new_resource.#{name}")
-                new_resource.public_send(__method__, *args, &block)
-              end
-            EOM
-          end
+          # this magic, stated simply, is that any instance method declared directly on
+          # the resource we are building, will be accessible from the action_class(provider)
+          # instance.  methods declared on Chef::Resource and properties are not inherited.
           dsl_methods =
             resource.class.public_instance_methods +
             resource.class.protected_instance_methods -
             provider_class.instance_methods -
-            resource.class.properties.keys
+            resource.class.properties.keys -
+            resource.class.properties.keys.map { |k| "#{k}=".to_sym } -
+            Chef::Resource.instance_methods
           def_delegators(:new_resource, *dsl_methods)
         end
         include @included_resource_dsl_module

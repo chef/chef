@@ -378,94 +378,6 @@ module ResourceActionSpec
       end
     end
 
-    context "With a resource with property x" do
-      class ResourceActionSpecWithX < Chef::Resource
-        resource_name :resource_action_spec_with_x
-        property :x, default: 20
-        action :set do
-          # Access x during converge to ensure that we emit no warnings there
-          x
-        end
-      end
-
-      context "And another resource with a property x and an action that sets property x to its value" do
-        class ResourceActionSpecAlsoWithX < Chef::Resource
-          resource_name :resource_action_spec_also_with_x
-          property :x
-          action :set_x_to_x do
-            resource_action_spec_with_x "hi" do
-              x x
-            end
-          end
-          def self.x_warning_line
-            __LINE__ - 4
-          end
-          action :set_x_to_x_in_non_initializer do
-            r = resource_action_spec_with_x "hi" do
-              x 10
-            end
-            x_times_2 = r.x * 2
-          end
-          action :set_x_to_10 do
-            resource_action_spec_with_x "hi" do
-              x 10
-            end
-          end
-        end
-
-        attr_reader :x_warning_line
-
-        it "Using the enclosing resource to set x to x emits a warning that you're using the wrong x" do
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          recipe = converge do
-            resource_action_spec_also_with_x "hi" do
-              x 1
-              action :set_x_to_x
-            end
-          end
-          warnings = recipe.logs.lines.select { |l| l =~ /warn/i }
-          expect(warnings.size).to eq 2
-          expect(warnings[0]).to match(/property x is declared in both resource_action_spec_with_x\[hi\] and resource_action_spec_also_with_x\[hi\] action :set_x_to_x. Use new_resource.x instead. At #{__FILE__}:#{ResourceActionSpecAlsoWithX.x_warning_line}/)
-        end
-
-        it "Using the enclosing resource to set x to x outside the initializer emits no warning" do
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          recipe = converge do
-            resource_action_spec_also_with_x "hi" do
-              x 1
-              action :set_x_to_x_in_non_initializer
-            end
-          end
-          warnings = recipe.logs.lines.select { |l| l =~ /warn/i }
-          expect(warnings.size).to eq 1  # the deprecation warning, not the property masking one
-        end
-
-        it "Using the enclosing resource to set x to 10 emits no warning" do
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          recipe = converge do
-            resource_action_spec_also_with_x "hi" do
-              x 1
-              action :set_x_to_10
-            end
-          end
-          warnings = recipe.logs.lines.select { |l| l =~ /warn/i }
-          expect(warnings.size).to eq 1  # the deprecation warning, not the property masking one
-        end
-
-        it "Using the enclosing resource to set x to 10 emits no warning" do
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          recipe = converge do
-            r = resource_action_spec_also_with_x "hi"
-            r.x 1
-            r.action :set_x_to_10
-          end
-          warnings = recipe.logs.lines.select { |l| l =~ /warn/i }
-          expect(warnings.size).to eq 1  # the deprecation warning, not the property masking one
-        end
-      end
-
-    end
-
     context "With a resource with a set_or_return property named group (same name as a resource)" do
       class ResourceActionSpecWithGroupAction < Chef::Resource
         resource_name :resource_action_spec_set_group_to_nil
@@ -503,13 +415,6 @@ module ResourceActionSpec
             "blah"
           end
         end
-      end
-
-      it "Raises an error when attempting to use a template in the action" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        expect_converge do
-          has_property_named_template "hi"
-        end.to raise_error(/Property `template` of `has_property_named_template\[hi\]` was incorrectly passed a block. Possible property-resource collision. To call a resource named `template` either rename the property or else use `declare_resource\(:template, ...\)`/)
       end
     end
 
