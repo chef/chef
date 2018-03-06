@@ -543,6 +543,10 @@ class Chef
         end
       end
 
+      def handle_type(type, loc)
+        type == :urls ? validate_and_return_uri(loc) : validate_and_create_file(loc)
+      end
+
       def validate_data_collector_output_locations!
         if data_collector_output_locations.empty?
           raise Chef::Exceptions::ConfigurationError,
@@ -550,15 +554,8 @@ class Chef
         end
 
         data_collector_output_locations.each do |type, locations|
-
-          method = if type == :urls
-                     method(:validate_and_return_uri)
-                   elsif type == :files
-                     method(:validate_and_create_file)
-                   end
-
           locations.each do |l|
-            unless method.call(l)
+            unless handle_type(type,l)
               raise Chef::Exceptions::ConfigurationError,
                       "Chef::Config[:data_collector][:output_locations] contains the location #{l} which is not valid."
             end
