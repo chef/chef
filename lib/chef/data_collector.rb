@@ -555,7 +555,7 @@ class Chef
 
         data_collector_output_locations.each do |type, locations|
           locations.each do |l|
-            unless handle_type(type,l)
+            unless handle_type(type, l)
               raise Chef::Exceptions::ConfigurationError,
                       "Chef::Config[:data_collector][:output_locations] contains the location #{l} which is not valid."
             end
