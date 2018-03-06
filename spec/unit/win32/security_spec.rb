@@ -59,7 +59,7 @@ describe "Chef::Win32::Security", :windows_only do
         expect(Chef::ReservedNames::Win32::Security).to receive(:SetNamedSecurityInfoW).and_return(
           Chef::ReservedNames::Win32::API::Error::ERROR_USER_NOT_FOUND
         )
-        expect { Chef::ReservedNames::Win32::Security.set_named_security_info "/temp_path", :SE_FILE_OBJECT, {} }.to raise_error Chef::Exceptions::Chef::Exceptions::UserIDNotFound
+        expect { Chef::ReservedNames::Win32::Security.set_named_security_info "/temp_path", :SE_FILE_OBJECT, {} }.to raise_error Chef::Exceptions::UserIDNotFound
       end
     end
   end
