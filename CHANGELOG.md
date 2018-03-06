@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.117 -->
-## [v14.0.117](https://github.com/chef/chef/tree/v14.0.117) (2018-03-06)
+<!-- latest_release 14.0.118 -->
+## [v14.0.118](https://github.com/chef/chef/tree/v14.0.118) (2018-03-06)
 
 #### Merged Pull Requests
-- Added source_file to FromFile [#6938](https://github.com/chef/chef/pull/6938) ([zfjagann](https://github.com/zfjagann))
+- remove deprecated property namespace collisions [#6952](https://github.com/chef/chef/pull/6952) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- remove deprecated property namespace collisions [#6952](https://github.com/chef/chef/pull/6952) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.118 -->
 - Added source_file to FromFile [#6938](https://github.com/chef/chef/pull/6938) ([zfjagann](https://github.com/zfjagann)) <!-- 14.0.117 -->
 - Avoid compile time error in apt_repository [#6953](https://github.com/chef/chef/pull/6953) ([tas50](https://github.com/tas50)) <!-- 14.0.116 -->
 - Remove support for Windows 2003 [#6923](https://github.com/chef/chef/pull/6923) ([tas50](https://github.com/tas50)) <!-- 14.0.115 -->
