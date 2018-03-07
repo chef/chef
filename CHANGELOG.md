@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.8.4 -->
-## [v13.8.4](https://github.com/chef/chef/tree/v13.8.4) (2018-03-05)
+<!-- latest_release 13.8.5 -->
+## [v13.8.5](https://github.com/chef/chef/tree/v13.8.5) (2018-03-07)
 
 #### Merged Pull Requests
-- [knife] Don&#39;t crash when a deprecated cookbook has no replacement (#6853) [#6936](https://github.com/chef/chef/pull/6936) ([tas50](https://github.com/tas50))
+- lock ffi at 1.9.21 [#6960](https://github.com/chef/chef/pull/6960) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.3 -->
 ### Changes since 13.8.3 release
 
 #### Merged Pull Requests
+- lock ffi at 1.9.21 [#6960](https://github.com/chef/chef/pull/6960) ([thommay](https://github.com/thommay)) <!-- 13.8.5 -->
 - [knife] Don&#39;t crash when a deprecated cookbook has no replacement (#6853) [#6936](https://github.com/chef/chef/pull/6936) ([tas50](https://github.com/tas50)) <!-- 13.8.4 -->
 <!-- release_rollup -->
 
