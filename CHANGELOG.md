@@ -1,27 +1,24 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.8.5 -->
-## [v13.8.5](https://github.com/chef/chef/tree/v13.8.5) (2018-03-07)
-
-#### Merged Pull Requests
-- lock ffi at 1.9.21 [#6960](https://github.com/chef/chef/pull/6960) ([thommay](https://github.com/thommay))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=13.8.3 -->
-### Changes since 13.8.3 release
-
-#### Merged Pull Requests
-- lock ffi at 1.9.21 [#6960](https://github.com/chef/chef/pull/6960) ([thommay](https://github.com/thommay)) <!-- 13.8.5 -->
-- [knife] Don&#39;t crash when a deprecated cookbook has no replacement (#6853) [#6936](https://github.com/chef/chef/pull/6936) ([tas50](https://github.com/tas50)) <!-- 13.8.4 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.8.5](https://github.com/chef/chef/tree/v13.8.5) (2018-03-07)
+
+#### Merged Pull Requests
+- [knife] Don&#39;t crash when a deprecated cookbook has no replacement (#6853) [#6936](https://github.com/chef/chef/pull/6936) ([tas50](https://github.com/tas50))
+- lock ffi at 1.9.21 [#6960](https://github.com/chef/chef/pull/6960) ([thommay](https://github.com/thommay))
+<!-- latest_stable_release -->
+
 ## [v13.8.3](https://github.com/chef/chef/tree/v13.8.3) (2018-03-05)
 
 #### Merged Pull Requests
 - Link to the knife.rb docs when the knife.rb file is missing [#6892](https://github.com/chef/chef/pull/6892) ([tas50](https://github.com/tas50))
 - Revert &quot;Revert &quot;fixup some unit tests&quot;&quot; [#6912](https://github.com/chef/chef/pull/6912) ([lamont-granquist](https://github.com/lamont-granquist))
 - Bump depenencies to pull in Ohai 13.8 / InSpec 1.51.21 [#6934](https://github.com/chef/chef/pull/6934) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v13.8.0](https://github.com/chef/chef/tree/v13.8.0) (2018-02-27)
 
