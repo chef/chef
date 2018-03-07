@@ -23,10 +23,10 @@ require "chef/mixin/get_source_from_package"
 class Chef
   class Provider
     class Package
-      class Aix < Chef::Provider::Package
+      class Bff < Chef::Provider::Package
 
         provides :package, os: "aix"
-        provides :bff_package, os: "aix"
+        provides :bff_package
 
         include Chef::Mixin::GetSourceFromPackage
 

@@ -18,7 +18,7 @@
 #
 require "spec_helper"
 
-describe Chef::Provider::Package::Aix do
+describe Chef::Provider::Package::Bff do
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -27,7 +27,7 @@ describe Chef::Provider::Package::Aix do
     @new_resource = Chef::Resource::Package.new("samba.base")
     @new_resource.source("/tmp/samba.base")
 
-    @provider = Chef::Provider::Package::Aix.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::Bff.new(@new_resource, @run_context)
     allow(::File).to receive(:exist?).with(@new_resource.source).and_return(true)
   end
 
@@ -99,7 +99,7 @@ describe Chef::Provider::Package::Aix do
     it "should raise an exception if the source is not set but we are installing" do
       status = double("Status", :stdout => "", :exitstatus => 1, :format_for_exception => "")
       @new_resource = Chef::Resource::Package.new("samba.base")
-      @provider = Chef::Provider::Package::Aix.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Bff.new(@new_resource, @run_context)
       allow(@provider).to receive(:shell_out).and_return(status)
       expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
@@ -156,7 +156,7 @@ describe Chef::Provider::Package::Aix do
 
     it "should run installp -aYF -d when the package is a path to install" do
       @new_resource = Chef::Resource::Package.new("/tmp/samba.base")
-      @provider = Chef::Provider::Package::Aix.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Bff.new(@new_resource, @run_context)
       expect(@new_resource.source).to eq("/tmp/samba.base")
       expect(@provider).to receive(:shell_out!).with("installp", "-aYF", "-d", "/tmp/samba.base", "/tmp/samba.base", timeout: 900)
       @provider.install_package("/tmp/samba.base", "3.3.12.0")
