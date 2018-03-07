@@ -285,7 +285,7 @@ describe Chef::ResourceReporter do
       end
 
       it "resource_command in prepared_run_data should be blank" do
-        expect(@first_update_report["after"]).to eq({ :command => "sensitive-resource", :user => nil })
+        expect(@first_update_report["after"]).to eq({ :command => "sensitive-resource" })
       end
     end
 
