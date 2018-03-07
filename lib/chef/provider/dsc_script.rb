@@ -25,7 +25,7 @@ class Chef
   class Provider
     class DscScript < Chef::Provider
 
-      provides :dsc_script, os: "windows"
+      provides :dsc_script
 
       def initialize(dsc_resource, run_context)
         super(dsc_resource, run_context)

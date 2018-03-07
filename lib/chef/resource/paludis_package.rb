@@ -23,7 +23,7 @@ class Chef
   class Resource
     class PaludisPackage < Chef::Resource::Package
       resource_name :paludis_package
-      provides :paludis_package, os: "linux"
+      provides :paludis_package
 
       description "Use the paludis_package resource to manage packages for the Paludis platform."
       introduced "12.1"

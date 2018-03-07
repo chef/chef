@@ -30,7 +30,7 @@ class Chef
         attr_accessor :is_virtual_package
 
         provides :package, platform: "smartos"
-        provides :smartos_package, platform_family: "smartos"
+        provides :smartos_package
 
         def load_current_resource
           Chef::Log.debug("#{new_resource} loading current resource")

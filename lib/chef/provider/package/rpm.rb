@@ -24,8 +24,7 @@ class Chef
   class Provider
     class Package
       class Rpm < Chef::Provider::Package
-
-        provides :rpm_package, os: %w{linux aix}
+        provides :rpm_package
 
         include Chef::Mixin::GetSourceFromPackage
 

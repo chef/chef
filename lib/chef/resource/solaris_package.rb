@@ -18,12 +18,12 @@
 #
 
 require "chef/resource/package"
-require "chef/provider/package/solaris"
 
 class Chef
   class Resource
     class SolarisPackage < Chef::Resource::Package
       resource_name :solaris_package
+      provides :solaris_package
       provides :package, os: "solaris2", platform_family: "nexentacore"
       provides :package, os: "solaris2", platform_family: "solaris2", platform_version: "<= 5.10"
 

@@ -23,7 +23,7 @@ class Chef
   class Provider
     class PowershellScript < Chef::Provider::WindowsScript
 
-      provides :powershell_script, os: "windows"
+      provides :powershell_script
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context, ".ps1")

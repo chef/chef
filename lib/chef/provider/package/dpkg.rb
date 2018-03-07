@@ -27,7 +27,7 @@ class Chef
         DPKG_INSTALLED = /^Status: install ok installed/
         DPKG_VERSION   = /^Version: (.+)$/
 
-        provides :dpkg_package, os: "linux"
+        provides :dpkg_package
 
         use_multipackage_api
         use_package_name_for_source

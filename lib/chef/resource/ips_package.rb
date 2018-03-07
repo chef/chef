@@ -24,7 +24,7 @@ class Chef
     class IpsPackage < ::Chef::Resource::Package
       resource_name :ips_package
       provides :package, os: "solaris2"
-      provides :ips_package, os: "solaris2"
+      provides :ips_package
 
       description "Use the ips_package resource to manage packages (using Image Packaging System (IPS)) on the Solaris 11 platform."
 

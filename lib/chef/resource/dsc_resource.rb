@@ -20,7 +20,8 @@ require "chef/dsl/powershell"
 class Chef
   class Resource
     class DscResource < Chef::Resource
-      provides :dsc_resource, os: "windows"
+      resource_name :dsc_resource
+      provides :dsc_resource
 
       description "The dsc_resource resource allows any DSC resource to be used in a"\
                   " Chef recipe, as well as any custom resources that have been added"\

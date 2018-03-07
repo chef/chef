@@ -25,7 +25,7 @@ class Chef
       class Chocolatey < Chef::Provider::Package
         include Chef::Mixin::PowershellOut
 
-        provides :chocolatey_package, os: "windows"
+        provides :chocolatey_package
 
         # Declare that our arguments should be arrays
         use_multipackage_api

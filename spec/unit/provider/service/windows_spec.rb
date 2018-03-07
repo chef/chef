@@ -20,7 +20,7 @@
 require "spec_helper"
 require "mixlib/shellout"
 
-describe Chef::Provider::Service::Windows, "load_current_resource" do
+describe Chef::Provider::Service::Windows, "load_current_resource", :windows_only do
   include_context "Win32"
 
   let(:chef_service_name) { "chef-client" }

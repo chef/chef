@@ -27,7 +27,7 @@ end
 
 class Chef::Provider::Service::Windows < Chef::Provider::Service
   provides :service, os: "windows"
-  provides :windows_service, os: "windows"
+  provides :windows_service
 
   include Chef::Mixin::ShellOut
   include Chef::ReservedNames::Win32::API::Error rescue LoadError

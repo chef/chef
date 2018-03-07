@@ -18,11 +18,12 @@
 #
 
 require "chef/resource"
-require "chef/provider/http_request"
 
 class Chef
   class Resource
     class HttpRequest < Chef::Resource
+      resource_name :http_request
+      provides :http_request
 
       description "Use the http_request resource to send an HTTP request (GET, PUT,"\
                   " POST, DELETE, HEAD, or OPTIONS) with an arbitrary message. This"\

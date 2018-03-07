@@ -21,8 +21,9 @@ require "chef/resource"
 class Chef
   class Resource
     class OsxProfile < Chef::Resource
-      provides :osx_profile, os: "darwin"
-      provides :osx_config_profile, os: "darwin"
+      resource_name :osx_profile
+      provides :osx_profile
+      provides :osx_config_profile
 
       description "Use the osx_profile resource to manage configuration profiles (.mobileconfig files)"\
                   " on the macOS platform. The osx_profile resource installs profiles by using"\

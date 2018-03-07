@@ -18,11 +18,12 @@
 #
 
 require "chef/resource"
-require "chef/provider/execute"
 
 class Chef
   class Resource
     class Execute < Chef::Resource
+      resource_name :execute
+      provides :execute
 
       identity_attr :command
 

@@ -27,7 +27,7 @@ class Chef
       include Chef::Mixin::Uris
 
       resource_name :powershell_package
-      provides :powershell_package, os: "windows"
+      provides :powershell_package
 
       introduced "12.16"
 

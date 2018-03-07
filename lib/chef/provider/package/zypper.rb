@@ -29,7 +29,7 @@ class Chef
         use_multipackage_api
 
         provides :package, platform_family: "suse"
-        provides :zypper_package, os: "linux"
+        provides :zypper_package
 
         def get_versions(package_name)
           candidate_version = current_version = nil

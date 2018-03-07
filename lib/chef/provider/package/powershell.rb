@@ -25,7 +25,7 @@ class Chef
       class Powershell < Chef::Provider::Package
         include Chef::Mixin::PowershellOut
 
-        provides :powershell_package, os: "windows"
+        provides :powershell_package
 
         def load_current_resource
           @current_resource = Chef::Resource::PowershellPackage.new(new_resource.name)

@@ -21,7 +21,7 @@ require "chef/resource/windows_script"
 class Chef
   class Resource
     class Batch < Chef::Resource::WindowsScript
-      provides :batch, os: "windows"
+      provides :batch
 
       description "Use the batch resource to execute a batch script using the cmd.exe"\
                   " interpreter on Windows. The batch resource creates and executes a"\
