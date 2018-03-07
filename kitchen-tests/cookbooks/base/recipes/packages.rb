@@ -15,7 +15,7 @@ pkgs.each do |pkg|
   multipackage pkgs
 end
 
-gems = %w{fpm aws-sdk}
+gems = %w{fpm community_cookbook_releaser}
 
 gems.each do |gem|
   chef_gem gem do
