@@ -30,7 +30,7 @@ class Chef
         include Chef::Mixin::Checksum
 
         provides :package, os: "windows"
-        provides :windows_package, os: "windows"
+        provides :windows_package
 
         require "chef/provider/package/windows/registry_uninstall_entry.rb"
 
