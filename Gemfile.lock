@@ -133,9 +133,9 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.12.2)
       faraday (>= 0.7.4, < 1.0)
-    ffi (1.9.23)
-    ffi (1.9.23-x64-mingw32)
-    ffi (1.9.23-x86-mingw32)
+    ffi (1.9.21)
+    ffi (1.9.21-x64-mingw32)
+    ffi (1.9.21-x86-mingw32)
     ffi-win32-extensions (1.0.3)
       ffi
     ffi-yajl (2.3.1)
@@ -230,7 +230,7 @@ GEM
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
     parallel (1.12.1)
-    parser (2.5.0.2)
+    parser (2.5.0.3)
       ast (~> 2.4.0)
     parslet (1.8.2)
     plist (3.4.0)
@@ -390,6 +390,7 @@ DEPENDENCIES
   chef-vault
   cheffish (~> 13)
   chefstyle (= 0.6.0)
+  ffi (= 1.9.21)
   inspec (~> 1)
   netrc
   octokit
