@@ -45,7 +45,7 @@ class Chef
         USE_FORCE = 1
         USE_LOTS_OF_FORCE = 2 #every windows API should support this flag
 
-        NERR_Success = 0 # rubocop:disable Style/ConstantName
+        NERR_Success = 0 # rubocop:disable Naming/ConstantName
         ERROR_MORE_DATA = 234
 
         ffi_lib "netapi32"

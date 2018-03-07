@@ -563,7 +563,7 @@ describe Chef::ProviderResolver do
         csh:                    [ Chef::Resource::Csh, Chef::Provider::Script ],
         directory:              [ Chef::Resource::Directory, Chef::Provider::Directory ],
         dpkg_package:           [ Chef::Resource::DpkgPackage, Chef::Provider::Package::Dpkg ],
-        dsc_script:             [ Chef::Resource::DscScript,  Chef::Provider::DscScript ],
+        dsc_script:             [ Chef::Resource::DscScript, Chef::Provider::DscScript ],
         dscl_user:              [ Chef::Resource::User::DsclUser, Chef::Provider::User::Dscl ],
         execute:                [ Chef::Resource::Execute, Chef::Provider::Execute ],
         file:                   [ Chef::Resource::File, Chef::Provider::File ],
