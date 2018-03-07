@@ -25,7 +25,7 @@ class Chef
       provides :remote_file
 
       def initialize(new_resource, run_context)
-        @content_class = Chef::Provider::RemoteFile::Content
+        @content_class ||= Chef::Provider::RemoteFile::Content
         super
       end
 
