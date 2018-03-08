@@ -65,14 +65,8 @@ describe "Chef::Win32::Security", :windows_only do
   end
 
   describe "self.has_admin_privileges?" do
-    it "returns true for windows server 2003" do
-      allow(Chef::Platform).to receive(:windows_server_2003?).and_return(true)
-      expect(Chef::ReservedNames::Win32::Security.has_admin_privileges?).to be true
-    end
-
     context "when the user doesn't have admin privileges" do
       it "returns false" do
-        allow(Chef::Platform).to receive(:windows_server_2003?).and_return(false)
         allow(Chef::ReservedNames::Win32::Security).to receive(:open_current_process_token).and_raise("Access is denied.")
         expect(Chef::ReservedNames::Win32::Security.has_admin_privileges?).to be false
       end
@@ -80,7 +74,6 @@ describe "Chef::Win32::Security", :windows_only do
 
     context "when open_current_process_token fails with some other error than `Access is Denied`" do
       it "raises error" do
-        allow(Chef::Platform).to receive(:windows_server_2003?).and_return(false)
         allow(Chef::ReservedNames::Win32::Security).to receive(:open_current_process_token).and_raise("boom")
         expect { Chef::ReservedNames::Win32::Security.has_admin_privileges? }.to raise_error(Chef::Exceptions::Win32APIError)
       end
@@ -88,7 +81,6 @@ describe "Chef::Win32::Security", :windows_only do
 
     context "when the user has admin privileges" do
       it "returns true" do
-        allow(Chef::Platform).to receive(:windows_server_2003?).and_return(false)
         allow(Chef::ReservedNames::Win32::Security).to receive(:open_current_process_token)
         token = Chef::ReservedNames::Win32::Security.open_current_process_token
         allow(token).to receive_message_chain(:handle, :handle)

@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+require "chef/resource"
+
 class Chef
   class Resource
     class WindowsPagefile < Chef::Resource
@@ -29,10 +31,10 @@ class Chef
                description: "The path to the pagefile if different from the resource name.",
                name_property: true
 
-      property :system_managed, [true, false],
+      property :system_managed, [TrueClass, FalseClass],
                description: "Configures whether the system manages the pagefile size."
 
-      property :automatic_managed, [true, false],
+      property :automatic_managed, [TrueClass, FalseClass],
                description: "Enable automatic management of pagefile initial and maximum size. Setting this to true ignores 'initial_size' and 'maximum_size' properties.",
                default: false
 

@@ -37,7 +37,6 @@ class Chef
         @use_last_modified = true
         @ftp_active_mode = false
         @headers = {}
-        @provider = Chef::Provider::RemoteFile
       end
 
       # source can take any of the following as arguments

@@ -193,7 +193,7 @@ describe Chef::Provider::RemoteDirectory do
         expect(::File.exist?(@destination_dir + "/a/multiply/nested/directory/qux.txt")).to be_falsey
       end
 
-      it "removes directory symlinks properly", :not_supported_on_win2k3 do
+      it "removes directory symlinks properly" do
         symlinked_dir_path = @destination_dir + "/symlinked_dir"
         @provider.action = :create
         @provider.run_action

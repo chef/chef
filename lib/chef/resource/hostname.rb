@@ -9,28 +9,23 @@ class Chef
       description "Sets the systems hostname, ensures that reboot will preserve the hostname, and re-runs the ohai plugin so the hostname will be available in subsequent cookbooks."
       introduced "14.0"
 
-      property :hostname,
-               String,
+      property :hostname, String,
                description: "The hostname if different than the resource's name",
                name_property: true
 
-      property :compile_time,
-               [ TrueClass, FalseClass ],
+      property :compile_time, [ TrueClass, FalseClass ],
                description: "Should the resource run at compile time or not.",
                default: true
 
-      property :ipaddress,
-               String,
+      property :ipaddress, String,
                description: "The ip address to use when configuring the hosts file",
                default: lazy { node["ipaddress"] }
 
-      property :aliases,
-               [ Array, nil ],
+      property :aliases, [ Array, nil ],
                description: "An array of hostname aliases to use when configuring the hosts file",
                default: nil
 
-      property :windows_reboot,
-               [ TrueClass, FalseClass ],
+      property :windows_reboot, [ TrueClass, FalseClass ],
                description: "Should Windows nodes be rebooted upon changing the name so it can take effect",
                default: true
 

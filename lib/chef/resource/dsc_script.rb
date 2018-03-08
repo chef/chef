@@ -114,37 +114,10 @@ class Chef
         end
       end
 
-      def flags(arg = nil)
-        set_or_return(
-          :flags,
-          arg,
-          :kind_of => [ Hash ]
-        )
-      end
-
-      def cwd(arg = nil)
-        set_or_return(
-          :cwd,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def environment(arg = nil)
-        set_or_return(
-          :environment,
-          arg,
-          :kind_of => [ Hash ]
-        )
-      end
-
-      def timeout(arg = nil)
-        set_or_return(
-          :timeout,
-          arg,
-          :kind_of => [ Integer ]
-        )
-      end
+      property :flags, Hash
+      property :cwd, String
+      property :environment, Hash
+      property :timeout, Integer
     end
   end
 end

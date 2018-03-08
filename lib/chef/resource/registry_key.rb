@@ -15,14 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "chef/provider/registry_key"
+
 require "chef/resource"
 require "chef/digester"
 
 class Chef
   class Resource
-    # Use the registry_key resource to create and delete registry keys in Microsoft Windows.
     class RegistryKey < Chef::Resource
+      resource_name :registry_key
+      provides :registry_key
+
+      description "Use the registry_key resource to create and delete registry keys in Microsoft Windows."
+      introduced "11.0"
+
       identity_attr :key
       state_attrs :values
 
@@ -62,8 +67,6 @@ class Chef
 
       def initialize(name, run_context = nil)
         super
-        @architecture = :machine
-        @recursive = false
         @key = name
         @values, @unscrubbed_values = [], []
       end
@@ -102,21 +105,8 @@ class Chef
         end
       end
 
-      def recursive(arg = nil)
-        set_or_return(
-          :recursive,
-          arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def architecture(arg = nil)
-        set_or_return(
-          :architecture,
-          arg,
-          :kind_of => Symbol
-        )
-      end
+      property :recursive, [TrueClass, FalseClass], default: false
+      property :architecture, Symbol, default: :machine, equal_to: [:machine, :x86_64, :i386]
 
       private
 

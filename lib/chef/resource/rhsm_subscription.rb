@@ -27,8 +27,7 @@ class Chef
                   " does not attach all necessary subscriptions to your host."
       introduced "14.0"
 
-      property :pool_id,
-               String,
+      property :pool_id, String,
                description: "An optional property for specifying the Pool ID if not using the resource's name.",
                name_property: true
 

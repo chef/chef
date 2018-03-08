@@ -34,6 +34,7 @@ class Chef
 
         UPSTART_STATE_FORMAT = /\S+ \(?(start|stop)?\)? ?[\/ ](\w+)/
 
+        # Returns true if the configs for the service name has upstart variable
         def self.supports?(resource, action)
           Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)
         end

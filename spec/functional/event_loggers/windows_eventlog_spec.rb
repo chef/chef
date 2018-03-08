@@ -19,12 +19,12 @@
 require "spec_helper"
 require "securerandom"
 require "chef/event_loggers/windows_eventlog"
-if Chef::Platform.windows? && (not Chef::Platform.windows_server_2003?)
+if Chef::Platform.windows?
   require "win32/eventlog"
   include Win32
 end
 
-describe Chef::EventLoggers::WindowsEventLogger, :windows_only, :not_supported_on_win2k3 do
+describe Chef::EventLoggers::WindowsEventLogger, :windows_only do
   def rand
     random.rand(1 << 32).to_s
   end

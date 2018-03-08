@@ -52,13 +52,13 @@ class Chef
       allowed_actions :create, :delete, :touch, :create_if_missing
 
       property :path, String, name_property: true, identity: true
-      property :atomic_update, [ true, false ], desired_state: false, default: lazy { |r| r.docker? && r.special_docker_files?(r.path) ? false : Chef::Config[:file_atomic_update] }
+      property :atomic_update, [ TrueClass, FalseClass ], desired_state: false, default: lazy { |r| r.docker? && r.special_docker_files?(r.path) ? false : Chef::Config[:file_atomic_update] }
       property :backup, [ Integer, false ], desired_state: false, default: 5
       property :checksum, [ /^[a-zA-Z0-9]{64}$/, nil ]
       property :content, [ String, nil ], desired_state: false
       property :diff, [ String, nil ], desired_state: false
-      property :force_unlink, [ true, false ], desired_state: false, default: false
-      property :manage_symlink_source, [ true, false ], desired_state: false
+      property :force_unlink, [ TrueClass, FalseClass ], desired_state: false, default: false
+      property :manage_symlink_source, [ TrueClass, FalseClass ], desired_state: false
       property :verifications, Array, default: lazy { [] }
 
       def verify(command = nil, opts = {}, &block)

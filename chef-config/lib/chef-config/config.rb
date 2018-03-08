@@ -4,7 +4,7 @@
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (<mmzyk@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -440,7 +440,7 @@ module ChefConfig
     default :splay, nil
     default :why_run, false
     default :color, false
-    default :client_fork, true
+    default :client_fork, nil
     default :ez, false
     default :enable_reporting, true
     default :enable_reporting_url_fatals, false

@@ -46,7 +46,7 @@ class Chef
       property :port_description, String,
                description: "The description of the port."
 
-      property :snmp_enabled, [true, false],
+      property :snmp_enabled, [TrueClass, FalseClass],
                description: "Should SNMP be enabled on the port.",
                default: false
 
@@ -55,7 +55,7 @@ class Chef
                validation_message: "port_protocol must be either 1 for RAW or 2 for LPR!",
                default: 1, equal_to: [1, 2]
 
-      property :exists, [true, false],
+      property :exists, [TrueClass, FalseClass],
                desired_state: true
 
       PORTS_REG_KEY = 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\\'.freeze unless defined?(PORTS_REG_KEY)

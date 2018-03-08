@@ -43,25 +43,8 @@ class Chef
         super
         @command = name
         @backup = 5
-        @creates = nil
-        @cwd = nil
-        @environment = nil
-        @group = nil
-        @returns = 0
-        @timeout = nil
-        @user = nil
-        @umask = nil
         @default_guard_interpreter = :execute
         @is_guard_interpreter = false
-        @live_stream = false
-      end
-
-      def umask(arg = nil)
-        set_or_return(
-          :umask,
-          arg,
-          :kind_of => [ String, Integer ]
-        )
       end
 
       def command(arg = nil)
@@ -71,68 +54,19 @@ class Chef
           :kind_of => [ String, Array ]
         )
       end
-
-      def creates(arg = nil)
-        set_or_return(
-          :creates,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def cwd(arg = nil)
-        set_or_return(
-          :cwd,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def environment(arg = nil)
-        set_or_return(
-          :environment,
-          arg,
-          :kind_of => [ Hash ]
-        )
-      end
+      property :umask, [ String, Integer ]
+      property :creates, String
+      property :cwd, String
+      property :environment, Hash
 
       alias :env :environment
 
-      def group(arg = nil)
-        set_or_return(
-          :group,
-          arg,
-          :kind_of => [ String, Integer ]
-        )
-      end
-
-      def live_stream(arg = nil)
-        set_or_return(
-          :live_stream,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ])
-      end
-
-      def returns(arg = nil)
-        set_or_return(
-          :returns,
-          arg,
-          :kind_of => [ Integer, Array ]
-        )
-      end
-
-      def timeout(arg = nil)
-        set_or_return(
-          :timeout,
-          arg,
-          :kind_of => [ Integer, Float ]
-        )
-      end
-
+      property :group, [ String, Integer ]
+      property :live_stream, [ TrueClass, FalseClass ], default: false
+      property :returns, [ Integer, Array ], default: 0
+      property :timeout, [ Integer, Float ]
       property :user, [ String, Integer ]
-
       property :domain, String
-
       property :password, String, sensitive: true
 
       # lazy used to set default value of sensitive to true if password is set

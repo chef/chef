@@ -554,6 +554,7 @@ describe Chef::ProviderResolver do
     PROVIDERS =
       {
         bash:                   [ Chef::Resource::Bash, Chef::Provider::Script ],
+        bff_package:            [ Chef::Resource::BffPackage, Chef::Provider::Package::Bff ],
         breakpoint:             [ Chef::Resource::Breakpoint, Chef::Resource::Breakpoint.action_class ],
         chef_gem:               [ Chef::Resource::ChefGem, Chef::Provider::Package::Rubygems ],
         cookbook_file:          [ Chef::Resource::CookbookFile, Chef::Provider::CookbookFile ],
@@ -592,7 +593,6 @@ describe Chef::ProviderResolver do
 
         # We want to check that these are unsupported:
         apt_package: nil,
-        bff_package: nil,
         dpkg_package: nil,
         dsc_script: nil,
         ips_package: nil,
@@ -781,13 +781,11 @@ describe Chef::ProviderResolver do
         },
 
         "aix" => {
-          bff_package: [ Chef::Resource::BffPackage, Chef::Provider::Package::Aix ],
           cron: [ Chef::Resource::Cron, Chef::Provider::Cron::Aix ],
           group: [ Chef::Resource::Group, Chef::Provider::Group::Aix ],
           ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig::Aix ],
           mount: [ Chef::Resource::Mount, Chef::Provider::Mount::Aix ],
-          # TODO should be Chef::Resource::BffPackage
-          package: [ Chef::Resource::Package, Chef::Provider::Package::Aix ],
+          package: [ Chef::Resource::Package, Chef::Provider::Package::Bff ],
           rpm_package: [ Chef::Resource::RpmPackage, Chef::Provider::Package::Rpm ],
           user: [ Chef::Resource::User::AixUser, Chef::Provider::User::Aix ],
     #      service: [ Chef::Resource::AixService, Chef::Provider::Service::Aix ],

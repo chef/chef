@@ -51,11 +51,6 @@ def windows_domain_joined?
   computer_system["partofdomain"]
 end
 
-def windows_win2k3?
-  return false unless windows?
-  (host_version && host_version.start_with?("5.2"))
-end
-
 def windows_2008r2_or_later?
   return false unless windows?
   return false unless host_version

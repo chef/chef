@@ -40,7 +40,7 @@ class Chef
                             callbacks: {
                  "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments." => proc { |v| v == "#{RbConfig::CONFIG['bindir']}/gem" },
                }
-      property :compile_time, [ true, false ], default: false, desired_state: false
+      property :compile_time, [TrueClass, FalseClass], default: false, desired_state: false
 
       # force the resource to compile time if the compile time property has been set
       def after_created

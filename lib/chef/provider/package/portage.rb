@@ -17,7 +17,7 @@
 #
 
 require "chef/provider/package"
-require "chef/resource/package"
+require "chef/resource/portage_package"
 require "chef/util/path_helper"
 
 class Chef

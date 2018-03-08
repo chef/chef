@@ -1,6 +1,8 @@
+#!/usr/bin/env ruby
 #
-# Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# ./chef-resource-inspector - Find information about a resource
+#
+# Copyright:: Copyright (c) 2018, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,22 +16,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-require "chef/resource/package"
-require "chef/provider/package/apt"
+Encoding.default_external = Encoding::UTF_8
 
-class Chef
-  class Resource
-    class AptPackage < Chef::Resource::Package
-      resource_name :apt_package
-      provides :package, platform_family: "debian"
+$:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
 
-      description "Use the apt_package resource to manage packages on Debian and Ubuntu platforms."
+require "chef/resource_inspector"
 
-      property :default_release, String, desired_state: false
-      property :overwrite_config_files, [TrueClass, FalseClass], default: false
-
-    end
-  end
-end
+ResourceInspector.start

@@ -33,20 +33,20 @@ class Chef
       property :repo_name, String, name_property: true
       property :description, String
       property :type, String, default: "NONE"
-      property :enabled, [true, false], default: true
-      property :autorefresh, [true, false], default: true
-      property :gpgcheck, [true, false], default: true
+      property :enabled, [TrueClass, FalseClass], default: true
+      property :autorefresh, [TrueClass, FalseClass], default: true
+      property :gpgcheck, [TrueClass, FalseClass], default: true
       property :gpgkey, String
       property :baseurl, String
       property :mirrorlist, String
       property :path, String
       property :priority, Integer, default: 99
-      property :keeppackages, [true, false], default: false
+      property :keeppackages, [TrueClass, FalseClass], default: false
       property :mode, default: "0644"
-      property :refresh_cache, [true, false], default: true
+      property :refresh_cache, [TrueClass, FalseClass], default: true
       property :source, String
       property :cookbook, String
-      property :gpgautoimportkeys, [true, false], default: true
+      property :gpgautoimportkeys, [TrueClass, FalseClass], default: true
 
       default_action :create
       allowed_actions :create, :remove, :add, :refresh

@@ -24,8 +24,6 @@ class Chef
   class Resource
     class HttpRequest < Chef::Resource
 
-      identity_attr :url
-
       description "Use the http_request resource to send an HTTP request (GET, PUT,"\
                   " POST, DELETE, HEAD, or OPTIONS) with an arbitrary message. This"\
                   " resource is often useful when custom callbacks are necessary."
@@ -33,19 +31,12 @@ class Chef
       default_action :get
       allowed_actions :get, :patch, :put, :post, :delete, :head, :options
 
+      property :url, String, identity: true
+      property :headers, Hash, default: {}
+
       def initialize(name, run_context = nil)
         super
         @message = name
-        @url = nil
-        @headers = {}
-      end
-
-      def url(args = nil)
-        set_or_return(
-          :url,
-          args,
-          :kind_of => String
-        )
       end
 
       def message(args = nil, &block)
@@ -54,14 +45,6 @@ class Chef
           :message,
           args,
           :kind_of => Object
-        )
-      end
-
-      def headers(args = nil)
-        set_or_return(
-          :headers,
-          args,
-          :kind_of => Hash
         )
       end
 

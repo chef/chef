@@ -1,15 +1,31 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.105 -->
-## [v14.0.105](https://github.com/chef/chef/tree/v14.0.105) (2018-03-03)
+<!-- latest_release 14.0.121 -->
+## [v14.0.121](https://github.com/chef/chef/tree/v14.0.121) (2018-03-07)
 
 #### Merged Pull Requests
-- Add Ubuntu 18.04 Testing in Travis [#6937](https://github.com/chef/chef/pull/6937) ([tas50](https://github.com/tas50))
+- Rename bff provider to match its resource [#6956](https://github.com/chef/chef/pull/6956) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Rename bff provider to match its resource [#6956](https://github.com/chef/chef/pull/6956) ([tas50](https://github.com/tas50)) <!-- 14.0.121 -->
+- Convert more set_or_returns to proper properties [#6950](https://github.com/chef/chef/pull/6950) ([tas50](https://github.com/tas50)) <!-- 14.0.120 -->
+- Remove explicit setting of @provider and depend on ProviderResolver [#6958](https://github.com/chef/chef/pull/6958) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 14.0.119 -->
+- remove deprecated property namespace collisions [#6952](https://github.com/chef/chef/pull/6952) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.118 -->
+- Added source_file to FromFile [#6938](https://github.com/chef/chef/pull/6938) ([zfjagann](https://github.com/zfjagann)) <!-- 14.0.117 -->
+- Avoid compile time error in apt_repository [#6953](https://github.com/chef/chef/pull/6953) ([tas50](https://github.com/tas50)) <!-- 14.0.116 -->
+- Remove support for Windows 2003 [#6923](https://github.com/chef/chef/pull/6923) ([tas50](https://github.com/tas50)) <!-- 14.0.115 -->
+- add a utility to dump info about resources [#6896](https://github.com/chef/chef/pull/6896) ([thommay](https://github.com/thommay)) <!-- 14.0.114 -->
+-  Don&#39;t use supervisor process for one-shot / command-line runs [#6914](https://github.com/chef/chef/pull/6914) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.113 -->
+- Add attribute hoisting into core [#6927](https://github.com/chef/chef/pull/6927) ([jonlives](https://github.com/jonlives)) <!-- 14.0.112 -->
+- Add more description fields, style fixes, add missing requires [#6943](https://github.com/chef/chef/pull/6943) ([tas50](https://github.com/tas50)) <!-- 14.0.111 -->
+- registry_key: Properly limit allowed values for architecture [#6947](https://github.com/chef/chef/pull/6947) ([tas50](https://github.com/tas50)) <!-- 14.0.110 -->
+- Modernize provides in the portage_package resource [#6903](https://github.com/chef/chef/pull/6903) ([tas50](https://github.com/tas50)) <!-- 14.0.109 -->
+- Set properties in git resource using our resource DSL [#6902](https://github.com/chef/chef/pull/6902) ([tas50](https://github.com/tas50)) <!-- 14.0.108 -->
+- Use the existing helper method for package resource classes that don&#39;t support allow_downgrade [#6942](https://github.com/chef/chef/pull/6942) ([coderanger](https://github.com/coderanger)) <!-- 14.0.107 -->
+- Apt repo cleanup and testing expansion [#6498](https://github.com/chef/chef/pull/6498) ([tas50](https://github.com/tas50)) <!-- 14.0.106 -->
 - Add Ubuntu 18.04 Testing in Travis [#6937](https://github.com/chef/chef/pull/6937) ([tas50](https://github.com/tas50)) <!-- 14.0.105 -->
 - Update our tests based on new resources we ship [#6939](https://github.com/chef/chef/pull/6939) ([tas50](https://github.com/tas50)) <!-- 14.0.104 -->
 - Allow specifying a comment for routes [#6929](https://github.com/chef/chef/pull/6929) ([tomdoherty](https://github.com/tomdoherty)) <!-- 14.0.103 -->

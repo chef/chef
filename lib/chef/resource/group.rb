@@ -20,7 +20,6 @@
 class Chef
   class Resource
     class Group < Chef::Resource
-      identity_attr :group_name
       state_attrs :members
 
       description "Use the group resource to manage a local group."
@@ -30,29 +29,12 @@ class Chef
 
       def initialize(name, run_context = nil)
         super
-        @group_name = name
-        @gid = nil
         @members = []
         @excluded_members = []
-        @append = false
-        @non_unique = false
       end
 
-      def group_name(arg = nil)
-        set_or_return(
-          :group_name,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def gid(arg = nil)
-        set_or_return(
-          :gid,
-          arg,
-          :kind_of => [ String, Integer ]
-        )
-      end
+      property :group_name, String, name_property: true, identity: true
+      property :gid, [ String, Integer ]
 
       def members(arg = nil)
         converted_members = arg.is_a?(String) ? arg.split(",") : arg
@@ -74,29 +56,9 @@ class Chef
         )
       end
 
-      def append(arg = nil)
-        set_or_return(
-          :append,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def system(arg = nil)
-        set_or_return(
-          :system,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def non_unique(arg = nil)
-        set_or_return(
-          :non_unique,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :append, [ TrueClass, FalseClass ], default: false
+      property :system, [ TrueClass, FalseClass ], default: false
+      property :non_unique, [ TrueClass, FalseClass ], default: false
     end
   end
 end

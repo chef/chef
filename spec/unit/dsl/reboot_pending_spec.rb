@@ -49,19 +49,6 @@ describe Chef::DSL::RebootPending do
           allow(recipe).to receive(:registry_key_exists?).with('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending').and_return(true)
           expect(recipe.reboot_pending?).to be_truthy
         end
-
-        context "version is server 2003" do
-          before do
-            allow(Chef::Platform).to receive(:windows_server_2003?).and_return(true)
-          end
-
-          it 'should return true if value "HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile" contains specific data on 2k3' do
-            allow(recipe).to receive(:registry_key_exists?).with('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').and_return(true)
-            allow(recipe).to receive(:registry_get_values).with('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').and_return(
-                  [{ :name => "Flags", :type => :dword, :data => 3 }])
-            expect(recipe.reboot_pending?).to be_truthy
-          end
-        end
       end
 
       context "platform is ubuntu" do

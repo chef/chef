@@ -35,10 +35,9 @@ class Chef
     class Link < Chef::Resource
       include Chef::Mixin::Securable
       resource_name :link
+      provides :link
 
-      identity_attr :target_file
-
-      state_attrs :to, :owner, :group
+      state_attrs :owner # required since it's not a property below
 
       default_action :create
       allowed_actions :create, :delete
@@ -46,51 +45,13 @@ class Chef
       def initialize(name, run_context = nil)
         verify_links_supported!
         super
-        @to = nil
-        @link_type = :symbolic
-        @target_file = name
       end
 
-      def to(arg = nil)
-        set_or_return(
-          :to,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def target_file(arg = nil)
-        set_or_return(
-          :target_file,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def link_type(arg = nil)
-        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
-        set_or_return(
-          :link_type,
-          real_arg,
-          :equal_to => [ :symbolic, :hard ]
-        )
-      end
-
-      def group(arg = nil)
-        set_or_return(
-          :group,
-          arg,
-          :regex => Chef::Config[:group_valid_regex]
-        )
-      end
-
-      def owner(arg = nil)
-        set_or_return(
-          :owner,
-          arg,
-          :regex => Chef::Config[:user_valid_regex]
-        )
-      end
+      property :target_file, String, name_property: true, identity: true
+      property :to, String
+      property :link_type, [String, Symbol], coerce: proc { |arg| arg.kind_of?(String) ? arg.to_sym : arg }, equal_to: [ :symbolic, :hard ], default: :symbolic
+      property :group, [String, Integer], regex: [Chef::Config[:group_valid_regex]]
+      property :user, [String, Integer], regex: [Chef::Config[:user_valid_regex]]
 
       # make link quack like a file (XXX: not for public consumption)
       def path

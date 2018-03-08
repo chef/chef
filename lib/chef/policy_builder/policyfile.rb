@@ -263,6 +263,16 @@ class Chef
       def apply_policyfile_attributes
         node.attributes.role_default = policy["default_attributes"]
         node.attributes.role_override = policy["override_attributes"]
+        hoist_policyfile_attributes(node.policy_group) if node.policy_group
+      end
+
+      # @api private
+      #
+      # Hoists attributes from role_X[policy_group] up to the equivalent role_X level
+      def hoist_policyfile_attributes(policy_group)
+        Chef::Log.debug("Running attribute Hoist for group #{policy_group}")
+        Chef::Mixin::DeepMerge.hash_only_merge!(node.role_default, node.role_default[policy_group]) if node.role_default.include?(policy_group)
+        Chef::Mixin::DeepMerge.hash_only_merge!(node.role_override, node.role_override[policy_group]) if node.role_override.include?(policy_group)
       end
 
       # @api private

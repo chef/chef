@@ -39,7 +39,7 @@ class Chef
       property :comment, String,
                description: "Optional descriptor for the printer queue."
 
-      property :default, [true, false],
+      property :default, [TrueClass, FalseClass],
                description: "Should this be the system's default printer.",
                default: false
 
@@ -50,7 +50,7 @@ class Chef
       property :location, String,
                description: "Printer location, e.g. 'Fifth floor copy room'."
 
-      property :shared, [true, false],
+      property :shared, [TrueClass, FalseClass],
                description: "Should the printer be shared.",
                default: false
 
@@ -62,7 +62,8 @@ class Chef
                validation_message: "The ipv4_address property must be in the IPv4 format of WWW.XXX.YYY.ZZZ",
                regex: Resolv::IPv4::Regex
 
-      property :exists, [true, false], desired_state: true
+      property :exists, [TrueClass, FalseClass],
+               desired_state: true
 
       PRINTERS_REG_KEY = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\\'.freeze unless defined?(PRINTERS_REG_KEY)
 

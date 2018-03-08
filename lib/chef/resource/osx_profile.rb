@@ -20,23 +20,20 @@ require "chef/resource"
 
 class Chef
   class Resource
-    # Use the osx_profile resource to manage configuration profiles (.mobileconfig files)
-    # on the macOS platform. The osx_profile resource installs profiles by using
-    # the uuidgen library to generate a unique ProfileUUID, and then using the
-    # profiles command to install the profile on the system.
     class OsxProfile < Chef::Resource
       provides :osx_profile, os: "darwin"
       provides :osx_config_profile, os: "darwin"
 
-      identity_attr :profile_name
-
-      description "12.7"
+      description "Use the osx_profile resource to manage configuration profiles (.mobileconfig files)"\
+                  " on the macOS platform. The osx_profile resource installs profiles by using"\
+                  " the uuidgen library to generate a unique ProfileUUID, and then using the"\
+                  " profiles command to install the profile on the system."
+      introduced "12.7"
 
       default_action :install
-
       allowed_actions :install, :remove
 
-      property :profile_name, String, name_property: true
+      property :profile_name, String, name_property: true, identity: true
       property :profile, [ String, Hash ]
       property :identifier, String
       property :path, String
