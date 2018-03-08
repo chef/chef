@@ -1,0 +1,29 @@
+REGEDIT4
+
+[HKEY_CLASSES_ROOT\Chef.PowerShell]
+@="Chef.PowerShell"
+
+[HKEY_CLASSES_ROOT\Chef.PowerShell\CLSID]
+@="{9008CA83-83E4-41FF-9C07-696E2CC47B52}"
+
+[HKEY_CLASSES_ROOT\CLSID\{9008CA83-83E4-41FF-9C07-696E2CC47B52}]
+@="Chef.PowerShell"
+
+[HKEY_CLASSES_ROOT\CLSID\{9008CA83-83E4-41FF-9C07-696E2CC47B52}\InprocServer32]
+@="mscoree.dll"
+"ThreadingModel"="Both"
+"Class"="Chef.PowerShell"
+"Assembly"="Chef.PowerShell, Version=1.0.14.0, Culture=neutral, PublicKeyToken=7def9f799d039a95"
+"RuntimeVersion"="v4.0.30319"
+"CodeBase"="file:///C:/projects/chef/distro/powershell/chef/Chef.PowerShell.dll"
+
+[HKEY_CLASSES_ROOT\CLSID\{9008CA83-83E4-41FF-9C07-696E2CC47B52}\InprocServer32\1.0.0.0]
+"Class"="Chef.PowerShell"
+"Assembly"="Chef.PowerShell, Version=1.0.14.0, Culture=neutral, PublicKeyToken=7def9f799d039a95"
+"RuntimeVersion"="v4.0.30319"
+"CodeBase"="file:///C:/projects/chef/distro/powershell/chef/Chef.PowerShell.dll"
+
+[HKEY_CLASSES_ROOT\CLSID\{9008CA83-83E4-41FF-9C07-696E2CC47B52}\ProgId]
+@="Chef.PowerShell"
+
+[HKEY_CLASSES_ROOT\CLSID\{9008CA83-83E4-41FF-9C07-696E2CC47B52}\Implemented Categories\{62C8FE65-4EBB-45E7-B440-6E39B2CDBF29}]
