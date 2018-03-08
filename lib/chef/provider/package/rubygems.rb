@@ -97,7 +97,7 @@ class Chef
               # Filter down to only to only stubs we actually want. The name
               # filter is needed in case of things like `foo-*.gemspec` also
               # matching a gem named `foo-bar`.
-              stubs.select! {|stub| stub.name == gem_dep.name && gem_dep.requirement.satisfied_by?(stub.version) }
+              stubs.select! { |stub| stub.name == gem_dep.name && gem_dep.requirement.satisfied_by?(stub.version) }
               # This isn't sorting before returning beacuse the only code that
               # uses this method calls `max_by` so it doesn't need to be sorted.
               stubs
