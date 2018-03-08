@@ -2,6 +2,12 @@ _This file holds "in progress" release notes for the current release under devel
 
 # Unreleased
 
+# Chef Client Release Notes 14.TBC:
+
+## New Windows PowerShell mixin `powershell_exec` added
+
+Since our supported Windows platforms can all run .NET Framework 4.0 and PowerShell 4.0 we have taken time to add a new interop that will allow faster and safer interactions with the system PowerShell.  You will be able to use the `powershell_exec` mixin in most places where you would have previously used `powershell_out`.
+
 # Chef Client Release Notes 13.7:
 
 ## The `windows_task` Resource should be better behaved
