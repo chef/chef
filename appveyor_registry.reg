@@ -10,7 +10,7 @@ REGEDIT4
 @="Chef.PowerShell"
 
 [HKEY_CLASSES_ROOT\CLSID\{9008CA83-83E4-41FF-9C07-696E2CC47B52}\InprocServer32]
-@="mscoree.dll"
+@="c:\\windows\\system32\\mscoree.dll"
 "ThreadingModel"="Both"
 "Class"="Chef.PowerShell"
 "Assembly"="Chef.PowerShell, Version=1.0.14.0, Culture=neutral, PublicKeyToken=7def9f799d039a95"
