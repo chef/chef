@@ -497,26 +497,28 @@ describe Chef::Provider::Mount::Mount do
     # we should not create two mount lines, but update the existing one
     context "when the device is described differently" do
       it "should update the existing line" do
+        @current_resource.enabled(true)
         status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)
         expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
 
         filesystems = [%q{/dev/sdy1 /tmp/foo  ext3  defaults  1 2},
                       %q{/dev/sdz1 /tmp/foo  ext3  defaults  1 2}].join("\n")
-        fstab = StringIO.new
-        fstab.puts filesystems
+        fstab = StringIO.new filesystems
+
+        fstab_write = StringIO.new
 
         allow(::File).to receive(:readlines).with("/etc/fstab").and_return(fstab.readlines)
-        allow(::File).to receive(:open).with("/etc/fstab", "w").and_yield(fstab)
-        allow(::File).to receive(:open).with("/etc/fstab", "a").and_yield(fstab)
+        allow(::File).to receive(:open).with("/etc/fstab", "w").and_yield(fstab_write)
+        allow(::File).to receive(:open).with("/etc/fstab", "a").and_yield(fstab_write)
 
         @new_resource.device_type :uuid
         @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
         @new_resource.dump 1
 
         @provider.enable_fs
-        expect(fstab.string).to match(%r{/dev/sdy1\s+/tmp/foo\s+ext3\s+defaults\s+1\s+2})
-        expect(fstab.string).to match(%r{UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a\s+/tmp/foo\s+ext3\s+defaults\s+1\s+2})
-        expect(fstab.string).not_to match(%r{/dev/sdz1\s+/tmp/foo\s+ext3\s+defaults\s+1\s+2})
+        expect(fstab_write.string).to match(%r{/dev/sdy1\s+/tmp/foo\s+ext3\s+defaults\s+1\s+2})
+        expect(fstab_write.string).to match(%r{UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a\s+/tmp/foo\s+ext3\s+defaults\s+1\s+2})
+        expect(fstab_write.string).not_to match(%r{/dev/sdz1\s+/tmp/foo\s+ext3\s+defaults\s+1\s+2})
       end
     end
   end

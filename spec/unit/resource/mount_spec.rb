@@ -61,6 +61,10 @@ describe Chef::Resource::Mount do
     expect(resource.fstype).to eql("nfs")
   end
 
+  it "sets fstype to 'auto' by default" do
+    expect(resource.fstype).to eql("auto")
+  end
+
   it "allows you to set the dump attribute" do
     resource.dump 1
     expect(resource.dump).to eql(1)
