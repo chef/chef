@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 6177d8b414add867bc89c8bab374f2e39cc717fe
+  revision: 8d9aed96d01f93a1b14583f902b7504cf61b9f72
   branch: master
   specs:
-    chefstyle (0.7.0)
+    chefstyle (0.8.0)
       rubocop (= 0.52.1)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 20305d8791869f36b7c54558e3c631e0c508ecc5
+  revision: df58c0ea31653c9ca601ce4154fc964946b27455
   branch: master
   specs:
-    ohai (14.0.23)
+    ohai (14.0.25)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -141,7 +141,7 @@ GEM
     debug_inspector (0.0.3)
     diff-lcs (1.3)
     docile (1.1.5)
-    docker-api (1.34.0)
+    docker-api (1.34.1)
       excon (>= 0.47.0)
       multi_json
     erubis (2.7.0)
@@ -237,7 +237,7 @@ GEM
     octokit (4.8.0)
       sawyer (~> 0.8.0, >= 0.5.3)
     parallel (1.12.1)
-    parser (2.5.0.2)
+    parser (2.5.0.3)
       ast (~> 2.4.0)
     parslet (1.8.2)
     plist (3.4.0)
