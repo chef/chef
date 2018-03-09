@@ -20,6 +20,7 @@ depends          "ubuntu"
 depends          "users"
 depends          "cron"
 depends          "git"
+depends          "docker"
 
 supports         "ubuntu"
 supports         "debian"
