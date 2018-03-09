@@ -186,7 +186,7 @@ describe Chef::Node do
       expect { node.policy_group = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqurstuvwxyz0123456789-_:." }.to_not raise_error
     end
 
-    it "sets an environment with chef_environment(something)" do
+    it "sets a policy_group with policy_group(something)" do
       node.policy_group("staging")
       expect(node.policy_group).to eq("staging")
     end
@@ -1353,6 +1353,7 @@ describe Chef::Node do
 
         expect(round_tripped_node.policy_name).to eq("my-application")
         expect(round_tripped_node.policy_group).to eq("staging")
+        expect(round_tripped_node.chef_environment).to eq("staging")
       end
 
     end

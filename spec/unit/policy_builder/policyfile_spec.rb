@@ -574,6 +574,10 @@ describe Chef::PolicyBuilder::Policyfile do
               expect(Chef::Config[:policy_group]).to eq("policy_group_from_node_json")
               expect(node.policy_name).to eq("policy_name_from_node_json")
               expect(node.policy_group).to eq("policy_group_from_node_json")
+              expect(node.automatic_attrs[:policy_name]).to eq("policy_name_from_node_json")
+              expect(node.automatic_attrs[:policy_group]).to eq("policy_group_from_node_json")
+              expect(node.automatic_attrs[:chef_environment]).to eq("policy_group_from_node_json")
+
             end
 
           end
@@ -623,6 +627,7 @@ describe Chef::PolicyBuilder::Policyfile do
           it "create node.automatic_attrs[:recipes]" do
             expect(node.automatic_attrs[:recipes]).to eq(["example1::default", "example2::server"])
           end
+
         end
 
         context "when a named run_list is given" do

@@ -164,6 +164,11 @@ class Chef
         events.node_load_completed(node, run_list_with_versions_for_display, Chef::Config)
         events.run_list_expanded(run_list_expansion_ish)
 
+        # we must do this after `node.consume_external_attrs`
+        node.automatic_attrs[:policy_name] = node.policy_name
+        node.automatic_attrs[:policy_group] = node.policy_group
+        node.automatic_attrs[:chef_environment] = node.policy_group
+
         node
       rescue Exception => e
         events.node_load_failed(node_name, e, Chef::Config)
@@ -400,6 +405,7 @@ class Chef
 
         node.policy_name = policy_name_to_set
         node.policy_group = policy_group_to_set
+        node.chef_environment = policy_group_to_set
 
         Chef::Config[:policy_name] = policy_name_to_set
         Chef::Config[:policy_group] = policy_group_to_set
