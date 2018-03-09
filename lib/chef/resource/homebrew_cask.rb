@@ -24,51 +24,73 @@ class Chef
   class Resource
     class HomebrewCask < Chef::Resource
       resource_name :homebrew_cask
-      provides :homebrew_cask
 
-      description ""
+      description "Use the homebrew_cask resource to install binaries distributed via the Homebrew package manager."
       introduced "14.0"
 
       include Chef::Mixin::HomebrewUser
 
-      property :name, String,
+      property :cask_name, String,
+               description: "Cask name to override the resource name.",
                regex: %r{^[\w/-]+$},
                name_property: true
 
-      property :options, String
+      property :options, String,
+               description: "Options to pass to the brew CLI during installation."
 
-      property :install_cask, [true, false],
+      property :install_cask, [TrueClass, FalseClass],
+               description: "Auto install cask tap if necessary.",
                default: true
 
+      property :homebrew_path, String,
+               description: "The path to the homebrew binary.",
+               default: "/usr/local/bin/brew"
+
+      property :owner, String,
+               description: "The owner of the homebrew installation.",
+               default: lazy { Chef::Mixin::HomebrewUser.find_homebrew_username }
+
       action :install do
+        description "Install an application packaged as a Homebrew cask."
+
         homebrew_tap "caskroom/cask" if new_resource.install_cask
 
-        declare_resource(:execute, "installing cask #{new_resource.name}") do
-          command "/usr/local/bin/brew cask install #{new_resource.name} #{new_resource.options}"
-          user find_homebrew_uid
-          environment lazy { { "HOME" => ::Dir.home(find_homebrew_uid), "USER" => find_homebrew_uid } }
-          not_if { casked? }
+        unless casked?
+          converge_by("install cask #{new_resource.name} #{new_resource.options}") do
+            shell_out!("#{new_resource.homebrew_path} cask install #{new_resource.name} #{new_resource.options}",
+                user: new_resource.owner,
+                env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
+                cwd: ::Dir.home(new_resource.owner))
+          end
         end
       end
 
-      action :uninstall do
+      action :remove do
+        description "Remove an application packaged as a Homebrew cask."
+
         homebrew_tap "caskroom/cask" if new_resource.install_cask
 
-        declare_resource(:execute, "uninstalling cask #{new_resource.name}") do
-          command "/usr/local/bin/brew cask uninstall #{new_resource.name}"
-          user find_homebrew_uid
-          environment lazy { { "HOME" => ::Dir.home(find_homebrew_uid), "USER" => find_homebrew_uid } }
-          only_if { casked? }
+        if casked?
+          converge_by("uninstall cask #{new_resource.name}") do
+            shell_out!("#{new_resource.homebrew_path} cask uninstall #{new_resource.name}",
+                user: new_resource.owner,
+                env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
+                cwd: ::Dir.home(new_resource.owner))
+          end
         end
       end
 
       action_class do
         alias_method :action_cask, :action_install
-        alias_method :action_uncask, :action_uninstall
+        alias_method :action_uncask, :action_remove
+        alias_method :action_uninstall, :action_remove
 
         def casked?
           unscoped_name = new_resource.name.split("/").last
-          shell_out("/usr/local/bin/brew cask list 2>/dev/null", user: find_homebrew_uid).stdout.split.include?(unscoped_name)
+          shell_out!('#{new_resource.homebrew_path} cask list 2>/dev/null',
+            user: new_resource.owner,
+            env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
+            cwd: ::Dir.home(new_resource.owner)).stdout.split.include?(unscoped_name)
         end
       end
     end

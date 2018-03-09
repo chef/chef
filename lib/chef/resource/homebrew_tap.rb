@@ -24,49 +24,62 @@ class Chef
   class Resource
     class HomebrewTap < Chef::Resource
       resource_name :homebrew_tap
-      provides :homebrew_tap
 
-      description ""
+      description "Use the homebrew_tap resource to add additional formula repositories to the Homebrew package manager."
       introduced "14.0"
 
       include Chef::Mixin::HomebrewUser
 
-      property :name, String,
+      property :tap_name, String,
+               description: "Optional tap name to override the resource name",
+               validation_message: "Homebrew tap names must be in the form REPO/TAP",
                regex: %r{^[\w-]+(?:\/[\w-]+)+$},
                name_property: true
 
-      property :url, String
+      property :url, String,
+               description: "URL to the tap."
 
       property :full, [TrueClass, FalseClass],
+               description: "Perform a full clone rather than a shallow clone on the tap.",
                default: false
 
+      property :homebrew_path, String,
+               description: "The path to the homebrew binary.",
+               default: "/usr/local/bin/brew"
+
+      property :owner, String,
+               description: "The owner of the homebrew installation",
+               default: lazy { Chef::Mixin::HomebrewUser.find_homebrew_username }
+
       action :tap do
+        description "Add a Homebrew tap."
+
         unless tapped?(new_resource.name)
-          declare_resource(:execute, "tapping #{new_resource.name}") do
-            command "/usr/local/bin/brew tap #{new_resource.full ? '--full' : ''} #{new_resource.name} #{new_resource.url || ''}"
-            environment lazy { { "HOME" => ::Dir.home(find_homebrew_uid), "USER" => find_homebrew_uid } }
-            not_if "/usr/local/bin/brew tap | grep #{new_resource.name}"
-            user find_homebrew_uid
+          converge_by("tap #{new_resource.name}") do
+            shell_out!("#{new_resource.homebrew_path} tap #{new_resource.full ? '--full' : ''} #{new_resource.name} #{new_resource.url || ''}",
+                user: new_resource.owner,
+                env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
+                cwd: ::Dir.home(new_resource.owner))
           end
         end
       end
 
       action :untap do
+        description "Remove a Homebrew tap."
+
         if tapped?(new_resource.name)
-          declare_resource(:execute, "untapping #{new_resource.name}") do
-            command "/usr/local/bin/brew untap #{new_resource.name}"
-            environment lazy { { "HOME" => ::Dir.home(find_homebrew_uid), "USER" => find_homebrew_uid } }
-            only_if "/usr/local/bin/brew tap | grep #{new_resource.name}"
-            user find_homebrew_uid
+          converge_by("untap #{new_resource.name}") do
+            shell_out!("#{new_resource.homebrew_path} untap #{new_resource.name}",
+                user: new_resource.owner,
+                env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
+                cwd: ::Dir.home(new_resource.owner))
           end
         end
       end
 
-      action_class do
-        def tapped?(name)
-          tap_dir = name.gsub("/", "/homebrew-")
-          ::File.directory?("/usr/local/Homebrew/Library/Taps/#{tap_dir}")
-        end
+      def tapped?(name)
+        tap_dir = name.gsub("/", "/homebrew-")
+        ::File.directory?("/usr/local/Homebrew/Library/Taps/#{tap_dir}")
       end
     end
   end

@@ -1,6 +1,6 @@
 #
 # Author:: Joshua Timberman (<jtimberman@chef.io>)
-# Copyright:: 2011-2017, Chef Software, Inc.
+# Copyright:: 2011-2018, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,46 +21,63 @@ class Chef
   class Resource
     class DmgPackage < Chef::Resource
       resource_name :dmg_package
-      provides :dmg_package
 
-      description ""
+      description "Use the dmg_package resourceto install a DMG 'Package'. The resource will retrieve the"\
+                  " DMG file from a remote URL, mount it using OS X's hdid, copy the application (.app directory)"\
+                  " to the specified destination (/Applications), and detach the image using hdiutil. The dmg file"\
+                  "will be stored in the Chef::Config[:file_cache_path]."
       introduced "14.0"
 
       property :app, String,
+               description: "The name of the application used by default for the /Volumes directory and the .app directory copied to /Applications.",
                name_property: true
 
-      property :source, String
+      property :source, String,
+               description: "The remote URL for the dmg to download if specified."
 
-      property :file, String
+      property :file, String,
+               description: "The local dmg full file path."
 
-      property :owner, String
+      property :owner, String,
+               description: "The owner that should own the package installation."
 
       property :destination, String,
+               description: "The directory to copy the .app into.",
                default: "/Applications"
 
-      property :checksum, String
+      property :checksum, String,
+               description: "The sha256 checksum of the dmg to download"
 
-      property :volumes_dir, String
+      property :volumes_dir, String,
+               description: "The Directory under /Volumes where the dmg is mounted as not all dmgs are mounted into a /Volumes location matching the name of the dmg."
 
-      property :dmg_name, String
+      property :dmg_name, String,
+               description: "The name of the dmg if it is not the same as app, or if the name has spaces."
 
       property :type, String,
+               description: "The type of package.",
+               equal_to: %w{app pkg mpkg},
                default: "app"
 
-      property :installed, [true, false],
+      property :installed, [TrueClass, FalseClass],
                default: false, desired_state: false
 
-      property :package_id, String
+      property :package_id, String,
+               description: "The package id registered with pkgutil when a pkg or mpkg is installed"
 
-      property :dmg_passphrase, String
+      property :dmg_passphrase, String,
+               description: "Specify a passphrase to use to unencrypt the dmg while mounting."
 
-      property :accept_eula, [true, false],
+      property :accept_eula, [TrueClass, FalseClass],
+               description: "Specify whether to accept the EULA. Certain dmgs require acceptance of EULA before mounting.",
                default: false
 
       property :headers, [Hash, nil],
+               description: "Allows custom HTTP headers (like cookies) to be set on the remote_file resource.",
                default: nil
 
-      property :allow_untrusted, [true, false],
+      property :allow_untrusted, [TrueClass, FalseClass],
+               description: "Allows packages with untrusted certs to be installed.",
                default: false
 
       load_current_value do |new_resource|
@@ -76,6 +93,8 @@ class Chef
       end
 
       action :install do
+        description "Installs the application."
+
         unless current_resource.installed
 
           volumes_dir = new_resource.volumes_dir ? new_resource.volumes_dir : new_resource.app
