@@ -57,12 +57,13 @@ class Chef
             case line
             when /^[#\s]/
               next
-            when /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
+            when /^(#{device_fstab_regex})\s+#{Regexp.escape(@new_resource.mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
               enabled = true
-              @current_resource.fstype($1)
-              @current_resource.options($2)
-              @current_resource.dump($3.to_i)
-              @current_resource.pass($4.to_i)
+              @current_resource.device($1)
+              @current_resource.fstype($2)
+              @current_resource.options($3)
+              @current_resource.dump($4.to_i)
+              @current_resource.pass($5.to_i)
               Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/fstab")
               next
             when /^[\/\w]+\s+#{Regexp.escape(@new_resource.mount_point)}\s+/
@@ -147,7 +148,7 @@ class Chef
         end
 
         def enable_fs
-          if @current_resource.enabled && mount_options_unchanged?
+          if @current_resource.enabled && mount_options_unchanged? && device_unchanged?
             Chef::Log.debug("#{@new_resource} is already enabled - nothing to do")
             return nil
           end
@@ -253,7 +254,7 @@ class Chef
           if @new_resource.device_type == :device
             device_mount_regex
           else
-            device_fstab
+            Regexp.union(device_fstab, device_mount_regex)
           end
         end
 
