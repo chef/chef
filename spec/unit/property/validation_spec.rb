@@ -699,4 +699,13 @@ describe "Chef::Resource.property validation" do
       end
     end
   end
+
+  context "custom validation messages" do
+    with_property ":x, String, validation_message: 'Must be a string, fool'" do
+      it "raise with the correct error message" do
+        expect { resource.x 1 }.to raise_error Chef::Exceptions::ValidationFailed,
+          "Must be a string, fool"
+      end
+    end
+  end
 end

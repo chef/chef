@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +35,8 @@ class Chef
       # map options are:
       #
       # @param opts [Hash<Symbol,Object>] Validation opts.
+      #   @option opts [String] :validation_message A custom message to return
+      #     should validation fail.
       #   @option opts [Object,Array] :is An object, or list of
       #     objects, that must match the value using Ruby's `===` operator
       #     (`opts[:is].any? { |v| v === value }`). (See #_pv_is.)
@@ -91,16 +93,20 @@ class Chef
         raise ArgumentError, "Options must be a hash" unless opts.kind_of?(Hash)
         raise ArgumentError, "Validation Map must be a hash" unless map.kind_of?(Hash)
 
+        @validation_message ||= {}
+
         map.each do |key, validation|
           unless key.kind_of?(Symbol) || key.kind_of?(String)
             raise ArgumentError, "Validation map keys must be symbols or strings!"
           end
+
           case validation
           when true
             _pv_required(opts, key)
           when false
             true
           when Hash
+            @validation_message[key] = validation.delete(:validation_message) if validation.has_key?(:validation_message)
             validation.each do |check, carg|
               check_method = "_pv_#{check}"
               if respond_to?(check_method, true)
@@ -129,6 +135,10 @@ class Chef
         validation.has_key?(:is) && _pv_is({ key => nil }, key, validation[:is], raise_error: false)
       end
 
+      def _validation_message(key, default)
+        @validation_message.has_key?(key) ? @validation_message[key] : default
+      end
+
       # Return the value of a parameter, or nil if it doesn't exist.
       def _pv_opts_lookup(opts, key)
         if opts.has_key?(key.to_s)
@@ -145,7 +155,7 @@ class Chef
         if is_required
           return true if opts.has_key?(key.to_s) && (explicitly_allows_nil || !opts[key.to_s].nil?)
           return true if opts.has_key?(key.to_sym) && (explicitly_allows_nil || !opts[key.to_sym].nil?)
-          raise Exceptions::ValidationFailed, "Required argument #{key.inspect} is missing!"
+          raise Exceptions::ValidationFailed, _validation_message(key, "Required argument #{key.inspect} is missing!")
         end
         true
       end
@@ -168,7 +178,7 @@ class Chef
           to_be.each do |tb|
             return true if value == tb
           end
-          raise Exceptions::ValidationFailed, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
+          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}.")
         end
       end
 
@@ -187,7 +197,7 @@ class Chef
           to_be.each do |tb|
             return true if value.kind_of?(tb)
           end
-          raise Exceptions::ValidationFailed, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}."
+          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}.")
         end
       end
 
@@ -202,7 +212,7 @@ class Chef
         unless value.nil?
           Array(method_name_list).each do |method_name|
             unless value.respond_to?(method_name)
-              raise Exceptions::ValidationFailed, "Option #{key} must have a #{method_name} method!"
+              raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} must have a #{method_name} method!")
             end
           end
         end
@@ -234,7 +244,7 @@ class Chef
 
             if value.respond_to?(predicate_method)
               if value.send(predicate_method)
-                raise Exceptions::ValidationFailed, "Option #{key} cannot be #{predicate_method_base_name}"
+                raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key} cannot be #{predicate_method_base_name}")
               end
             end
           end
@@ -294,7 +304,7 @@ class Chef
           Array(regex).flatten.each do |r|
             return true if r.match(value.to_s)
           end
-          raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} does not match regular expression #{regex.inspect}"
+          raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key}'s value #{value} does not match regular expression #{regex.inspect}")
         end
       end
 
@@ -316,7 +326,7 @@ class Chef
         if !value.nil?
           callbacks.each do |message, zeproc|
             unless zeproc.call(value)
-              raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} #{message}!"
+              raise Exceptions::ValidationFailed, _validation_message(key, "Option #{key}'s value #{value} #{message}!")
             end
           end
         end
@@ -428,7 +438,7 @@ class Chef
           unless errors.empty?
             message << " Errors:\n#{errors.map { |m| "- #{m}" }.join("\n")}"
           end
-          raise Exceptions::ValidationFailed, message
+          raise Exceptions::ValidationFailed, _validation_message(key, message)
         end
       end
 

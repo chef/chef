@@ -387,6 +387,37 @@ describe Chef::Resource do
     end
   end
 
+  context "Documentation of resources" do
+    it "can have a description" do
+      c = Class.new(Chef::Resource) do
+        description "my description"
+      end
+      expect(c.description).to eq "my description"
+    end
+
+    it "can say when it was introduced" do
+      c = Class.new(Chef::Resource) do
+        introduced "14.0"
+      end
+      expect(c.introduced).to eq "14.0"
+    end
+
+    it "can have some examples" do
+      c = Class.new(Chef::Resource) do
+        examples <<-EOH
+resource "foo" do
+  foo foo
+end
+        EOH
+      end
+      expect(c.examples).to eq <<-EOH
+resource "foo" do
+  foo foo
+end
+        EOH
+    end
+  end
+
   describe "self.resource_name" do
     context "When resource_name is not set" do
       it "and there are no provides lines, resource_name is nil" do
