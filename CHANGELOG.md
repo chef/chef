@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 13.8.6 -->
+## [v13.8.6](https://github.com/chef/chef/tree/v13.8.6) (2018-03-09)
+
+#### Merged Pull Requests
+- Backport RFC-101/RFC-104 resource enhancements [#6964](https://github.com/chef/chef/pull/6964) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=13.8.5 -->
+### Changes since 13.8.5 release
+
+#### Merged Pull Requests
+- Backport RFC-101/RFC-104 resource enhancements [#6964](https://github.com/chef/chef/pull/6964) ([thommay](https://github.com/thommay)) <!-- 13.8.6 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
