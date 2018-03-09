@@ -53,13 +53,13 @@ describe Chef::Provider::Mount::Mount do
       expect(@provider.current_resource.device).to eq("/dev/sdz1")
     end
 
-    it "should accecpt device_type :uuid", :not_supported_on_solaris do
+    it "should accept device_type :uuid", :not_supported_on_solaris do
       @status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")
       expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(@status)
-      @provider.load_current_resource()
+      @provider.load_current_resource
       @provider.mountable?
     end
 
@@ -468,6 +468,33 @@ describe Chef::Provider::Mount::Mount do
         expect(::File).not_to receive(:open).and_yield(@fstab)
 
         @provider.disable_fs
+      end
+    end
+
+    # the fstab might contain the mount with the device as a device but the resource has a label.
+    # we should not create two mount lines, but update the existing one
+    context "when the device is described differently" do
+      it "should update the existing line" do
+        status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)
+        expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
+
+        filesystems = [%q{/dev/sdy1 /tmp/foo  ext3  defaults  1 2},
+                      %q{/dev/sdz1 /tmp/foo  ext3  defaults  1 2}].join("\n")
+        fstab = StringIO.new
+        fstab.puts filesystems
+
+        allow(::File).to receive(:readlines).with("/etc/fstab").and_return(fstab.readlines)
+        allow(::File).to receive(:open).with("/etc/fstab", "w").and_yield(fstab)
+        allow(::File).to receive(:open).with("/etc/fstab", "a").and_yield(fstab)
+
+        @new_resource.device_type :uuid
+        @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
+        @new_resource.dump 1
+
+        @provider.enable_fs
+        expect(fstab.string).to match(%r{/dev/sdy1\s+/tmp/foo\s+ext3\s+defaults\s+1\s+2})
+        expect(fstab.string).to match(%r{UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a\s+/tmp/foo\s+ext3\s+defaults\s+1\s+2})
+        expect(fstab.string).not_to match(%r{/dev/sdz1\s+/tmp/foo\s+ext3\s+defaults\s+1\s+2})
       end
     end
   end
