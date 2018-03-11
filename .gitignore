@@ -61,3 +61,12 @@ kitchen-tests/vendor
 
 # ignore nodes generated during local testing
 nodes/
+
+# acceptance
+acceptance/.acceptance_logs
+acceptance/.acceptance_data
+acceptance/data-collector/Berksfile.lock
+
+# chef-config
+chef-config/.bundle
+chef-config/Gemfile.lock

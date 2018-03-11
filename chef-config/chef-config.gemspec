@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
     spec.add_development_dependency(rspec, "~> 3.2")
   end
 
-  spec.files = %w{Rakefile LICENSE README.md} + Dir.glob("*.gemspec") +
+  spec.files = %w{Rakefile LICENSE} + Dir.glob("*.gemspec") +
     Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
 
   spec.bindir        = "bin"
