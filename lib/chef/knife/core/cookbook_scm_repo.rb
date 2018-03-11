@@ -58,7 +58,7 @@ class Chef
           exit 1
         end
         cmd = git("status --porcelain")
-        if cmd.stdout =~ DIRTY_REPO
+        if cmd.stdout.match?(DIRTY_REPO)
           ui.error "You have uncommitted changes to your cookbook repo (#{repo_path}):"
           ui.msg cmd.stdout
           ui.info "Commit or stash your changes before importing cookbooks"

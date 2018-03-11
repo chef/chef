@@ -360,7 +360,7 @@ class Chef
                                    platform, version = Chef::Platform.find_platform_and_version(node)
                                  rescue ArgumentError => e
                                    # Skip platform/version if they were not found by find_platform_and_version
-                                   if e.message =~ /Cannot find a (?:platform|version)/
+                                   if e.message.match?(/Cannot find a (?:platform|version)/)
                                      platform = "/unknown_platform/"
                                      version = "/unknown_platform_version/"
                                    else
@@ -491,7 +491,7 @@ class Chef
         cb["version"]
       end
     rescue Net::HTTPServerException => e
-      if e.to_s =~ /^404/
+      if e.to_s.match?(/^404/)
         Chef::Log.error("Cannot find a cookbook named #{cookbook_name}")
         nil
       else

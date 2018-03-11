@@ -33,7 +33,7 @@ class Chef
             unless current_resource.version
               case new_resource.source
               when /^http/, /^ftp/
-                if new_resource.source =~ /\/$/
+                if new_resource.source.match?(/\/$/)
                   shell_out_compact_timeout!("pkg_add", "-r", package_name, env: { "PACKAGESITE" => new_resource.source, "LC_ALL" => nil }).status
                 else
                   shell_out_compact_timeout!("pkg_add", "-r", package_name, env: { "PACKAGEROOT" => new_resource.source, "LC_ALL" => nil }).status

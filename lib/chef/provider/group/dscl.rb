@@ -76,7 +76,7 @@ class Chef
           gid = nil; next_gid_guess = 200
           groups_gids = safe_dscl("list", "/Groups", "gid")
           while next_gid_guess < search_limit + 200
-            if groups_gids =~ Regexp.new("#{Regexp.escape(next_gid_guess.to_s)}\n")
+            if groups_gids.match?(Regexp.new("#{Regexp.escape(next_gid_guess.to_s)}\n"))
               next_gid_guess += 1
             else
               gid = next_gid_guess

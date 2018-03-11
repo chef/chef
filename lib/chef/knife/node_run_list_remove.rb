@@ -49,7 +49,7 @@ class Chef
             node.run_list.remove(e)
           else
             ui.warn "#{e} is not in the run list"
-            unless e =~ /^(recipe|role)\[/
+            unless e.match?(/^(recipe|role)\[/)
               ui.warn "(did you forget recipe[] or role[] around it?)"
             end
           end

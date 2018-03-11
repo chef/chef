@@ -87,7 +87,7 @@ class Chef
               chkconfig.stdout.split(/\s+/)[1..-1].each do |level|
                 index = level.split(":").first
                 status = level.split(":").last
-                if level =~ CHKCONFIG_ON
+                if level.match?(CHKCONFIG_ON)
                   @current_run_levels << index.to_i
                   all_levels_match = false unless run_levels.include?(index.to_i)
                 else

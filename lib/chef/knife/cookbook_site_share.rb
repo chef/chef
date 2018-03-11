@@ -135,7 +135,7 @@ class Chef
         res = Chef::JSONCompat.from_json(http_resp.body)
         if http_resp.code.to_i != 201
           if res["error_messages"]
-            if res["error_messages"][0] =~ /Version already exists/
+            if res["error_messages"][0].match?(/Version already exists/)
               ui.error "The same version of this cookbook already exists on Supermarket."
               exit(1)
             else

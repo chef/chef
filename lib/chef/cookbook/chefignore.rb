@@ -62,7 +62,7 @@ class Chef
       end
 
       def find_ignore_file(path)
-        if File.basename(path) =~ /chefignore/
+        if File.basename(path).match?(/chefignore/)
           path
         else
           File.join(path, "chefignore")

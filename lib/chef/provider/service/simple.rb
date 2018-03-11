@@ -145,7 +145,7 @@ class Chef
             Chef::Log.debug "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
             begin
               shell_out!(ps_cmd).stdout.each_line do |line|
-                if r.match(line)
+                if r.match?(line)
                   @current_resource.running true
                   break
                 end

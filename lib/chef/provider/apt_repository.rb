@@ -128,7 +128,7 @@ class Chef
 
         so = shell_out("apt-key list")
         so.stdout.split(/\n/).map do |t|
-          if t =~ %r{^\/#{key}.*\[expired: .*\]$}
+          if t.match?(%r{^\/#{key}.*\[expired: .*\]$})
             Chef::Log.debug "Found expired key: #{t}"
             valid = false
             break

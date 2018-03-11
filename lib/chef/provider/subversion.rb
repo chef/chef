@@ -122,7 +122,7 @@ class Chef
       # If the specified revision is an integer, trust it.
       def revision_int
         @revision_int ||= begin
-          if new_resource.revision =~ /^\d+$/
+          if new_resource.revision.match?(/^\d+$/)
             new_resource.revision
           else
             command = scm(:info, new_resource.repository, new_resource.svn_info_args, authentication, "-r#{new_resource.revision}")

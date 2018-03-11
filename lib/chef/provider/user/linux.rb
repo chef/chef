@@ -101,7 +101,7 @@ class Chef
           passwd_s = shell_out_compact("passwd", "-S", new_resource.username, returns: [ 0, 1 ])
 
           # checking "does not exist" has to come before exit code handling since centos and ubuntu differ in exit codes
-          if passwd_s.stderr =~ /does not exist/
+          if passwd_s.stderr.match?(/does not exist/)
             return false if whyrun_mode?
             raise Chef::Exceptions::User, "User #{new_resource.username} does not exist when checking lock status for #{new_resource}"
           end

@@ -72,7 +72,7 @@ class Chef
 
       def device_type(arg = nil)
         real_arg = arg.kind_of?(String) ? arg.to_sym : arg
-        valid_devices = if RUBY_PLATFORM =~ /solaris/i
+        valid_devices = if RUBY_PLATFORM.match?(/solaris/i)
                           [ :device ]
                         else
                           [ :device, :label, :uuid ]
