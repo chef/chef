@@ -83,7 +83,7 @@ class Chef
 
     # Gets or sets whether this client is a validator.
     #
-    # @param [Boolean] whether or not the client is a validator.  If
+    # @param [Boolean] arg whether or not the client is a validator.  If
     #   `nil`, retrieves the already-set value.
     # @return [Boolean] The current value
     def validator(arg = nil)

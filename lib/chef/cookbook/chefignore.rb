@@ -33,7 +33,7 @@ class Chef
         @ignores = parse_ignore_file
       end
 
-      # @param [Array] list the list of cookbook files
+      # @param [Array] file_list the list of cookbook files
       # @return [Array] list of cookbook files with chefignore files removed
       def remove_ignores_from(file_list)
         Array(file_list).inject([]) do |unignored, file|

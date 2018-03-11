@@ -36,7 +36,7 @@ class Chef
 
       # Is the current notification a duplicate of another notification
       #
-      # @param [Notification] another notification object to compare to
+      # @param [Notification] other_notification another notification object to compare to
       # @return [Boolean] does the resource match
       def duplicates?(other_notification)
         unless other_notification.respond_to?(:resource) && other_notification.respond_to?(:action)

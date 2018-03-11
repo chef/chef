@@ -89,7 +89,7 @@ class Chef
       end
 
       # determine if a cookbook file is available in the run
-      # @param [String] path the path to the template file
+      # @param [String] fn the path to the template file
       #
       # @return [Boolean] cookbook file exists or doesn't
       def has_cookbook_file?(fn)

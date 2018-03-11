@@ -206,7 +206,7 @@ class Chef
     #
     # Adds an before notification to the +before_notification_collection+.
     #
-    # @param [Chef::Resource::Notification] The notification to add.
+    # @param [Chef::Resource::Notification] notification The notification to add.
     #
     def notifies_before(notification)
       # Note for the future, notification.notifying_resource may be an instance
@@ -218,7 +218,7 @@ class Chef
     #
     # Adds an immediate notification to the +immediate_notification_collection+.
     #
-    # @param [Chef::Resource::Notification] The notification to add.
+    # @param [Chef::Resource::Notification] notification The notification to add.
     #
     def notifies_immediately(notification)
       # Note for the future, notification.notifying_resource may be an instance
@@ -230,7 +230,7 @@ class Chef
     #
     # Adds a delayed notification to the +delayed_notification_collection+.
     #
-    # @param [Chef::Resource::Notification] The notification to add.
+    # @param [Chef::Resource::Notification] notification The notification to add.
     #
     def notifies_delayed(notification)
       # Note for the future, notification.notifying_resource may be an instance
@@ -309,7 +309,7 @@ class Chef
     #      I don't see anything different beyond accepting and returning an
     #      array of recipes.
     #
-    # @param recipe_names [Array[String]] The recipe name (e.g 'my_cookbook' or
+    # @param recipe_name [Array[String]] The recipe name (e.g 'my_cookbook' or
     #   'my_cookbook::my_resource').
     # @param current_cookbook [String] The cookbook we are currently running in.
     #
