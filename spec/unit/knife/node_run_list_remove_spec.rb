@@ -24,7 +24,7 @@ describe Chef::Knife::NodeRunListRemove do
     @knife = Chef::Knife::NodeRunListRemove.new
     @knife.config[:print_after] = nil
     @knife.name_args = [ "adam", "role[monkey]" ]
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
     @node.name("knifetest-node")
     @node.run_list << "role[monkey]"
     allow(@node).to receive(:save).and_return(true)

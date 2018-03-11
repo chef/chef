@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::Knife::NodeShow do
 
   let(:node) do
-    node = Chef::Node.new()
+    node = Chef::Node.new
     node.name("adam")
     node.run_list = ["role[base]"]
     node

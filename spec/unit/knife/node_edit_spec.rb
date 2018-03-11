@@ -35,7 +35,7 @@ describe Chef::Knife::NodeEdit do
       :print_after => nil,
     }
     @knife.name_args = [ "adam" ]
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
   end
 
   it "should load the node" do

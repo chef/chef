@@ -59,7 +59,7 @@ describe Chef::Provider::Mount::Mount do
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       @stdout_findfs = double("STDOUT", :first => "/dev/sdz1")
       expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(@status)
-      @provider.load_current_resource()
+      @provider.load_current_resource
       @provider.mountable?
     end
 
@@ -99,36 +99,36 @@ describe Chef::Provider::Mount::Mount do
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       expect(@provider).to receive(:shell_out).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
       expect(::File).to receive(:exists?).with("").and_return(false)
-      expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
+      expect { @provider.load_current_resource; @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
     it "should raise an error if the mount point does not exist" do
       allow(::File).to receive(:exists?).with("/tmp/foo").and_return false
-      expect { @provider.load_current_resource(); @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
+      expect { @provider.load_current_resource; @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
     %w{tmpfs fuse cgroup vboxsf zfs}.each do |fstype|
       it "does not expect the device to exist for #{fstype}" do
         @new_resource.fstype(fstype)
         @new_resource.device("whatever")
-        expect { @provider.load_current_resource(); @provider.mountable? }.not_to raise_error
+        expect { @provider.load_current_resource; @provider.mountable? }.not_to raise_error
       end
     end
 
     it "does not expect the device to exist if it's none" do
       @new_resource.device("none")
-      expect { @provider.load_current_resource(); @provider.mountable? }.not_to raise_error
+      expect { @provider.load_current_resource; @provider.mountable? }.not_to raise_error
     end
 
     it "should set mounted true if the mount point is found in the mounts list" do
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/sdz1 on /tmp/foo type ext3 (rw)\n"))
-      @provider.load_current_resource()
+      @provider.load_current_resource
       expect(@provider.current_resource.mounted).to be_truthy
     end
 
     it "should set mounted false if another mount point beginning with the same path is found in the mounts list" do
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/sdz1 on /tmp/foobar type ext3 (rw)\n"))
-      @provider.load_current_resource()
+      @provider.load_current_resource
       expect(@provider.current_resource.mounted).to be_falsey
     end
 
@@ -140,7 +140,7 @@ describe Chef::Provider::Mount::Mount do
       allow(::File).to receive(:readlink).with("#{@new_resource.device}").and_return(target)
 
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "#{target} on /tmp/foo type ext3 (rw)\n"))
-      @provider.load_current_resource()
+      @provider.load_current_resource
       expect(@provider.current_resource.mounted).to be_truthy
     end
 
@@ -154,7 +154,7 @@ describe Chef::Provider::Mount::Mount do
       allow(::File).to receive(:readlink).with("#{@new_resource.device}").and_return(target)
 
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "#{absolute_target} on /tmp/foo type ext3 (rw)\n"))
-      @provider.load_current_resource()
+      @provider.load_current_resource
       expect(@provider.current_resource.mounted).to be_truthy
     end
 
@@ -163,7 +163,7 @@ describe Chef::Provider::Mount::Mount do
       mount << "#{@new_resource.device} on #{@new_resource.mount_point} type ext3 (rw)\n"
 
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => mount))
-      @provider.load_current_resource()
+      @provider.load_current_resource
       expect(@provider.current_resource.mounted).to be_truthy
     end
 
@@ -172,13 +172,13 @@ describe Chef::Provider::Mount::Mount do
       mount << "/dev/sdy1 on #{@new_resource.mount_point} type ext3 (rw)\n"
 
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => mount))
-      @provider.load_current_resource()
+      @provider.load_current_resource
       expect(@provider.current_resource.mounted).to be_falsey
     end
 
     it "mounted should be false if the mount point is not found in the mounts list" do
       allow(@provider).to receive(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/sdy1 on /tmp/foo type ext3 (rw)\n"))
-      @provider.load_current_resource()
+      @provider.load_current_resource
       expect(@provider.current_resource.mounted).to be_falsey
     end
 
@@ -296,14 +296,14 @@ describe Chef::Provider::Mount::Mount do
     describe "mount_fs" do
       it "should mount the filesystem if it is not mounted" do
         expect(@provider).to receive(:shell_out!).with("mount -t ext3 -o defaults /dev/sdz1 /tmp/foo")
-        @provider.mount_fs()
+        @provider.mount_fs
       end
 
       it "should mount the filesystem with options if options were passed" do
         options = "rw,noexec,noauto"
         @new_resource.options(%w{rw noexec noauto})
         expect(@provider).to receive(:shell_out!).with("mount -t ext3 -o rw,noexec,noauto /dev/sdz1 /tmp/foo")
-        @provider.mount_fs()
+        @provider.mount_fs
       end
 
       it "should mount the filesystem specified by uuid", :not_supported_on_solaris do
@@ -314,13 +314,13 @@ describe Chef::Provider::Mount::Mount do
         @stdout_mock = double("stdout mock")
         allow(@stdout_mock).to receive(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
         expect(@provider).to receive(:shell_out!).with("mount -t #{@new_resource.fstype} -o defaults -U #{@new_resource.device} #{@new_resource.mount_point}").and_return(@stdout_mock)
-        @provider.mount_fs()
+        @provider.mount_fs
       end
 
       it "should not mount the filesystem if it is mounted" do
         allow(@current_resource).to receive(:mounted).and_return(true)
         expect(@provider).not_to receive(:shell_out!)
-        @provider.mount_fs()
+        @provider.mount_fs
       end
 
     end
@@ -329,13 +329,13 @@ describe Chef::Provider::Mount::Mount do
       it "should umount the filesystem if it is mounted" do
         @current_resource.mounted(true)
         expect(@provider).to receive(:shell_out!).with("umount /tmp/foo")
-        @provider.umount_fs()
+        @provider.umount_fs
       end
 
       it "should not umount the filesystem if it is not mounted" do
         @current_resource.mounted(false)
         expect(@provider).not_to receive(:shell_out!)
-        @provider.umount_fs()
+        @provider.umount_fs
       end
     end
 
@@ -362,7 +362,7 @@ describe Chef::Provider::Mount::Mount do
         expect(@provider).to receive(:umount_fs)
         expect(@provider).to receive(:sleep).with(1)
         expect(@provider).to receive(:mount_fs)
-        @provider.remount_fs()
+        @provider.remount_fs
       end
 
       it "should not try to remount at all if mounted is false" do
@@ -370,7 +370,7 @@ describe Chef::Provider::Mount::Mount do
         expect(@provider).not_to receive(:shell_out!)
         expect(@provider).not_to receive(:umount_fs)
         expect(@provider).not_to receive(:mount_fs)
-        @provider.remount_fs()
+        @provider.remount_fs
       end
     end
 

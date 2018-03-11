@@ -29,7 +29,7 @@ describe Chef::Win32::Registry do
   let(:key_to_delete) { "OpscodeNumbers" }
   let(:sub_key) { "OpscodePrimes" }
   let(:missing_key_path) { 'HKCU\Software' }
-  let(:registry) { Chef::Win32::Registry.new() }
+  let(:registry) { Chef::Win32::Registry.new }
   let(:hive_mock) { double("::Win32::Registry::KHKEY_CURRENT_USER") }
   let(:reg_mock) { double("reg") }
 
@@ -252,7 +252,7 @@ describe Chef::Win32::Registry do
       expect(registry).to receive(:key_exists!).with(key_path).and_return(true)
       expect(registry).to receive(:get_hive_and_key).with(key_path).and_return([hive_mock, key])
       expect(hive_mock).to receive(:open).with(key, ::Win32::Registry::KEY_READ | registry.registry_system_architecture).and_yield(reg_mock)
-      expect(reg_mock).to receive(:each_key).and_return(no_args())
+      expect(reg_mock).to receive(:each_key).and_return(no_args)
       expect(registry.has_subkeys?(key_path)).to eq(false)
     end
 
@@ -290,7 +290,7 @@ describe Chef::Win32::Registry do
       expect(registry).to receive(:key_exists!).with(key_path).and_return(true)
       expect(registry).to receive(:get_hive_and_key).with(key_path).and_return([hive_mock, key])
       expect(hive_mock).to receive(:open).with(key, ::Win32::Registry::KEY_READ | registry.registry_system_architecture).and_yield(reg_mock)
-      expect(reg_mock).to receive(:any?).and_yield(no_args())
+      expect(reg_mock).to receive(:any?).and_yield(no_args)
       registry.value_exists?(key_path, value1) == false
     end
   end
@@ -305,7 +305,7 @@ describe Chef::Win32::Registry do
       expect(registry).to receive(:key_exists!).with(key_path).and_return(true)
       expect(registry).to receive(:get_hive_and_key).with(key_path).and_return([hive_mock, key])
       expect(registry).to receive(:get_type_from_name).with(:string).and_return(1)
-      expect(reg_mock).to receive(:each).with(no_args()).and_yield("one", 1, "1")
+      expect(reg_mock).to receive(:each).with(no_args).and_yield("one", 1, "1")
       expect(hive_mock).to receive(:open).with(key, ::Win32::Registry::KEY_READ | registry.registry_system_architecture).and_yield(reg_mock)
       expect(registry.data_exists?(key_path, value1)).to eq(true)
     end
@@ -315,7 +315,7 @@ describe Chef::Win32::Registry do
       expect(registry).to receive(:get_hive_and_key).with(key_path).and_return([hive_mock, key])
       expect(hive_mock).to receive(:open).with(key, ::Win32::Registry::KEY_READ | registry.registry_system_architecture).and_yield(reg_mock)
       expect(registry).to receive(:get_type_from_name).with(:string).and_return(1)
-      expect(reg_mock).to receive(:each).with(no_args()).and_yield("one", 1, "2")
+      expect(reg_mock).to receive(:each).with(no_args).and_yield("one", 1, "2")
       expect(registry.data_exists?(key_path, value1)).to eq(false)
     end
   end

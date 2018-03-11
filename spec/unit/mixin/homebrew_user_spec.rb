@@ -52,7 +52,7 @@ describe Chef::Mixin::HomebrewUser do
     let(:brew_owner) { 2001 }
     let(:default_brew_path) { "/usr/local/bin/brew" }
     let(:stat_double) do
-      d = double()
+      d = double
       expect(d).to receive(:uid).and_return(brew_owner)
       d
     end

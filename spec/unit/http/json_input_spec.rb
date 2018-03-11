@@ -21,7 +21,7 @@ require "chef/http/json_input"
 
 describe Chef::HTTP::JSONInput do
 
-  let(:json_encoder) { described_class.new() }
+  let(:json_encoder) { described_class.new }
 
   let(:url) { URI.parse("http://example.com") }
   let(:headers) { {} }

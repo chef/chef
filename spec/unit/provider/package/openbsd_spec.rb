@@ -45,14 +45,14 @@ describe Chef::Provider::Package::Openbsd do
 
     context "when not already installed" do
       before do
-        allow(provider).to receive(:shell_out!).with("pkg_info", "-e", "#{name}->0", anything()).and_return(instance_double("shellout", :stdout => ""))
+        allow(provider).to receive(:shell_out!).with("pkg_info", "-e", "#{name}->0", anything).and_return(instance_double("shellout", :stdout => ""))
       end
 
       context "when there is a single candidate" do
 
         context "when source is not provided" do
           it "should run the installation command" do
-            expect(provider).to receive(:shell_out!).with("pkg_info", "-I", name, anything()).and_return(
+            expect(provider).to receive(:shell_out!).with("pkg_info", "-I", name, anything).and_return(
               instance_double("shellout", :stdout => "#{name}-#{version}\n"))
             expect(provider).to receive(:shell_out!).with(
               "pkg_add", "-r", "#{name}-#{version}",
@@ -83,8 +83,8 @@ describe Chef::Provider::Package::Openbsd do
 
           context "if no version is specified" do
             it "should run the installation command" do
-              expect(provider).to receive(:shell_out!).with("pkg_info", "-e", "#{package_name}->0", anything()).and_return(instance_double("shellout", :stdout => ""))
-              expect(provider).to receive(:shell_out!).with("pkg_info", "-I", name, anything()).and_return(
+              expect(provider).to receive(:shell_out!).with("pkg_info", "-e", "#{package_name}->0", anything).and_return(instance_double("shellout", :stdout => ""))
+              expect(provider).to receive(:shell_out!).with("pkg_info", "-I", name, anything).and_return(
                 instance_double("shellout", :stdout => "#{name}-#{version}-#{flavor}\n"))
               expect(provider).to receive(:shell_out!).with(
                 "pkg_add", "-r", "#{name}-#{version}-#{flavor}",
@@ -98,7 +98,7 @@ describe Chef::Provider::Package::Openbsd do
 
         context "if a version is specified" do
           it "should use the flavor from the version" do
-            expect(provider).to receive(:shell_out!).with("pkg_info", "-I", "#{name}-#{version}-#{flavor_b}", anything()).and_return(
+            expect(provider).to receive(:shell_out!).with("pkg_info", "-I", "#{name}-#{version}-#{flavor_b}", anything).and_return(
               instance_double("shellout", :stdout => "#{name}-#{version}-#{flavor_a}\n"))
 
             new_resource.version("#{version}-#{flavor_b}")

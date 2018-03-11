@@ -153,7 +153,7 @@ class Chef
       end
     end
 
-    def destroy(data_bag = self.data_bag(), databag_item = name)
+    def destroy(data_bag = self.data_bag, databag_item = name)
       chef_server_rest.delete("data/#{data_bag}/#{databag_item}")
     end
 

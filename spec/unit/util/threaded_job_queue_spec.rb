@@ -22,7 +22,7 @@ describe Chef::Util::ThreadedJobQueue do
   let(:queue) { Chef::Util::ThreadedJobQueue.new }
 
   it "should pass mutex to jobs with an arity of 1" do
-    job = double()
+    job = double
     expect(job).to receive(:arity).at_least(:once).and_return(1)
     expect(job).to receive(:call).exactly(5).times.with(an_instance_of(Mutex))
 
@@ -31,7 +31,7 @@ describe Chef::Util::ThreadedJobQueue do
   end
 
   it "should pass nothing to jobs with an arity of 0" do
-    job = double()
+    job = double
     expect(job).to receive(:arity).at_least(:once).and_return(0)
     expect(job).to receive(:call).exactly(5).times.with(no_args)
 

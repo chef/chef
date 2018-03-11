@@ -25,7 +25,7 @@ describe Chef::Knife::NodeRunListSet do
     @knife.config = {}
     @knife.name_args = [ "adam", "role[monkey]" ]
     allow(@knife).to receive(:output).and_return(true)
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
     allow(@node).to receive(:save).and_return(true)
     allow(Chef::Node).to receive(:load).and_return(@node)
   end

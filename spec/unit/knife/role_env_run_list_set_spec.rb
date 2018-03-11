@@ -33,7 +33,7 @@ describe Chef::Knife::RoleEnvRunListSet do
     @knife.name_args = [ "will", "QA", "role[owen]", "role[mauntel]" ]
     allow(@knife).to receive(:output).and_return(true)
 
-    @role = Chef::Role.new()
+    @role = Chef::Role.new
     @role.name("will")
     allow(@role).to receive(:save).and_return(true)
 

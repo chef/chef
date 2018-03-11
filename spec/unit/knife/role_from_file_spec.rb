@@ -30,7 +30,7 @@ describe Chef::Knife::RoleFromFile do
     @knife.name_args = [ "adam.rb" ]
     allow(@knife).to receive(:output).and_return(true)
     allow(@knife).to receive(:confirm).and_return(true)
-    @role = Chef::Role.new()
+    @role = Chef::Role.new
     allow(@role).to receive(:save)
     allow(@knife.loader).to receive(:load_from).and_return(@role)
     @stdout = StringIO.new
