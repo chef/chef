@@ -141,17 +141,17 @@ class Chef
         end
 
         # run dism.exe to get a list of all available features and their state
-        # and save that to the node at node.normal (same as ohai) level.
+        # and save that to the node at node.override level.
         # We do this because getting a list of features in dism takes at least a second
         # and this data will be persisted across multiple resource runs which gives us
         # a much faster run when no features actually need to be installed / removed.
         # @return [void]
         def reload_cached_dism_data
           Chef::Log.debug("Caching Windows features available via dism.exe.")
-          node.normal["dism_features_cache"] = Mash.new
-          node.normal["dism_features_cache"]["enabled"] = []
-          node.normal["dism_features_cache"]["disabled"] = []
-          node.normal["dism_features_cache"]["removed"] = []
+          node.override["dism_features_cache"] = Mash.new
+          node.override["dism_features_cache"]["enabled"] = []
+          node.override["dism_features_cache"]["disabled"] = []
+          node.override["dism_features_cache"]["removed"] = []
 
           # Grab raw feature information from dism command line
           raw_list_of_features = shell_out("dism.exe /Get-Features /Online /Format:Table /English").stdout
@@ -178,7 +178,7 @@ class Chef
         # @return [void]
         def add_to_feature_mash(feature_type, feature_string)
           feature_details = feature_string.strip.split(/\s+[|]\s+/)
-          node.normal["dism_features_cache"][feature_type] << feature_details.first
+          node.override["dism_features_cache"][feature_type] << feature_details.first
         end
 
         # Fail if any of the packages are in a removed state
