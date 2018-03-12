@@ -371,7 +371,7 @@ function Run-RubyCommand($command, $argList) {
   # % character in *any* waym shape or form.
   # https://connect.microsoft.com/PowerShell/feedback/details/376207/executing-commands-which-require-quotes-and-variables-is-practically-impossible
   #
-  # In case you think that you're either reading this incorrectly or that I'm full of shit, here
+  # In case you think that you're either reading this incorrectly or that I'm full of air, here
   # are some examples.  These use EchoArgs.exe from the PowerShell Community Extensions package.
   # I have not included the argument parsing output from EchoArgs.exe to prevent confusing you with
   # more details about MSVCRT's parsing algorithm.
