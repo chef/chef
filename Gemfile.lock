@@ -141,7 +141,7 @@ GEM
     debug_inspector (0.0.3)
     diff-lcs (1.3)
     docile (1.1.5)
-    docker-api (1.34.0)
+    docker-api (1.34.1)
       excon (>= 0.47.0)
       multi_json
     erubis (2.7.0)
