@@ -95,8 +95,8 @@ class Chef
       end
 
       def action_create
-        crontab = String.new
-        newcron = String.new
+        crontab = ""
+        newcron = ""
         cron_found = false
 
         newcron = get_crontab_entry
@@ -156,7 +156,7 @@ class Chef
 
       def action_delete
         if @cron_exists
-          crontab = String.new
+          crontab = ""
           cron_found = false
           read_crontab.each_line do |line|
             case line.chomp
