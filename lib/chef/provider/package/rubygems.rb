@@ -86,7 +86,22 @@ class Chef
           # === Returns
           # [Gem::Specification]  an array of Gem::Specification objects
           def installed_versions(gem_dep)
-            if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("1.8.0")
+            rubygems_version = Gem::Version.new(Gem::VERSION)
+            if rubygems_version >= Gem::Version.new("2.7")
+              # In newer Rubygems, bundler is now a "default gem" which means
+              # even with AlternateGemEnvironment when you try to get the
+              # installed versions, you get the one from Chef's Ruby's default
+              # gems. This workaround ignores default gems entirely so we see
+              # only the installed gems.
+              stubs = gem_specification.send(:installed_stubs, gem_specification.dirs, "#{gem_dep.name}-*.gemspec")
+              # Filter down to only to only stubs we actually want. The name
+              # filter is needed in case of things like `foo-*.gemspec` also
+              # matching a gem named `foo-bar`.
+              stubs.select! { |stub| stub.name == gem_dep.name && gem_dep.requirement.satisfied_by?(stub.version) }
+              # This isn't sorting before returning beacuse the only code that
+              # uses this method calls `max_by` so it doesn't need to be sorted.
+              stubs
+            elsif rubygems_version >= Gem::Version.new("1.8.0")
               gem_specification.find_all_by_name(gem_dep.name, gem_dep.requirement)
             else
               gem_source_index.search(gem_dep)
@@ -432,23 +447,16 @@ class Chef
         end
 
         def current_version
-          # rubygems 2.6.3 ensures that gem lists are sorted newest first
-          pos = if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.6.3")
-                  :first
-                else
-                  :last
-                end
-
           # If one or more matching versions are installed, the newest of them
           # is the current version
           if !matching_installed_versions.empty?
-            gemspec = matching_installed_versions.send(pos)
+            gemspec = matching_installed_versions.max_by(&:version)
             logger.debug { "#{new_resource} found installed gem #{gemspec.name} version #{gemspec.version} matching #{gem_dependency}" }
             gemspec
             # If no version matching the requirements exists, the latest installed
             # version is the current version.
           elsif !all_installed_versions.empty?
-            gemspec = all_installed_versions.send(pos)
+            gemspec = all_installed_versions.max_by(&:version)
             logger.debug { "#{new_resource} newest installed version of gem #{gemspec.name} is #{gemspec.version}" }
             gemspec
           else
