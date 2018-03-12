@@ -119,16 +119,6 @@ class Chef
         :description => "Do not proxy locations for the node being bootstrapped; this option is used internally by Opscode",
         :proc => Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
 
-      # DEPR: Remove this option in Chef 13
-      option :distro,
-        :short => "-d DISTRO",
-        :long => "--distro DISTRO",
-        :description => "Bootstrap a distro using a template. [DEPRECATED] Use -t / --bootstrap-template option instead.",
-        :proc        => Proc.new { |v|
-          Chef::Log.warn("[DEPRECATED] -d / --distro option is deprecated. Use -t / --bootstrap-template option instead.")
-          v
-        }
-
       option :bootstrap_template,
         :short => "-t TEMPLATE",
         :long => "--bootstrap-template TEMPLATE",
@@ -148,15 +138,6 @@ class Chef
         :long => "--use-sudo-password",
         :description => "Execute the bootstrap via sudo with password",
         :boolean => false
-
-      # DEPR: Remove this option in Chef 13
-      option :template_file,
-        :long => "--template-file TEMPLATE",
-        :description => "Full path to location of template to use. [DEPRECATED] Use -t / --bootstrap-template option instead.",
-        :proc        => Proc.new { |v|
-          Chef::Log.warn("[DEPRECATED] --template-file option is deprecated. Use -t / --bootstrap-template option instead.")
-          v
-        }
 
       option :run_list,
         :short => "-r RUN_LIST",
@@ -312,10 +293,9 @@ class Chef
       end
 
       def bootstrap_template
-        # The order here is important. We want to check if we have the new Chef 12 option is set first.
-        # Knife cloud plugins unfortunately all set a default option for the :distro so it should be at
-        # the end.
-        config[:bootstrap_template] || config[:template_file] || config[:distro] || default_bootstrap_template
+        # Allow passing a bootstrap template or use the default
+        # @return [String] The CLI specific bootstrap template or the default
+        config[:bootstrap_template] || default_bootstrap_template
       end
 
       def find_template

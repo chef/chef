@@ -96,24 +96,8 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
-  context "with :distro and :bootstrap_template cli options" do
-    let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "--distro", "other-template" ] }
-
-    it "should select bootstrap template" do
-      expect(File.basename(knife.bootstrap_template)).to eq("my-template")
-    end
-  end
-
-  context "with :distro and :template_file cli options" do
-    let(:bootstrap_cli_options) { [ "--distro", "my-template", "--template-file", "other-template" ] }
-
-    it "should select bootstrap template" do
-      expect(File.basename(knife.bootstrap_template)).to eq("other-template")
-    end
-  end
-
   context "with :bootstrap_template and :template_file cli options" do
-    let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "--template-file", "other-template" ] }
+    let(:bootstrap_cli_options) { [ "--bootstrap-template", "my-template", "other-template" ] }
 
     it "should select bootstrap template" do
       expect(File.basename(knife.bootstrap_template)).to eq("my-template")
@@ -247,7 +231,7 @@ describe Chef::Knife::Bootstrap do
     end
   end
 
-  ["-d", "--distro", "-t", "--bootstrap-template", "--template-file"].each do |t|
+  ["-t", "--bootstrap-template"].each do |t|
     context "when #{t} option is given in the command line" do
       it "sets the knife :bootstrap_template config" do
         knife.parse_options([t, "blahblah"])
