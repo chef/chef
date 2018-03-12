@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.125 -->
-## [v14.0.125](https://github.com/chef/chef/tree/v14.0.125) (2018-03-12)
+<!-- latest_release 14.0.126 -->
+## [v14.0.126](https://github.com/chef/chef/tree/v14.0.126) (2018-03-12)
 
 #### Merged Pull Requests
-- Use node.override not node.normal in the windows_feature_dism resource [#6962](https://github.com/chef/chef/pull/6962) ([tas50](https://github.com/tas50))
+- Remove platfom restrictions in provides and don&#39;t require providers [#6957](https://github.com/chef/chef/pull/6957) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Remove platfom restrictions in provides and don&#39;t require providers [#6957](https://github.com/chef/chef/pull/6957) ([tas50](https://github.com/tas50)) <!-- 14.0.126 -->
 - Use node.override not node.normal in the windows_feature_dism resource [#6962](https://github.com/chef/chef/pull/6962) ([tas50](https://github.com/tas50)) <!-- 14.0.125 -->
 - RFC 106: expose name and chef_environment as attrs [#6967](https://github.com/chef/chef/pull/6967) ([thommay](https://github.com/thommay)) <!-- 14.0.124 -->
 - Remove the manpages [#6974](https://github.com/chef/chef/pull/6974) ([tas50](https://github.com/tas50)) <!-- 14.0.123 -->
