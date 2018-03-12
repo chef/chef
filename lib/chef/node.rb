@@ -330,6 +330,8 @@ class Chef
       Chef::Log.debug("Platform is #{platform} version #{version}")
       automatic[:platform] = platform
       automatic[:platform_version] = version
+      automatic[:name] = name
+      automatic[:chef_environment] = chef_environment
     end
 
     def consume_ohai_data(ohai_data)
@@ -421,6 +423,7 @@ class Chef
 
       apply_expansion_attributes(expansion)
 
+      automatic_attrs[:chef_environment] = chef_environment
       expansion
     end
 
@@ -510,7 +513,16 @@ class Chef
       return o if o.kind_of? Chef::Node
       node = new
       node.name(o["name"])
-      node.chef_environment(o["chef_environment"])
+
+      node.policy_name = o["policy_name"] if o.has_key?("policy_name")
+      node.policy_group = o["policy_group"] if o.has_key?("policy_group")
+
+      unless node.policy_group.nil?
+        node.chef_environment(o["policy_group"])
+      else
+        node.chef_environment(o["chef_environment"])
+      end
+
       if o.has_key?("attributes")
         node.normal_attrs = o["attributes"]
       end
@@ -524,9 +536,6 @@ class Chef
       elsif o.has_key?("recipes")
         o["recipes"].each { |r| node.recipes << r }
       end
-
-      node.policy_name = o["policy_name"] if o.has_key?("policy_name")
-      node.policy_group = o["policy_group"] if o.has_key?("policy_group")
 
       node
     end
