@@ -43,7 +43,7 @@ class Chef
         def remove_user
           command = [ "pw", "userdel", new_resource.username ]
           command << "-r" if new_resource.manage_home
-          shell_out_compact!(command)
+          shell_out_compact!(*command)
         end
 
         def check_lock

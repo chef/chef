@@ -33,7 +33,7 @@ class Chef
             useradd.concat(universal_options)
             useradd.concat(useradd_options)
           end
-          shell_out_compact!(command)
+          shell_out_compact!(*command)
         end
 
         def manage_user
@@ -41,7 +41,7 @@ class Chef
           command = compile_command("usermod") do |u|
             u.concat(universal_options)
           end
-          shell_out_compact!(command)
+          shell_out_compact!(*command)
         end
 
         def remove_user
@@ -49,7 +49,7 @@ class Chef
           command << "-r" if new_resource.manage_home
           command << "-f" if new_resource.force
           command << new_resource.username
-          shell_out_compact!(command)
+          shell_out_compact!(*command)
         end
 
         def check_lock

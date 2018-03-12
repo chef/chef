@@ -68,7 +68,7 @@ class Chef
           command = [ "pkg", options, "install", "-q" ]
           command << "--accept" if new_resource.accept_license
           command << "#{name}@#{version}"
-          shell_out_compact_timeout!(command)
+          shell_out_compact_timeout!(*command)
         end
 
         def upgrade_package(name, version)

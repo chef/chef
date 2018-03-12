@@ -106,7 +106,7 @@ class Chef
                       else
                         [ "pkgadd", "-n", "-d", new_resource.source, "all" ]
                       end
-            shell_out_compact_timeout!(command)
+            shell_out_compact_timeout!(*command)
             Chef::Log.debug("#{new_resource} installed version #{new_resource.version} from: #{new_resource.source}")
           else
             command = if ::File.directory?(new_resource.source) # CHEF-4469

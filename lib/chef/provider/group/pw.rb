@@ -48,7 +48,7 @@ class Chef
             command += [ "-M", new_resource.members.join(",") ]
           end
 
-          shell_out_compact!(command)
+          shell_out_compact!(*command)
         end
 
         # Manage the group when it already exists
