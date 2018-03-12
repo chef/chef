@@ -56,7 +56,6 @@ class Chef
         super
         @properties = ToTextHash.new
         @resource = nil
-        @reboot_action = :nothing
       end
 
       def resource(value = nil)
@@ -100,13 +99,7 @@ class Chef
       # If the set method of the DSC resource indicate that a reboot
       # is necessary, reboot_action provides the mechanism for a reboot to
       # be requested.
-      def reboot_action(value = nil)
-        if value
-          @reboot_action = value
-        else
-          @reboot_action
-        end
-      end
+      property :reboot_action, Symbol, default: :nothing, equal_to: [:nothing, :reboot_now, :request_reboot]
 
       property :timeout, Integer
 
