@@ -26,6 +26,6 @@ if Chef::Platform.windows?
     end
 
     require "win32/eventlog"
-    Chef::Win32EventLogLoaded = true # rubocop:disable Style/ConstantName
+    Chef::Win32EventLogLoaded = true # rubocop:disable Naming/ConstantName
   end
 end

@@ -25,7 +25,7 @@ class Chef
       include Chef::DSL::Powershell
 
       resource_name :dsc_script
-      provides :dsc_script, os: "windows"
+      provides :dsc_script
 
       description "Many DSC resources are comparable to built-in Chef resources. For"\
                   " example, both DSC and Chef have file, package, and service resources."\

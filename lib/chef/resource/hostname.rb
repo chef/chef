@@ -3,8 +3,8 @@ class Chef
     # Sets the hostname and updates /etc/hosts on *nix systems
     # @since 14.0.0
     class Hostname < Chef::Resource
-      provides :hostname
       resource_name :hostname
+      provides :hostname
 
       description "Sets the systems hostname, ensures that reboot will preserve the hostname, and re-runs the ohai plugin so the hostname will be available in subsequent cookbooks."
       introduced "14.0"

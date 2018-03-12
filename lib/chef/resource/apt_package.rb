@@ -17,7 +17,6 @@
 #
 
 require "chef/resource/package"
-require "chef/provider/package/apt"
 
 class Chef
   class Resource

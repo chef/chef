@@ -27,7 +27,7 @@ class Chef
       include Chef::Mixin::ShellOut
       include Chef::Mixin::PowershellOut
 
-      provides :windows_task, os: "windows"
+      provides :windows_task
 
       def load_current_resource
         self.current_resource = Chef::Resource::WindowsTask.new(new_resource.name)

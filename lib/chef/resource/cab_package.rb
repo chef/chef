@@ -25,7 +25,7 @@ class Chef
       include Chef::Mixin::Uris
 
       resource_name :cab_package
-      provides :cab_package, os: "windows"
+      provides :cab_package
 
       description "Use the cab_package resource to install or remove Microsoft Windows"\
                   " cabinet (.cab) packages."

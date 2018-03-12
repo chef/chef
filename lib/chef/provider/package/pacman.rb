@@ -25,7 +25,7 @@ class Chef
       class Pacman < Chef::Provider::Package
 
         provides :package, platform: "arch"
-        provides :pacman_package, os: "linux"
+        provides :pacman_package
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(new_resource.name)

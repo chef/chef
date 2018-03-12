@@ -28,7 +28,7 @@ class Chef
     class Service
       class Macosx < Chef::Provider::Service::Simple
 
-        provides :macosx_service, os: "darwin"
+        provides :macosx_service
         provides :service, os: "darwin"
 
         def self.gather_plist_dirs

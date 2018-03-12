@@ -25,7 +25,7 @@ class Chef
       include Chef::Mixin::Uris
 
       resource_name :msu_package
-      provides :msu_package, os: "windows"
+      provides :msu_package
 
       description "Use the msu_package resource to install Microsoft Update(MSU) packages on Microsoft Windows machines."
       introduced "12.17"

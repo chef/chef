@@ -36,7 +36,7 @@ class Chef
         include Chef::Mixin::Uris
         include Chef::Mixin::Checksum
 
-        provides :msu_package, os: "windows"
+        provides :msu_package
 
         def load_current_resource
           @current_resource = Chef::Resource::MsuPackage.new(new_resource.name)

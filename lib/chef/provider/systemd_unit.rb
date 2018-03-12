@@ -30,7 +30,7 @@ class Chef
       include Chef::Mixin::Which
       include Chef::Mixin::ShellOut
 
-      provides :systemd_unit, os: "linux"
+      provides :systemd_unit
 
       def load_current_resource
         @current_resource = Chef::Resource::SystemdUnit.new(new_resource.name)

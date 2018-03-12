@@ -22,7 +22,7 @@ class Chef
   class Resource
     class ChocolateyPackage < Chef::Resource::Package
       resource_name :chocolatey_package
-      provides :chocolatey_package, os: "windows"
+      provides :chocolatey_package
 
       description "Use the chocolatey_package resource to manage packages using Chocolatey"\
                   " on the Microsoft Windows platform."

@@ -81,7 +81,7 @@ shared_context "use Windows permissions", :windows_only do
     SID ||= Chef::ReservedNames::Win32::Security::SID
     ACE ||= Chef::ReservedNames::Win32::Security::ACE
     ACL ||= Chef::ReservedNames::Win32::Security::ACL
-    SecurableObject ||= Chef::ReservedNames::Win32::Security::SecurableObject # rubocop:disable Style/ConstantName
+    SecurableObject ||= Chef::ReservedNames::Win32::Security::SecurableObject # rubocop:disable Naming/ConstantName
   end
 
   def get_security_descriptor(path)
@@ -439,7 +439,7 @@ shared_examples_for "a securable resource without existing target" do
 
     context "with a mode attribute" do
       if windows?
-        Security ||= Chef::ReservedNames::Win32::API::Security # rubocop:disable Style/ConstantName
+        Security ||= Chef::ReservedNames::Win32::API::Security # rubocop:disable Naming/ConstantName
       end
 
       it "respects mode in string form as an octal number" do

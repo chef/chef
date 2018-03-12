@@ -24,7 +24,7 @@ class Chef
   class Provider
     class DscResource < Chef::Provider
       include Chef::Mixin::PowershellTypeCoercions
-      provides :dsc_resource, os: "windows"
+      provides :dsc_resource
       def initialize(new_resource, run_context)
         super
         @new_resource = new_resource

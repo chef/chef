@@ -26,8 +26,8 @@ class Chef
       include Chef::Mixin::WindowsEnvHelper
       attr_accessor :key_exists
 
-      provides :env, os: "windows"
-      provides :windows_env, os: "windows"
+      provides :env
+      provides :windows_env
 
       def whyrun_supported?
         false

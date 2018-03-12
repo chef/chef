@@ -22,10 +22,10 @@ require "chef/resource/scm"
 class Chef
   class Resource
     class Subversion < Chef::Resource::Scm
-      allowed_actions :force_export
-
       description "Use the subversion resource to manage source control resources that"\
                   " exist in a Subversion repository."
+
+      allowed_actions :force_export
 
       def initialize(name, run_context = nil)
         super

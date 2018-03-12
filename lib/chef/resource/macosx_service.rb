@@ -22,7 +22,7 @@ class Chef
   class Resource
     class MacosxService < Chef::Resource::Service
       resource_name :macosx_service
-      provides :macosx_service, os: "darwin"
+      provides :macosx_service
       provides :service, os: "darwin"
 
       description "Use the macosx_service resource to manage services on the macOS platform."
