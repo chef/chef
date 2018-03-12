@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.122 -->
-## [v14.0.122](https://github.com/chef/chef/tree/v14.0.122) (2018-03-09)
+<!-- latest_release 14.0.123 -->
+## [v14.0.123](https://github.com/chef/chef/tree/v14.0.123) (2018-03-12)
 
 #### Merged Pull Requests
-- New interop between Chef and PowerShell 4.0 (or higher) [#6941](https://github.com/chef/chef/pull/6941) ([stuartpreston](https://github.com/stuartpreston))
+- Remove the manpages [#6974](https://github.com/chef/chef/pull/6974) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Remove the manpages [#6974](https://github.com/chef/chef/pull/6974) ([tas50](https://github.com/tas50)) <!-- 14.0.123 -->
 - New interop between Chef and PowerShell 4.0 (or higher) [#6941](https://github.com/chef/chef/pull/6941) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.122 -->
 - Rename bff provider to match its resource [#6956](https://github.com/chef/chef/pull/6956) ([tas50](https://github.com/tas50)) <!-- 14.0.121 -->
 - Convert more set_or_returns to proper properties [#6950](https://github.com/chef/chef/pull/6950) ([tas50](https://github.com/tas50)) <!-- 14.0.120 -->
