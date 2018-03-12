@@ -27,8 +27,6 @@ class Chef
         # If the chef_server_url cannot be parsed as a URI, the node["fqdn"] attribute
         # will be returned, or "localhost" if the run_status is unavailable to us.
         #
-        # @param run_status [Chef::RunStatus] The RunStatus object for this Chef Run.
-        #
         # @return [String] FQDN of the configured Chef Server, or node/localhost if not found.
         #
         def chef_server_fqdn
