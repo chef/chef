@@ -351,16 +351,14 @@ class Chef
 
       def send_to_output_locations(message)
         data_collector_output_locations.each do |type, location_list|
-          method = if type == :urls
-                     method(:send_to_http_location)
-                   elsif type == :files
-                     method(:send_to_file_location)
-                   end
-
           location_list.each do |l|
-            method.call(l, message)
+            handle_output_location(type, l, message)
           end
         end
+      end
+
+      def handle_output_location(type, loc, message)
+        type == :urls ? send_to_http_location(loc, message) : send_to_file_location(loc, message)
       end
 
       def send_to_file_location(file_name, message)
