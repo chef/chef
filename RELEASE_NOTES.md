@@ -6,7 +6,7 @@ _This file holds "in progress" release notes for the current release under devel
 
 ## New Windows PowerShell mixin `powershell_exec`
 
-Since our supported Windows platforms can all run .NET Framework 4.0 and PowerShell 4.0 we have taken time to add a new interop that will allow faster and safer interactions with the system PowerShell.  You will be able to use the `powershell_exec` mixin in most places where you would have previously used `powershell_out`.
+Since our supported Windows platforms can all run .NET Framework 4.0 and PowerShell 4.0 we have taken time to add a new interop that will allow faster and safer interactions with the system PowerShell.  You will be able to use the `powershell_exec` mixin in most places where you would have previously used `powershell_out`.  For comparison, a basic benchmark test to return the `$PSVersionTable` 100 times completed 7.3X faster compared to the `powershell_out` method.  The majority of the time difference is because of less time spent in invocation.  So we believe it has big future potential where multiple calls to PowerShell are required inside (for example) a custom resource.
 
 # Chef Client Release Notes 13.7:
 
