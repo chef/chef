@@ -24,7 +24,7 @@ describe Chef::Knife::NodeEnvironmentSet do
     @knife = Chef::Knife::NodeEnvironmentSet.new
     @knife.name_args = %w{adam bar}
     allow(@knife).to receive(:output).and_return(true)
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
     @node.name("knifetest-node")
     @node.chef_environment << "foo"
     allow(@node).to receive(:save).and_return(true)

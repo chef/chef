@@ -23,7 +23,7 @@ require "lib/chef/chef_fs/config.rb"
 describe Chef::ChefFS::Config do
   describe "initialize" do
     it "warns when hosted setups use 'everything'" do
-      base_config = Hash.new()
+      base_config = Hash.new
       base_config[:repo_mode] = "everything"
       base_config[:chef_server_url] = "http://foo.com/organizations/fake_org/"
 
@@ -34,7 +34,7 @@ describe Chef::ChefFS::Config do
     end
 
     it "doesn't warn when hosted setups use 'hosted_everything'" do
-      base_config = Hash.new()
+      base_config = Hash.new
       base_config[:repo_mode] = "hosted_everything"
       base_config[:chef_server_url] = "http://foo.com/organizations/fake_org/"
 
@@ -45,7 +45,7 @@ describe Chef::ChefFS::Config do
     end
 
     it "doesn't warn when non-hosted setups use 'everything'" do
-      base_config = Hash.new()
+      base_config = Hash.new
       base_config[:repo_mode] = "everything"
       base_config[:chef_server_url] = "http://foo.com/"
 

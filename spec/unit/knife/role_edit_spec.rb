@@ -25,7 +25,7 @@ describe Chef::Knife::RoleEdit do
     @knife.config[:print_after] = nil
     @knife.name_args = [ "adam" ]
     allow(@knife.ui).to receive(:output).and_return(true)
-    @role = Chef::Role.new()
+    @role = Chef::Role.new
     allow(@role).to receive(:save)
     allow(Chef::Role).to receive(:load).and_return(@role)
     allow(@knife.ui).to receive(:edit_data).and_return(@role)

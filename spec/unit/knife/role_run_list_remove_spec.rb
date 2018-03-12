@@ -32,7 +32,7 @@ describe Chef::Knife::RoleRunListRemove do
     @knife.name_args = [ "will", "role[monkey]" ]
     allow(@knife).to receive(:output).and_return(true)
 
-    @role = Chef::Role.new()
+    @role = Chef::Role.new
     @role.name("will")
     allow(@role).to receive(:save).and_return(true)
 

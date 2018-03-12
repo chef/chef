@@ -350,7 +350,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         expect(File).to receive(:symlink?).with(device).at_least(:once).and_return(true)
         expect(File).to receive(:readlink).with(device).at_least(:once).and_return(target)
 
-        provider.load_current_resource()
+        provider.load_current_resource
       end
 
       it "should set mounted true if the symlink target of the device is found in the mounts list" do
@@ -387,7 +387,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         expect(File).to receive(:symlink?).with(device).at_least(:once).and_return(true)
         expect(File).to receive(:readlink).with(device).at_least(:once).and_return(target)
 
-        provider.load_current_resource()
+        provider.load_current_resource
       end
 
       it "should set mounted true if the symlink target of the device is found in the mounts list" do
@@ -411,7 +411,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         EOF
       end
       it "should set mounted true" do
-        provider.load_current_resource()
+        provider.load_current_resource
         expect(provider.current_resource.mounted).to be_truthy
       end
     end
@@ -424,7 +424,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         EOF
       end
       it "should set mounted false" do
-        provider.load_current_resource()
+        provider.load_current_resource
         expect(provider.current_resource.mounted).to be_falsey
       end
     end
@@ -436,7 +436,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         EOF
       end
       it "should set mounted false" do
-        provider.load_current_resource()
+        provider.load_current_resource
         expect(provider.current_resource.mounted).to be_falsey
       end
     end
@@ -448,7 +448,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
         EOF
       end
       it "should set mounted false" do
-        provider.load_current_resource()
+        provider.load_current_resource
         expect(provider.current_resource.mounted).to be_falsey
       end
     end
@@ -539,28 +539,28 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     describe "mount_fs" do
       it "should mount the filesystem" do
         expect(provider).to receive(:shell_out!).with("mount -F #{fstype} -o defaults #{device} #{mountpoint}")
-        provider.mount_fs()
+        provider.mount_fs
       end
 
       it "should mount the filesystem with options if options were passed" do
         options = "logging,noatime,largefiles,nosuid,rw,quota"
         new_resource.options(options.split(/,/))
         expect(provider).to receive(:shell_out!).with("mount -F #{fstype} -o #{options} #{device} #{mountpoint}")
-        provider.mount_fs()
+        provider.mount_fs
       end
 
       it "should delete the 'noauto' magic option" do
         options = "rw,noauto"
         new_resource.options(%w{rw noauto})
         expect(provider).to receive(:shell_out!).with("mount -F #{fstype} -o rw #{device} #{mountpoint}")
-        provider.mount_fs()
+        provider.mount_fs
       end
     end
 
     describe "umount_fs" do
       it "should umount the filesystem if it is mounted" do
         expect(provider).to receive(:shell_out!).with("umount #{mountpoint}")
-        provider.umount_fs()
+        provider.umount_fs
       end
     end
 

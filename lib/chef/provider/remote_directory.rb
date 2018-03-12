@@ -102,7 +102,7 @@ class Chef
         if purge
           Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob_dir(path), "**", "*"), ::File::FNM_DOTMATCH).sort!.reverse!.each do |file|
             # skip '.' and '..'
-            next if [".", ".."].include?(Pathname.new(file).basename().to_s)
+            next if [".", ".."].include?(Pathname.new(file).basename.to_s)
 
             # Clean the path.  This is required because of the ::File.join
             file = Chef::Util::PathHelper.cleanpath(file)
