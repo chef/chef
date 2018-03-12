@@ -58,6 +58,36 @@ describe Chef::ServerAPI do
     end
   end
 
+  describe "#get" do
+    context "when response is 404" do
+      context "body data is not json" do
+        it "throws not a Chef server exception" do
+          net_http_not_found = double()
+          allow(net_http_not_found).to receive(:kind_of?).and_return(Net::HTTPNotFound)
+          allow(net_http_not_found).to receive(:body).and_return("Not Found")
+
+          api = described_class.new(url, raw_key: SIGNING_KEY_DOT_PEM)
+          allow(api).to receive(:request).and_raise(Net::HTTPServerException.new("", net_http_not_found))
+
+          expect { api.get("/nodes") }.to raise_error(Chef::Exceptions::NotAChefServerException)
+        end
+      end
+
+      context "body data is json" do
+        it "bubbles up Exception" do
+          net_http_not_found = double()
+          allow(net_http_not_found).to receive(:kind_of?).and_return(Net::HTTPNotFound)
+          allow(net_http_not_found).to receive(:body).and_return("{}")
+
+          api = described_class.new(url, raw_key: SIGNING_KEY_DOT_PEM)
+          allow(api).to receive(:request).and_raise(Net::HTTPServerException.new("", net_http_not_found))
+
+          expect { api.get("/nodes") }.to raise_error(Net::HTTPServerException)
+        end
+      end
+    end
+  end
+
   context "versioned apis" do
     class VersionedClassV0
       extend Chef::Mixin::VersionedAPI

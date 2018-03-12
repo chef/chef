@@ -521,5 +521,7 @@ This error is most often caused by network issues (proxies, etc) outside of chef
 
     # exception specific to invalid usage of 'dsc_resource' resource
     class DSCModuleNameMissing < ArgumentError; end
+
+    class NotAChefServerException < ArgumentError; end
   end
 end
