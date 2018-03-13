@@ -269,32 +269,32 @@ matrix:
     sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
-     - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-     - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     before_script:
-     - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-     - cd kitchen-tests
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
     script:
-     - bundle exec kitchen test base-fedora-latest
+      - bundle exec kitchen test base-fedora-latest
     after_failure:
-     - cat .kitchen/logs/kitchen.log
+      - cat .kitchen/logs/kitchen.log
     env:
-     - FEDORA=latest
-     - KITCHEN_YAML=.kitchen.travis.yml
+      - FEDORA=latest
+      - KITCHEN_YAML=.kitchen.travis.yml
   - rvm: 2.4.3
     services: docker
     sudo: required
     gemfile: kitchen-tests/Gemfile
     before_install:
-     - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-     - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
+      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
+      - gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
     before_script:
-     - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-     - cd kitchen-tests
+      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+      - cd kitchen-tests
     script:
       - bundle exec kitchen test base-opensuse-leap
     after_failure:
-     - cat .kitchen/logs/kitchen.log
+      - cat .kitchen/logs/kitchen.log
     env:
      - OPENSUSELEAP=42
      - KITCHEN_YAML=.kitchen.travis.yml

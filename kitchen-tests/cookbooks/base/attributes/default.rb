@@ -70,14 +70,6 @@ default["resolver"]["nameservers"] = [ "8.8.8.8", "8.8.4.4" ]
 default["resolver"]["search"] = "chef.io"
 
 #
-# sudo cookbook overrides
-#
-
-default["authorization"]["sudo"]["passwordless"] = true
-default["authorization"]["sudo"]["groups"] = %w{sysadmin}
-default["authorization"]["sudo"]["users"] = %w{vagrant centos ubuntu}
-
-#
 # nscd cookbook overrides
 #
 

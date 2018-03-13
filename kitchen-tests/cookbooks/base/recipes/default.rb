@@ -38,7 +38,17 @@ users_manage "sysadmin" do
   action [:create]
 end
 
-include_recipe "sudo"
+sudo "sysadmins" do
+  group ["sysadmin", "%superadmin"]
+  nopasswd true
+end
+
+sudo "some_person" do
+  nopasswd true
+  user "some_person"
+  commands ["/opt/chef/bin/chef-client"]
+  env_keep_add %w{PATH RBENV_ROOT RBENV_VERSION}
+end
 
 include_recipe "chef-client::delete_validation"
 include_recipe "chef-client::config"
