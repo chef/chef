@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -220,6 +220,11 @@ class Chef
       end
 
       def action_lock
+        packages_locked = if respond_to?(:packages_all_locked?)
+                            packages_all_locked?(Array(new_resource.package_name), Array(new_resource.version))
+                          else
+                            package_locked(new_resource.package_name, new_resource.version)
+                          end
         unless package_locked(new_resource.package_name, new_resource.version)
           description = new_resource.version ? "version #{new_resource.version} of " : ""
           converge_by("lock #{description}package #{current_resource.package_name}") do
@@ -234,6 +239,11 @@ class Chef
       end
 
       def action_unlock
+        packages_locked = if respond_to?(:packages_all_unlocked?)
+                            packages_all_unlocked?(Array(new_resource.package_name), Array(new_resource.version))
+                          else
+                            package_locked(new_resource.package_name, new_resource.version)
+                          end
         if package_locked(new_resource.package_name, new_resource.version)
           description = new_resource.version ? "version #{new_resource.version} of " : ""
           converge_by("unlock #{description}package #{current_resource.package_name}") do
@@ -247,6 +257,7 @@ class Chef
         end
       end
 
+      # for multipackage just implement packages_all_[un]locked? properly and omit implementing this API
       def package_locked(name, version)
         raise Chef::Exceptions::UnsupportedAction, "#{self} has no way to detect if package is locked"
       end

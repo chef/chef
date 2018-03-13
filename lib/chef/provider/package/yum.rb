@@ -181,8 +181,12 @@ class Chef
             end
         end
 
-        def package_locked(name, version)
-          name.all? { |n| locked_packages.include? n }
+        def packages_all_locked?(names, versions)
+          names.all? { |n| locked_packages.include? n }
+        end
+
+        def packages_all_unlocked?(names, versions)
+          !names.any? { |n| locked_packages.include? n }
         end
 
         def version_gt?(v1, v2)
