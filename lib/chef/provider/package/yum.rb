@@ -158,7 +158,7 @@ class Chef
 
         private
 
-        # this will resolve things like `/usr/bin/perl` or virtual packages like `mysql`
+        # this will resolve things like `/usr/bin/perl` or virtual packages like `mysql` -- it will not work (well? at all?) with globs that match multiple packages
         def resolved_package_lock_names(names)
           names.each_with_index.map do |name, i|
             if !name.nil?
