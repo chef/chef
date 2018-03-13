@@ -173,45 +173,4 @@ describe Chef::Resource::Mount do
     resource.domain("TEST_DOMAIN")
     expect(resource.domain).to eq("TEST_DOMAIN")
   end
-
-  describe "when it has mount point, device type, and fstype" do
-    before do
-      resource.device("charmander")
-      resource.mount_point("123.456")
-      resource.device_type(:device)
-      resource.fstype("ranked")
-    end
-
-    it "describes its state" do
-      state = resource.state_for_resource_reporter
-      expect(state[:mount_point]).to eq("123.456")
-      expect(state[:device_type]).to eql(:device)
-      expect(state[:fstype]).to eq("ranked")
-    end
-
-    it "returns the device as its identity" do
-      expect(resource.identity).to eq("charmander")
-    end
-  end
-
-  describe "when it has username, password and domain" do
-    before do
-      resource.mount_point("T:")
-      resource.device("charmander")
-      resource.username("Administrator")
-      resource.password("Jetstream123!")
-      resource.domain("TEST_DOMAIN")
-    end
-
-    it "describes its state" do
-      state = resource.state_for_resource_reporter
-      expect(state[:mount_point]).to eq("T:")
-      expect(state[:username]).to eq("Administrator")
-      expect(state[:password]).to eq("*sensitive value suppressed*")
-      expect(state[:domain]).to eq("TEST_DOMAIN")
-      expect(state[:device_type]).to eql(:device)
-      expect(state[:fstype]).to eq("auto")
-    end
-
-  end
 end
