@@ -220,7 +220,7 @@ class Chef
       end
 
       def action_lock
-        packages_locked = if respond_to?(:packages_all_locked?)
+        packages_locked = if respond_to?(:packages_all_locked?, true)
                             packages_all_locked?(Array(new_resource.package_name), Array(new_resource.version))
                           else
                             package_locked(new_resource.package_name, new_resource.version)
@@ -239,7 +239,7 @@ class Chef
       end
 
       def action_unlock
-        packages_unlocked = if respond_to?(:packages_all_unlocked?)
+        packages_unlocked = if respond_to?(:packages_all_unlocked?, true)
                               packages_all_unlocked?(Array(new_resource.package_name), Array(new_resource.version))
                             else
                               !package_locked(new_resource.package_name, new_resource.version)
