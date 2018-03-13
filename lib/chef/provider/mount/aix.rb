@@ -28,7 +28,7 @@ class Chef
           super
           # options and fstype are set to "defaults" and "auto" respectively in the Mount Resource class. These options are not valid for AIX, override them.
           if @new_resource.options[0] == "defaults"
-            @new_resource.options.clear
+            @new_resource.options([])
           end
           if @new_resource.fstype == "auto"
             @new_resource.send(:clear_fstype)

@@ -121,8 +121,8 @@ class Chef
         end
 
         def mount_options_unchanged?
-          new_options = options_remove_noauto(options)
-          current_options = options_remove_noauto(current_resource.nil? ? nil : current_resource.options)
+          new_options = native_options(options)
+          current_options = native_options(current_resource.nil? ? nil : current_resource.options)
 
           current_resource.fsck_device == fsck_device &&
             current_resource.fstype == fstype &&
@@ -168,7 +168,8 @@ class Chef
         def read_vfstab_status
           # Check to see if there is an entry in /etc/vfstab. Last entry for a volume wins.
           enabled = false
-          fstype = options = pass = nil
+          pass = false
+          fstype = options = nil
           ::File.foreach(VFSTAB) do |line|
             case line
             when /^[#\s]/
@@ -220,11 +221,7 @@ class Chef
         end
 
         def vfstab_entry
-          actual_options = unless options.nil?
-                             tempops = options.dup
-                             tempops.delete("noauto")
-                             tempops
-                           end
+          actual_options = native_options(options)
           autostr = mount_at_boot? ? "yes" : "no"
           passstr = pass == 0 ? "-" : pass
           optstr = (actual_options.nil? || actual_options.empty?) ? "-" : actual_options.join(",")
@@ -251,11 +248,15 @@ class Chef
           contents << vfstab_entry
         end
 
-        def options_remove_noauto(temp_options)
-          new_options = []
-          new_options += temp_options.nil? ? [] : temp_options
-          new_options.delete("noauto")
-          new_options
+        def native_options(temp_options)
+          if temp_options == %w{defaults}
+            ["-"]
+          else
+            new_options = []
+            new_options += temp_options.nil? ? [] : temp_options.dup
+            new_options.delete("noauto")
+            new_options
+          end
         end
 
         def device_regex

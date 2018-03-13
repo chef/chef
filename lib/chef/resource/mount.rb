@@ -28,8 +28,9 @@ class Chef
       allowed_actions :mount, :umount, :unmount, :remount, :enable, :disable
 
       # this is a poor API please do not re-use this pattern
-      property :supports, Hash, default: lazy { { remount: false } },
-                                coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
+      property :supports, Hash,
+        default: lazy { { remount: false } },
+        coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
       property :password, String, sensitive: true
 
@@ -42,9 +43,9 @@ class Chef
         equal_to: RUBY_PLATFORM =~ /solaris/i ? %i{ device } : %i{ device label uuid }
 
       property :fsck_device, String, default: "-"
-      property :fstype, String, default: "auto"
+      property :fstype, [String, nil], default: "auto"
 
-      property :options, [Array, String],
+      property :options, [Array, String, nil],
         coerce: proc { |arg| arg.kind_of?(String) ? arg.split(",") : arg },
         default: %w{defaults}
 
