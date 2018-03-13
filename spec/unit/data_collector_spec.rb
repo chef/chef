@@ -25,9 +25,10 @@ require "chef/resource_builder"
 describe Chef::DataCollector do
 
   describe ".register_reporter?" do
-    context "when no data collector URL is configured" do
+    context "when no data collector URL or output locations are configured" do
       it "returns false" do
         Chef::Config[:data_collector][:server_url] = nil
+        Chef::Config[:data_collector][:output_locations] = nil
         expect(Chef::DataCollector.register_reporter?).to be_falsey
       end
     end
@@ -35,6 +36,109 @@ describe Chef::DataCollector do
     context "when a data collector URL is configured" do
       before do
         Chef::Config[:data_collector][:server_url] = "http://data_collector"
+      end
+
+      context "when operating in why_run mode" do
+        it "returns false" do
+          Chef::Config[:why_run] = true
+          expect(Chef::DataCollector.register_reporter?).to be_falsey
+        end
+      end
+
+      context "when not operating in why_run mode" do
+
+        before do
+          Chef::Config[:why_run] = false
+          Chef::Config[:data_collector][:token] = token
+        end
+
+        context "when a token is configured" do
+
+          let(:token) { "supersecrettoken" }
+
+          context "when report is enabled for current mode" do
+            it "returns true" do
+              allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(true)
+              expect(Chef::DataCollector.register_reporter?).to be_truthy
+            end
+          end
+
+          context "when report is disabled for current mode" do
+            it "returns false" do
+              allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(false)
+              expect(Chef::DataCollector.register_reporter?).to be_falsey
+            end
+          end
+
+        end
+
+        # `Chef::Config[:data_collector][:server_url]` defaults to a URL
+        # relative to the `chef_server_url`, so we use configuration of the
+        # token to infer whether a solo/local mode user intends for data
+        # collection to be enabled.
+        context "when a token is not configured" do
+
+          let(:token) { nil }
+
+          context "when report is enabled for current mode" do
+
+            before do
+              allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(true)
+            end
+
+            context "when the current mode is solo" do
+
+              before do
+                Chef::Config[:solo] = true
+              end
+
+              it "returns true" do
+                expect(Chef::DataCollector.register_reporter?).to be(true)
+              end
+
+            end
+
+            context "when the current mode is local mode" do
+
+              before do
+                Chef::Config[:local_mode] = true
+              end
+
+              it "returns false" do
+                expect(Chef::DataCollector.register_reporter?).to be(true)
+              end
+            end
+
+            context "when the current mode is client mode" do
+
+              before do
+                Chef::Config[:local_mode] = false
+                Chef::Config[:solo] = false
+              end
+
+              it "returns true" do
+                expect(Chef::DataCollector.register_reporter?).to be_truthy
+              end
+
+            end
+
+          end
+
+          context "when report is disabled for current mode" do
+            it "returns false" do
+              allow(Chef::DataCollector).to receive(:reporter_enabled_for_current_mode?).and_return(false)
+              expect(Chef::DataCollector.register_reporter?).to be_falsey
+            end
+          end
+
+        end
+
+      end
+    end
+
+    context "when output_locations are configured" do
+      before do
+        Chef::Config[:data_collector][:output_locations] = ["http://data_collector", "/tmp/data_collector.json"]
       end
 
       context "when operating in why_run mode" do
@@ -656,6 +760,13 @@ describe Chef::DataCollector::Reporter do
       end
     end
 
+    context "when server_url is omitted but output_locations is specified" do
+      it "does not an exception" do
+        Chef::Config[:data_collector][:output_locations] = ["http://data_collector", "/tmp/data_collector.json"]
+        expect { reporter.send(:validate_data_collector_server_url!) }.not_to raise_error(Chef::Exceptions::ConfigurationError)
+      end
+    end
+
     context "when server_url is not empty" do
       context "when server_url is an invalid URI" do
         it "raises an exception" do
@@ -679,6 +790,29 @@ describe Chef::DataCollector::Reporter do
             expect { reporter.send(:validate_data_collector_server_url!) }.not_to raise_error
           end
         end
+      end
+    end
+  end
+
+  describe "#validate_data_collector_output_locations!" do
+    context "when output_locations is empty" do
+      it "raises an exception" do
+        Chef::Config[:data_collector][:output_locations] = {}
+        expect { reporter.send(:validate_data_collector_output_locations!) }.to raise_error(Chef::Exceptions::ConfigurationError)
+      end
+    end
+
+    context "when valid output_locations are provided" do
+      it "does not raise an exception" do
+        Chef::Config[:data_collector][:output_locations] = { :urls => ["http://data_collector"], :files => ["data_collection.json"] }
+        expect { reporter.send(:validate_data_collector_output_locations!) }.not_to raise_error(Chef::Exceptions::ConfigurationError)
+      end
+    end
+
+    context "when output_locations contains an invalid URI" do
+      it "raises an exception" do
+        Chef::Config[:data_collector][:output_locations] = { :urls => ["this is not a url"], :files => ["/tmp/data_collection.json"] }
+        expect { reporter.send(:validate_data_collector_output_locations!) }.to raise_error(Chef::Exceptions::ConfigurationError)
       end
     end
   end

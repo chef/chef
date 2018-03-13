@@ -50,8 +50,8 @@ class Chef
                         "#{Chef::Config[:data_collector][:mode].inspect} modes, disabling it")
         return false
       end
-      unless data_collector_url_configured?
-        Chef::Log.debug("data collector URL is not configured, disabling data collector")
+      unless data_collector_url_configured? || data_collector_output_locations_configured?
+        Chef::Log.debug("Neither data collector URL or output locations have been configured, disabling data collector")
         return false
       end
       if solo? && !token_auth_configured?
@@ -67,6 +67,10 @@ class Chef
 
     def self.data_collector_url_configured?
       !!Chef::Config[:data_collector][:server_url]
+    end
+
+    def self.data_collector_output_locations_configured?
+      !!Chef::Config[:data_collector][:output_locations]
     end
 
     def self.why_run?
@@ -104,7 +108,7 @@ class Chef
 
       def initialize
         validate_data_collector_server_url!
-
+        validate_data_collector_output_locations! if data_collector_output_locations
         @all_resource_reports    = []
         @current_resource_loaded = nil
         @error_descriptions      = {}
@@ -112,7 +116,10 @@ class Chef
         @deprecations            = Set.new
         @enabled                 = true
 
-        @http = setup_http_client
+        @http = setup_http_client(data_collector_server_url)
+        if data_collector_output_locations
+          @http_output_locations = setup_http_output_locations if data_collector_output_locations[:urls]
+        end
       end
 
       # see EventDispatch::Base#run_started
@@ -125,11 +132,11 @@ class Chef
       def run_started(current_run_status)
         update_run_status(current_run_status)
 
+        message = Chef::DataCollector::Messages.run_start_message(current_run_status)
         disable_reporter_on_error do
-          send_to_data_collector(
-            Chef::DataCollector::Messages.run_start_message(current_run_status)
-          )
+          send_to_data_collector(message)
         end
+        send_to_output_locations(message) if data_collector_output_locations
       end
 
       # see EventDispatch::Base#run_completed
@@ -286,11 +293,17 @@ class Chef
       # intended to be used primarily for Chef Solo in which case no signing
       # key will be available (in which case `Chef::ServerAPI.new()` would
       # raise an exception.
-      def setup_http_client
+      def setup_http_client(url)
         if data_collector_token.nil?
-          Chef::ServerAPI.new(data_collector_server_url, validate_utf8: false)
+          Chef::ServerAPI.new(url, validate_utf8: false)
         else
-          Chef::HTTP::SimpleJSON.new(data_collector_server_url, validate_utf8: false)
+          Chef::HTTP::SimpleJSON.new(url, validate_utf8: false)
+        end
+      end
+
+      def setup_http_output_locations
+        Chef::Config[:data_collector][:output_locations][:urls].each_with_object({}) do |location_url, http_output_locations|
+          http_output_locations[location_url] = setup_http_client(location_url)
         end
       end
 
@@ -309,7 +322,8 @@ class Chef
              Errno::ECONNREFUSED, EOFError, Net::HTTPBadResponse,
              Net::HTTPHeaderSyntaxError, Net::ProtocolError, OpenSSL::SSL::SSLError,
              Errno::EHOSTDOWN => e
-        disable_data_collector_reporter
+        # Do not disable data collector reporter if additional output_locations have been specified
+        disable_data_collector_reporter unless data_collector_output_locations
         code = if e.respond_to?(:response) && e.response.code
                  e.response.code.to_s
                else
@@ -332,8 +346,29 @@ class Chef
 
       def send_to_data_collector(message)
         return unless data_collector_accessible?
+        http.post(nil, message, headers) if data_collector_server_url
+      end
 
-        http.post(nil, message, headers)
+      def send_to_output_locations(message)
+        data_collector_output_locations.each do |type, location_list|
+          location_list.each do |l|
+            handle_output_location(type, l, message)
+          end
+        end
+      end
+
+      def handle_output_location(type, loc, message)
+        type == :urls ? send_to_http_location(loc, message) : send_to_file_location(loc, message)
+      end
+
+      def send_to_file_location(file_name, message)
+        open(file_name, "a") { |f| f.puts message }
+      end
+
+      def send_to_http_location(http_url, message)
+        @http_output_locations[http_url].post(nil, message, headers) if @http_output_locations[http_url]
+      rescue
+        Chef::Log.debug("Data collector failed to send to URL location #{http_url}. Please check your configured data_collector.output_locations")
       end
 
       #
@@ -352,16 +387,18 @@ class Chef
         # we have nothing to report.
         return unless run_status
 
-        send_to_data_collector(
-          Chef::DataCollector::Messages.run_end_message(
-            run_status: run_status,
-            expanded_run_list: expanded_run_list,
-            resources: all_resource_reports,
-            status: opts[:status],
-            error_descriptions: error_descriptions,
-            deprecations: deprecations.to_a
-          )
-        )
+        message = Chef::DataCollector::Messages.run_end_message(
+                   run_status: run_status,
+                   expanded_run_list: expanded_run_list,
+                   resources: all_resource_reports,
+                   status: opts[:status],
+                   error_descriptions: error_descriptions,
+                   deprecations: deprecations.to_a
+                  )
+        disable_reporter_on_error do
+          send_to_data_collector(message)
+        end
+        send_to_output_locations(message) if data_collector_output_locations
       end
 
       def headers
@@ -377,6 +414,10 @@ class Chef
 
       def data_collector_server_url
         Chef::Config[:data_collector][:server_url]
+      end
+
+      def data_collector_output_locations
+        Chef::Config[:data_collector][:output_locations]
       end
 
       def data_collector_token
@@ -467,21 +508,56 @@ class Chef
         @current_resource_report && @current_resource_report.new_resource != new_resource
       end
 
+      def validate_and_return_uri(uri)
+        URI(uri)
+      rescue URI::InvalidURIError
+        return nil
+      end
+
+      def validate_and_create_file(file)
+        send_to_file_location(file, "")
+        return true
+      # Rescue exceptions raised by the file path being non-existent or not writeable and re-raise them to the user
+      # with clearer explanatory text.
+      rescue Errno::ENOENT
+        raise Chef::Exceptions::ConfigurationError,
+              "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which is a non existent file path."
+      rescue Errno::EACCES
+        raise Chef::Exceptions::ConfigurationError,
+              "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which cannnot be written to by Chef."
+      end
+
       def validate_data_collector_server_url!
-        if data_collector_server_url.empty?
+        unless !data_collector_server_url && data_collector_output_locations
+          uri = validate_and_return_uri(data_collector_server_url)
+          unless uri
+            raise Chef::Exceptions::ConfigurationError, "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is not a valid URI."
+          end
+
+          if uri.host.nil?
+            raise Chef::Exceptions::ConfigurationError,
+              "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is a URI with no host. Please supply a valid URL."
+          end
+        end
+      end
+
+      def handle_type(type, loc)
+        type == :urls ? validate_and_return_uri(loc) : validate_and_create_file(loc)
+      end
+
+      def validate_data_collector_output_locations!
+        if data_collector_output_locations.empty?
           raise Chef::Exceptions::ConfigurationError,
-            "Chef::Config[:data_collector][:server_url] is empty. Please supply a valid URL."
+                "Chef::Config[:data_collector][:output_locations] is empty. Please supply an hash of valid URLs and / or local file paths."
         end
 
-        begin
-          uri = URI(data_collector_server_url)
-        rescue URI::InvalidURIError
-          raise Chef::Exceptions::ConfigurationError, "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is not a valid URI."
-        end
-
-        if uri.host.nil?
-          raise Chef::Exceptions::ConfigurationError,
-            "Chef::Config[:data_collector][:server_url] (#{data_collector_server_url}) is a URI with no host. Please supply a valid URL."
+        data_collector_output_locations.each do |type, locations|
+          locations.each do |l|
+            unless handle_type(type, l)
+              raise Chef::Exceptions::ConfigurationError,
+                      "Chef::Config[:data_collector][:output_locations] contains the location #{l} which is not valid."
+            end
+          end
         end
       end
     end
