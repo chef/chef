@@ -144,7 +144,46 @@ class Chef
           flushcache
         end
 
+        # NB: the yum_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
+        # support to lock / unlock.  The best solution is to write an execute resource which does a not_if `yum versionlock | grep '^pattern`` kind of approach
+        def lock_package(names, versions)
+          yum("-d0 -e0 -y", options, "versionlock add", resolved_package_lock_names(names))
+        end
+
+        # NB: the yum_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
+        # support to lock / unlock.  The best solution is to write an execute resource which does a only_if `yum versionlock | grep '^pattern`` kind of approach
+        def unlock_package(names, versions)
+          yum("-d0 -e0 -y", options, "versionlock delete", resolved_package_lock_names(names))
+        end
+
         private
+
+        # this will resolve things like `/usr/bin/perl` or virtual packages like `mysql`
+        def resolved_package_lock_names(names)
+          names.each_with_index.map do |name, i|
+            if !name.nil?
+              if installed_version(i).version.nil?
+                candidate_version(i).name
+              else
+                installed_version(i).name
+              end
+            end
+          end
+        end
+
+        def locked_packages
+          @locked_packages ||=
+            begin
+              locked = shell_out_with_timeout!("yum versionlock list")
+              locked.stdout.each_line.map do |line|
+                line.sub(/-[^-]*-[^-]*$/, "").split(":").last.strip
+              end
+            end
+        end
+
+        def package_locked(name, version)
+          name.all? { |n| locked_packages.include? n }
+        end
 
         def version_gt?(v1, v2)
           return false if v1.nil? || v2.nil?
