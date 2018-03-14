@@ -36,7 +36,7 @@ class Chef
 
       property :source, String,
                description: "A local filesystem path or URI to source the font file from.",
-               coerce: proc { |x| x =~ /^.:.*/ ? x.tr('\\', "/").gsub("//", "/") : x }
+               coerce: proc { |x| x.match?(/^.:.*/) ? x.tr('\\', "/").gsub("//", "/") : x }
 
       action :install do
         description "Install a font to the system fonts directory."

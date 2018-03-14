@@ -66,7 +66,7 @@ class Chef
           txt.each_line do |line|
             if line =~ /\*\s+#{PACKAGE_NAME_PATTERN}/
               found_package_name = $&.delete("*").strip
-              if package =~ /\// # the category is specified
+              if package.match?(/\//) # the category is specified
                 if found_package_name == package
                   availables[found_package_name] = nil
                 end

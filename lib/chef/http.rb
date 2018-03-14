@@ -309,7 +309,7 @@ class Chef
     # @api private
     def create_url(path)
       return path if path.is_a?(URI)
-      if path =~ /^(http|https|chefzero):\/\//i
+      if path.match?(/^(http|https|chefzero):\/\//i)
         URI.parse(path)
       elsif path.nil? || path.empty?
         URI.parse(@url)

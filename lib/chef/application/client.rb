@@ -119,7 +119,7 @@ class Chef::Application::Client < Chef::Application
       :description =>
         "Daemonize the process. Accepts an optional integer which is the " \
         "number of seconds to wait before the first daemonized run.",
-      :proc => lambda { |wait| wait =~ /^\d+$/ ? wait.to_i : true }
+      :proc => lambda { |wait| wait.match?(/^\d+$/) ? wait.to_i : true }
   end
 
   option :pid_file,

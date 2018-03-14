@@ -83,7 +83,7 @@ class Chef
                 # debian runlevels: 0 Halt, 1 Singleuser, 2 Multiuser, 3-5 == 2, 6 Reboot
                 priority[$1] = [($2 == "S" ? :start : :stop), $3]
               end
-              if line =~ UPDATE_RC_D_ENABLED_MATCHES
+              if line.match?(UPDATE_RC_D_ENABLED_MATCHES)
                 enabled = true
               end
             end

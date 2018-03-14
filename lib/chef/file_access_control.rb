@@ -26,7 +26,7 @@ class Chef
   # the values specified by a value object, usually a Chef::Resource.
   class FileAccessControl
 
-    if RUBY_PLATFORM =~ /mswin|mingw|windows/
+    if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
       require "chef/file_access_control/windows"
       include FileAccessControl::Windows
     else

@@ -17,7 +17,7 @@
 #
 
 require "chef/provider/user"
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
   require "chef/util/windows/net_group"
 end
 

@@ -91,7 +91,7 @@ class Chef
               old_services_list = rc_conf_local.match(/^pkg_scripts="(.*)"/)
               old_services_list = old_services_list ? old_services_list[1].split(" ") : []
               new_services_list = old_services_list + [new_resource.service_name]
-              if rc_conf_local =~ /^pkg_scripts="(.*)"/
+              if rc_conf_local.match?(/^pkg_scripts="(.*)"/)
                 new_rcl = rc_conf_local.sub(/^pkg_scripts="(.*)"/, "pkg_scripts=\"#{new_services_list.join(' ')}\"")
               else
                 new_rcl = rc_conf_local + "\n" + "pkg_scripts=\"#{new_services_list.join(' ')}\"\n"
@@ -158,7 +158,7 @@ class Chef
           result = false
           var_name = builtin_service_enable_variable_name
           if var_name
-            if rc_conf =~ /^#{Regexp.escape(var_name)}=(.*)/
+            if rc_conf.match?(/^#{Regexp.escape(var_name)}=(.*)/)
               result = true
             end
           end

@@ -36,10 +36,10 @@ class Chef
     RESERVED_NAMES = /^(node|role|environment|client)$/
 
     def self.validate_name!(name)
-      unless name =~ VALID_NAME
+      unless name.match?(VALID_NAME)
         raise Exceptions::InvalidDataBagName, "DataBags must have a name matching #{VALID_NAME.inspect}, you gave #{name.inspect}"
       end
-      if name =~ RESERVED_NAMES
+      if name.match?(RESERVED_NAMES)
         raise Exceptions::InvalidDataBagName, "DataBags may not have a name matching #{RESERVED_NAMES.inspect}, you gave #{name.inspect}"
       end
     end

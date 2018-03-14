@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
   require "win32/service"
 end
 require "chef/config"
