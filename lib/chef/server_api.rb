@@ -25,7 +25,6 @@ require "chef/http/json_output"
 require "chef/http/remote_request_id"
 require "chef/http/validate_content_length"
 require "chef/http/api_versions"
-require "ffi_yajl"
 
 class Chef
   class ServerAPI < Chef::HTTP
@@ -57,21 +56,6 @@ class Chef
     alias :delete_rest :delete
     alias :post_rest :post
     alias :put_rest :put
-
-    def get(path, headers = {})
-      request(:GET, path, headers)
-    rescue Net::HTTPServerException => e
-      if e.response.kind_of?(Net::HTTPNotFound)
-        begin
-          FFI_Yajl::Parser.parse(e.response.body)
-        rescue FFI_Yajl::ParseError => e
-          raise Chef::Exceptions::NotAChefServerException
-        end
-        raise
-      else
-        raise
-      end
-    end
 
     # Makes an HTTP request to +path+ with the given +method+, +headers+, and
     # +data+ (if applicable). Does not apply any middleware, besides that
