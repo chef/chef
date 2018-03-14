@@ -603,9 +603,6 @@ describe Chef::ProviderResolver do
         windows_user:           [ Chef::Resource::User::WindowsUser, Chef::Provider::User::Windows ],
         yum_package:            [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
 
-        # We want to check that these are unsupported:
-        yum_package: nil,
-
         "linux" => {
           "debian" => {
             ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig::Debian ],
