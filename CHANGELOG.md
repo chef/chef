@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.131 -->
-## [v14.0.131](https://github.com/chef/chef/tree/v14.0.131) (2018-03-13)
+<!-- latest_release 14.0.132 -->
+## [v14.0.132](https://github.com/chef/chef/tree/v14.0.132) (2018-03-14)
 
 #### Merged Pull Requests
-- Add output_locations functionality to data collector [#6873](https://github.com/chef/chef/pull/6873) ([jonlives](https://github.com/jonlives))
+- Require Ruby 2.4+ [#6983](https://github.com/chef/chef/pull/6983) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Require Ruby 2.4+ [#6983](https://github.com/chef/chef/pull/6983) ([tas50](https://github.com/tas50)) <!-- 14.0.132 -->
 - Add output_locations functionality to data collector [#6873](https://github.com/chef/chef/pull/6873) ([jonlives](https://github.com/jonlives)) <!-- 14.0.131 -->
 - Bump to ruby 2.5.0 [#6838](https://github.com/chef/chef/pull/6838) ([thommay](https://github.com/thommay)) <!-- 14.0.130 -->
 - Knife should give a useful error when the chef_server_url isn&#39;t a chef server API [#6253](https://github.com/chef/chef/pull/6253) ([jeunito](https://github.com/jeunito)) <!-- 14.0.129 -->
