@@ -159,7 +159,7 @@ class Chef
           names.each_with_index.map do |name, i|
             if !name.nil?
               if installed_version(i).version.nil?
-                candidate_version(i).name
+                available_version(i).name
               else
                 installed_version(i).name
               end

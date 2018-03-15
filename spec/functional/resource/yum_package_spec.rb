@@ -24,6 +24,10 @@ exclude_test = !(%w{rhel fedora}.include?(ohai[:platform_family]) && !File.exist
 describe Chef::Resource::YumPackage, :requires_root, :external => exclude_test do
   include Chef::Mixin::ShellOut
 
+  # NOTE: every single test here either needs to explicitly call flush_cache or needs to explicitly
+  # call preinstall (which explicitly calls flush_cache).  It is your responsibility to do one or the
+  # other in order to minimize calling flush_cache a half dozen times per test.
+
   def flush_cache
     Chef::Resource::YumPackage.new("shouldnt-matter", run_context).run_action(:flush_cache)
   end
@@ -879,6 +883,50 @@ gpgcheck=0
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^package chef_rpm is not installed$")
       end
+    end
+  end
+
+  describe ":lock and :unlock" do
+    before(:all) do
+      shell_out!("yum -y install yum-versionlock")
+    end
+
+    before(:each) do
+      shell_out("yum versionlock delete '*'")  # will exit with error when nothing is locked, we don't care
+    end
+
+    it "locks an rpm" do
+      flush_cache
+      yum_package.package_name("chef_rpm")
+      yum_package.run_action(:lock)
+      expect(yum_package.updated_by_last_action?).to be true
+      expect(shell_out("yum versionlock list").stdout.chomp).to match("^0:chef_rpm-")
+    end
+
+    it "does not lock if its already locked" do
+      flush_cache
+      shell_out!("yum versionlock add chef_rpm")
+      yum_package.package_name("chef_rpm")
+      yum_package.run_action(:lock)
+      expect(yum_package.updated_by_last_action?).to be false
+      expect(shell_out("yum versionlock list").stdout.chomp).to match("^0:chef_rpm-")
+    end
+
+    it "unlocks an rpm" do
+      flush_cache
+      shell_out!("yum versionlock add chef_rpm")
+      yum_package.package_name("chef_rpm")
+      yum_package.run_action(:unlock)
+      expect(yum_package.updated_by_last_action?).to be true
+      expect(shell_out("yum versionlock list").stdout.chomp).not_to match("^0:chef_rpm-")
+    end
+
+    it "does not unlock an already locked rpm" do
+      flush_cache
+      yum_package.package_name("chef_rpm")
+      yum_package.run_action(:unlock)
+      expect(yum_package.updated_by_last_action?).to be false
+      expect(shell_out("yum versionlock list").stdout.chomp).not_to match("^0:chef_rpm-")
     end
   end
 end
