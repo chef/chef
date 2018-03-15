@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.134 -->
-## [v14.0.134](https://github.com/chef/chef/tree/v14.0.134) (2018-03-15)
+<!-- latest_release 14.0.135 -->
+## [v14.0.135](https://github.com/chef/chef/tree/v14.0.135) (2018-03-15)
 
 #### Merged Pull Requests
-- Stripping out Authorization header on redirect to a different host [#6985](https://github.com/chef/chef/pull/6985) ([bugok](https://github.com/bugok))
+- Remove knife help which used the manpages [#6982](https://github.com/chef/chef/pull/6982) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Remove knife help which used the manpages [#6982](https://github.com/chef/chef/pull/6982) ([tas50](https://github.com/tas50)) <!-- 14.0.135 -->
 - Stripping out Authorization header on redirect to a different host [#6985](https://github.com/chef/chef/pull/6985) ([bugok](https://github.com/bugok)) <!-- 14.0.134 -->
 - Pass pointer to LsaFreeMemory, not FFI::MemoryPointer [#6980](https://github.com/chef/chef/pull/6980) ([btm](https://github.com/btm)) <!-- 14.0.133 -->
 - Require Ruby 2.4+ [#6983](https://github.com/chef/chef/pull/6983) ([tas50](https://github.com/tas50)) <!-- 14.0.132 -->
