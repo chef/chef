@@ -928,5 +928,22 @@ gpgcheck=0
       expect(yum_package.updated_by_last_action?).to be false
       expect(shell_out("yum versionlock list").stdout.chomp).not_to match("^0:chef_rpm-")
     end
+
+    it "check that we can lock based on provides" do
+      flush_cache
+      yum_package.package_name("chef_rpm_provides")
+      yum_package.run_action(:lock)
+      expect(yum_package.updated_by_last_action?).to be true
+      expect(shell_out("yum versionlock list").stdout.chomp).to match("^0:chef_rpm-")
+    end
+
+    it "check that we can unlock based on provides" do
+      flush_cache
+      shell_out!("yum versionlock add chef_rpm")
+      yum_package.package_name("chef_rpm_provides")
+      yum_package.run_action(:unlock)
+      expect(yum_package.updated_by_last_action?).to be true
+      expect(shell_out("yum versionlock list").stdout.chomp).not_to match("^0:chef_rpm-")
+    end
   end
 end
