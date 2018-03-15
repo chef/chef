@@ -149,7 +149,7 @@ class Chef
         # NB: the yum_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
         # support to lock / unlock.  The best solution is to write an execute resource which does a only_if `yum versionlock | grep '^pattern`` kind of approach
         def unlock_package(names, versions)
-          yum("-d0 -e0 -y", options, "versionlock delete", resolved_package_lock_names(names))
+          yum("-d0 -e0 -y", options, "versionlock delete '*:#{resolved_package_lock_names(names)}-*'")
         end
 
         private

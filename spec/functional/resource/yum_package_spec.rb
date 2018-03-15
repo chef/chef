@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016-2017, Chef Software Inc.
+# Copyright:: Copyright 2016-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -892,7 +892,7 @@ gpgcheck=0
     end
 
     before(:each) do
-      shell_out("yum versionlock delete '*'") # will exit with error when nothing is locked, we don't care
+      shell_out("yum versionlock delete '*:chef_rpm-*'") # will exit with error when nothing is locked, we don't care
     end
 
     it "locks an rpm" do
