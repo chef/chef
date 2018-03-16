@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.137 -->
-## [v14.0.137](https://github.com/chef/chef/tree/v14.0.137) (2018-03-16)
+<!-- latest_release 14.0.138 -->
+## [v14.0.138](https://github.com/chef/chef/tree/v14.0.138) (2018-03-16)
 
 #### Merged Pull Requests
-- Yum refactor [#6540](https://github.com/chef/chef/pull/6540) ([lamont-granquist](https://github.com/lamont-granquist))
+- Use Chef omnibus def that includes libarchive [#6993](https://github.com/chef/chef/pull/6993) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Use Chef omnibus def that includes libarchive [#6993](https://github.com/chef/chef/pull/6993) ([tas50](https://github.com/tas50)) <!-- 14.0.138 -->
 - Yum refactor [#6540](https://github.com/chef/chef/pull/6540) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.137 -->
 - update mount to use properties and fix 6851 [#6969](https://github.com/chef/chef/pull/6969) ([thommay](https://github.com/thommay)) <!-- 14.0.136 -->
 - Remove knife help which used the manpages [#6982](https://github.com/chef/chef/pull/6982) ([tas50](https://github.com/tas50)) <!-- 14.0.135 -->
