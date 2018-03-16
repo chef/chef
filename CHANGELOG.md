@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.136 -->
-## [v14.0.136](https://github.com/chef/chef/tree/v14.0.136) (2018-03-15)
+<!-- latest_release 14.0.137 -->
+## [v14.0.137](https://github.com/chef/chef/tree/v14.0.137) (2018-03-16)
 
 #### Merged Pull Requests
-- update mount to use properties and fix 6851 [#6969](https://github.com/chef/chef/pull/6969) ([thommay](https://github.com/thommay))
+- Yum refactor [#6540](https://github.com/chef/chef/pull/6540) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Yum refactor [#6540](https://github.com/chef/chef/pull/6540) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.137 -->
 - update mount to use properties and fix 6851 [#6969](https://github.com/chef/chef/pull/6969) ([thommay](https://github.com/thommay)) <!-- 14.0.136 -->
 - Remove knife help which used the manpages [#6982](https://github.com/chef/chef/pull/6982) ([tas50](https://github.com/tas50)) <!-- 14.0.135 -->
 - Stripping out Authorization header on redirect to a different host [#6985](https://github.com/chef/chef/pull/6985) ([bugok](https://github.com/bugok)) <!-- 14.0.134 -->
