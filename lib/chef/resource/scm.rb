@@ -21,20 +21,11 @@ require "chef/resource"
 class Chef
   class Resource
     class Scm < Chef::Resource
-      state_attrs :revision
-
       default_action :sync
       allowed_actions :checkout, :export, :sync, :diff, :log
 
       def initialize(name, run_context = nil)
         super
-        @enable_submodules = false
-        @enable_checkout = true
-        @remote = "origin"
-        @ssh_wrapper = nil
-        @depth = nil
-        @checkout_branch = "deploy"
-        @environment = nil
       end
 
       property :destination, String, name_property: true, identity: true
@@ -44,6 +35,15 @@ class Chef
       property :group, [String, Integer]
       property :svn_username, String
       property :svn_password, String, sensitive: true, desired_state: false
+      # Capistrano and git-deploy use ``shallow clone''
+      property :depth, Integer
+      property :enable_submodules, [TrueClass, FalseClass], default: false
+      property :enable_checkout, [TrueClass, FalseClass], default: true
+      property :remote, String, default: "origin"
+      property :ssh_wrapper, String
+      property :timeout, Integer
+      property :checkout_branch, String, default: "deploy"
+      property :environment, [Hash, nil], default: nil
 
       def svn_arguments(arg = nil)
         @svn_arguments, arg = nil, nil if arg == false
@@ -62,70 +62,7 @@ class Chef
           :kind_of => String)
       end
 
-      # Capistrano and git-deploy use ``shallow clone''
-      def depth(arg = nil)
-        set_or_return(
-          :depth,
-          arg,
-          :kind_of => Integer
-        )
-      end
 
-      def enable_submodules(arg = nil)
-        set_or_return(
-          :enable_submodules,
-          arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def enable_checkout(arg = nil)
-        set_or_return(
-          :enable_checkout,
-          arg,
-          :kind_of => [TrueClass, FalseClass]
-        )
-      end
-
-      def remote(arg = nil)
-        set_or_return(
-          :remote,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def ssh_wrapper(arg = nil)
-        set_or_return(
-          :ssh_wrapper,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def timeout(arg = nil)
-        set_or_return(
-          :timeout,
-          arg,
-          :kind_of => Integer
-        )
-      end
-
-      def checkout_branch(arg = nil)
-        set_or_return(
-          :checkout_branch,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def environment(arg = nil)
-        set_or_return(
-          :environment,
-          arg,
-          :kind_of => [ Hash ]
-        )
-      end
 
       alias :env :environment
     end
