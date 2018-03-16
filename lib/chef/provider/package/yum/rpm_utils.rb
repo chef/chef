@@ -1,6 +1,6 @@
 
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,15 @@
 #
 
 require "chef/provider/package"
+
+#
+# BUGGY AND DEPRECATED:  This ruby code is known to not match the python implementation for version comparisons.
+# The APIs here should probably be converted to talk to the PythonHelper or just abandonded completely.
+#
+# e.g. this should just use Chef::Provider::Package::Yum::PythonHelper.instance.compare_versions(x,y)
+#
+# The python_helper could be extended to support additional APIs in here to remove the ruby code entirely.
+#
 
 class Chef
   class Provider

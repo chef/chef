@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -220,7 +220,12 @@ class Chef
       end
 
       def action_lock
-        unless package_locked(new_resource.package_name, new_resource.version)
+        packages_locked = if respond_to?(:packages_all_locked?, true)
+                            packages_all_locked?(Array(new_resource.package_name), Array(new_resource.version))
+                          else
+                            package_locked(new_resource.package_name, new_resource.version)
+                          end
+        unless packages_locked
           description = new_resource.version ? "version #{new_resource.version} of " : ""
           converge_by("lock #{description}package #{current_resource.package_name}") do
             multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
@@ -234,7 +239,12 @@ class Chef
       end
 
       def action_unlock
-        if package_locked(new_resource.package_name, new_resource.version)
+        packages_unlocked = if respond_to?(:packages_all_unlocked?, true)
+                              packages_all_unlocked?(Array(new_resource.package_name), Array(new_resource.version))
+                            else
+                              !package_locked(new_resource.package_name, new_resource.version)
+                            end
+        unless packages_unlocked
           description = new_resource.version ? "version #{new_resource.version} of " : ""
           converge_by("unlock #{description}package #{current_resource.package_name}") do
             multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
@@ -247,6 +257,7 @@ class Chef
         end
       end
 
+      # for multipackage just implement packages_all_[un]locked? properly and omit implementing this API
       def package_locked(name, version)
         raise Chef::Exceptions::UnsupportedAction, "#{self} has no way to detect if package is locked"
       end
