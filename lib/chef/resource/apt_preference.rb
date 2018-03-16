@@ -30,10 +30,21 @@ class Chef
                   " sources are prioritized during installation."
       introduced "13.3"
 
-      property :package_name, String, name_property: true, regex: [/^([a-z]|[A-Z]|[0-9]|_|-|\.|\*|\+)+$/]
-      property :glob, String
-      property :pin, String, required: true
-      property :pin_priority, [String, Integer], required: true
+      property :package_name, String,
+               name_property: true,
+               description: "The name of the package.",
+               regex: [/^([a-z]|[A-Z]|[0-9]|_|-|\.|\*|\+)+$/]
+
+      property :glob, String,
+               description: "Pin by glob() expression or with regular expressions surrounded by /."
+
+      property :pin, String,
+               description: "The package version or repository to pin.",
+               required: true
+
+      property :pin_priority, [String, Integer],
+               description: "Sets the Pin-Priority for a package.",
+               required: true
 
       default_action :add
       allowed_actions :add, :remove
