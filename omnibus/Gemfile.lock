@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 33a94bf000d2f6eb0f738041be38f3e5e00a594e
+  revision: 31eddd2f8482f79869fc60bffd9c1ce11071844b
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -31,13 +31,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.11.11)
-      aws-sdk-resources (= 2.11.11)
-    aws-sdk-core (2.11.11)
+    aws-sdk (2.11.16)
+      aws-sdk-resources (= 2.11.16)
+    aws-sdk-core (2.11.16)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.11.11)
-      aws-sdk-core (= 2.11.11)
+    aws-sdk-resources (2.11.16)
+      aws-sdk-core (= 2.11.16)
     aws-sigv4 (1.0.2)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -110,7 +110,7 @@ GEM
     ipaddress (0.8.3)
     jmespath (1.3.1)
     json (2.1.0)
-    kitchen-vagrant (0.19.0)
+    kitchen-vagrant (1.3.1)
       test-kitchen (~> 1.4)
     libyajl2 (1.2.0)
     license_scout (1.0.1)
@@ -146,7 +146,7 @@ GEM
     net-ssh (4.2.0)
     net-ssh-gateway (1.3.0)
       net-ssh (>= 2.6.5)
-    nio4r (2.2.0)
+    nio4r (2.3.0)
     nori (2.6.0)
     octokit (4.8.0)
       sawyer (~> 0.8.0, >= 0.5.3)
