@@ -57,7 +57,7 @@ class Chef
         )
       end
 
-      property :variables, Hash, default: {}
+      property :variables, Hash, default: lazy { Hash.new }
       property :cookbook, String
       property :local, [ TrueClass, FalseClass ], default: false
 
