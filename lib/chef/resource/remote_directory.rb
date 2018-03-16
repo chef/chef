@@ -23,11 +23,13 @@ require "chef/mixin/securable"
 
 class Chef
   class Resource
-    # Use the remote_directory resource to incrementally transfer a directory from a cookbook to a node. The director
-    # that is copied from the cookbook should be located under COOKBOOK_NAME/files/default/REMOTE_DIRECTORY. The
-    # remote_directory resource will obey file specificity.
     class RemoteDirectory < Chef::Resource::Directory
       include Chef::Mixin::Securable
+
+      description "Use the remote_directory resource to incrementally transfer a directory"\
+                  " from a cookbook to a node. The director that is copied from the cookbook"\
+                  " should be located under COOKBOOK_NAME/files/default/REMOTE_DIRECTORY. The"\
+                  " remote_directory resource will obey file specificity."
 
       identity_attr :path
 

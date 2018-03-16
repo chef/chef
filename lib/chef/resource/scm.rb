@@ -62,8 +62,6 @@ class Chef
           :kind_of => String)
       end
 
-
-
       alias :env :environment
     end
   end
