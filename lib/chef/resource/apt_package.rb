@@ -26,8 +26,13 @@ class Chef
 
       description "Use the apt_package resource to manage packages on Debian and Ubuntu platforms."
 
-      property :default_release, String, desired_state: false
-      property :overwrite_config_files, [TrueClass, FalseClass], default: false
+      property :default_release, String,
+               description: "The default release. For example: stable.",
+               desired_state: false
+
+      property :overwrite_config_files, [TrueClass, FalseClass],
+               description: "Overwrite existing config files with those in the package if prompted by apt.",
+               default: false
 
     end
   end

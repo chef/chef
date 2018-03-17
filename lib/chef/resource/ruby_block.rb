@@ -22,10 +22,12 @@ require "chef/provider/ruby_block"
 
 class Chef
   class Resource
-    # Use the ruby_block resource to execute Ruby code during a chef-client run. Ruby code in the ruby_block resource is
-    # evaluated with other resources during convergence, whereas Ruby code outside of a ruby_block resource is evaluated
-    # before other resources, as the recipe is compiled.
     class RubyBlock < Chef::Resource
+      description "Use the ruby_block resource to execute Ruby code during a chef-client run."\
+                  " Ruby code in the ruby_block resource is evaluated with other resources during"\
+                  " convergence, whereas Ruby code outside of a ruby_block resource is evaluated"\
+                  " before other resources, as the recipe is compiled."
+
       default_action :run
       allowed_actions :create, :run
 

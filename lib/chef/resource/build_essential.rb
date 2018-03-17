@@ -30,6 +30,9 @@ class Chef
                default: false
 
       action :install do
+
+        description "Install build essential packages"
+
         case node["platform_family"]
         when "debian"
           declare_resource(:package,  %w{ autoconf binutils-doc bison build-essential flex gettext ncurses-dev })

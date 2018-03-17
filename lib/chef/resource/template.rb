@@ -44,9 +44,6 @@ class Chef
       def initialize(name, run_context = nil)
         super
         @source = "#{::File.basename(name)}.erb"
-        @cookbook = nil
-        @local = false
-        @variables = Hash.new
         @inline_helper_blocks = {}
         @inline_helper_modules = []
         @helper_modules = []
@@ -60,29 +57,9 @@ class Chef
         )
       end
 
-      def variables(args = nil)
-        set_or_return(
-          :variables,
-          args,
-          :kind_of => [ Hash ]
-        )
-      end
-
-      def cookbook(args = nil)
-        set_or_return(
-          :cookbook,
-          args,
-          :kind_of => [ String ]
-        )
-      end
-
-      def local(args = nil)
-        set_or_return(
-          :local,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :variables, Hash, default: lazy { Hash.new }
+      property :cookbook, String
+      property :local, [ TrueClass, FalseClass ], default: false
 
       # Declares a helper method to be defined in the template context when
       # rendering.
