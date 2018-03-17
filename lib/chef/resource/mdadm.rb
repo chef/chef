@@ -33,7 +33,7 @@ class Chef
       allowed_actions :create, :assemble, :stop
 
       property :chunk, Integer, default: 16
-      property :devices, Array, default: []
+      property :devices, Array, default: lazy { [] }
       property :exists, [ TrueClass, FalseClass ], default: false
       property :level, Integer, default: 1
       property :metadata, String, default: "0.90"

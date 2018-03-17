@@ -25,7 +25,7 @@ class Chef
                   " in a git repository. git version 1.6.5 (or higher) is required to"\
                   " use all of the functionality in the git resource."
 
-      property :additional_remotes, Hash, default: {}
+      property :additional_remotes, Hash, default: lazy { Hash.new }
 
       alias :branch :revision
       alias :reference :revision

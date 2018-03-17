@@ -33,7 +33,7 @@ class Chef
       allowed_actions :get, :patch, :put, :post, :delete, :head, :options
 
       property :url, String, identity: true
-      property :headers, Hash, default: {}
+      property :headers, Hash, default: lazy { Hash.new }
 
       def initialize(name, run_context = nil)
         super
