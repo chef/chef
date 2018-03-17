@@ -381,7 +381,14 @@ class Chef
         elsif redirect_location = redirected_to(response)
           if [:GET, :HEAD].include?(method)
             follow_redirect do
-              send_http_request(method, url + redirect_location, headers, body, &response_handler)
+              redirected_url = url + redirect_location
+              if http_disable_auth_on_redirect
+                new_headers = build_headers(method, redirected_url, headers, body)
+                new_headers.delete("Authorization") if url.host != redirected_url.host
+                send_http_request(method, redirected_url, new_headers, body, &response_handler)
+              else
+                send_http_request(method, redirected_url, headers, body, &response_handler)
+              end
             end
           else
             raise Exceptions::InvalidRedirect, "#{method} request was redirected from #{url} to #{redirect_location}. Only GET and HEAD support redirects."
@@ -457,6 +464,11 @@ class Chef
     # @api private
     def http_retry_count
       config[:http_retry_count]
+    end
+
+    # @api private
+    def http_disable_auth_on_redirect
+      config[:http_disable_auth_on_redirect]
     end
 
     # @api private

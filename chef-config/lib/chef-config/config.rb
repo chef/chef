@@ -354,6 +354,11 @@ module ChefConfig
 
     default :http_retry_count, 5
     default :http_retry_delay, 5
+    # Whether or not to send the Authorization header again on http redirects.
+    # As per the plan in https://github.com/chef/chef/pull/7006, this will be
+    # False in Chef 14, True in Chef 15, and will be removed entirely in Chef 16.
+    default :http_disable_auth_on_redirect, false
+
     default :interval, nil
     default :once, nil
     default :json_attribs, nil
