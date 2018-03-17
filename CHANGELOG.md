@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.139 -->
-## [v14.0.139](https://github.com/chef/chef/tree/v14.0.139) (2018-03-16)
+<!-- latest_release 14.0.140 -->
+## [v14.0.140](https://github.com/chef/chef/tree/v14.0.140) (2018-03-17)
 
 #### Merged Pull Requests
-- Revert &quot;Stripping out Authorization header on redirect to a different host [#6996](https://github.com/chef/chef/pull/6996) ([tas50](https://github.com/tas50))
+- Add the sudo resource from the sudo resource [#6979](https://github.com/chef/chef/pull/6979) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Add the sudo resource from the sudo resource [#6979](https://github.com/chef/chef/pull/6979) ([tas50](https://github.com/tas50)) <!-- 14.0.140 -->
 - Revert &quot;Stripping out Authorization header on redirect to a different host [#6996](https://github.com/chef/chef/pull/6996) ([tas50](https://github.com/tas50)) <!-- 14.0.139 -->
 - Use Chef omnibus def that includes libarchive [#6993](https://github.com/chef/chef/pull/6993) ([tas50](https://github.com/tas50)) <!-- 14.0.138 -->
 - Yum refactor [#6540](https://github.com/chef/chef/pull/6540) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.137 -->
