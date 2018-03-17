@@ -32,6 +32,10 @@ describe Chef::Resource::YumRepository do
     expect(resource.repositoryid).to eq("multiverse")
   end
 
+  it "fails if the user provides a repositoryid with a forward slash" do
+    expect { resource.repositoryid "foo/bar" }.to raise_error(ArgumentError)
+  end
+
   it "the timeout property expects numeric Strings" do
     expect { resource.timeout "123" }.not_to raise_error(ArgumentError)
     expect { resource.timeout "123foo" }.to raise_error(ArgumentError)

@@ -30,7 +30,11 @@ class Chef
                   " zypper cookbook."
       introduced "13.3"
 
-      property :repo_name, String, name_property: true
+      property :repo_name, String,
+               regex: [/^[^\/]+$/],
+               validation_message: "repo_name property cannot contain a forward slash '/'",
+               name_property: true
+
       property :description, String
       property :type, String, default: "NONE"
       property :enabled, [TrueClass, FalseClass], default: true

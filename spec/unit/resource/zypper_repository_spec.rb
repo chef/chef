@@ -32,6 +32,10 @@ describe Chef::Resource::ZypperRepository do
     expect(resource.repo_name).to eql("repo-source")
   end
 
+  it "fails if the user provides a repo_name with a forward slash" do
+    expect { resource.repo_name "foo/bar" }.to raise_error(ArgumentError)
+  end
+
   it "has a default action of create" do
     expect(resource.action).to eql([:create])
   end
