@@ -143,7 +143,7 @@ class Chef
       property :shell, String
       property :command, String, identity: true
       property :user, String, default: "root"
-      property :environment, Hash, default: {}
+      property :environment, Hash, default: lazy { Hash.new }
 
       private
 

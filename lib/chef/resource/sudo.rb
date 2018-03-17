@@ -44,12 +44,12 @@ class Chef
 
       property :users, [String, Array],
                description: "User(s) to provide sudo privileges to. This accepts either an array or a comma separated.",
-               default: [],
+               default: lazy { [] },
                coerce: proc { |x| x.is_a?(Array) ? x : x.split(/\s*,\s*/) }
 
       property :groups, [String, Array],
                description: "Group(s) to provide sudo privileges to. This accepts either an array or a comma separated list. Leading % on group names is optional.",
-               default: [],
+               default: lazy { [] },
                coerce: proc { |x| coerce_groups(x) }
 
       property :commands, Array,
@@ -81,11 +81,11 @@ class Chef
 
       property :defaults, Array,
                description: "An array of defaults for the user/group.",
-               default: []
+               default: lazy { [] }
 
       property :command_aliases, Array,
                description: "Command aliases that can be used as allowed commands later in the config",
-               default: []
+               default: lazy { [] }
 
       property :setenv, [TrueClass, FalseClass],
                description: "Whether to permit the preserving of environment with sudo -E.",
@@ -93,11 +93,11 @@ class Chef
 
       property :env_keep_add, Array,
                description: "An array of strings to add to env_keep.",
-               default: []
+               default: lazy { [] }
 
       property :env_keep_subtract, Array,
                description: "An array of strings to remove from env_keep.",
-               default: []
+               default: lazy { [] }
 
       property :visudo_path, String,
                description: "The path to visudo for config verification.",
