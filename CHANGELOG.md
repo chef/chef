@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.141 -->
-## [v14.0.141](https://github.com/chef/chef/tree/v14.0.141) (2018-03-17)
+<!-- latest_release 14.0.142 -->
+## [v14.0.142](https://github.com/chef/chef/tree/v14.0.142) (2018-03-17)
 
 #### Merged Pull Requests
-- Add more resource descriptions and convert resources to use properties [#6994](https://github.com/chef/chef/pull/6994) ([tas50](https://github.com/tas50))
+- Lazy eval empty Hash/Array resource properties. [#6997](https://github.com/chef/chef/pull/6997) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Lazy eval empty Hash/Array resource properties. [#6997](https://github.com/chef/chef/pull/6997) ([tas50](https://github.com/tas50)) <!-- 14.0.142 -->
 - Add more resource descriptions and convert resources to use properties [#6994](https://github.com/chef/chef/pull/6994) ([tas50](https://github.com/tas50)) <!-- 14.0.141 -->
 - Add the sudo resource from the sudo resource [#6979](https://github.com/chef/chef/pull/6979) ([tas50](https://github.com/tas50)) <!-- 14.0.140 -->
 - Revert &quot;Stripping out Authorization header on redirect to a different host [#6996](https://github.com/chef/chef/pull/6996) ([tas50](https://github.com/tas50)) <!-- 14.0.139 -->
