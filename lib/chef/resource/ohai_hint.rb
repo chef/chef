@@ -31,8 +31,7 @@ class Chef
       property :content, Hash,
                description: "Values to include in the hint file."
 
-      property :compile_time,
-               [TrueClass, FalseClass],
+      property :compile_time, [TrueClass, FalseClass],
                description: "Should the resource execute during the compile time phase",
                default: true
 

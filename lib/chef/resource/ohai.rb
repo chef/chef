@@ -28,7 +28,7 @@ class Chef
                   " that adds a user) to refer to those attributes later on during the chef-client run."
 
       property :ohai_name, name_property: true
-      property :plugin, [String]
+      property :plugin, String
 
       default_action :reload
       allowed_actions :reload

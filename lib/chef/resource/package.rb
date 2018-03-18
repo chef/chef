@@ -21,14 +21,16 @@ require "chef/resource"
 
 class Chef
   class Resource
-    # Use the package resource to manage packages. When the package is installed from a local file (such as with RubyGems,
-    # dpkg, or RPM Package Manager), the file must be added to the node using the remote_file or cookbook_file resources.
-    #
-    # This resource is the base resource for several other resources used for package management on specific platforms.
-    # While it is possible to use each of these specific resources, it is recommended to use the package resource as often
-    # as possible.
     class Package < Chef::Resource
       resource_name :package
+
+      description "Use the package resource to manage packages. When the package is"\
+                  " installed from a local file (such as with RubyGems, dpkg, or RPM"\
+                  " Package Manager), the file must be added to the node using the remote_file"\
+                  " or cookbook_file resources.\n\nThis resource is the base resource for"\
+                  " several other resources used for package management on specific platforms."\
+                  " While it is possible to use each of these specific resources, it is"\
+                  " recommended to use the package resource as often as possible."
 
       default_action :install
       allowed_actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock

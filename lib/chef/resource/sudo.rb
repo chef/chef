@@ -32,7 +32,6 @@ class Chef
                   " '#includedir' directive introduced in version 1.7.2. The resource does not enforce"\
                   " installing the version. Supported releases of Ubuntu, Debian and RHEL (6+) all support"\
                   " this feature."
-
       introduced "14.0"
 
       # acording to the sudo man pages sudo will ignore files in an include dir that have a `.` or `~`
