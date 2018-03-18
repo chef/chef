@@ -93,23 +93,23 @@ describe Chef::Resource::Group, "members" do
   let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
 
   [ :users, :members].each do |method|
-    it "(#{method}) allows and convert a string" do
-      resource.send(method, "aj")
-      expect(resource.send(method)).to eql(["aj"])
+    it "(#{method}) allows a String and coerces it to an Array" do
+      resource.send(method, "some_user")
+      expect(resource.send(method)).to eql(["some_user"])
     end
 
-    it "(#{method}) should split a string on commas" do
-      resource.send(method, "aj,adam")
-      expect(resource.send(method)).to eql( %w{aj adam} )
+    it "(#{method}) coerces a comma separated list of users to an Array" do
+      resource.send(method, "some_user, other_user ,another_user,just_one_more_user")
+      expect(resource.send(method)).to eql( %w{some_user other_user another_user just_one_more_user} )
     end
 
-    it "(#{method}) allows an array" do
-      resource.send(method, %w{aj adam})
-      expect(resource.send(method)).to eql( %w{aj adam} )
+    it "(#{method}) allows an Array" do
+      resource.send(method, %w{some_user other_user})
+      expect(resource.send(method)).to eql( %w{some_user other_user} )
     end
 
-    it "(#{method}) does not allow a hash" do
-      expect { resource.send(method, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
+    it "(#{method}) does not allow a Hash" do
+      expect { resource.send(method, { :some_user => "is freakin awesome" }) }.to raise_error(ArgumentError)
     end
   end
 end
