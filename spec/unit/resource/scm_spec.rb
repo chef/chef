@@ -80,17 +80,6 @@ describe Chef::Resource::Scm do
     expect(resource.svn_password).to eql("taftplz")
   end
 
-  it "has a svn_arguments String attribute" do
-    resource.svn_arguments "--more-taft plz"
-    expect(resource.svn_arguments).to eql("--more-taft plz")
-  end
-
-  it "has a svn_info_args String attribute" do
-    expect(resource.svn_info_args).to be_nil
-    resource.svn_info_args("--no-moar-plaintext-creds yep")
-    expect(resource.svn_info_args).to eq("--no-moar-plaintext-creds yep")
-  end
-
   it "takes the depth as an integer for shallow clones" do
     resource.depth 5
     expect(resource.depth).to eq(5)

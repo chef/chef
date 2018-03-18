@@ -65,6 +65,18 @@ describe Chef::Resource::Subversion do
     expect(resource.svn_arguments).to be_nil
   end
 
+  it "has a svn_arguments String attribute" do
+    expect(resource.svn_arguments).to eq("--no-auth-cache") # the default
+    resource.svn_arguments "--more-taft plz"
+    expect(resource.svn_arguments).to eql("--more-taft plz")
+  end
+
+  it "has a svn_info_args String attribute" do
+    expect(resource.svn_info_args).to eq("--no-auth-cache") # the default
+    resource.svn_info_args("--no-moar-plaintext-creds yep")
+    expect(resource.svn_info_args).to eq("--no-moar-plaintext-creds yep")
+  end
+
   it "hides password from custom exception message" do
     resource.svn_password "l33th4x0rpa$$w0rd"
     e = resource.customize_exception(Chef::Exceptions::Exec.new "Exception with password #{resource.svn_password}")
