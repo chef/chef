@@ -668,7 +668,7 @@ class Chef
         Token.new(Handle.new(token.read_pointer))
       end
 
-      def test_and_raise_lsa_nt_status(result)
+      def self.test_and_raise_lsa_nt_status(result)
         win32_error = LsaNtStatusToWinError(result)
         if win32_error != 0
           Chef::ReservedNames::Win32::Error.raise!(nil, win32_error)

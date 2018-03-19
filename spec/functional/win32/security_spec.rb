@@ -52,6 +52,7 @@ describe "Chef::Win32::Security", :windows_only do
       delete_user.run_command
       delete_user.error!
     end
+
     it "has_admin_privileges? returns false" do
       has_admin_privileges = with_user_context(user, password, domain, :local) do
         Chef::ReservedNames::Win32::Security.has_admin_privileges?
@@ -147,6 +148,41 @@ describe "Chef::Win32::Security", :windows_only do
         allow(Chef::ReservedNames::Win32::Security).to receive(:OpenProcessToken).and_return(true)
         expect { Chef::ReservedNames::Win32::Security.get_token_information_elevation_type(token) }.to raise_error(Chef::Exceptions::Win32APIError)
       end
+    end
+  end
+
+  describe ".get_account_right" do
+    let(:username) { ENV["USERNAME"] }
+
+    context "when given a valid username" do
+      it "returns an array of account right constants" do
+        Chef::ReservedNames::Win32::Security.add_account_right(username, "SeBatchLogonRight")
+        expect(Chef::ReservedNames::Win32::Security.get_account_right(username)).to include("SeBatchLogonRight")
+      end
+
+      it "passes an FFI::Pointer to LsaFreeMemory" do
+        Chef::ReservedNames::Win32::Security.add_account_right(username, "SeBatchLogonRight") # otherwise we return an empty array before LsaFreeMemory
+        expect(Chef::ReservedNames::Win32::Security).to receive(:LsaFreeMemory).with(instance_of(FFI::Pointer)).and_return(0) # not FFI::MemoryPointer
+        Chef::ReservedNames::Win32::Security.get_account_right(username)
+      end
+    end
+
+    context "when given an invalid username" do
+      let(:username) { "noooooooooope" }
+
+      it "raises an exception" do
+        expect { Chef::ReservedNames::Win32::Security.get_account_right(username) }.to raise_error(Chef::Exceptions::Win32APIError)
+      end
+    end
+  end
+
+  describe ".test_and_raise_lsa_nt_status" do
+    # NTSTATUS code: 0xC0000001 / STATUS_UNSUCCESSFUL
+    # Windows Error: ERROR_GEN_FAILURE / 31 / 0x1F / A device attached to the system is not functioning.
+    let(:status_unsuccessful) { 0xC0000001 }
+
+    it "raises an exception with the Win Error if the win32 result is not 0" do
+      expect { Chef::ReservedNames::Win32::Security.test_and_raise_lsa_nt_status(status_unsuccessful) }.to raise_error(Chef::Exceptions::Win32APIError)
     end
   end
 end
