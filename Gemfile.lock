@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 8d9aed96d01f93a1b14583f902b7504cf61b9f72
+  revision: e3805466d90b7efc6ede3d186244ded6a4b2116c
   branch: master
   specs:
-    chefstyle (0.8.0)
-      rubocop (= 0.52.1)
+    chefstyle (0.9.0)
+      rubocop (= 0.54.0)
 
 PATH
   remote: .
@@ -103,7 +103,7 @@ GEM
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
-    byebug (10.0.0)
+    byebug (10.0.1)
     chef-vault (3.3.0)
     chef-zero (14.0.1)
       ffi-yajl (~> 2.2)
@@ -190,7 +190,8 @@ GEM
       mixlib-log
     mixlib-authentication (1.4.2)
     mixlib-cli (1.7.0)
-    mixlib-config (2.2.5)
+    mixlib-config (2.2.6)
+      tomlrb
     mixlib-log (2.0.3)
     mixlib-shellout (2.3.2)
     mixlib-shellout (2.3.2-universal-mingw32)
@@ -251,7 +252,7 @@ GEM
       websocket (~> 1.0)
     rack (2.0.4)
     rainbow (3.0.0)
-    rake (12.3.0)
+    rake (12.3.1)
     rb-readline (0.5.5)
     rspec (3.7.0)
       rspec-core (~> 3.7.0)
@@ -272,9 +273,9 @@ GEM
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.52.1)
+    rubocop (0.54.0)
       parallel (~> 1.10)
-      parser (>= 2.4.0.2, < 3.0)
+      parser (>= 2.5)
       powerpack (~> 0.1)
       rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
