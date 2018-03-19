@@ -41,7 +41,7 @@ class Chef
             when /^Version *: (.+) *$/
               candidate_version = $1.strip
               Chef::Log.debug("#{new_resource} version #{candidate_version}")
-            when /^Installed *: Yes *(\(automatically\))?$/ # http://rubular.com/r/qhPeO6vP9h
+            when /^Installed *: Yes.*$/ # http://rubular.com/r/9StcAMjOn6
               is_installed = true
               Chef::Log.debug("#{new_resource} is installed")
             when /^Status *: out-of-date \(version (.+) installed\) *$/
