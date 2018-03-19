@@ -24,10 +24,6 @@ class Chef
       default_action :sync
       allowed_actions :checkout, :export, :sync, :diff, :log
 
-      def initialize(name, run_context = nil)
-        super
-      end
-
       property :destination, String, name_property: true, identity: true
       property :repository, String
       property :revision, String, default: "HEAD"
@@ -44,23 +40,6 @@ class Chef
       property :timeout, Integer
       property :checkout_branch, String, default: "deploy"
       property :environment, [Hash, nil], default: nil
-
-      def svn_arguments(arg = nil)
-        @svn_arguments, arg = nil, nil if arg == false
-        set_or_return(
-          :svn_arguments,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def svn_info_args(arg = nil)
-        @svn_info_args, arg = nil, nil if arg == false
-        set_or_return(
-          :svn_info_args,
-          arg,
-          :kind_of => String)
-      end
 
       alias :env :environment
     end

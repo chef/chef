@@ -38,6 +38,23 @@ class Chef
         "#{self} (#{defined_at}) had an error: #{e.class.name}: #{svn_password ? e.message.gsub(svn_password, "[hidden_password]") : e.message}"
       end
 
+      def svn_arguments(arg = nil)
+        @svn_arguments, arg = nil, nil if arg == false
+        set_or_return(
+          :svn_arguments,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def svn_info_args(arg = nil)
+        @svn_info_args, arg = nil, nil if arg == false
+        set_or_return(
+          :svn_info_args,
+          arg,
+          :kind_of => String)
+      end
+
       property :svn_binary, String
     end
   end
