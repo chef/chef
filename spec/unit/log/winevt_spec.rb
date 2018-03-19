@@ -25,7 +25,6 @@ describe Chef::Log::WinEvt do
   let(:app) { Chef::Application.new }
 
   before do
-
     Chef::Log.init(MonoLogger.new(winevt))
     @old_log_level = Chef::Log.level
     Chef::Log.level = :info
@@ -39,12 +38,12 @@ describe Chef::Log::WinEvt do
   end
 
   it "should send message with severity info to Windows Event Log." do
-    expect(winevt).to receive(:info).with("*** Chef 12.4.0.dev.0 ***")
+    expect(winevt).to receive(:add).with(1, "*** Chef 12.4.0.dev.0 ***", nil)
     Chef::Log.info("*** Chef 12.4.0.dev.0 ***")
   end
 
   it "should send message with severity warning to Windows Event Log." do
-    expect(winevt).to receive(:warn).with("No config file found or specified on command line, using command line options.")
+    expect(winevt).to receive(:add).with(2, "No config file found or specified on command line, using command line options.", nil)
     Chef::Log.warn("No config file found or specified on command line, using command line options.")
   end
 

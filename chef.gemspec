@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
 
   s.add_dependency "mixlib-cli", "~> 1.7"
-  s.add_dependency "mixlib-log", "~> 1.3"
+  s.add_dependency "mixlib-log", "~> 2.0"
   s.add_dependency "mixlib-authentication", "~> 1.4"
   s.add_dependency "mixlib-shellout", "~> 2.0"
   s.add_dependency "mixlib-archive", "~> 0.4"

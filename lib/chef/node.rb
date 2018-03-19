@@ -49,6 +49,8 @@ class Chef
 
     attr_accessor :recipe_list, :run_state
 
+    attr_reader :logger
+
     # RunContext will set itself as run_context via this setter when
     # initialized. This is needed so DSL::IncludeAttribute (in particular,
     # #include_recipe) can access the run_context to determine if an attributes
@@ -66,9 +68,10 @@ class Chef
     NULL_ARG = Object.new
 
     # Create a new Chef::Node object.
-    def initialize(chef_server_rest: nil)
+    def initialize(chef_server_rest: nil, logger: nil)
       @chef_server_rest = chef_server_rest
       @name = nil
+      @logger = logger || Chef::Log.with_child(subsystem: "node")
 
       @chef_environment = "_default"
       @primary_runlist = Chef::RunList.new
@@ -321,13 +324,15 @@ class Chef
 
     # Consume data from ohai and Attributes provided as JSON on the command line.
     def consume_external_attrs(ohai_data, json_cli_attrs)
-      Chef::Log.debug("Extracting run list from JSON attributes provided on command line")
+      # FIXME(log): should be trace
+      logger.debug("Extracting run list from JSON attributes provided on command line")
       consume_attributes(json_cli_attrs)
 
       self.automatic_attrs = ohai_data
 
       platform, version = Chef::Platform.find_platform_and_version(self)
-      Chef::Log.debug("Platform is #{platform} version #{version}")
+      # FIXME(log): should be trace
+      logger.debug("Platform is #{platform} version #{version}")
       automatic[:platform] = platform
       automatic[:platform_version] = version
       automatic[:name] = name
@@ -342,7 +347,8 @@ class Chef
     def consume_attributes(attrs)
       normal_attrs_to_merge = consume_run_list(attrs)
       normal_attrs_to_merge = consume_chef_environment(normal_attrs_to_merge)
-      Chef::Log.debug("Applying attributes from json file")
+      # FIXME(log): should be trace
+      logger.debug("Applying attributes from json file")
       self.normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs, normal_attrs_to_merge)
       tags # make sure they're defined
     end
@@ -368,7 +374,7 @@ class Chef
         if attrs.key?("recipes") || attrs.key?("run_list")
           raise Chef::Exceptions::AmbiguousRunlistSpecification, "please set the node's run list using the 'run_list' attribute only."
         end
-        Chef::Log.info("Setting the run_list to #{new_run_list} from CLI options")
+        logger.info("Setting the run_list to #{new_run_list} from CLI options")
         run_list(new_run_list)
       end
       attrs
@@ -594,7 +600,7 @@ class Chef
       # so then POST to create.
       begin
         if Chef::Config[:why_run]
-          Chef::Log.warn("In why-run mode, so NOT performing node save.")
+          logger.warn("In why-run mode, so NOT performing node save.")
         else
           chef_server_rest.put("nodes/#{name}", data_for_save)
         end
@@ -663,14 +669,14 @@ class Chef
         whitelist_config_option = "#{level}_attribute_whitelist".to_sym
         whitelist = Chef::Config[whitelist_config_option]
         unless whitelist.nil? # nil => save everything
-          Chef::Log.info("Whitelisting #{level} node attributes for save.")
+          logger.info("Whitelisting #{level} node attributes for save.")
           data[level] = Chef::Whitelist.filter(data[level], whitelist)
         end
 
         blacklist_config_option = "#{level}_attribute_blacklist".to_sym
         blacklist = Chef::Config[blacklist_config_option]
         unless blacklist.nil? # nil => remove nothing
-          Chef::Log.info("Blacklisting #{level} node attributes for save")
+          logger.info("Blacklisting #{level} node attributes for save")
           data[level] = Chef::Blacklist.filter(data[level], blacklist)
         end
       end

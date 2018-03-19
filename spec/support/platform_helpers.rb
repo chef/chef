@@ -246,6 +246,9 @@ end
 
 class HttpHelper
   extend Ohai::Mixin::HttpHelper
+  def self.logger
+    Chef::Log
+  end
 end
 
 def gce?

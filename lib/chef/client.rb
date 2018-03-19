@@ -135,6 +135,7 @@ class Chef
     #
     attr_reader :events
 
+    attr_reader :logger
     #
     # Creates a new Chef::Client.
     #
@@ -148,7 +149,9 @@ class Chef
     #
     def initialize(json_attribs = nil, args = {})
       @json_attribs = json_attribs || {}
-      @ohai = Ohai::System.new
+      @logger = args.delete(:logger) || Chef::Log.with_child
+
+      @ohai = Ohai::System.new(logger: logger)
 
       event_handlers = configure_formatters + configure_event_loggers
       event_handlers += Array(Chef::Config[:event_handlers])
@@ -249,10 +252,10 @@ class Chef
         request_id = Chef::RequestID.instance.request_id
         run_context = nil
         events.run_start(Chef::VERSION)
-        Chef::Log.info("*** Chef #{Chef::VERSION} ***")
-        Chef::Log.info("Platform: #{RUBY_PLATFORM}")
-        Chef::Log.info "Chef-client pid: #{Process.pid}"
-        Chef::Log.debug("Chef-client request_id: #{request_id}")
+        logger.info("*** Chef #{Chef::VERSION} ***")
+        logger.info("Platform: #{RUBY_PLATFORM}")
+        logger.info "Chef-client pid: #{Process.pid}"
+        logger.debug("Chef-client request_id: #{request_id}")
         enforce_path_sanity
         run_ohai
 
@@ -265,7 +268,7 @@ class Chef
 
         run_status.run_id = request_id
         run_status.start_clock
-        Chef::Log.info("Starting Chef Run for #{node.name}")
+        logger.info("Starting Chef Run for #{node.name}")
         run_started
 
         do_windows_admin_check
@@ -280,7 +283,7 @@ class Chef
 
         if Chef::Config[:why_run] == true
           # why_run should probably be renamed to why_converge
-          Chef::Log.debug("Not running controls in 'why-run' mode - this mode is used to see potential converge changes")
+          logger.debug("Not running controls in 'why-run' mode - this mode is used to see potential converge changes")
         elsif Chef::Config[:audit_mode] != :disabled
           audit_error = run_audits(run_context)
         end
@@ -289,7 +292,7 @@ class Chef
         raise converge_error if converge_error
 
         run_status.stop_clock
-        Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
+        logger.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
         events.run_completed(node, run_status)
 
@@ -300,7 +303,7 @@ class Chef
         Chef::Platform::Rebooter.reboot_if_needed!(node)
       rescue Exception => run_error
         # CHEF-3336: Send the error first in case something goes wrong below and we don't know why
-        Chef::Log.debug("Re-raising exception: #{run_error.class} - #{run_error.message}\n#{run_error.backtrace.join("\n  ")}")
+        logger.trace("Re-raising exception: #{run_error.class} - #{run_error.message}\n#{run_error.backtrace.join("\n  ")}")
         # If we failed really early, we may not have a run_status yet. Too early for these to be of much use.
         if run_status
           run_status.stop_clock
@@ -526,7 +529,7 @@ class Chef
     #
     def load_required_recipe(rest, run_context)
       required_recipe_contents = rest.get("required_recipe")
-      Chef::Log.info("Required Recipe found, loading it")
+      logger.info("Required Recipe found, loading it")
       Chef::FileCache.store("required_recipe", required_recipe_contents)
       required_recipe_file = Chef::FileCache.load("required_recipe", false)
 
@@ -547,7 +550,7 @@ class Chef
     rescue Net::HTTPServerException => e
       case e.response
       when Net::HTTPNotFound
-        Chef::Log.debug("Required Recipe not configured on the server, skipping it")
+        logger.trace("Required Recipe not configured on the server, skipping it")
       else
         raise
       end
@@ -578,9 +581,9 @@ class Chef
       if Chef::Config[:solo_legacy_mode]
         # nothing to do
       elsif policy_builder.temporary_policy?
-        Chef::Log.warn("Skipping final node save because override_runlist was given")
+        logger.warn("Skipping final node save because override_runlist was given")
       else
-        Chef::Log.debug("Saving the current state of node #{node_name}")
+        logger.debug("Saving the current state of node #{node_name}")
         node.save
       end
     end
@@ -600,7 +603,7 @@ class Chef
       ohai.all_plugins(filter)
       events.ohai_completed(node)
     rescue Ohai::Exceptions::CriticalPluginFailure => e
-      Chef::Log.error("Critical Ohai plugins failed: #{e.message}")
+      logger.error("Critical Ohai plugins failed: #{e.message}")
       exit(false)
     end
 
@@ -653,13 +656,13 @@ class Chef
     def register(client_name = node_name, config = Chef::Config)
       if !config[:client_key]
         events.skipping_registration(client_name, config)
-        Chef::Log.debug("Client key is unspecified - skipping registration")
+        logger.trace("Client key is unspecified - skipping registration")
       elsif File.exists?(config[:client_key])
         events.skipping_registration(client_name, config)
-        Chef::Log.debug("Client key #{config[:client_key]} is present - skipping registration")
+        logger.trace("Client key #{config[:client_key]} is present - skipping registration")
       else
         events.registration_start(node_name, config)
-        Chef::Log.info("Client key #{config[:client_key]} is not present - registering")
+        logger.info("Client key #{config[:client_key]} is not present - registering")
         Chef::ApiClient::Registration.new(node_name, config[:client_key]).run
         events.registration_completed
       end
@@ -707,7 +710,7 @@ class Chef
       catch(:end_client_run_early) do
         begin
           events.converge_start(run_context)
-          Chef::Log.debug("Converging node #{node_name}")
+          logger.debug("Converging node #{node_name}")
           @runner = Chef::Runner.new(run_context)
           @runner.converge
           events.converge_complete
@@ -775,7 +778,7 @@ class Chef
     def run_audits(run_context)
       begin
         events.audit_phase_start(run_status)
-        Chef::Log.info("Starting audit phase")
+        logger.info("Starting audit phase")
         auditor = Chef::Audit::Runner.new(run_context)
         auditor.run
         if auditor.failed?
@@ -785,7 +788,7 @@ class Chef
           @events.audit_phase_complete(Chef::Audit::Logger.read_buffer)
         end
       rescue Exception => e
-        Chef::Log.error("Audit phase failed with error message: #{e.message}")
+        logger.error("Audit phase failed with error message: #{e.message}")
         @events.audit_phase_failed(e, Chef::Audit::Logger.read_buffer)
         audit_exception = e
       end
@@ -818,19 +821,19 @@ class Chef
     #
     def do_windows_admin_check
       if Chef::Platform.windows?
-        Chef::Log.debug("Checking for administrator privileges....")
+        logger.trace("Checking for administrator privileges....")
 
         if !has_admin_privileges?
           message = "chef-client doesn't have administrator privileges on node #{node_name}."
           if Chef::Config[:fatal_windows_admin_check]
-            Chef::Log.fatal(message)
-            Chef::Log.fatal("fatal_windows_admin_check is set to TRUE.")
+            logger.fatal(message)
+            logger.fatal("fatal_windows_admin_check is set to TRUE.")
             raise Chef::Exceptions::WindowsNotAdmin, message
           else
-            Chef::Log.warn("#{message} This might cause unexpected resource failures.")
+            logger.warn("#{message} This might cause unexpected resource failures.")
           end
         else
-          Chef::Log.debug("chef-client has administrator privileges on node #{node_name}.")
+          logger.trace("chef-client has administrator privileges on node #{node_name}.")
         end
       end
     end
@@ -960,7 +963,7 @@ class Chef
       File.open(path, "w+") do |file|
         RubyProf::GraphPrinter.new(RubyProf.stop).print(file, {})
       end
-      Chef::Log.warn("Ruby execution profile dumped to #{path}")
+      logger.warn("Ruby execution profile dumped to #{path}")
     end
 
     def empty_directory?(path)
@@ -977,14 +980,14 @@ class Chef
         # Chef::Config[:cookbook_path] can be a string or an array
         # if it's an array, go through it and check each one, raise error at the last one if no files are found
         cookbook_paths = Array(Chef::Config[:cookbook_path])
-        Chef::Log.debug "Loading from cookbook_path: #{cookbook_paths.map { |path| File.expand_path(path) }.join(', ')}"
+        logger.trace "Loading from cookbook_path: #{cookbook_paths.map { |path| File.expand_path(path) }.join(', ')}"
         if cookbook_paths.all? { |path| empty_directory?(path) }
           msg = "None of the cookbook paths set in Chef::Config[:cookbook_path], #{cookbook_paths.inspect}, contain any cookbooks"
-          Chef::Log.fatal(msg)
+          logger.fatal(msg)
           raise Chef::Exceptions::CookbookNotFound, msg
         end
       else
-        Chef::Log.warn("Node #{node_name} has an empty run list.") if run_context.node.run_list.empty?
+        logger.warn("Node #{node_name} has an empty run list.") if run_context.node.run_list.empty?
       end
     end
 
