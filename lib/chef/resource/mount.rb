@@ -24,143 +24,37 @@ class Chef
     # Use the mount resource to manage a mounted file system.
     class Mount < Chef::Resource
 
-      identity_attr :device
-
-      state_attrs :mount_point, :device_type, :fstype, :username, :password, :domain
-
       default_action :mount
       allowed_actions :mount, :umount, :unmount, :remount, :enable, :disable
 
       # this is a poor API please do not re-use this pattern
-      property :supports, Hash, default: lazy { { remount: false } },
-                                coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
+      property :supports, Hash,
+        default: lazy { { remount: false } },
+        coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
       property :password, String, sensitive: true
 
-      def initialize(name, run_context = nil)
-        super
-        @mount_point = name
-        @device = nil
-        @device_type = :device
-        @fsck_device = "-"
-        @fstype = "auto"
-        @options = ["defaults"]
-        @dump = 0
-        @pass = 2
-        @mounted = false
-        @enabled = false
-        @username = nil
-        @password = nil
-        @domain = nil
-      end
+      property :mount_point, String, name_property: true
+      property :device, String, identity: true
 
-      def mount_point(arg = nil)
-        set_or_return(
-          :mount_point,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :device_type, [String, Symbol],
+        coerce: proc { |arg| arg.kind_of?(String) ? arg.to_sym : arg },
+        default: :device,
+        equal_to: RUBY_PLATFORM =~ /solaris/i ? %i{ device } : %i{ device label uuid }
 
-      def device(arg = nil)
-        set_or_return(
-          :device,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :fsck_device, String, default: "-"
+      property :fstype, [String, nil], default: "auto"
 
-      def device_type(arg = nil)
-        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
-        valid_devices = if RUBY_PLATFORM =~ /solaris/i
-                          [ :device ]
-                        else
-                          [ :device, :label, :uuid ]
-                        end
-        set_or_return(
-          :device_type,
-          real_arg,
-          :equal_to => valid_devices
-        )
-      end
+      property :options, [Array, String, nil],
+        coerce: proc { |arg| arg.kind_of?(String) ? arg.split(",") : arg },
+        default: %w{defaults}
 
-      def fsck_device(arg = nil)
-        set_or_return(
-          :fsck_device,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def fstype(arg = nil)
-        set_or_return(
-          :fstype,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def options(arg = nil)
-        ret = set_or_return(
-                            :options,
-                            arg,
-                            :kind_of => [ Array, String ]
-                            )
-
-        if ret.is_a? String
-          ret.tr(",", " ").split(/ /)
-        else
-          ret
-        end
-      end
-
-      def dump(arg = nil)
-        set_or_return(
-          :dump,
-          arg,
-          :kind_of => [ Integer, FalseClass ]
-        )
-      end
-
-      def pass(arg = nil)
-        set_or_return(
-          :pass,
-          arg,
-          :kind_of => [ Integer, FalseClass ]
-        )
-      end
-
-      def mounted(arg = nil)
-        set_or_return(
-          :mounted,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def enabled(arg = nil)
-        set_or_return(
-          :enabled,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def username(arg = nil)
-        set_or_return(
-          :username,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def domain(arg = nil)
-        set_or_return(
-          :domain,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :dump, [Integer, FalseClass], default: 0
+      property :pass, [Integer, FalseClass], default: 2
+      property :mounted, [TrueClass, FalseClass], default: false
+      property :enabled, [TrueClass, FalseClass], default: false
+      property :username, String
+      property :domain, String
 
       private
 

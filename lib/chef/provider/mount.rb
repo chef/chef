@@ -83,7 +83,7 @@ class Chef
       end
 
       def action_enable
-        unless current_resource.enabled && mount_options_unchanged?
+        unless current_resource.enabled && mount_options_unchanged? && device_unchanged?
           converge_by("enable #{current_resource.device}") do
             enable_fs
             Chef::Log.info("#{new_resource} enabled")
@@ -118,6 +118,14 @@ class Chef
       # should check new_resource against current_resource to see if mount options need updating, returns true/false
       def mount_options_unchanged?
         raise Chef::Exceptions::UnsupportedAction, "#{self} does not implement #mount_options_unchanged?"
+      end
+
+      # It's entirely plausible that a site might prefer UUIDs or labels, so
+      # we need to be able to update fstab to conform with their wishes
+      # without necessarily needing to remount the device.
+      # See #6851 for more.
+      def device_unchanged?
+        @current_resource.device == @new_resource.device
       end
 
       #

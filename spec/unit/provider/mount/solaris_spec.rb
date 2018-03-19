@@ -538,7 +538,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
   context "after the mount's state has been discovered" do
     describe "mount_fs" do
       it "should mount the filesystem" do
-        expect(provider).to receive(:shell_out!).with("mount -F #{fstype} -o defaults #{device} #{mountpoint}")
+        expect(provider).to receive(:shell_out!).with("mount -F #{fstype} #{device} #{mountpoint}")
         provider.mount_fs()
       end
 
@@ -600,7 +600,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
       context "in the typical case" do
         let(:other_mount) { "/dev/dsk/c0t2d0s0       /dev/rdsk/c0t2d0s0      /            ufs     2       yes     -" }
 
-        let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\tdefaults\n" }
+        let(:this_mount) { "/dev/dsk/c0t2d0s7\t/dev/rdsk/c0t2d0s7\t/mnt/foo\tufs\t2\tyes\t-\n" }
 
         let(:vfstab_file_contents) { [other_mount].join("\n") }
 
