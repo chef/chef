@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,9 +75,8 @@ class Chef
       # Check to see if a group needs any changes. Populate
       # @change_desc with a description of why a change must occur
       #
-      # ==== Returns
-      # <true>:: If a change is required
-      # <false>:: If a change is not required
+      # @return [true] change is required
+      # @return [false] change is not required
       def compare_group
         @change_desc = [ ]
         if new_resource.gid.to_s != current_resource.gid.to_s
