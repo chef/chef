@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.22.2 -->
-## [v12.22.2](https://github.com/chef/chef/tree/v12.22.2) (2018-03-16)
+<!-- latest_release 12.22.3 -->
+## [v12.22.3](https://github.com/chef/chef/tree/v12.22.3) (2018-03-20)
 
 #### Merged Pull Requests
-- Pass pointer to LsaFreeMemory, not FFI::MemoryPointer [#6992](https://github.com/chef/chef/pull/6992) ([btm](https://github.com/btm))
+- Fix regression in #6980, add functional tests [#7011](https://github.com/chef/chef/pull/7011) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=12.22.1 -->
 ### Changes since 12.22.1 release
 
 #### Merged Pull Requests
+- Fix regression in #6980, add functional tests [#7011](https://github.com/chef/chef/pull/7011) ([btm](https://github.com/btm)) <!-- 12.22.3 -->
 - Pass pointer to LsaFreeMemory, not FFI::MemoryPointer [#6992](https://github.com/chef/chef/pull/6992) ([btm](https://github.com/btm)) <!-- 12.22.2 -->
 <!-- release_rollup -->
 

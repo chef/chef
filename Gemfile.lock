@@ -38,10 +38,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (12.22.2)
+    chef (12.22.3)
       addressable
       bundler (>= 1.10)
-      chef-config (= 12.22.2)
+      chef-config (= 12.22.3)
       chef-zero (>= 4.8, < 13)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -67,10 +67,10 @@ PATH
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (12.22.2-universal-mingw32)
+    chef (12.22.3-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 12.22.2)
+      chef-config (= 12.22.3)
       chef-zero (>= 4.8, < 13)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -111,7 +111,7 @@ PATH
 PATH
   remote: chef-config
   specs:
-    chef-config (12.22.2)
+    chef-config (12.22.3)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
