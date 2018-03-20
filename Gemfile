@@ -57,8 +57,6 @@ group(:development, :test) do
 end
 
 group(:travis) do
-  # See `bundler-audit` in .travis.yml
-  gem "bundler-audit"
   gem "travis"
 end
 
