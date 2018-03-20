@@ -40,7 +40,7 @@ class Chef
           declare_resource(:package,  %w{ autoconf bison flex gcc gcc-c++ gettext kernel-devel make m4 ncurses-devel patch })
 
           # Ensure GCC 4 is available on older pre-6 EL
-          declare_resource(:package,  %w{ gcc44 gcc44-c++ }) if node["platform_version"].to_i < 6
+          declare_resource(:package,  %w{ gcc44 gcc44-c++ }) if platform_family?("rhel") && node["platform_version"].to_i < 6
         when "freebsd"
           declare_resource(:package,  "devel/gmake")
           declare_resource(:package,  "devel/autoconf")
