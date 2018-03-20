@@ -34,10 +34,6 @@ class Chef
       def initialize(name, run_context = nil)
         super
         @source = []
-        @use_etag = true
-        @use_last_modified = true
-        @ftp_active_mode = false
-        @headers = {}
       end
 
       # source can take any of the following as arguments
@@ -74,13 +70,7 @@ class Chef
         end
       end
 
-      def checksum(args = nil)
-        set_or_return(
-          :checksum,
-          args,
-          :kind_of => String
-        )
-      end
+      property :checksum, String
 
       # Disable or enable ETag and Last Modified conditional GET. Equivalent to
       #   use_etag(true_or_false)
@@ -90,48 +80,17 @@ class Chef
         use_last_modified(true_or_false)
       end
 
-      def use_etag(args = nil)
-        set_or_return(
-          :use_etag,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :use_etag, [ TrueClass, FalseClass ], default: true
 
       alias :use_etags :use_etag
 
-      def use_last_modified(args = nil)
-        set_or_return(
-          :use_last_modified,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :use_last_modified, [ TrueClass, FalseClass ], default: true
 
-      def ftp_active_mode(args = nil)
-        set_or_return(
-          :ftp_active_mode,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :ftp_active_mode, [ TrueClass, FalseClass ], default: false
 
-      def headers(args = nil)
-        set_or_return(
-          :headers,
-          args,
-          :kind_of => Hash
-        )
-      end
+      property :headers, Hash, default: lazy { Hash.new }
 
-      def show_progress(args = nil)
-        set_or_return(
-          :show_progress,
-          args,
-          :default => false,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :show_progress, [ TrueClass, FalseClass ], default: false
 
       property :remote_user, String
 

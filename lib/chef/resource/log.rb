@@ -21,13 +21,6 @@ require "chef/resource"
 
 class Chef
   class Resource
-    # Use the log resource to create log entries. The log resource behaves like any other resource: built into the resource
-    # collection during the compile phase, and then run during the execution phase. (To create a log entry that is not built
-    # into the resource collection, use Chef::Log instead of the log resource.)
-    #
-    # Allows logging a :debug, :info, :warn, and :error levels
-    # Defaults to :info level
-    #
     # @example logging at default info level
     #   log "your string to log"
     #
@@ -35,9 +28,14 @@ class Chef
     #   log "a debug string" do
     #     level :debug
     #   end
-    #
     class Log < Chef::Resource
       resource_name :log
+
+      description "Use the log resource to create log entries. The log resource behaves"\
+                  " like any other resource: built into the resource collection during the"\
+                  " compile phase, and then run during the execution phase. (To create a log"\
+                  " entry that is not built into the resource collection, use Chef::Log instead"\
+                  " of the log resource.)"
 
       property :message, String, name_property: true, identity: true
       property :level, Symbol, equal_to: [ :debug, :info, :warn, :error, :fatal ], default: :info
