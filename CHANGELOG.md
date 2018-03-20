@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.144 -->
-## [v14.0.144](https://github.com/chef/chef/tree/v14.0.144) (2018-03-20)
+<!-- latest_release 14.0.145 -->
+## [v14.0.145](https://github.com/chef/chef/tree/v14.0.145) (2018-03-20)
 
 #### Merged Pull Requests
-- Detect new &quot;automatically&quot; installed string in Zypper [#7009](https://github.com/chef/chef/pull/7009) ([tas50](https://github.com/tas50))
+- Fail with a warning if users specify apt/yum/zypper repos with slashes [#7000](https://github.com/chef/chef/pull/7000) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Fail with a warning if users specify apt/yum/zypper repos with slashes [#7000](https://github.com/chef/chef/pull/7000) ([tas50](https://github.com/tas50)) <!-- 14.0.145 -->
 - Detect new &quot;automatically&quot; installed string in Zypper [#7009](https://github.com/chef/chef/pull/7009) ([tas50](https://github.com/tas50)) <!-- 14.0.144 -->
 - Lazy eval empty Hash/Array resource properties. [#6997](https://github.com/chef/chef/pull/6997) ([tas50](https://github.com/tas50)) <!-- 14.0.142 -->
 - Add more resource descriptions and convert resources to use properties [#6994](https://github.com/chef/chef/pull/6994) ([tas50](https://github.com/tas50)) <!-- 14.0.141 -->
