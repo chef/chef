@@ -55,9 +55,11 @@ class Chef
         unless features_to_install.empty?
           message = "install Windows feature#{'s' if features_to_install.count > 1} #{features_to_install.join(',')}"
           converge_by(message) do
-            addsource = new_resource.source ? "/LimitAccess /Source:\"#{new_resource.source}\"" : ""
-            addall = new_resource.all ? "/All" : ""
-            shell_out!("dism.exe /online /enable-feature #{features_to_install.map { |f| "/featurename:#{f}" }.join(' ')} /norestart #{addsource} #{addall}", returns: [0, 42, 127, 3010], timeout: new_resource.timeout)
+            install_command = "#{dism} /online /enable-feature #{features_to_install.map { |f| "/featurename:#{f}" }.join(' ')} /norestart"
+            install_command << " /LimitAccess /Source:\"#{new_resource.source}\"" if new_resource.source
+            install_command << " /All" if new_resource.all
+
+            shell_out!(install_command, returns: [0, 42, 127, 3010], timeout: new_resource.timeout)
 
             reload_cached_dism_data # Reload cached dism feature state
           end
@@ -104,8 +106,16 @@ class Chef
       action_class do
         # @return [Array] features the user has requested to install which need installation
         def features_to_install
-          # the intersection of the features to install & disabled features are what needs installing
-          @install ||= new_resource.feature_name & node["dism_features_cache"]["disabled"]
+          @install ||= begin
+            # disabled features are always available to install
+            available_for_install = node["dism_features_cache"]["disabled"]
+
+            # if the user passes a source then removed features are also available for installation
+            available_for_install.concat(node["dism_features_cache"]["removed"]) if new_resource.source
+
+            # the intersection of the features to install & disabled/removed(if passing source) features are what needs installing
+            new_resource.feature_name & available_for_install
+          end
         end
 
         # @return [Array] features the user has requested to remove which need removing
