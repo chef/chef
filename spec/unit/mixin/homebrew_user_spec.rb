@@ -1,7 +1,7 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
 #
-# Copyright 2014-2016, Chef Software, Inc <legal@chef.io>
+# Copyright 2014-2018, Chef Software, Inc <legal@chef.io>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,10 +23,6 @@ class ExampleHomebrewUser
 end
 
 describe Chef::Mixin::HomebrewUser do
-  before(:each) do
-    node.default["homebrew"]["owner"] = nil
-  end
-
   let(:homebrew_user) { ExampleHomebrewUser.new }
   let(:node) { Chef::Node.new }
 
