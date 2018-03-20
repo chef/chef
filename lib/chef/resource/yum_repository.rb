@@ -65,7 +65,12 @@ class Chef
       property :proxy, String
       property :repo_gpgcheck, [TrueClass, FalseClass]
       property :report_instanceid, [TrueClass, FalseClass]
-      property :repositoryid, String, name_property: true
+
+      property :repositoryid, String,
+               regex: [/^[^\/]+$/],
+               validation_message: "repositoryid property cannot contain a forward slash '/'",
+               name_property: true
+
       property :skip_if_unavailable, [TrueClass, FalseClass]
       property :source, String
       property :sslcacert, String

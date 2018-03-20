@@ -28,7 +28,11 @@ class Chef
                   " Adding a new repository will update APT package cache immediately."
       introduced "12.9"
 
-      property :repo_name, String, name_property: true
+      property :repo_name, String,
+               regex: [/^[^\/]+$/],
+               validation_message: "repo_name property cannot contain a forward slash '/'",
+               name_property: true
+
       property :uri, String
       property :distribution, [ String, nil, false ], default: lazy { node["lsb"]["codename"] }, coerce: proc { |x| x ? x : nil }
       property :components, Array, default: lazy { [] }

@@ -28,6 +28,10 @@ describe Chef::Resource::AptRepository do
     expect(resource.keyserver).to eql("keyserver.ubuntu.com")
   end
 
+  it "fails if the user provides a repo_name with a forward slash" do
+    expect { resource.repo_name "foo/bar" }.to raise_error(ArgumentError)
+  end
+
   it "resolves to a Noop class when on non-linux OS" do
     node.automatic[:os] = "windows"
     node.automatic[:platform_family] = "windows"
