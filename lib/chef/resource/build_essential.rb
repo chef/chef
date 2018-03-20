@@ -122,10 +122,7 @@ class Chef
         def xcode_cli_installed?
           cmd = Mixlib::ShellOut.new("pkgutil --pkgs=com.apple.pkg.CLTools_Executables")
           cmd.run_command
-          cmd.error!
-          true
-        rescue Mixlib::ShellOut::ShellCommandFailed
-          false
+          cmd.error? ? false : true
         end
       end
 
