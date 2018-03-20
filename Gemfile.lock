@@ -103,9 +103,6 @@ GEM
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
-    bundler-audit (0.6.0)
-      bundler (~> 1.2)
-      thor (~> 0.18)
     byebug (10.0.0)
     chef-vault (3.3.0)
     chef-zero (14.0.1)
@@ -384,7 +381,6 @@ PLATFORMS
 
 DEPENDENCIES
   appbundler
-  bundler-audit
   chef!
   chef-config!
   chef-vault
