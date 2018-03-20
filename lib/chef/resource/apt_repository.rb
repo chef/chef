@@ -28,23 +28,28 @@ class Chef
                   " Adding a new repository will update APT package cache immediately."
       introduced "12.9"
 
+      # There's a pile of [ String, nil, FalseClass ] types in these properties.
+      # This goes back to Chef 12 where String didn't default to nil and we had to do
+      # it ourself, which required allowing that type as well. We've cleaned up the
+      # defaults, but since we allowed users to pass nil here we need to continue
+      # to allow that so don't refactor this however tempting it is
       property :repo_name, String,
                regex: [/^[^\/]+$/],
                validation_message: "repo_name property cannot contain a forward slash '/'",
                name_property: true
 
       property :uri, String
-      property :distribution, [ String, nil, false ], default: lazy { node["lsb"]["codename"] }, coerce: proc { |x| x ? x : nil }
+      property :distribution, [ String, nil, FalseClass ], default: lazy { node["lsb"]["codename"] }
       property :components, Array, default: lazy { [] }
-      property :arch, [String, nil, false], default: nil, coerce: proc { |x| x ? x : nil }
+      property :arch, [String, nil, FalseClass]
       property :trusted, [TrueClass, FalseClass], default: false
       # whether or not to add the repository as a source repo, too
       property :deb_src, [TrueClass, FalseClass], default: false
-      property :keyserver, [String, nil, false], default: "keyserver.ubuntu.com", coerce: proc { |x| x ? x : nil }
-      property :key, [String, Array, nil, false], default: lazy { [] }, coerce: proc { |x| x ? Array(x) : nil }
-      property :key_proxy, [String, nil, false], default: nil, coerce: proc { |x| x ? x : nil }
+      property :keyserver, [String, nil, FalseClass], default: "keyserver.ubuntu.com"
+      property :key, [String, Array, nil, FalseClass], default: lazy { [] }, coerce: proc { |x| x ? Array(x) : x }
+      property :key_proxy, [String, nil, FalseClass]
 
-      property :cookbook, [String, nil, false], default: nil, desired_state: false, coerce: proc { |x| x ? x : nil }
+      property :cookbook, [String, nil, FalseClass], desired_state: false
       property :cache_rebuild, [TrueClass, FalseClass], default: true, desired_state: false
 
       default_action :add
