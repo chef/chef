@@ -122,6 +122,7 @@ class Chef
         def xcode_cli_installed?
           cmd = Mixlib::ShellOut.new("pkgutil --pkgs=com.apple.pkg.CLTools_Executables")
           cmd.run_command
+          # pkgutil returns an error if the package isn't found aka not installed
           cmd.error? ? false : true
         end
       end
