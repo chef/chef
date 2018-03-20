@@ -14,6 +14,56 @@ shared_examples "a completed run" do
     expect(node.automatic_attrs[:platform]).to eq(platform)
     expect(node.automatic_attrs[:platform_version]).to eq(platform_version)
   end
+
+  describe "setting node GUID" do
+    let(:chef_guid_path) { "/tmp/chef_guid" }
+    let(:chef_guid) { "test-test-test" }
+    let(:metadata_file) { "data_collector_metadata.json" }
+    let(:metadata_path) { Pathname.new(File.join(Chef::Config[:file_cache_path], metadata_file)).cleanpath.to_s }
+    let(:file) { instance_double(File) }
+
+    before do
+      Chef::Config[:chef_guid_path] = chef_guid_path
+      Chef::Config[:chef_guid] = nil
+    end
+
+    it "loads from the config" do
+      expect(File).to receive(:exists?).with(chef_guid_path).and_return(true)
+      expect(File).to receive(:read).with(chef_guid_path).and_return(chef_guid)
+      client.run
+      expect(Chef::Config[:chef_guid]).to eql(chef_guid)
+      expect(node.automatic_attrs[:chef_guid]).to eql(chef_guid)
+    end
+
+    it "loads from the data collector config" do
+      expect(File).to receive(:exists?).with(chef_guid_path).and_return(false)
+      expect(Chef::FileCache).to receive(:load).with(metadata_file).and_return("{\"node_uuid\": \"#{chef_guid}\"}")
+
+      expect(File).to receive(:open).with(chef_guid_path, "w+").and_yield(file)
+      expect(file).to receive(:write).with(chef_guid)
+
+      client.run
+      expect(Chef::Config[:chef_guid]).to eql(chef_guid)
+      expect(node.automatic_attrs[:chef_guid]).to eql(chef_guid)
+    end
+
+    it "creates a new one" do
+      expect(File).to receive(:exists?).with(chef_guid_path).and_return(false)
+      expect(File).to receive(:exists?).with(metadata_path).and_return(false)
+
+      expect(SecureRandom).to receive(:uuid).and_return(chef_guid).at_least(:once)
+
+      # we'll try and write the generated UUID to the data collector too, and that's ok
+      allow(File).to receive(:open).with(metadata_path, "w", 420)
+
+      expect(File).to receive(:open).with(chef_guid_path, "w+").and_yield(file)
+      expect(file).to receive(:write).with(chef_guid)
+
+      client.run
+      expect(Chef::Config[:chef_guid]).to eql(chef_guid)
+      expect(node.automatic_attrs[:chef_guid]).to eql(chef_guid)
+    end
+  end
 end
 
 shared_examples "a completed run with audit failure" do

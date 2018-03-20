@@ -560,7 +560,6 @@ EOM
         expect { client.node_name }.to raise_error(Chef::Exceptions::CannotDetermineNodeName)
       end
     end
-
   end
 
   describe "always attempt to run handlers" do

@@ -256,6 +256,8 @@ class Chef
         enforce_path_sanity
         run_ohai
 
+        generate_guid
+
         register unless Chef::Config[:solo_legacy_mode]
         register_data_collector_reporter
 
@@ -992,6 +994,27 @@ class Chef
       require "chef/win32/security"
 
       Chef::ReservedNames::Win32::Security.has_admin_privileges?
+    end
+
+    # Ensure that we have a GUID for this node
+    # If we've got the proper configuration, we'll simply set that.
+    # If we're registed with the data collector, we'll migrate that UUID into our configuration and use that
+    # Otherwise, we'll create a new GUID and save it
+    def generate_guid
+      Chef::Config[:chef_guid] ||=
+        if File.exists?(Chef::Config[:chef_guid_path])
+          File.read(Chef::Config[:chef_guid_path])
+        else
+          uuid = UUIDFetcher.node_uuid
+          File.open(Chef::Config[:chef_guid_path], "w+") do |fh|
+            fh.write(uuid)
+          end
+          uuid
+        end
+    end
+
+    class UUIDFetcher
+      extend Chef::DataCollector::Messages::Helpers
     end
 
     # Register the data collector reporter to send event information to the
