@@ -42,15 +42,15 @@ class Chef
         default: :device,
         equal_to: RUBY_PLATFORM =~ /solaris/i ? %i{ device } : %i{ device label uuid }
 
-      property :fsck_device, String, default: "-"
+      property :fsck_device, [String, nil], default: "-"
       property :fstype, [String, nil], default: "auto"
 
       property :options, [Array, String, nil],
         coerce: proc { |arg| arg.kind_of?(String) ? arg.split(",") : arg },
         default: %w{defaults}
 
-      property :dump, [Integer, FalseClass], default: 0
-      property :pass, [Integer, FalseClass], default: 2
+      property :dump, [Integer, FalseClass, nil], default: 0
+      property :pass, [Integer, FalseClass, nil], default: 2
       property :mounted, [TrueClass, FalseClass], default: false
       property :enabled, [TrueClass, FalseClass], default: false
       property :username, String
