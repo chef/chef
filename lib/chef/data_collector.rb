@@ -511,12 +511,12 @@ class Chef
       def validate_and_return_uri(uri)
         URI(uri)
       rescue URI::InvalidURIError
-        return nil
+        nil
       end
 
       def validate_and_create_file(file)
         send_to_file_location(file, "")
-        return true
+        true
       # Rescue exceptions raised by the file path being non-existent or not writeable and re-raise them to the user
       # with clearer explanatory text.
       rescue Errno::ENOENT

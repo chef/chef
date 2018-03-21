@@ -58,7 +58,7 @@ class Chef
       Pathname.new(config_location).realpath.to_s
       false
     rescue Errno::ENOENT
-      return true
+      true
     end
 
     def http

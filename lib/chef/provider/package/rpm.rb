@@ -118,7 +118,7 @@ class Chef
           return false unless scheme
           %w{http https ftp file}.include?(scheme.downcase)
         rescue URI::InvalidURIError
-          return false
+          false
         end
       end
     end

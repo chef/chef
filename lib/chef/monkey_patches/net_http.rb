@@ -33,13 +33,13 @@ if Net::HTTP.instance_methods.map { |m| m.to_s }.include?("proxy_uri")
     #
     #    ruby -r'net/http' -e 'Net::HTTP.new("::1", 80).proxy_uri'
     #    /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/uri/generic.rb:214:in `initialize': the scheme http does not accept registry part: ::1:80 (or bad hostname?) (URI::InvalidURIError)
-    #    	from /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/uri/http.rb:84:in `initialize'
-    #    	from /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/uri/common.rb:214:in `new'
-    #    	from /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/uri/common.rb:214:in `parse'
-    #    	from /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/uri/common.rb:747:in `parse'
-    #    	from /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/uri/common.rb:994:in `URI'
-    #    	from /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/net/http.rb:1027:in `proxy_uri'
-    #    	from -e:1:in `<main>'
+    #      from /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/uri/http.rb:84:in `initialize'
+    #      from /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/uri/common.rb:214:in `new'
+    #      from /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/uri/common.rb:214:in `parse'
+    #      from /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/uri/common.rb:747:in `parse'
+    #      from /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/uri/common.rb:994:in `URI'
+    #      from /Users/ddeleo/.rbenv/versions/2.0.0-p247/lib/ruby/2.0.0/net/http.rb:1027:in `proxy_uri'
+    #      from -e:1:in `<main>'
     #
     # https://bugs.ruby-lang.org/issues/9129
     #

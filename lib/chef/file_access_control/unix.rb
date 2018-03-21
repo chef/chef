@@ -132,7 +132,7 @@ class Chef
           a.failure_message(Chef::Exceptions::GroupIDNotFound, "cannot determine group id for '#{resource.group}', does the group exist on this system?")
           a.whyrun("Assuming group #{resource.group} would have been created")
         end
-        return nil
+        nil
       end
 
       def should_update_group?
@@ -279,7 +279,7 @@ class Chef
           a.failure_message(Chef::Exceptions::UserIDNotFound, "cannot determine user id for '#{resource.owner}', does the user exist on this system?")
           a.whyrun("Assuming user #{resource.owner} would have been created")
         end
-        return nil
+        nil
       end
 
       def suid_bit_set?

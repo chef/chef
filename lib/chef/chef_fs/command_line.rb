@@ -146,38 +146,38 @@ class Chef
         if old_entry.dir?
           if new_entry.dir?
             if recurse_depth == 0
-              return [ [ :common_subdirectories, old_entry, new_entry ] ]
+              [ [ :common_subdirectories, old_entry, new_entry ] ]
             else
-              return Chef::ChefFS::Parallelizer.parallelize(Chef::ChefFS::FileSystem.child_pairs(old_entry, new_entry)) do |old_child, new_child|
+              Chef::ChefFS::Parallelizer.parallelize(Chef::ChefFS::FileSystem.child_pairs(old_entry, new_entry)) do |old_child, new_child|
                 Chef::ChefFS::CommandLine.diff_entries(old_child, new_child, recurse_depth ? recurse_depth - 1 : nil, get_content)
               end.flatten(1)
             end
 
           # If old is a directory and new is a file
           elsif new_entry.exists?
-            return [ [ :directory_to_file, old_entry, new_entry ] ]
+            [ [ :directory_to_file, old_entry, new_entry ] ]
 
           # If old is a directory and new does not exist
           elsif new_entry.parent.can_have_child?(old_entry.name, old_entry.dir?)
-            return [ [ :deleted, old_entry, new_entry ] ]
+            [ [ :deleted, old_entry, new_entry ] ]
 
           # If the new entry does not and *cannot* exist, report that.
           else
-            return [ [ :new_cannot_upload, old_entry, new_entry ] ]
+            [ [ :new_cannot_upload, old_entry, new_entry ] ]
           end
 
         # If new is a directory and old is a file
         elsif new_entry.dir?
           if old_entry.exists?
-            return [ [ :file_to_directory, old_entry, new_entry ] ]
+            [ [ :file_to_directory, old_entry, new_entry ] ]
 
           # If new is a directory and old does not exist
           elsif old_entry.parent.can_have_child?(new_entry.name, new_entry.dir?)
-            return [ [ :added, old_entry, new_entry ] ]
+            [ [ :added, old_entry, new_entry ] ]
 
           # If the new entry does not and *cannot* exist, report that.
           else
-            return [ [ :old_cannot_upload, old_entry, new_entry ] ]
+            [ [ :old_cannot_upload, old_entry, new_entry ] ]
           end
 
         # Neither is a directory, so they are diffable with file diff
@@ -239,7 +239,7 @@ class Chef
           end
         end
       rescue Chef::ChefFS::FileSystem::FileSystemError => e
-        return [ [ :error, old_entry, new_entry, nil, nil, e ] ]
+        [ [ :error, old_entry, new_entry, nil, nil, e ] ]
       end
 
       class << self

@@ -96,11 +96,11 @@ class Chef
           # Lets not break because someone passes a weird string like 'default' :)
           Chef::Log.debug(e)
           Chef::Log.debug "InvalidCookbookVersion exceptions are common and expected here: the generic constraint matcher attempted to match something which is not a constraint. Moving on to next version or constraint"
-          return nil
+          nil
         rescue Chef::Exceptions::InvalidPlatformVersion => e
           Chef::Log.debug "Caught InvalidPlatformVersion, this means that Chef::Version::Platform does not know how to turn #{node_version} into an x.y.z format"
           Chef::Log.debug(e)
-          return nil
+          nil
         end
 
         def set(platforms, value)
