@@ -195,6 +195,9 @@ class Chef
         # @return [void]
         def fail_if_removed
           return if new_resource.source # if someone provides a source then all is well
+          if node["os_version"].to_f > 6.2
+            return if registry_key_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing') && registry_value_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing', name: "LocalSourcePath") # if source is defined in the registry, still fine
+          end
           removed = new_resource.feature_name & node["dism_features_cache"]["removed"]
           raise "The Windows feature#{'s' if removed.count > 1} #{removed.join(',')} #{removed.count > 1 ? 'are' : 'is'} have been removed from the host and cannot be installed." unless removed.empty?
         end
