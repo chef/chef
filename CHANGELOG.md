@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.151 -->
-## [v14.0.151](https://github.com/chef/chef/tree/v14.0.151) (2018-03-21)
+<!-- latest_release 14.0.152 -->
+## [v14.0.152](https://github.com/chef/chef/tree/v14.0.152) (2018-03-21)
 
 #### Merged Pull Requests
-- Support installing removed windows features from source [#7015](https://github.com/chef/chef/pull/7015) ([tas50](https://github.com/tas50))
+- Save the node&#39;s UUID as an attribute [#7016](https://github.com/chef/chef/pull/7016) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Save the node&#39;s UUID as an attribute [#7016](https://github.com/chef/chef/pull/7016) ([thommay](https://github.com/thommay)) <!-- 14.0.152 -->
 - Support installing removed windows features from source [#7015](https://github.com/chef/chef/pull/7015) ([tas50](https://github.com/tas50)) <!-- 14.0.151 -->
 - Pagefile sizes are in megabytes not bytes [#7019](https://github.com/chef/chef/pull/7019) ([tas50](https://github.com/tas50)) <!-- 14.0.150 -->
 - memoize some work in the package class [#6661](https://github.com/chef/chef/pull/6661) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.149 -->
