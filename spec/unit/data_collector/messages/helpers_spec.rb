@@ -124,8 +124,16 @@ describe Chef::DataCollector::Messages::Helpers do
   end
 
   describe "#node_uuid" do
+    context "when the node UUID is available in Chef::Config" do
+      it "returns the configured value" do
+        Chef::Config[:chef_guid] = "configured_uuid"
+        expect(TestMessage.node_uuid).to eq("configured_uuid")
+      end
+    end
+
     context "when the node UUID can be read" do
       it "returns the read-in node UUID" do
+        Chef::Config[:chef_guid] = nil
         allow(TestMessage).to receive(:read_node_uuid).and_return("read_uuid")
         expect(TestMessage.node_uuid).to eq("read_uuid")
       end
@@ -133,6 +141,7 @@ describe Chef::DataCollector::Messages::Helpers do
 
     context "when the node UUID cannot be read" do
       it "generated a new node UUID" do
+        Chef::Config[:chef_guid] = nil
         allow(TestMessage).to receive(:read_node_uuid).and_return(nil)
         allow(TestMessage).to receive(:generate_node_uuid).and_return("generated_uuid")
         expect(TestMessage.node_uuid).to eq("generated_uuid")

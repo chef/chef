@@ -335,6 +335,7 @@ class Chef
       logger.debug("Platform is #{platform} version #{version}")
       automatic[:platform] = platform
       automatic[:platform_version] = version
+      automatic[:chef_guid] = Chef::Config[:chef_guid]
       automatic[:name] = name
       automatic[:chef_environment] = chef_environment
     end

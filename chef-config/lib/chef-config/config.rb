@@ -712,6 +712,12 @@ module ChefConfig
     # The selected profile when using credentials.
     default :profile, nil
 
+    default :chef_guid_path do
+      PathHelper.join(config_dir, "chef_guid")
+    end
+
+    default :chef_guid, nil
+
     # knife configuration data
     config_context :knife do
       # XXX: none of these default values are applied to knife (and would create a backcompat

@@ -953,6 +953,14 @@ describe Chef::Node do
       expect(node.automatic_attrs[:platform_version]).to eq("23.42")
     end
 
+    it "sets the chef guid attribute correctly" do
+      guid = Chef::Config[:chef_guid]
+      Chef::Config[:chef_guid] = "test-guid-guid"
+      node.consume_external_attrs(@ohai_data, {})
+      expect(node.automatic_attrs[:chef_guid]).to eq("test-guid-guid")
+      Chef::Config[:chef_guid] = guid
+    end
+
     it "consumes the run list from provided json attributes" do
       node.consume_external_attrs(@ohai_data, { "run_list" => ["recipe[unicorn]"] })
       expect(node.run_list).to eq(["recipe[unicorn]"])

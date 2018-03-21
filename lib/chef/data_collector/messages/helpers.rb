@@ -106,7 +106,7 @@ class Chef
         # @return [String] UUID for the node
         #
         def node_uuid
-          read_node_uuid || generate_node_uuid
+          Chef::Config[:chef_guid] || read_node_uuid || generate_node_uuid
         end
 
         #

@@ -167,6 +167,7 @@ shared_context "a client run" do
     Chef::Config[:cache_path] = windows? ? 'C:\chef' : "/var/chef"
     Chef::Config[:why_run] = false
     Chef::Config[:audit_mode] = :enabled
+    Chef::Config[:chef_guid] = "default-guid"
 
     stub_rest_clean
     stub_for_register
