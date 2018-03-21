@@ -113,7 +113,7 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
       end
 
       it "should throw an exception if the exitstatus is not 0" do
-        status = double(:stdout => "", :stderr =>"", :exitstatus => 1)
+        status = double(:stdout => "", :stderr => "", :exitstatus => 1)
         allow(@provider).to receive(:shell_out).and_return(status)
         expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
       end
