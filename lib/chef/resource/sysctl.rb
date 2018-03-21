@@ -19,11 +19,12 @@ require "chef/resource"
 
 class Chef
   class Resource
-    class SysctlParam < Chef::Resource
-      resource_name :sysctl_param
+    class Sysctl < Chef::Resource
+      resource_name :sysctl
+      provides :sysctl
       provides :sysctl_param
 
-      description "Use the sysctl_param resource to set kernel parameters using the sysctl"\
+      description "Use the sysctl resource to set kernel parameters using the sysctl"\
                   " command line tool and configuration files in the system's sysctl.d directory."\
                   "Configuration files managed by this resource are named 99-chef-KEYNAME.conf. If"\
                   " an existing value was already set for the value it will be backed up to the node"\
@@ -49,8 +50,8 @@ class Chef
                default: "/etc/sysctl.d"
 
       def after_created
-        raise "The systctl_param resource requires Linux as it needs sysctl and the systctl.d directory functionality." unless node["os"] == "linux"
-        raise "The systctl_param resource does not support SLES releases less than 12 as it requires a systctl.d directory" if platform_family?("suse") && node["platform_version"].to_i < 12
+        raise "The systctl resource requires Linux as it needs sysctl and the systctl.d directory functionality." unless node["os"] == "linux"
+        raise "The systctl resource does not support SLES releases less than 12 as it requires a systctl.d directory" if platform_family?("suse") && node["platform_version"].to_i < 12
       end
 
       def coerce_value(v)

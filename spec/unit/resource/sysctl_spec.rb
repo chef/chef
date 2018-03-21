@@ -17,11 +17,11 @@
 
 require "spec_helper"
 
-describe Chef::Resource::SysctlParam do
-  let(:resource) { Chef::Resource::SysctlParam.new("something.something") }
+describe Chef::Resource::Sysctl do
+  let(:resource) { Chef::Resource::Sysctl.new("something.something") }
 
-  it "sets resource name as :sysctl_param" do
-    expect(resource.resource_name).to eql(:sysctl_param)
+  it "sets resource name as :sysctl" do
+    expect(resource.resource_name).to eql(:sysctl)
   end
 
   it "sets the default action as :apply" do
