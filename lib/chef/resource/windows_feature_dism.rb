@@ -55,7 +55,7 @@ class Chef
         unless features_to_install.empty?
           message = "install Windows feature#{'s' if features_to_install.count > 1} #{features_to_install.join(',')}"
           converge_by(message) do
-            install_command = "#{dism} /online /enable-feature #{features_to_install.map { |f| "/featurename:#{f}" }.join(' ')} /norestart"
+            install_command = "dism.exe /online /enable-feature #{features_to_install.map { |f| "/featurename:#{f}" }.join(' ')} /norestart"
             install_command << " /LimitAccess /Source:\"#{new_resource.source}\"" if new_resource.source
             install_command << " /All" if new_resource.all
 
