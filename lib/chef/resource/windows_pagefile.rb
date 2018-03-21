@@ -39,10 +39,10 @@ class Chef
                default: false
 
       property :initial_size, Integer,
-               description: "Initial size of the pagefile in bytes."
+               description: "Initial size of the pagefile in megabytes."
 
       property :maximum_size, Integer,
-               description: "Maximum size of the pagefile in bytes."
+               description: "Maximum size of the pagefile in megabytes."
 
       action :set do
         description "Configures the default pagefile, creating if it doesn't exist."
