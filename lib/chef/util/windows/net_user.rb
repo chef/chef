@@ -95,9 +95,9 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   def validate_credentials(passwd)
     token = Security.logon_user(@username, nil, passwd,
                LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT)
-    return true
+    true
   rescue Chef::Exceptions::Win32APIError
-    return false
+    false
   end
 
   def get_info

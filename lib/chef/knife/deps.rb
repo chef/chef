@@ -73,7 +73,7 @@ class Chef
 
       def get_dependencies(entry)
         if entry.parent && entry.parent.path == "/cookbooks"
-          return entry.chef_object.metadata.dependencies.keys.map { |cookbook| "/cookbooks/#{cookbook}" }
+          entry.chef_object.metadata.dependencies.keys.map { |cookbook| "/cookbooks/#{cookbook}" }
 
         elsif entry.parent && entry.parent.path == "/nodes"
           node = Chef::JSONCompat.parse(entry.read)
