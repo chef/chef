@@ -17,6 +17,7 @@
 #
 
 require "chef/resource"
+require "chef/json_compat"
 
 class Chef
   class Resource
