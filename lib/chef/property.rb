@@ -336,31 +336,6 @@ class Chef
       else
         # We are getting the default value.
 
-        # If the user does something like this:
-        #
-        # ```
-        # class MyResource < Chef::Resource
-        #   property :content
-        #   action :create do
-        #     file '/x.txt' do
-        #       content content
-        #     end
-        #   end
-        # end
-        # ```
-        #
-        # It won't do what they expect. This checks whether you try to *read*
-        # `content` while we are compiling the resource.
-        if !nil_set &&
-            resource.respond_to?(:resource_initializing) &&
-            resource.resource_initializing &&
-            resource.respond_to?(:enclosing_provider) &&
-            resource.enclosing_provider &&
-            resource.enclosing_provider.new_resource &&
-            resource.enclosing_provider.new_resource.respond_to?(name)
-          Chef::Log.warn("#{Chef::Log.caller_location}: property #{name} is declared in both #{resource} and #{resource.enclosing_provider}. Use new_resource.#{name} instead. At #{Chef::Log.caller_location}")
-        end
-
         if has_default?
           # If we were able to cache the stored_default, grab it.
           if defined?(@stored_default)
