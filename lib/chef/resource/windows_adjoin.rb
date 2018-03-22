@@ -30,7 +30,9 @@ class Chef
       introduced "14.0"
 
       property :domain_name, String,
-               description: "The domain name to join.",
+               description: "The FQDN of the AD domain to join.",
+               validation_message: "The 'domain_name' property must be a FQDN.",
+               regex: /.\../, # anything.anything
                name_property: true
 
       property :domain_user, String,
@@ -46,7 +48,7 @@ class Chef
 
       property :reboot, Symbol,
                equal_to: [:immediate, :delayed, :never],
-               validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the Chef run completes), and :never (Don't reboot)"
+               validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the Chef run completes), and :never (Don't reboot)",
                description: "Controls the system reboot behavior post domain joining. Reboot immediately, after the Chef run completes, or never. Note that a reboot is necessary for changes to take effect.",
                default: :immediate
 

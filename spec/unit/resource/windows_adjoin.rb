@@ -28,6 +28,10 @@ describe Chef::Resource::WindowsAdJoin do
     expect(resource.domain_name).to eql("example.com")
   end
 
+  it "only accepts FQDNs for the domain_name property" do
+    expect { resource.domain_name "example" }.to raise_error(ArgumentError)
+  end
+
   it "sets the default action as :join" do
     expect(resource.action).to eql([:join])
   end
