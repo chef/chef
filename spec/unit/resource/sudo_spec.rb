@@ -80,6 +80,11 @@ describe Chef::Resource::Sudo do
     expect(resource.config_prefix).to eql("/private/etc")
   end
 
+  it "it sets the config prefix to /usr/local/etc on FreeBSD" do
+    node.automatic[:platform_family] = "freebsd"
+    expect(resource.config_prefix).to eql("/usr/local/etc")
+  end
+
   it "it sets the config prefix to /opt/local/etc on smartos" do
     node.automatic[:platform_family] = "smartos"
     expect(resource.config_prefix).to eql("/opt/local/etc")
