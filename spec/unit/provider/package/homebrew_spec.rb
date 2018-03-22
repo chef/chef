@@ -20,7 +20,8 @@ require "spec_helper"
 describe Chef::Provider::Package::Homebrew do
   let(:node) { Chef::Node.new }
   let(:events) { double("Chef::Events").as_null_object }
-  let(:run_context) { double("Chef::RunContext", node: node, events: events) }
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+  let(:run_context) { double("Chef::RunContext", node: node, events: events, logger: logger) }
   let(:new_resource) { Chef::Resource::HomebrewPackage.new("emacs") }
   let(:current_resource) { Chef::Resource::HomebrewPackage.new("emacs") }
 

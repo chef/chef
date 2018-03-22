@@ -313,7 +313,13 @@ describe Chef::Provider::RegistryKey do
 end
 
 describe Chef::Provider::RegistryKey, "key_missing?" do
-  let(:provider) { Chef::Provider::RegistryKey.new(nil, nil) }
+  let(:node) { Chef::Node.new }
+  let(:events) { double("Chef::Events").as_null_object }
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+  let(:run_context) { double("Chef::RunContext", node: node, events: events, logger: logger) }
+  let(:new_resource) { Chef::Resource::RegistryKey.new("emacs") }
+  let(:provider) { Chef::Provider::RegistryKey.new(new_resource, run_context) }
+
   let(:all_keys_present_in_all_hash) do
     [ { :name => "input1_value1", :type => :string, :data => "my_value1" },
       { :name => "input1_value2", :type => :string, :data => "my_value2" },

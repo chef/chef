@@ -45,8 +45,7 @@ describe Chef::Provider::Group::Dscl do
 
   describe "safe_dscl" do
     before do
-      @node = Chef::Node.new
-      @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
+      @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context)
       allow(@provider).to receive(:dscl).and_return(["cmd", @status, "stdout", "stderr"])
     end
 
@@ -93,8 +92,7 @@ describe Chef::Provider::Group::Dscl do
 
   describe "get_free_gid" do
     before do
-      @node = Chef::Node.new
-      @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
+      @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context)
       allow(@provider).to receive(:safe_dscl).and_return("\naj      200\njt      201\n")
     end
 
@@ -115,8 +113,6 @@ describe Chef::Provider::Group::Dscl do
 
   describe "gid_used?" do
     before do
-      @node = Chef::Node.new
-      @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
       allow(@provider).to receive(:safe_dscl).and_return(<<-eos
         someprogram		somethingElse:gid = (
             500
