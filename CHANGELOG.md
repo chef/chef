@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.158 -->
-## [v14.0.158](https://github.com/chef/chef/tree/v14.0.158) (2018-03-22)
+<!-- latest_release 14.0.159 -->
+## [v14.0.159](https://github.com/chef/chef/tree/v14.0.159) (2018-03-22)
 
 #### Merged Pull Requests
-- Use the latest libarchive/bzip2 defs in omnibus [#7035](https://github.com/chef/chef/pull/7035) ([tas50](https://github.com/tas50))
+- Add windows_adjoin resource [#6981](https://github.com/chef/chef/pull/6981) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Add windows_adjoin resource [#6981](https://github.com/chef/chef/pull/6981) ([tas50](https://github.com/tas50)) <!-- 14.0.159 -->
 - Use the latest libarchive/bzip2 defs in omnibus [#7035](https://github.com/chef/chef/pull/7035) ([tas50](https://github.com/tas50)) <!-- 14.0.158 -->
 - Suppress nested causes for sensitive exceptions [#7032](https://github.com/chef/chef/pull/7032) ([thommay](https://github.com/thommay)) <!-- 14.0.157 -->
 - Add sysctl_param resource from the sysctl cookbook [#7022](https://github.com/chef/chef/pull/7022) ([tas50](https://github.com/tas50)) <!-- 14.0.156 -->
