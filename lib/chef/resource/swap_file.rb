@@ -60,9 +60,7 @@ class Chef
           end
         end
         if new_resource.swappiness
-          include_recipe "sysctl::default"
-
-          sysctl_param "vm.swappiness" do
+          declare_resource(:sysctl, "vm.swappiness") do
             value new_resource.swappiness
           end
         end
