@@ -31,4 +31,11 @@ describe Chef::Resource::WindowsAdJoin do
   it "sets the default action as :join" do
     expect(resource.action).to eql([:join])
   end
+
+  it "accepts :immediate, :delayed, or :never values for 'reboot' property" do
+    expect { resource.reboot :immediate }.not_to raise_error
+    expect { resource.reboot :delayed }.not_to raise_error
+    expect { resource.reboot :never }.not_to raise_error
+    expect { resource.reboot :nopenope }.to raise_error(ArgumentError)
+  end
 end

@@ -44,9 +44,11 @@ class Chef
       property :ou_path, String,
                description: "The path to the OU where you would like to place the host."
 
-      property :restart, [TrueClass, FalseClass],
-               description: "Restart the system after joining the domain. This is necessary for changes to take effect.",
-               default: true
+      property :reboot, Symbol,
+               equal_to: [:immediate, :delayed, :never],
+               validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the Chef run completes), and :never (Don't reboot)"
+               description: "Controls the system reboot behavior post domain joining. Reboot immediately, after the Chef run completes, or never. Note that a reboot is necessary for changes to take effect.",
+               default: :immediate
 
       # define this again so we can default it to true. Otherwise failures print the password
       property :sensitive, [TrueClass, FalseClass],
@@ -58,19 +60,25 @@ class Chef
           cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.domain_user}\",$pswd);"
           cmd << "Add-Computer -DomainName #{new_resource.domain_name} -Credential $credential"
           cmd << " -OUPath \"#{new_resource.ou_path}\"" if new_resource.ou_path
-          cmd << " -Restart" if new_resource.restart
           cmd << " -Force"
 
           converge_by("join Active Directory domain #{new_resource.domain_name}") do
             ps_run = powershell_out(cmd)
             raise "Failed to join the domain #{new_resource.domain_name}: #{ps_run.stderr}}" if ps_run.error?
+
+            unless new_resource.reboot == :never
+              declare_resource(:reboot, "Reboot to join domain #{new_resource.domain_name}") do
+                action new_resource.reboot
+                reason "Reboot to join domain #{new_resource.domain_name}"
+              end
+            end
           end
         end
       end
 
       action_class do
         def on_domain?
-          node_domain = powershell_out!('(Get-WmiObject Win32_ComputerSystem).Domain')
+          node_domain = powershell_out!("(Get-WmiObject Win32_ComputerSystem).Domain")
           raise "Failed to check if the system is joined to the domain #{new_resource.domain_name}: #{node_domain.stderr}}" if node_domain.error?
           node_domain.stdout.downcase.strip == new_resource.domain_name.downcase
         end
