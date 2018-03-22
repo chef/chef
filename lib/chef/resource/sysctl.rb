@@ -33,20 +33,20 @@ class Chef
       introduced "14.0"
 
       property :key, String,
-               description: "",
+               description: "The kernel parameter key in dotted format.",
                name_property: true
 
       property :ignore_error, [TrueClass, FalseClass],
-               description: "",
+               description: "Ignore any errors when setting the value on the command line.",
                default: false
 
       property :value, [Array, String, Integer, Float],
-               description: "",
+               description: "The value to set.",
                coerce: proc { |v| coerce_value(v) },
                required: true
 
       property :conf_dir, String,
-               description: "",
+               description: "The configuration directory to write the config to.",
                default: "/etc/sysctl.d"
 
       def after_created
@@ -71,9 +71,6 @@ class Chef
 
       load_current_value do
         value get_sysctl_value(key)
-        if node.normal["sysctl"]["backup"][key].empty?
-          node.normal["sysctl"]["backup"][key] = value
-        end
       end
 
       action :apply do
@@ -87,28 +84,19 @@ class Chef
             content "#{new_resource.key} = #{new_resource.value}"
           end
 
-          execute "sysctl -p" do
-            command "sysctl -p"
-            action :run
-          end
+          execute "sysctl -p"
         end
       end
 
       action :remove do
         # only converge the resource if the file actually exists to delete
         if ::File.exist?("#{new_resource.conf_dir}/99-chef-#{new_resource.key}.conf")
-          converge_by "removing systctl value #{new_resource.key}" do
+          converge_by "removing systctl config at #{new_resource.conf_dir}/99-chef-#{new_resource.key}.conf" do
             file "#{new_resource.conf_dir}/99-chef-#{new_resource.key}.conf" do
               action :delete
             end
 
-            backup_value = node["sysctl"]["backup"][new_resource.key]
-            set_sysctl_param(new_resource.key, backup_value) unless backup_value.empty?
-            node.rm("sysctl", "backup", new_resource.key)
-
-            execute "sysctl -p" do
-              action :run
-            end
+            execute "sysctl -p"
           end
         end
       end
