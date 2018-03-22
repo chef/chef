@@ -65,7 +65,7 @@ class Chef
 
       def get_sysctl_value(key)
         o = shell_out("sysctl -n -e #{key}")
-        raise "Unknown sysctl key #{key}!" if o.error!
+        raise "Unknown sysctl key #{key}!" if o.error?
         o.stdout.to_s.tr("\t", " ").strip
       end
 
