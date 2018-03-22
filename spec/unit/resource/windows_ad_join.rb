@@ -20,8 +20,8 @@ require "spec_helper"
 describe Chef::Resource::WindowsAdJoin do
   let(:resource) { Chef::Resource::WindowsAdJoin.new("example.com") }
 
-  it "sets resource name as :windows_adjoin" do
-    expect(resource.resource_name).to eql(:windows_adjoin)
+  it "sets resource name as :windows_ad_join" do
+    expect(resource.resource_name).to eql(:windows_ad_join)
   end
 
   it "sets the domain_name as its name" do
