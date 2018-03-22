@@ -104,7 +104,7 @@ class Chef
 
       property :config_prefix, String,
                description: "The directory containing the sudoers config file.",
-               default: lazy { "config_prefix" }
+               default: lazy { platform_config_prefix }
 
       alias_method :user, :users
       alias_method :group, :groups
@@ -119,10 +119,12 @@ class Chef
       end
 
       # default config prefix paths based on platform
-      def config_prefix
+      def platform_config_prefix
         case node["platform_family"]
         when "smartos"
           "/opt/local/etc"
+        when "freebsd"
+          "/usr/local/etc"
         when "mac_os_x"
           "/private/etc"
         else
@@ -133,7 +135,6 @@ class Chef
       action :create do
         description "Create a single sudoers config in the sudoers.d directory"
 
-        validate_platform
         validate_properties
 
         if docker? # don't even put this into resource collection unless we're in docker
@@ -201,12 +202,6 @@ class Chef
       end
 
       action_class do
-        # Make sure we fail on FreeBSD
-        def validate_platform
-          return unless platform_family?("freebsd")
-          raise "The sudo resource cannot run on FreeBSD as FreeBSD does not support using a sudoers.d config directory."
-        end
-
         # Ensure that the inputs are valid (we cannot just use the resource for this)
         def validate_properties
           # if group, user, env_keep_add, env_keep_subtract and template are nil, throw an exception
