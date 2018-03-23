@@ -11,7 +11,7 @@ Defaults    env_keep += "<%= env_keep %>"
 Defaults    env_keep -= "<%= env_keep %>"
 <% end -%>
 <% @commands.each do |command| -%>
-<% if @sudoer %><%= @sudoer %> <%= @host %>=(<%= @runas %>) <%= 'NOEXEC:' if @noexec %><%= 'NOPASSWD:' if @nopasswd.to_s == 'true' %><%= 'SETENV:' if @setenv.to_s == 'true' %><%= command %><% end -%>
+<% unless @sudoer.empty? %><%= @sudoer %> <%= @host %>=(<%= @runas %>) <%= 'NOEXEC:' if @noexec %><%= 'NOPASSWD:' if @nopasswd.to_s == 'true' %><%= 'SETENV:' if @setenv.to_s == 'true' %><%= command %><% end -%>
 <% end -%>
 <% unless @defaults.empty? %>
 Defaults:<%= @sudoer %> <%= @defaults.join(',') %>
