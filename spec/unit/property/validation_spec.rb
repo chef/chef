@@ -617,8 +617,9 @@ describe "Chef::Resource.property validation" do
         expect(resource.x 1).to eq 1
         expect(resource.x).to eq 1
       end
-      it "value nil is invalid" do
-        expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
+      it "value nil sets to the default" do
+        # this mildly complicated because the default of a name property is a lazy evaluator to the actual resource.name
+        expect(resource.x nil).to be_a(Chef::DelayedEvaluator)
       end
     end
 
@@ -630,8 +631,54 @@ describe "Chef::Resource.property validation" do
         expect(resource.x 1).to eq 1
         expect(resource.x).to eq 1
       end
-      it "value nil is invalid" do
-        expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
+      it "value nil sets the default" do
+        expect(resource.x nil).to eq 10
+        expect(resource.x).to eq 10
+      end
+    end
+  end
+
+  context "nil setting default" do
+    with_property ":x, String" do
+      it "if x is not specified, the default is returned" do
+        expect(resource.x).to eq nil
+      end
+      it "value '2' is valid" do
+        expect(resource.x "2").to eq "2"
+        expect(resource.x).to eq "2"
+      end
+      it "value nil sets the default" do
+        resource.x "2"
+        expect(resource.x nil).to eq nil
+        expect(resource.x).to eq nil
+      end
+    end
+    with_property ":x, String, default: '1'" do
+      it "if x is not specified, the default is returned" do
+        expect(resource.x).to eq "1"
+      end
+      it "value '2' is valid" do
+        expect(resource.x "2").to eq "2"
+        expect(resource.x).to eq "2"
+      end
+      it "value nil sets the default" do
+        resource.x "2"
+        expect(resource.x nil).to eq "1"
+        expect(resource.x).to eq "1"
+      end
+    end
+    with_property ":x, [ String, nil ] , default: '1'" do
+      it "if x is not specified, the default is returned" do
+        expect(resource.x).to eq "1"
+      end
+      it "value '2' is valid" do
+        expect(resource.x "2").to eq "2"
+        expect(resource.x).to eq "2"
+      end
+      it "value nil sets to nil" do
+        resource.x "2"
+        expect(resource.x nil).to eq nil
+        expect(resource.x).to eq nil
       end
     end
   end
