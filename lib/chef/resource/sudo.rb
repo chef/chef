@@ -213,8 +213,8 @@ class Chef
         end
 
         def visudo_present?
-          return if ::File.exist?(new_resource.visudo_path)
-          Chef::Log.warn("The visudo binary cannot be found at '#{new_resource.visudo_path}'. Skipping sudoer file validation. If visudo is on this system you can specify the path using the 'visudo_path' property.")
+          return true if ::File.exist?(new_resource.visudo_binary)
+          Chef::Log.warn("The visudo binary cannot be found at '#{new_resource.visudo_binary}'. Skipping sudoer file validation. If visudo is on this system you can specify the path using the 'visudo_binary' property.")
         end
       end
     end
