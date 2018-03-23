@@ -119,14 +119,15 @@ class Chef
       end
 
       # default config prefix paths based on platform
-      def platform_config_prefix
+      # @return [String]
+      def config_prefix
         case node["platform_family"]
         when "smartos"
           "/opt/local/etc"
-        when "freebsd"
-          "/usr/local/etc"
         when "mac_os_x"
           "/private/etc"
+        when "freebsd"
+          "/usr/local/etc"
         else
           "/etc"
         end
