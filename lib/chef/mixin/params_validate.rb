@@ -317,7 +317,6 @@ class Chef
       #   ```
       #
       def _pv_callbacks(opts, key, callbacks)
-        puts caller
         raise ArgumentError, "Callback list must be a hash!" unless callbacks.kind_of?(Hash)
         value = _pv_opts_lookup(opts, key)
         if !value.nil?
