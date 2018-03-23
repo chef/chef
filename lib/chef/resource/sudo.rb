@@ -129,7 +129,7 @@ class Chef
 
       # default config prefix paths based on platform
       # @return [String]
-      def config_prefix
+      def platform_config_prefix
         case node["platform_family"]
         when "smartos"
           "/opt/local/etc"
