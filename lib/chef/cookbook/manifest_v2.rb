@@ -24,7 +24,7 @@ class Chef
       minimum_api_version 2
 
       def self.from_hash(hash)
-        Chef::Log.debug "processing manifest: #{hash}"
+        Chef::Log.trace "processing manifest: #{hash}"
         Mash.new hash
       end
 

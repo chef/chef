@@ -28,7 +28,7 @@ class Chef
       def load_current_resource
         @current_resource = Chef::Resource::Mdadm.new(new_resource.name)
         current_resource.raid_device(new_resource.raid_device)
-        Chef::Log.debug("#{new_resource} checking for software raid device #{current_resource.raid_device}")
+        logger.trace("#{new_resource} checking for software raid device #{current_resource.raid_device}")
 
         device_not_found = 4
         mdadm = shell_out!("mdadm --detail --test #{new_resource.raid_device}", :returns => [0, device_not_found])
@@ -45,12 +45,12 @@ class Chef
             command << " --bitmap=#{new_resource.bitmap}" if new_resource.bitmap
             command << " --layout=#{new_resource.layout}" if new_resource.layout
             command << " --raid-devices #{new_resource.devices.length} #{new_resource.devices.join(" ")}"
-            Chef::Log.debug("#{new_resource} mdadm command: #{command}")
+            logger.trace("#{new_resource} mdadm command: #{command}")
             shell_out!(command)
-            Chef::Log.info("#{new_resource} created raid device (#{new_resource.raid_device})")
+            logger.info("#{new_resource} created raid device (#{new_resource.raid_device})")
           end
         else
-          Chef::Log.debug("#{new_resource} raid device already exists, skipping create (#{new_resource.raid_device})")
+          logger.trace("#{new_resource} raid device already exists, skipping create (#{new_resource.raid_device})")
         end
       end
 
@@ -58,12 +58,12 @@ class Chef
         unless current_resource.exists
           converge_by("assemble RAID device #{new_resource.raid_device}") do
             command = "yes | mdadm --assemble #{new_resource.raid_device} #{new_resource.devices.join(" ")}"
-            Chef::Log.debug("#{new_resource} mdadm command: #{command}")
+            logger.trace("#{new_resource} mdadm command: #{command}")
             shell_out!(command)
-            Chef::Log.info("#{new_resource} assembled raid device (#{new_resource.raid_device})")
+            logger.info("#{new_resource} assembled raid device (#{new_resource.raid_device})")
           end
         else
-          Chef::Log.debug("#{new_resource} raid device already exists, skipping assemble (#{new_resource.raid_device})")
+          logger.trace("#{new_resource} raid device already exists, skipping assemble (#{new_resource.raid_device})")
         end
       end
 
@@ -71,12 +71,12 @@ class Chef
         if current_resource.exists
           converge_by("stop RAID device #{new_resource.raid_device}") do
             command = "yes | mdadm --stop #{new_resource.raid_device}"
-            Chef::Log.debug("#{new_resource} mdadm command: #{command}")
+            logger.trace("#{new_resource} mdadm command: #{command}")
             shell_out!(command)
-            Chef::Log.info("#{new_resource} stopped raid device (#{new_resource.raid_device})")
+            logger.info("#{new_resource} stopped raid device (#{new_resource.raid_device})")
           end
         else
-          Chef::Log.debug("#{new_resource} raid device doesn't exist (#{new_resource.raid_device}) - not stopping")
+          logger.trace("#{new_resource} raid device doesn't exist (#{new_resource.raid_device}) - not stopping")
         end
       end
 

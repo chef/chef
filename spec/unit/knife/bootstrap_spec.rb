@@ -118,7 +118,7 @@ describe Chef::Knife::Bootstrap do
         let(:bootstrap_template) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test.erb")) }
 
         it "loads the given file as the template" do
-          expect(Chef::Log).to receive(:debug)
+          expect(Chef::Log).to receive(:trace)
           expect(knife.find_template).to eq(File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test.erb")))
         end
       end

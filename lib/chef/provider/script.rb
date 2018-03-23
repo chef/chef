@@ -51,7 +51,7 @@ class Chef
         super
         # @todo Chef-13: change this to an exception
         if code.nil?
-          Chef::Log.warn "#{new_resource}: No code attribute was given, resource does nothing, this behavior is deprecated and will be removed in Chef-13"
+          logger.warn "#{new_resource}: No code attribute was given, resource does nothing, this behavior is deprecated and will be removed in Chef-13"
         end
       end
 

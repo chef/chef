@@ -29,7 +29,7 @@ class Chef
               case new_resource.source
               when /^(http|ftp|\/)/
                 shell_out_compact_timeout!("pkg", "add", options, new_resource.source, env: { "LC_ALL" => nil }).status
-                Chef::Log.debug("#{new_resource} installed from: #{new_resource.source}")
+                logger.trace("#{new_resource} installed from: #{new_resource.source}")
               else
                 shell_out_compact_timeout!("pkg", "install", "-y", options, name, env: { "LC_ALL" => nil }).status
               end

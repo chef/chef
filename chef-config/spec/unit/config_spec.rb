@@ -767,8 +767,8 @@ RSpec.describe ChefConfig::Config do
         shared_examples_for "a suitable locale" do
           it "returns an English UTF-8 locale" do
             expect(ChefConfig.logger).to_not receive(:warn).with(/Please install an English UTF-8 locale for Chef to use/)
-            expect(ChefConfig.logger).to_not receive(:debug).with(/Defaulting to locale en_US.UTF-8 on Windows/)
-            expect(ChefConfig.logger).to_not receive(:debug).with(/No usable locale -a command found/)
+            expect(ChefConfig.logger).to_not receive(:trace).with(/Defaulting to locale en_US.UTF-8 on Windows/)
+            expect(ChefConfig.logger).to_not receive(:trace).with(/No usable locale -a command found/)
             expect(ChefConfig::Config.guess_internal_locale).to eq expected_locale
           end
         end
@@ -837,9 +837,9 @@ RSpec.describe ChefConfig::Config do
 
           it "should default to 'en_US.UTF-8'" do
             if is_windows
-              expect(ChefConfig.logger).to receive(:debug).with("Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else.")
+              expect(ChefConfig.logger).to receive(:trace).with("Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else.")
             else
-              expect(ChefConfig.logger).to receive(:debug).with("No usable locale -a command found, assuming you have en_US.UTF-8 installed.")
+              expect(ChefConfig.logger).to receive(:trace).with("No usable locale -a command found, assuming you have en_US.UTF-8 installed.")
             end
             expect(ChefConfig::Config.guess_internal_locale).to eq "en_US.UTF-8"
           end

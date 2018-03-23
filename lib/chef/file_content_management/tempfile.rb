@@ -45,7 +45,7 @@ class Chef
             break
           rescue SystemCallError => e
             message = "Creating temp file under '#{tempfile_dirname}' failed with: '#{e.message}'"
-            Chef::Log.debug(message)
+            Chef::Log.trace(message)
             errors << message
           end
         end

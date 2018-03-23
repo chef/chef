@@ -47,7 +47,7 @@ class Chef
 
         # cleanup any existing pref files w/o the sanitized name (created by old apt cookbook)
         if (sanitized_prefname != new_resource.package_name) && ::File.exist?("#{APT_PREFERENCE_DIR}/#{new_resource.package_name}.pref")
-          Chef::Log.warn "Replacing legacy #{new_resource.package_name}.pref with #{sanitized_prefname}.pref in #{APT_PREFERENCE_DIR}"
+          logger.warn "Replacing legacy #{new_resource.package_name}.pref with #{sanitized_prefname}.pref in #{APT_PREFERENCE_DIR}"
           declare_resource(:file, "#{APT_PREFERENCE_DIR}/#{new_resource.package_name}.pref") do
             action :delete
           end
@@ -55,7 +55,7 @@ class Chef
 
         # cleanup any existing pref files without the .pref extension (created by old apt cookbook)
         if ::File.exist?("#{APT_PREFERENCE_DIR}/#{new_resource.package_name}")
-          Chef::Log.warn "Replacing legacy #{new_resource.package_name} with #{sanitized_prefname}.pref in #{APT_PREFERENCE_DIR}"
+          logger.warn "Replacing legacy #{new_resource.package_name} with #{sanitized_prefname}.pref in #{APT_PREFERENCE_DIR}"
           declare_resource(:file, "#{APT_PREFERENCE_DIR}/#{new_resource.package_name}") do
             action :delete
           end
@@ -72,7 +72,7 @@ class Chef
         sanitized_prefname = safe_name(new_resource.package_name)
 
         if ::File.exist?("#{APT_PREFERENCE_DIR}/#{sanitized_prefname}.pref")
-          Chef::Log.info "Un-pinning #{sanitized_prefname} from #{APT_PREFERENCE_DIR}"
+          logger.info "Un-pinning #{sanitized_prefname} from #{APT_PREFERENCE_DIR}"
           declare_resource(:file, "#{APT_PREFERENCE_DIR}/#{sanitized_prefname}.pref") do
             action :delete
           end

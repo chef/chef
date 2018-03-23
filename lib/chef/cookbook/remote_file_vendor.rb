@@ -65,11 +65,11 @@ class Chef
         if found_manifest_record[:lazy] || current_checksum != found_manifest_record["checksum"]
           raw_file = @rest.streaming_request(found_manifest_record[:url])
 
-          Chef::Log.debug("Storing updated #{cache_filename} in the cache.")
+          Chef::Log.trace("Storing updated #{cache_filename} in the cache.")
           Chef::FileCache.move_to(raw_file.path, cache_filename)
         else
-          Chef::Log.debug("Not fetching #{cache_filename}, as the cache is up to date.")
-          Chef::Log.debug("Current checksum: #{current_checksum}; manifest checksum: #{found_manifest_record['checksum']})")
+          Chef::Log.trace("Not fetching #{cache_filename}, as the cache is up to date.")
+          Chef::Log.trace("Current checksum: #{current_checksum}; manifest checksum: #{found_manifest_record['checksum']})")
         end
 
         full_path_cache_filename = Chef::FileCache.load(cache_filename, false)

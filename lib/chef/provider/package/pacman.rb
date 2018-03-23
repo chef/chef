@@ -31,12 +31,12 @@ class Chef
           @current_resource = Chef::Resource::Package.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
 
-          Chef::Log.debug("#{new_resource} checking pacman for #{new_resource.package_name}")
+          logger.trace("#{new_resource} checking pacman for #{new_resource.package_name}")
           status = shell_out_compact_timeout("pacman", "-Qi", new_resource.package_name)
           status.stdout.each_line do |line|
             case line
             when /^Version(\s?)*: (.+)$/
-              Chef::Log.debug("#{new_resource} current version is #{$2}")
+              logger.trace("#{new_resource} current version is #{$2}")
               current_resource.version($2)
             end
           end

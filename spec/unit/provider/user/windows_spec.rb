@@ -28,11 +28,14 @@ class Chef
 end
 
 describe Chef::Provider::User::Windows do
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+
   before(:each) do
     @node = Chef::Node.new
     @new_resource = Chef::Resource::User::WindowsUser.new("monkey")
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
+    allow(@run_context).to receive(:logger).and_return(logger)
     @current_resource = Chef::Resource::User::WindowsUser.new("monkey")
 
     @net_user = double("Chef::Util::Windows::NetUser")

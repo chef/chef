@@ -216,7 +216,7 @@ class Chef
       # @return [Hash{String => Chef::CookbookManifest}] A map of
       #   CookbookManifest objects by cookbook name.
       def sync_cookbooks
-        Chef::Log.debug("Synchronizing cookbooks")
+        Chef::Log.trace("Synchronizing cookbooks")
         synchronizer = Chef::CookbookSynchronizer.new(cookbooks_to_sync, events)
         synchronizer.sync_cookbooks
 
@@ -275,7 +275,7 @@ class Chef
       #
       # Hoists attributes from role_X[policy_group] up to the equivalent role_X level
       def hoist_policyfile_attributes(policy_group)
-        Chef::Log.debug("Running attribute Hoist for group #{policy_group}")
+        Chef::Log.trace("Running attribute Hoist for group #{policy_group}")
         Chef::Mixin::DeepMerge.hash_only_merge!(node.role_default, node.role_default[policy_group]) if node.role_default.include?(policy_group)
         Chef::Mixin::DeepMerge.hash_only_merge!(node.role_override, node.role_override[policy_group]) if node.role_override.include?(policy_group)
       end

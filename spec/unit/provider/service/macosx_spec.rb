@@ -44,6 +44,7 @@ describe Chef::Provider::Service::Macosx do
   context "when service name is given as" do
     let(:node) { Chef::Node.new }
     let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:logger) { double("Mixlib::Log::Child").as_null_object }
     let(:run_context) { Chef::RunContext.new(node, {}, events) }
     let(:provider) { described_class.new(new_resource, run_context) }
     let(:launchctl_stdout) { StringIO.new }
@@ -73,6 +74,7 @@ XML
           end
           let(:service_label) { "io.redis.redis-server" }
           before do
+            allow(run_context).to receive(:logger).and_return(logger)
             allow(Dir).to receive(:glob).and_return([plist], [])
             @stat = double("File::Stat", { :uid => 501 })
             allow(File).to receive(:stat).and_return(@stat)
@@ -260,7 +262,7 @@ SVC_LIST
 
               it "shows warning message if service is already running" do
                 allow(current_resource).to receive(:running).and_return(true)
-                expect(Chef::Log).to receive(:debug).with("macosx_service[#{service_name}] already running, not starting")
+                expect(logger).to receive(:trace).with("macosx_service[#{service_name}] already running, not starting")
 
                 provider.start_service
               end
@@ -292,7 +294,7 @@ SVC_LIST
 
               it "shows warning message if service is not running" do
                 allow(current_resource).to receive(:running).and_return(false)
-                expect(Chef::Log).to receive(:debug).with("macosx_service[#{service_name}] not running, not stopping")
+                expect(logger).to receive(:trace).with("macosx_service[#{service_name}] not running, not stopping")
 
                 provider.stop_service
               end

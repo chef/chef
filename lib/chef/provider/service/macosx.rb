@@ -58,7 +58,7 @@ class Chef
 
           if @console_user
             @console_user = Etc.getpwuid(::File.stat("/dev/console").uid).name
-            Chef::Log.debug("#{new_resource} console_user: '#{@console_user}'")
+            logger.trace("#{new_resource} console_user: '#{@console_user}'")
             cmd = "su "
             param = this_version_or_newer?("10.10") ? "" : "-l "
             param = "-l " if this_version_or_newer?("10.12")
@@ -67,7 +67,7 @@ class Chef
             @session_type = "Aqua" if @session_type.nil?
           end
 
-          Chef::Log.debug("#{new_resource} Plist: '#{@plist}' service_label: '#{@service_label}'")
+          logger.trace("#{new_resource} Plist: '#{@plist}' service_label: '#{@service_label}'")
           set_service_status
 
           @current_resource
@@ -108,7 +108,7 @@ class Chef
 
         def start_service
           if @current_resource.running
-            Chef::Log.debug("#{@new_resource} already running, not starting")
+            logger.trace("#{@new_resource} already running, not starting")
           else
             if @new_resource.start_command
               super
@@ -120,7 +120,7 @@ class Chef
 
         def stop_service
           unless @current_resource.running
-            Chef::Log.debug("#{@new_resource} not running, not stopping")
+            logger.trace("#{@new_resource} not running, not stopping")
           else
             if @new_resource.stop_command
               super
@@ -147,7 +147,7 @@ class Chef
         # supervisor that will restart daemons that are crashing, etc.
         def enable_service
           if @current_resource.enabled
-            Chef::Log.debug("#{@new_resource} already enabled, not enabling")
+            logger.trace("#{@new_resource} already enabled, not enabling")
           else
             load_service
           end
@@ -155,7 +155,7 @@ class Chef
 
         def disable_service
           unless @current_resource.enabled
-            Chef::Log.debug("#{@new_resource} not enabled, not disabling")
+            logger.trace("#{@new_resource} not enabled, not disabling")
           else
             unload_service
           end
@@ -199,7 +199,7 @@ class Chef
               when /\s+\"pid\"\s+=\s+(\d+).*/
                 pid = $1
                 @current_resource.running(pid.to_i != 0)
-                Chef::Log.debug("Current PID for #{@service_label} is #{pid}")
+                logger.trace("Current PID for #{@service_label} is #{pid}")
               end
             end
           else

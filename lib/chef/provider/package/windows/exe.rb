@@ -28,11 +28,13 @@ class Chef
 
           def initialize(resource, installer_type, uninstall_entries)
             @new_resource = resource
+            @logger = new_resource.logger
             @installer_type = installer_type
             @uninstall_entries = uninstall_entries
           end
 
           attr_reader :new_resource
+          attr_reader :logger
           attr_reader :installer_type
           attr_reader :uninstall_entries
 
@@ -43,7 +45,7 @@ class Chef
 
           # Returns a version if the package is installed or nil if it is not.
           def installed_version
-            Chef::Log.debug("#{new_resource} checking package version")
+            logger.trace("#{new_resource} checking package version")
             current_installed_version
           end
 
@@ -52,7 +54,7 @@ class Chef
           end
 
           def install_package
-            Chef::Log.debug("#{new_resource} installing #{new_resource.installer_type} package '#{new_resource.source}'")
+            logger.trace("#{new_resource} installing #{new_resource.installer_type} package '#{new_resource.source}'")
             shell_out!(
               [
                 "start",
@@ -70,7 +72,7 @@ class Chef
             uninstall_version = new_resource.version || current_installed_version
             uninstall_entries.select { |entry| [uninstall_version].flatten.include?(entry.display_version) }
                              .map(&:uninstall_string).uniq.each do |uninstall_string|
-              Chef::Log.debug("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
+              logger.trace("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
               shell_out!(uninstall_command(uninstall_string), timeout: new_resource.timeout, returns: new_resource.returns)
             end
           end

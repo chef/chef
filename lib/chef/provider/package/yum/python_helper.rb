@@ -114,7 +114,7 @@ class Chef
             parameters.merge!(repo_opts)
             query_output = query(action, parameters)
             version = parse_response(query_output.lines.last)
-            Chef::Log.debug "parsed #{version} from python helper"
+            Chef::Log.trace "parsed #{version} from python helper"
             # XXX: for now we restart after every query with an enablerepo/disablerepo to clean the helpers internal state
             restart unless repo_opts.empty?
             version
@@ -149,10 +149,10 @@ class Chef
           def query(action, parameters)
             with_helper do
               json = build_query(action, parameters)
-              Chef::Log.debug "sending '#{json}' to python helper"
+              Chef::Log.trace "sending '#{json}' to python helper"
               outpipe.syswrite json + "\n"
               output = inpipe.sysread(4096).chomp
-              Chef::Log.debug "got '#{output}' from python helper"
+              Chef::Log.trace "got '#{output}' from python helper"
               return output
             end
           end
@@ -198,14 +198,14 @@ class Chef
             end
             output = drain_fds
             unless output.empty?
-              Chef::Log.debug "discarding output on stderr/stdout from python helper: #{output}"
+              Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
             end
             ret
           rescue EOFError, Errno::EPIPE, Timeout::Error, Errno::ESRCH => e
             output = drain_fds
             if ( max_retries -= 1 ) > 0
               unless output.empty?
-                Chef::Log.debug "discarding output on stderr/stdout from python helper: #{output}"
+                Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
               end
               restart
               retry

@@ -80,6 +80,10 @@ class Chef
           c
         end
 
+        def logger
+          @parent_resource.logger
+        end
+
         def initialize(parent_resource, command, opts, &block)
           @command, @command_opts = command, opts
           @block = block
@@ -87,7 +91,7 @@ class Chef
         end
 
         def verify(path, opts = {})
-          Chef::Log.debug("Running verification[#{self}] on #{path}")
+          logger.trace("Running verification[#{self}] on #{path}")
           if @block
             verify_block(path, opts)
           elsif @command.is_a?(Symbol)

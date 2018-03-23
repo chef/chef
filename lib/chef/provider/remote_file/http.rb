@@ -31,12 +31,14 @@ class Chef
         attr_reader :uri
         attr_reader :new_resource
         attr_reader :current_resource
+        attr_reader :logger
 
         # Parse the uri into instance variables
-        def initialize(uri, new_resource, current_resource)
+        def initialize(uri, new_resource, current_resource, logger = Chef::Log.with_child)
           @uri = uri
           @new_resource = new_resource
           @current_resource = current_resource
+          @logger = logger
         end
 
         def events
@@ -55,7 +57,7 @@ class Chef
           if (etag = cache_control_data.etag) && want_etag_cache_control?
             cache_control_headers["if-none-match"] = etag
           end
-          Chef::Log.debug("Cache control headers: #{cache_control_headers.inspect}")
+          logger.trace("Cache control headers: #{cache_control_headers.inspect}")
           cache_control_headers
         end
 
@@ -129,7 +131,7 @@ class Chef
           # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
           # which is not what you wanted.
           if uri.to_s =~ /gz$/
-            Chef::Log.debug("Turning gzip compression off due to filename ending in gz")
+            logger.trace("Turning gzip compression off due to filename ending in gz")
             opts[:disable_gzip] = true
           end
           opts

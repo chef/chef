@@ -41,7 +41,7 @@ class Chef
 
       def uri
         @uri ||= begin
-          Chef::Log.debug("Checking SSL cert on #{given_uri}")
+          Chef::Log.trace("Checking SSL cert on #{given_uri}")
           URI.parse(given_uri)
         end
       end

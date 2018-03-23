@@ -37,7 +37,7 @@ class Chef
         if notification.group.parent_groups.size == 1
           # top level `control_group` block
           desc = notification.group.description
-          Chef::Log.debug("Entered `control_group` block named #{desc}")
+          Chef::Log.trace("Entered `control_group` block named #{desc}")
           events.control_group_started(desc)
         end
       end

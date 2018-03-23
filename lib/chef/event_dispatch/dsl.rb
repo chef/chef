@@ -35,10 +35,10 @@ class Chef
         # and associated event dispatcher is set, else fallback to
         # Chef::Config[:event_handlers]
         if Chef.run_context && Chef.run_context.events
-          Chef::Log.debug("Registering handler '#{name}' using events api")
+          Chef::Log.trace("Registering handler '#{name}' using events api")
           Chef.run_context.events.register(handler)
         else
-          Chef::Log.debug("Registering handler '#{name}' using global config")
+          Chef::Log.trace("Registering handler '#{name}' using global config")
           Chef::Config[:event_handlers] << handler
         end
       end

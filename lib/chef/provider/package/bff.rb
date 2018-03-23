@@ -48,7 +48,7 @@ class Chef
           current_resource.package_name(new_resource.package_name)
 
           if package_source_found?
-            Chef::Log.debug("#{new_resource} checking pkg status")
+            logger.trace("#{new_resource} checking pkg status")
             ret = shell_out_compact_timeout("installp", "-L", "-d", new_resource.source)
             ret.stdout.each_line do |line|
               case line
@@ -56,7 +56,7 @@ class Chef
                 fields = line.split(":")
                 new_resource.version(fields[2])
               when /^#{new_resource.package_name}:/
-                Chef::Log.warn("You are installing a bff package by product name. For idempotent installs, please install individual filesets")
+                logger.warn("You are installing a bff package by product name. For idempotent installs, please install individual filesets")
                 fields = line.split(":")
                 new_resource.version(fields[2])
               end
@@ -64,13 +64,13 @@ class Chef
             raise Chef::Exceptions::Package, "package source #{new_resource.source} does not provide package #{new_resource.package_name}" unless new_resource.version
           end
 
-          Chef::Log.debug("#{new_resource} checking install state")
+          logger.trace("#{new_resource} checking install state")
           ret = shell_out_compact_timeout("lslpp", "-lcq", current_resource.package_name)
           ret.stdout.each_line do |line|
             case line
             when /#{current_resource.package_name}/
               fields = line.split(":")
-              Chef::Log.debug("#{new_resource} version #{fields[2]} is already installed")
+              logger.trace("#{new_resource} version #{fields[2]} is already installed")
               current_resource.version(fields[2])
             end
           end
@@ -92,7 +92,7 @@ class Chef
                 fields = line.split(":")
                 @candidate_version = fields[2]
                 new_resource.version(fields[2])
-                Chef::Log.debug("#{new_resource} setting install candidate version to #{@candidate_version}")
+                logger.trace("#{new_resource} setting install candidate version to #{@candidate_version}")
               end
             end
             unless ret.exitstatus == 0
@@ -110,13 +110,13 @@ class Chef
         # So far, the code has been tested only with standalone packages.
         #
         def install_package(name, version)
-          Chef::Log.debug("#{new_resource} package install options: #{options}")
+          logger.trace("#{new_resource} package install options: #{options}")
           if options.nil?
             shell_out_compact_timeout!("installp", "-aYF", "-d", new_resource.source, new_resource.package_name)
-            Chef::Log.debug("#{new_resource} installed version #{new_resource.version} from: #{new_resource.source}")
+            logger.trace("#{new_resource} installed version #{new_resource.version} from: #{new_resource.source}")
           else
             shell_out_compact_timeout!("installp", "-aYF", options, "-d", new_resource.source, new_resource.package_name)
-            Chef::Log.debug("#{new_resource} installed version #{new_resource.version} from: #{new_resource.source}")
+            logger.trace("#{new_resource} installed version #{new_resource.version} from: #{new_resource.source}")
           end
         end
 
@@ -125,10 +125,10 @@ class Chef
         def remove_package(name, version)
           if options.nil?
             shell_out_compact_timeout!("installp", "-u", name)
-            Chef::Log.debug("#{new_resource} removed version #{new_resource.version}")
+            logger.trace("#{new_resource} removed version #{new_resource.version}")
           else
             shell_out_compact_timeout!("installp", "-u", options, name)
-            Chef::Log.debug("#{new_resource} removed version #{new_resource.version}")
+            logger.trace("#{new_resource} removed version #{new_resource.version}")
           end
         end
 

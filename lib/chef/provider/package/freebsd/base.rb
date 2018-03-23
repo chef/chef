@@ -74,10 +74,10 @@ class Chef
             current_resource.package_name(new_resource.package_name)
 
             current_resource.version(current_installed_version)
-            Chef::Log.debug("#{new_resource} current version is #{current_resource.version}") if current_resource.version
+            logger.trace("#{new_resource} current version is #{current_resource.version}") if current_resource.version
 
             @candidate_version = candidate_version
-            Chef::Log.debug("#{new_resource} candidate version is #{@candidate_version}") if @candidate_version
+            logger.trace("#{new_resource} candidate version is #{@candidate_version}") if @candidate_version
 
             current_resource
           end

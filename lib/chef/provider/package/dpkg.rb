@@ -73,17 +73,17 @@ class Chef
 
         def install_package(name, version)
           sources = name.map { |n| name_sources[n] }
-          Chef::Log.info("#{new_resource} installing package(s): #{name.join(' ')}")
+          logger.info("#{new_resource} installing package(s): #{name.join(' ')}")
           run_noninteractive("dpkg", "-i", *options, *sources)
         end
 
         def remove_package(name, version)
-          Chef::Log.info("#{new_resource} removing package(s): #{name.join(' ')}")
+          logger.info("#{new_resource} removing package(s): #{name.join(' ')}")
           run_noninteractive("dpkg", "-r", *options, *name)
         end
 
         def purge_package(name, version)
-          Chef::Log.info("#{new_resource} purging packages(s): #{name.join(' ')}")
+          logger.info("#{new_resource} purging packages(s): #{name.join(' ')}")
           run_noninteractive("dpkg", "-P", *options, *name)
         end
 
@@ -92,12 +92,12 @@ class Chef
         end
 
         def preseed_package(preseed_file)
-          Chef::Log.info("#{new_resource} pre-seeding package installation instructions")
+          logger.info("#{new_resource} pre-seeding package installation instructions")
           run_noninteractive("debconf-set-selections", *preseed_file)
         end
 
         def reconfig_package(name, version)
-          Chef::Log.info("#{new_resource} reconfiguring")
+          logger.info("#{new_resource} reconfiguring")
           run_noninteractive("dpkg-reconfigure", *name)
         end
 
@@ -123,7 +123,7 @@ class Chef
         end
 
         def read_current_version_of_package(package_name)
-          Chef::Log.debug("#{new_resource} checking install state of #{package_name}")
+          logger.trace("#{new_resource} checking install state of #{package_name}")
           status = shell_out_compact_timeout!("dpkg", "-s", package_name, returns: [0, 1])
           package_installed = false
           status.stdout.each_line do |line|
@@ -135,7 +135,7 @@ class Chef
               package_installed = true
             when DPKG_VERSION
               if package_installed
-                Chef::Log.debug("#{new_resource} current version is #{$1}")
+                logger.trace("#{new_resource} current version is #{$1}")
                 return $1
               end
             end
@@ -191,7 +191,7 @@ class Chef
           @name_pkginfo ||=
             begin
               pkginfos = resolved_source_array.map do |src|
-                Chef::Log.debug("#{new_resource} checking #{src} dpkg status")
+                logger.trace("#{new_resource} checking #{src} dpkg status")
                 status = shell_out_compact_timeout!("dpkg-deb", "-W", src)
                 status.stdout
               end

@@ -115,8 +115,8 @@ class Chef
           if new_resource.link_type == :symbolic
             converge_by("create symlink at #{new_resource.target_file} to #{new_resource.to}") do
               file_class.symlink(canonicalize(new_resource.to), new_resource.target_file)
-              Chef::Log.debug("#{new_resource} created #{new_resource.link_type} link from #{new_resource.target_file} -> #{new_resource.to}")
-              Chef::Log.info("#{new_resource} created")
+              logger.trace("#{new_resource} created #{new_resource.link_type} link from #{new_resource.target_file} -> #{new_resource.to}")
+              logger.info("#{new_resource} created")
               # file_class.symlink will create the link with default access controls.
               # This means that the access controls of the file could be different
               # than those captured during the initial evaluation of current_resource.
@@ -127,8 +127,8 @@ class Chef
           elsif new_resource.link_type == :hard
             converge_by("create hard link at #{new_resource.target_file} to #{new_resource.to}") do
               file_class.link(new_resource.to, new_resource.target_file)
-              Chef::Log.debug("#{new_resource} created #{new_resource.link_type} link from #{new_resource.target_file} -> #{new_resource.to}")
-              Chef::Log.info("#{new_resource} created")
+              logger.trace("#{new_resource} created #{new_resource.link_type} link from #{new_resource.target_file} -> #{new_resource.to}")
+              logger.info("#{new_resource} created")
             end
           end
         end
@@ -146,12 +146,12 @@ class Chef
           if Chef::Platform.windows? && ::File.directory?(current_resource.target_file)
             converge_by("delete link to dir at #{new_resource.target_file}") do
               ::Dir.delete(new_resource.target_file)
-              Chef::Log.info("#{new_resource} deleted")
+              logger.info("#{new_resource} deleted")
             end
           else
             converge_by("delete link to file at #{new_resource.target_file}") do
               ::File.delete(new_resource.target_file)
-              Chef::Log.info("#{new_resource} deleted")
+              logger.info("#{new_resource} deleted")
             end
           end
         end

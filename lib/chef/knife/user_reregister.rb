@@ -75,7 +75,7 @@ EOF
           run_osc_11_user_reregister
         else # EC / CS 12 case
           user.reregister
-          Chef::Log.debug("Updated user data: #{user.inspect}")
+          Chef::Log.trace("Updated user data: #{user.inspect}")
           key = user.private_key
           if config[:file]
             File.open(config[:file], "w") do |f|

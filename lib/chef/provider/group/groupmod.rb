@@ -66,13 +66,13 @@ class Chef
               end
             end
 
-            Chef::Log.debug("#{new_resource} not changing group members, the group has no members to add") if members_to_be_added.empty?
+            logger.trace("#{new_resource} not changing group members, the group has no members to add") if members_to_be_added.empty?
 
             add_group_members(members_to_be_added)
           else
             # We are resetting the members of a group so use the same trick
             reset_group_membership
-            Chef::Log.debug("#{new_resource} setting group members to: none") if new_resource.members.empty?
+            logger.trace("#{new_resource} setting group members to: none") if new_resource.members.empty?
             add_group_members(new_resource.members)
           end
         end
@@ -84,7 +84,7 @@ class Chef
 
         # Adds a list of usernames to the group using `user mod`
         def add_group_members(members)
-          Chef::Log.debug("#{new_resource} adding members #{members.join(', ')}") unless members.empty?
+          logger.trace("#{new_resource} adding members #{members.join(', ')}") unless members.empty?
           members.each do |user|
             shell_out_compact!("user", "mod", "-G", new_resource.group_name, user)
           end

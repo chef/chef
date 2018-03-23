@@ -95,7 +95,7 @@ class Chef
           # a provider to say "assuming /etc/init.d/whatever would have been installed" and in the non-why-run case we
           # need to make a best guess at "cannot find /etc/init.d/whatever".  We are essentially defining a "default" provider
           # for the platform, which is the best we can do, but which might give misleading errors, but we cannot read minds.
-          Chef::Log.debug "No providers responded true to `supports?` for action #{action} on resource #{resource}, falling back to enabled handlers so we can return something anyway."
+          Chef::Log.trace "No providers responded true to `supports?` for action #{action} on resource #{resource}, falling back to enabled handlers so we can return something anyway."
           supported_handlers = enabled_handlers
         end
 
@@ -118,14 +118,14 @@ class Chef
 
     # try dynamically finding a provider based on querying the providers to see what they support
     def maybe_dynamic_provider_resolution(resource, action)
-      Chef::Log.debug "Providers for generic #{resource.resource_name} resource enabled on node include: #{enabled_handlers}"
+      Chef::Log.trace "Providers for generic #{resource.resource_name} resource enabled on node include: #{enabled_handlers}"
 
       handler = prioritized_handlers.first
 
       if handler
-        Chef::Log.debug "Provider for action #{action} on resource #{resource} is #{handler}"
+        Chef::Log.trace "Provider for action #{action} on resource #{resource} is #{handler}"
       else
-        Chef::Log.debug "Dynamic provider resolver FAILED to resolve a provider for action #{action} on resource #{resource}"
+        Chef::Log.trace "Dynamic provider resolver FAILED to resolve a provider for action #{action} on resource #{resource}"
       end
 
       handler

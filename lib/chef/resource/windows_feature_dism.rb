@@ -51,7 +51,7 @@ class Chef
         fail_if_unavailable # fail if the features don't exist
         fail_if_removed # fail if the features are in removed state
 
-        Chef::Log.debug("Windows features needing installation: #{features_to_install.empty? ? 'none' : features_to_install.join(',')}")
+        logger.trace("Windows features needing installation: #{features_to_install.empty? ? 'none' : features_to_install.join(',')}")
         unless features_to_install.empty?
           message = "install Windows feature#{'s' if features_to_install.count > 1} #{features_to_install.join(',')}"
           converge_by(message) do
@@ -71,7 +71,7 @@ class Chef
 
         reload_cached_dism_data unless node["dism_features_cache"]
 
-        Chef::Log.debug("Windows features needing removal: #{features_to_remove.empty? ? 'none' : features_to_remove.join(',')}")
+        logger.trace("Windows features needing removal: #{features_to_remove.empty? ? 'none' : features_to_remove.join(',')}")
         unless features_to_remove.empty?
           message = "remove Windows feature#{'s' if features_to_remove.count > 1} #{features_to_remove.join(',')}"
 
@@ -92,7 +92,7 @@ class Chef
 
         fail_if_unavailable # fail if the features don't exist
 
-        Chef::Log.debug("Windows features needing deletion: #{features_to_delete.empty? ? 'none' : features_to_delete.join(',')}")
+        logger.trace("Windows features needing deletion: #{features_to_delete.empty? ? 'none' : features_to_delete.join(',')}")
         unless features_to_delete.empty?
           message = "delete Windows feature#{'s' if features_to_delete.count > 1} #{features_to_delete.join(',')} from the image"
           converge_by(message) do
@@ -157,7 +157,7 @@ class Chef
         # a much faster run when no features actually need to be installed / removed.
         # @return [void]
         def reload_cached_dism_data
-          Chef::Log.debug("Caching Windows features available via dism.exe.")
+          logger.trace("Caching Windows features available via dism.exe.")
           node.override["dism_features_cache"] = Mash.new
           node.override["dism_features_cache"]["enabled"] = []
           node.override["dism_features_cache"]["disabled"] = []
@@ -178,7 +178,7 @@ class Chef
               add_to_feature_mash("disabled", feature_details_raw)
             end
           end
-          Chef::Log.debug("The cache contains\n#{node['dism_features_cache']}")
+          logger.trace("The cache contains\n#{node['dism_features_cache']}")
         end
 
         # parse the feature string and add the values to the appropriate array

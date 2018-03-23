@@ -56,7 +56,7 @@ class Chef
             ignore_globs << line.strip unless line =~ COMMENTS_AND_WHITESPACE
           end
         else
-          Chef::Log.debug("No chefignore file found at #{@ignore_file} no files will be ignored")
+          Chef::Log.trace("No chefignore file found at #{@ignore_file} no files will be ignored")
         end
         ignore_globs
       end

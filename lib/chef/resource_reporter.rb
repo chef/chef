@@ -153,7 +153,7 @@ class Chef
           Chef::Log.info(message + reason + reporting_status)
         else
           reporting_status = "Disabling reporting for run."
-          Chef::Log.debug(message + reason + reporting_status)
+          Chef::Log.trace(message + reason + reporting_status)
         end
       end
 
@@ -237,9 +237,9 @@ class Chef
         run_data = prepare_run_data
         resource_history_url = "reports/nodes/#{node_name}/runs/#{run_id}"
         Chef::Log.info("Sending resource update report (run-id: #{run_id})")
-        Chef::Log.debug run_data.inspect
+        Chef::Log.trace run_data.inspect
         compressed_data = encode_gzip(Chef::JSONCompat.to_json(run_data))
-        Chef::Log.debug("Sending compressed run data...")
+        Chef::Log.trace("Sending compressed run data...")
         # Since we're posting compressed data we can not directly call post which expects JSON
         begin
           @rest_client.raw_request(:POST, resource_history_url, headers({ "Content-Encoding" => "gzip" }), compressed_data)
@@ -252,7 +252,7 @@ class Chef
           end
         end
       else
-        Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
+        Chef::Log.trace("Server doesn't support resource history, skipping resource report.")
       end
     end
 

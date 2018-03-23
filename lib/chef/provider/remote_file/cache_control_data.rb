@@ -153,7 +153,7 @@ class Chef
             if Chef::FileCache.has_key?(old_path)
               # We found an old cache control data file. We started using sha256 instead of md5
               # to name these. Upgrade the file to the new name.
-              Chef::Log.debug("Found old cache control data file at #{old_path}. Moving to #{path}.")
+              Chef::Log.trace("Found old cache control data file at #{old_path}. Moving to #{path}.")
               Chef::FileCache.load(old_path).tap do |data|
                 Chef::FileCache.store(path, data)
                 Chef::FileCache.delete(old_path)

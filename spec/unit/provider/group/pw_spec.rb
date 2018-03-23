@@ -19,10 +19,13 @@
 require "spec_helper"
 
 describe Chef::Provider::Group::Pw do
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+
   before do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
+    allow(@run_context).to receive(:logger).and_return(logger)
 
     @new_resource = Chef::Resource::Group.new("wheel")
     @new_resource.gid 50
@@ -93,7 +96,7 @@ describe Chef::Provider::Group::Pw do
       end
 
       it "should log an appropriate message" do
-        expect(Chef::Log).to receive(:debug).with("group[wheel] removing group members: all,your,base")
+        expect(logger).to receive(:trace).with("group[wheel] removing group members: all,your,base")
         @provider.set_members_options
       end
 
@@ -109,7 +112,7 @@ describe Chef::Provider::Group::Pw do
       end
 
       it "should log an appropriate debug message" do
-        expect(Chef::Log).to receive(:debug).with("group[wheel] adding group members: all,your,base")
+        expect(logger).to receive(:trace).with("group[wheel] adding group members: all,your,base")
         @provider.set_members_options
       end
 

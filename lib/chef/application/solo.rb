@@ -242,7 +242,7 @@ class Chef::Application::Solo < Chef::Application
       ARGV.delete("--ez")
 
       # For back compat reasons, we need to ensure that we try and use the cache_path as a repo first
-      Chef::Log.debug "Current chef_repo_path is #{Chef::Config.chef_repo_path}"
+      Chef::Log.trace "Current chef_repo_path is #{Chef::Config.chef_repo_path}"
 
       if !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
         Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Chef::Config[:cache_path])
@@ -272,10 +272,10 @@ class Chef::Application::Solo < Chef::Application
       recipes_path = File.expand_path(File.join(cookbooks_path, ".."))
 
       if Chef::Config[:delete_entire_chef_repo]
-        Chef::Log.debug "Cleanup path #{recipes_path} before extract recipes into it"
+        Chef::Log.trace "Cleanup path #{recipes_path} before extract recipes into it"
         FileUtils.rm_rf(recipes_path, :secure => true)
       end
-      Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
+      Chef::Log.trace "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p(recipes_path)
       tarball_path = File.join(recipes_path, "recipes.tgz")
       fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
@@ -336,7 +336,7 @@ EOH
         sleep_sec += rand(Chef::Config[:splay]) if Chef::Config[:splay]
         sleep_sec += Chef::Config[:interval] if Chef::Config[:interval]
         if sleep_sec != 0
-          Chef::Log.debug("Sleeping for #{sleep_sec} seconds")
+          Chef::Log.trace("Sleeping for #{sleep_sec} seconds")
           sleep(sleep_sec)
         end
 
@@ -349,7 +349,7 @@ EOH
       rescue Exception => e
         if Chef::Config[:interval]
           Chef::Log.error("#{e.class}: #{e}")
-          Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
+          Chef::Log.trace("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
           retry
         else
           Chef::Application.fatal!("#{e.class}: #{e.message}", e)
@@ -359,7 +359,7 @@ EOH
   end
 
   def fetch_recipe_tarball(url, path)
-    Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
+    Chef::Log.trace("Download recipes tarball from #{url} to #{path}")
     File.open(path, "wb") do |f|
       open(url) do |r|
         f.write(r.read)

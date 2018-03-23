@@ -645,7 +645,7 @@ class Chef
 
         # display token elevation details
         token_elevation_type = get_token_information_elevation_type(process_token)
-        Chef::Log.debug("Token Elevation Type: #{token_elevation_type}")
+        Chef::Log.trace("Token Elevation Type: #{token_elevation_type}")
 
         elevation_result = FFI::Buffer.new(:ulong)
         elevation_result_size = FFI::MemoryPointer.new(:uint32)

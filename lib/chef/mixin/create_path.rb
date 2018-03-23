@@ -61,7 +61,7 @@ class Chef
           #                                             File.directory?(create_path) <- false
           #                                             Dir.mkdir(create_path)
           # Dir.mkdir(create_path) <- raises Errno::EEXIST
-        Chef::Log.debug("Creating directory #{path}")
+        Chef::Log.trace("Creating directory #{path}")
         Dir.mkdir(path)
       rescue Errno::EEXIST
       end

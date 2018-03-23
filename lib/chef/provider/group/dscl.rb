@@ -51,7 +51,7 @@ class Chef
             group_info = safe_dscl("read", "/Groups/#{new_resource.group_name}")
           rescue Chef::Exceptions::Group
             @group_exists = false
-            Chef::Log.debug("#{new_resource} group does not exist")
+            logger.trace("#{new_resource} group does not exist")
           end
 
           if group_info
@@ -105,7 +105,7 @@ class Chef
         def set_members
           # First reset the memberships if the append is not set
           unless new_resource.append
-            Chef::Log.debug("#{new_resource} removing group members #{current_resource.members.join(' ')}") unless current_resource.members.empty?
+            logger.trace("#{new_resource} removing group members #{current_resource.members.join(' ')}") unless current_resource.members.empty?
             safe_dscl("create", "/Groups/#{new_resource.group_name}", "GroupMembers", "") # clear guid list
             safe_dscl("create", "/Groups/#{new_resource.group_name}", "GroupMembership", "") # clear user list
             current_resource.members([ ])
@@ -118,7 +118,7 @@ class Chef
               members_to_be_added << member unless current_resource.members.include?(member)
             end
             unless members_to_be_added.empty?
-              Chef::Log.debug("#{new_resource} setting group members #{members_to_be_added.join(', ')}")
+              logger.trace("#{new_resource} setting group members #{members_to_be_added.join(', ')}")
               safe_dscl("append", "/Groups/#{new_resource.group_name}", "GroupMembership", *members_to_be_added)
             end
           end
@@ -130,7 +130,7 @@ class Chef
               members_to_be_removed << member if current_resource.members.include?(member)
             end
             unless members_to_be_removed.empty?
-              Chef::Log.debug("#{new_resource} removing group members #{members_to_be_removed.join(', ')}")
+              logger.trace("#{new_resource} removing group members #{members_to_be_removed.join(', ')}")
               safe_dscl("delete", "/Groups/#{new_resource.group_name}", "GroupMembership", *members_to_be_removed)
             end
           end

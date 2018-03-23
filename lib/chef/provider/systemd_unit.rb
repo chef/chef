@@ -88,7 +88,7 @@ class Chef
 
       def action_enable
         if current_resource.static
-          Chef::Log.debug("#{new_resource.unit_name} is a static unit, enabling is a NOP.")
+          logger.trace("#{new_resource.unit_name} is a static unit, enabling is a NOP.")
         end
 
         unless current_resource.enabled || current_resource.static
@@ -100,7 +100,7 @@ class Chef
 
       def action_disable
         if current_resource.static
-          Chef::Log.debug("#{new_resource.unit_name} is a static unit, disabling is a NOP.")
+          logger.trace("#{new_resource.unit_name} is a static unit, disabling is a NOP.")
         end
 
         if current_resource.enabled && !current_resource.static
@@ -160,7 +160,7 @@ class Chef
             systemctl_execute!(:reload, new_resource.unit_name)
           end
         else
-          Chef::Log.debug("#{new_resource.unit_name} is not active, skipping reload.")
+          logger.trace("#{new_resource.unit_name} is not active, skipping reload.")
         end
       end
 

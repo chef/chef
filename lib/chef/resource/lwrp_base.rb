@@ -43,7 +43,7 @@ class Chef
 
         def build_from_file(cookbook_name, filename, run_context)
           if LWRPBase.loaded_lwrps[filename]
-            Chef::Log.debug("Custom resource #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
+            Chef::Log.trace("Custom resource #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
             return loaded_lwrps[filename]
           end
 
@@ -63,7 +63,7 @@ class Chef
             define_singleton_method(:inspect) { to_s }
           end
 
-          Chef::Log.debug("Loaded contents of #{filename} into resource #{resource_name} (#{resource_class})")
+          Chef::Log.trace("Loaded contents of #{filename} into resource #{resource_name} (#{resource_class})")
 
           LWRPBase.loaded_lwrps[filename] = true
 

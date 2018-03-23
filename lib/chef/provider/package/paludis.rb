@@ -31,7 +31,7 @@ class Chef
           @current_resource = Chef::Resource::Package.new(new_resource.package_name)
           current_resource.package_name(new_resource.package_name)
 
-          Chef::Log.debug("Checking package status for #{new_resource.package_name}")
+          logger.trace("Checking package status for #{new_resource.package_name}")
           installed = false
           re = Regexp.new("(.*)[[:blank:]](.*)[[:blank:]](.*)$")
 

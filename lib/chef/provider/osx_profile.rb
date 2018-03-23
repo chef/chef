@@ -189,14 +189,14 @@ class Chef
 
       def install_profile(profile_path)
         cmd = "profiles -I -F '#{profile_path}'"
-        Chef::Log.debug("cmd: #{cmd}")
+        logger.trace("cmd: #{cmd}")
         shellout_results = shell_out(cmd)
         shellout_results.exitstatus
       end
 
       def remove_profile
         cmd = "profiles -R -p '#{@new_profile_identifier}'"
-        Chef::Log.debug("cmd: #{cmd}")
+        logger.trace("cmd: #{cmd}")
         shellout_results = shell_out(cmd)
         shellout_results.exitstatus
       end
@@ -214,7 +214,7 @@ class Chef
         tempfile = generate_tempfile
         write_installed_profiles(tempfile)
         installed_profiles = read_plist(tempfile)
-        Chef::Log.debug("Saved profiles to run_state")
+        logger.trace("Saved profiles to run_state")
         # Clean up the temp file as we do not need it anymore
         ::File.unlink(tempfile)
         installed_profiles

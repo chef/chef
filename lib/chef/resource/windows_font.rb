@@ -42,7 +42,7 @@ class Chef
         description "Install a font to the system fonts directory."
 
         if font_exists?
-          Chef::Log.debug("Not installing font: #{new_resource.font_name} as font already installed.")
+          logger.trace("Not installing font: #{new_resource.font_name} as font already installed.")
         else
           retrieve_cookbook_font
           install_font
@@ -92,7 +92,7 @@ class Chef
         def font_exists?
           require "win32ole" if RUBY_PLATFORM =~ /mswin|mingw32|windows/
           fonts_dir = WIN32OLE.new("WScript.Shell").SpecialFolders("Fonts")
-          Chef::Log.debug("Seeing if the font at #{Chef::Util::PathHelper.join(fonts_dir, new_resource.font_name)} exists")
+          logger.trace("Seeing if the font at #{Chef::Util::PathHelper.join(fonts_dir, new_resource.font_name)} exists")
           ::File.exist?(Chef::Util::PathHelper.join(fonts_dir, new_resource.font_name))
         end
 
@@ -112,13 +112,13 @@ class Chef
           begin
             require "uri"
             if remote_file_schema?(URI.parse(new_resource.source).scheme)
-              Chef::Log.debug("source property starts with ftp/http. Using source property unmodified")
+              logger.trace("source property starts with ftp/http. Using source property unmodified")
               return new_resource.source
             end
           rescue URI::InvalidURIError
             Chef::Log.warn("source property of #{new_resource.source} could not be processed as a URI. Check the format you provided.")
           end
-          Chef::Log.debug("source property does not start with ftp/http. Prepending with file:// as it appears to be a local file.")
+          logger.trace("source property does not start with ftp/http. Prepending with file:// as it appears to be a local file.")
           "file://#{new_resource.source}"
         end
       end

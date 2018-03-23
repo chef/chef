@@ -164,7 +164,7 @@ class Chef
             command = add_command
             converge_by("run #{command.join(' ')} to add #{new_resource}") do
               shell_out_compact!(command)
-              Chef::Log.info("#{new_resource} added")
+              logger.info("#{new_resource} added")
             end
           end
         end
@@ -180,7 +180,7 @@ class Chef
         command = enable_command
         converge_by("run #{command.join(' ')} to enable #{new_resource}") do
           shell_out_compact!(command)
-          Chef::Log.info("#{new_resource} enabled")
+          logger.info("#{new_resource} enabled")
         end
       end
 
@@ -190,10 +190,10 @@ class Chef
           command = delete_command
           converge_by("run #{command.join(' ')} to delete #{new_resource}") do
             shell_out_compact!(command)
-            Chef::Log.info("#{new_resource} deleted")
+            logger.info("#{new_resource} deleted")
           end
         else
-          Chef::Log.debug("#{new_resource} does not exist - nothing to do")
+          logger.trace("#{new_resource} does not exist - nothing to do")
         end
         delete_config
       end
@@ -205,10 +205,10 @@ class Chef
           command = disable_command
           converge_by("run #{command.join(' ')} to disable #{new_resource}") do
             shell_out_compact!(command)
-            Chef::Log.info("#{new_resource} disabled")
+            logger.info("#{new_resource} disabled")
           end
         else
-          Chef::Log.debug("#{new_resource} does not exist - nothing to do")
+          logger.trace("#{new_resource} does not exist - nothing to do")
         end
       end
 

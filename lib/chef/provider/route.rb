@@ -77,7 +77,7 @@ class Chef
         begin
           IPAddr.new(ip, Socket::AF_INET).to_s
         rescue ArgumentError
-          Chef::Log.debug("Invalid IP address data: hex=#{hex_ip}, ip=#{ip}")
+          logger.trace("Invalid IP address data: hex=#{hex_ip}, ip=#{ip}")
           return nil
         end
       end
@@ -111,7 +111,7 @@ class Chef
 
           # Skip formatting lines (header, etc)
           next unless destination && gateway && mask
-          Chef::Log.debug("#{new_resource} system has route: dest=#{destination} mask=#{mask} gw=#{gateway}")
+          logger.trace("#{new_resource} system has route: dest=#{destination} mask=#{mask} gw=#{gateway}")
 
           # check if what were trying to configure is already there
           # use an ipaddr object with ip/mask this way we can have
@@ -119,7 +119,7 @@ class Chef
           # expanding bitmask by hand.
           #
           running_ip = IPAddr.new("#{destination}/#{mask}")
-          Chef::Log.debug("#{new_resource} new ip: #{new_ip.inspect} running ip: #{running_ip.inspect}")
+          logger.trace("#{new_resource} new ip: #{new_ip.inspect} running ip: #{running_ip.inspect}")
           self.is_running = true if running_ip == new_ip && gateway == new_resource.gateway
         end
 
@@ -129,12 +129,12 @@ class Chef
       def action_add
         # check to see if load_current_resource found the route
         if is_running
-          Chef::Log.debug("#{new_resource} route already active - nothing to do")
+          logger.trace("#{new_resource} route already active - nothing to do")
         else
           command = generate_command(:add)
           converge_by("run #{command.join(' ')} to add route") do
             shell_out_compact!(command)
-            Chef::Log.info("#{new_resource} added")
+            logger.info("#{new_resource} added")
           end
         end
 
@@ -147,10 +147,10 @@ class Chef
           command = generate_command(:delete)
           converge_by("run #{command.join(' ')} to delete route ") do
             shell_out_compact!(command)
-            Chef::Log.info("#{new_resource} removed")
+            logger.info("#{new_resource} removed")
           end
         else
-          Chef::Log.debug("#{new_resource} route does not exist - nothing to do")
+          logger.trace("#{new_resource} route does not exist - nothing to do")
         end
 
         # for now we always write the file (ugly but its what it is)
@@ -185,7 +185,7 @@ class Chef
             if new_resource.target == "default"
               network_file_name = "/etc/sysconfig/network"
               converge_by("write route default route to #{network_file_name}") do
-                Chef::Log.debug("#{new_resource} writing default route #{new_resource.gateway} to #{network_file_name}")
+                logger.trace("#{new_resource} writing default route #{new_resource.gateway} to #{network_file_name}")
                 if ::File.exist?(network_file_name)
                   network_file = ::Chef::Util::FileEdit.new(network_file_name)
                   network_file.search_file_replace_line /^GATEWAY=/, "GATEWAY=#{new_resource.gateway}"
@@ -202,7 +202,7 @@ class Chef
               converge_by("write route route.#{k}\n#{conf[k]} to #{network_file_name}") do
                 network_file = ::File.new(network_file_name, "w")
                 network_file.puts(conf[k])
-                Chef::Log.debug("#{new_resource} writing route.#{k}\n#{conf[k]}")
+                logger.trace("#{new_resource} writing route.#{k}\n#{conf[k]}")
                 network_file.close
               end
             end

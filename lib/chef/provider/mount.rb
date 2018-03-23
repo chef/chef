@@ -41,10 +41,10 @@ class Chef
         unless current_resource.mounted
           converge_by("mount #{current_resource.device} to #{current_resource.mount_point}") do
             mount_fs
-            Chef::Log.info("#{new_resource} mounted")
+            logger.info("#{new_resource} mounted")
           end
         else
-          Chef::Log.debug("#{new_resource} is already mounted")
+          logger.trace("#{new_resource} is already mounted")
         end
       end
 
@@ -52,10 +52,10 @@ class Chef
         if current_resource.mounted
           converge_by("unmount #{current_resource.device}") do
             umount_fs
-            Chef::Log.info("#{new_resource} unmounted")
+            logger.info("#{new_resource} unmounted")
           end
         else
-          Chef::Log.debug("#{new_resource} is already unmounted")
+          logger.trace("#{new_resource} is already unmounted")
         end
       end
 
@@ -64,21 +64,21 @@ class Chef
           if new_resource.supports[:remount]
             converge_by("remount #{current_resource.device}") do
               remount_fs
-              Chef::Log.info("#{new_resource} remounted")
+              logger.info("#{new_resource} remounted")
             end
           else
             converge_by("unmount #{current_resource.device}") do
               umount_fs
-              Chef::Log.info("#{new_resource} unmounted")
+              logger.info("#{new_resource} unmounted")
             end
             wait_until_unmounted(unmount_retries)
             converge_by("mount #{current_resource.device}") do
               mount_fs
-              Chef::Log.info("#{new_resource} mounted")
+              logger.info("#{new_resource} mounted")
             end
           end
         else
-          Chef::Log.debug("#{new_resource} not mounted, nothing to remount")
+          logger.trace("#{new_resource} not mounted, nothing to remount")
         end
       end
 
@@ -86,10 +86,10 @@ class Chef
         unless current_resource.enabled && mount_options_unchanged? && device_unchanged?
           converge_by("enable #{current_resource.device}") do
             enable_fs
-            Chef::Log.info("#{new_resource} enabled")
+            logger.info("#{new_resource} enabled")
           end
         else
-          Chef::Log.debug("#{new_resource} already enabled")
+          logger.trace("#{new_resource} already enabled")
         end
       end
 
@@ -97,10 +97,10 @@ class Chef
         if current_resource.enabled
           converge_by("disable #{current_resource.device}") do
             disable_fs
-            Chef::Log.info("#{new_resource} disabled")
+            logger.info("#{new_resource} disabled")
           end
         else
-          Chef::Log.debug("#{new_resource} already disabled")
+          logger.trace("#{new_resource} already disabled")
         end
       end
 

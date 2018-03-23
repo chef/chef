@@ -38,11 +38,11 @@ class Chef
                 else
                   shell_out_compact_timeout!("pkg_add", "-r", package_name, env: { "PACKAGEROOT" => new_resource.source, "LC_ALL" => nil }).status
                 end
-                Chef::Log.debug("#{new_resource} installed from: #{new_resource.source}")
+                logger.trace("#{new_resource} installed from: #{new_resource.source}")
 
               when /^\//
                 shell_out_compact_timeout!("pkg_add", file_candidate_version_path, env: { "PKG_PATH" => new_resource.source, "LC_ALL" => nil }).status
-                Chef::Log.debug("#{new_resource} installed from: #{new_resource.source}")
+                logger.trace("#{new_resource} installed from: #{new_resource.source}")
 
               else
                 shell_out_compact_timeout!("pkg_add", "-r", latest_link_name, env: nil).status

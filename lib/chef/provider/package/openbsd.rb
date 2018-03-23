@@ -73,7 +73,7 @@ class Chef
               name = parts[1]
             end
             shell_out_compact_timeout!("pkg_add", "-r", package_string(name, version), env: { "PKG_PATH" => pkg_path }).status
-            Chef::Log.debug("#{new_resource.package_name} installed")
+            logger.trace("#{new_resource.package_name} installed")
           end
         end
 
@@ -94,7 +94,7 @@ class Chef
                  end
           pkg_info = shell_out_compact_timeout!("pkg_info", "-e", "#{name}->0", env: nil, returns: [0, 1])
           result = pkg_info.stdout[/^inst:#{Regexp.escape(name)}-(.+?)\s/, 1]
-          Chef::Log.debug("installed_version of '#{new_resource.package_name}' is '#{result}'")
+          logger.trace("installed_version of '#{new_resource.package_name}' is '#{result}'")
           result
         end
 
@@ -109,7 +109,7 @@ class Chef
                          end
             end
             results = results.reject(&:nil?)
-            Chef::Log.debug("Candidate versions of '#{new_resource.package_name}' are '#{results}'")
+            logger.trace("Candidate versions of '#{new_resource.package_name}' are '#{results}'")
             case results.length
             when 0
               []

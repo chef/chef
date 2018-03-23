@@ -36,7 +36,7 @@ class Chef
 
         def load_current_resource
           if new_resource.gid
-            Chef::Log.warn("The 'gid' (or 'group') property is not implemented on the Windows platform. Please use the `members` property of the  'group' resource to assign a user to a group.")
+            logger.warn("The 'gid' (or 'group') property is not implemented on the Windows platform. Please use the `members` property of the  'group' resource to assign a user to a group.")
           end
 
           @current_resource = Chef::Resource::User.new(new_resource.name)
@@ -51,7 +51,7 @@ class Chef
           rescue Chef::Exceptions::UserIDNotFound => e
             # e.message should be "The user name could not be found" but checking for that could cause a localization bug
             @user_exists = false
-            Chef::Log.debug("#{new_resource} does not exist (#{e.message})")
+            logger.trace("#{new_resource} does not exist (#{e.message})")
           end
 
           current_resource
@@ -64,7 +64,7 @@ class Chef
         # <false>:: If the users are identical
         def compare_user
           unless @net_user.validate_credentials(new_resource.password)
-            Chef::Log.debug("#{new_resource} password has changed")
+            logger.trace("#{new_resource} password has changed")
             return true
           end
           [ :uid, :comment, :home, :shell ].any? do |user_attrib|
@@ -112,7 +112,7 @@ class Chef
             next unless current_resource.send(field_symbol) != new_resource.send(field_symbol)
             next unless new_resource.send(field_symbol)
             unless field_symbol == :password
-              Chef::Log.debug("#{new_resource} setting #{field} to #{new_resource.send(field_symbol)}")
+              logger.trace("#{new_resource} setting #{field} to #{new_resource.send(field_symbol)}")
             end
             opts[option.to_sym] = new_resource.send(field_symbol)
           end

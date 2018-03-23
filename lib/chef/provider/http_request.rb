@@ -40,8 +40,8 @@ class Chef
           "#{new_resource.url}",
           new_resource.headers
         )
-        Chef::Log.info("#{new_resource} HEAD to #{new_resource.url} successful")
-        Chef::Log.debug("#{new_resource} HEAD request response: #{modified}")
+        logger.info("#{new_resource} HEAD to #{new_resource.url} successful")
+        logger.trace("#{new_resource} HEAD request response: #{modified}")
         # :head is usually used to trigger notifications, which converge_by now does
         if modified != false
           converge_by("#{new_resource} HEAD to #{new_resource.url} returned modified, trigger notifications") {}
@@ -57,8 +57,8 @@ class Chef
             "#{new_resource.url}",
             new_resource.headers
           )
-          Chef::Log.info("#{new_resource} GET to #{new_resource.url} successful")
-          Chef::Log.debug("#{new_resource} GET request response: #{body}")
+          logger.info("#{new_resource} GET to #{new_resource.url} successful")
+          logger.trace("#{new_resource} GET request response: #{body}")
         end
       end
 
@@ -71,8 +71,8 @@ class Chef
             message,
             new_resource.headers
           )
-          Chef::Log.info("#{new_resource} PATCH to #{new_resource.url} successful")
-          Chef::Log.debug("#{new_resource} PATCH request response: #{body}")
+          logger.info("#{new_resource} PATCH to #{new_resource.url} successful")
+          logger.trace("#{new_resource} PATCH request response: #{body}")
         end
       end
 
@@ -85,8 +85,8 @@ class Chef
             message,
             new_resource.headers
           )
-          Chef::Log.info("#{new_resource} PUT to #{new_resource.url} successful")
-          Chef::Log.debug("#{new_resource} PUT request response: #{body}")
+          logger.info("#{new_resource} PUT to #{new_resource.url} successful")
+          logger.trace("#{new_resource} PUT request response: #{body}")
         end
       end
 
@@ -99,8 +99,8 @@ class Chef
             message,
             new_resource.headers
           )
-          Chef::Log.info("#{new_resource} POST to #{new_resource.url} message: #{message.inspect} successful")
-          Chef::Log.debug("#{new_resource} POST request response: #{body}")
+          logger.info("#{new_resource} POST to #{new_resource.url} message: #{message.inspect} successful")
+          logger.trace("#{new_resource} POST request response: #{body}")
         end
       end
 
@@ -112,8 +112,8 @@ class Chef
             new_resource.headers
           )
           new_resource.updated_by_last_action(true)
-          Chef::Log.info("#{new_resource} DELETE to #{new_resource.url} successful")
-          Chef::Log.debug("#{new_resource} DELETE request response: #{body}")
+          logger.info("#{new_resource} DELETE to #{new_resource.url} successful")
+          logger.trace("#{new_resource} DELETE request response: #{body}")
         end
       end
 

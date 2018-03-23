@@ -49,7 +49,7 @@ class Chef
 
       def action_run
         if creates && sentinel_file.exist?
-          Chef::Log.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
+          logger.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
           return false
         end
 
@@ -68,7 +68,7 @@ class Chef
               raise
             end
           end
-          Chef::Log.info("#{new_resource} ran successfully")
+          logger.info("#{new_resource} ran successfully")
         end
       end
 
@@ -99,7 +99,7 @@ class Chef
         opts[:umask]       = umask if umask
         opts[:log_level]   = :info
         opts[:log_tag]     = new_resource.to_s
-        if (Chef::Log.info? || live_stream?) && !sensitive?
+        if (logger.info? || live_stream?) && !sensitive?
           if run_context.events.formatter?
             opts[:live_stream] = Chef::EventDispatch::EventsOutputStream.new(run_context.events, :name => :execute)
           elsif stream_to_stdout?

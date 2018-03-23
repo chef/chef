@@ -79,7 +79,7 @@ module ChefConfig
         end
 
         if windows_max_length_exceeded?(path)
-          ChefConfig.logger.debug("Path '#{path}' is longer than #{WIN_MAX_PATH}, prefixing with'\\\\?\\'")
+          ChefConfig.logger.trace("Path '#{path}' is longer than #{WIN_MAX_PATH}, prefixing with'\\\\?\\'")
           path.insert(0, "\\\\?\\")
         end
       end

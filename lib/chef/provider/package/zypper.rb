@@ -34,19 +34,19 @@ class Chef
         def get_versions(package_name)
           candidate_version = current_version = nil
           is_installed = false
-          Chef::Log.debug("#{new_resource} checking zypper")
+          logger.trace("#{new_resource} checking zypper")
           status = shell_out_compact_timeout!("zypper", "--non-interactive", "info", package_name)
           status.stdout.each_line do |line|
             case line
             when /^Version *: (.+) *$/
               candidate_version = $1.strip
-              Chef::Log.debug("#{new_resource} version #{candidate_version}")
+              logger.trace("#{new_resource} version #{candidate_version}")
             when /^Installed *: Yes.*$/ # http://rubular.com/r/9StcAMjOn6
               is_installed = true
-              Chef::Log.debug("#{new_resource} is installed")
+              logger.trace("#{new_resource} is installed")
             when /^Status *: out-of-date \(version (.+) installed\) *$/
               current_version = $1.strip
-              Chef::Log.debug("#{new_resource} out of date version #{current_version}")
+              logger.trace("#{new_resource} out of date version #{current_version}")
             end
           end
           current_version = candidate_version if is_installed

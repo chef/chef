@@ -157,7 +157,7 @@ user password using shadow hash.")
             convert_group_name if new_resource.gid
           else
             @user_exists = false
-            Chef::Log.debug("#{new_resource} user does not exist")
+            logger.trace("#{new_resource} user does not exist")
           end
 
           current_resource
@@ -333,7 +333,7 @@ user password using shadow hash.")
         end
 
         def move_home
-          Chef::Log.debug("#{new_resource} moving #{self} home from #{current_resource.home} to #{new_resource.home}")
+          logger.trace("#{new_resource} moving #{self} home from #{current_resource.home} to #{new_resource.home}")
           new_resource.gid(STAFF_GROUP_ID) if new_resource.gid.nil?
           src = current_resource.home
           FileUtils.mkdir_p(new_resource.home)

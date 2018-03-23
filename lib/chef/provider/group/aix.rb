@@ -66,7 +66,7 @@ class Chef
           { gid: "id" }.sort_by { |a| a[0] }.each do |field, option|
             next unless current_resource.send(field) != new_resource.send(field)
             if new_resource.send(field)
-              Chef::Log.debug("#{new_resource} setting #{field} to #{new_resource.send(field)}")
+              logger.trace("#{new_resource} setting #{field} to #{new_resource.send(field)}")
               opts << "#{option}=#{new_resource.send(field)}"
             end
           end

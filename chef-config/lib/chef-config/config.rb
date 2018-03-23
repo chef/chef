@@ -1060,9 +1060,9 @@ module ChefConfig
       end
     rescue
       if ChefConfig.windows?
-        ChefConfig.logger.debug "Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else."
+        ChefConfig.logger.trace "Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else."
       else
-        ChefConfig.logger.debug "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
+        ChefConfig.logger.trace "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
       end
       "en_US.UTF-8"
     end

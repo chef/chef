@@ -616,7 +616,7 @@ class Chef
         if block_given?
           super
         else
-          Chef::Log.debug "ignoring method #{method} on cookbook with name #{name}, possible typo or the ghosts of metadata past or future?"
+          Chef::Log.trace "ignoring method #{method} on cookbook with name #{name}, possible typo or the ghosts of metadata past or future?"
         end
       end
 

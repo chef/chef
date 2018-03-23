@@ -67,7 +67,7 @@ class Chef
                 members_to_be_added << member unless current_resource.members.include?(member)
               end
               members_to_be_added.each do |member|
-                Chef::Log.debug("#{new_resource} appending member #{member} to group #{new_resource.group_name}")
+                logger.trace("#{new_resource} appending member #{member} to group #{new_resource.group_name}")
                 add_member(member)
               end
             end
@@ -79,13 +79,13 @@ class Chef
               end
 
               members_to_be_removed.each do |member|
-                Chef::Log.debug("#{new_resource} removing member #{member} from group #{new_resource.group_name}")
+                logger.trace("#{new_resource} removing member #{member} from group #{new_resource.group_name}")
                 remove_member(member)
               end
             end
           else
             members_description = new_resource.members.empty? ? "none" : new_resource.members.join(", ")
-            Chef::Log.debug("#{new_resource} setting group members to: #{members_description}")
+            logger.trace("#{new_resource} setting group members to: #{members_description}")
             set_members(new_resource.members)
           end
         end
@@ -113,7 +113,7 @@ class Chef
             next unless new_resource.send(field)
             opts << option
             opts << new_resource.send(field)
-            Chef::Log.debug("#{new_resource} set #{field} to #{new_resource.send(field)}")
+            logger.trace("#{new_resource} set #{field} to #{new_resource.send(field)}")
           end
           opts << new_resource.group_name
           opts

@@ -67,7 +67,7 @@ class Chef
               until version.empty?
                 version = powershell_out(build_powershell_command("Uninstall-Package '#{name}'"), timeout: new_resource.timeout).stdout.strip
                 unless version.empty?
-                  Chef::Log.info("Removed package '#{name}' with version #{version}")
+                  logger.info("Removed package '#{name}' with version #{version}")
                 end
               end
             end

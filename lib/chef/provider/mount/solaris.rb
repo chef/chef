@@ -112,7 +112,7 @@ class Chef
           else
             # this is likely some kind of internal error, since we should only call disable_fs when there
             # the filesystem we want to disable is enabled.
-            Chef::Log.warn("#{new_resource} did not find the mountpoint to disable in the vfstab")
+            logger.warn("#{new_resource} did not find the mountpoint to disable in the vfstab")
           end
         end
 
@@ -153,10 +153,10 @@ class Chef
           shell_out!("mount -v").stdout.each_line do |line|
             case line
             when /^#{device_regex}\s+on\s+#{Regexp.escape(mount_point)}\s+/
-              Chef::Log.debug("Special device #{device} is mounted as #{mount_point}")
+              logger.trace("Special device #{device} is mounted as #{mount_point}")
               mounted = true
             when /^([\/\w]+)\son\s#{Regexp.escape(mount_point)}\s+/
-              Chef::Log.debug("Special device #{Regexp.last_match[1]} is mounted as #{mount_point}")
+              logger.trace("Special device #{Regexp.last_match[1]} is mounted as #{mount_point}")
               mounted = false
             end
           end
@@ -191,12 +191,12 @@ class Chef
                 end
               end
               pass = (Regexp.last_match[2] == "-") ? 0 : Regexp.last_match[2].to_i
-              Chef::Log.debug("Found mount #{device} to #{mount_point} in #{VFSTAB}")
+              logger.trace("Found mount #{device} to #{mount_point} in #{VFSTAB}")
               next
             when /^[-\/\w]+\s+[-\/\w]+\s+#{Regexp.escape(mount_point)}\s+/
               # if we find a mountpoint on top of our mountpoint, then we are not enabled
               enabled = false
-              Chef::Log.debug("Found conflicting mount point #{mount_point} in #{VFSTAB}")
+              logger.trace("Found conflicting mount point #{mount_point} in #{VFSTAB}")
             end
           end
           [enabled, fstype, options, pass]
@@ -234,7 +234,7 @@ class Chef
           ::File.readlines(VFSTAB).reverse_each do |line|
             if !found && line =~ /^#{device_regex}\s+\S+\s+#{Regexp.escape(mount_point)}/
               found = true
-              Chef::Log.debug("#{new_resource} is removed from vfstab")
+              logger.trace("#{new_resource} is removed from vfstab")
               next
             end
             contents << line

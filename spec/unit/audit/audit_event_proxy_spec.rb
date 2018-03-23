@@ -44,7 +44,7 @@ describe Chef::Audit::AuditEventProxy do
       let(:parents) { [double("ExampleGroup")] }
 
       it "notifies control_group_started event" do
-        expect(Chef::Log).to receive(:debug).
+        expect(Chef::Log).to receive(:trace).
           with("Entered \`control_group\` block named poots")
         expect(events).to receive(:control_group_started).
           with(description)

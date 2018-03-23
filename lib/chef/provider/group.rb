@@ -41,7 +41,7 @@ class Chef
           group_info = Etc.getgrnam(new_resource.group_name)
         rescue ArgumentError
           @group_exists = false
-          Chef::Log.debug("#{new_resource} group does not exist")
+          logger.trace("#{new_resource} group does not exist")
         end
 
         if group_info
@@ -126,13 +126,13 @@ class Chef
         when false
           converge_by("create group #{new_resource.group_name}") do
             create_group
-            Chef::Log.info("#{new_resource} created")
+            logger.info("#{new_resource} created")
           end
         else
           if compare_group
             converge_by(["alter group #{new_resource.group_name}"] + change_desc) do
               manage_group
-              Chef::Log.info("#{new_resource} altered")
+              logger.info("#{new_resource} altered")
             end
           end
         end
@@ -142,7 +142,7 @@ class Chef
         return unless @group_exists
         converge_by("remove group #{new_resource.group_name}") do
           remove_group
-          Chef::Log.info("#{new_resource} removed")
+          logger.info("#{new_resource} removed")
         end
       end
 
@@ -150,7 +150,7 @@ class Chef
         return unless @group_exists && compare_group
         converge_by(["manage group #{new_resource.group_name}"] + change_desc) do
           manage_group
-          Chef::Log.info("#{new_resource} managed")
+          logger.info("#{new_resource} managed")
         end
       end
 
@@ -158,7 +158,7 @@ class Chef
         return unless compare_group
         converge_by(["modify group #{new_resource.group_name}"] + change_desc) do
           manage_group
-          Chef::Log.info("#{new_resource} modified")
+          logger.info("#{new_resource} modified")
         end
       end
 

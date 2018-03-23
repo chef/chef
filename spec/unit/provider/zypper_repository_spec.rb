@@ -35,10 +35,12 @@ EOF
 
 describe Chef::Provider::ZypperRepository do
   let(:new_resource) { Chef::Resource::ZypperRepository.new("Nginx Repository") }
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
   let(:provider) do
     node = Chef::Node.new
     events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, {}, events)
+    allow(run_context).to receive(:logger).and_return(logger)
     Chef::Provider::ZypperRepository.new(new_resource, run_context)
   end
 
@@ -58,7 +60,7 @@ describe Chef::Provider::ZypperRepository do
     it "skips key import if gpgautoimportkeys is false" do
       new_resource.gpgautoimportkeys(false)
       expect(provider).to receive(:declare_resource)
-      expect(Chef::Log).to receive(:debug)
+      expect(logger).to receive(:trace)
       provider.run_action(:create)
     end
   end
@@ -117,7 +119,7 @@ describe Chef::Provider::ZypperRepository do
 
   describe "#install_gpg_key" do
     it "skips installing the key if a nil value for key is passed" do
-      expect(Chef::Log).to receive(:debug)
+      expect(logger).to receive(:trace)
       provider.install_gpg_key(nil)
     end
   end

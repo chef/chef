@@ -148,7 +148,7 @@ class Chef
           def candidate_version_from_file(gem_dependency, source)
             spec = spec_from_file(source)
             if spec.satisfies_requirement?(gem_dependency)
-              logger.debug { "found candidate gem version #{spec.version} from local gem package #{source}" }
+              logger.trace { "found candidate gem version #{spec.version} from local gem package #{source}" }
               spec.version
             else
               # This is probably going to end badly...
@@ -193,7 +193,7 @@ class Chef
 
             version = spec && spec.version
             if version
-              logger.debug { "found gem #{spec.name} version #{version} for platform #{spec.platform} from #{source}" }
+              logger.trace { "found gem #{spec.name} version #{version} for platform #{spec.platform} from #{source}" }
               version
             else
               source_list = sources.compact.empty? ? "[#{Gem.sources.to_a.join(', ')}]" : "[#{sources.join(', ')}]"
@@ -232,7 +232,7 @@ class Chef
           # Set rubygems' user interaction to ConsoleUI or SilentUI depending
           # on our current debug level
           def with_correct_verbosity
-            Gem::DefaultUserInteraction.ui = Chef::Log.debug? ? Gem::ConsoleUI.new : Gem::SilentUI.new
+            Gem::DefaultUserInteraction.ui = logger.trace? ? Gem::ConsoleUI.new : Gem::SilentUI.new
             yield
           end
 
@@ -247,7 +247,7 @@ class Chef
           private
 
           def logger
-            Chef::Log.logger
+            Chef::Log.with_child({ subsytem: "gem_installer_environment" })
           end
 
         end
@@ -367,10 +367,6 @@ class Chef
         attr_reader :gem_env
         attr_reader :cleanup_gem_env
 
-        def logger
-          Chef::Log.logger
-        end
-
         provides :chef_gem
         provides :gem_package
 
@@ -387,7 +383,7 @@ class Chef
               raise ArgumentError, msg
             end
             @gem_env = AlternateGemEnvironment.new(new_resource.gem_binary)
-            Chef::Log.debug("#{new_resource} using gem '#{new_resource.gem_binary}'")
+            logger.trace("#{new_resource} using gem '#{new_resource.gem_binary}'")
           elsif is_omnibus? && (!new_resource.instance_of? Chef::Resource::ChefGem)
             # Opscode Omnibus - The ruby that ships inside omnibus is only used for Chef
             # Default to installing somewhere more functional
@@ -404,21 +400,21 @@ class Chef
             gem_location = find_gem_by_path
             new_resource.gem_binary gem_location
             @gem_env = AlternateGemEnvironment.new(gem_location)
-            Chef::Log.debug("#{new_resource} using gem '#{gem_location}'")
+            logger.trace("#{new_resource} using gem '#{gem_location}'")
           else
             @gem_env = CurrentGemEnvironment.new
             @cleanup_gem_env = false
-            Chef::Log.debug("#{new_resource} using gem from running ruby environment")
+            logger.trace("#{new_resource} using gem from running ruby environment")
           end
         end
 
         def is_omnibus?
           if RbConfig::CONFIG["bindir"] =~ %r{/(opscode|chef|chefdk)/embedded/bin}
-            Chef::Log.debug("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
+            logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
             # Omnibus installs to a static path because of linking on unix, find it.
             true
           elsif RbConfig::CONFIG["bindir"].sub(/^[\w]:/, "") == "/opscode/chef/embedded/bin"
-            Chef::Log.debug("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
+            logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
             # windows, with the drive letter removed
             true
           else
@@ -442,7 +438,7 @@ class Chef
           scheme = nil if scheme =~ /^[a-z]$/
           %w{http https}.include?(scheme)
         rescue URI::InvalidURIError
-          Chef::Log.debug("#{new_resource} failed to parse source '#{new_resource.source}' as a URI, assuming a local path")
+          logger.trace("#{new_resource} failed to parse source '#{new_resource.source}' as a URI, assuming a local path")
           false
         end
 
@@ -451,16 +447,16 @@ class Chef
           # is the current version
           if !matching_installed_versions.empty?
             gemspec = matching_installed_versions.max_by(&:version)
-            logger.debug { "#{new_resource} found installed gem #{gemspec.name} version #{gemspec.version} matching #{gem_dependency}" }
+            logger.trace { "#{new_resource} found installed gem #{gemspec.name} version #{gemspec.version} matching #{gem_dependency}" }
             gemspec
             # If no version matching the requirements exists, the latest installed
             # version is the current version.
           elsif !all_installed_versions.empty?
             gemspec = all_installed_versions.max_by(&:version)
-            logger.debug { "#{new_resource} newest installed version of gem #{gemspec.name} is #{gemspec.version}" }
+            logger.trace { "#{new_resource} newest installed version of gem #{gemspec.name} is #{gemspec.version}" }
             gemspec
           else
-            logger.debug { "#{new_resource} no installed version found for #{gem_dependency}" }
+            logger.trace { "#{new_resource} no installed version found for #{gem_dependency}" }
             nil
           end
         end
@@ -492,7 +488,7 @@ class Chef
 
         def cleanup_after_converge
           if @cleanup_gem_env
-            logger.debug { "#{new_resource} resetting gem environment to default" }
+            logger.trace { "#{new_resource} resetting gem environment to default" }
             Gem.clear_paths
           end
         end

@@ -27,7 +27,7 @@ class Chef
 
       def method_missing(method_sym, *arguments, &block)
         if method_sym.to_s =~ /^action_/
-          Chef::Log.debug("NoOp-ing for #{method_sym}")
+          logger.trace("NoOp-ing for #{method_sym}")
         else
           super
         end

@@ -19,10 +19,12 @@
 require "spec_helper"
 
 describe Chef::Provider::Package::Bff do
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
+    allow(@run_context).to receive(:logger).and_return(logger)
 
     @new_resource = Chef::Resource::Package.new("samba.base")
     @new_resource.source("/tmp/samba.base")
@@ -79,7 +81,7 @@ describe Chef::Provider::Package::Bff do
       status = double("Status", :stdout => info, :exitstatus => 0)
       expect(@provider).to receive(:shell_out).with("installp", "-L", "-d", "/tmp/samba.base", timeout: 900).and_return(status)
       expect(@provider).to receive(:shell_out).with("lslpp", "-lcq", "samba.base", timeout: 900).and_return(@empty_status)
-      expect(Chef::Log).to receive(:warn).once.with(%r{bff package by product name})
+      expect(logger).to receive(:warn).once.with(%r{bff package by product name})
       @provider.load_current_resource
 
       expect(@provider.current_resource.package_name).to eq("samba.base")

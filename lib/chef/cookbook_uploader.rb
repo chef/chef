@@ -71,14 +71,14 @@ class Chef
           Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
           queue << uploader_function_for(checksum_files[checksum], checksum, info["url"], checksums_to_upload)
         else
-          Chef::Log.debug("#{checksum_files[checksum]} has not changed")
+          Chef::Log.trace("#{checksum_files[checksum]} has not changed")
         end
       end
 
       queue.process(@concurrency)
 
       sandbox_url = new_sandbox["uri"]
-      Chef::Log.debug("Committing sandbox")
+      Chef::Log.trace("Committing sandbox")
       # Retry if S3 is claims a checksum doesn't exist (the eventual
       # in eventual consistency)
       retries = 0

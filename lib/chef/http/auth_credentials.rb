@@ -38,7 +38,7 @@ class Chef
 
       def signature_headers(request_params = {})
         raise ArgumentError, "Cannot sign the request without a client name, check that :node_name is assigned" if client_name.nil?
-        Chef::Log.debug("Signing the request as #{client_name}")
+        Chef::Log.trace("Signing the request as #{client_name}")
 
         # params_in = {:http_method => :GET, :path => "/clients", :body => "", :host => "localhost"}
         request_params                 = request_params.dup

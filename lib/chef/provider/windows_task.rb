@@ -75,9 +75,9 @@ class Chef
 
       def action_create
         if current_resource.exists
-          Chef::Log.debug "#{new_resource} task exists"
+          logger.trace "#{new_resource} task exists"
           if !(task_need_update? || new_resource.force)
-            Chef::Log.info "#{new_resource} task does not need updating and force is not specified - nothing to do"
+            logger.info "#{new_resource} task does not need updating and force is not specified - nothing to do"
             return
           end
           # Setting the attributes of new_resource as current_resource.
@@ -128,74 +128,74 @@ class Chef
 
       def action_run
         if current_resource.exists
-          Chef::Log.debug "#{new_resource} task exists"
+          logger.trace "#{new_resource} task exists"
           if current_resource.status == :running
-            Chef::Log.info "#{new_resource} task is currently running, skipping run"
+            logger.info "#{new_resource} task is currently running, skipping run"
           else
             converge_by("run scheduled task #{new_resource}") do
               run_schtasks "RUN"
             end
           end
         else
-          Chef::Log.warn "#{new_resource} task does not exist - nothing to do"
+          logger.warn "#{new_resource} task does not exist - nothing to do"
         end
       end
 
       def action_delete
         if current_resource.exists
-          Chef::Log.debug "#{new_resource} task exists"
+          logger.trace "#{new_resource} task exists"
           converge_by("delete scheduled task #{new_resource}") do
             # always need to force deletion
             run_schtasks "DELETE", "F" => ""
           end
         else
-          Chef::Log.warn "#{new_resource} task does not exist - nothing to do"
+          logger.warn "#{new_resource} task does not exist - nothing to do"
         end
       end
 
       def action_end
         if current_resource.exists
-          Chef::Log.debug "#{new_resource} task exists"
+          logger.trace "#{new_resource} task exists"
           if current_resource.status != :running
-            Chef::Log.debug "#{new_resource} is not running - nothing to do"
+            logger.trace "#{new_resource} is not running - nothing to do"
           else
             converge_by("#{new_resource} task ended") do
               run_schtasks "END"
             end
           end
         else
-          Chef::Log.warn "#{new_resource} task does not exist - nothing to do"
+          logger.warn "#{new_resource} task does not exist - nothing to do"
         end
       end
 
       def action_enable
         if current_resource.exists
-          Chef::Log.debug "#{new_resource} task exists"
+          logger.trace "#{new_resource} task exists"
           if current_resource.enabled
-            Chef::Log.debug "#{new_resource} already enabled - nothing to do"
+            logger.trace "#{new_resource} already enabled - nothing to do"
           else
             converge_by("#{new_resource} task enabled") do
               run_schtasks "CHANGE", "ENABLE" => ""
             end
           end
         else
-          Chef::Log.fatal "#{new_resource} task does not exist - nothing to do"
+          logger.fatal "#{new_resource} task does not exist - nothing to do"
           raise Errno::ENOENT, "#{new_resource}: task does not exist, cannot enable"
         end
       end
 
       def action_disable
         if current_resource.exists
-          Chef::Log.info "#{new_resource} task exists"
+          logger.info "#{new_resource} task exists"
           if current_resource.enabled
             converge_by("#{new_resource} task disabled") do
               run_schtasks "CHANGE", "DISABLE" => ""
             end
           else
-            Chef::Log.warn "#{new_resource} already disabled - nothing to do"
+            logger.warn "#{new_resource} already disabled - nothing to do"
           end
         else
-          Chef::Log.warn "#{new_resource} task does not exist - nothing to do"
+          logger.warn "#{new_resource} task does not exist - nothing to do"
         end
       end
 
@@ -214,8 +214,8 @@ class Chef
         if options["TR"]
           cmd += "/TR \"#{options["TR"]} \" " unless task_action == "DELETE"
         end
-        Chef::Log.debug("running: ")
-        Chef::Log.debug("    #{cmd}")
+        logger.trace("running: ")
+        logger.trace("    #{cmd}")
         shell_out!(cmd, returns: [0])
       end
       # rubocop:enable Style/StringLiteralsInInterpolation
@@ -236,7 +236,7 @@ class Chef
           return true if new_resource.day.to_s.casecmp(current_resource.day.to_s) != 0 ||
               new_resource.months.to_s.casecmp(current_resource.months.to_s) != 0
         rescue
-          Chef::Log.debug "caught a raise in task_needs_update?"
+          logger.trace "caught a raise in task_needs_update?"
         end
 
         false
@@ -314,7 +314,7 @@ class Chef
 
       def get_system_short_date_format
         return @system_short_date_format if @system_short_date_format
-        Chef::Log.debug "Finding system date format"
+        logger.trace "Finding system date format"
         task_script = <<-EOH
           [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
           [Globalization.Cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern
@@ -349,7 +349,7 @@ class Chef
           "execution_time_limit" => "Settings/ExecutionTimeLimit",
         }
 
-        Chef::Log.debug "looking for existing tasks"
+        logger.trace "looking for existing tasks"
 
         task_script = <<-EOH
             [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
@@ -368,12 +368,12 @@ class Chef
         end
 
         options.each do |option|
-          Chef::Log.debug "Removing former #{option} if any"
+          logger.trace "Removing former #{option} if any"
           doc.root.elements.delete(xml_element_mapping[option])
           option_value = new_resource.send("#{option}")
 
           if option_value
-            Chef::Log.debug "Setting #{option} as #{option_value}"
+            logger.trace "Setting #{option} as #{option_value}"
             split_xml_path = xml_element_mapping[option].split("/") # eg. if xml_element_mapping[option] = "Actions/Exec/WorkingDirectory"
             element_name = split_xml_path.last # element_name = "WorkingDirectory"
             cwd_element = REXML::Element.new(element_name)
@@ -403,7 +403,7 @@ class Chef
       end
 
       def load_task_hash(task_name)
-        Chef::Log.debug "Looking for existing tasks"
+        logger.trace "Looking for existing tasks"
 
         task_script = <<-EOH
           [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8

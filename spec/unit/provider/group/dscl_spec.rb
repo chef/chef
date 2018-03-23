@@ -19,10 +19,13 @@
 require "spec_helper"
 
 describe Chef::Provider::Group::Dscl do
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+
   before do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
+    allow(@run_context).to receive(:logger).and_return(logger)
     @new_resource = Chef::Resource::Group.new("aj")
     @current_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context)
@@ -193,7 +196,7 @@ describe Chef::Provider::Group::Dscl do
       end
 
       it "should log an appropriate message" do
-        expect(Chef::Log).to receive(:debug).with("group[aj] removing group members all your base")
+        expect(logger).to receive(:trace).with("group[aj] removing group members all your base")
         @provider.set_members
       end
 
@@ -211,7 +214,7 @@ describe Chef::Provider::Group::Dscl do
       end
 
       it "should log an appropriate debug message" do
-        expect(Chef::Log).to receive(:debug).with("group[aj] setting group members all, your, base")
+        expect(logger).to receive(:trace).with("group[aj] setting group members all, your, base")
         @provider.set_members
       end
 

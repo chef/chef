@@ -42,20 +42,20 @@ class Chef
     #   falsey value
     def self.register_reporter?
       if why_run?
-        Chef::Log.debug("data collector is disabled for why run mode")
+        Chef::Log.trace("data collector is disabled for why run mode")
         return false
       end
       unless reporter_enabled_for_current_mode?
-        Chef::Log.debug("data collector is configured to only run in " \
+        Chef::Log.trace("data collector is configured to only run in " \
                         "#{Chef::Config[:data_collector][:mode].inspect} modes, disabling it")
         return false
       end
       unless data_collector_url_configured? || data_collector_output_locations_configured?
-        Chef::Log.debug("Neither data collector URL or output locations have been configured, disabling data collector")
+        Chef::Log.trace("Neither data collector URL or output locations have been configured, disabling data collector")
         return false
       end
       if solo? && !token_auth_configured?
-        Chef::Log.debug("Data collector token must be configured to use Chef Automate data collector with Chef Solo")
+        Chef::Log.trace("Data collector token must be configured to use Chef Automate data collector with Chef Solo")
       end
       if !solo? && token_auth_configured?
         Chef::Log.warn("Data collector token authentication is not recommended for client-server mode" \
@@ -368,7 +368,7 @@ class Chef
       def send_to_http_location(http_url, message)
         @http_output_locations[http_url].post(nil, message, headers) if @http_output_locations[http_url]
       rescue
-        Chef::Log.debug("Data collector failed to send to URL location #{http_url}. Please check your configured data_collector.output_locations")
+        Chef::Log.trace("Data collector failed to send to URL location #{http_url}. Please check your configured data_collector.output_locations")
       end
 
       #
