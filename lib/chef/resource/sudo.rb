@@ -99,6 +99,9 @@ class Chef
                default: lazy { [] }
 
       property :visudo_path, String,
+               description: "Deprecated property. Do not use."
+
+      property :visudo_binary,
                description: "The path to visudo for config verification.",
                default: "/usr/sbin/visudo"
 
@@ -106,6 +109,12 @@ class Chef
                description: "The directory containing the sudoers config file.",
                default: lazy { platform_config_prefix }
 
+      # handle legacy cookbook property
+      def after_created
+        raise "The 'visudo_path' property from the sudo cookbook has been replaced with the 'visudo_binary' property. The path is now more intelligently determined and for most users specifying the path should no longer be necessary. If this resource still cannot determine the path to visudo then provide the full path to the binary with the 'visudo_binary' property." if visudo_path
+      end
+
+      # VERY old legacy properties
       alias_method :user, :users
       alias_method :group, :groups
 
@@ -157,7 +166,7 @@ class Chef
             source new_resource.template
             mode "0440"
             variables new_resource.variables
-            verify "#{new_resource.visudo_path} -cf %{path}" if visudo_present?
+            verify "#{new_resource.visudo_binary} -cf %{path}" if visudo_present?
             action :create
           end
         else
@@ -177,7 +186,7 @@ class Chef
                       setenv:             new_resource.setenv,
                       env_keep_add:       new_resource.env_keep_add,
                       env_keep_subtract:  new_resource.env_keep_subtract
-            verify "#{new_resource.visudo_path} -cf %{path}" if visudo_present?
+            verify "#{new_resource.visudo_binary} -cf %{path}" if visudo_present?
             action :create
           end
         end
