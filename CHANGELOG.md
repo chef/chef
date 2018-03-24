@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.8.11 -->
-## [v13.8.11](https://github.com/chef/chef/tree/v13.8.11) (2018-03-23)
+<!-- latest_release 13.8.12 -->
+## [v13.8.12](https://github.com/chef/chef/tree/v13.8.12) (2018-03-24)
 
 #### Merged Pull Requests
-- Empty commit to trigger a release build [#7040](https://github.com/chef/chef/pull/7040) ([btm](https://github.com/btm))
+- partially revert 61e3d4bb: do not use properties for mount [#7031](https://github.com/chef/chef/pull/7031) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.5 -->
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- partially revert 61e3d4bb: do not use properties for mount [#7031](https://github.com/chef/chef/pull/7031) ([thommay](https://github.com/thommay)) <!-- 13.8.12 -->
 - Empty commit to trigger a release build [#7040](https://github.com/chef/chef/pull/7040) ([btm](https://github.com/btm)) <!-- 13.8.11 -->
 - [chef-13] support nils because of course [#7017](https://github.com/chef/chef/pull/7017) ([thommay](https://github.com/thommay)) <!-- 13.8.10 -->
 - Backport mount provider fixes to 13 [#7007](https://github.com/chef/chef/pull/7007) ([thommay](https://github.com/thommay)) <!-- 13.8.9 -->
