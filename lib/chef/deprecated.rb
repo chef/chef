@@ -280,6 +280,13 @@ class Chef
 
     # id 3694 was deleted
 
+    # Returned when using the deprecated option on a property
+    class Property < Base
+      def inspect
+        "#{message}\n#{location}"
+      end
+    end
+
     class Generic < Base
       def url
         "https://docs.chef.io/chef_deprecations_client.html"

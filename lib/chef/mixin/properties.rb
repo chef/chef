@@ -149,6 +149,10 @@ class Chef
           Property.derive(**options)
         end
 
+        def deprecated_property_alias(from, to, message)
+          Property.emit_deprecated_alias(from, to, message, self)
+        end
+
         #
         # Create a lazy value for assignment to a default value.
         #
