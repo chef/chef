@@ -148,6 +148,7 @@ class Chef
       @not_if = []
       @only_if = []
       @source_line = nil
+      @deprecated = false
       # We would like to raise an error when the user gives us a guard
       # interpreter and a ruby_block to the guard. In order to achieve this
       # we need to understand when the user overrides the default guard
@@ -1181,8 +1182,8 @@ class Chef
     # Internal Resource Interface (for Chef)
     #
 
-    FORBIDDEN_IVARS = [:@run_context, :@logger, :@not_if, :@only_if, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@logger, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message]
+    FORBIDDEN_IVARS = [:@run_context, :@logger, :@not_if, :@only_if, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message, :@deprecated]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@logger, :@name, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider, :@description, :@introduced, :@examples, :@validation_message, :@deprecated]
 
     include Chef::Mixin::ConvertToClassName
     extend Chef::Mixin::ConvertToClassName
@@ -1404,6 +1405,14 @@ class Chef
         @examples = examples
       end
       @examples
+    end
+
+    def self.deprecated(deprecated = "NOT_PASSED")
+      if deprecated != "NOT_PASSED"
+        @deprecated = true
+        @deprecated_message = deprecated
+      end
+      @deprecated
     end
 
     #

@@ -51,6 +51,27 @@ class Chef
       new(**options)
     end
 
+    # This is to support #deprecated_property_alias, by emitting an alias and a
+    # deprecatation warning when called.
+    #
+    # @param from [String] Name of the deprecated property
+    # @param to [String] Name of the correct property
+    # @param message [String] Deprecation message to show to the cookbook author
+    # @param declared_in [Class] Class this property comes from
+    #
+    def self.emit_deprecated_alias(from, to, message, declared_in)
+      declared_in.class_eval <<-EOM, __FILE__, __LINE__ + 1
+        def #{from}(value=NOT_PASSED)
+          Chef.deprecated(:property, "#{message}")
+          #{to}(value)
+        end
+        def #{from}=(value)
+          Chef.deprecated(:property, "#{message}")
+          #{to} = value
+        end
+      EOM
+    end
+
     #
     # Create a new property.
     #
@@ -90,6 +111,8 @@ class Chef
     #   @option options [Boolean] :required `true` if this property
     #     must be present; `false` otherwise. This is checked after the resource
     #     is fully initialized.
+    #   @option options [String] :deprecated If set, this property is deprecated and
+    #     will create a deprecation warning.
     #
     def initialize(**options)
       options = options.inject({}) { |memo, (key, value)| memo[key.to_sym] = value; memo }
@@ -272,7 +295,7 @@ class Chef
     #
     def validation_options
       @validation_options ||= options.reject do |k, v|
-        [:declared_in, :name, :instance_variable_name, :desired_state, :identity, :default, :name_property, :coerce, :required, :nillable, :sensitive, :description, :introduced].include?(k)
+        [:declared_in, :name, :instance_variable_name, :desired_state, :identity, :default, :name_property, :coerce, :required, :nillable, :sensitive, :description, :introduced, :deprecated].include?(k)
       end
     end
 
@@ -379,6 +402,10 @@ class Chef
     #
     def set(resource, value)
       value = set_value(resource, input_to_stored_value(resource, value))
+
+      if options.has_key?(:deprecated)
+        Chef.deprecated(:property, options[:deprecated])
+      end
 
       if value.nil? && required?
         raise Chef::Exceptions::ValidationFailed, "#{name} is a required property"
