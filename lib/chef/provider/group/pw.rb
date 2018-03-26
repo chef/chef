@@ -44,7 +44,7 @@ class Chef
             # new or existing group. Because pw groupadd does not support the -m
             # and -d options used by manage_group, we treat group creation as a
             # special case and use -M.
-            Chef::Log.debug("#{new_resource} setting group members: #{new_resource.members.join(',')}")
+            logger.trace("#{new_resource} setting group members: #{new_resource.members.join(',')}")
             command += [ "-M", new_resource.members.join(",") ]
           end
 
@@ -75,7 +75,7 @@ class Chef
         def set_options
           opts = [ new_resource.group_name ]
           if new_resource.gid && (current_resource.gid != new_resource.gid)
-            Chef::Log.debug("#{new_resource}: current gid (#{current_resource.gid}) doesnt match target gid (#{new_resource.gid}), changing it")
+            logger.trace("#{new_resource}: current gid (#{current_resource.gid}) doesnt match target gid (#{new_resource.gid}), changing it")
             opts << "-g"
             opts << new_resource.gid
           end
@@ -119,12 +119,12 @@ class Chef
           end
 
           unless members_to_be_added.empty?
-            Chef::Log.debug("#{new_resource} adding group members: #{members_to_be_added.join(',')}")
+            logger.trace("#{new_resource} adding group members: #{members_to_be_added.join(',')}")
             opts << [ "-m", members_to_be_added.join(",") ]
           end
 
           unless members_to_be_removed.empty?
-            Chef::Log.debug("#{new_resource} removing group members: #{members_to_be_removed.join(',')}")
+            logger.trace("#{new_resource} removing group members: #{members_to_be_removed.join(',')}")
             opts << [ "-d", members_to_be_removed.join(",") ]
           end
 

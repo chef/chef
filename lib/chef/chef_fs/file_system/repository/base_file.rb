@@ -43,12 +43,12 @@ class Chef
 
             file_path = "#{parent.file_path}/#{name}"
 
-            Chef::Log.debug "BaseFile: Detecting file extension for #{name}"
+            Chef::Log.trace "BaseFile: Detecting file extension for #{name}"
             ext = File.exist?(file_path + ".rb") ? ".rb" : ".json"
             name += ext
             file_path += ext
 
-            Chef::Log.debug "BaseFile: got a file path of #{file_path} for #{name}"
+            Chef::Log.trace "BaseFile: got a file path of #{file_path} for #{name}"
             @name = name
             @path = Chef::ChefFS::PathUtils.join(parent.path, name)
             @file_path = file_path

@@ -27,6 +27,7 @@ describe Chef::Resource::Link do
   let(:file_base) { "file_spec" }
 
   let(:expect_updated?) { true }
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
 
   # We create the files in a different directory than tmp to exercise
   # different file deployment strategies more completely.
@@ -163,6 +164,7 @@ describe Chef::Resource::Link do
     cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
     cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(cookbook_repo))
     run_context = Chef::RunContext.new(node, cookbook_collection, events)
+    allow(run_context).to receive(:logger).and_return(logger)
     resource = Chef::Resource::Link.new(target_file, run_context)
     resource.to(to)
     resource
@@ -184,7 +186,7 @@ describe Chef::Resource::Link do
       describe "the :delete action" do
         before(:each) do
           @info = []
-          allow(Chef::Log).to receive(:info) { |msg| @info << msg }
+          allow(logger).to receive(:info) { |msg| @info << msg }
           resource.run_action(:delete)
         end
 
@@ -205,7 +207,7 @@ describe Chef::Resource::Link do
       describe "the :delete action" do
         before(:each) do
           @info = []
-          allow(Chef::Log).to receive(:info) { |msg| @info << msg }
+          allow(logger).to receive(:info) { |msg| @info << msg }
           resource.run_action(:delete)
         end
 
@@ -226,7 +228,7 @@ describe Chef::Resource::Link do
       describe "the :create action" do
         before(:each) do
           @info = []
-          allow(Chef::Log).to receive(:info) { |msg| @info << msg }
+          allow(logger).to receive(:info) { |msg| @info << msg }
           resource.run_action(:create)
         end
 
@@ -248,7 +250,7 @@ describe Chef::Resource::Link do
       describe "the :create action" do
         before(:each) do
           @info = []
-          allow(Chef::Log).to receive(:info) { |msg| @info << msg }
+          allow(logger).to receive(:info) { |msg| @info << msg }
           resource.run_action(:create)
         end
 
@@ -270,7 +272,7 @@ describe Chef::Resource::Link do
       describe "the :create action" do
         before(:each) do
           @info = []
-          allow(Chef::Log).to receive(:info) { |msg| @info << msg }
+          allow(logger).to receive(:info) { |msg| @info << msg }
           resource.run_action(:create)
         end
         it "preserves the hard link" do
@@ -295,7 +297,7 @@ describe Chef::Resource::Link do
       describe "the :create action" do
         before(:each) do
           @info = []
-          allow(Chef::Log).to receive(:info) { |msg| @info << msg }
+          allow(logger).to receive(:info) { |msg| @info << msg }
           resource.run_action(:create)
         end
         it "links to the target file" do

@@ -56,7 +56,7 @@ class Chef
               return
             end
 
-            Chef::Log.debug("#{new_resource} checking rpm status")
+            logger.trace("#{new_resource} checking rpm status")
             shell_out_compact_timeout!("rpm", "-qp", "--queryformat", "%{NAME} %{VERSION}-%{RELEASE}\n", new_resource.source).stdout.each_line do |line|
               case line
               when /^(\S+)\s(\S+)$/
@@ -72,12 +72,12 @@ class Chef
             end
           end
 
-          Chef::Log.debug("#{new_resource} checking install state")
+          logger.trace("#{new_resource} checking install state")
           @rpm_status = shell_out_compact_timeout("rpm", "-q", "--queryformat", "%{NAME} %{VERSION}-%{RELEASE}\n", current_resource.package_name)
           @rpm_status.stdout.each_line do |line|
             case line
             when /^(\S+)\s(\S+)$/
-              Chef::Log.debug("#{new_resource} current version is #{$2}")
+              logger.trace("#{new_resource} current version is #{$2}")
               current_resource.version($2)
             end
           end

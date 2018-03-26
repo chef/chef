@@ -31,9 +31,9 @@ class Chef
         attr_file_specs.flatten.each do |attr_file_spec|
           cookbook_name, attr_file = parse_attribute_file_spec(attr_file_spec)
           if run_context.loaded_fully_qualified_attribute?(cookbook_name, attr_file)
-            Chef::Log.debug("I am not loading attribute file #{cookbook_name}::#{attr_file}, because I have already seen it.")
+            Chef::Log.trace("I am not loading attribute file #{cookbook_name}::#{attr_file}, because I have already seen it.")
           else
-            Chef::Log.debug("Loading Attribute #{cookbook_name}::#{attr_file}")
+            Chef::Log.trace("Loading Attribute #{cookbook_name}::#{attr_file}")
             run_context.loaded_attribute(cookbook_name, attr_file)
             attr_file_path = run_context.resolve_attribute(cookbook_name, attr_file)
             node.from_file(attr_file_path)

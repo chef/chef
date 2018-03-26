@@ -336,10 +336,10 @@ class Chef::Application::Client < Chef::Application
         Chef::Application.fatal!("chef-client recipe-url can be used only in local-mode")
       else
         if Chef::Config[:delete_entire_chef_repo]
-          Chef::Log.debug "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
+          Chef::Log.trace "Cleanup path #{Chef::Config.chef_repo_path} before extract recipes into it"
           FileUtils.rm_rf(recipes_path, :secure => true)
         end
-        Chef::Log.debug "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
+        Chef::Log.trace "Creating path #{Chef::Config.chef_repo_path} to extract recipes into"
         FileUtils.mkdir_p(Chef::Config.chef_repo_path)
         tarball_path = File.join(Chef::Config.chef_repo_path, "recipes.tgz")
         fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
@@ -467,7 +467,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def sleep_then_run_chef_client(sleep_sec)
-    Chef::Log.debug("Sleeping for #{sleep_sec} seconds")
+    Chef::Log.trace("Sleeping for #{sleep_sec} seconds")
 
     # interval_sleep will return early if we received a signal (unless on windows)
     interval_sleep(sleep_sec)
@@ -480,7 +480,7 @@ class Chef::Application::Client < Chef::Application
   rescue Exception => e
     if Chef::Config[:interval]
       Chef::Log.error("#{e.class}: #{e}")
-      Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
+      Chef::Log.trace("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
       retry
     end
 
@@ -533,7 +533,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def fetch_recipe_tarball(url, path)
-    Chef::Log.debug("Download recipes tarball from #{url} to #{path}")
+    Chef::Log.trace("Download recipes tarball from #{url} to #{path}")
     File.open(path, "wb") do |f|
       open(url) do |r|
         f.write(r.read)

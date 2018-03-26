@@ -31,6 +31,7 @@ describe Chef::Provider::User::Windows, :windows_only do
   end
 
   let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:new_resource) do
     Chef::Resource::User.new(username, run_context).tap do |r|
@@ -45,6 +46,7 @@ describe Chef::Provider::User::Windows, :windows_only do
 
   before do
     delete_user(username)
+    allow(run_context).to receive(:logger).and_return(logger)
   end
 
   describe "action :create" do
@@ -69,7 +71,7 @@ describe Chef::Provider::User::Windows, :windows_only do
 
     context "with a gid specified" do
       it "warns unsupported" do
-        expect(Chef::Log).to receive(:warn).with(/not implemented/)
+        expect(logger).to receive(:warn).with(/not implemented/)
         new_resource.gid("agroup")
         new_resource.run_action(:create)
       end

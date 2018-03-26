@@ -48,7 +48,7 @@ class Chef
           @current_resource = Chef::Resource::Service.new(new_resource.name)
           current_resource.service_name(new_resource.service_name)
 
-          Chef::Log.debug("#{current_resource} found at #{init_command}")
+          logger.trace("#{current_resource} found at #{init_command}")
 
           determine_current_status!
           determine_enabled_status!

@@ -46,7 +46,7 @@ class Chef
 
         def download_source_file
           source_resource.run_action(:create)
-          Chef::Log.debug("#{new_resource} fetched source file to #{source_resource.path}")
+          logger.trace("#{new_resource} fetched source file to #{source_resource.path}")
           source_resource.path
         end
 
@@ -84,7 +84,7 @@ class Chef
           # e.g. Package_for_KB2975719~31bf3856ad364e35~amd64~~6.3.1.8
           package = new_cab_identity
           # Search for just the package name to catch a different version being installed
-          Chef::Log.debug("#{new_resource} searching for installed package #{package['name']}")
+          logger.trace("#{new_resource} searching for installed package #{package['name']}")
           existing_package_identities = installed_packages.map do |p|
             split_package_identity(p["package_identity"])
           end
@@ -108,7 +108,7 @@ class Chef
         end
 
         def new_cab_identity
-          Chef::Log.debug("#{new_resource} getting product version for package at #{cab_file_source}")
+          logger.trace("#{new_resource} getting product version for package at #{cab_file_source}")
           @new_cab_identity ||= cab_identity_from_cab_file
         end
 

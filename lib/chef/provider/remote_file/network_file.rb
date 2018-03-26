@@ -41,7 +41,7 @@ class Chef
         def fetch
           begin
             tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
-            Chef::Log.debug("#{new_resource} staging #{@source} to #{tempfile.path}")
+            Chef::Log.trace("#{new_resource} staging #{@source} to #{tempfile.path}")
 
             with_user_context(new_resource.remote_user, new_resource.remote_password, new_resource.remote_domain, new_resource.authentication) do
               ::File.open(@source, "rb") do |remote_file|

@@ -35,7 +35,7 @@ class Chef
         ACL = Security::ACL
 
         def create(file)
-          Chef::Log.debug("Touching #{file} to create it")
+          Chef::Log.trace("Touching #{file} to create it")
           FileUtils.touch(file)
         end
 

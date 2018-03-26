@@ -252,7 +252,7 @@ module Shell
     # DoppelGanger implementation of build_node. preserves as many of the node's
     # attributes, and does not save updates to the server
     def build_node
-      Chef::Log.debug("Building node object for #{@node_name}")
+      Chef::Log.trace("Building node object for #{@node_name}")
       @node = Chef::Node.find_or_create(node_name)
       ohai_data = @ohai.data.merge(@node.automatic_attrs)
       @node.consume_external_attrs(ohai_data, nil)

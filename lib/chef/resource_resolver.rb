@@ -77,14 +77,14 @@ class Chef
     # @api private use Chef::ResourceResolver.resolve instead.
     def resolve
       # log this so we know what resources will work for the generic resource on the node (early cut)
-      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
+      Chef::Log.trace "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
 
       handler = prioritized_handlers.first
 
       if handler
-        Chef::Log.debug "Resource for #{resource_name} is #{handler}"
+        Chef::Log.trace "Resource for #{resource_name} is #{handler}"
       else
-        Chef::Log.debug "Dynamic resource resolver FAILED to resolve a resource for #{resource_name}"
+        Chef::Log.trace "Dynamic resource resolver FAILED to resolve a resource for #{resource_name}"
       end
 
       handler
@@ -92,7 +92,7 @@ class Chef
 
     # @api private
     def list
-      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
+      Chef::Log.trace "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
       prioritized_handlers
     end
 

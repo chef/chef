@@ -84,7 +84,7 @@ class Chef
 
       action :install do
         unless target_version_array.any?
-          Chef::Log.debug("#{new_resource} is already installed - nothing to do")
+          logger.trace("#{new_resource} is already installed - nothing to do")
           return
         end
 
@@ -101,7 +101,7 @@ class Chef
           multipackage_api_adapter(package_names_for_targets, versions_for_targets) do |name, version|
             install_package(name, version)
           end
-          Chef::Log.info("#{new_resource} installed #{package_names_for_targets} at #{versions_for_targets}")
+          logger.info("#{new_resource} installed #{package_names_for_targets} at #{versions_for_targets}")
         end
       end
 
@@ -119,7 +119,7 @@ class Chef
 
       action :upgrade do
         unless target_version_array.any?
-          Chef::Log.debug("#{new_resource} no versions to upgrade - nothing to do")
+          logger.trace("#{new_resource} no versions to upgrade - nothing to do")
           return
         end
 
@@ -128,7 +128,7 @@ class Chef
             upgrade_package(name, version)
           end
           log_allow_downgrade = allow_downgrade ? "(allow_downgrade)" : ""
-          Chef::Log.info("#{new_resource} upgraded#{log_allow_downgrade} #{package_names_for_targets} to #{versions_for_targets}")
+          logger.info("#{new_resource} upgraded#{log_allow_downgrade} #{package_names_for_targets} to #{versions_for_targets}")
         end
       end
 
@@ -154,10 +154,10 @@ class Chef
             multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
               remove_package(name, version)
             end
-            Chef::Log.info("#{new_resource} removed")
+            logger.info("#{new_resource} removed")
           end
         else
-          Chef::Log.debug("#{new_resource} package does not exist - nothing to do")
+          logger.trace("#{new_resource} package does not exist - nothing to do")
         end
       end
 
@@ -189,19 +189,19 @@ class Chef
             multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
               purge_package(name, version)
             end
-            Chef::Log.info("#{new_resource} purged")
+            logger.info("#{new_resource} purged")
           end
         end
       end
 
       action :reconfig do
         if current_resource.version.nil?
-          Chef::Log.debug("#{new_resource} is NOT installed - nothing to do")
+          logger.trace("#{new_resource} is NOT installed - nothing to do")
           return
         end
 
         unless new_resource.response_file
-          Chef::Log.debug("#{new_resource} no response_file provided - nothing to do")
+          logger.trace("#{new_resource} no response_file provided - nothing to do")
           return
         end
 
@@ -212,10 +212,10 @@ class Chef
               reconfig_package(name, version)
 
             end
-            Chef::Log.info("#{new_resource} reconfigured")
+            logger.info("#{new_resource} reconfigured")
           end
         else
-          Chef::Log.debug("#{new_resource} preseeding has not changed - nothing to do")
+          logger.trace("#{new_resource} preseeding has not changed - nothing to do")
         end
       end
 
@@ -230,11 +230,11 @@ class Chef
           converge_by("lock #{description}package #{current_resource.package_name}") do
             multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
               lock_package(name, version)
-              Chef::Log.info("#{new_resource} locked")
+              logger.info("#{new_resource} locked")
             end
           end
         else
-          Chef::Log.debug("#{new_resource} is already locked")
+          logger.trace("#{new_resource} is already locked")
         end
       end
 
@@ -249,11 +249,11 @@ class Chef
           converge_by("unlock #{description}package #{current_resource.package_name}") do
             multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
               unlock_package(name, version)
-              Chef::Log.info("#{new_resource} unlocked")
+              logger.info("#{new_resource} unlocked")
             end
           end
         else
-          Chef::Log.debug("#{new_resource} is already unlocked")
+          logger.trace("#{new_resource} is already unlocked")
         end
       end
 
@@ -383,7 +383,7 @@ class Chef
       def get_preseed_file(name, version)
         resource = preseed_resource(name, version)
         resource.run_action(:create)
-        Chef::Log.debug("#{new_resource} fetched preseed file to #{resource.path}")
+        logger.trace("#{new_resource} fetched preseed file to #{resource.path}")
 
         if resource.updated_by_last_action?
           resource.path
@@ -399,14 +399,14 @@ class Chef
         # The full path where the preseed file will be stored
         cache_seed_to = "#{file_cache_dir}/#{name}-#{version}.seed"
 
-        Chef::Log.debug("#{new_resource} fetching preseed file to #{cache_seed_to}")
+        logger.trace("#{new_resource} fetching preseed file to #{cache_seed_to}")
 
         if template_available?(new_resource.response_file)
-          Chef::Log.debug("#{new_resource} fetching preseed file via Template")
+          logger.trace("#{new_resource} fetching preseed file via Template")
           remote_file = Chef::Resource::Template.new(cache_seed_to, run_context)
           remote_file.variables(new_resource.response_file_variables)
         elsif cookbook_file_available?(new_resource.response_file)
-          Chef::Log.debug("#{new_resource} fetching preseed file via cookbook_file")
+          logger.trace("#{new_resource} fetching preseed file via cookbook_file")
           remote_file = Chef::Resource::CookbookFile.new(cache_seed_to, run_context)
         else
           message = "No template or cookbook file found for response file #{new_resource.response_file}"
@@ -480,22 +480,22 @@ class Chef
               when :upgrade
                 if version_equals?(current_version, new_version)
                   # this is an odd use case
-                  Chef::Log.debug("#{new_resource} #{package_name} #{new_version} is already installed -- you are equality pinning with an :upgrade action, this may be deprecated in the future")
+                  logger.trace("#{new_resource} #{package_name} #{new_version} is already installed -- you are equality pinning with an :upgrade action, this may be deprecated in the future")
                   target_version_array.push(nil)
                 elsif version_equals?(current_version, candidate_version)
-                  Chef::Log.debug("#{new_resource} #{package_name} #{candidate_version} is already installed")
+                  logger.trace("#{new_resource} #{package_name} #{candidate_version} is already installed")
                   target_version_array.push(nil)
                 elsif candidate_version.nil?
-                  Chef::Log.debug("#{new_resource} #{package_name} has no candidate_version to upgrade to")
+                  logger.trace("#{new_resource} #{package_name} has no candidate_version to upgrade to")
                   target_version_array.push(nil)
                 elsif current_version.nil?
-                  Chef::Log.debug("#{new_resource} has no existing installed version. Installing install #{candidate_version}")
+                  logger.trace("#{new_resource} has no existing installed version. Installing install #{candidate_version}")
                   target_version_array.push(candidate_version)
                 elsif version_compare(current_version, candidate_version) == 1 && !allow_downgrade
-                  Chef::Log.debug("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{candidate_version}. Skipping...)")
+                  logger.trace("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{candidate_version}. Skipping...)")
                   target_version_array.push(nil)
                 else
-                  Chef::Log.debug("#{new_resource} #{package_name} is out of date, will upgrade to #{candidate_version}")
+                  logger.trace("#{new_resource} #{package_name} is out of date, will upgrade to #{candidate_version}")
                   target_version_array.push(candidate_version)
                 end
 
@@ -503,17 +503,17 @@ class Chef
 
                 if new_version
                   if version_requirement_satisfied?(current_version, new_version)
-                    Chef::Log.debug("#{new_resource} #{package_name} #{current_version} satisifies #{new_version} requirement")
+                    logger.trace("#{new_resource} #{package_name} #{current_version} satisifies #{new_version} requirement")
                     target_version_array.push(nil)
                   else
-                    Chef::Log.debug("#{new_resource} #{package_name} #{current_version} needs updating to #{new_version}")
+                    logger.trace("#{new_resource} #{package_name} #{current_version} needs updating to #{new_version}")
                     target_version_array.push(new_version)
                   end
                 elsif current_version.nil?
-                  Chef::Log.debug("#{new_resource} #{package_name} not installed, installing #{candidate_version}")
+                  logger.trace("#{new_resource} #{package_name} not installed, installing #{candidate_version}")
                   target_version_array.push(candidate_version)
                 else
-                  Chef::Log.debug("#{new_resource} #{package_name} #{current_version} already installed")
+                  logger.trace("#{new_resource} #{package_name} #{current_version} already installed")
                   target_version_array.push(nil)
                 end
 
@@ -641,7 +641,7 @@ class Chef
               package_name = package_name_array[i]
               # we require at least one '/' in the package_name to avoid [XXX_]package 'foo' breaking due to a random 'foo' file in cwd
               if use_package_name_for_source? && source.nil? && package_name.match(/#{::File::SEPARATOR}/) && ::File.exist?(package_name)
-                Chef::Log.debug("No package source specified, but #{package_name} exists on filesystem, using #{package_name} as source.")
+                logger.trace("No package source specified, but #{package_name} exists on filesystem, using #{package_name} as source.")
                 package_name
               else
                 source

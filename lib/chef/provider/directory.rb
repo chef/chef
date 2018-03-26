@@ -129,7 +129,7 @@ class Chef
             else
               ::Dir.mkdir(new_resource.path)
             end
-            Chef::Log.info("#{new_resource} created directory #{new_resource.path}")
+            logger.info("#{new_resource} created directory #{new_resource.path}")
           end
         end
         do_acl_changes
@@ -144,10 +144,10 @@ class Chef
               # we don't use rm_rf here because it masks all errors, including
               # IO errors or permission errors that would prvent the deletion
               FileUtils.rm_r(new_resource.path)
-              Chef::Log.info("#{new_resource} deleted #{new_resource.path} recursively")
+              logger.info("#{new_resource} deleted #{new_resource.path} recursively")
             else
               ::Dir.delete(new_resource.path)
-              Chef::Log.info("#{new_resource} deleted #{new_resource.path}")
+              logger.info("#{new_resource} deleted #{new_resource.path}")
             end
           end
         end

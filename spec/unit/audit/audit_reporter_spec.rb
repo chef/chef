@@ -34,8 +34,8 @@ describe Chef::Audit::AuditReporter do
 
   describe "#audit_phase_start" do
 
-    it "notifies audit phase start to debug log" do
-      expect(Chef::Log).to receive(:debug).with(/Audit Reporter starting/)
+    it "notifies audit phase start to trace log" do
+      expect(Chef::Log).to receive(:trace).with(/Audit Reporter starting/)
       reporter.audit_phase_start(run_status)
     end
 
@@ -126,8 +126,8 @@ EOM
           let(:response) { double("response", :code => code) }
 
           before do
-            expect(Chef::Log).to receive(:debug).with(/Sending audit report/)
-            expect(Chef::Log).to receive(:debug).with(/Audit Report/)
+            expect(Chef::Log).to receive(:trace).with(/Sending audit report/)
+            expect(Chef::Log).to receive(:trace).with(/Audit Report/)
             allow(error).to receive(:response).and_return(response)
             expect(error).to receive(:respond_to?).with(:response).and_return(true)
           end
@@ -137,7 +137,7 @@ EOM
             let(:code) { "404" }
 
             it "logs that the server doesn't support audit reporting" do
-              expect(Chef::Log).to receive(:debug).with(/Server doesn't support audit reporting/)
+              expect(Chef::Log).to receive(:trace).with(/Server doesn't support audit reporting/)
               reporter.run_completed(node)
             end
           end
@@ -203,12 +203,12 @@ EOM
     context "when auditing is not enabled" do
 
       before do
-        allow(Chef::Log).to receive(:debug)
+        allow(Chef::Log).to receive(:trace)
       end
 
       it "doesn't send reports" do
         expect(reporter).to receive(:auditing_enabled?).and_return(false)
-        expect(Chef::Log).to receive(:debug).with("Audit Reports are disabled. Skipping sending reports.")
+        expect(Chef::Log).to receive(:trace).with("Audit Reports are disabled. Skipping sending reports.")
         reporter.run_completed(node)
       end
 
@@ -217,13 +217,13 @@ EOM
     context "when the run fails before audits" do
 
       before do
-        allow(Chef::Log).to receive(:debug)
+        allow(Chef::Log).to receive(:trace)
       end
 
       it "doesn't send reports" do
         expect(reporter).to receive(:auditing_enabled?).and_return(true)
         expect(reporter).to receive(:run_status).and_return(nil)
-        expect(Chef::Log).to receive(:debug).with("Run failed before audit mode was initialized, not sending audit report to server")
+        expect(Chef::Log).to receive(:trace).with("Run failed before audit mode was initialized, not sending audit report to server")
         reporter.run_completed(node)
       end
 
@@ -313,8 +313,8 @@ EOM
   describe "#audit_phase_complete" do
     include_context "audit data"
 
-    it "notifies audit phase finished to debug log" do
-      expect(Chef::Log).to receive(:debug).with(/Audit Reporter completed/)
+    it "notifies audit phase finished to trace log" do
+      expect(Chef::Log).to receive(:trace).with(/Audit Reporter completed/)
       reporter.audit_phase_complete("Output from audit mode")
     end
 
@@ -331,8 +331,8 @@ EOM
 
     let(:error) { double("Exception") }
 
-    it "notifies audit phase failed to debug log" do
-      expect(Chef::Log).to receive(:debug).with(/Audit Reporter failed/)
+    it "notifies audit phase failed to trace log" do
+      expect(Chef::Log).to receive(:trace).with(/Audit Reporter failed/)
       reporter.audit_phase_failed(error, "Output from audit mode")
     end
 

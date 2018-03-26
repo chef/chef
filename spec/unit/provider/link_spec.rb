@@ -26,10 +26,12 @@ if Chef::Platform.windows?
 end
 
 describe Chef::Resource::Link do
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
   let(:provider) do
     node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, {}, @events)
+    allow(run_context).to receive(:logger).and_return(logger)
     Chef::Provider::Link.new(new_resource, run_context)
   end
   let(:new_resource) do
@@ -270,7 +272,7 @@ describe Chef::Resource::Link do
 
       it "invokes Dir.delete method to delete the link" do
         expect(::Dir).to receive(:delete).with(provider.new_resource.target_file)
-        expect(Chef::Log).to receive(:info).with("#{provider.new_resource} deleted")
+        expect(logger).to receive(:info).with("#{provider.new_resource} deleted")
         provider.run_action(:delete)
       end
     end
@@ -283,7 +285,7 @@ describe Chef::Resource::Link do
 
       it "invokes File.delete method to delete the link" do
         expect(::File).to receive(:delete).with(provider.new_resource.target_file)
-        expect(Chef::Log).to receive(:info).with("#{provider.new_resource} deleted")
+        expect(logger).to receive(:info).with("#{provider.new_resource} deleted")
         provider.run_action(:delete)
       end
     end
@@ -296,7 +298,7 @@ describe Chef::Resource::Link do
 
       it "invokes File.delete method to delete the link" do
         expect(::File).to receive(:delete).with(provider.new_resource.target_file)
-        expect(Chef::Log).to receive(:info).with("#{provider.new_resource} deleted")
+        expect(logger).to receive(:info).with("#{provider.new_resource} deleted")
         provider.run_action(:delete)
       end
     end

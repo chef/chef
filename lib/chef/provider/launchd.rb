@@ -119,7 +119,7 @@ class Chef
         end
         invalid_type = lltstype != "LoginWindow"
         if root && agent && invalid_action && invalid_type
-          Chef::Log.debug("#{label}: Aqua LaunchAgents shouldn't be loaded as root")
+          logger.trace("#{label}: Aqua LaunchAgents shouldn't be loaded as root")
           return false
         end
         true

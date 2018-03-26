@@ -50,7 +50,7 @@ class Chef
           crontab.each_line do |line|
             case line.chomp
             when "# Chef Name: #{new_resource.name}"
-              Chef::Log.debug("Found cron '#{new_resource.name}'")
+              logger.trace("Found cron '#{new_resource.name}'")
               cron_found = true
               @cron_exists = true
               next
@@ -79,9 +79,9 @@ class Chef
               next
             end
           end
-          Chef::Log.debug("Cron '#{new_resource.name}' not found") unless @cron_exists
+          logger.trace("Cron '#{new_resource.name}' not found") unless @cron_exists
         else
-          Chef::Log.debug("Cron empty for '#{new_resource.user}'")
+          logger.trace("Cron empty for '#{new_resource.user}'")
           @cron_empty = true
         end
 
@@ -103,7 +103,7 @@ class Chef
 
         if @cron_exists
           unless cron_different?
-            Chef::Log.debug("Skipping existing cron entry '#{new_resource.name}'")
+            logger.trace("Skipping existing cron entry '#{new_resource.name}'")
             return
           end
           read_crontab.each_line do |line|
@@ -140,7 +140,7 @@ class Chef
 
           converge_by("update crontab entry for #{new_resource}") do
             write_crontab crontab
-            Chef::Log.info("#{new_resource} updated crontab entry")
+            logger.info("#{new_resource} updated crontab entry")
           end
 
         else
@@ -149,7 +149,7 @@ class Chef
 
           converge_by("add crontab entry for #{new_resource}") do
             write_crontab crontab
-            Chef::Log.info("#{new_resource} added crontab entry")
+            logger.info("#{new_resource} added crontab entry")
           end
         end
       end
@@ -184,7 +184,7 @@ class Chef
           description = cron_found ? "remove #{new_resource.name} from crontab" : "save unmodified crontab"
           converge_by(description) do
             write_crontab crontab
-            Chef::Log.info("#{new_resource} deleted crontab entry")
+            logger.info("#{new_resource} deleted crontab entry")
           end
         end
       end

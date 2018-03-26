@@ -57,8 +57,8 @@ class Chef
                   tf.puts "gem(*#{([gem_name] + args).inspect})"
                 end
                 tf.close
-                Chef::Log.debug("generated Gemfile contents:")
-                Chef::Log.debug(IO.read(tf.path))
+                Chef::Log.trace("generated Gemfile contents:")
+                Chef::Log.trace(IO.read(tf.path))
                 so = shell_out!("bundle install", cwd: dir, env: { "PATH" => path_with_prepended_ruby_bin })
                 Chef::Log.info(so.stdout)
               end

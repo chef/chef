@@ -54,14 +54,14 @@ class Chef
 
       def action_request_reboot
         converge_by("request a system reboot to occur if the run succeeds") do
-          Chef::Log.warn "Reboot requested:'#{new_resource.name}'"
+          logger.warn "Reboot requested:'#{new_resource.name}'"
           request_reboot
         end
       end
 
       def action_reboot_now
         converge_by("rebooting the system immediately") do
-          Chef::Log.warn "Rebooting system immediately, requested by '#{new_resource.name}'"
+          logger.warn "Rebooting system immediately, requested by '#{new_resource.name}'"
           request_reboot
           throw :end_client_run_early
         end
@@ -69,7 +69,7 @@ class Chef
 
       def action_cancel
         converge_by("cancel any existing end-of-run reboot request") do
-          Chef::Log.warn "Reboot canceled: '#{new_resource.name}'"
+          logger.warn "Reboot canceled: '#{new_resource.name}'"
           node.run_context.cancel_reboot
         end
       end

@@ -49,7 +49,7 @@ class Chef
           user_info = Etc.getpwnam(new_resource.username)
         rescue ArgumentError
           @user_exists = false
-          Chef::Log.debug("#{new_resource} user does not exist")
+          logger.trace("#{new_resource} user does not exist")
           user_info = nil
         end
 
@@ -120,12 +120,12 @@ class Chef
         if !@user_exists
           converge_by("create user #{new_resource.username}") do
             create_user
-            Chef::Log.info("#{new_resource} created")
+            logger.info("#{new_resource} created")
           end
         elsif compare_user
           converge_by("alter user #{new_resource.username}") do
             manage_user
-            Chef::Log.info("#{new_resource} altered")
+            logger.info("#{new_resource} altered")
           end
         end
       end
@@ -134,7 +134,7 @@ class Chef
         return unless @user_exists
         converge_by("remove user #{new_resource.username}") do
           remove_user
-          Chef::Log.info("#{new_resource} removed")
+          logger.info("#{new_resource} removed")
         end
       end
 
@@ -142,7 +142,7 @@ class Chef
         return unless @user_exists && compare_user
         converge_by("manage user #{new_resource.username}") do
           manage_user
-          Chef::Log.info("#{new_resource} managed")
+          logger.info("#{new_resource} managed")
         end
       end
 
@@ -150,7 +150,7 @@ class Chef
         return unless compare_user
         converge_by("modify user #{new_resource.username}") do
           manage_user
-          Chef::Log.info("#{new_resource} modified")
+          logger.info("#{new_resource} modified")
         end
       end
 
@@ -158,10 +158,10 @@ class Chef
         if check_lock == false
           converge_by("lock the user #{new_resource.username}") do
             lock_user
-            Chef::Log.info("#{new_resource} locked")
+            logger.info("#{new_resource} locked")
           end
         else
-          Chef::Log.debug("#{new_resource} already locked - nothing to do")
+          logger.trace("#{new_resource} already locked - nothing to do")
         end
       end
 
@@ -169,10 +169,10 @@ class Chef
         if check_lock == true
           converge_by("unlock user #{new_resource.username}") do
             unlock_user
-            Chef::Log.info("#{new_resource} unlocked")
+            logger.info("#{new_resource} unlocked")
           end
         else
-          Chef::Log.debug("#{new_resource} already unlocked - nothing to do")
+          logger.trace("#{new_resource} already unlocked - nothing to do")
         end
       end
 

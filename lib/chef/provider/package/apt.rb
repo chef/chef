@@ -104,12 +104,12 @@ class Chef
         end
 
         def preseed_package(preseed_file)
-          Chef::Log.info("#{new_resource} pre-seeding package installation instructions")
+          logger.info("#{new_resource} pre-seeding package installation instructions")
           run_noninteractive("debconf-set-selections", preseed_file)
         end
 
         def reconfig_package(name, version)
-          Chef::Log.info("#{new_resource} reconfiguring")
+          logger.info("#{new_resource} reconfiguring")
           run_noninteractive("dpkg-reconfigure", name)
         end
 
@@ -174,10 +174,10 @@ class Chef
             case line
             when /^\s{2}Installed: (.+)$/
               current_version = ( $1 != "(none)" ) ? $1 : nil
-              Chef::Log.debug("#{new_resource} installed version for #{pkg} is #{$1}")
+              logger.trace("#{new_resource} installed version for #{pkg} is #{$1}")
             when /^\s{2}Candidate: (.+)$/
               candidate_version = ( $1 != "(none)" ) ? $1 : nil
-              Chef::Log.debug("#{new_resource} candidate version for #{pkg} is #{$1}")
+              logger.trace("#{new_resource} candidate version for #{pkg} is #{$1}")
             end
           end
           [ current_version, candidate_version ]
@@ -209,7 +209,7 @@ class Chef
 
             if newpkg
               virtual = true
-              Chef::Log.info("#{new_resource} is a virtual package, actually acting on package[#{newpkg}]")
+              logger.info("#{new_resource} is a virtual package, actually acting on package[#{newpkg}]")
               current_version, candidate_version = resolve_package_versions(newpkg)
             end
           end

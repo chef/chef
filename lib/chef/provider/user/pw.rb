@@ -78,13 +78,13 @@ class Chef
             field_symbol = field.to_sym
             next unless current_resource.send(field_symbol) != new_resource.send(field_symbol)
             if new_resource.send(field_symbol)
-              Chef::Log.debug("#{new_resource} setting #{field} to #{new_resource.send(field_symbol)}")
+              logger.trace("#{new_resource} setting #{field} to #{new_resource.send(field_symbol)}")
               opts << option
               opts << new_resource.send(field_symbol)
             end
           end
           if new_resource.manage_home
-            Chef::Log.debug("#{new_resource} is managing the users home directory")
+            logger.trace("#{new_resource} is managing the users home directory")
             opts << "-m"
           end
           opts
@@ -92,11 +92,11 @@ class Chef
 
         def modify_password
           if !new_resource.password.nil? && (current_resource.password != new_resource.password)
-            Chef::Log.debug("#{new_resource} updating password")
+            logger.trace("#{new_resource} updating password")
             command = "pw usermod #{new_resource.username} -H 0"
             shell_out!(command, input: new_resource.password.to_s)
           else
-            Chef::Log.debug("#{new_resource} no change needed to password")
+            logger.trace("#{new_resource} no change needed to password")
           end
         end
       end

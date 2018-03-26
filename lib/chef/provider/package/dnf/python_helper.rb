@@ -64,7 +64,7 @@ class Chef
           def compare_versions(version1, version2)
             with_helper do
               json = build_version_query("versioncompare", [version1, version2])
-              Chef::Log.debug "sending '#{json}' to python helper"
+              Chef::Log.trace "sending '#{json}' to python helper"
               stdin.syswrite json + "\n"
               stdout.sysread(4096).chomp.to_i
             end
@@ -74,12 +74,12 @@ class Chef
           def query(action, provides, version = nil, arch = nil)
             with_helper do
               json = build_query(action, provides, version, arch)
-              Chef::Log.debug "sending '#{json}' to python helper"
+              Chef::Log.trace "sending '#{json}' to python helper"
               stdin.syswrite json + "\n"
               output = stdout.sysread(4096).chomp
-              Chef::Log.debug "got '#{output}' from python helper"
+              Chef::Log.trace "got '#{output}' from python helper"
               version = parse_response(output)
-              Chef::Log.debug "parsed #{version} from python helper"
+              Chef::Log.trace "parsed #{version} from python helper"
               version
             end
           end
@@ -149,14 +149,14 @@ class Chef
             end
             output = drain_stderr
             unless output.empty?
-              Chef::Log.debug "discarding output on stderr from python helper: #{output}"
+              Chef::Log.trace "discarding output on stderr from python helper: #{output}"
             end
             ret
           rescue EOFError, Errno::EPIPE, Timeout::Error, Errno::ESRCH => e
             output = drain_stderr
             if ( max_retries -= 1 ) > 0
               unless output.empty?
-                Chef::Log.debug "discarding output on stderr from python helper: #{output}"
+                Chef::Log.trace "discarding output on stderr from python helper: #{output}"
               end
               restart
               retry

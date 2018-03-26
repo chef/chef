@@ -51,7 +51,7 @@ class Chef
 
       def delete!(path)
         parent = _get_parent(path)
-        Chef::Log.debug("Deleting parent #{parent} and #{path} from FileSystemCache")
+        Chef::Log.trace("Deleting parent #{parent} and #{path} from FileSystemCache")
         if @cache.key?(path)
           @cache.delete(path)
         end

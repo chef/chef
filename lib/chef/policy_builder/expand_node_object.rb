@@ -170,7 +170,7 @@ class Chef
       # === Returns
       # Hash:: The hash of cookbooks with download URLs as given by the server
       def sync_cookbooks
-        Chef::Log.debug("Synchronizing cookbooks")
+        Chef::Log.trace("Synchronizing cookbooks")
 
         begin
           events.cookbook_resolution_start(@expanded_run_list_with_versions)

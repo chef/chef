@@ -85,8 +85,8 @@ describe Chef::HTTP::ValidateContentLength do
 
   before(:each) do
     @original_log_level = Chef::Log.level
-    Chef::Log.level = :debug
-    allow(Chef::Log).to receive(:debug) do |message|
+    Chef::Log.level = :trace
+    allow(Chef::Log).to receive(:trace) do |message|
       debug_stream.puts message
     end
   end
@@ -111,7 +111,7 @@ describe Chef::HTTP::ValidateContentLength do
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
-        it "should skip validation and log for debug" do
+        it "should skip validation and log for trace" do
           run_content_length_validation
           expect(debug_output).to include("HTTP server did not include a Content-Length header in response")
         end
@@ -126,7 +126,7 @@ describe Chef::HTTP::ValidateContentLength do
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
-        it "should skip validation and log for debug" do
+        it "should skip validation and log for trace" do
           run_content_length_validation
           expect(debug_output).to include("HTTP server responded with a negative Content-Length header (-1), cannot identify truncated downloads.")
         end
@@ -180,7 +180,7 @@ describe Chef::HTTP::ValidateContentLength do
       describe "when running #{req_type} request" do
         let(:request_type) { req_type.to_sym }
 
-        it "should skip validation and log for debug" do
+        it "should skip validation and log for trace" do
           run_content_length_validation
           expect(debug_output).to include("Transfer-Encoding header is set, skipping Content-Length check.")
         end

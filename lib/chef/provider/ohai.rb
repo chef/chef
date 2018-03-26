@@ -37,7 +37,7 @@ class Chef
           # the path are picked up by ohai.
           ohai.all_plugins new_resource.plugin
           node.automatic_attrs.merge! ohai.data
-          Chef::Log.info("#{new_resource} reloaded")
+          logger.info("#{new_resource} reloaded")
         end
       end
     end

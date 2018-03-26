@@ -26,7 +26,7 @@ class Chef
         class RegistryUninstallEntry
 
           def self.find_entries(package_name)
-            Chef::Log.debug("Finding uninstall entries for #{package_name}")
+            logger.trace("Finding uninstall entries for #{package_name}")
             entries = []
             [
               [::Win32::Registry::HKEY_LOCAL_MACHINE, (::Win32::Registry::Constants::KEY_READ | 0x0100)],
@@ -45,12 +45,12 @@ class Chef
                         entries.push(quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry))
                       end
                     rescue ::Win32::Registry::Error => ex
-                      Chef::Log.debug("Registry error opening key '#{key}' on node #{desired}: #{ex}")
+                      logger.trace("Registry error opening key '#{key}' on node #{desired}: #{ex}")
                     end
                   end
                 end
               rescue ::Win32::Registry::Error => ex
-                Chef::Log.debug("Registry error opening hive '#{hkey[0]}' :: #{desired}: #{ex}")
+                logger.trace("Registry error opening hive '#{hkey[0]}' :: #{desired}: #{ex}")
               end
             end
             entries
@@ -63,13 +63,18 @@ class Chef
 
           def self.read_registry_property(data, property)
             data[property]
-          rescue ::Win32::Registry::Error => ex
-            Chef::Log.debug("Failure to read property '#{property}'")
+          rescue ::Win32::Registry::Error
+            logger.trace("Failure to read property '#{property}'")
             nil
           end
 
+          def self.logger
+            Chef::Log
+          end
+
           def initialize(hive, key, registry_data, uninstall_key = "UninstallString")
-            Chef::Log.debug("Creating uninstall entry for #{hive}::#{key}")
+            @logger = Chef::Log.with_child({ subsystem: "registry_uninstall_entry" })
+            logger.trace("Creating uninstall entry for #{hive}::#{key}")
             @hive = hive
             @key = key
             @data = registry_data
@@ -84,6 +89,7 @@ class Chef
           attr_reader :display_version
           attr_reader :uninstall_string
           attr_reader :data
+          attr_reader :logger
 
           UNINSTALL_SUBKEY = 'Software\Microsoft\Windows\CurrentVersion\Uninstall'.freeze
         end

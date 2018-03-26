@@ -92,7 +92,7 @@ class Chef
         if !needs_creating?
           # we are updating an existing file
           if managing_content?
-            Chef::Log.debug("#{new_resource} checksumming file at #{new_resource.path}.")
+            logger.trace("#{new_resource} checksumming file at #{new_resource.path}.")
             current_resource.checksum(checksum(current_resource.path))
           else
             # if the file does not exist or is not a file, then the checksum is invalid/pointless
@@ -151,7 +151,7 @@ class Chef
         unless ::File.exist?(new_resource.path)
           action_create
         else
-          Chef::Log.debug("#{new_resource} exists at #{new_resource.path} taking no action.")
+          logger.trace("#{new_resource} exists at #{new_resource.path} taking no action.")
         end
       end
 
@@ -160,7 +160,7 @@ class Chef
           converge_by("delete file #{new_resource.path}") do
             do_backup unless file_class.symlink?(new_resource.path)
             ::File.delete(new_resource.path)
-            Chef::Log.info("#{new_resource} deleted file at #{new_resource.path}")
+            logger.info("#{new_resource} deleted file at #{new_resource.path}")
           end
         end
       end
@@ -170,7 +170,7 @@ class Chef
         converge_by("update utime on file #{new_resource.path}") do
           time = Time.now
           ::File.utime(time, time, new_resource.path)
-          Chef::Log.info("#{new_resource} updated atime and mtime to #{time}")
+          logger.info("#{new_resource} updated atime and mtime to #{time}")
         end
       end
 
@@ -227,9 +227,9 @@ class Chef
         elsif file_class.symlink?(path) && new_resource.manage_symlink_source
           verify_symlink_sanity(path)
         elsif file_class.symlink?(new_resource.path) && new_resource.manage_symlink_source.nil?
-          Chef::Log.warn("File #{path} managed by #{new_resource} is really a symlink. Managing the source file instead.")
-          Chef::Log.warn("Disable this warning by setting `manage_symlink_source true` on the resource")
-          Chef::Log.warn("In a future Chef release, 'manage_symlink_source' will not be enabled by default")
+          logger.warn("File #{path} managed by #{new_resource} is really a symlink. Managing the source file instead.")
+          logger.warn("Disable this warning by setting `manage_symlink_source true` on the resource")
+          logger.warn("In a future Chef release, 'manage_symlink_source' will not be enabled by default")
           verify_symlink_sanity(path)
         elsif new_resource.force_unlink
           [nil, nil, nil]
@@ -273,7 +273,7 @@ class Chef
       def content
         @content ||= begin
           load_current_resource if current_resource.nil?
-          @content_class.new(new_resource, current_resource, @run_context)
+          @content_class.new(new_resource, current_resource, @run_context, logger)
         end
       end
 
@@ -361,7 +361,7 @@ class Chef
         if needs_creating?
           converge_by("create new file #{new_resource.path}") do
             deployment_strategy.create(new_resource.path)
-            Chef::Log.info("#{new_resource} created file #{new_resource.path}")
+            logger.info("#{new_resource} created file #{new_resource.path}")
           end
         end
       end
@@ -377,7 +377,7 @@ class Chef
       def update_file_contents
         do_backup unless needs_creating?
         deployment_strategy.deploy(tempfile.path, ::File.realpath(new_resource.path))
-        Chef::Log.info("#{new_resource} updated file contents #{new_resource.path}")
+        logger.info("#{new_resource} updated file contents #{new_resource.path}")
         if managing_content?
           # save final checksum for reporting.
           new_resource.final_checksum = checksum(new_resource.path)
@@ -428,7 +428,7 @@ class Chef
               restore_security_context(::File.realpath(new_resource.path), recursive)
             end
           else
-            Chef::Log.debug "selinux utilities can not be found. Skipping selinux permission fixup."
+            logger.trace "selinux utilities can not be found. Skipping selinux permission fixup."
           end
         end
       end
@@ -442,7 +442,7 @@ class Chef
       end
 
       def contents_changed?
-        Chef::Log.debug "calculating checksum of #{tempfile.path} to compare with #{current_resource.checksum}"
+        logger.trace "calculating checksum of #{tempfile.path} to compare with #{current_resource.checksum}"
         tempfile_checksum != current_resource.checksum
       end
 

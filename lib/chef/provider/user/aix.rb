@@ -74,7 +74,7 @@ class Chef
 
         def add_password
           return unless current_resource.password != new_resource.password && new_resource.password
-          Chef::Log.debug("#{new_resource.username} setting password to #{new_resource.password}")
+          logger.trace("#{new_resource.username} setting password to #{new_resource.password}")
           command = "echo '#{new_resource.username}:#{new_resource.password}' | chpasswd -e"
           shell_out!(command)
         end
@@ -85,10 +85,10 @@ class Chef
           # -m option does not work on aix, so move dir.
           universal_options.delete("-m")
           if ::File.directory?(current_resource.home)
-            Chef::Log.debug("Changing users home directory from #{current_resource.home} to #{new_resource.home}")
+            logger.trace("Changing users home directory from #{current_resource.home} to #{new_resource.home}")
             FileUtils.mv current_resource.home, new_resource.home
           else
-            Chef::Log.debug("Creating users home directory #{new_resource.home}")
+            logger.trace("Creating users home directory #{new_resource.home}")
             FileUtils.mkdir_p new_resource.home
           end
         end

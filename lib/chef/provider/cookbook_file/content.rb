@@ -34,7 +34,7 @@ class Chef
           else
             tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
             tempfile.close
-            Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{tempfile.path}")
+            logger.trace("#{@new_resource} staging #{file_cache_location} to #{tempfile.path}")
             FileUtils.cp(file_cache_location, tempfile.path)
             tempfile
           end

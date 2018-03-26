@@ -315,7 +315,7 @@ class Chef
         client_solo = chef_config[:solo] ? "chef-solo" : "chef-client"
         $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime("%R:%S")};"
         begin
-          logger.debug "Forked instance now converging"
+          logger.trace "Forked instance now converging"
           @chef_client.run
         rescue Exception => e
           logger.error(e.to_s)
@@ -324,10 +324,10 @@ class Chef
           exit 0
         end
       end
-      logger.debug "Fork successful. Waiting for new chef pid: #{pid}"
+      logger.trace "Fork successful. Waiting for new chef pid: #{pid}"
       result = Process.waitpid2(pid)
       handle_child_exit(result)
-      logger.debug "Forked instance successfully reaped (pid: #{pid})"
+      logger.trace "Forked instance successfully reaped (pid: #{pid})"
       true
     end
 

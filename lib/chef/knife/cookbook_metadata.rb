@@ -80,7 +80,7 @@ class Chef
         File.open(json_file, "w") do |f|
           f.write(Chef::JSONCompat.to_json_pretty(md))
         end
-        Chef::Log.debug("Generated #{json_file}")
+        Chef::Log.trace("Generated #{json_file}")
       rescue Exceptions::ObsoleteDependencySyntax, Exceptions::InvalidVersionConstraint => e
         ui.stderr.puts "ERROR: The cookbook '#{cookbook}' contains invalid or obsolete metadata syntax."
         ui.stderr.puts "in #{file}:"

@@ -19,16 +19,23 @@
 require "spec_helper"
 
 describe Chef::Provider::Cron do
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+
+  before do
+    @node = Chef::Node.new
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+    allow(@run_context).to receive(:logger).and_return(logger)
+
+    @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
+    @new_resource.user "root"
+    @new_resource.minute "30"
+    @new_resource.command "/bin/true"
+    @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
+  end
+
   describe "when with special time string" do
     before do
-      @node = Chef::Node.new
-      @events = Chef::EventDispatch::Dispatcher.new
-      @run_context = Chef::RunContext.new(@node, {}, @events)
-
-      @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
-      @new_resource.user "root"
-      @new_resource.minute "30"
-      @new_resource.command "/bin/true"
       @new_resource.time :reboot
       @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
     end
@@ -113,7 +120,7 @@ CRONTAB
       end
 
       it "should report the match" do
-        expect(Chef::Log).to receive(:debug).with("Found cron '#{@new_resource.name}'")
+        expect(logger).to receive(:trace).with("Found cron '#{@new_resource.name}'")
         @provider.load_current_resource
       end
 
@@ -141,18 +148,6 @@ CRONTAB
     end
   end
 
-  before do
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
-
-    @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
-    @new_resource.user "root"
-    @new_resource.minute "30"
-    @new_resource.command "/bin/true"
-    @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
-  end
-
   describe "when examining the current system state" do
     context "with no crontab for the user" do
       before :each do
@@ -166,7 +161,7 @@ CRONTAB
       end
 
       it "should report an empty crontab" do
-        expect(Chef::Log).to receive(:debug).with("Cron empty for '#{@new_resource.user}'")
+        expect(logger).to receive(:trace).with("Cron empty for '#{@new_resource.user}'")
         @provider.load_current_resource
       end
     end
@@ -190,7 +185,7 @@ CRONTAB
       end
 
       it "should report no entry found" do
-        expect(Chef::Log).to receive(:debug).with("Cron '#{@new_resource.name}' not found")
+        expect(logger).to receive(:trace).with("Cron '#{@new_resource.name}' not found")
         @provider.load_current_resource
       end
 
@@ -296,7 +291,7 @@ CRONTAB
       end
 
       it "should report the match" do
-        expect(Chef::Log).to receive(:debug).with("Found cron '#{@new_resource.name}'")
+        expect(logger).to receive(:trace).with("Found cron '#{@new_resource.name}'")
         @provider.load_current_resource
       end
     end
@@ -332,7 +327,7 @@ CRONTAB
       end
 
       it "should report the match" do
-        expect(Chef::Log).to receive(:debug).with("Found cron '#{@new_resource.name}'")
+        expect(logger).to receive(:trace).with("Found cron '#{@new_resource.name}'")
         @provider.load_current_resource
       end
     end
@@ -478,7 +473,7 @@ TEST=LOL
       end
 
       it "should log the action" do
-        expect(Chef::Log).to receive(:info).with("cron[cronhole some stuff] added crontab entry")
+        expect(logger).to receive(:info).with("cron[cronhole some stuff] added crontab entry")
         @provider.run_action(:create)
       end
     end
@@ -540,7 +535,7 @@ TEST=LOL
       end
 
       it "should log the action" do
-        expect(Chef::Log).to receive(:info).with("cron[cronhole some stuff] added crontab entry")
+        expect(logger).to receive(:info).with("cron[cronhole some stuff] added crontab entry")
         @provider.run_action(:create)
       end
     end
@@ -605,7 +600,7 @@ TEST=LOL
       end
 
       it "should log the action" do
-        expect(Chef::Log).to receive(:info).with("cron[cronhole some stuff] updated crontab entry")
+        expect(logger).to receive(:info).with("cron[cronhole some stuff] updated crontab entry")
         @provider.run_action(:create)
       end
     end
@@ -719,8 +714,8 @@ CRONTAB
       end
 
       it "should log nothing changed" do
-        expect(Chef::Log).to receive(:debug).with("Found cron '#{@new_resource.name}'")
-        expect(Chef::Log).to receive(:debug).with("Skipping existing cron entry '#{@new_resource.name}'")
+        expect(logger).to receive(:trace).with("Found cron '#{@new_resource.name}'")
+        expect(logger).to receive(:trace).with("Skipping existing cron entry '#{@new_resource.name}'")
         @provider.run_action(:create)
       end
     end
@@ -739,7 +734,7 @@ CRONTAB
 
       it "should do nothing" do
         expect(@provider).not_to receive(:write_crontab)
-        expect(Chef::Log).not_to receive(:info)
+        expect(logger).not_to receive(:info)
         @provider.run_action(:delete)
       end
 
@@ -806,7 +801,7 @@ FOO=test
       end
 
       it "should log the action" do
-        expect(Chef::Log).to receive(:info).with("#{@new_resource} deleted crontab entry")
+        expect(logger).to receive(:info).with("#{@new_resource} deleted crontab entry")
         @provider.run_action(:delete)
       end
     end

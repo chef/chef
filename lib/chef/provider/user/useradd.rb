@@ -118,10 +118,10 @@ class Chef
               if updating_home?
                 opts << "-d" << new_resource.home
                 if new_resource.manage_home
-                  Chef::Log.debug("#{new_resource} managing the users home directory")
+                  logger.trace("#{new_resource} managing the users home directory")
                   opts << "-m"
                 else
-                  Chef::Log.debug("#{new_resource} setting home to #{new_resource.home}")
+                  logger.trace("#{new_resource} setting home to #{new_resource.home}")
                 end
               end
               opts << "-o" if new_resource.non_unique
@@ -132,7 +132,7 @@ class Chef
         def update_options(field, option, opts)
           return unless current_resource.send(field).to_s != new_resource.send(field).to_s
           return unless new_resource.send(field)
-          Chef::Log.debug("#{new_resource} setting #{field} to #{new_resource.send(field)}")
+          logger.trace("#{new_resource} setting #{field} to #{new_resource.send(field)}")
           opts << option << new_resource.send(field).to_s
         end
 

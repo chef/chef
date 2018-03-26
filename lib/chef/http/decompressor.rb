@@ -79,10 +79,10 @@ class Chef
         else
           case response[CONTENT_ENCODING]
           when GZIP
-            Chef::Log.debug "Decompressing gzip response"
+            Chef::Log.trace "Decompressing gzip response"
             Zlib::Inflate.new(Zlib::MAX_WBITS + 16).inflate(response.body)
           when DEFLATE
-            Chef::Log.debug "Decompressing deflate response"
+            Chef::Log.trace "Decompressing deflate response"
             Zlib::Inflate.inflate(response.body)
           else
             response.body
@@ -94,20 +94,20 @@ class Chef
       # object you can use to unzip/inflate a streaming response.
       def stream_response_handler(response)
         if gzip_disabled?
-          Chef::Log.debug "disable_gzip is set. \
+          Chef::Log.trace "disable_gzip is set. \
             Not using #{response[CONTENT_ENCODING]} \
             and initializing noop stream deflator."
           NoopInflater.new
         else
           case response[CONTENT_ENCODING]
           when GZIP
-            Chef::Log.debug "Initializing gzip stream deflator"
+            Chef::Log.trace "Initializing gzip stream deflator"
             GzipInflater.new
           when DEFLATE
-            Chef::Log.debug "Initializing deflate stream deflator"
+            Chef::Log.trace "Initializing deflate stream deflator"
             DeflateInflater.new
           else
-            Chef::Log.debug "content_encoding = '#{response[CONTENT_ENCODING]}' \
+            Chef::Log.trace "content_encoding = '#{response[CONTENT_ENCODING]}' \
               initializing noop stream deflator."
             NoopInflater.new
           end

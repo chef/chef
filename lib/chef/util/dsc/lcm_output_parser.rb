@@ -130,7 +130,7 @@ class Chef
                   end
                   current_resource = { :name => info }
                 else
-                  Chef::Log.debug("Ignoring op_action #{op_action}: Read line #{line}")
+                  Chef::Log.trace("Ignoring op_action #{op_action}: Read line #{line}")
                 end
               when :end
                 # Make sure we log the last line

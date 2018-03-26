@@ -35,11 +35,11 @@ class Chef
           self.current_resource = Chef::Resource::HomebrewPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
           current_resource.version(current_installed_version)
-          Chef::Log.debug("#{new_resource} current version is #{current_resource.version}") if current_resource.version
+          logger.trace("#{new_resource} current version is #{current_resource.version}") if current_resource.version
 
           @candidate_version = candidate_version
 
-          Chef::Log.debug("#{new_resource} candidate version is #{@candidate_version}") if @candidate_version
+          logger.trace("#{new_resource} candidate version is #{@candidate_version}") if @candidate_version
 
           current_resource
         end
@@ -126,7 +126,7 @@ class Chef
           homebrew_uid = find_homebrew_uid(new_resource.respond_to?(:homebrew_user) && new_resource.homebrew_user)
           homebrew_user = Etc.getpwuid(homebrew_uid)
 
-          Chef::Log.debug "Executing '#{command.join(' ')}' as user '#{homebrew_user.name}'"
+          logger.trace "Executing '#{command.join(' ')}' as user '#{homebrew_user.name}'"
           # FIXME: this 1800 second default timeout should be deprecated
           output = shell_out_compact_timeout!(*command, timeout: 1800, user: homebrew_uid, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
           output.stdout.chomp

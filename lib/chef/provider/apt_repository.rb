@@ -36,7 +36,7 @@ class Chef
 
       action :add do
         if new_resource.key.nil?
-          Chef::Log.debug "No 'key' property specified skipping key import"
+          logger.debug "No 'key' property specified skipping key import"
         else
           new_resource.key.each do |k|
             if is_key_id?(k) && !has_cookbook_file?(k)
@@ -93,7 +93,7 @@ class Chef
             end
           end
         else
-          Chef::Log.debug("/etc/apt/sources.list.d/#{new_resource.name}.list does not exist. Nothing to do")
+          logger.trace("/etc/apt/sources.list.d/#{new_resource.name}.list does not exist. Nothing to do")
         end
       end
 
@@ -129,13 +129,13 @@ class Chef
         so = shell_out("apt-key list")
         so.stdout.split(/\n/).map do |t|
           if t =~ %r{^\/#{key}.*\[expired: .*\]$}
-            Chef::Log.debug "Found expired key: #{t}"
+            logger.debug "Found expired key: #{t}"
             valid = false
             break
           end
         end
 
-        Chef::Log.debug "key #{key} #{valid ? "is valid" : "is not valid"}"
+        logger.debug "key #{key} #{valid ? "is valid" : "is not valid"}"
         valid
       end
 

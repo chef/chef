@@ -34,7 +34,7 @@ class Chef
         if new_resource.gpgautoimportkeys
           install_gpg_key(new_resource.gpgkey)
         else
-          Chef::Log.debug("'gpgautoimportkeys' property is set to false. Skipping key import.")
+          logger.trace("'gpgautoimportkeys' property is set to false. Skipping key import.")
         end
 
         declare_resource(:template, "/etc/zypp/repos.d/#{escaped_repo_name}.repo") do
@@ -105,10 +105,10 @@ class Chef
       # @return [Symbol] :remote_file or :cookbook_file
       def key_type(uri)
         if uri.start_with?("http")
-          Chef::Log.debug("Will use :remote_file resource to cache the gpg key locally")
+          logger.trace("Will use :remote_file resource to cache the gpg key locally")
           :remote_file
         elsif has_cookbook_file?(uri)
-          Chef::Log.debug("Will use :cookbook_file resource to cache the gpg key locally")
+          logger.trace("Will use :cookbook_file resource to cache the gpg key locally")
           :cookbook_file
         else
           raise Chef::Exceptions::FileNotFound, "Cannot determine location of gpgkey. Must start with 'http' or be a file managed by Chef."
@@ -123,7 +123,7 @@ class Chef
         so = shell_out("rpm -qa gpg-pubkey*")
         # expected output & match: http://rubular.com/r/RdF7EcXEtb
         status = /gpg-pubkey-#{key_fingerprint(key_path)}/.match(so.stdout)
-        Chef::Log.debug("GPG key at #{key_path} is known by rpm? #{status ? "true" : "false"}")
+        logger.trace("GPG key at #{key_path} is known by rpm? #{status ? "true" : "false"}")
         status
       end
 
@@ -135,7 +135,7 @@ class Chef
         so = shell_out!("gpg --with-fingerprint #{key_path}")
         # expected output and match: http://rubular.com/r/BpfMjxySQM
         fingerprint = /pub\s*\S*\/(\S*)/.match(so.stdout)[1].downcase
-        Chef::Log.debug("GPG fingerprint of key at #{key_path} is #{fingerprint}")
+        logger.trace("GPG fingerprint of key at #{key_path} is #{fingerprint}")
         fingerprint
       end
 
@@ -143,7 +143,7 @@ class Chef
       # @param [String] uri the uri of the local or remote gpg key
       def install_gpg_key(uri)
         unless uri
-          Chef::Log.debug("'gpgkey' property not provided or set to nil. Skipping key import.")
+          logger.trace("'gpgkey' property not provided or set to nil. Skipping key import.")
           return
         end
 

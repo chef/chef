@@ -78,12 +78,12 @@ class Chef
           Chef::CookbookUploader.new(cookbook).validate_cookbooks
           tmp_cookbook_dir = Chef::CookbookSiteStreamingUploader.create_build_dir(cookbook)
           begin
-            Chef::Log.debug("Temp cookbook directory is #{tmp_cookbook_dir.inspect}")
+            Chef::Log.trace("Temp cookbook directory is #{tmp_cookbook_dir.inspect}")
             ui.info("Making tarball #{cookbook_name}.tgz")
             shell_out!("#{tar_cmd} -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
           rescue => e
             ui.error("Error making tarball #{cookbook_name}.tgz: #{e.message}. Increase log verbosity (-VV) for more information.")
-            Chef::Log.debug("\n#{e.backtrace.join("\n")}")
+            Chef::Log.trace("\n#{e.backtrace.join("\n")}")
             exit(1)
           end
 
@@ -98,11 +98,11 @@ class Chef
           begin
             do_upload("#{tmp_cookbook_dir}/#{cookbook_name}.tgz", category, Chef::Config[:node_name], Chef::Config[:client_key])
             ui.info("Upload complete")
-            Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
+            Chef::Log.trace("Removing local staging directory at #{tmp_cookbook_dir}")
             FileUtils.rm_rf tmp_cookbook_dir
           rescue => e
             ui.error("Error uploading cookbook #{cookbook_name} to Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
-            Chef::Log.debug("\n#{e.backtrace.join("\n")}")
+            Chef::Log.trace("\n#{e.backtrace.join("\n")}")
             exit(1)
           end
 
@@ -118,7 +118,7 @@ class Chef
       rescue => e
         return "Other" if e.kind_of?(Net::HTTPServerException) && e.response.code == "404"
         ui.fatal("Unable to reach Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
-        Chef::Log.debug("\n#{e.backtrace.join("\n")}")
+        Chef::Log.trace("\n#{e.backtrace.join("\n")}")
         exit(1)
       end
 

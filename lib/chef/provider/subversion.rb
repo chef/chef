@@ -61,7 +61,7 @@ class Chef
             shell_out!(checkout_command, run_options)
           end
         else
-          Chef::Log.debug "#{new_resource} checkout destination #{new_resource.destination} already exists or is a non-empty directory - nothing to do"
+          logger.trace "#{new_resource} checkout destination #{new_resource.destination} already exists or is a non-empty directory - nothing to do"
         end
       end
 
@@ -69,7 +69,7 @@ class Chef
         if target_dir_non_existent_or_empty?
           action_force_export
         else
-          Chef::Log.debug "#{new_resource} export destination #{new_resource.destination} already exists or is a non-empty directory - nothing to do"
+          logger.trace "#{new_resource} export destination #{new_resource.destination} already exists or is a non-empty directory - nothing to do"
         end
       end
 
@@ -83,11 +83,11 @@ class Chef
         assert_target_directory_valid!
         if ::File.exist?(::File.join(new_resource.destination, ".svn"))
           current_rev = find_current_revision
-          Chef::Log.debug "#{new_resource} current revision: #{current_rev} target revision: #{revision_int}"
+          logger.trace "#{new_resource} current revision: #{current_rev} target revision: #{revision_int}"
           unless current_revision_matches_target_revision?
             converge_by("sync #{new_resource.destination} from #{new_resource.repository}") do
               shell_out!(sync_command, run_options)
-              Chef::Log.info "#{new_resource} updated to revision: #{revision_int}"
+              logger.info "#{new_resource} updated to revision: #{revision_int}"
             end
           end
         else
@@ -97,14 +97,14 @@ class Chef
 
       def sync_command
         c = scm :update, new_resource.svn_arguments, verbose, authentication, proxy, "-r#{revision_int}", new_resource.destination
-        Chef::Log.debug "#{new_resource} updated working copy #{new_resource.destination} to revision #{new_resource.revision}"
+        logger.trace "#{new_resource} updated working copy #{new_resource.destination} to revision #{new_resource.revision}"
         c
       end
 
       def checkout_command
         c = scm :checkout, new_resource.svn_arguments, verbose, authentication, proxy,
           "-r#{revision_int}", new_resource.repository, new_resource.destination
-        Chef::Log.info "#{new_resource} checked out #{new_resource.repository} at revision #{new_resource.revision} to #{new_resource.destination}"
+        logger.info "#{new_resource} checked out #{new_resource.repository} at revision #{new_resource.revision} to #{new_resource.destination}"
         c
       end
 
@@ -113,7 +113,7 @@ class Chef
         args << new_resource.svn_arguments << verbose << authentication << proxy <<
           "-r#{revision_int}" << new_resource.repository << new_resource.destination
         c = scm :export, *args
-        Chef::Log.info "#{new_resource} exported #{new_resource.repository} at revision #{new_resource.revision} to #{new_resource.destination}"
+        logger.info "#{new_resource} exported #{new_resource.repository} at revision #{new_resource.revision} to #{new_resource.destination}"
         c
       end
 
@@ -175,7 +175,7 @@ class Chef
         rev = (repo_attrs["Last Changed Rev"] || repo_attrs["Revision"])
         rev.strip! if rev
         raise "Could not parse `svn info` data: #{svn_info}" if repo_attrs.empty?
-        Chef::Log.debug "#{new_resource} resolved revision #{new_resource.revision} to #{rev}"
+        logger.trace "#{new_resource} resolved revision #{new_resource.revision} to #{rev}"
         rev
       end
 

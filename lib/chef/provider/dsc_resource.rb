@@ -196,10 +196,10 @@ class Chef
         unless @reboot_resource.nil?
           case reboot_action
           when :nothing
-            Chef::Log.debug("A reboot was requested by the DSC resource, but reboot_action is :nothing.")
-            Chef::Log.debug("This dsc_resource will not reboot the node.")
+            logger.trace("A reboot was requested by the DSC resource, but reboot_action is :nothing.")
+            logger.trace("This dsc_resource will not reboot the node.")
           else
-            Chef::Log.debug("Requesting node reboot with #{reboot_action}.")
+            logger.trace("Requesting node reboot with #{reboot_action}.")
             @reboot_resource.run_action(reboot_action)
           end
         end

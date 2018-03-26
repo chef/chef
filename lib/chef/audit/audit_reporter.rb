@@ -42,13 +42,13 @@ class Chef
       end
 
       def audit_phase_start(run_status)
-        Chef::Log.debug("Audit Reporter starting")
+        Chef::Log.trace("Audit Reporter starting")
         @audit_data = AuditData.new(run_status.node.name, run_status.run_id)
         @run_status = run_status
       end
 
       def audit_phase_complete(audit_output)
-        Chef::Log.debug("Audit Reporter completed successfully without errors.")
+        Chef::Log.trace("Audit Reporter completed successfully without errors.")
         ordered_control_groups.each_value do |control_group|
           audit_data.add_control_group(control_group)
         end
@@ -61,7 +61,7 @@ class Chef
       def audit_phase_failed(error, audit_output)
         # The stacktrace information has already been logged elsewhere
         @audit_phase_error = error
-        Chef::Log.debug("Audit Reporter failed.")
+        Chef::Log.trace("Audit Reporter failed.")
         ordered_control_groups.each_value do |control_group|
           audit_data.add_control_group(control_group)
         end
@@ -104,12 +104,12 @@ class Chef
 
       def post_auditing_data
         unless auditing_enabled?
-          Chef::Log.debug("Audit Reports are disabled. Skipping sending reports.")
+          Chef::Log.trace("Audit Reports are disabled. Skipping sending reports.")
           return
         end
 
         unless run_status
-          Chef::Log.debug("Run failed before audit mode was initialized, not sending audit report to server")
+          Chef::Log.trace("Run failed before audit mode was initialized, not sending audit report to server")
           return
         end
 
@@ -117,7 +117,7 @@ class Chef
         audit_data.end_time = iso8601ify(run_status.end_time)
 
         audit_history_url = "controls"
-        Chef::Log.debug("Sending audit report (run-id: #{audit_data.run_id})")
+        Chef::Log.trace("Sending audit report (run-id: #{audit_data.run_id})")
         run_data = audit_data.to_hash
 
         if @audit_phase_error
@@ -126,7 +126,7 @@ class Chef
           run_data[:error] = error_info
         end
 
-        Chef::Log.debug "Audit Report:\n#{Chef::JSONCompat.to_json_pretty(run_data)}"
+        Chef::Log.trace "Audit Report:\n#{Chef::JSONCompat.to_json_pretty(run_data)}"
         begin
           rest_client.post(audit_history_url, run_data, headers)
         rescue StandardError => e
@@ -134,14 +134,14 @@ class Chef
             # 404 error code is OK. This means the version of server we're running against doesn't support
             # audit reporting. Don't alarm failure in this case.
             if e.response.code == "404"
-              Chef::Log.debug("Server doesn't support audit reporting. Skipping report.")
+              Chef::Log.trace("Server doesn't support audit reporting. Skipping report.")
               return
             else
               # Save the audit report to local disk
               error_file = "failed-audit-data.json"
               Chef::FileCache.store(error_file, Chef::JSONCompat.to_json_pretty(run_data), 0640)
               if Chef::Config.chef_zero.enabled
-                Chef::Log.debug("Saving audit report to #{Chef::FileCache.load(error_file, false)}")
+                Chef::Log.trace("Saving audit report to #{Chef::FileCache.load(error_file, false)}")
               else
                 Chef::Log.error("Failed to post audit report to server. Saving report to #{Chef::FileCache.load(error_file, false)}")
               end

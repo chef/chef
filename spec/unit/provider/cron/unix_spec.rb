@@ -41,10 +41,15 @@ describe Chef::Provider::Cron::Unix do
   let(:exitstatus) { 0 }
   let(:shell_out) { double("Mixlib::ShellOut", :status => status, :stdout => stdout, :stderr => stderr) }
 
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+
   it "is a Chef::Provider:Cron" do
     expect(provider).to be_a(Chef::Provider::Cron)
   end
 
+  before do
+    allow(run_context).to receive(:logger).and_return(logger)
+  end
   describe "read_crontab" do
     let(:stderr) { "" }
     let(:stdout) do
@@ -59,7 +64,7 @@ describe Chef::Provider::Cron::Unix do
     end
 
     before do
-      allow(Chef::Log).to receive(:debug)
+      allow(logger).to receive(:trace)
       allow(shell_out).to receive(:format_for_exception).and_return("formatted command output")
       allow(provider).to receive(:shell_out).with("/usr/bin/crontab -l", :user => username).and_return(shell_out)
     end
@@ -83,7 +88,7 @@ describe Chef::Provider::Cron::Unix do
 
       it "logs the crontab output to debug" do
         provider.send(:read_crontab)
-        expect(Chef::Log).to have_received(:debug).with("formatted command output")
+        expect(logger).to have_received(:trace).with("formatted command output")
       end
     end
 
@@ -98,7 +103,7 @@ describe Chef::Provider::Cron::Unix do
 
       it "logs the crontab output to debug" do
         provider.send(:read_crontab) rescue nil
-        expect(Chef::Log).to have_received(:debug).with("formatted command output")
+        expect(logger).to have_received(:trace).with("formatted command output")
       end
     end
   end

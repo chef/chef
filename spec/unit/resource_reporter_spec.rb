@@ -635,7 +635,7 @@ describe Chef::ResourceReporter do
       end
 
       it "prints an error about the 404" do
-        expect(Chef::Log).to receive(:debug).with(/404/)
+        expect(Chef::Log).to receive(:trace).with(/404/)
         @resource_reporter.run_started(@run_status)
       end
 

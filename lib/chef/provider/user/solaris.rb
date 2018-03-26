@@ -83,7 +83,7 @@ class Chef
 
         def manage_password
           return unless current_resource.password != new_resource.password && new_resource.password
-          Chef::Log.debug("#{new_resource} setting password to #{new_resource.password}")
+          logger.trace("#{new_resource} setting password to #{new_resource.password}")
           write_shadow_file
         end
 

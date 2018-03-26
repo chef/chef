@@ -83,7 +83,7 @@ class Chef
 
         def download_source_file
           source_resource.run_action(:create)
-          Chef::Log.debug("#{new_resource} fetched source file to #{source_resource.path}")
+          logger.trace("#{new_resource} fetched source file to #{source_resource.path}")
           source_resource.path
         end
 

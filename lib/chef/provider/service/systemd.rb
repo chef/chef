@@ -42,7 +42,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     @status_check_success = true
 
     if new_resource.status_command
-      Chef::Log.debug("#{new_resource} you have specified a status command, running..")
+      logger.trace("#{new_resource} you have specified a status command, running..")
 
       unless shell_out(new_resource.status_command).error?
         current_resource.running(true)
@@ -95,7 +95,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def start_service
     if current_resource.running
-      Chef::Log.debug("#{new_resource} already running, not starting")
+      logger.trace("#{new_resource} already running, not starting")
     else
       if new_resource.start_command
         super
@@ -108,7 +108,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def stop_service
     unless current_resource.running
-      Chef::Log.debug("#{new_resource} not running, not stopping")
+      logger.trace("#{new_resource} not running, not stopping")
     else
       if new_resource.stop_command
         super

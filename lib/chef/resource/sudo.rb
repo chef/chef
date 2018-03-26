@@ -160,7 +160,7 @@ class Chef
         Chef::Log.warn("#{new_resource.filename} will be rendered, but will not take effect because the #{new_resource.config_prefix}/sudoers config lacks the includedir directive that loads configs from #{new_resource.config_prefix}/sudoers.d/!") if ::File.readlines("#{new_resource.config_prefix}/sudoers").grep(/includedir/).empty?
 
         if new_resource.template
-          Chef::Log.debug("Template property provided, all other properties ignored.")
+          logger.trace("Template property provided, all other properties ignored.")
 
           declare_resource(:template, "#{target}#{new_resource.filename}") do
             source new_resource.template

@@ -79,7 +79,7 @@ class Chef
     def self.checksum_cookbook_file(filepath)
       Chef::Digester.generate_md5_checksum_for_file(filepath)
     rescue Errno::ENOENT
-      Chef::Log.debug("File #{filepath} does not exist, so there is no checksum to generate")
+      Chef::Log.trace("File #{filepath} does not exist, so there is no checksum to generate")
       nil
     end
 
@@ -188,7 +188,7 @@ class Chef
         raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
       end
 
-      Chef::Log.debug("Found recipe #{recipe_name} in cookbook #{name}")
+      Chef::Log.trace("Found recipe #{recipe_name} in cookbook #{name}")
       recipe = Chef::Recipe.new(name, recipe_name, run_context)
       recipe_filename = recipe_filenames_by_name[recipe_name]
 

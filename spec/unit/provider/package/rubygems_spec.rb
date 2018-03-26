@@ -33,8 +33,10 @@ require "ostruct"
 describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   include GemspecBackcompatCreator
 
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
   before do
     @gem_env = Chef::Provider::Package::Rubygems::CurrentGemEnvironment.new
+    allow(@gem_env).to receive(:logger).and_return(logger)
   end
 
   it "determines the gem paths from the in memory rubygems" do

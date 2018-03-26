@@ -96,7 +96,7 @@ class Chef
         # @return [Boolean]
         def exists?(pagefile)
           @exists ||= begin
-            Chef::Log.debug("Checking if #{pagefile} exists by runing: wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" list /format:list")
+            logger.trace("Checking if #{pagefile} exists by runing: wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" list /format:list")
             cmd = shell_out("wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" list /format:list", returns: [0])
             cmd.stderr.empty? && (cmd.stdout =~ /SettingID=#{get_setting_id(pagefile)}/i)
           end
@@ -110,7 +110,7 @@ class Chef
         # @return [Boolean]
         def max_and_min_set?(pagefile, min, max)
           @max_and_min_set ||= begin
-            Chef::Log.debug("Checking if #{pagefile} min: #{min} and max #{max} are set")
+            logger.trace("Checking if #{pagefile} min: #{min} and max #{max} are set")
             cmd = shell_out("wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" list /format:list", returns: [0])
             cmd.stderr.empty? && (cmd.stdout =~ /InitialSize=#{min}/i) && (cmd.stdout =~ /MaximumSize=#{max}/i)
           end
@@ -121,7 +121,7 @@ class Chef
         # @param [String] pagefile path to the pagefile
         def create(pagefile)
           converge_by("create pagefile #{pagefile}") do
-            Chef::Log.debug("Running wmic.exe pagefileset create name=\"#{pagefile}\"")
+            logger.trace("Running wmic.exe pagefileset create name=\"#{pagefile}\"")
             cmd = shell_out("wmic.exe pagefileset create name=\"#{pagefile}\"")
             check_for_errors(cmd.stderr)
           end
@@ -132,7 +132,7 @@ class Chef
         # @param [String] pagefile path to the pagefile
         def delete(pagefile)
           converge_by("remove pagefile #{pagefile}") do
-            Chef::Log.debug("Running wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" delete")
+            logger.trace("Running wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" delete")
             cmd = shell_out("wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" delete")
             check_for_errors(cmd.stderr)
           end
@@ -143,7 +143,7 @@ class Chef
         # @return [Boolean]
         def automatic_managed?
           @automatic_managed ||= begin
-            Chef::Log.debug("Checking if pagefiles are automatically managed")
+            logger.trace("Checking if pagefiles are automatically managed")
             cmd = shell_out("wmic.exe computersystem where name=\"%computername%\" get AutomaticManagedPagefile /format:list")
             cmd.stderr.empty? && (cmd.stdout =~ /AutomaticManagedPagefile=TRUE/i)
           end
@@ -152,7 +152,7 @@ class Chef
         # turn on automatic management of all pagefiles by Windows
         def set_automatic_managed
           converge_by("set pagefile to Automatic Managed") do
-            Chef::Log.debug("Running wmic.exe computersystem where name=\"%computername%\" set AutomaticManagedPagefile=True")
+            logger.trace("Running wmic.exe computersystem where name=\"%computername%\" set AutomaticManagedPagefile=True")
             cmd = shell_out("wmic.exe computersystem where name=\"%computername%\" set AutomaticManagedPagefile=True")
             check_for_errors(cmd.stderr)
           end
@@ -161,7 +161,7 @@ class Chef
         # turn off automatic management of all pagefiles by Windows
         def unset_automatic_managed
           converge_by("set pagefile to User Managed") do
-            Chef::Log.debug("Running wmic.exe computersystem where name=\"%computername%\" set AutomaticManagedPagefile=False")
+            logger.trace("Running wmic.exe computersystem where name=\"%computername%\" set AutomaticManagedPagefile=False")
             cmd = shell_out("wmic.exe computersystem where name=\"%computername%\" set AutomaticManagedPagefile=False")
             check_for_errors(cmd.stderr)
           end
@@ -174,7 +174,7 @@ class Chef
         # @param [String] max the minimum size of the pagefile
         def set_custom_size(pagefile, min, max)
           converge_by("set #{pagefile} to InitialSize=#{min} & MaximumSize=#{max}") do
-            Chef::Log.debug("Running wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" set InitialSize=#{min},MaximumSize=#{max}")
+            logger.trace("Running wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" set InitialSize=#{min},MaximumSize=#{max}")
             cmd = shell_out("wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" set InitialSize=#{min},MaximumSize=#{max}", returns: [0])
             check_for_errors(cmd.stderr)
           end
@@ -185,7 +185,7 @@ class Chef
         # @param [String] pagefile path to the pagefile
         def set_system_managed(pagefile)
           converge_by("set #{pagefile} to System Managed") do
-            Chef::Log.debug("Running wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" set InitialSize=0,MaximumSize=0")
+            logger.trace("Running wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" set InitialSize=0,MaximumSize=0")
             cmd = shell_out("wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" set InitialSize=0,MaximumSize=0", returns: [0])
             check_for_errors(cmd.stderr)
           end

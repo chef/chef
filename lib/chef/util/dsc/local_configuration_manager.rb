@@ -46,7 +46,7 @@ class Chef::Util::DSC
     private
 
     def run_configuration_cmdlet(configuration_document, apply_configuration, shellout_flags)
-      Chef::Log.debug("DSC: Calling DSC Local Config Manager to #{apply_configuration ? "set" : "test"} configuration document.")
+      Chef::Log.trace("DSC: Calling DSC Local Config Manager to #{apply_configuration ? "set" : "test"} configuration document.")
 
       start_operation_timing
       status = nil
@@ -63,10 +63,10 @@ class Chef::Util::DSC
         end_operation_timing
         remove_configuration_document
         if last_operation_execution_time_seconds
-          Chef::Log.debug("DSC: DSC operation completed in #{last_operation_execution_time_seconds} seconds.")
+          Chef::Log.trace("DSC: DSC operation completed in #{last_operation_execution_time_seconds} seconds.")
         end
       end
-      Chef::Log.debug("DSC: Completed call to DSC Local Config Manager")
+      Chef::Log.trace("DSC: Completed call to DSC Local Config Manager")
       status
     end
 
@@ -110,7 +110,7 @@ class Chef::Util::DSC
     end
 
     def configuration_update_required?(command_output)
-      Chef::Log.debug("DSC: DSC returned the following '-whatif' output from test operation:\n#{command_output}")
+      Chef::Log.trace("DSC: DSC returned the following '-whatif' output from test operation:\n#{command_output}")
       begin
         Parser.parse(command_output, ps_version_gte_5?)
       rescue Chef::Exceptions::LCMParser => e

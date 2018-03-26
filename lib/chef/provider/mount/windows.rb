@@ -47,15 +47,15 @@ class Chef
 
           @current_resource = Chef::Resource::Mount.new(@new_resource.name)
           @current_resource.mount_point(@new_resource.mount_point)
-          Chef::Log.debug("Checking for mount point #{@current_resource.mount_point}")
+          logger.trace("Checking for mount point #{@current_resource.mount_point}")
 
           begin
             @current_resource.device(@mount.device)
-            Chef::Log.debug("#{@current_resource.device} mounted on #{@new_resource.mount_point}")
+            logger.trace("#{@current_resource.device} mounted on #{@new_resource.mount_point}")
             @current_resource.mounted(true)
           rescue ArgumentError => e
             @current_resource.mounted(false)
-            Chef::Log.debug("#{@new_resource.mount_point} is not mounted: #{e.message}")
+            logger.trace("#{@new_resource.mount_point} is not mounted: #{e.message}")
           end
         end
 
@@ -65,18 +65,18 @@ class Chef
                        :username => @new_resource.username,
                        :domainname => @new_resource.domain,
                        :password => @new_resource.password)
-            Chef::Log.debug("#{@new_resource} is mounted at #{@new_resource.mount_point}")
+            logger.trace("#{@new_resource} is mounted at #{@new_resource.mount_point}")
           else
-            Chef::Log.debug("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
+            logger.trace("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
           end
         end
 
         def umount_fs
           if @current_resource.mounted
             @mount.delete
-            Chef::Log.debug("#{@new_resource} is no longer mounted at #{@new_resource.mount_point}")
+            logger.trace("#{@new_resource} is no longer mounted at #{@new_resource.mount_point}")
           else
-            Chef::Log.debug("#{@new_resource} is not mounted at #{@new_resource.mount_point}")
+            logger.trace("#{@new_resource} is not mounted at #{@new_resource.mount_point}")
           end
         end
 

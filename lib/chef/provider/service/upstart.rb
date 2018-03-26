@@ -109,7 +109,7 @@ class Chef
           # We do not support searching for a service via ps when using upstart since status is a native
           # upstart function. We will however support status_command in case someone wants to do something special.
           if @new_resource.status_command
-            Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
+            logger.trace("#{@new_resource} you have specified a status command, running..")
 
             begin
               if shell_out!(@new_resource.status_command).exitstatus == 0
@@ -135,16 +135,16 @@ class Chef
           end
           # Get enabled/disabled state by reading job configuration file
           if ::File.exists?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-            Chef::Log.debug("#{@new_resource} found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+            logger.trace("#{@new_resource} found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}", "r") do |file|
               while line = file.gets
                 case line
                 when /^start on/
-                  Chef::Log.debug("#{@new_resource} enabled: #{line.chomp}")
+                  logger.trace("#{@new_resource} enabled: #{line.chomp}")
                   @current_resource.enabled true
                   break
                 when /^#start on/
-                  Chef::Log.debug("#{@new_resource} disabled: #{line.chomp}")
+                  logger.trace("#{@new_resource} disabled: #{line.chomp}")
                   @current_resource.enabled false
                   break
                 end
@@ -152,7 +152,7 @@ class Chef
             end
           else
             @config_file_found = false
-            Chef::Log.debug("#{@new_resource} did not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+            logger.trace("#{@new_resource} did not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             @current_resource.enabled false
           end
 
@@ -164,7 +164,7 @@ class Chef
           # Calling start on a service that is already started will return 1
           # Our 'goal' when we call start is to ensure the service is started
           if @upstart_service_running
-            Chef::Log.debug("#{@new_resource} already running, not starting")
+            logger.trace("#{@new_resource} already running, not starting")
           else
             if @new_resource.start_command
               super
@@ -180,7 +180,7 @@ class Chef
           # Calling stop on a service that is already stopped will return 1
           # Our 'goal' when we call stop is to ensure the service is stopped
           unless @upstart_service_running
-            Chef::Log.debug("#{@new_resource} not running, not stopping")
+            logger.trace("#{@new_resource} not running, not stopping")
           else
             if @new_resource.stop_command
               super
@@ -226,14 +226,14 @@ class Chef
         # https://bugs.launchpad.net/upstart/+bug/94065
 
         def enable_service
-          Chef::Log.debug("#{@new_resource} upstart lacks inherent support for enabling services, editing job config file")
+          logger.trace("#{@new_resource} upstart lacks inherent support for enabling services, editing job config file")
           conf = Chef::Util::FileEdit.new("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
           conf.search_file_replace(/^#start on/, "start on")
           conf.write_file
         end
 
         def disable_service
-          Chef::Log.debug("#{@new_resource} upstart lacks inherent support for disabling services, editing job config file")
+          logger.trace("#{@new_resource} upstart lacks inherent support for disabling services, editing job config file")
           conf = Chef::Util::FileEdit.new("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
           conf.search_file_replace(/^start on/, "#start on")
           conf.write_file

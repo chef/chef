@@ -326,8 +326,7 @@ class Chef
     # @see DSL::IncludeRecipe#load_recipe
     #
     def load_recipe(recipe_name, current_cookbook: nil)
-      # FIXME(log): Should be trace
-      logger.debug("Loading recipe #{recipe_name} via include_recipe")
+      logger.trace("Loading recipe #{recipe_name} via include_recipe")
 
       cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name, current_cookbook: current_cookbook)
 
@@ -342,8 +341,7 @@ ERROR_MESSAGE
       end
 
       if loaded_fully_qualified_recipe?(cookbook_name, recipe_short_name)
-        # FIXME(log): Should be trace
-        logger.debug("I am not loading #{recipe_name}, because I have already seen it.")
+        logger.trace("I am not loading #{recipe_name}, because I have already seen it.")
         false
       else
         loaded_recipe(cookbook_name, recipe_short_name)
@@ -367,8 +365,7 @@ ERROR_MESSAGE
         raise Chef::Exceptions::RecipeNotFound, "could not find recipe file #{recipe_file}"
       end
 
-      # FIXME(log): Should be trace
-      logger.debug("Loading recipe file #{recipe_file}")
+      logger.trace("Loading recipe file #{recipe_file}")
       recipe = Chef::Recipe.new("@recipe_files", recipe_file, self)
       recipe.from_file(recipe_file)
       recipe

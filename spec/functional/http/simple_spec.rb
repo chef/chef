@@ -87,11 +87,11 @@ describe Chef::HTTP::Simple do
 
   it_behaves_like "downloading all the things"
 
-  context "when Chef::Log.level = :debug" do
+  context "when Chef::Log.level = :trace" do
     before do
-      Chef::Log.level = :debug
+      Chef::Log.level = :trace
       @debug_log = ""
-      allow(Chef::Log).to receive(:debug) { |str| @debug_log << str }
+      allow(Chef::Log).to receive(:trace) { |str| @debug_log << str }
     end
 
     let(:source) { "http://localhost:9000" }

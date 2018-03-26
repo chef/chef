@@ -148,7 +148,7 @@ class Chef
     # true:: Always returns true
     def sync_cookbooks
       Chef::Log.info("Loading cookbooks [#{cookbooks.map { |ckbk| ckbk.name + '@' + ckbk.version }.join(', ')}]")
-      Chef::Log.debug("Cookbooks detail: #{cookbooks.inspect}")
+      Chef::Log.trace("Cookbooks detail: #{cookbooks.inspect}")
 
       clear_obsoleted_cookbooks
 
@@ -272,7 +272,7 @@ class Chef
         download_file(file.manifest_record["url"], cache_filename)
         @events.updated_cookbook_file(file.cookbook.name, cache_filename)
       else
-        Chef::Log.debug("Not storing #{cache_filename}, as the cache is up to date.")
+        Chef::Log.trace("Not storing #{cache_filename}, as the cache is up to date.")
       end
 
       # Load the file in the cache and return the full file path to the loaded file

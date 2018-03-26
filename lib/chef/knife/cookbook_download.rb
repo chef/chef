@@ -75,7 +75,7 @@ class Chef
         basedir = File.join(config[:download_directory], "#{@cookbook_name}-#{cookbook.version}")
         if File.exists?(basedir)
           if config[:force]
-            Chef::Log.debug("Deleting #{basedir}")
+            Chef::Log.trace("Deleting #{basedir}")
             FileUtils.rm_rf(basedir)
           else
             ui.fatal("Directory #{basedir} exists, use --force to overwrite")
@@ -87,7 +87,7 @@ class Chef
           ui.info("Downloading #{segment}")
           files.each do |segment_file|
             dest = File.join(basedir, segment_file["path"].gsub("/", File::SEPARATOR))
-            Chef::Log.debug("Downloading #{segment_file['path']} to #{dest}")
+            Chef::Log.trace("Downloading #{segment_file['path']} to #{dest}")
             FileUtils.mkdir_p(File.dirname(dest))
             tempfile = rest.streaming_request(segment_file["url"])
             FileUtils.mv(tempfile.path, dest)

@@ -44,7 +44,7 @@ class Chef
         if ! @resource_converged
           converge_by(generate_description) do
             run_configuration(:set)
-            Chef::Log.info("DSC resource configuration completed successfully")
+            logger.info("DSC resource configuration completed successfully")
           end
         end
       end
@@ -95,7 +95,7 @@ class Chef
           configuration_document = generate_configuration_document(config_directory, configuration_flags)
           @operations[operation].call(config_manager, configuration_document, shellout_flags)
         rescue Exception => e
-          Chef::Log.error("DSC operation failed: #{e.message}")
+          logger.error("DSC operation failed: #{e.message}")
           raise e
         ensure
           ::FileUtils.rm_rf(config_directory)
@@ -124,7 +124,7 @@ class Chef
           generator.configuration_document_from_script_path(@dsc_resource.command, configuration_name, configuration_flags, shellout_flags)
         else
           # If code is also not provided, we mimic what the other script resources do (execute nothing)
-          Chef::Log.warn("Neither code or command were provided for dsc_resource[#{@dsc_resource.name}].") unless @dsc_resource.code
+          logger.warn("Neither code or command were provided for dsc_resource[#{@dsc_resource.name}].") unless @dsc_resource.code
           generator.configuration_document_from_script_code(@dsc_resource.code || "", configuration_flags, @dsc_resource.imports, shellout_flags)
         end
       end

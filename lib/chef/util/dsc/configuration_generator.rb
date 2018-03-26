@@ -26,7 +26,7 @@ class Chef::Util::DSC
     end
 
     def configuration_document_from_script_code(code, configuration_flags, imports, shellout_flags)
-      Chef::Log.debug("DSC: DSC code:\n '#{code}'")
+      Chef::Log.trace("DSC: DSC code:\n '#{code}'")
       generated_script_path = write_document_generation_script(code, "chef_dsc", imports)
       begin
         configuration_document_from_script_path(generated_script_path, "chef_dsc", configuration_flags, shellout_flags)

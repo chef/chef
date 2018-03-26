@@ -109,9 +109,9 @@ class Chef
 
         # Daemon class needs to have all the signal callbacks return
         # before service_main returns.
-        Chef::Log.debug("Giving signal callbacks some time to exit...")
+        Chef::Log.trace("Giving signal callbacks some time to exit...")
         sleep 1
-        Chef::Log.debug("Exiting service...")
+        Chef::Log.trace("Exiting service...")
       end
 
       ################################################################################
@@ -135,7 +135,7 @@ class Chef
               run_warning_displayed = true
             end
 
-            Chef::Log.debug("Waiting for chef-client run...")
+            Chef::Log.trace("Waiting for chef-client run...")
             sleep 1
           end
         end
@@ -200,8 +200,8 @@ class Chef
           :timeout => Chef::Config[:windows_service][:watchdog_timeout],
           :logger => Chef::Log
         )
-        Chef::Log.debug "#{result.stdout}"
-        Chef::Log.debug "#{result.stderr}"
+        Chef::Log.trace "#{result.stdout}"
+        Chef::Log.trace "#{result.stderr}"
       rescue Mixlib::ShellOut::CommandTimeout => e
         Chef::Log.error "chef-client timed out\n(#{e})"
         Chef::Log.error(<<-EOF)

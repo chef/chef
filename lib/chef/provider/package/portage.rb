@@ -53,7 +53,7 @@ class Chef
             end
           elsif versions.size == 1
             current_resource.version(versions.first.last)
-            Chef::Log.debug("#{new_resource} current version #{$1}")
+            logger.trace("#{new_resource} current version #{$1}")
           end
 
           current_resource

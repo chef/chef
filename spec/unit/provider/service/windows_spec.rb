@@ -23,6 +23,8 @@ require "mixlib/shellout"
 describe Chef::Provider::Service::Windows, "load_current_resource", :windows_only do
   include_context "Win32"
 
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
+
   let(:chef_service_name) { "chef-client" }
   let(:new_resource) { Chef::Resource::WindowsService.new(chef_service_name) }
 
@@ -77,8 +79,9 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
   end
 
   let(:provider) do
-    prvdr = Chef::Provider::Service::Windows.new(new_resource,
-      Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new))
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+    allow(run_context).to receive(:logger).and_return(logger)
+    prvdr = Chef::Provider::Service::Windows.new(new_resource, run_context)
     prvdr.current_resource = Chef::Resource::WindowsService.new("current-chef")
     prvdr
   end
@@ -268,7 +271,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
       end
 
       it "logs debug message" do
-        expect(Chef::Log).to receive(:debug).with("windows_service[#{chef_service_name}] already exists - nothing to do")
+        expect(logger).to receive(:trace).with("windows_service[#{chef_service_name}] already exists - nothing to do")
         provider.action_create
       end
 
@@ -348,7 +351,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
       end
 
       it "logs debug message" do
-        expect(Chef::Log).to receive(:debug).with("windows_service[#{chef_service_name}] does not exist - nothing to do")
+        expect(logger).to receive(:trace).with("windows_service[#{chef_service_name}] does not exist - nothing to do")
         provider.action_delete
       end
 
@@ -421,7 +424,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
       end
 
       it "logs warning" do
-        expect(Chef::Log).to receive(:warn)
+        expect(logger).to receive(:warn)
           .with("windows_service[#{chef_service_name}] does not exist. Maybe you need to prepend action :create")
         provider.action_configure
       end

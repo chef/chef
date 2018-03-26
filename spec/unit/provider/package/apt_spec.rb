@@ -20,6 +20,7 @@ require "spec_helper"
 require "ostruct"
 
 describe Chef::Provider::Package::Apt do
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
   # XXX: sorry this is ugly and was done quickly to get 12.0.2 out, this file needs a rewrite to use
   # let blocks and shared examples
 
@@ -27,6 +28,7 @@ describe Chef::Provider::Package::Apt do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
+    allow(@run_context).to receive(:logger).and_return(logger)
     @new_resource = Chef::Resource::AptPackage.new("irssi", @run_context)
 
     @status = double("Status", :exitstatus => 0)
@@ -418,7 +420,7 @@ mpg123 1.12.1-0ubuntu1
         ).and_return(instance_double(
           Mixlib::ShellOut, stdout: "irssi")
                     )
-        expect(Chef::Log).to receive(:debug).with("#{@provider.new_resource} is already locked")
+        expect(logger).to receive(:trace).with("#{@provider.new_resource} is already locked")
 
         @provider.new_resource.package_name = ["irssi"]
         @provider.action_lock
@@ -440,7 +442,7 @@ mpg123 1.12.1-0ubuntu1
         ).and_return(instance_double(
           Mixlib::ShellOut, stdout: "")
                     )
-        expect(Chef::Log).to receive(:debug).with("#{@provider.new_resource} is already unlocked")
+        expect(logger).to receive(:trace).with("#{@provider.new_resource} is already unlocked")
 
         @provider.new_resource.package_name = ["irssi"]
         @provider.action_unlock

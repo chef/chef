@@ -73,8 +73,8 @@ class Chef
       # special handling to cover common use cases.
       def add_exit_status_wrapper
         self.code = wrapper_script
-        Chef::Log.debug("powershell_script provider called with script code:\n\n#{new_resource.code}\n")
-        Chef::Log.debug("powershell_script provider will execute transformed code:\n\n#{code}\n")
+        logger.trace("powershell_script provider called with script code:\n\n#{new_resource.code}\n")
+        logger.trace("powershell_script provider will execute transformed code:\n\n#{code}\n")
       end
 
       def validate_script_syntax!

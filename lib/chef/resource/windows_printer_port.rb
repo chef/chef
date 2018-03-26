@@ -63,7 +63,7 @@ class Chef
       def port_exists?(name)
         port_reg_key = PORTS_REG_KEY + name
 
-        Chef::Log.debug "Checking to see if this reg key exists: '#{port_reg_key}'"
+        logger.trace "Checking to see if this reg key exists: '#{port_reg_key}'"
         registry_key_exists?(port_reg_key)
       end
 

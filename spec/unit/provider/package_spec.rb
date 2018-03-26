@@ -26,6 +26,7 @@ describe Chef::Provider::Package do
     node
   end
   let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:new_resource) { Chef::Resource::Package.new("install emacs") }
   let(:current_resource) { Chef::Resource::Package.new("install emacs") }
@@ -37,6 +38,10 @@ describe Chef::Provider::Package do
     provider.current_resource = current_resource
     provider.candidate_version = candidate_version
     provider
+  end
+
+  before do
+    allow(run_context).to receive(:logger).and_return(logger)
   end
 
   describe "when installing a package" do
@@ -166,7 +171,7 @@ describe Chef::Provider::Package do
 
     it "should print the word 'uninstalled' if there was no original version" do
       allow(current_resource).to receive(:version).and_return(nil)
-      expect(Chef::Log).to receive(:info).with("package[install emacs] upgraded emacs to 1.0")
+      expect(logger).to receive(:info).with("package[install emacs] upgraded emacs to 1.0")
       provider.run_action(:upgrade)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -287,7 +292,7 @@ describe Chef::Provider::Package do
       expect(provider).to receive(:get_preseed_file).and_return("/var/cache/preseed-test")
       allow(provider).to receive(:preseed_package).and_return(true)
       allow(provider).to receive(:reconfig_package).and_return(true)
-      expect(Chef::Log).to receive(:info).with("package[install emacs] reconfigured")
+      expect(logger).to receive(:info).with("package[install emacs] reconfigured")
       expect(provider).to receive(:reconfig_package)
       provider.run_action(:reconfig)
       expect(new_resource).to be_updated
@@ -296,7 +301,7 @@ describe Chef::Provider::Package do
 
     it "should debug log and not reconfigure the package if the package is not installed" do
       allow(current_resource).to receive(:version).and_return(nil)
-      expect(Chef::Log).to receive(:debug).with("package[install emacs] is NOT installed - nothing to do")
+      expect(logger).to receive(:trace).with("package[install emacs] is NOT installed - nothing to do")
       expect(provider).not_to receive(:reconfig_package)
       provider.run_action(:reconfig)
       expect(new_resource).not_to be_updated_by_last_action
@@ -305,7 +310,7 @@ describe Chef::Provider::Package do
     it "should debug log and not reconfigure the package if no response_file is given" do
       allow(current_resource).to receive(:version).and_return("1.0")
       allow(new_resource).to receive(:response_file).and_return(nil)
-      expect(Chef::Log).to receive(:debug).with("package[install emacs] no response_file provided - nothing to do")
+      expect(logger).to receive(:trace).with("package[install emacs] no response_file provided - nothing to do")
       expect(provider).not_to receive(:reconfig_package)
       provider.run_action(:reconfig)
       expect(new_resource).not_to be_updated_by_last_action
@@ -316,7 +321,7 @@ describe Chef::Provider::Package do
       allow(new_resource).to receive(:response_file).and_return(true)
       expect(provider).to receive(:get_preseed_file).and_return(false)
       allow(provider).to receive(:preseed_package).and_return(false)
-      expect(Chef::Log).to receive(:debug).with("package[install emacs] preseeding has not changed - nothing to do")
+      expect(logger).to receive(:trace).with("package[install emacs] preseeding has not changed - nothing to do")
       expect(provider).not_to receive(:reconfig_package)
       provider.run_action(:reconfig)
       expect(new_resource).not_to be_updated_by_last_action

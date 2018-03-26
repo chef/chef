@@ -36,7 +36,7 @@ class Chef
           crontab = shell_out("/usr/bin/crontab -l", :user => @new_resource.user)
           status = crontab.status.exitstatus
 
-          Chef::Log.debug crontab.format_for_exception if status > 0
+          logger.trace crontab.format_for_exception if status > 0
 
           if status > 1
             raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status}"
@@ -62,12 +62,12 @@ class Chef
               exit_status = 1
             end
           rescue Chef::Exceptions::Exec => e
-            Chef::Log.debug(e.message)
+            logger.trace(e.message)
             exit_status = 1
             error_message = e.message
           rescue ArgumentError => e
             # usually raised on invalid user.
-            Chef::Log.debug(e.message)
+            logger.trace(e.message)
             exit_status = 1
             error_message = e.message
           end

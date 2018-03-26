@@ -44,7 +44,7 @@ class Chef
 
       def uri
         @uri ||= begin
-          Chef::Log.debug("Checking SSL cert on #{given_uri}")
+          Chef::Log.trace("Checking SSL cert on #{given_uri}")
           URI.parse(given_uri)
         end
       end
@@ -131,7 +131,7 @@ class Chef
         true
       rescue OpenSSL::SSL::SSLError => e
         ui.error "The SSL certificate of #{host} could not be verified"
-        Chef::Log.debug e.message
+        Chef::Log.trace e.message
         debug_invalid_cert
         false
       end
@@ -141,7 +141,7 @@ class Chef
         true
       rescue OpenSSL::SSL::SSLError => e
         ui.error "The SSL cert is signed by a trusted authority but is not valid for the given hostname"
-        Chef::Log.debug(e)
+        Chef::Log.trace(e)
         debug_invalid_host
         false
       end

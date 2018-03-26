@@ -38,6 +38,7 @@ class Chef
     attr_accessor :run_context
 
     attr_reader :recipe_name
+    attr_reader :logger
 
     include Chef::Mixin::WhyRun
     extend Chef::Mixin::Provides
@@ -90,6 +91,12 @@ class Chef
       @run_context = run_context
       @converge_actions = nil
 
+      @logger = if run_context
+                  run_context.logger.with_child({ resource: new_resource.name, cookbook: cookbook_name, recipe: recipe_name })
+                else
+                  Chef::Log.with_child({ resource: new_resource.name, cookbook: cookbook_name, recipe: recipe_name })
+                end
+
       @recipe_name = nil
       @cookbook_name = nil
       self.class.include_resource_dsl_module(new_resource)
@@ -130,7 +137,7 @@ class Chef
     end
 
     def action_nothing
-      Chef::Log.debug("Doing nothing for #{@new_resource}")
+      logger.trace("Doing nothing for #{@new_resource}")
       true
     end
 
@@ -271,7 +278,7 @@ class Chef
                                                  end
                              end.join(", ")
                            end
-          Chef::Log.debug("Skipping update of #{new_resource}: has not changed any of the specified properties #{properties_str}.")
+          logger.debug("Skipping update of #{new_resource}: has not changed any of the specified properties #{properties_str}.")
           return false
         end
 

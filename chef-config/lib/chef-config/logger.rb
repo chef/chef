@@ -27,6 +27,9 @@ module ChefConfig
     def add(_severity, _message = nil, _progname = nil)
     end
 
+    def trace(_progname = nil, &block)
+    end
+
     def debug(_progname = nil, &block)
     end
 

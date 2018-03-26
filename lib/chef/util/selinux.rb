@@ -51,7 +51,7 @@ class Chef
           restorecon_flags = [ "-R" ]
           restorecon_flags << "-r" if recursive
           restorecon_flags << file_path
-          Chef::Log.debug("Restoring selinux security content with #{restorecon_path}")
+          Chef::Log.trace("Restoring selinux security content with #{restorecon_path}")
           shell_out_compact!(restorecon_path, restorecon_flags)
         else
           Chef::Log.warn "Can not find 'restorecon' on the system. Skipping selinux security context restore."
