@@ -35,6 +35,7 @@ platforms:
     pid_one_command: /sbin/init
     intermediate_instructions:
       - RUN yum -y install sudo
+      - RUN yum -y install gcc-c++
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: amazonlinux-2
@@ -43,6 +44,7 @@ platforms:
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
       - RUN yum -y install sudo
+      - RUN yum -y install gcc-c++
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 
@@ -68,6 +70,7 @@ platforms:
     pid_one_command: /sbin/init
     intermediate_instructions:
       - RUN yum -y install sudo
+      - RUN yum -y install gcc-c++
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: centos-7
@@ -76,6 +79,7 @@ platforms:
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
       - RUN yum -y install sudo
+      - RUN yum -y install gcc-c++
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: fedora-latest
@@ -84,6 +88,7 @@ platforms:
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
       - RUN dnf -y install sudo
+      - RUN yum -y install gcc-c++
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: ubuntu-14.04
@@ -116,6 +121,8 @@ platforms:
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN /usr/bin/zypper install -y sudo
+      - RUN /usr/bin/zypper install -y gcc-c++
+
 
 suites:
   - name: base
