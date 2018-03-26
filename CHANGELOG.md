@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.165 -->
-## [v14.0.165](https://github.com/chef/chef/tree/v14.0.165) (2018-03-26)
+<!-- latest_release 14.0.166 -->
+## [v14.0.166](https://github.com/chef/chef/tree/v14.0.166) (2018-03-26)
 
 #### Merged Pull Requests
-- Ensure that we pass the correct options to mount [#7030](https://github.com/chef/chef/pull/7030) ([thommay](https://github.com/thommay))
+- RFC-102: Deprecation warning in resources [#7050](https://github.com/chef/chef/pull/7050) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.7.16 -->
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- RFC-102: Deprecation warning in resources [#7050](https://github.com/chef/chef/pull/7050) ([thommay](https://github.com/thommay)) <!-- 14.0.166 -->
 - Ensure that we pass the correct options to mount [#7030](https://github.com/chef/chef/pull/7030) ([thommay](https://github.com/thommay)) <!-- 14.0.165 -->
 - Parser 2.5.0.4 was yanked [#7055](https://github.com/chef/chef/pull/7055) ([tas50](https://github.com/tas50)) <!-- 14.0.164 -->
 - Switch chef debug logging to trace [#7039](https://github.com/chef/chef/pull/7039) ([thommay](https://github.com/thommay))
