@@ -10,6 +10,8 @@
 ### Changes since 13.7.16 release
 
 #### Merged Pull Requests
+- Switch chef debug logging to trace [#7039](https://github.com/chef/chef/pull/7039) ([thommay](https://github.com/thommay))
+- Remove path helpers from window_pagefile [#7048](https://github.com/chef/chef/pull/7048) ([tas50](https://github.com/tas50))
 - Add swap_file resource from the swap cookbook [#6990](https://github.com/chef/chef/pull/6990) ([tas50](https://github.com/tas50)) <!-- 14.0.163 -->
 - Revert &quot;Upgrade to openssl 1.1&quot; [#7045](https://github.com/chef/chef/pull/7045) ([tas50](https://github.com/tas50)) <!-- 14.0.162 -->
 - Upgrade to openssl 1.1 [#7044](https://github.com/chef/chef/pull/7044) ([tas50](https://github.com/tas50)) <!-- 14.0.161 -->
