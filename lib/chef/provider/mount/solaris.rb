@@ -74,8 +74,8 @@ class Chef
         end
 
         def mount_fs
-          actual_options = options || []
-          actual_options.delete("noauto")
+          actual_options = native_options(options)
+          actual_options.delete("-")
           command = "mount -F #{fstype}"
           command << " -o #{actual_options.join(',')}" unless actual_options.empty?
           command << " #{device} #{mount_point}"
@@ -88,8 +88,8 @@ class Chef
 
         def remount_fs
           # FIXME: Should remount always do the remount or only if the options change?
-          actual_options = options || []
-          actual_options.delete("noauto")
+          actual_options = native_options(options)
+          actual_options.delete("-")
           mount_options = actual_options.empty? ? "" : ",#{actual_options.join(',')}"
           shell_out!("mount -o remount#{mount_options} #{mount_point}")
         end
