@@ -229,7 +229,7 @@ GEM
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
     parallel (1.12.1)
-    parser (2.5.0.4)
+    parser (2.5.0.5)
       ast (~> 2.4.0)
     parslet (1.8.2)
     plist (3.4.0)
