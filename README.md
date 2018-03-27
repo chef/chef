@@ -134,9 +134,7 @@ If you want to change our constraints (change which packages and versions we acc
 
 In addition there are several places versions are pinned for CI tasks:
 
-* [acceptance/Gemfile](acceptance/Gemfile) and [acceptance/Gemfile.lock](acceptance/Gemfile.lock):  Acceptance tests (internal jenkins)
 * [kitchen-tests/Gemfile](kitchen-tests/Gemfile) and [kitchen-tests/Gemfile.lock](kitchen-tests/Gemfile.lock): Gems for test-kitchen tests (travis)
-* [kitchen-tests/Berksfile](kitchen-tests/Berksfile) and [kitchen-tests/Berksfile.lock](kitchen-tests/Berksfile.lock): Cookbooks for test-kitchen tests (travis)
 
 In order to update everything run `rake dependencies`.  Note that the [Gemfile.lock](Gemfile.lock) pins windows platforms and to fully regenerate the lockfile
 you must use the following commands or run `rake dependencies:update_gemfile_lock`:
@@ -165,12 +163,11 @@ Additionally, periodically Chef will update the desired versions of chef compone
 
 ## Automated Version Bumping
 
-Whenever a change is checked in to `master`, the patch version of `chef` is bumped. To do this, the `lita-versioner` bot listens to github for merged PRs, and when it finds one, takes these actions:
+Whenever a change is checked in to `master`, the patch version of `chef` is bumped. To do this, the `chef-ci` bot listens to GitHub for merged PRs, and when it finds one, takes these actions:
 
-1. Bumps the patch version in `lib/chef/version.rb` (e.g. 0.9.14 -> 0.9.15).
-2. Runs `rake bundle:install` to update the `Gemfile.lock` to include the new version.
-3. Runs `rake changelog:update` to update the `CHANGELOG.md`.
-4. Pushes to `master` and submits a new build to Chef's Jenkins cluster.
+1. Bumps the patch version (e.g. 14.1.14 -> 14.1.15) by running ./ci/version_bump.sh
+2. Updates the changelog with the new pull request and current point release
+3. Pushes to `master` and submits a new build to Chef's Jenkins cluster.
 
 ## Bumping the minor version of Chef
 
