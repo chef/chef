@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.168 -->
-## [v14.0.168](https://github.com/chef/chef/tree/v14.0.168) (2018-03-27)
+<!-- latest_release 14.0.169 -->
+## [v14.0.169](https://github.com/chef/chef/tree/v14.0.169) (2018-03-27)
 
 #### Merged Pull Requests
-- Update information on updating gems / Expeditor [#7057](https://github.com/chef/chef/pull/7057) ([tas50](https://github.com/tas50))
+- Update openssl to 1.0.2o [#7075](https://github.com/chef/chef/pull/7075) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.5 -->
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- Update openssl to 1.0.2o [#7075](https://github.com/chef/chef/pull/7075) ([tas50](https://github.com/tas50)) <!-- 14.0.169 -->
 - Update information on updating gems / Expeditor [#7057](https://github.com/chef/chef/pull/7057) ([tas50](https://github.com/tas50)) <!-- 14.0.168 -->
 - Ship InSpec 2 [#7051](https://github.com/chef/chef/pull/7051) ([thommay](https://github.com/thommay)) <!-- 14.0.167 -->
 - RFC-102: Deprecation warning in resources [#7050](https://github.com/chef/chef/pull/7050) ([thommay](https://github.com/thommay)) <!-- 14.0.166 -->
