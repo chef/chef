@@ -566,11 +566,11 @@ It is now possible to set `ETHTOOL_OPTS`, `BONDING_OPTS`, `MASTER` and `SLAVE` p
 
 ### Properties
 
-- `ethtool\_opts`<br>
+- `ethtool_opts`<br>
   **Ruby types:** String<br>
   **Platforms:** Fedora, RHEL, Amazon Linux A string containing arguments to ethtool. The string will be wrapped in double quotes, so ensure that any needed quotes in the property are surrounded by single quotes
 
-- `bonding\_opts`<br>
+- `bonding_opts`<br>
   **Ruby types:** String<br>
   **Platforms:** Fedora, RHEL, Amazon Linux A string containing configuration parameters for the bonding device.
 
