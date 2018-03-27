@@ -248,7 +248,7 @@ Ohai now detects the Scaleway cloud and provides additional configuration inform
 
 ### Virtualization / Container Detection
 
-In addition to detecting if a system is a Docker host, we now provide a large amount of Docker configuration information available at `node['docker']`. This including the release of Docker, installed plugins, network config, and the number of running containers.
+In addition to detecting if a system is a Docker host, we now provide a large amount of Docker configuration information available at `node['docker']`. This includes the release of Docker, installed plugins, network config, and the number of running containers.
 
 Ohai also now properly detects LXD containers and macOS guests running on VirtualBox / VMware. This data is available in `node['virtualization']['systems']`.
 
