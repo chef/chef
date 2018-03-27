@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.171 -->
-## [v14.0.171](https://github.com/chef/chef/tree/v14.0.171) (2018-03-27)
+<!-- latest_release 14.0.172 -->
+## [v14.0.172](https://github.com/chef/chef/tree/v14.0.172) (2018-03-27)
 
 #### Merged Pull Requests
-- Sudo resource: specify ruby type for visudo_binary [#7076](https://github.com/chef/chef/pull/7076) ([brewn](https://github.com/brewn))
+- Add Chef 13.8 and 14.0 release notes [#7074](https://github.com/chef/chef/pull/7074) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.5 -->
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- Add Chef 13.8 and 14.0 release notes [#7074](https://github.com/chef/chef/pull/7074) ([tas50](https://github.com/tas50)) <!-- 14.0.172 -->
 - Sudo resource: specify ruby type for visudo_binary [#7076](https://github.com/chef/chef/pull/7076) ([brewn](https://github.com/brewn)) <!-- 14.0.171 -->
 - Add / update resource descriptions [#7073](https://github.com/chef/chef/pull/7073) ([tas50](https://github.com/tas50)) <!-- 14.0.170 -->
 - Update openssl to 1.0.2o [#7075](https://github.com/chef/chef/pull/7075) ([tas50](https://github.com/tas50)) <!-- 14.0.169 -->
