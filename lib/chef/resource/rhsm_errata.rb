@@ -22,7 +22,7 @@ class Chef
     class RhsmErrata < Chef::Resource
       resource_name :rhsm_errata
 
-      description "A resource for installing packages associated with a given Red"\
+      description "Use the rhsm_errata resource to install packages associated with a given Red"\
                   " Hat Subscription Manager Errata ID. This is helpful if packages"\
                   " to mitigate a single vulnerability must be installed on your hosts."
       introduced "14.0"

@@ -22,7 +22,7 @@ class Chef
     class RhsmRepo < Chef::Resource
       resource_name :rhsm_repo
 
-      description "A resource for enabling and disabling Red Hat Subscription Manager"\
+      description "Use the rhsm_repo resource to enable or disable Red Hat Subscription Manager"\
                   " repositories that are made available via attached subscriptions."
       introduced "14.0"
 

@@ -22,7 +22,7 @@ class Chef
     class RhsmSubscription < Chef::Resource
       resource_name :rhsm_subscription
 
-      description "A resource for adding additional Redhat Subscription Manager subscriptions"\
+      description "Use tthe rhsm_subscription resource to add additional Redhat Subscription Manager subscriptions"\
                   " to your host. This can be used when a host's activation_key"\
                   " does not attach all necessary subscriptions to your host."
       introduced "14.0"
