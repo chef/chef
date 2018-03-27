@@ -101,7 +101,7 @@ class Chef
       property :visudo_path, String,
                description: "Deprecated property. Do not use."
 
-      property :visudo_binary,
+      property :visudo_binary, String
                description: "The path to visudo for config verification.",
                default: "/usr/sbin/visudo"
 
