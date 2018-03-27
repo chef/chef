@@ -6,7 +6,8 @@ class Chef
       resource_name :hostname
       provides :hostname
 
-      description "Sets the systems hostname, ensures that reboot will preserve the hostname, and re-runs the ohai plugin so the hostname will be available in subsequent cookbooks."
+      description "Use the hostname resource to set the system's hostname, configure hostname and hosts config"\
+                  " file, and re-run the Ohai hostname plugin so the hostname will be available in subsequent cookbooks."
       introduced "14.0"
 
       property :hostname, String,

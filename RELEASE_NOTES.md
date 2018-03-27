@@ -32,7 +32,7 @@ Use the homebrew_tap resource to add additional formula repositories to the Home
 
 ### hostname
 
-Use the hostname resource to sets the system's hostname, configure hostname and hosts config file, and re-run the Ohai hostname plugin so the hostname will be available in subsequent cookbooks. This resource was ported from the `chef_hostname` community cookbook.
+Use the hostname resource to set the system's hostname, configure hostname and hosts config file, and re-run the Ohai hostname plugin so the hostname will be available in subsequent cookbooks. This resource was ported from the `chef_hostname` community cookbook.
 
 ### macos_userdefaults
 
@@ -68,7 +68,7 @@ Use the rhsm_register resource to register a node with the Red Hat Subscription 
 
 ### rhsm_repo
 
-Use the rhsm_repo resource to enabling or disabling Red Hat Subscription Manager repositories that are made available via attached subscriptions. This resource was ported from the `redhat_subscription_manager` community cookbook.
+Use the rhsm_repo resource to enable or disable Red Hat Subscription Manager repositories that are made available via attached subscriptions. This resource was ported from the `redhat_subscription_manager` community cookbook.
 
 ### rhsm_subscription
 
@@ -86,7 +86,7 @@ Use the swap_file resource to create or delete swap files on Linux systems, and 
 
 Use the sysctl resource to set kernel parameters using the sysctl command line tool and configuration files in the system's `sysctl.d` directory. Configuration files managed by this resource are named 99-chef-KEYNAME.conf. If an existing value was already set for the value it will be backed up to the node and restored if the :remove action is used later. This resource was ported from the `sysctl` community cookbook.
 
-`Note`: This resource no longer backs up existing key values to the node when changing values as we done in the sysctl cookbook previously. The resource has also been renamed from `sysctl_param` to `systctl` with backwards compatibility for the previous name.
+`Note`: This resource no longer backs up existing key values to the node when changing values as we have done in the sysctl cookbook previously. The resource has also been renamed from `sysctl_param` to `systctl` with backwards compatibility for the previous name.
 
 ### windows_ad_join
 
