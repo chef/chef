@@ -33,7 +33,7 @@ class Chef
 
       property :feature_name, [Array, String],
                description: "The name of the feature/role(s) to install if it differs from the resource name.",
-               coerce: proc { |x| Array(x) },
+               coerce: proc { |x| x.is_a?(String) ? x.split(/\s*,\s*/) : x },
                name_property: true
 
       property :source, String,

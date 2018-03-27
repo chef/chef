@@ -18,7 +18,7 @@
 require "spec_helper"
 
 describe Chef::Resource::WindowsFeaturePowershell do
-  let(:resource) { Chef::Resource::WindowsFeaturePowershell.new("SNMP") }
+  let(:resource) { Chef::Resource::WindowsFeaturePowershell.new(%w{SNMP DHCP}) }
 
   it "sets resource name as :windows_feature_powershell" do
     expect(resource.resource_name).to eql(:windows_feature_powershell)
@@ -28,7 +28,17 @@ describe Chef::Resource::WindowsFeaturePowershell do
     expect(resource.action).to eql([:install])
   end
 
-  it "sets the feature_name property as its name and coerces it to an array" do
+  it "sets the feature_name property as its name property" do
+    expect(resource.feature_name).to eql(%w{SNMP DHCP})
+  end
+
+  it "coerces comma separated lists of features to arrays" do
+    resource.feature_name "SNMP, DHCP"
+    expect(resource.feature_name).to eql(%w{SNMP DHCP})
+  end
+
+  it "coerces a single feature as a String into an array" do
+    resource.feature_name "SNMP"
     expect(resource.feature_name).to eql(["SNMP"])
   end
 

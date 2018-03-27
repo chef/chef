@@ -30,7 +30,7 @@ class Chef
 
       property :feature_name, [Array, String],
                description: "The name of the feature/role(s) to install if it differs from the resource name.",
-               coerce: proc { |x| Array(x) },
+               coerce: proc { |x| x.is_a?(String) ? x.split(/\s*,\s*/) : x },
                name_property: true
 
       property :source, String,
@@ -55,7 +55,7 @@ class Chef
         unless features_to_install.empty?
           message = "install Windows feature#{'s' if features_to_install.count > 1} #{features_to_install.join(',')}"
           converge_by(message) do
-            install_command = "#{dism} /online /enable-feature #{features_to_install.map { |f| "/featurename:#{f}" }.join(' ')} /norestart"
+            install_command = "dism.exe /online /enable-feature #{features_to_install.map { |f| "/featurename:#{f}" }.join(' ')} /norestart"
             install_command << " /LimitAccess /Source:\"#{new_resource.source}\"" if new_resource.source
             install_command << " /All" if new_resource.all
 
@@ -195,6 +195,9 @@ class Chef
         # @return [void]
         def fail_if_removed
           return if new_resource.source # if someone provides a source then all is well
+          if node["os_version"].to_f > 6.2
+            return if registry_key_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing') && registry_value_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing', name: "LocalSourcePath") # if source is defined in the registry, still fine
+          end
           removed = new_resource.feature_name & node["dism_features_cache"]["removed"]
           raise "The Windows feature#{'s' if removed.count > 1} #{removed.join(',')} #{removed.count > 1 ? 'are' : 'is'} have been removed from the host and cannot be installed." unless removed.empty?
         end
