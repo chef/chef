@@ -34,8 +34,8 @@ platforms:
     image: dokken/amazonlinux
     pid_one_command: /sbin/init
     intermediate_instructions:
-      - RUN yum -y install sudo
-      - RUN yum -y install gcc-c++
+      # TODO: inspec 2.0 requires gcc-c++, adding here until it can be added to appbundler-updater
+      - RUN yum -y install sudo gcc-c++
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: amazonlinux-2
@@ -43,10 +43,8 @@ platforms:
     image: dokken/amazonlinux-2
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN yum -y install sudo
-      - RUN yum -y install gcc-c++
+      - RUN yum -y install sudo gcc-c++
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
 
 - name: debian-8
   driver:
@@ -69,8 +67,7 @@ platforms:
     image: dokken/centos-6
     pid_one_command: /sbin/init
     intermediate_instructions:
-      - RUN yum -y install sudo
-      - RUN yum -y install gcc-c++
+      - RUN yum -y install sudo gcc-c++
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: centos-7
@@ -78,8 +75,7 @@ platforms:
     image: dokken/centos-7
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN yum -y install sudo
-      - RUN yum -y install gcc-c++
+      - RUN yum -y install sudo gcc-c++
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: fedora-latest
@@ -87,8 +83,7 @@ platforms:
     image: dokken/fedora-latest
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN dnf -y install sudo
-      - RUN yum -y install gcc-c++
+      - RUN dnf -y install sudo gcc-c++
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: ubuntu-14.04
@@ -120,9 +115,7 @@ platforms:
     image: dokken/opensuse-leap
     pid_one_command: /bin/systemd
     intermediate_instructions:
-      - RUN /usr/bin/zypper install -y sudo
-      - RUN /usr/bin/zypper install -y gcc-c++
-
+      - RUN /usr/bin/zypper install -y sudo gcc-c++
 
 suites:
   - name: base
