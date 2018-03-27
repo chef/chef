@@ -30,7 +30,7 @@ class Chef
 
       property :feature_name, [Array, String],
                description: "The name of the feature/role(s) to install if it differs from the resource name.",
-               coerce: proc { |x| x.is_a?(String) ? x.split(/\s*,\s*/) : x },
+               coerce: proc { |x| to_lowercase_array(x) },
                name_property: true
 
       property :source, String,
@@ -43,6 +43,11 @@ class Chef
       property :timeout, Integer,
                description: "Specifies a timeout (in seconds) for feature install.",
                default: 600
+
+      def to_lowercase_array(x)
+        x = x.split(/\s*,\s*/) if x.is_a?(String) # split multiple forms of a comma separated list
+        x.map(&:downcase)
+      end
 
       action :install do
         description "Install a Windows role/feature using DISM"
@@ -188,7 +193,7 @@ class Chef
         # @return [void]
         def add_to_feature_mash(feature_type, feature_string)
           feature_details = feature_string.strip.split(/\s+[|]\s+/)
-          node.override["dism_features_cache"][feature_type] << feature_details.first
+          node.override["dism_features_cache"][feature_type] << feature_details.first.downcase # lowercase so we can compare properly
         end
 
         # Fail if any of the packages are in a removed state
