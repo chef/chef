@@ -24,8 +24,7 @@ class Chef
       resource_name :apt_update
       provides :apt_update
 
-      description "Use the apt_update resource to manage APT repository updates on"\
-                  " Debian and Ubuntu platforms."
+      description "Use the apt_update resource to manage APT repository updates on Debian and Ubuntu platforms."
       introduced "12.7"
 
       # allow bare apt_update with no name
