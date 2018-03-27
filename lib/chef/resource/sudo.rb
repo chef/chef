@@ -28,10 +28,10 @@ class Chef
       provides "sudo"
 
       description "Use the sudo resource to add or remove individual sudo entries using sudoers.d files."\
-                  " Sudo version 1.7.2 or newer is required to use the sudo resource as it relies on the"\
-                  " '#includedir' directive introduced in version 1.7.2. The resource does not enforce"\
-                  " installing the version. Supported releases of Ubuntu, Debian and RHEL (6+) all support"\
-                  " this feature."
+                  " Sudo version 1.7.2 or newer is required to use the sudo resource, as it relies on the"\
+                  " '#includedir' directive introduced in version 1.7.2. This resource does not enforce"\
+                  " installation of the required sudo version. Supported releases of Ubuntu, SuSE, Debian,"\
+                  " and RHEL (6+) all support this feature."
       introduced "14.0"
 
       # acording to the sudo man pages sudo will ignore files in an include dir that have a `.` or `~`
