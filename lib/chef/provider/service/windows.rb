@@ -93,7 +93,8 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       Win32::Service.configure(new_config)
       logger.info "#{@new_resource} configured with #{new_config.inspect}"
 
-      if new_config.has_key?(:service_start_name)
+      # LocalSystem is the default runas user, which is a special service account that should ultimately have the rights of BUILTIN\Administrators, but we wouldn't see that from get_account_right
+      if new_config.has_key?(:service_start_name) && new_config[:service_start_name].casecmp("localsystem") != 0
         unless Chef::ReservedNames::Win32::Security.get_account_right(canonicalize_username(new_config[:service_start_name])).include?(SERVICE_RIGHT)
           grant_service_logon(new_config[:service_start_name])
         end
