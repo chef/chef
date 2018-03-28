@@ -29,17 +29,17 @@ describe Chef::Resource::WindowsFeatureDism do
   end
 
   it "sets the feature_name property as its name property" do
-    expect(resource.feature_name).to eql(%w{SNMP DHCP})
+    expect(resource.feature_name).to eql(%w{snmp dhcp})
   end
 
-  it "coerces comma separated lists of features to arrays" do
+  it "coerces comma separated lists of features to a lowercase array" do
     resource.feature_name "SNMP, DHCP"
-    expect(resource.feature_name).to eql(%w{SNMP DHCP})
+    expect(resource.feature_name).to eql(%w{snmp dhcp})
   end
 
-  it "coerces a single feature as a String into an array" do
+  it "coerces a single feature as a String to a lowercase array" do
     resource.feature_name "SNMP"
-    expect(resource.feature_name).to eql(["SNMP"])
+    expect(resource.feature_name).to eql(["snmp"])
   end
 
   it "supports :install, :remove, and :delete actions" do
