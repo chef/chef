@@ -131,10 +131,6 @@ class Chef
 
       private
 
-      def explicitly_allows_nil?(key, validation)
-        validation.has_key?(:is) && _pv_is({ key => nil }, key, validation[:is], raise_error: false)
-      end
-
       def _validation_message(key, default)
         @validation_message.has_key?(key) ? @validation_message[key] : default
       end
@@ -407,7 +403,7 @@ class Chef
       #   x nil      #=> invalid
       #   ```
       #
-      def _pv_is(opts, key, to_be, raise_error: true)
+      def _pv_is(opts, key, to_be)
         return true if !opts.has_key?(key.to_s) && !opts.has_key?(key.to_sym)
         value = _pv_opts_lookup(opts, key)
         to_be = [ to_be ].flatten(1)

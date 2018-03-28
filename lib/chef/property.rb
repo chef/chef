@@ -367,7 +367,7 @@ class Chef
             # Otherwise, we have to validate it now.
             value = input_to_stored_value(resource, default, is_default: true)
           end
-          value = stored_value_to_output(resource, value, is_default: true)
+          value = stored_value_to_output(resource, value)
 
           # If the value is mutable (non-frozen), we set it on the instance
           # so that people can mutate it.  (All constant default values are
@@ -600,7 +600,9 @@ class Chef
     # @api private
     def explicitly_accepts_nil?(resource)
       options.has_key?(:coerce) ||
-        (options.has_key?(:is) && resource.send(:_pv_is, { name => nil }, name, options[:is], raise_error: false))
+        (options.has_key?(:is) && Chef::Mixin::ParamsValidate.send(:_pv_is, { name => nil }, name, options[:is]))
+    rescue Chef::Exceptions::ValidationFailed, Chef::Exceptions::CannotValidateStaticallyError
+      false
     end
 
     # @api private
@@ -676,25 +678,26 @@ class Chef
     end
 
     def input_to_stored_value(resource, value, is_default: false)
+      if value.nil? && !is_default && !explicitly_accepts_nil?(resource)
+        value = default
+      end
       unless value.is_a?(DelayedEvaluator)
-        value = coerce_and_validate(resource, value, is_default: is_default)
+        value = coerce_and_validate(resource, value)
       end
       value
     end
 
-    def stored_value_to_output(resource, value, is_default: false)
+    def stored_value_to_output(resource, value)
       # Crack open lazy values before giving the result to the user
       if value.is_a?(DelayedEvaluator)
         value = exec_in_resource(resource, value)
-        value = coerce_and_validate(resource, value, is_default: is_default)
+        value = coerce_and_validate(resource, value)
       end
       value
     end
 
-    # Coerces and validates the value. If the value is a default, it will warn
-    # the user that invalid defaults are bad mmkay, and return it as if it were
-    # valid.
-    def coerce_and_validate(resource, value, is_default: false)
+    # Coerces and validates the value.
+    def coerce_and_validate(resource, value)
       result = coerce(resource, value)
       validate(resource, result)
 
