@@ -32,7 +32,7 @@ describe Chef::Resource::WindowsFeatureDism do
     expect(resource.feature_name).to eql(%w{snmp dhcp})
   end
 
-  it "coerces comma separated lists of features to a lowercase arrays" do
+  it "coerces comma separated lists of features to a lowercase array" do
     resource.feature_name "SNMP, DHCP"
     expect(resource.feature_name).to eql(%w{snmp dhcp})
   end

@@ -46,7 +46,10 @@ class Chef
 
       def to_lowercase_array(x)
         x = x.split(/\s*,\s*/) if x.is_a?(String) # split multiple forms of a comma separated list
-        x.map(&:downcase)
+
+        # dism on windows < 2012 is case sensitive so only downcase when on 2012+
+        # @todo when we're really ready to remove support for Windows 2008 R2 this check can go away
+        node["platform_version"].to_f < 6.2 ? x : x.map(&:downcase)
       end
 
       action :install do
@@ -192,8 +195,13 @@ class Chef
         # + | +  n number of spaces
         # @return [void]
         def add_to_feature_mash(feature_type, feature_string)
-          feature_details = feature_string.strip.split(/\s+[|]\s+/)
-          node.override["dism_features_cache"][feature_type] << feature_details.first.downcase # lowercase so we can compare properly
+          feature_details = feature_string.strip.split(/\s+[|]\s+/).first
+
+          # dism on windows 2012+ isn't case sensitive so it's best to compare
+          # lowercase lists so the user input doesn't need to be case sensitive
+          # @todo when we're ready to remove windows 2008R2 the gating here can go away
+          feature_details.downcase! unless node["platform_version"].to_f < 6.2
+          node.override["dism_features_cache"][feature_type] << feature_details
         end
 
         # Fail if any of the packages are in a removed state
