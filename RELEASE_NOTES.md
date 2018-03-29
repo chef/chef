@@ -312,6 +312,23 @@ Since our supported Windows platforms can all run .NET Framework 4.0 and PowerSh
 
 Chef now includes a new log level of `:trace` in addition to the existing `:info`, `:warn`, and `:debug` levels. With the introduction of `trace` level logging we've moved a large amount of logging that is more useful for Chef developers from `debug` to `trace`. This makes it easier for Chef Cookbook developers to use `debug` level to get useful information.
 
+## Security Updates
+
+### OpenSSL
+
+OpenSSL has been updated to 1.0.2o to resolve [CVE-2018-0739](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0739)
+
+### Ruby
+
+Ruby has been updated to 2.5.1 to resolve the following vulnerabilities:
+- https://www.ruby-lang.org/en/news/2018/03/28/http-response-splitting-in-webrick-cve-2017-17742/
+- https://www.ruby-lang.org/en/news/2018/03/28/unintentional-file-and-directory-creation-with-directory-traversal-cve-2018-6914/
+- https://www.ruby-lang.org/en/news/2018/03/28/large-request-dos-in-webrick-cve-2018-8777/
+- https://www.ruby-lang.org/en/news/2018/03/28/buffer-under-read-unpack-cve-2018-8778/
+- https://www.ruby-lang.org/en/news/2018/03/28/poisoned-nul-byte-unixsocket-cve-2018-8779/
+- https://www.ruby-lang.org/en/news/2018/03/28/poisoned-nul-byte-dir-cve-2018-8780/
+- https://www.ruby-lang.org/en/news/2018/02/17/multiple-vulnerabilities-in-rubygems/
+
 ## Breaking Changes
 
 This release completes the deprecation process for many of the deprecations that were warnings throughout the Chef 12 and Chef 13 releases.
