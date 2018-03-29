@@ -57,7 +57,7 @@ class Chef
                default: true
 
       action :join do
-        description "Default. Join the Active Directory domain."
+        description "Join the Active Directory domain."
 
         unless on_domain?
           cmd = "$pswd = ConvertTo-SecureString \'#{new_resource.domain_password}\' -AsPlainText -Force;"
