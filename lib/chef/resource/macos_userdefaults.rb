@@ -84,7 +84,7 @@ class Chef
       action :write do
         description "Write the setting to the specified domain"
 
-        unless current_value.is_set
+        unless current_resource.is_set
           cmd = ["defaults write"]
           cmd.unshift("sudo") if new_resource.sudo
 
@@ -108,6 +108,23 @@ class Chef
 
           declare_resource(:execute, cmd.join(" ")) do
             user new_resource.user unless new_resource.user.nil?
+          end
+        end
+      end
+
+      action_class do
+        def value_type(value)
+          case value
+          when true, false
+            "bool"
+          when Integer
+            "int"
+          when Float
+            "float"
+          when Hash
+            "dict"
+          when Array
+            "array"
           end
         end
       end
