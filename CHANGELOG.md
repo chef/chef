@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.182 -->
-## [v14.0.182](https://github.com/chef/chef/tree/v14.0.182) (2018-03-29)
+<!-- latest_release 14.0.183 -->
+## [v14.0.183](https://github.com/chef/chef/tree/v14.0.183) (2018-03-29)
 
 #### Merged Pull Requests
--  Bump Ruby to 2.5.1 [#7090](https://github.com/chef/chef/pull/7090) ([tas50](https://github.com/tas50))
+- homebrew_tap / homebrew_cask: Fix compile time errors with the user mixin [#7097](https://github.com/chef/chef/pull/7097) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.5 -->
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- homebrew_tap / homebrew_cask: Fix compile time errors with the user mixin [#7097](https://github.com/chef/chef/pull/7097) ([tas50](https://github.com/tas50)) <!-- 14.0.183 -->
 -  Bump Ruby to 2.5.1 [#7090](https://github.com/chef/chef/pull/7090) ([tas50](https://github.com/tas50)) <!-- 14.0.182 -->
 - macos_userdefaults: Fix 2 failures [#7095](https://github.com/chef/chef/pull/7095) ([tas50](https://github.com/tas50)) <!-- 14.0.181 -->
 - Avoid lookups for rights of &#39;LocalSystem&#39; in windows service [#7083](https://github.com/chef/chef/pull/7083) ([btm](https://github.com/btm)) <!-- 14.0.180 -->
