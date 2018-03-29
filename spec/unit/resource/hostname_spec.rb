@@ -25,6 +25,31 @@ describe Chef::Resource::Hostname do
     expect(resource.resource_name).to eql(:hostname)
   end
 
+  it "hostname fails validation with invalid characters" do
+    expect { resource.hostname "something^" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "something^" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "something!" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "something@" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "something#" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "something$" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "something%" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "something*" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "something[" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "something]" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "something(" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "something)" }.to raise_error Chef::Exceptions::ValidationFailed
+  end
+
+  it "hostname fails validation if it starts with _, -, or ." do
+    expect { resource.hostname ".something" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "-something" }.to raise_error Chef::Exceptions::ValidationFailed
+    expect { resource.hostname "_something" }.to raise_error Chef::Exceptions::ValidationFailed
+  end
+
+  it "hostname can contain ., _, or -" do
+    expect { resource.hostname "something._-something" }.to_not raise_error Chef::Exceptions::ValidationFailed
+  end
+
   it "has a default action of set" do
     expect(resource.action).to eql([:set])
   end

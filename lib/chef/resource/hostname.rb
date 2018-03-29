@@ -11,6 +11,8 @@ class Chef
       introduced "14.0"
 
       property :hostname, String,
+               regex: /^([A-Za-z0-9])+([A-Za-z0-9-._])*$/, # http://rubular.com/r/c5xKppWX4i
+               validation_message: "Hostnames can contain alphanumeric characters, -, ., and _ ,but must start with an alphanumeric character.",
                description: "The hostname if different than the resource's name",
                name_property: true
 
