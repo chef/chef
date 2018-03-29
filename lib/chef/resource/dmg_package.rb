@@ -149,7 +149,7 @@ class Chef
         def dmg_file
           @dmg_file ||= begin
             if new_resource.file.nil?
-              "#{Chef::Config[:file_cache_path]}/#{dmg_name}.dmg"
+              "#{Chef::Config[:file_cache_path]}/#{new_resource.dmg_name}.dmg"
             else
               new_resource.file
             end
