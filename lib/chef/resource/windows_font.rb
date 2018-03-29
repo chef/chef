@@ -25,7 +25,7 @@ class Chef
       resource_name :windows_font
       provides :windows_font
 
-      description "Use the windows_font resource to install or remove font files on Windows."\
+      description "Use the windows_font resource to install font files on Windows."\
                   " By default, the font is sourced from the cookbook using the resource, but a URI"\
                   " source can be specified as well."
       introduced "14.0"
