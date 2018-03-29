@@ -27,7 +27,7 @@ class Chef
       resource_name :windows_printer_port
       provides :windows_printer_port
 
-      description "Use the windows_printer_port resoruce to create and delete TCP/IPv4 printer ports on Windows"
+      description "Use the windows_printer_port resource to create and delete TCP/IPv4 printer ports on Windows"
       introduced "14.0"
 
       property :ipv4_address, String,
