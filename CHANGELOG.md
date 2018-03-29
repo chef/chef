@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.177 -->
-## [v14.0.177](https://github.com/chef/chef/tree/v14.0.177) (2018-03-29)
+<!-- latest_release 14.0.178 -->
+## [v14.0.178](https://github.com/chef/chef/tree/v14.0.178) (2018-03-29)
 
 #### Merged Pull Requests
-- [windows_ad_join] add description for :join action [#7082](https://github.com/chef/chef/pull/7082) ([brewn](https://github.com/brewn))
+- [windows_font] get rid of &quot;remove&quot; in description [#7089](https://github.com/chef/chef/pull/7089) ([brewn](https://github.com/brewn))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.5 -->
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- [windows_font] get rid of &quot;remove&quot; in description [#7089](https://github.com/chef/chef/pull/7089) ([brewn](https://github.com/brewn)) <!-- 14.0.178 -->
 - [windows_ad_join] add description for :join action [#7082](https://github.com/chef/chef/pull/7082) ([brewn](https://github.com/brewn)) <!-- 14.0.177 -->
 - Add basic hostname validation on Windows [#7087](https://github.com/chef/chef/pull/7087) ([tas50](https://github.com/tas50)) <!-- 14.0.176 -->
 - windows_feature_dism: Be case insensitive with feature names [#7079](https://github.com/chef/chef/pull/7079) ([tas50](https://github.com/tas50)) <!-- 14.0.175 -->
