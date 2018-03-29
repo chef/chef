@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.180 -->
-## [v14.0.180](https://github.com/chef/chef/tree/v14.0.180) (2018-03-29)
+<!-- latest_release 14.0.181 -->
+## [v14.0.181](https://github.com/chef/chef/tree/v14.0.181) (2018-03-29)
 
 #### Merged Pull Requests
-- Avoid lookups for rights of &#39;LocalSystem&#39; in windows service [#7083](https://github.com/chef/chef/pull/7083) ([btm](https://github.com/btm))
+- macos_userdefaults: Fix 2 failures [#7095](https://github.com/chef/chef/pull/7095) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.5 -->
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- macos_userdefaults: Fix 2 failures [#7095](https://github.com/chef/chef/pull/7095) ([tas50](https://github.com/tas50)) <!-- 14.0.181 -->
 - Avoid lookups for rights of &#39;LocalSystem&#39; in windows service [#7083](https://github.com/chef/chef/pull/7083) ([btm](https://github.com/btm)) <!-- 14.0.180 -->
 - Fix method missing error in dmg_package [#7091](https://github.com/chef/chef/pull/7091) ([tas50](https://github.com/tas50)) <!-- 14.0.179 -->
 - [windows_font] get rid of &quot;remove&quot; in description [#7089](https://github.com/chef/chef/pull/7089) ([brewn](https://github.com/brewn)) <!-- 14.0.178 -->
