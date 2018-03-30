@@ -76,7 +76,7 @@ class Chef
       end
 
       action :create do
-        description "Create the new printer port if it does not already exist."   
+        description "Create the new printer port if it does not already exist."
 
         if current_resource.exists
           Chef::Log.info "#{@new_resource} already exists - nothing to do."
@@ -88,7 +88,7 @@ class Chef
       end
 
       action :delete do
-        description "Delete an existing printer port." 
+        description "Delete an existing printer port."
 
         if current_resource.exists
           converge_by("Delete #{@new_resource}") do
