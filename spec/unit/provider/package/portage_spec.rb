@@ -113,172 +113,36 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
       end
 
       it "should throw an exception if the exitstatus is not 0" do
-        status = double(:stdout => "", :exitstatus => 1)
+        status = double(:stdout => "", :stderr => "", :exitstatus => 1)
         allow(@provider).to receive(:shell_out).and_return(status)
         expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
       end
 
       it "should find the candidate_version if a category is specifed and there are no duplicates" do
-        output = <<EOF
-Searching...
-[ Results for search key : git ]
-[ Applications found : 14 ]
-
-*  app-misc/digitemp [ Masked ]
-      Latest version available: 3.5.0
-      Latest version installed: [ Not Installed ]
-      Size of files: 261 kB
-      Homepage:      http://www.digitemp.com/ http://www.ibutton.com/
-      Description:   Temperature logging and reporting using Dallas Semiconductor's iButtons and 1-Wire protocol
-      License:       GPL-2
-
-*  dev-util/git
-      Latest version available: 1.6.0.6
-      Latest version installed: ignore
-      Size of files: 2,725 kB
-      Homepage:      http://git.or.cz/
-      Description:   GIT - the stupid content tracker, the revision control system heavily used by the Linux kernel team
-      License:       GPL-2
-
-*  dev-util/gitosis [ Masked ]
-      Latest version available: 0.2_p20080825
-      Latest version installed: [ Not Installed ]
-      Size of files: 31 kB
-      Homepage:      http://eagain.net/gitweb/?p=gitosis.git;a=summary
-      Description:   gitosis -- software for hosting git repositories
-      License:       GPL-2
-EOF
-
-        status = double(:stdout => output, :exitstatus => 0)
+        status = double(:stdout => "dev-vcs/git-2.16.2", :exitstatus => 0)
         expect(@provider).to receive(:shell_out).and_return(status)
-        expect(@provider.candidate_version).to eq("1.6.0.6")
+        expect(@provider.candidate_version).to eq("2.16.2")
       end
 
       it "should find the candidate_version if a category is not specifed and there are no duplicates" do
-        output = <<EOF
-Searching...
-[ Results for search key : git ]
-[ Applications found : 14 ]
-
-*  app-misc/digitemp [ Masked ]
-      Latest version available: 3.5.0
-      Latest version installed: [ Not Installed ]
-      Size of files: 261 kB
-      Homepage:      http://www.digitemp.com/ http://www.ibutton.com/
-      Description:   Temperature logging and reporting using Dallas Semiconductor's iButtons and 1-Wire protocol
-      License:       GPL-2
-
-*  dev-util/git
-      Latest version available: 1.6.0.6
-      Latest version installed: ignore
-      Size of files: 2,725 kB
-      Homepage:      http://git.or.cz/
-      Description:   GIT - the stupid content tracker, the revision control system heavily used by the Linux kernel team
-      License:       GPL-2
-
-*  dev-util/gitosis [ Masked ]
-      Latest version available: 0.2_p20080825
-      Latest version installed: [ Not Installed ]
-      Size of files: 31 kB
-      Homepage:      http://eagain.net/gitweb/?p=gitosis.git;a=summary
-      Description:   gitosis -- software for hosting git repositories
-      License:       GPL-2
-EOF
-
-        status = double(:stdout => output, :exitstatus => 0)
+        status = double(:stdout => "dev-vcs/git-2.16.2", :exitstatus => 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
         expect(@provider).to receive(:shell_out).and_return(status)
-        expect(@provider.candidate_version).to eq("1.6.0.6")
+        expect(@provider.candidate_version).to eq("2.16.2")
       end
 
       it "should throw an exception if a category is not specified and there are duplicates" do
-        output = <<EOF
-Searching...
-[ Results for search key : git ]
-[ Applications found : 14 ]
+        stderr_output = <<EOF
+You specified an unqualified atom that matched multiple packages:
+* app-misc/sphinx
+* dev-python/sphinx
 
-*  app-misc/digitemp [ Masked ]
-      Latest version available: 3.5.0
-      Latest version installed: [ Not Installed ]
-      Size of files: 261 kB
-      Homepage:      http://www.digitemp.com/ http://www.ibutton.com/
-      Description:   Temperature logging and reporting using Dallas Semiconductor's iButtons and 1-Wire protocol
-      License:       GPL-2
-
-*  app-misc/git
-      Latest version available: 4.3.20
-      Latest version installed: [ Not Installed ]
-      Size of files: 416 kB
-      Homepage:      http://www.gnu.org/software/git/
-      Description:   GNU Interactive Tools - increase speed and efficiency of most daily task
-      License:       GPL-2
-
-*  dev-util/git
-      Latest version available: 1.6.0.6
-      Latest version installed: ignore
-      Size of files: 2,725 kB
-      Homepage:      http://git.or.cz/
-      Description:   GIT - the stupid content tracker, the revision control system heavily used by the Linux kernel team
-      License:       GPL-2
-
-*  dev-util/gitosis [ Masked ]
-      Latest version available: 0.2_p20080825
-      Latest version installed: [ Not Installed ]
-      Size of files: 31 kB
-      Homepage:      http://eagain.net/gitweb/?p=gitosis.git;a=summary
-      Description:   gitosis -- software for hosting git repositories
-      License:       GPL-2
+Please use a more specific atom.
 EOF
-
-        status = double(:stdout => output, :exitstatus => 0)
+        status = double(:stdout => "", :stderr => stderr_output, :exitstatus => 1)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
         expect(@provider).to receive(:shell_out).and_return(status)
         expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
-      end
-
-      it "should find the candidate_version if a category is specifed and there are category duplicates" do
-        output = <<EOF
-Searching...
-[ Results for search key : git ]
-[ Applications found : 14 ]
-
-*  app-misc/digitemp [ Masked ]
-      Latest version available: 3.5.0
-      Latest version installed: [ Not Installed ]
-      Size of files: 261 kB
-      Homepage:      http://www.digitemp.com/ http://www.ibutton.com/
-      Description:   Temperature logging and reporting using Dallas Semiconductor's iButtons and 1-Wire protocol
-      License:       GPL-2
-
-*  app-misc/git
-      Latest version available: 4.3.20
-      Latest version installed: [ Not Installed ]
-      Size of files: 416 kB
-      Homepage:      http://www.gnu.org/software/git/
-      Description:   GNU Interactive Tools - increase speed and efficiency of most daily task
-      License:       GPL-2
-
-*  dev-util/git
-      Latest version available: 1.6.0.6
-      Latest version installed: ignore
-      Size of files: 2,725 kB
-      Homepage:      http://git.or.cz/
-      Description:   GIT - the stupid content tracker, the revision control system heavily used by the Linux kernel team
-      License:       GPL-2
-
-*  dev-util/gitosis [ Masked ]
-      Latest version available: 0.2_p20080825
-      Latest version installed: [ Not Installed ]
-      Size of files: 31 kB
-      Homepage:      http://eagain.net/gitweb/?p=gitosis.git;a=summary
-      Description:   gitosis -- software for hosting git repositories
-      License:       GPL-2
-EOF
-
-        status = double(:stdout => output, :exitstatus => 0)
-        @provider = Chef::Provider::Package::Portage.new(@new_resource, @run_context)
-        expect(@provider).to receive(:shell_out).and_return(status)
-        expect(@provider.candidate_version).to eq("1.6.0.6")
       end
     end
 
