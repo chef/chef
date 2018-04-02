@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.187 -->
-## [v14.0.187](https://github.com/chef/chef/tree/v14.0.187) (2018-04-02)
+<!-- latest_release 14.0.188 -->
+## [v14.0.188](https://github.com/chef/chef/tree/v14.0.188) (2018-04-02)
 
 #### Merged Pull Requests
-- Stripping Authorization header upon redirects (second try) [#7006](https://github.com/chef/chef/pull/7006) ([bugok](https://github.com/bugok))
+- [CHEF-7026] Rewrite portage package provider candidate_version determination and fix tests [#7027](https://github.com/chef/chef/pull/7027) ([gengor](https://github.com/gengor))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.5 -->
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- [CHEF-7026] Rewrite portage package provider candidate_version determination and fix tests [#7027](https://github.com/chef/chef/pull/7027) ([gengor](https://github.com/gengor)) <!-- 14.0.188 -->
 - Stripping Authorization header upon redirects (second try) [#7006](https://github.com/chef/chef/pull/7006) ([bugok](https://github.com/bugok)) <!-- 14.0.187 -->
 - Bring in the windows_feature_powershell improvements from the cookbook [#7098](https://github.com/chef/chef/pull/7098) ([tas50](https://github.com/tas50)) <!-- 14.0.186 -->
 - Address possible gem installs between interval runs that are then used in the config [#7106](https://github.com/chef/chef/pull/7106) ([coderanger](https://github.com/coderanger)) <!-- 14.0.185 -->
