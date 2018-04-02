@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.184 -->
-## [v14.0.184](https://github.com/chef/chef/tree/v14.0.184) (2018-04-02)
+<!-- latest_release 14.0.185 -->
+## [v14.0.185](https://github.com/chef/chef/tree/v14.0.185) (2018-04-02)
 
 #### Merged Pull Requests
-- scrub tempfile names [#7104](https://github.com/chef/chef/pull/7104) ([lamont-granquist](https://github.com/lamont-granquist))
+- Address possible gem installs between interval runs that are then used in the config [#7106](https://github.com/chef/chef/pull/7106) ([coderanger](https://github.com/coderanger))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.5 -->
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- Address possible gem installs between interval runs that are then used in the config [#7106](https://github.com/chef/chef/pull/7106) ([coderanger](https://github.com/coderanger)) <!-- 14.0.185 -->
 - scrub tempfile names [#7104](https://github.com/chef/chef/pull/7104) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.184 -->
 - homebrew_tap / homebrew_cask: Fix compile time errors with the user mixin [#7097](https://github.com/chef/chef/pull/7097) ([tas50](https://github.com/tas50)) <!-- 14.0.183 -->
 -  Bump Ruby to 2.5.1 [#7090](https://github.com/chef/chef/pull/7090) ([tas50](https://github.com/tas50)) <!-- 14.0.182 -->
