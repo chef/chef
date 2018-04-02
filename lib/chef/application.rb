@@ -50,6 +50,8 @@ class Chef
 
     # Reconfigure the application. You'll want to override and super this method.
     def reconfigure
+      # In case any gems were installed for use in the config.
+      Gem.clear_paths
       configure_chef
       configure_logging
       configure_encoding
