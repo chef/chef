@@ -94,7 +94,7 @@ class Chef
       action :delete do
         description "Remove a Windows role/feature from the image using DISM"
 
-        fail_if_delete_unsupported
+        raise_if_delete_unsupported
 
         reload_cached_dism_data unless node["dism_features_cache"]
 
@@ -208,7 +208,7 @@ class Chef
         # @return [void]
         def fail_if_removed
           return if new_resource.source # if someone provides a source then all is well
-          if node["os_version"].to_f > 6.2
+          if node["platform_version"].to_f > 6.2
             return if registry_key_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing') && registry_value_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing', name: "LocalSourcePath") # if source is defined in the registry, still fine
           end
           removed = new_resource.feature_name & node["dism_features_cache"]["removed"]
@@ -217,7 +217,7 @@ class Chef
 
         # Fail unless we're on windows 8+ / 2012+ where deleting a feature is supported
         # @return [void]
-        def fail_if_delete_unsupported
+        def raise_if_delete_unsupported
           raise Chef::Exceptions::UnsupportedAction, "#{self} :delete action not support on Windows releases before Windows 8/2012. Cannot continue!" unless node["platform_version"].to_f >= 6.2
         end
       end
