@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 9a3a97bb0c6b437524fdea15b4cd15a65ff6ac29
+  revision: 41c5d2eaa819587b631d893e613612a96031c8af
   branch: master
   specs:
     omnibus (5.6.10)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 75ae88adb7d6b51038d92d1cfb40dec5fded9650
+  revision: 0cb3a8dfb6cebd56684c1d4609a676959389e4c5
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -31,13 +31,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.11.24)
-      aws-sdk-resources (= 2.11.24)
-    aws-sdk-core (2.11.24)
+    aws-sdk (2.11.27)
+      aws-sdk-resources (= 2.11.27)
+    aws-sdk-core (2.11.27)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.11.24)
-      aws-sdk-core (= 2.11.24)
+    aws-sdk-resources (2.11.27)
+      aws-sdk-core (= 2.11.27)
     aws-sigv4 (1.0.2)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -72,7 +72,7 @@ GEM
     buff-shell_out (0.2.0)
       buff-ruby_engine (~> 0.1.0)
     builder (3.2.3)
-    byebug (10.0.1)
+    byebug (10.0.2)
     celluloid (0.16.0)
       timers (~> 4.0.0)
     celluloid-io (0.16.2)
