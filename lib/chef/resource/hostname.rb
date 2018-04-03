@@ -203,7 +203,7 @@ class Chef
           end
 
         else # windows
-          raise "Windows hostnames cannot contain a period." if new_resource.hostname.match?(/./)
+          raise "Windows hostnames cannot contain a period." if new_resource.hostname.match?(/\./)
 
           # suppress EC2 config service from setting our hostname
           if ::File.exist?('C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml')
