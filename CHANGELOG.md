@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.189 -->
-## [v14.0.189](https://github.com/chef/chef/tree/v14.0.189) (2018-04-03)
+<!-- latest_release 14.0.190 -->
+## [v14.0.190](https://github.com/chef/chef/tree/v14.0.190) (2018-04-03)
 
 #### Merged Pull Requests
-- Don&#39;t fail on every hostname with windows [#7107](https://github.com/chef/chef/pull/7107) ([tas50](https://github.com/tas50))
+- [windows_printer_port] fix typo + add action descriptions [#7093](https://github.com/chef/chef/pull/7093) ([brewn](https://github.com/brewn))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.5 -->
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- [windows_printer_port] fix typo + add action descriptions [#7093](https://github.com/chef/chef/pull/7093) ([brewn](https://github.com/brewn)) <!-- 14.0.190 -->
 - Don&#39;t fail on every hostname with windows [#7107](https://github.com/chef/chef/pull/7107) ([tas50](https://github.com/tas50)) <!-- 14.0.189 -->
 - [CHEF-7026] Rewrite portage package provider candidate_version determination and fix tests [#7027](https://github.com/chef/chef/pull/7027) ([gengor](https://github.com/gengor)) <!-- 14.0.188 -->
 - Stripping Authorization header upon redirects (second try) [#7006](https://github.com/chef/chef/pull/7006) ([bugok](https://github.com/bugok)) <!-- 14.0.187 -->
