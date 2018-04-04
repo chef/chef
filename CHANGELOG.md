@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.0.191 -->
+## [v14.0.191](https://github.com/chef/chef/tree/v14.0.191) (2018-04-04)
+
+#### Merged Pull Requests
+- Update InSpec to 2.1.21 [#7109](https://github.com/chef/chef/pull/7109) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.0.190 -->
+### Changes since 14.0.190 release
+
+#### Merged Pull Requests
+- Update InSpec to 2.1.21 [#7109](https://github.com/chef/chef/pull/7109) ([tas50](https://github.com/tas50)) <!-- 14.0.191 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
