@@ -85,9 +85,9 @@ The general development process is:
 3. Write code and tests.
 4. Push your feature branch to github and open a pull request against master.
 
-Once your repository is set up, you can start working on the code. We do utilize
+Once your repository is set up, you can start working on the code.  We do utilize
 RSpec for test driven development, so you'll need to get a development
-environment running. Follow the above procedure ("Installing from Git") to get
+environment running.  Follow the above procedure ("Installing from Git") to get
 your local copy of the source running.
 
 ## Testing
@@ -147,23 +147,23 @@ bundle lock --update --add-platform x86-mingw32
 
 # How Chef Builds and Versions
 
-Chef is an amalgam of many components. These components update all the time, necessitating new builds. This is an overview of the process of versioning, building and releasing Chef.
+Chef is an amalgam of many components.  These components update all the time, necessitating new builds.  This is an overview of the process of versioning, building and releasing Chef.
 
 ## Chef Packages
 
-Chef is distributed as packages for debian, rhel, ubuntu, windows, solaris, aix, and os x. It includes a large number of components from various sources, and these are versioned and maintained separately from chef project, which bundles them all together conveniently for the user.
+Chef is distributed as packages for debian, rhel, ubuntu, windows, solaris, aix, and os x.  It includes a large number of components from various sources, and these are versioned and maintained separately from chef project, which bundles them all together conveniently for the user.
 
 These packages go through several milestones:
 - `master`: When code is checked in to master, the patch version of chef is bumped (e.g. 0.9.10 -> 0.9.11) and a build is kicked off automatically to create and test the packages in Chef's Jenkins cluster.
-- `unstable`: When a package is built, it enters the unstable channel. When all packages for all OS's have successfully built, the test phase is kicked off in Jenkins across all supported OS's. These builds are password-protected and generally only available to the test systems.
+- `unstable`: When a package is built, it enters the unstable channel.  When all packages for all OS's have successfully built, the test phase is kicked off in Jenkins across all supported OS's.  These builds are password-protected and generally only available to the test systems.
 - `current`: If the packages pass all the tests on all supported OS's, it is promoted as a unit to `current`, and is available via Chef's artifactory by running `curl https://www.chef.io/chef/install.sh | sudo bash -s -- -c current -P chef`
-- `stable`: Periodically, Chef will pick a release to "bless" for folks who would like a slower update schedule than "every time a build passes the tests." When this happens, it is manually promoted to stable and an announcement is sent to the list. It can be reached at https://downloads.chef.io or installed using the `curl` command without specifying `-c current`. Packages in `stable` are no longer available in `current`.
+- `stable`: Periodically, Chef will pick a release to "bless" for folks who would like a slower update schedule than "every time a build passes the tests." When this happens, it is manually promoted to stable and an announcement is sent to the list.  It can be reached at https://downloads.chef.io or installed using the `curl` command without specifying `-c current`. Packages in `stable` are no longer available in `current`.
 
 Additionally, periodically Chef will update the desired versions of chef components and check that in to `master`, triggering a new build with the updated components in it.
 
 ## Automated Version Bumping
 
-Whenever a change is checked in to `master`, the patch version of `chef` is bumped. To do this, the `chef-ci` bot listens to GitHub for merged PRs, and when it finds one, takes these actions:
+Whenever a change is checked in to `master`, the patch version of `chef` is bumped.  To do this, the `chef-ci` bot listens to GitHub for merged PRs, and when it finds one, takes these actions:
 
 1. Bumps the patch version (e.g. 14.1.14 -> 14.1.15) by running ./ci/version_bump.sh
 2. Updates the changelog with the new pull request and current point release
@@ -171,7 +171,7 @@ Whenever a change is checked in to `master`, the patch version of `chef` is bump
 
 ## Bumping the minor version of Chef
 
-After each "official" stable release we need to bump the minor version. To do this:
+After each "official" stable release we need to bump the minor version.  To do this:
 
 1. Run `bundle exec rake version:bump_minor`
 
@@ -179,7 +179,7 @@ Submit a PR with the changes made by the above.
 
 ## Addressing a Regression
 
-Sometimes, regressions split through the cracks. Since new functionality is always being added and the minor version is bumped immediately after release, we can't simply roll forward. In this scenario, we'll need to perform a special regression release process. In the example that follows, the stable release with a regression is `1.10.60` while master is currently sitting at `1.11.30`. *Note:* To perform this process, you must be a Chef employee.
+Sometimes, regressions split through the cracks.  Since new functionality is always being added and the minor version is bumped immediately after release, we can't simply roll forward.  In this scenario, we'll need to perform a special regression release process.  In the example that follows, the stable release with a regression is `1.10.60` while master is currently sitting at `1.11.30`. *Note:* To perform this process, you must be a Chef employee.
 
 1. If the regression has not already been addressed, open a Pull Request against master with the fix.
 2. Wait until that Pull Request has been merged and `1.11.31` has passed all the necessary tests and is available in the current channel.
@@ -196,7 +196,7 @@ Sometimes, regressions split through the cracks. Since new functionality is alwa
 
 Chef has two sorts of component: ruby components like `berkshelf` and `test-kitchen`, and binary components like `openssl` and even `ruby` itself.
 
-In general, you can find all chef desired versions in the [Gemfile](Gemfile) and [omnibus_overrides.rb](omnibus_overrides.rb) files. The [Gemfile.lock](Gemfile.lock) is the locked version of the Gemfile.
+In general, you can find all chef desired versions in the [Gemfile](Gemfile) and [omnibus_overrides.rb](omnibus_overrides.rb) files.  The [Gemfile.lock](Gemfile.lock) is the locked version of the Gemfile.
 
 ### Binary Components
 
@@ -216,7 +216,7 @@ cases a recent MacOS with Xcode and a few homebrew packages or a recent Ubuntu d
 
 ### Test Versions
 
-chef is tested by the [chef-acceptance framework](https://github.com/chef/chef-acceptance), which contains suites that are run on the Jenkins test machines. The definitions of the tests are in the `acceptance` directory. The version of chef-acceptance and test-kitchen, are governed by `acceptance/Gemfile`.
+chef is tested by the [chef-acceptance framework](https://github.com/chef/chef-acceptance), which contains suites that are run on the Jenkins test machines.  The definitions of the tests are in the `acceptance` directory.  The version of chef-acceptance and test-kitchen, are governed by `acceptance/Gemfile`.
 
 The test tooling versions are locked down with `acceptance/Gemfile.lock`, which can be updated by running `rake dependencies`.
 
