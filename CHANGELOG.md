@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.191 -->
-## [v14.0.191](https://github.com/chef/chef/tree/v14.0.191) (2018-04-04)
+<!-- latest_release 14.0.192 -->
+## [v14.0.192](https://github.com/chef/chef/tree/v14.0.192) (2018-04-05)
 
 #### Merged Pull Requests
-- Update InSpec to 2.1.21 [#7109](https://github.com/chef/chef/pull/7109) ([tas50](https://github.com/tas50))
+- add delegator for property_is_set? to providers [#7122](https://github.com/chef/chef/pull/7122) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.0.190 -->
 ### Changes since 14.0.190 release
 
 #### Merged Pull Requests
+- add delegator for property_is_set? to providers [#7122](https://github.com/chef/chef/pull/7122) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.192 -->
 - Update InSpec to 2.1.21 [#7109](https://github.com/chef/chef/pull/7109) ([tas50](https://github.com/tas50)) <!-- 14.0.191 -->
 <!-- release_rollup -->
 
