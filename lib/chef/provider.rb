@@ -42,6 +42,7 @@ class Chef
 
     include Chef::Mixin::WhyRun
     extend Chef::Mixin::Provides
+    extend Forwardable
 
     # includes the "core" DSL and not the "recipe" DSL by design
     include Chef::DSL::Core
@@ -76,6 +77,10 @@ class Chef
       # Uncomment this in Chef 13.6.
       # Chef.deprecated(:use_inline_resources, "The use_inline_resources mode is no longer optional and the line enabling it can be removed")
     end
+
+    # delegate to the resource
+    #
+    def_delegators :@new_resource, :property_is_set?
 
     #--
     # TODO: this should be a reader, and the action should be passed in the
