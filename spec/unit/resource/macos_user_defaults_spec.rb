@@ -28,18 +28,4 @@ describe Chef::Resource::MacosUserDefaults do
   it "has a default action of install" do
     expect(resource.action).to eql([:write])
   end
-
-  [true, "TRUE", "1", "true", "YES", "yes"].each do |val|
-    it "coerces value property from #{val} to 1" do
-      resource.value val
-      expect(resource.value).to eql(1)
-    end
-  end
-
-  [false, "FALSE", "0", "false", "NO", "no"].each do |val|
-    it "coerces value property from #{val} to 0" do
-      resource.value val
-      expect(resource.value).to eql(0)
-    end
-  end
 end
