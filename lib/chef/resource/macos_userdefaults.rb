@@ -43,7 +43,6 @@ class Chef
 
       property :value, [Integer, Float, String, TrueClass, FalseClass, Hash, Array],
                description: "The value of the key.",
-               coerce: proc { |v| coerce_booleans(v) },
                required: true
 
       property :type, String,
@@ -73,11 +72,12 @@ class Chef
       end
 
       load_current_value do |desired|
+        value = coerce_booleans(desired.value)
         drcmd = "defaults read '#{desired.domain}' "
         drcmd << "'#{desired.key}' " if desired.key
         shell_out_opts = {}
         shell_out_opts[:user] = desired.user unless desired.user.nil?
-        vc = shell_out("#{drcmd} | grep -qx '#{desired.value}'", shell_out_opts)
+        vc = shell_out("#{drcmd} | grep -qx '#{value}'", shell_out_opts)
         is_set vc.exitstatus == 0 ? true : false
       end
 
