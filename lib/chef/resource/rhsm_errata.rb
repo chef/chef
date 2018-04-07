@@ -21,6 +21,7 @@ class Chef
   class Resource
     class RhsmErrata < Chef::Resource
       resource_name :rhsm_errata
+      provides(:rhsm_errata) { true }
 
       description "Use the rhsm_errata resource to install packages associated with a given Red"\
                   " Hat Subscription Manager Errata ID. This is helpful if packages"\

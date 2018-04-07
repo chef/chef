@@ -22,7 +22,7 @@ class Chef
   class Resource
     class WindowsPath < Chef::Resource
       resource_name :windows_path
-      provides :windows_path
+      provides(:windows_path) { true }
 
       description "Use the windows_path resource to manage the path environment variable on Microsoft Windows."
       introduced "13.4"

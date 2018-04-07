@@ -24,6 +24,7 @@ class Chef
   class Resource
     class HomebrewTap < Chef::Resource
       resource_name :homebrew_tap
+      provides(:homebrew_tap) { true }
 
       description "Use the homebrew_tap resource to add additional formula repositories to the Homebrew package manager."
       introduced "14.0"

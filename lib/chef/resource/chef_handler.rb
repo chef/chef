@@ -19,7 +19,7 @@ class Chef
   class Resource
     class ChefHandler < Chef::Resource
       resource_name :chef_handler
-      provides :chef_handler
+      provides(:chef_handler) { true }
 
       description "Use the chef_handler resource to install or uninstall Chef reporting/exception handlers."
       introduced "14.0"

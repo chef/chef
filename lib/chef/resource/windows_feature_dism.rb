@@ -22,7 +22,7 @@ class Chef
   class Resource
     class WindowsFeatureDism < Chef::Resource
       resource_name :windows_feature_dism
-      provides :windows_feature_dism
+      provides(:windows_feature_dism) { true }
 
       description "Using the windows_feature_dism resource to add, remove or"\
                   " delete Windows features and roles using DISM"
