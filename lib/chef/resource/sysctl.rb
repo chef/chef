@@ -21,8 +21,8 @@ class Chef
   class Resource
     class Sysctl < Chef::Resource
       resource_name :sysctl
-      provides :sysctl
-      provides :sysctl_param
+      provides(:sysctl) { true }
+      provides(:sysctl_param) { true }
 
       description "Use the sysctl resource to set kernel parameters using the sysctl"\
                   " command line tool and configuration files in the system's sysctl.d directory."\

@@ -27,7 +27,7 @@ class Chef
       include Chef::Mixin::Uris
 
       resource_name :windows_package
-      provides :windows_package
+      provides(:windows_package) { true }
       provides :package, os: "windows"
 
       description "Use the windows_package resource to manage Microsoft Installer Package"\

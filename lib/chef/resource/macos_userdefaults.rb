@@ -22,8 +22,8 @@ class Chef
     class MacosUserDefaults < Chef::Resource
       # align with apple's marketing department
       resource_name :macos_userdefaults
-      provides :mac_os_x_userdefaults
-      provides :macos_userdefaults
+      provides(:mac_os_x_userdefaults) { true }
+      provides(:macos_userdefaults) { true }
 
       description "Use the macos_userdefaults resource to manage the macOS user defaults system. The properties"\
                   " of this resource are passed to the defaults command, and the parameters follow the convention"\

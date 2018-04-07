@@ -22,7 +22,7 @@ class Chef
   class Resource
     class WindowsTask < Chef::Resource
       resource_name :windows_task
-      provides :windows_task
+      provides(:windows_task) { true }
 
       description "Use the windows_task resource to create, delete or run a Windows"\
                   " scheduled task. Requires Windows Server 2008 or later due to API usage."

@@ -22,7 +22,7 @@ class Chef
   class Resource
     class WindowsShortcut < Chef::Resource
       resource_name :windows_shortcut
-      provides :windows_shortcut
+      provides(:windows_shortcut) { true }
 
       description "Use the windows_shortcut resource to create shortcut files on Windows"
       introduced "14.0"

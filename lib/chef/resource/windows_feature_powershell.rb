@@ -24,7 +24,7 @@ class Chef
   class Resource
     class WindowsFeaturePowershell < Chef::Resource
       resource_name :windows_feature_powershell
-      provides :windows_feature_powershell
+      provides(:windows_feature_powershell) { true }
 
       description "Use the windows_feature_powershell resource to add, remove or"\
                   " delete Windows features and roles using PowerShell. This resource"\

@@ -23,7 +23,7 @@ class Chef
   class Resource
     class RegistryKey < Chef::Resource
       resource_name :registry_key
-      provides :registry_key
+      provides(:registry_key) { true }
 
       description "Use the registry_key resource to create and delete registry keys in Microsoft Windows."
       introduced "11.0"

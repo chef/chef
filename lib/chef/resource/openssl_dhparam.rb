@@ -24,6 +24,7 @@ class Chef
       include Chef::Mixin::OpenSSLHelper
 
       resource_name :openssl_dhparam
+      provides(:openssl_dhparam) { true }
 
       description "Use the openssl_dhparam resource to generate dhparam.pem files. If a"\
                   " valid dhparam.pem file is found at the specified location, no new file"\

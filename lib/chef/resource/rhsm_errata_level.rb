@@ -21,6 +21,7 @@ class Chef
   class Resource
     class RhsmErrataLevel < Chef::Resource
       resource_name :rhsm_errata_level
+      provides(:rhsm_errata_level) { true }
 
       description " Use the rhsm_errata_level resource to install all packages of a specified errata level"\
                   " from the Red Hat Subscript Manager. For example, you can ensure that all packages associated"\

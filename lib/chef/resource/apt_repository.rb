@@ -22,7 +22,7 @@ class Chef
   class Resource
     class AptRepository < Chef::Resource
       resource_name :apt_repository
-      provides :apt_repository
+      provides(:apt_repository) { true }
 
       description "Use the apt_repository resource to specify additional APT repositories."\
                   " Adding a new repository will update APT package cache immediately."

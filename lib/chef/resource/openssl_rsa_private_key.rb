@@ -24,8 +24,8 @@ class Chef
       include Chef::Mixin::OpenSSLHelper
 
       resource_name :openssl_rsa_private_key
-      provides :openssl_rsa_private_key
-      provides :openssl_rsa_key # legacy cookbook resource name
+      provides(:openssl_rsa_private_key) { true }
+      provides(:openssl_rsa_key) { true } # legacy cookbook resource name
 
       description "Use the openssl_rsa_private_key resource to generate RSA private key files."\
                   " If a valid RSA key file can be opened at the specified location, no new file"\

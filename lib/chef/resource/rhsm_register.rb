@@ -22,6 +22,7 @@ class Chef
   class Resource
     class RhsmRegister < Chef::Resource
       resource_name :rhsm_register
+      provides(:rhsm_register) { true }
 
       description "Use the rhsm_register resource to register a node with the Red Hat Subscription Manager"\
                   " or a local Red Hat Satellite server."

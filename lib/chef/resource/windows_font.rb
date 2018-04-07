@@ -23,7 +23,7 @@ class Chef
       require "chef/util/path_helper"
 
       resource_name :windows_font
-      provides :windows_font
+      provides(:windows_font) { true }
 
       description "Use the windows_font resource to install font files on Windows."\
                   " By default, the font is sourced from the cookbook using the resource, but a URI"\
