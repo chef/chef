@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.8.12 -->
-## [v13.8.12](https://github.com/chef/chef/tree/v13.8.12) (2018-03-24)
+<!-- latest_release 13.8.13 -->
+## [v13.8.13](https://github.com/chef/chef/tree/v13.8.13) (2018-04-09)
 
 #### Merged Pull Requests
-- partially revert 61e3d4bb: do not use properties for mount [#7031](https://github.com/chef/chef/pull/7031) ([thommay](https://github.com/thommay))
+- Bump dependencies to bring in Ohai 13.9 [#7135](https://github.com/chef/chef/pull/7135) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.5 -->
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- Bump dependencies to bring in Ohai 13.9 [#7135](https://github.com/chef/chef/pull/7135) ([tas50](https://github.com/tas50)) <!-- 13.8.13 -->
 - partially revert 61e3d4bb: do not use properties for mount [#7031](https://github.com/chef/chef/pull/7031) ([thommay](https://github.com/thommay)) <!-- 13.8.12 -->
 - Empty commit to trigger a release build [#7040](https://github.com/chef/chef/pull/7040) ([btm](https://github.com/btm)) <!-- 13.8.11 -->
 - [chef-13] support nils because of course [#7017](https://github.com/chef/chef/pull/7017) ([thommay](https://github.com/thommay)) <!-- 13.8.10 -->
