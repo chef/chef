@@ -75,12 +75,22 @@ class Chef
           end
         end
 
-        def package_locked(name, version)
-          locked = shell_out_compact_timeout!("zypper", "locks")
-          locked_packages = locked.stdout.each_line.map do |line|
-            line.split("|").shift(2).last.strip
-          end
-          name.all? { |n| locked_packages.include? n }
+        def packages_all_locked?(names, versions)
+          names.all? { |n| locked_packages.include? n }
+        end
+
+        def packages_all_unlocked?(names, versions)
+          names.all? { |n| !locked_packages.include? n }
+        end
+
+        def locked_packages
+          @locked_packages ||=
+            begin
+              locked = shell_out_compact_timeout!("zypper", "locks")
+              locked.stdout.each_line.map do |line|
+                line.split("|").shift(2).last.strip
+              end
+            end
         end
 
         def load_current_resource
