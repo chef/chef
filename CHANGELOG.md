@@ -1,20 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 12.22.3 -->
-## [v12.22.3](https://github.com/chef/chef/tree/v12.22.3) (2018-03-20)
-
-#### Merged Pull Requests
-- Fix regression in #6980, add functional tests [#7011](https://github.com/chef/chef/pull/7011) ([btm](https://github.com/btm))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=12.22.1 -->
-### Changes since 12.22.1 release
-
-#### Merged Pull Requests
-- Fix regression in #6980, add functional tests [#7011](https://github.com/chef/chef/pull/7011) ([btm](https://github.com/btm)) <!-- 12.22.3 -->
-- Pass pointer to LsaFreeMemory, not FFI::MemoryPointer [#6992](https://github.com/chef/chef/pull/6992) ([btm](https://github.com/btm)) <!-- 12.22.2 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v12.22.3](https://github.com/chef/chef/tree/v12.22.3) (2018-04-09)
+
+#### Merged Pull Requests
+- Pass pointer to LsaFreeMemory, not FFI::MemoryPointer [#6992](https://github.com/chef/chef/pull/6992) ([btm](https://github.com/btm))
+- Fix regression in #6980, add functional tests [#7011](https://github.com/chef/chef/pull/7011) ([btm](https://github.com/btm))
+<!-- latest_stable_release -->
+
 ## [v12.22.1](https://github.com/chef/chef/tree/v12.22.1) (2018-03-01)
 
 #### Merged Pull Requests
@@ -26,7 +24,6 @@
 - Use the version of LicenseScout that comes with the Omnibus gem. [#6840](https://github.com/chef/chef/pull/6840) ([tduffield](https://github.com/tduffield))
 - Bump libxml2 to 2.9.7 and prep 12.22 release [#6881](https://github.com/chef/chef/pull/6881) ([tas50](https://github.com/tas50))
 - One last Chef 12 dependency bump [#6918](https://github.com/chef/chef/pull/6918) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v12.21.31](https://github.com/chef/chef/tree/v12.21.31) (2017-12-19)
 
