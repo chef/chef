@@ -129,14 +129,16 @@ class Chef
         def register_command
           command = %w{subscription-manager register}
 
-          unless new_resource.activation_key.empty?
-            raise "Unable to register - you must specify organization when using activation keys" if new_resource.organization.nil?
+          if new_resource.activation_key
+            unless new_resource.activation_key.empty?
+              raise "Unable to register - you must specify organization when using activation keys" if new_resource.organization.nil?
 
-            command << new_resource.activation_key.map { |key| "--activationkey=#{Shellwords.shellescape(key)}" }
-            command << "--org=#{Shellwords.shellescape(new_resource.organization)}"
-            command << "--force" if new_resource.force
+              command << new_resource.activation_key.map { |key| "--activationkey=#{Shellwords.shellescape(key)}" }
+              command << "--org=#{Shellwords.shellescape(new_resource.organization)}"
+              command << "--force" if new_resource.force
 
-            return command.join(" ")
+              return command.join(" ")
+            end
           end
 
           if new_resource.username && new_resource.password
