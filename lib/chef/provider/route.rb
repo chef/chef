@@ -174,7 +174,7 @@ class Chef
             conf[dev] = "" if conf[dev].nil?
             case @action
             when :add
-              conf[dev] << config_file_contents(:add, comment: resource.comment, target: resource.target, netmask: resource.netmask, gateway: resource.gateway) if resource.action == [:add]
+              conf[dev] << config_file_contents(:add, comment: resource.comment, target: resource.target, metric: resource.metric, netmask: resource.netmask, gateway: resource.gateway) if resource.action == [:add]
             when :delete
               # need to do this for the case when the last route on an int
               # is removed
@@ -219,6 +219,7 @@ class Chef
           command = [ "ip", "route", "replace", target ]
           command += [ "via", new_resource.gateway ] if new_resource.gateway
           command += [ "dev", new_resource.device ] if new_resource.device
+          command += [ "metric", new_resource.metric ] if new_resource.metric
         when :delete
           command = [ "ip", "route", "delete", target ]
           command += [ "via", new_resource.gateway ] if new_resource.gateway
@@ -235,6 +236,7 @@ class Chef
           content << (options[:target]).to_s
           content << "/#{MASK[options[:netmask].to_s]}" if options[:netmask]
           content << " via #{options[:gateway]}" if options[:gateway]
+          content << " metric #{options[:metric]}" if options[:metric]
           content << "\n"
         end
 
