@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.194 -->
-## [v14.0.194](https://github.com/chef/chef/tree/v14.0.194) (2018-04-09)
+<!-- latest_release 14.0.195 -->
+## [v14.0.195](https://github.com/chef/chef/tree/v14.0.195) (2018-04-11)
 
 #### Merged Pull Requests
-- Fix RHSM registration using passwords [#7133](https://github.com/chef/chef/pull/7133) ([tas50](https://github.com/tas50))
+- fix Chef-14 chef_fs/chef-zero perf regression [#7143](https://github.com/chef/chef/pull/7143) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.0.190 -->
 ### Changes since 14.0.190 release
 
 #### Merged Pull Requests
+- fix Chef-14 chef_fs/chef-zero perf regression [#7143](https://github.com/chef/chef/pull/7143) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.195 -->
 - Fix RHSM registration using passwords [#7133](https://github.com/chef/chef/pull/7133) ([tas50](https://github.com/tas50)) <!-- 14.0.194 -->
 - Modify the provides for all resources from cookbooks so chef wins [#7134](https://github.com/chef/chef/pull/7134) ([tas50](https://github.com/tas50)) <!-- 14.0.193 -->
 - add delegator for property_is_set? to providers [#7122](https://github.com/chef/chef/pull/7122) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.192 -->
