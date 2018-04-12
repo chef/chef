@@ -590,6 +590,14 @@ gpgcheck=0
         expect { yum_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
 
+      it "should work with disablerepo first" do
+        flush_cache
+        yum_package.options(["--disablerepo=*", "--enablerepo=chef-yum-localtesting"])
+        yum_package.run_action(:install)
+        expect(yum_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
+      end
+
       it "should work to enable a disabled repo", not_rhel5: true do
         shell_out!("yum-config-manager --disable chef-yum-localtesting")
         flush_cache

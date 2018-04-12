@@ -83,11 +83,13 @@ def query(command):
     enabled_repos = base.repos.listEnabled()
 
     # Handle any repocontrols passed in with our options
-    if 'enablerepos' in command:
-      base.repos.enableRepo(*command['enablerepos'])
 
-    if 'disablerepos' in command:
-      base.repos.disableRepo(*command['disablerepos'])
+    if 'repos' in command:
+      for repo in command['repos']:
+        if 'enable' in repo:
+          base.repos.enableRepo(repo['enable'])
+        if 'disable' in repo:
+          base.repos.disableRepo(repo['disable'])
 
     args = { 'name': command['provides'] }
     do_nevra = False
@@ -148,15 +150,14 @@ def query(command):
         outpipe.flush()
 
     # Reset any repos we were passed in enablerepo/disablerepo to the original state in enabled_repos
-    if 'enablerepos' in command:
-        for repo in command['enablerepos']:
-            if base.repos.getRepo(repo) not in enabled_repos:
-                base.repos.disableRepo(repo)
-
-    if 'disablerepos' in command:
-        for repo in command['disablerepos']:
-            if base.repos.getRepo(repo) in enabled_repos:
-                base.repos.enableRepo(repo)
+    if 'repos' in command:
+      for repo in command['repos']:
+        if 'enable' in repo:
+          if base.repos.getRepo(repo['enable']) not in enabled_repos:
+            base.repos.disableRepo(repo['enable'])
+        if 'disable' in repo:
+          if base.repos.getRepo(repo['disable']) in enabled_repos:
+            base.repos.enableRepo(repo['disable'])
 
 # the design of this helper is that it should try to be 'brittle' and fail hard and exit in order
 # to keep process tables clean.  additional error handling should probably be added to the retry loop
