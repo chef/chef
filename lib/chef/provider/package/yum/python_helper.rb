@@ -93,14 +93,14 @@ class Chef
             options.each_with_object({}) do |opt, h|
               if opt =~ /--enablerepo=(.+)/
                 $1.split(",").each do |repo|
-                  h["enablerepos"] ||= []
-                  h["enablerepos"].push(repo)
+                  h["repos"] ||= []
+                  h["repos"].push( { "enable" => repo } )
                 end
               end
               if opt =~ /--disablerepo=(.+)/
                 $1.split(",").each do |repo|
-                  h["disablerepos"] ||= []
-                  h["disablerepos"].push(repo)
+                  h["repos"] ||= []
+                  h["repos"].push( { "disable" => repo } )
                 end
               end
             end
