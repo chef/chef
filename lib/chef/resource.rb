@@ -23,6 +23,7 @@ require "chef/dsl/data_query"
 require "chef/dsl/registry_helper"
 require "chef/dsl/reboot_pending"
 require "chef/dsl/resources"
+require "chef/dsl/declare_resource"
 require "chef/json_compat"
 require "chef/mixin/convert_to_class_name"
 require "chef/guard_interpreter/resource_guard_interpreter"
@@ -51,6 +52,7 @@ class Chef
     # Generic User DSL (not resource-specific)
     #
 
+    include Chef::DSL::DeclareResource
     include Chef::DSL::DataQuery
     include Chef::DSL::RegistryHelper
     include Chef::DSL::RebootPending
@@ -95,26 +97,6 @@ class Chef
     #
     def node
       run_context && run_context.node
-    end
-
-    #
-    # Find existing resources by searching the list of existing resources.  Possible
-    # forms are:
-    #
-    #   find(:file => "foobar")
-    #   find(:file => [ "foobar", "baz" ])
-    #   find("file[foobar]", "file[baz]")
-    #   find("file[foobar,baz]")
-    #
-    # Calls `run_context.resource_collection.find(*args)`
-    #
-    # @return the matching resource, or an Array of matching resources.
-    #
-    # @raise ArgumentError if you feed it bad lookup information
-    # @raise RuntimeError if it can't find the resources you are looking for.
-    #
-    def resources(*args)
-      run_context.resource_collection.find(*args)
     end
 
     #
