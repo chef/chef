@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 41c5d2eaa819587b631d893e613612a96031c8af
+  revision: 7e9c9a6a71c1ada2d7f42484f13074e1ec6b7cd3
   branch: master
   specs:
-    omnibus (5.6.10)
+    omnibus (5.6.12)
       aws-sdk (~> 2)
       chef-sugar (~> 3.3)
       cleanroom (~> 1.0)
@@ -31,13 +31,13 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
-    aws-sdk (2.11.27)
-      aws-sdk-resources (= 2.11.27)
-    aws-sdk-core (2.11.27)
+    aws-sdk (2.11.33)
+      aws-sdk-resources (= 2.11.33)
+    aws-sdk-core (2.11.33)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.11.27)
-      aws-sdk-core (= 2.11.27)
+    aws-sdk-resources (2.11.33)
+      aws-sdk-core (= 2.11.33)
     aws-sigv4 (1.0.2)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -108,7 +108,7 @@ GEM
     httpclient (2.7.2)
     iostruct (0.0.4)
     ipaddress (0.8.3)
-    jmespath (1.3.1)
+    jmespath (1.4.0)
     json (2.1.0)
     kitchen-vagrant (1.3.1)
       test-kitchen (~> 1.4)
@@ -125,7 +125,7 @@ GEM
     minitar (0.6.1)
     mixlib-archive (0.4.1)
       mixlib-log
-    mixlib-authentication (1.4.2)
+    mixlib-authentication (2.0.0)
     mixlib-cli (1.7.0)
     mixlib-config (2.2.6)
       tomlrb
@@ -151,7 +151,7 @@ GEM
     nori (2.6.0)
     octokit (4.8.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (13.8.0)
+    ohai (13.9.0)
       chef-config (>= 12.5.0.alpha.1, < 14)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
