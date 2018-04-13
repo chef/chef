@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.197 -->
-## [v14.0.197](https://github.com/chef/chef/tree/v14.0.197) (2018-04-12)
+<!-- latest_release 14.0.198 -->
+## [v14.0.198](https://github.com/chef/chef/tree/v14.0.198) (2018-04-13)
 
 #### Merged Pull Requests
-- Fix up knife logging [#7144](https://github.com/chef/chef/pull/7144) ([thommay](https://github.com/thommay))
+- Add support for route metric [#7140](https://github.com/chef/chef/pull/7140) ([tomdoherty](https://github.com/tomdoherty))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.0.190 -->
 ### Changes since 14.0.190 release
 
 #### Merged Pull Requests
+- Add support for route metric [#7140](https://github.com/chef/chef/pull/7140) ([tomdoherty](https://github.com/tomdoherty)) <!-- 14.0.198 -->
 - Fix up knife logging [#7144](https://github.com/chef/chef/pull/7144) ([thommay](https://github.com/thommay)) <!-- 14.0.197 -->
 - fix for enable/disable repo ordering [#7148](https://github.com/chef/chef/pull/7148) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.196 -->
 - fix Chef-14 chef_fs/chef-zero perf regression [#7143](https://github.com/chef/chef/pull/7143) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.195 -->
