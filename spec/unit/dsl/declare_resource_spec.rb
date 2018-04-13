@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,15 @@ describe Chef::ResourceCollection do
 
   let(:recipe) do
     Chef::Recipe.new("hjk", "test", run_context)
+  end
+
+  describe "mixed in correctly" do
+    it "the resources() method winds up in the right classes" do
+      methods = [ :resources, :find_resource, :find_resource!, :edit_resource, :edit_resource!, :delete_resource, :delete_resource!, :declare_resource, :build_resource ]
+      expect(Chef::Resource.instance_methods).to include(*methods)
+      expect(Chef::Recipe.instance_methods).to include(*methods)
+      expect(Chef::Provider.instance_methods).to include(*methods)
+    end
   end
 
   describe "#declare_resource" do
