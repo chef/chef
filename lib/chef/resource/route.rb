@@ -29,7 +29,7 @@ class Chef
 
       property :target, String, identity: true, name_property: true
       property :comment, [String, nil]
-      property :metric, [String, nil]
+      property :metric, [Integer, nil]
       property :netmask, [String, nil]
       property :gateway, [String, nil]
       property :device, [String, nil], desired_state: false # Has a partial default in the provider of eth0.
