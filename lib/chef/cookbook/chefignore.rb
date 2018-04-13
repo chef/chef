@@ -25,11 +25,9 @@ class Chef
       attr_reader :ignores
 
       def initialize(ignore_file_or_repo)
-        # Check the 'ignore_file_or_repo' path first and then look in the parent directory
+        # Check the 'ignore_file_or_repo' path first and then look in the parent directories (up to 2 levels)
         # to handle both the chef repo cookbook layout and a standalone cookbook
         @ignore_file = find_ignore_file(ignore_file_or_repo)
-        @ignore_file = find_ignore_file(File.dirname(ignore_file_or_repo)) unless readable_file_or_symlink?(@ignore_file)
-
         @ignores = parse_ignore_file
       end
 
@@ -56,22 +54,32 @@ class Chef
             ignore_globs << line.strip unless line =~ COMMENTS_AND_WHITESPACE
           end
         else
-          Chef::Log.trace("No chefignore file found at #{@ignore_file} no files will be ignored")
+          Chef::Log.debug("No chefignore file found. No files will be ignored!")
         end
         ignore_globs
       end
 
       def find_ignore_file(path)
-        if File.basename(path) =~ /chefignore/
-          path
-        else
-          File.join(path, "chefignore")
+        ignore_path=path
+        for i in 0..2
+          if File.basename(ignore_path) =~ /chefignore/
+            ignore_file = ignore_path
+          else
+            ignore_file = File.join(ignore_path, "/chefignore")
+          end
+          if readable_file_or_symlink?(ignore_file)
+            break
+          else
+            Chef::Log.debug("No chefignore file found at #{@ignore_path}.")
+            ignore_path = File.dirname(ignore_path) unless i == 2
+          end
         end
+        ignore_file
       end
 
       def readable_file_or_symlink?(path)
-        File.exist?(@ignore_file) && File.readable?(@ignore_file) &&
-          (File.file?(@ignore_file) || File.symlink?(@ignore_file))
+        File.exist?(path) && File.readable?(path) &&
+          (File.file?(path) || File.symlink?(path))
       end
     end
   end

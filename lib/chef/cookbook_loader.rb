@@ -173,8 +173,8 @@ class Chef
 
     def preload_cookbook(cookbook_path)
       repo_path = File.dirname(cookbook_path)
-      @chefignores[repo_path] ||= Cookbook::Chefignore.new(repo_path)
-      loader = Cookbook::CookbookVersionLoader.new(cookbook_path, @chefignores[repo_path])
+      @chefignores[cookbook_path] ||= Cookbook::Chefignore.new(cookbook_path)
+      loader = Cookbook::CookbookVersionLoader.new(cookbook_path, @chefignores[cookbook_path])
       add_cookbook_loader(loader)
     end
 
