@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "mixlib-cli", "~> 1.7"
   s.add_dependency "mixlib-log", "~> 2.0", ">= 2.0.3"
-  s.add_dependency "mixlib-authentication", "~> 1.4"
+  s.add_dependency "mixlib-authentication", "~> 2.0"
   s.add_dependency "mixlib-shellout", "~> 2.0"
   s.add_dependency "mixlib-archive", "~> 0.4"
   s.add_dependency "ohai", "~> 14.0"
@@ -55,7 +55,7 @@ Gem::Specification.new do |s|
   s.add_dependency "bundler", ">= 1.10"
 
   s.bindir       = "bin"
-  s.executables  = %w{ chef-client chef-solo knife chef-shell chef-apply }
+  s.executables  = %w{ chef-client chef-solo knife chef-shell chef-apply chef-resource-inspector }
 
   s.require_paths = %w{ lib }
   s.files = %w{Gemfile Rakefile LICENSE README.md CONTRIBUTING.md VERSION} + Dir.glob("{distro,lib,lib-backcompat,tasks,acceptance,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } + Dir.glob("*.gemspec")

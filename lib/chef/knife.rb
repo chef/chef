@@ -370,11 +370,13 @@ class Chef
         Chef::Config[:log_level] = :warn
       when 1
         Chef::Config[:log_level] = :info
-      else
+      when 2
         Chef::Config[:log_level] = :debug
+      else
+        Chef::Config[:log_level] = :trace
       end
 
-      Chef::Config[:log_level] = :debug if ENV["KNIFE_DEBUG"]
+      Chef::Config[:log_level] = :trace if ENV["KNIFE_DEBUG"]
 
       Chef::Config[:node_name]         = config[:node_name]       if config[:node_name]
       Chef::Config[:client_key]        = config[:client_key]      if config[:client_key]
@@ -467,7 +469,7 @@ class Chef
       when NameError, NoMethodError
         ui.error "knife encountered an unexpected error"
         ui.info  "This may be a bug in the '#{self.class.common_name}' knife command or plugin"
-        ui.info  "Please collect the output of this command with the `-VV` option before filing a bug report."
+        ui.info  "Please collect the output of this command with the `-VVV` option before filing a bug report."
         ui.info  "Exception: #{e.class.name}: #{e.message}"
       when Chef::Exceptions::PrivateKeyMissing
         ui.error "Your private key could not be loaded from #{api_key}"

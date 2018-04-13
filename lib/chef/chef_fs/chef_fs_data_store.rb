@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -307,25 +307,14 @@ class Chef
 
         # GET /cookbooks/NAME/VERSION or /cookbook_artifacts/NAME/IDENTIFIER
         elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 3
-          with_entry([path[0]]) do |entry|
+          with_cookbook_manifest(path) do |manifest, entry|
             cookbook_type = path[0]
-            cookbook_entry = entry.children.select do |child|
-              child.chef_object.full_name == "#{path[1]}-#{path[2]}" ||
-                (child.chef_object.name.to_s == path[1] && child.chef_object.identifier == path[2])
-            end[0]
-            raise ChefZero::DataStore::DataNotFoundError.new(path) if cookbook_entry.nil?
-            result = nil
-            begin
-              result = Chef::CookbookManifest.new(cookbook_entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_hash
-            rescue Chef::ChefFS::FileSystem::NotFoundError => e
-              raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
-            end
 
-            result.each_pair do |key, value|
+            manifest.each_pair do |key, value|
               if value.is_a?(Array)
                 value.each do |file|
                   if file.is_a?(Hash) && file.has_key?("checksum")
-                    relative = ["file_store", "repo", cookbook_type, cookbook_entry.name ]
+                    relative = ["file_store", "repo", cookbook_type, entry.name ]
                     relative += file[:path].split("/")
                     file["url"] = ChefZero::RestBase.build_uri(request.base_uri, relative)
                   end
@@ -334,8 +323,8 @@ class Chef
             end
 
             if cookbook_type == "cookbook_artifacts"
-              result["metadata"] = result["metadata"].to_hash
-              result["metadata"].delete_if do |key, value|
+              manifest["metadata"] = manifest["metadata"].to_hash
+              manifest["metadata"].delete_if do |key, value|
                 value == [] ||
                   (value == {} && !%w{dependencies attributes recipes}.include?(key)) ||
                   (value == "" && %w{source_url issues_url}.include?(key)) ||
@@ -343,9 +332,8 @@ class Chef
               end
             end
 
-            Chef::JSONCompat.to_json_pretty(result)
+            Chef::JSONCompat.to_json_pretty(manifest)
           end
-
         else
           with_entry(path) do |entry|
             begin
@@ -766,6 +754,26 @@ class Chef
 
       def path_always_exists?(path)
         path.length == 1 && BASE_DIRNAMES.include?(path[0])
+      end
+
+      def with_cookbook_manifest(path)
+        cookbook_type = path[0]
+        begin
+          # this is fast and equivalent to with_entry() that also returns the cb manifest
+          entry = Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path))
+          yield Chef::CookbookManifest.new(entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_hash, entry
+        rescue Chef::ChefFS::FileSystem::NotFoundError, ChefZero::DataStore::DataNotFoundError => e
+          # this is very slow and we walk through all the cookbook versions to find ones that have the correct name in the metadata
+          dir = Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path([path[0]]))
+          entry = dir.children.select do |child|
+            child.chef_object.full_name == "#{path[1]}-#{path[2]}" ||
+              (child.chef_object.name.to_s == path[1] && child.chef_object.identifier == path[2])
+          end[0]
+          raise ChefZero::DataStore::DataNotFoundError.new(path) if entry.nil?
+          yield Chef::CookbookManifest.new(entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_hash, entry
+        end
+      rescue Chef::ChefFS::FileSystem::NotFoundError => e
+        raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
       end
 
       def with_entry(path)
