@@ -186,7 +186,13 @@ while 1:
         sys.exit(0)
     setup_exit_handler()
     line = inpipe.readline()
-    command = json.loads(line)
+
+    try:
+        command = json.loads(line)
+    except ValueError, e:
+        base.closeRpmDB()
+        sys.exit(0)
+
     if command['action'] == "whatinstalled":
         query(command)
     elif command['action'] == "whatavailable":
