@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.201 -->
-## [v14.0.201](https://github.com/chef/chef/tree/v14.0.201) (2018-04-14)
+<!-- latest_release 14.0.202 -->
+## [v14.0.202](https://github.com/chef/chef/tree/v14.0.202) (2018-04-14)
 
 #### Merged Pull Requests
-- add support for lock bot [#7136](https://github.com/chef/chef/pull/7136) ([lamont-granquist](https://github.com/lamont-granquist))
+-  Catch json.load exceptions causing syslog errors  [#7155](https://github.com/chef/chef/pull/7155) ([tomdoherty](https://github.com/tomdoherty))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.0.190 -->
 ### Changes since 14.0.190 release
 
 #### Merged Pull Requests
+-  Catch json.load exceptions causing syslog errors  [#7155](https://github.com/chef/chef/pull/7155) ([tomdoherty](https://github.com/tomdoherty)) <!-- 14.0.202 -->
 - add support for lock bot [#7136](https://github.com/chef/chef/pull/7136) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.201 -->
 - bump omnibus [#7157](https://github.com/chef/chef/pull/7157) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.200 -->
 - add the resources() dsl method back to providers [#7152](https://github.com/chef/chef/pull/7152) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.199 -->
