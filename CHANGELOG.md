@@ -1,30 +1,28 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.202 -->
-## [v14.0.202](https://github.com/chef/chef/tree/v14.0.202) (2018-04-14)
-
-#### Merged Pull Requests
--  Catch json.load exceptions causing syslog errors  [#7155](https://github.com/chef/chef/pull/7155) ([tomdoherty](https://github.com/tomdoherty))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.0.190 -->
-### Changes since 14.0.190 release
-
-#### Merged Pull Requests
--  Catch json.load exceptions causing syslog errors  [#7155](https://github.com/chef/chef/pull/7155) ([tomdoherty](https://github.com/tomdoherty)) <!-- 14.0.202 -->
-- add support for lock bot [#7136](https://github.com/chef/chef/pull/7136) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.201 -->
-- bump omnibus [#7157](https://github.com/chef/chef/pull/7157) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.200 -->
-- add the resources() dsl method back to providers [#7152](https://github.com/chef/chef/pull/7152) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.199 -->
-- Add support for route metric [#7140](https://github.com/chef/chef/pull/7140) ([tomdoherty](https://github.com/tomdoherty)) <!-- 14.0.198 -->
-- Fix up knife logging [#7144](https://github.com/chef/chef/pull/7144) ([thommay](https://github.com/thommay)) <!-- 14.0.197 -->
-- fix for enable/disable repo ordering [#7148](https://github.com/chef/chef/pull/7148) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.196 -->
-- fix Chef-14 chef_fs/chef-zero perf regression [#7143](https://github.com/chef/chef/pull/7143) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.195 -->
-- Fix RHSM registration using passwords [#7133](https://github.com/chef/chef/pull/7133) ([tas50](https://github.com/tas50)) <!-- 14.0.194 -->
-- Modify the provides for all resources from cookbooks so chef wins [#7134](https://github.com/chef/chef/pull/7134) ([tas50](https://github.com/tas50)) <!-- 14.0.193 -->
-- add delegator for property_is_set? to providers [#7122](https://github.com/chef/chef/pull/7122) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.192 -->
-- Update InSpec to 2.1.21 [#7109](https://github.com/chef/chef/pull/7109) ([tas50](https://github.com/tas50)) <!-- 14.0.191 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.0.202](https://github.com/chef/chef/tree/v14.0.202) (2018-04-16)
+
+#### Merged Pull Requests
+- Update InSpec to 2.1.21 [#7109](https://github.com/chef/chef/pull/7109) ([tas50](https://github.com/tas50))
+- add delegator for property_is_set? to providers [#7122](https://github.com/chef/chef/pull/7122) ([lamont-granquist](https://github.com/lamont-granquist))
+- Modify the provides for all resources from cookbooks so chef wins [#7134](https://github.com/chef/chef/pull/7134) ([tas50](https://github.com/tas50))
+- Fix RHSM registration using passwords [#7133](https://github.com/chef/chef/pull/7133) ([tas50](https://github.com/tas50))
+- fix Chef-14 chef_fs/chef-zero perf regression [#7143](https://github.com/chef/chef/pull/7143) ([lamont-granquist](https://github.com/lamont-granquist))
+- fix for enable/disable repo ordering [#7148](https://github.com/chef/chef/pull/7148) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix up knife logging [#7144](https://github.com/chef/chef/pull/7144) ([thommay](https://github.com/thommay))
+- Add support for route metric [#7140](https://github.com/chef/chef/pull/7140) ([tomdoherty](https://github.com/tomdoherty))
+- add the resources() dsl method back to providers [#7152](https://github.com/chef/chef/pull/7152) ([lamont-granquist](https://github.com/lamont-granquist))
+- bump omnibus [#7157](https://github.com/chef/chef/pull/7157) ([lamont-granquist](https://github.com/lamont-granquist))
+- add support for lock bot [#7136](https://github.com/chef/chef/pull/7136) ([lamont-granquist](https://github.com/lamont-granquist))
+-  Catch json.load exceptions causing syslog errors  [#7155](https://github.com/chef/chef/pull/7155) ([tomdoherty](https://github.com/tomdoherty))
+<!-- latest_stable_release -->
+
 ## [v14.0.190](https://github.com/chef/chef/tree/v14.0.190) (2018-04-03)
 
 #### Merged Pull Requests
@@ -215,7 +213,6 @@
 - [CHEF-7026] Rewrite portage package provider candidate_version determination and fix tests [#7027](https://github.com/chef/chef/pull/7027) ([gengor](https://github.com/gengor))
 - Don&#39;t fail on every hostname with windows [#7107](https://github.com/chef/chef/pull/7107) ([tas50](https://github.com/tas50))
 - [windows_printer_port] fix typo + add action descriptions [#7093](https://github.com/chef/chef/pull/7093) ([brewn](https://github.com/brewn))
-<!-- latest_stable_release -->
 
 ## [v13.8.3](https://github.com/chef/chef/tree/v13.8.3) (2018-03-05)
 
