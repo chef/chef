@@ -1,5 +1,14 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Chef Client Release Notes 14.0.202
+
+This release of Chef 14 resolves several regressions in the Chef 14.0 release.
+
+- Resources contained in cookbooks would be used instead of built-in Chef client resources causing older resources to run
+- Resources failed due to a missing `property_is_set?` and `resources` methods
+- `yum_package` changed the order of `disablerepo` and `enablerepo` options
+- Depsolving large numbers of cookbooks with chef zero/local took a very long time
+
 # Chef Client Release Notes 14.0:
 
 ## New Resources
