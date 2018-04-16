@@ -28,18 +28,48 @@ class Chef
       description "Use the ssh_known_hosts_entry resource to append an entry for the specified host in /etc/ssh/ssh_known_hosts or a user's known hosts file if specified."
       introduced "15.0"
 
-      property :host, String, name_property: true
-      property :key, String
-      property :key_type, String, default: "rsa"
-      property :port, Integer, default: 22
-      property :timeout, Integer, default: 30
-      property :mode, String, default: "0644"
-      property :owner, String, default: "root"
-      property :group, String, default: "root"
-      property :hash_entries, [true, false], default: false
-      property :file_location, String, default: "/etc/ssh/ssh_known_hosts"
+      property :host, String,
+               description: "The host to add to the known hosts file.",
+               name_property: true
+
+      property :key, String,
+               description: "An optional key for the host. If not provided this will be automatically determined."
+
+      property :key_type, String,
+               description: "The type of key to store.",
+               default: "rsa"
+
+      property :port, Integer,
+               description: "The server port that ssh-keyscan will use to gather the public key.",
+               default: 22
+
+      property :timeout, Integer,
+               description: "The timeout in seconds for ssh-keyscan.",
+               default: 30
+
+      property :mode, String,
+               description: "The file mode for the ssh_known_hosts file.",
+               default: "0644"
+
+      property :owner, String,
+               description: "The file owner for the ssh_known_hosts file.",
+               default: "root"
+
+      property :group, String,
+               description: "The file group for the ssh_known_hosts file.",
+               default: lazy { node['root_group'] }
+
+      property :hash_entries, [TrueClass, FalseClass],
+               description: "Hash the hostname and addresses in the ssh_known_hosts file for privacy.",
+               default: false
+
+      property :file_location, String,
+               description: "The location of the ssh known hosts file. Change this to set a known host file for a particular user.",
+               default: "/etc/ssh/ssh_known_hosts"
 
       action :create do
+        description "Create an entry in the ssh_known_hosts file."
+
         key =
           if new_resource.key
             hoststr = (new_resource.port != 22) ? "[#{new_resource.host}]:#{new_resource.port}" : new_resource.host
@@ -81,6 +111,8 @@ class Chef
 
       # all this does is send an immediate run_action(:create) to the template resource
       action :flush do
+        description "Immediately flush the entries to the config file. Without this the actual writing of the file is delayed in the Chef run so all entries can be accumulated before writing the file out."
+
         with_run_context :root do
           # if you haven't ever called ssh_known_hosts_entry before you're definitely doing it wrong so we blow up hard.
           find_resource!(:template, "update ssh known hosts file #{new_resource.file_location}").run_action(:create)
