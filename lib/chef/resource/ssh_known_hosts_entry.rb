@@ -70,9 +70,6 @@ class Chef
           end
         end
 
-        # messing with the run_context appears to cause issues with the cookbook_name
-        r.cookbook_name = "ssh_known_hosts"
-
         keys = r.variables[:entries].reject(&:empty?)
 
         if key_exists?(keys, key, comment)
