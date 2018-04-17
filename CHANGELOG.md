@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.0.203 -->
+## [v14.0.203](https://github.com/chef/chef/tree/v14.0.203) (2018-04-17)
+
+#### Merged Pull Requests
+- fix for Red Hat Satellite yum_package bug [#7147](https://github.com/chef/chef/pull/7147) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.0.202 -->
+### Changes since 14.0.202 release
+
+#### Merged Pull Requests
+- fix for Red Hat Satellite yum_package bug [#7147](https://github.com/chef/chef/pull/7147) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.203 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
