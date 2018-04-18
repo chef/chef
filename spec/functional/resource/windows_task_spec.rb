@@ -1355,7 +1355,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       subject.run_action(:create)
       subject.run_action(:run)
       current_resource = call_for_load_current_resource
-      expect(current_resource.task.status).to eq("queued").or eq("running") # queued or can be running
+      expect(current_resource.task.status).to eq("queued").or eq("running").or eq("ready") # queued or can be running
     end
   end
 
