@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.204 -->
-## [v14.0.204](https://github.com/chef/chef/tree/v14.0.204) (2018-04-19)
+<!-- latest_release 14.0.205 -->
+## [v14.0.205](https://github.com/chef/chef/tree/v14.0.205) (2018-04-19)
 
 #### Merged Pull Requests
-- add name_property to resource inspector [#7164](https://github.com/chef/chef/pull/7164) ([thommay](https://github.com/thommay))
+- Windows MSI: files are now re-unzipped during repair mode [#7111](https://github.com/chef/chef/pull/7111) ([stuartpreston](https://github.com/stuartpreston))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.0.202 -->
 ### Changes since 14.0.202 release
 
 #### Merged Pull Requests
+- Windows MSI: files are now re-unzipped during repair mode [#7111](https://github.com/chef/chef/pull/7111) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.205 -->
 - add name_property to resource inspector [#7164](https://github.com/chef/chef/pull/7164) ([thommay](https://github.com/thommay)) <!-- 14.0.204 -->
 - fix for Red Hat Satellite yum_package bug [#7147](https://github.com/chef/chef/pull/7147) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.203 -->
 <!-- release_rollup -->
