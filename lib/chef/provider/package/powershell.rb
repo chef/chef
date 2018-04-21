@@ -36,7 +36,7 @@ class Chef
 
         def define_resource_requirements
           super
-          if powershell_out("$PSVersionTable.PSVersion.Major").stdout.strip.to_i < 5
+          if node['languages']['powershell']['version'].to_i < 5
             raise "Minimum installed Powershell Version required is 5"
           end
           requirements.assert(:install) do |a|
@@ -53,7 +53,7 @@ class Chef
         # Installs the package specified with the version passed else latest version will be installed
         def install_package(names, versions)
           names.each_with_index do |name, index|
-            powershell_out(build_powershell_command("Install-Package '#{name}'", versions[index]), timeout: new_resource.timeout)
+            powershell_out(build_powershell_package_command("Install-Package '#{name}'", versions[index]), timeout: new_resource.timeout)
           end
         end
 
@@ -61,11 +61,11 @@ class Chef
         def remove_package(names, versions)
           names.each_with_index do |name, index|
             if versions && !versions[index].nil?
-              powershell_out(build_powershell_command("Uninstall-Package '#{name}'", versions[index]), timeout: new_resource.timeout)
+              powershell_out(build_powershell_package_command("Uninstall-Package '#{name}'", versions[index]), timeout: new_resource.timeout)
             else
               version = "0"
               until version.empty?
-                version = powershell_out(build_powershell_command("Uninstall-Package '#{name}'"), timeout: new_resource.timeout).stdout.strip
+                version = powershell_out(build_powershell_package_command("Uninstall-Package '#{name}'"), timeout: new_resource.timeout).stdout.strip
                 unless version.empty?
                   logger.info("Removed package '#{name}' with version #{version}")
                 end
@@ -79,9 +79,9 @@ class Chef
           versions = []
           new_resource.package_name.each_with_index do |name, index|
             version = if new_resource.version && !new_resource.version[index].nil?
-                        powershell_out(build_powershell_command("Find-Package '#{name}'", new_resource.version[index]), timeout: new_resource.timeout).stdout.strip
+                        powershell_out(build_powershell_package_command("Find-Package '#{name}'", new_resource.version[index]), timeout: new_resource.timeout).stdout.strip
                       else
-                        powershell_out(build_powershell_command("Find-Package '#{name}'"), timeout: new_resource.timeout).stdout.strip
+                        powershell_out(build_powershell_package_command("Find-Package '#{name}'"), timeout: new_resource.timeout).stdout.strip
                       end
             if version.empty?
               version = nil
@@ -96,9 +96,9 @@ class Chef
           version_list = []
           new_resource.package_name.each_with_index do |name, index|
             version = if new_resource.version && !new_resource.version[index].nil?
-                        powershell_out(build_powershell_command("Get-Package '#{name}'", new_resource.version[index]), timeout: new_resource.timeout).stdout.strip
+                        powershell_out(build_powershell_package_command("Get-Package '#{name}'", new_resource.version[index]), timeout: new_resource.timeout).stdout.strip
                       else
-                        powershell_out(build_powershell_command("Get-Package '#{name}'"), timeout: new_resource.timeout).stdout.strip
+                        powershell_out(build_powershell_package_command("Get-Package '#{name}'"), timeout: new_resource.timeout).stdout.strip
                       end
             if version.empty?
               version = nil
@@ -108,7 +108,7 @@ class Chef
           version_list
         end
 
-        def build_powershell_command(command, version = nil)
+        def build_powershell_package_command(command, version = nil)
           command = [command] unless command.is_a?(Array)
           command.unshift("(")
           %w{-Force -ForceBootstrap}.each do |arg|
