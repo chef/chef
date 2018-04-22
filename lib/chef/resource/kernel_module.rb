@@ -14,12 +14,24 @@ class Chef
       resource_name :kernel_module
       provides(:kernel_module) { true }
 
-      property :modname, String, name_property: true, identity: true
-      property :load_dir, String, default: "/etc/modules-load.d"
-      property :unload_dir, String, default: "/etc/modprobe.d"
+      description "Use the kernel_module resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, install, and uninstall modules."
+      introduced "15.0"
 
-      # Load kernel module, and ensure it loads on reboot
+      property :modname, String,
+               description: "The name of the kernel module.",
+               name_property: true, identity: true
+
+      property :load_dir, String,
+               description: "The directory to load modules from.",
+               default: "/etc/modules-load.d"
+
+      property :unload_dir, String,
+               description: "The modprobe.d directory.",
+               default: "/etc/modprobe.d"
+
       action :install do
+        description "Load kernel module, and ensure it loads on reboot"
+
         declare_resource(:directory, new_resource.load_dir) do
           recursive true
         end
@@ -37,8 +49,9 @@ class Chef
         new_resource.run_action(:load)
       end
 
-      # Unload module and remove module config, so it doesn't load on reboot.
       action :uninstall do
+        description "Unload a kernel module and remove module config, so it doesn't load on reboot."
+
         declare_resource(:file, "#{new_resource.load_dir}/#{new_resource.modname}.conf") do
           action :delete
           notifies :run, "execute[update initramfs]"
@@ -57,8 +70,9 @@ class Chef
         new_resource.run_action(:unload)
       end
 
-      # Blacklist kernel module
       action :blacklist do
+        description "Blacklist a kernel module."
+
         declare_resource(:file, "#{new_resource.unload_dir}/blacklist_#{new_resource.modname}.conf") do
           content "blacklist #{new_resource.modname}"
           notifies :run, "execute[update initramfs]"
@@ -72,8 +86,9 @@ class Chef
         new_resource.run_action(:unload)
       end
 
-      # Load kernel module
       action :load do
+        description "Load a kernel module."
+
         unless module_loaded?
           converge_by("load kernel module #{new_resource.modname}") do
             shell_out!("modprobe #{new_resource.modname}")
@@ -81,8 +96,9 @@ class Chef
         end
       end
 
-      # Unload kernel module
       action :unload do
+        description "Unload kernel module"
+
         if module_loaded?
           converge_by("unload kernel module #{new_resource.modname}") do
             shell_out!("modprobe -r #{new_resource.modname}")
