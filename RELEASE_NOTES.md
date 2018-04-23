@@ -157,6 +157,10 @@ Rename a property with a deprecation warning for users of the old property name
 deprecated_property_alias 'thing2', 'the_second_thing', 'The thing2 property was renamed the_second_thing in the 2.0 release of this cookbook. Please update your cookbooks to use the new property name.'
 ```
 
+### Platform Deprecations
+
+chef-client no longer is built or tested on OS X 10.10 in accordance with Chef's EOL policy.
+
 ### validation_message
 
 Validation messages allow you give the user a friendly error message when any validation on a property fails.
