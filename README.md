@@ -85,7 +85,7 @@ The general development process is:
 3. Write code and tests.
 4. Push your feature branch to github and open a pull request against master.
 
-Once your repository is set up, you can start working on the code. We do utilize
+Once your repository is set up, you can start working on the code.  We do utilize
 RSpec for test driven development, so you'll need to get a development
 environment running. Follow the above procedure ("Installing from Git") to get
 your local copy of the source running.
