@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require "spec_helper"
 require "functional/resource/base"
 require "chef/mixin/shell_out"
 
@@ -52,7 +53,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :skip_travis, :external => in
   end
 
   def fetch_first_interface_name
-    shell_out("ifconfig | grep Ethernet | head -1 | cut -d' ' -f1").stdout.strip
+    shell_out("ip link list |grep UP|grep -vi loop|head -1|cut -d':' -f 2").stdout.strip
   end
 
   # **Caution: any updates to core interfaces can be risky.
