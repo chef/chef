@@ -28,7 +28,6 @@ describe "ChefFSDataStore tests", :workstation do
 
   let(:cookbook_x_100_metadata_rb) { cb_metadata("x", "1.0.0") }
   let(:cookbook_z_100_metadata_rb) { cb_metadata("z", "1.0.0") }
-  let(:cookbook_y_102_metadata_rb) { cb_metadata("z", "1.0.2") }
 
   describe "with repo mode 'hosted_everything' (default)" do
     before do
@@ -40,8 +39,6 @@ describe "ChefFSDataStore tests", :workstation do
         file "clients/x.json", {}
         file "cookbook_artifacts/x-111/metadata.rb", cookbook_x_100_metadata_rb
         file "cookbooks/x/metadata.rb", cookbook_x_100_metadata_rb
-        file "cookbooks/y/metadata.rb", cookbook_y_102_metadata_rb
-        file "cookbooks/z/metadata.rb", cookbook_z_100_metadata_rb
         file "data_bags/x/y.json", {}
         file "environments/x.json", {}
         file "nodes/x.json", {}
@@ -67,7 +64,6 @@ describe "ChefFSDataStore tests", :workstation do
 /acls/cookbook_artifacts/x.json
 /acls/cookbooks/
 /acls/cookbooks/x.json
-/acls/cookbooks/z.json
 /acls/data_bags/
 /acls/data_bags/x.json
 /acls/environments/
@@ -88,13 +84,11 @@ describe "ChefFSDataStore tests", :workstation do
 /containers/
 /containers/x.json
 /cookbook_artifacts/
-/cookbook_artifacts/x-1.0.0/
-/cookbook_artifacts/x-1.0.0/metadata.rb
+/cookbook_artifacts/x-111/
+/cookbook_artifacts/x-111/metadata.rb
 /cookbooks/
 /cookbooks/x/
 /cookbooks/x/metadata.rb
-/cookbooks/z/
-/cookbooks/z/metadata.rb
 /data_bags/
 /data_bags/x/
 /data_bags/x/y.json
@@ -117,12 +111,6 @@ EOM
         end
       end
 
-      context "LIST /TYPE/NAME" do
-        it "knife cookbook show -z z" do
-          knife("cookbook show -z z").should_succeed "z   1.0.2  1.0.0\n"
-        end
-      end
-
       context "DELETE /TYPE/NAME" do
         it "knife delete -z /clients/x.json works" do
           knife("delete -z /clients/x.json").should_succeed "Deleted /clients/x.json\n"
@@ -131,7 +119,7 @@ EOM
 
         it "knife delete -z -r /cookbooks/x works" do
           knife("delete -z -r /cookbooks/x").should_succeed "Deleted /cookbooks/x\n"
-          knife("list -z -Rfp /cookbooks").should_succeed "/cookbooks/z/\n/cookbooks/z/metadata.rb\n"
+          knife("list -z -Rfp /cookbooks").should_succeed ""
         end
 
         it "knife delete -z -r /data_bags/x works" do
@@ -206,14 +194,7 @@ EOM
 Uploading x              [1.0.0]
 Uploaded 1 cookbook.
 EOM
-          knife("list --local -Rfp /cookbooks").should_succeed <<EOM
-/cookbooks/x/
-/cookbooks/x/metadata.rb
-/cookbooks/y/
-/cookbooks/y/metadata.rb
-/cookbooks/z/
-/cookbooks/z/metadata.rb
-EOM
+          knife("list --local -Rfp /cookbooks").should_succeed "/cookbooks/x/\n/cookbooks/x/metadata.rb\n"
         end
 
         it "knife raw -z -i empty.json -m PUT /data/x/y" do
