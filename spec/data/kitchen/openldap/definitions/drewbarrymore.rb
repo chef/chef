@@ -1,3 +1,0 @@
-#
-# Was in people magazine this month... 
-#

@@ -1,8 +1,0 @@
-#!/bin/sh
-export GEM_HOME="{{pkg.path}}/ruby/2.3.0"
-export GEM_PATH="$(hab pkg path core/ruby)/lib/ruby/gems/2.3.0:$(hab pkg path core/bundler):$GEM_HOME"
-export APPBUNDLER_ALLOW_RVM=true
-
-exec 2>&1
-exec chef-solo --fork -i {{cfg.interval}} -s {{cfg.splay}} -l {{cfg.log_level}} -o {{cfg.run_list}}
-

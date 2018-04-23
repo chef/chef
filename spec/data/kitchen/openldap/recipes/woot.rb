@@ -1,3 +1,0 @@
-#
-# Such a funny word..
-#

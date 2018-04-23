@@ -1,4 +1,0 @@
-# git config merge.ignore.name 'ignore changes merge driver'
-# git config merge.ignore.driver 'touch %A'
-lib/chef/version.rb merge=ignore
-*.reg text eol=crlf

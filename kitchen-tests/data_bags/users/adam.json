@@ -1,9 +1,0 @@
-{
-    "id": "adam",
-    "uid": 666,  // yes?  i figure adam likes metal, shout out to iron maiden...
-    "gid": 666,
-    "shell": "/bin/zsh",
-    "groups": [ "sysadmin" ],
-    "comment":  "Adam Jacob",
-    "password": "*"
-}

@@ -1,1 +1,0 @@
-LibraryLoadOrder.record('test-resource')

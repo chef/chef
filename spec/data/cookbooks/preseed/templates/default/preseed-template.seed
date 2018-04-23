@@ -1,1 +1,0 @@
-chef-integration-test chef-integration-test/sample-var string "<%= node[:preseed_value] -%>"
