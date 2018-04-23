@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.207 -->
-## [v14.0.207](https://github.com/chef/chef/tree/v14.0.207) (2018-04-22)
+<!-- latest_release 14.0.208 -->
+## [v14.0.208](https://github.com/chef/chef/tree/v14.0.208) (2018-04-23)
 
 #### Merged Pull Requests
-- Avoid conflict with build_powershell_command from powershell_out mixin [#7173](https://github.com/chef/chef/pull/7173) ([stuartpreston](https://github.com/stuartpreston))
+- Ubuntu 1804 - passing tests and fixed ifconfig provider [#7174](https://github.com/chef/chef/pull/7174) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.0.202 -->
 ### Changes since 14.0.202 release
 
 #### Merged Pull Requests
+- Ubuntu 1804 - passing tests and fixed ifconfig provider [#7174](https://github.com/chef/chef/pull/7174) ([thommay](https://github.com/thommay)) <!-- 14.0.208 -->
 - Avoid conflict with build_powershell_command from powershell_out mixin [#7173](https://github.com/chef/chef/pull/7173) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.207 -->
 - Some options, i.e. metric, require specifying dev [#7162](https://github.com/chef/chef/pull/7162) ([tomdoherty](https://github.com/tomdoherty)) <!-- 14.0.206 -->
 - Windows MSI: files are now re-unzipped during repair mode [#7111](https://github.com/chef/chef/pull/7111) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.205 -->
