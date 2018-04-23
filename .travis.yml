@@ -88,9 +88,10 @@ matrix:
     script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake
     rvm: 2.5.1
   - env:
-      PEDANT_OPTS: --skip-oc_id
-      TEST_GEM: chef/chef-zero
-    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake spec cheffs
+      - PEDANT_OPTS=--skip-oc_id
+      - TEST_GEM=chef/chef-zero
+      - CHEF_FS=true
+    script: bundle exec tasks/bin/run_external_test $TEST_GEM master rake pedant
     rvm: 2.5.1
   - env:
       TEST_GEM: chef/cheffish
