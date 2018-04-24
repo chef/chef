@@ -84,7 +84,10 @@ class Chef
             content "#{new_resource.key} = #{new_resource.value}"
           end
 
-          execute "sysctl -p"
+          execute "sysctl -p" do
+            environment ({"PATH" => "/sbin:/bin:/usr/sbin:/usr/bin"})
+            command "sysctl -p"
+          end
         end
       end
 
