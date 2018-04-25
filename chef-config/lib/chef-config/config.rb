@@ -322,6 +322,7 @@ module ChefConfig
     default :umask, 0022
 
     # Valid log_levels are:
+    # * :trace
     # * :debug
     # * :info
     # * :warn
