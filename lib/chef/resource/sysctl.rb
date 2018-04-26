@@ -84,7 +84,10 @@ class Chef
             content "#{new_resource.key} = #{new_resource.value}"
           end
 
-          execute "sysctl -p"
+          execute "sysctl -p" do
+            command "sysctl #{'-e ' if new_resource.ignore_error}-p"
+            action :run
+          end
         end
       end
 
