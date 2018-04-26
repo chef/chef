@@ -42,6 +42,9 @@ class Chef
     def debug(message, &block)
     end
 
+    def trace(message, &block)
+    end
+
     def add(severity, message = nil, progname = nil)
     end
 
@@ -65,6 +68,10 @@ class Chef
     end
 
     def debug?
+      false
+    end
+
+    def trace?
       false
     end
 

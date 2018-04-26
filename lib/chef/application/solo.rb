@@ -81,7 +81,7 @@ class Chef::Application::Solo < Chef::Application
   option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
-    :description  => "Set the log level (debug, info, warn, error, fatal)",
+    :description  => "Set the log level (trace, debug, info, warn, error, fatal)",
     :proc         => lambda { |l| l.to_sym }
 
   option :log_location,
