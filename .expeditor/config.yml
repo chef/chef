@@ -24,6 +24,9 @@ github:
   # The file where our CHANGELOG is kept. This file is updated automatically with
   # details from the Pull Request via the `built_in:update_changelog` merge_action.
   changelog_file: "CHANGELOG.md"
+  # This will trigger an Omnibus build with EXPIRE_CACHE enabled after
+  # a pull request is merged into the release branch.
+  enable_expire_cache: true
   # The tag format to use (e.g. v1.0.0)
   version_tag_format: "v{{version}}"
   # The Github Team primarily responsible for handling incoming Pull Requests.
