@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.210 -->
-## [v14.0.210](https://github.com/chef/chef/tree/v14.0.210) (2018-04-23)
+<!-- latest_release 14.0.211 -->
+## [v14.0.211](https://github.com/chef/chef/tree/v14.0.211) (2018-04-26)
 
 #### Merged Pull Requests
-- whitespace fix to make expeditor run [#7179](https://github.com/chef/chef/pull/7179) ([lamont-granquist](https://github.com/lamont-granquist))
+- Run all tests in CI [#7183](https://github.com/chef/chef/pull/7183) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.0.202 -->
 ### Changes since 14.0.202 release
 
 #### Merged Pull Requests
+- Run all tests in CI [#7183](https://github.com/chef/chef/pull/7183) ([thommay](https://github.com/thommay)) <!-- 14.0.211 -->
 - whitespace fix to make expeditor run [#7179](https://github.com/chef/chef/pull/7179) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.210 -->
 - Ubuntu 1804 - passing tests and fixed ifconfig provider [#7174](https://github.com/chef/chef/pull/7174) ([thommay](https://github.com/thommay)) <!-- 14.0.208 -->
 - Avoid conflict with build_powershell_command from powershell_out mixin [#7173](https://github.com/chef/chef/pull/7173) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.207 -->
