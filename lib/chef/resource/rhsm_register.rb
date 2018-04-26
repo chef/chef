@@ -88,7 +88,7 @@ class Chef
           sensitive new_resource.sensitive
           command register_command
           action :run
-          not_if { registered_with_rhsm? }
+          not_if { registered_with_rhsm? } unless new_resource.force
         end
 
         yum_package "katello-agent" do
