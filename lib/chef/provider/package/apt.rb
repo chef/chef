@@ -70,12 +70,22 @@ class Chef
           @candidate_version ||= get_candidate_versions
         end
 
-        def package_locked(name, version)
-          locked = shell_out_compact_timeout!("apt-mark", "showhold")
-          locked_packages = locked.stdout.each_line.map do |line|
-            line.strip
-          end
-          name.all? { |n| locked_packages.include? n }
+        def packages_all_locked?(names, versions)
+          names.all? { |n| locked_packages.include? n }
+        end
+
+        def packages_all_unlocked?(names, versions)
+          names.all? { |n| !locked_packages.include? n }
+        end
+
+        def locked_packages
+          @locked_packages ||=
+            begin
+              locked = shell_out_compact_timeout!("apt-mark", "showhold")
+              locked.stdout.each_line.map do |line|
+                line.strip
+              end
+            end
         end
 
         def install_package(name, version)

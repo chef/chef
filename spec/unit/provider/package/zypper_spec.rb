@@ -267,6 +267,40 @@ describe Chef::Provider::Package::Zypper do
     end
   end
 
+  describe "action_lock" do
+    it "should lock if the package is not already locked" do
+      prov = provider
+      allow(prov).to receive(:shell_out_compact_timeout!).with(
+        "zypper", "--non-interactive", "info", new_resource.package_name
+      ).and_return(status)
+      allow(prov).to receive(:shell_out_compact_timeout!).with(
+        "zypper", "locks"
+      ).and_return(instance_double(
+        Mixlib::ShellOut, stdout: "1 | somethingelse | package | (any)"
+      ))
+      expect(prov).to receive(:lock_package).with(["cups"], [nil])
+
+      prov.load_current_resource
+      prov.action_lock
+    end
+
+    it "should not lock if the package is already locked" do
+      prov = provider
+      allow(prov).to receive(:shell_out_compact_timeout!).with(
+        "zypper", "--non-interactive", "info", new_resource.package_name
+      ).and_return(status)
+      allow(prov).to receive(:shell_out_compact_timeout!).with(
+        "zypper", "locks"
+      ).and_return(instance_double(
+        Mixlib::ShellOut, stdout: "1 | cups | package | (any)"
+      ))
+      expect(prov).to_not receive(:lock_package)
+
+      prov.load_current_resource
+      prov.action_lock
+    end
+  end
+
   describe "lock_package" do
     it "should run zypper addlock with the package name" do
       shell_out_expectation!(
@@ -287,6 +321,39 @@ describe Chef::Provider::Package::Zypper do
         "zypper", "--non-interactive", "addlock", "--user-provided", "emacs"
       )
       provider.lock_package(["emacs"], [nil])
+    end
+  end
+
+  describe "action_unlock" do
+    it "should unlock if the package is not already unlocked" do
+      prov = provider
+      allow(prov).to receive(:shell_out_compact_timeout!).with(
+        "zypper", "--non-interactive", "info", new_resource.package_name
+      ).and_return(status)
+      allow(prov).to receive(:shell_out_compact_timeout!).with(
+        "zypper", "locks"
+      ).and_return(instance_double(
+        Mixlib::ShellOut, stdout: "1 | cups | package | (any)"
+      ))
+      expect(prov).to receive(:unlock_package).with(["cups"], [nil])
+
+      prov.load_current_resource
+      provider.action_unlock
+    end
+    it "should not unlock if the package is already unlocked" do
+      prov = provider
+      allow(prov).to receive(:shell_out_compact_timeout!).with(
+        "zypper", "--non-interactive", "info", new_resource.package_name
+      ).and_return(status)
+      allow(prov).to receive(:shell_out_compact_timeout!).with(
+        "zypper", "locks"
+      ).and_return(instance_double(
+        Mixlib::ShellOut, stdout: "1 | somethingelse | package | (any)"
+      ))
+      expect(prov).to_not receive(:unlock_package)
+
+      prov.load_current_resource
+      provider.action_unlock
     end
   end
 
