@@ -82,7 +82,7 @@ class Chef
             content "#{new_resource.key} = #{new_resource.value}"
           end
 
-          execute "sysctl -p" do
+          execute "Load sysctl values" do
             command "sysctl #{'-e ' if new_resource.ignore_error}-p"
             action :run
           end
@@ -97,7 +97,10 @@ class Chef
               action :delete
             end
 
-            execute "sysctl -p"
+            execute "Load sysctl values" do
+              command "sysctl -p"
+              action :run
+            end
           end
         end
       end
