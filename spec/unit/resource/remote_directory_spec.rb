@@ -22,7 +22,7 @@ describe Chef::Resource::RemoteDirectory do
 
   let(:resource) { Chef::Resource::RemoteDirectory.new("/etc/dunk") }
 
-  it "sets the path to the first argument to new" do
+  it "path is the name property" do
     expect(resource.path).to eql("/etc/dunk")
   end
 
@@ -45,7 +45,7 @@ describe Chef::Resource::RemoteDirectory do
     expect(resource.files_backup).to eql(false)
   end
 
-  it "accepts 3 or 4 digets for the files_mode" do
+  it "accepts 3 or 4 digits for the files_mode" do
     resource.files_mode 100
     expect(resource.files_mode).to eql(100)
     resource.files_mode 1000
