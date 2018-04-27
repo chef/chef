@@ -555,6 +555,16 @@ end
       resource.ignore_failure(true)
       expect(resource.ignore_failure).to eq(true)
     end
+
+    it "should allow you to set quiet ignore_failure as a symbol" do
+      resource.ignore_failure(:quiet)
+      expect(resource.ignore_failure).to eq(:quiet)
+    end
+
+    it "should allow you to set quiet ignore_failure as a string" do
+      resource.ignore_failure('quiet')
+      expect(resource.ignore_failure).to eq('quiet')
+    end
   end
 
   describe "retries" do
