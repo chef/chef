@@ -24,7 +24,7 @@ class Chef
       resource_name :apt_repository
       provides(:apt_repository) { true }
 
-      description "Use the apt_repository resource to specify additional APT repositories. Adding a new repository will update APT package cache immediately."
+      description "Use the apt_repository resource to specify additional APT repositories. Adding a new repository will update the APT package cache immediately."
       introduced "12.9"
 
       # There's a pile of [ String, nil, FalseClass ] types in these properties.
@@ -50,14 +50,14 @@ class Chef
                default: lazy { [] }
 
       property :arch, [String, nil, FalseClass],
-               description: "Constrain packages to a particular CPU architecture such as 'i386' or 'amd64'"
+               description: "Constrain packages to a particular CPU architecture such as 'i386' or 'amd64'."
 
       property :trusted, [TrueClass, FalseClass],
-               description: "Determines whether you should treat all packages from this repository as authenticated regardless of signature",
+               description: "Determines whether you should treat all packages from this repository as authenticated regardless of signature.",
                default: false
 
       property :deb_src, [TrueClass, FalseClass],
-               description: "Determines whether or not to add the repository as a source repo as well",
+               description: "Determines whether or not to add the repository as a source repo as well.",
                default: false
 
       property :keyserver, [String, nil, FalseClass],
