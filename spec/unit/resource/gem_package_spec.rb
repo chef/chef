@@ -38,3 +38,16 @@ describe Chef::Resource::GemPackage, "gem_binary" do
     expect(resource.gem_binary).to eql("/opt/local/bin/gem")
   end
 end
+
+describe Chef::Resource::GemPackage, "clear_gem_sources" do
+  let(:resource) { Chef::Resource::GemPackage.new("foo") }
+
+  it "is false by default" do
+    expect(resource.clear_sources).to be false
+  end
+
+  it "sets the default of clear_sources to the config value" do
+    Chef::Config[:clear_gem_sources] = true
+    expect(resource.clear_sources).to be true
+  end
+end
