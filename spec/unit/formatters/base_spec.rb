@@ -78,23 +78,23 @@ describe Chef::Formatters::Base do
   end
 
   it "outputs error information for failed resources with ignore_failure true" do
-    resource = Chef::Resource::RubyBlock.new('test')
+    resource = Chef::Resource::RubyBlock.new("test")
     resource.ignore_failure(true)
     formatter.resource_failed(resource, :run, exception)
     expect(out.string).to match(/Error executing action `run` on resource 'ruby_block\[test\]'/)
   end
 
   it "does not output error information for failed resources with ignore_failure :quiet" do
-    resource = Chef::Resource::RubyBlock.new('test')
+    resource = Chef::Resource::RubyBlock.new("test")
     resource.ignore_failure(:quiet)
     formatter.resource_failed(resource, :run, exception)
-    expect(out.string).to eq('')
+    expect(out.string).to eq("")
   end
 
   it "does not output error information for failed resources with ignore_failure 'quiet'" do
-    resource = Chef::Resource::RubyBlock.new('test')
-    resource.ignore_failure('quiet')
+    resource = Chef::Resource::RubyBlock.new("test")
+    resource.ignore_failure("quiet")
     formatter.resource_failed(resource, :run, exception)
-    expect(out.string).to eq('')
+    expect(out.string).to eq("")
   end
 end

@@ -524,7 +524,7 @@ class Chef
     # @param arg [Boolean, String, Symbol] Whether to ignore failures.
     # @return Whether this resource will ignore failures.
     #
-    property :ignore_failure, [ true, false, :quiet, 'quiet' ], default: false, desired_state: false
+    property :ignore_failure, [ true, false, :quiet, "quiet" ], default: false, desired_state: false
 
     #
     # Make this resource into an exact (shallow) copy of the other resource.
