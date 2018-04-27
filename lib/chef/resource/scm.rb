@@ -36,8 +36,8 @@ class Chef
       property :enable_submodules, [TrueClass, FalseClass], default: false
       property :enable_checkout, [TrueClass, FalseClass], default: true
       property :remote, String, default: "origin"
-      property :ssh_wrapper, String
-      property :timeout, Integer
+      property :ssh_wrapper, String, desired_state: false
+      property :timeout, Integer, desired_state: false
       property :checkout_branch, String, default: "deploy"
       property :environment, [Hash, nil], default: nil
 

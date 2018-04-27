@@ -58,7 +58,7 @@ class Chef
 
       property :force, [TrueClass, FalseClass],
                description: "If true, the system will be registered even if it is already registered. Normally, any register operations will fail if the machine is has already registered.",
-               default: false
+               default: false, desired_state: false
 
       action :register do
         description "Register the node with RHSM"
