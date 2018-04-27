@@ -129,7 +129,7 @@ describe Chef::Provider::User do
     end
 
     it "shouldn't try and convert the group gid if none has been supplied" do
-      @new_resource.gid(false)
+      @new_resource.gid(nil)
       expect(@provider).not_to receive(:convert_group_name)
       @provider.load_current_resource
     end

@@ -25,7 +25,6 @@ class Chef
 
         provides :linux_user
         provides :user, os: "linux"
-
       end
     end
   end
