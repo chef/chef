@@ -38,7 +38,7 @@ class Chef
 
       property :ignore_error, [TrueClass, FalseClass],
                description: "Ignore any errors when setting the value on the command line.",
-               default: false
+               default: false, desired_state: false
 
       property :value, [Array, String, Integer, Float],
                description: "The value to set.",
