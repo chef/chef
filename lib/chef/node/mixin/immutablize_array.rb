@@ -112,6 +112,7 @@ class Chef
           :take_while,
           :to_a,
           :to_ary,
+          :to_csv,
           :to_h,
           :to_plist,
           :to_set,
