@@ -24,18 +24,26 @@ class Chef
       resource_name :chocolatey_package
       provides :chocolatey_package
 
-      description "Use the chocolatey_package resource to manage packages using Chocolatey"\
-                  " on the Microsoft Windows platform."
+      description "Use the chocolatey_package resource to manage packages using Chocolatey on the Microsoft Windows platform."
       introduced "12.7"
 
       allowed_actions :install, :upgrade, :remove, :purge, :reconfig
 
       # windows can't take Array options yet
-      property :options, String
+      property :options, String,
+                description: "One (or more) additional options that are passed to the command."
 
-      property :package_name, [String, Array], coerce: proc { |x| [x].flatten }
-      property :version, [String, Array], coerce: proc { |x| [x].flatten }
-      property :returns, [Integer, Array], default: [ 0 ], desired_state: false
+      property :package_name, [String, Array],
+                description: "The name of the package. Default value: the name of the resource block See “Syntax” section above for more information.",
+                coerce: proc { |x| [x].flatten }
+
+      property :version, [String, Array],
+                description: "The version of a package to be installed or upgraded.",
+                coerce: proc { |x| [x].flatten }
+
+      property :returns, [Integer, Array],
+                description: "The exit code(s) returned a chocolatey package that indicate success.",
+                default: [ 0 ], desired_state: false
     end
   end
 end
