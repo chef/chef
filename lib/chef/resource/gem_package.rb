@@ -40,7 +40,7 @@ class Chef
       # FIXME? the array form of installing paths most likely does not work?
       #
       property :source, [ String, Array ]
-      property :clear_sources, [ TrueClass, FalseClass ], default: false, desired_state: false
+      property :clear_sources, [ TrueClass, FalseClass ], default: lazy {Chef::Config[:clear_gem_sources]}, desired_state: false
       # Sets a custom gem_binary to run for gem commands.
       property :gem_binary, String, desired_state: false
 
