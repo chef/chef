@@ -47,11 +47,25 @@ class Chef
         super
       end
 
-      property :target_file, String, name_property: true, identity: true
-      property :to, String
-      property :link_type, [String, Symbol], coerce: proc { |arg| arg.kind_of?(String) ? arg.to_sym : arg }, equal_to: [ :symbolic, :hard ], default: :symbolic
-      property :group, [String, Integer], regex: [Chef::Config[:group_valid_regex]]
-      property :user, [String, Integer], regex: [Chef::Config[:user_valid_regex]]
+      property :target_file, String,
+               description: "The name of the link. Default value: the name of the resource block See “Syntax” section above for more information.",
+               name_property: true, identity: true
+
+      property :to, String,
+               description: "The actual file to which the link is to be created."
+
+      property :link_type, [String, Symbol],
+               description: "The type of link: :symbolic or :hard.",
+               coerce: proc { |arg| arg.kind_of?(String) ? arg.to_sym : arg },
+               equal_to: [ :symbolic, :hard ], default: :symbolic
+
+      property :group, [String, Integer],
+               description: "A string or ID that identifies the group associated with a symbolic link.",
+               regex: [Chef::Config[:group_valid_regex]]
+
+      property :owner, [String, Integer],
+               description: "The owner associated with a symbolic link.",
+               regex: [Chef::Config[:user_valid_regex]]
 
       # make link quack like a file (XXX: not for public consumption)
       def path
