@@ -40,7 +40,7 @@ class Chef
                default: "rsa"
 
       property :port, Integer,
-               description: "The server port that ssh-keyscan will use to gather the public key.",
+               description: "The server port that the ssh-keyscan command will use to gather the public key.",
                default: 22
 
       property :timeout, Integer,
@@ -88,7 +88,8 @@ class Chef
 
         r = with_run_context :root do
           find_resource(:template, "update ssh known hosts file #{new_resource.file_location}") do
-            source "ssh_known_hosts.erb"
+            source ::File.expand_path("../support/ssh_known_hosts.erb", __FILE__)
+            local true
             path new_resource.file_location
             owner new_resource.owner
             group new_resource.group
