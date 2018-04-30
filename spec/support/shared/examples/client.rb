@@ -23,6 +23,7 @@ shared_examples "a completed run" do
     let(:file) { instance_double(File) }
 
     before do
+      allow(File).to receive(:read).and_call_original
       Chef::Config[:chef_guid_path] = chef_guid_path
       Chef::Config[:chef_guid] = nil
     end
