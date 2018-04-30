@@ -101,6 +101,7 @@ describe Chef::Application do
 
         @app = Chef::Application.new
         allow(@app).to receive(:parse_options).and_return(true)
+        allow(::File).to receive(:read).with("/proc/sys/crypto/fips_enabled").and_call_original
         expect(Chef::Config).to receive(:export_proxies).and_return(true)
       end
 
