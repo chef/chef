@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.214 -->
-## [v14.0.214](https://github.com/chef/chef/tree/v14.0.214) (2018-04-30)
+<!-- latest_release 14.0.215 -->
+## [v14.0.215](https://github.com/chef/chef/tree/v14.0.215) (2018-04-30)
 
 #### Merged Pull Requests
-- Whitelist some additional Hash/Array methods [#7198](https://github.com/chef/chef/pull/7198) ([lamont-granquist](https://github.com/lamont-granquist))
+- Convert some of remote_directory to use properties [#7204](https://github.com/chef/chef/pull/7204) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.0.202 -->
 ### Changes since 14.0.202 release
 
 #### Merged Pull Requests
+- Convert some of remote_directory to use properties [#7204](https://github.com/chef/chef/pull/7204) ([tas50](https://github.com/tas50)) <!-- 14.0.215 -->
 - Whitelist some additional Hash/Array methods [#7198](https://github.com/chef/chef/pull/7198) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.214 -->
 - Fix NoMethodError when (un)locking single packages in apt and zypper [#7138](https://github.com/chef/chef/pull/7138) ([RoboticCheese](https://github.com/RoboticCheese)) <!-- 14.0.213 -->
 - CLI help text now includes :trace log level [#7186](https://github.com/chef/chef/pull/7186) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.212 -->
