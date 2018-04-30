@@ -447,6 +447,7 @@ describe Chef::Application::Client, "configure_chef" do
   before do
     @original_argv = ARGV.dup
     ARGV.clear
+    allow(::File).to receive(:read).with("/proc/sys/crypto/fips_enabled").and_call_original
     allow(::File).to receive(:read).with(Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_return("")
     app.configure_chef
   end
