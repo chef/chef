@@ -32,7 +32,8 @@ describe Chef::Resource::RemoteDirectory do
   end
 
   it "has the basename of the remote directory resource as the default source" do
-    expect(resource.source).to eql("dunk")
+    resource.path "/foo/bar"
+    expect(resource.source).to eql("bar")
   end
 
   it "accepts a number for the remote files backup" do

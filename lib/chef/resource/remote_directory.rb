@@ -53,7 +53,7 @@ class Chef
         rights_attribute(:files_rights)
       end
 
-      property :source, String, default: lazy { ::File.basename(name) }
+      property :source, String, default: lazy { ::File.basename(path) }
       property :files_backup, [ Integer, FalseClass ], default: 5, desired_state: false
       property :purge, [ TrueClass, FalseClass ], default: false, desired_state: false
       property :overwrite, [ TrueClass, FalseClass ], default: false
