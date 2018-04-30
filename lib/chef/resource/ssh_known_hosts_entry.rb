@@ -57,7 +57,7 @@ class Chef
 
       property :group, String,
                description: "The file group for the ssh_known_hosts file.",
-               default: lazy { node['root_group'] }
+               default: lazy { node["root_group"] }
 
       property :hash_entries, [TrueClass, FalseClass],
                description: "Hash the hostname and addresses in the ssh_known_hosts file for privacy.",
