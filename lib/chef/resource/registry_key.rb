@@ -28,7 +28,6 @@ class Chef
       description "Use the registry_key resource to create and delete registry keys in Microsoft Windows."
       introduced "11.0"
 
-      identity_attr :key
       state_attrs :values
 
       default_action :create
@@ -67,17 +66,10 @@ class Chef
 
       def initialize(name, run_context = nil)
         super
-        @key = name
         @values, @unscrubbed_values = [], []
       end
 
-      def key(arg = nil)
-        set_or_return(
-          :key,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :key, String, name_property: true, identity: true
 
       def values(arg = nil)
         if not arg.nil?
