@@ -65,7 +65,7 @@ class Chef
 
       property :force, [TrueClass, FalseClass],
                description: "Force creating the key even if the existing key exists.",
-               default: false
+               default: false, desired_state: false
 
       action :create do
         return if new_resource.force || priv_key_file_valid?(new_resource.path, new_resource.key_pass)
