@@ -11,11 +11,18 @@
 
 #### Merged Pull Requests
 - Convert some of remote_directory to use properties [#7204](https://github.com/chef/chef/pull/7204) ([tas50](https://github.com/tas50)) <!-- 14.0.215 -->
+- Convert properties in subversion to use property [#7200](https://github.com/chef/chef/pull/7200) ([tas50](https://github.com/tas50))
+- Convert :key property in registry_key to use property [#7199](https://github.com/chef/chef/pull/7199) ([tas50](https://github.com/tas50))
+- Set desired_state: false on several properties [#7201](https://github.com/chef/chef/pull/7201) ([tas50](https://github.com/tas50))
+- Fix regression where owner was removed from link resource [#7206](https://github.com/chef/chef/pull/7206) ([tas50](https://github.com/tas50))
+- Add descriptions to more resources [#7195](https://github.com/chef/chef/pull/7195) ([tas50](https://github.com/tas50))
+- Allow build_essential resource to be used without setting a name [#7197](https://github.com/chef/chef/pull/7197) ([tas50](https://github.com/tas50))
+- rhsm_register: skip the registration check if force is specified [#7193](https://github.com/chef/chef/pull/7193) ([tas50](https://github.com/tas50))
 - Whitelist some additional Hash/Array methods [#7198](https://github.com/chef/chef/pull/7198) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.214 -->
+- sysctl: Fix ignore_error being ignored [#7192](https://github.com/chef/chef/pull/7192) ([tas50](https://github.com/tas50))
+- prune remotes with git fetch, fixes #3929 [#7129](https://github.com/chef/chef/pull/7129) ([rmoriz](https://github.com/rmoriz))
 - Fix NoMethodError when (un)locking single packages in apt and zypper [#7138](https://github.com/chef/chef/pull/7138) ([RoboticCheese](https://github.com/RoboticCheese)) <!-- 14.0.213 -->
 - CLI help text now includes :trace log level [#7186](https://github.com/chef/chef/pull/7186) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.212 -->
-- Run all tests in CI [#7183](https://github.com/chef/chef/pull/7183) ([thommay](https://github.com/thommay)) <!-- 14.0.211 -->
-- whitespace fix to make expeditor run [#7179](https://github.com/chef/chef/pull/7179) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.210 -->
 - Ubuntu 1804 - passing tests and fixed ifconfig provider [#7174](https://github.com/chef/chef/pull/7174) ([thommay](https://github.com/thommay)) <!-- 14.0.208 -->
 - Avoid conflict with build_powershell_command from powershell_out mixin [#7173](https://github.com/chef/chef/pull/7173) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.207 -->
 - Some options, i.e. metric, require specifying dev [#7162](https://github.com/chef/chef/pull/7162) ([tomdoherty](https://github.com/tomdoherty)) <!-- 14.0.206 -->
