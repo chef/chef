@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.215 -->
-## [v14.0.215](https://github.com/chef/chef/tree/v14.0.215) (2018-04-30)
+<!-- latest_release 14.0.216 -->
+## [v14.0.216](https://github.com/chef/chef/tree/v14.0.216) (2018-05-01)
 
 #### Merged Pull Requests
-- Convert some of remote_directory to use properties [#7204](https://github.com/chef/chef/pull/7204) ([tas50](https://github.com/tas50))
+- Don&#39;t always request lazy files [#7208](https://github.com/chef/chef/pull/7208) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.0.202 -->
 ### Changes since 14.0.202 release
 
 #### Merged Pull Requests
+- Don&#39;t always request lazy files [#7208](https://github.com/chef/chef/pull/7208) ([thommay](https://github.com/thommay)) <!-- 14.0.216 -->
 - Convert some of remote_directory to use properties [#7204](https://github.com/chef/chef/pull/7204) ([tas50](https://github.com/tas50)) <!-- 14.0.215 -->
 - Convert properties in subversion to use property [#7200](https://github.com/chef/chef/pull/7200) ([tas50](https://github.com/tas50))
 - Convert :key property in registry_key to use property [#7199](https://github.com/chef/chef/pull/7199) ([tas50](https://github.com/tas50))
