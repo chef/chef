@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.0.216 -->
-## [v14.0.216](https://github.com/chef/chef/tree/v14.0.216) (2018-05-01)
+<!-- latest_release 14.0.217 -->
+## [v14.0.217](https://github.com/chef/chef/tree/v14.0.217) (2018-05-02)
 
 #### Merged Pull Requests
-- Don&#39;t always request lazy files [#7208](https://github.com/chef/chef/pull/7208) ([thommay](https://github.com/thommay))
+- Allow specifying `ignore_failure :quiet` to disable the error spew [#7194](https://github.com/chef/chef/pull/7194) ([coderanger](https://github.com/coderanger))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.0.202 -->
 ### Changes since 14.0.202 release
 
 #### Merged Pull Requests
+- Allow specifying `ignore_failure :quiet` to disable the error spew [#7194](https://github.com/chef/chef/pull/7194) ([coderanger](https://github.com/coderanger)) <!-- 14.0.217 -->
 - Don&#39;t always request lazy files [#7208](https://github.com/chef/chef/pull/7208) ([thommay](https://github.com/thommay)) <!-- 14.0.216 -->
 - Convert some of remote_directory to use properties [#7204](https://github.com/chef/chef/pull/7204) ([tas50](https://github.com/tas50)) <!-- 14.0.215 -->
 - Convert properties in subversion to use property [#7200](https://github.com/chef/chef/pull/7200) ([tas50](https://github.com/tas50))
