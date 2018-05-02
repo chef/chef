@@ -166,7 +166,7 @@ class Chef
             logger.trace "#{new_resource} task exists"
             converge_by("delete scheduled task #{new_resource}") do
               ts = TaskScheduler.new
-              ts.delete(current_resource.name)
+              ts.delete(current_resource.task_name)
             end
           else
             logger.warn "#{new_resource} task does not exist - nothing to do"
