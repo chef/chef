@@ -62,7 +62,7 @@ class Chef
         # If the checksums are different between on-disk (current) and on-server
         # (remote, per manifest), do the update. This will also execute if there
         # is no current checksum.
-        if found_manifest_record[:lazy] || current_checksum != found_manifest_record["checksum"]
+        if current_checksum != found_manifest_record["checksum"]
           raw_file = @rest.streaming_request(found_manifest_record[:url])
 
           Chef::Log.debug("Storing updated #{cache_filename} in the cache.")
