@@ -33,13 +33,13 @@ EOM
     describe "on unix", :unix_only do
       describe "the nodes directory" do
         it "has the correct permissions" do
-          expect(File.stat(nodes_dir).mode.to_s(8)[2..5]).to eq("700")
+          expect(File.stat(nodes_dir).mode.to_s(8)[-3..-1]).to eq("700")
         end
       end
 
       describe "the node file" do
         it "has the correct permissions" do
-          expect(File.stat(node_file).mode.to_s(8)[2..5]).to eq("0600")
+          expect(File.stat(node_file).mode.to_s(8)[-4..-1]).to eq("0600")
         end
       end
     end
