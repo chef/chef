@@ -1,11 +1,3 @@
-cookbook_path = "chef/cookbooks"
-data_bag_bath = "chef/data_bags"
-environment_path = "chef/environments"
-file_backup_path = "chef/backup"
-file_cache_path = "chef/cache"
-node_path = "chef/node"
-role_path = "chef/roles"
-
 pid_file = "chef.pid"
 run_list = ""
 

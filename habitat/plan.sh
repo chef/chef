@@ -3,13 +3,17 @@ pkg_origin=chef
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
 pkg_description="The Chef Client"
 pkg_version=$(cat ../VERSION)
-pkg_source=nosuchfile.tar.gz
-pkg_filename=${pkg_dirname}.tar.gz
 pkg_license=('Apache-2.0')
+pkg_filename=${pkg_dirname}.tar.gz
 pkg_bin_dirs=(bin)
 pkg_build_deps=(core/make core/gcc core/git)
-pkg_deps=(core/glibc core/ruby core/libxml2 core/libxslt core/libiconv core/xz core/zlib core/bundler core/openssl core/cacerts core/libffi core/coreutils)
+pkg_deps=(core/glibc core/ruby core/libxml2 core/libxslt core/libiconv core/xz core/zlib core/bundler core/openssl core/cacerts core/libffi core/coreutils core/libarchive)
 pkg_svc_user=root
+
+do_before() {
+  do_default_before
+  update_pkg_version
+}
 
 do_download() {
   build_line "Fake download! Creating archive of latest repository commit."
@@ -84,6 +88,10 @@ do_end() {
     build_line "Removing the symlink we created for '/usr/bin/env'"
     rm /usr/bin/env
   fi
+}
+
+do_strip() {
+  return 0
 }
 
 # Helper function to wrap up some repetitive bundle install flags

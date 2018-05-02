@@ -1,16 +1,10 @@
-cookbook_path "{{pkg.svc_data_path}}/{{cfg.cookbook_path}}"
-data_bag_path "{{pkg.svc_data_path}}/{{cfg.data_bag_path}}"
-environment_path "{{pkg.svc_data_path}}/{{cfg.environment_path}}"
+chef_repo_path "{{pkg.svc_data_path}}/chef"
 file_backup_path "{{pkg.svc_data_path}}/{{cfg.file_backup_path}}"
-node_path "{{pkg.svc_data_path}}/{{cfg.node_path}}"
-role_path "{{pkg.svc_data_path}}/{{cfg.role_path}}"
 pid_file "{{pkg.svc_data_path}}/{{cfg.pid_file}}"
 data_collector.server_url "{{cfg.data_collector.url}}"
 data_collector.token "{{cfg.data_collector.token}}"
 data_collector.mode "{{cfg.data_collector.mode}}".to_sym
 data_collector.raise_on_failure {{cfg.data_collector.raise_on_failure}}
-chef_repo_path "{{pkg.svc_data_path}}/chef"
-environment "{{cfg.environment}}"
 minimal_ohai {{cfg.minimal_ohai}}
 {{#if cfg.chef-client.node_name ~}}
 node_name "{{cfg.node_name}}"
@@ -19,3 +13,6 @@ splay {{cfg.splay}}
 interval {{cfg.interval}}
 log_location {{cfg.log_location}}
 log_level "{{cfg.log_level}}".to_sym
+{{#if cfg.use_member_id_as_uuid ~}}
+chef_guid "{{svc.me.member_id}}"
+{{/if ~}}
