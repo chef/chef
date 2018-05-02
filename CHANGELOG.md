@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.8.13 -->
-## [v13.8.13](https://github.com/chef/chef/tree/v13.8.13) (2018-04-09)
+<!-- latest_release 13.8.14 -->
+## [v13.8.14](https://github.com/chef/chef/tree/v13.8.14) (2018-05-02)
 
 #### Merged Pull Requests
-- Bump dependencies to bring in Ohai 13.9 [#7135](https://github.com/chef/chef/pull/7135) ([tas50](https://github.com/tas50))
+- Windows MSI: files are now re-unzipped during repair mode (Backport to Chef 13) [#7112](https://github.com/chef/chef/pull/7112) ([stuartpreston](https://github.com/stuartpreston))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.5 -->
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- Windows MSI: files are now re-unzipped during repair mode (Backport to Chef 13) [#7112](https://github.com/chef/chef/pull/7112) ([stuartpreston](https://github.com/stuartpreston)) <!-- 13.8.14 -->
 - Bump dependencies to bring in Ohai 13.9 [#7135](https://github.com/chef/chef/pull/7135) ([tas50](https://github.com/tas50)) <!-- 13.8.13 -->
 - partially revert 61e3d4bb: do not use properties for mount [#7031](https://github.com/chef/chef/pull/7031) ([thommay](https://github.com/thommay)) <!-- 13.8.12 -->
 - Empty commit to trigger a release build [#7040](https://github.com/chef/chef/pull/7040) ([btm](https://github.com/btm)) <!-- 13.8.11 -->
