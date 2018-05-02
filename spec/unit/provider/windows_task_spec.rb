@@ -18,8 +18,9 @@
 
 require "spec_helper"
 
-describe Chef::Provider::WindowsTask do
+describe Chef::Provider::WindowsTask, :windows_only do
   let(:new_resource) { Chef::Resource::WindowsTask.new("sample_task") }
+  let(:current_resource) { Chef::Resource::WindowsTask.new() }
 
   let(:provider) do
     node = Chef::Node.new
@@ -28,690 +29,392 @@ describe Chef::Provider::WindowsTask do
     Chef::Provider::WindowsTask.new(new_resource, run_context)
   end
 
-  let(:task_hash) do
-    {
-      :"" => "",
-      :Folder => "\\",
-      :HostName => "NIMISHA-PC",
-      :TaskName => "\\sample_task",
-      :NextRunTime => "3/30/2017 2:42:00 PM",
-      :Status => "Ready",
-      :LogonMode => "Interactive/Background",
-      :LastRunTime => "3/30/2017 2:27:00 PM",
-      :LastResult => "1",
-      :Author => "Administrator",
-      :TaskToRun => "chef-client -L C:\\tmp\\",
-      :StartIn => "N/A",
-      :Comment => "N/A",
-      :ScheduledTaskState => "Enabled",
-      :IdleTime => "Disabled",
-      :PowerManagement => "Stop On Battery Mode, No Start On Batteries",
-      :RunAsUser => "SYSTEM",
-      :DeleteTaskIfNotRescheduled => "Enabled",
-      :StopTaskIfRunsXHoursandXMins => "72:00:00",
-      :Schedule => "Scheduling data is not available in this format.",
-      :ScheduleType => "One Time Only, Minute",
-      :StartTime => "1:12:00 PM",
-      :StartDate => "3/30/2017",
-      :EndDate => "N/A",
-      :Days => "N/A",
-      :Months => "N/A",
-      :"Repeat:Every" => "0 Hour(s), 15 Minute(s)",
-      :"Repeat:Until:Time" => "None",
-      :"Repeat:Until:Duration" => "Disabled",
-      :"Repeat:StopIfStillRunning" => "Disabled",
-      :run_level => "HighestAvailable",
-      :repetition_interval => "PT15M",
-      :execution_time_limit => "PT72H",
-    }
-  end
-
-  let(:task_xml) do
-    "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\r\r\n<Task version=\"1.2\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\">\r\r\n  <RegistrationInfo>\r\r\n    <Date>2017-03-31T15:34:44</Date>\r\r\n    <Author>Administrator</Author>\r\r\n  </RegistrationInfo>\r\r\n<Triggers>\r\r\n    <TimeTrigger>\r\r\n      <Repetition>\r\r\n        <Interval>PT15M</Interval>\r\r\n        <StopAtDurationEnd>false</StopAtDurationEnd>\r\r\n      </Repetition>\r\r\n      <StartBoundary>2017-03-31T15:34:00</StartBoundary>\r\r\n      <Enabled>true</Enabled>\r\r\n    </TimeTrigger>\r\r\n  </Triggers>\r\r\n  <Principals>\r\r\n    <Principal id=\"Author\">\r\r\n      <RunLevel>HighestAvailable</RunLevel>\r\r\n      <UserId>S-1-5-18</UserId>\r\r\n    </Principal>\r\r\n  </Principals>\r\r\n  <Settings>\r\r\n    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>\r\r\n    <DisallowStartIfOnBatteries>true</DisallowStartIfOnBatteries>\r\r\n    <StopIfGoingOnBatteries>true</StopIfGoingOnBatteries>\r\r\n    <AllowHardTerminate>true</AllowHardTerminate>\r\r\n    <StartWhenAvailable>false</StartWhenAvailable>\r\r\n    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>\r\r\n    <IdleSettings>\r\r\n      <Duration>PT10M</Duration>\r\r\n<WaitTimeout>PT1H</WaitTimeout>\r\r\n      <StopOnIdleEnd>true</StopOnIdleEnd>\r\r\n      <RestartOnIdle>false</RestartOnIdle>\r\r\n    </IdleSettings>\r\r\n    <AllowStartOnDemand>true</AllowStartOnDemand>\r\r\n    <Enabled>true</Enabled>\r\r\n    <Hidden>false</Hidden>\r\r\n<RunOnlyIfIdle>false</RunOnlyIfIdle>\r\r\n    <WakeToRun>false</WakeToRun>\r\r\n    <ExecutionTimeLimit>PT72H</ExecutionTimeLimit>\r\r\n<Priority>7</Priority>\r\r\n  </Settings>\r\r\n  <Actions Context=\"Author\">\r\r\n    <Exec>\r\r\n      <Command>chef-client</Command>\r\r\n    </Exec>\r\r\n  </Actions>\r\r\n</Task>"
-  end
-
   describe "#load_current_resource" do
     it "returns a current_resource" do
-      allow(provider).to receive(:load_task_hash)
       expect(provider.load_current_resource).to be_kind_of(Chef::Resource::WindowsTask)
     end
+  end
 
-    context "if the given task name already exists" do
-      before do
-        allow(provider).to receive(:load_task_hash).and_return({ :TaskName => "\\sample_task" })
-      end
-
-      it "calls set_current_resource" do
-        expect(provider).to receive(:set_current_resource)
-        provider.load_current_resource
-      end
+  describe "#set_start_day_and_time" do
+    it "sets the curret date and time start_day and start_time if nothing is provided by user" do
+      new_resource.start_day = nil
+      new_resource.start_time = nil
+      provider.send(:set_start_day_and_time)
+      expect(new_resource.start_day).not_to be_nil
+      expect(new_resource.start_time).not_to be_nil
     end
 
-    it "sets the attributes of current_resource" do
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      current_resource = provider.load_current_resource
-      expect(current_resource.exists).to be(true)
-      expect(current_resource.command).to eq("chef-client -L C:\\tmp\\")
-      expect(current_resource.user).to eq("SYSTEM")
-      expect(current_resource.run_level).to eq(:highest)
-      expect(current_resource.frequency).to eq(:minute)
-      expect(current_resource.frequency_modifier).to eq(15)
-      expect(current_resource.execution_time_limit).to eq("PT72H")
-      expect(current_resource.enabled).to be(true)
+    it "does not set start_day and start_time if given by user" do
+      new_resource.start_day = "12/02/2017"
+      new_resource.start_time = "17:30"
+      provider.send(:set_start_day_and_time)
+      expect(new_resource.start_day).to eq("12/02/2017")
+      expect(new_resource.start_time).to eq("17:30")
     end
   end
 
-  describe "#action_create" do
-    it "doesn't create the same task if it's already existing" do
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-      allow(provider).to receive(:task_need_update?).and_return(false)
-      provider.run_action(:create)
-      expect(new_resource).not_to be_updated_by_last_action
-    end
-
-    it "sets the start_time in 24hr format while updating an existing task" do
-      # task_hash has start_time = "1:12:00 PM"
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-      allow(provider).to receive(:task_need_update?).and_return(true)
-      allow(provider).to receive(:convert_system_date_to_mm_dd_yyyy).and_return("03/30/2017")
-      allow(provider).to receive(:run_schtasks)
-      provider.run_action(:create)
-      # start_time gets set in 24hr format for new_resource
-      expect(new_resource.start_time).to eq("13:12")
-      expect(new_resource).to be_updated_by_last_action
-    end
-
-    it "sets the start_day in mm/dd/yyyy format while updating an existing task" do
-      # start_day in yyyy-MM-dd format
-      task_hash[:StartDate] = "2017-03-30"
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      current_resource = provider.load_current_resource
-      allow(provider).to receive(:task_need_update?).and_return(true)
-      allow(provider).to receive(:convert_system_date_format_to_ruby_date_format).and_return("%Y-%m-%d")
-      allow(provider).to receive(:run_schtasks)
-      provider.run_action(:create)
-      # start_day gets set in mm/dd/yyyy format for new_resource
-      expect(new_resource.start_day).to eq("03/30/2017")
-      expect(new_resource).to be_updated_by_last_action
-    end
-
-    context "when start_day and start_time are N/A for frequency :on_logon" do
-      it "doesn't update the start_day and start_time of new_resource" do
-        task_hash[:on_logon] = true
-        task_hash[:StartDate] = "N/A"
-        task_hash[:StartTime] = "N/A"
-        allow(provider).to receive(:load_task_hash).and_return(task_hash)
-        current_resource = provider.load_current_resource
-        allow(provider).to receive(:task_need_update?).and_return(true)
-        allow(provider).to receive(:run_schtasks)
-        expect(provider).not_to receive(:convert_system_date_to_mm_dd_yyyy)
-        expect(DateTime).not_to receive(:parse)
-        expect(new_resource.start_day).to eq(nil)
-        expect(new_resource.start_time).to eq(nil)
-      end
-    end
-
-    context "when task is not existing" do
-      before do
-        allow(provider).to receive(:load_task_hash)
-        provider.load_current_resource
-      end
-
-      it "creates the task if it's not already existing" do
-        allow(provider).to receive(:task_need_update?).and_return(true)
-        allow(provider).to receive(:basic_validation).and_return(true)
-        expect(provider).to receive(:run_schtasks).with("CREATE", { "F" => "", "SC" => :hourly, "MO" => 1, "TR" => nil, "RU" => "SYSTEM" })
-        provider.run_action(:create)
-        expect(new_resource).to be_updated_by_last_action
-      end
-
-      it "updates the task XML if random_delay is provided" do
-        new_resource.random_delay "20"
-        allow(provider).to receive(:task_need_update?).and_return(true)
-        allow(provider).to receive(:basic_validation).and_return(true)
-        expect(provider).to receive(:run_schtasks).with("CREATE", { "F" => "", "SC" => :hourly, "MO" => 1, "TR" => nil, "RU" => "SYSTEM" })
-        expect(provider).to receive(:update_task_xml)
-        provider.run_action(:create)
-        expect(new_resource).to be_updated_by_last_action
-      end
-
-      it "updates the task XML if execution_time_limit is provided" do
-        new_resource.execution_time_limit "20"
-        allow(provider).to receive(:task_need_update?).and_return(true)
-        allow(provider).to receive(:basic_validation).and_return(true)
-        expect(provider).to receive(:run_schtasks).with("CREATE", { "F" => "", "SC" => :hourly, "MO" => 1, "TR" => nil, "RU" => "SYSTEM" })
-        expect(provider).to receive(:update_task_xml)
-        provider.run_action(:create)
-        expect(new_resource).to be_updated_by_last_action
-      end
-
-      it "updates the task XML if frequency is set as `:none`" do
-        new_resource.frequency :none
-        new_resource.random_delay ""
-        allow(provider).to receive(:task_need_update?).and_return(true)
-        allow(provider).to receive(:basic_validation).and_return(true)
-        allow(provider).to receive(:run_schtasks).and_return("CREATE", { "F" => "", "SC" => :once, "ST" => "00:00", "SD" => "12/12/2012", "TR" => nil, "RU" => "SYSTEM" })
-        expect(provider).to receive(:update_task_xml)
-        provider.run_action(:create)
-        expect(new_resource).to be_updated_by_last_action
-      end
-    end
-  end
-
-  describe "#action_run" do
-    it "does nothing if the task doesn't exist" do
-      allow(provider).to receive(:load_task_hash)
-      provider.load_current_resource
-      provider.run_action(:run)
-      expect(new_resource).not_to be_updated_by_last_action
-    end
-
-    context "when the task exists" do
-      it "does nothing if the task is already running" do
-        task_hash[:Status] = "Running"
-        allow(provider).to receive(:load_task_hash).and_return(task_hash)
-        provider.load_current_resource
-        provider.run_action(:run)
-        expect(new_resource).not_to be_updated_by_last_action
-      end
-
-      it "runs the task" do
-        allow(provider).to receive(:load_task_hash).and_return(task_hash)
-        provider.load_current_resource
-        expect(provider).to receive(:run_schtasks).with("RUN")
-        provider.run_action(:run)
-        expect(new_resource).to be_updated_by_last_action
-      end
-    end
-  end
-
-  describe "#action_delete" do
-    it "deletes the task if it exists" do
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-      expect(provider).to receive(:run_schtasks).with("DELETE", { "F" => "" })
-      provider.run_action(:delete)
-      expect(new_resource).to be_updated_by_last_action
-    end
-
-    it "does nothing if the task doesn't exist" do
-      allow(provider).to receive(:load_task_hash)
-      provider.load_current_resource
-      provider.run_action(:delete)
-      expect(new_resource).not_to be_updated_by_last_action
-    end
-  end
-
-  describe "#action_end" do
-    it "does nothing if the task doesn't exist" do
-      allow(provider).to receive(:load_task_hash)
-      provider.load_current_resource
-      provider.run_action(:end)
-      expect(new_resource).not_to be_updated_by_last_action
-    end
-
-    context "when the task exists" do
-      it "does nothing if the task is not running" do
-        allow(provider).to receive(:load_task_hash).and_return(task_hash)
-        provider.load_current_resource
-        provider.run_action(:end)
-        expect(new_resource).not_to be_updated_by_last_action
-      end
-
-      it "ends the task if it's running" do
-        task_hash[:Status] = "Running"
-        allow(provider).to receive(:load_task_hash).and_return(task_hash)
-        provider.load_current_resource
-        expect(provider).to receive(:run_schtasks).with("END")
-        provider.run_action(:end)
-        expect(new_resource).to be_updated_by_last_action
-      end
-    end
-  end
-
-  describe "#action_enable" do
-    it "raises error if the task doesn't exist" do
-      allow(provider).to receive(:load_task_hash)
-      provider.load_current_resource
-      expect { provider.run_action(:enable) }.to raise_error(Errno::ENOENT)
-    end
-
-    context "when the task exists" do
-      it "does nothing if the task is already enabled" do
-        allow(provider).to receive(:load_task_hash).and_return(task_hash)
-        provider.load_current_resource
-        provider.run_action(:enable)
-        expect(new_resource).not_to be_updated_by_last_action
-      end
-
-      it "enables the task if it exists" do
-        task_hash[:ScheduledTaskState] = "Disabled"
-        allow(provider).to receive(:load_task_hash).and_return(task_hash)
-        provider.load_current_resource
-        expect(provider).to receive(:run_schtasks).with("CHANGE", { "ENABLE" => "" })
-        provider.run_action(:enable)
-        expect(new_resource).to be_updated_by_last_action
-      end
-    end
-  end
-
-  describe "#action_disable" do
-    it "does nothing if the task doesn't exist" do
-      allow(provider).to receive(:load_task_hash)
-      provider.load_current_resource
-      provider.run_action(:disable)
-      expect(new_resource).not_to be_updated_by_last_action
-    end
-
-    context "when the task exists" do
-      it "disables the task if it's enabled" do
-        allow(provider).to receive(:load_task_hash).and_return(task_hash)
-        provider.load_current_resource
-        expect(provider).to receive(:run_schtasks).with("CHANGE", { "DISABLE" => "" })
-        provider.run_action(:disable)
-        expect(new_resource).to be_updated_by_last_action
-      end
-
-      it "does nothing if the task is already disabled" do
-        task_hash[:ScheduledTaskState] = "Disabled"
-        allow(provider).to receive(:load_task_hash).and_return(task_hash)
-        provider.load_current_resource
-        provider.run_action(:disable)
-        expect(new_resource).not_to be_updated_by_last_action
-      end
-    end
-  end
-
-  describe "#run_schtasks" do
-    before do
-      @task_action = "CREATE"
-      @options = { "F" => "", "SC" => :minute, "MO" => 15, "TR" => "chef-client", "RU" => "SYSTEM", "RL" => "HIGHEST" }
-      @cmd = "schtasks /CREATE /TN \"sample_task\" /F /SC \"minute\" /MO \"15\" /RU \"SYSTEM\" /RL \"HIGHEST\" /TR \"chef-client \" "
-    end
-
-    it "forms the command properly from the given options" do
-      expect(provider).to receive(:shell_out!).with(@cmd, { :returns => [0] })
-      provider.send(:run_schtasks, @task_action, @options)
-    end
-  end
-
-  describe "#basic_validation" do
-    context "when command doesn't exist" do
-      it "raise error" do
-        new_resource.command ""
-        expect { provider.send(:basic_validation) }.to raise_error(Chef::Exceptions::ValidationFailed)
-      end
-    end
-
-    context "when task_name doesn't exist" do
-      let(:new_resource) { Chef::Resource::WindowsTask.new("") }
-      it "raise error" do
-        expect { provider.send(:basic_validation) }.to raise_error(Chef::Exceptions::ValidationFailed)
-      end
-    end
-
-    context "when task_name and command exists" do
-      it "returns true" do
-        new_resource.command "cd ~/"
-        expect(provider.send(:basic_validation)).to be(true)
-      end
-    end
-  end
-
-  describe "#task_need_update?" do
-    context "when task doesn't exist" do
-      before do
-        allow(provider).to receive(:load_task_hash)
-        provider.load_current_resource
-      end
-
-      it "returns true" do
-        new_resource.command "chef-client"
-        expect(provider.send(:task_need_update?)).to be(true)
-      end
-    end
-
-    context "when the task exists" do
-      before do
-        allow(provider).to receive(:load_task_hash).and_return(task_hash)
-        allow(provider).to receive(:get_system_short_date_format).and_return("MM/dd/yyyy")
-        provider.load_current_resource
-
-        new_resource.command "chef-client -L C:\\tmp\\"
-        new_resource.run_level :highest
-        new_resource.frequency :minute
-        new_resource.frequency_modifier 15
-        new_resource.user "SYSTEM"
-        new_resource.execution_time_limit "PT72H"
-        new_resource.start_day "03/30/2017"
-        new_resource.start_time "13:12"
-      end
-
-      context "when no attributes are modified" do
-        it "returns false" do
-          expect(provider.send(:task_need_update?)).to be(false)
-        end
-      end
-
-      context "when frequency_modifier is updated" do
-        it "returns true" do
-          new_resource.frequency_modifier 25
-          expect(provider.send(:task_need_update?)).to be(true)
-        end
-      end
-
-      context "when months are updated" do
-        it "returns true" do
-          new_resource.months "JAN"
-          expect(provider.send(:task_need_update?)).to be(true)
-        end
-      end
-
-      context "when start_day is updated" do
-        it "returns true" do
-          new_resource.start_day "01/01/2000"
-          expect(provider.send(:task_need_update?)).to be(true)
-        end
-      end
-
-      context "when start_time updated" do
-        it "returns true" do
-          new_resource.start_time "01:01"
-          expect(provider.send(:task_need_update?)).to be(true)
-        end
-      end
-
-      context "when command updated" do
-        it "return true" do
-          new_resource.command "chef-client"
-          expect(provider.send(:task_need_update?)).to be(true)
-        end
-      end
-    end
-  end
-
-  describe "#start_day_updated?" do
-    before do
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      allow(provider).to receive(:get_system_short_date_format).and_return("MM/dd/yyyy")
-      provider.load_current_resource
-
-      new_resource.command "chef-client"
-      new_resource.run_level :highest
-      new_resource.frequency :minute
+  describe "#trigger" do
+    it "returns the trigger values in hash format" do
+      new_resource.start_day "12/02/2017"
+      new_resource.start_time "17:30"
+      new_resource.frequency  :minute
       new_resource.frequency_modifier 15
-      new_resource.user "SYSTEM"
-      new_resource.execution_time_limit "PT72H"
-      new_resource.start_day "03/30/2017"
-      new_resource.start_time "13:12"
-    end
-    context "when start_day not changed" do
-      it "returns false" do
-        expect(provider.send(:start_day_updated?)).to be(false)
-      end
-    end
+      new_resource.random_delay 60
+      result = {
+        :start_year => 2017,
+        :start_month => 12,
+        :start_day => 2,
+        :start_hour => 17,
+        :start_minute => 30,
+        :end_month => 0,
+        :end_day => 0,
+        :end_year => 0,
+        :trigger_type => 1,
+        :type => { :once => nil },
+        :random_minutes_interval => 60,
+        :minutes_interval => 15,
+        :run_on_last_day_of_month => false,
+        :run_on_last_week_of_month => false
 
-    context "when start_day changed" do
-      it "returns true" do
-        new_resource.start_day "01/01/2000"
-        expect(provider.send(:start_day_updated?)).to be(true)
-      end
+      }
+      expect(provider.send(:trigger)).to eq(result)
     end
   end
 
-  describe "#start_time_updated?" do
-    before do
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-
-      new_resource.command "chef-client"
-      new_resource.run_level :highest
-      new_resource.frequency :minute
-      new_resource.frequency_modifier 15
-      new_resource.user "SYSTEM"
-      new_resource.execution_time_limit "PT72H"
-      new_resource.start_day "3/30/2017"
-      new_resource.start_time "13:12"
-    end
-    context "when start_time not changed" do
-      it "returns false" do
-        expect(provider.send(:start_time_updated?)).to be(false)
-      end
-    end
-
-    context "when start_time changed" do
-      it "returns true" do
-        new_resource.start_time "01:01"
-        expect(provider.send(:start_time_updated?)).to be(true)
-      end
+  describe "#convert_hours_in_minutes" do
+    it "converts given hours in minutes" do
+      expect(provider.send(:convert_hours_in_minutes, 5)).to eq(300)
     end
   end
 
-  describe "#convert_user_date_to_system_date" do
-    it "when current resource start date is '05/30/2017' then returns '30/05/2017'" do
-      allow(provider).to receive(:get_system_short_date_format).and_return("dd/MM/yyyy")
-      expect(provider.send(:convert_user_date_to_system_date, "05/30/2017")).to eq("30/05/2017")
-    end
-  end
-
-  describe "#convert_system_date_format_to_ruby_date_format" do
-    context "when system date format 'dd-MMM-yy'" do
-      it "returns '%d-%b-%y'" do
-        allow(provider).to receive(:get_system_short_date_format).and_return("dd-MMM-yy")
-        expect(provider.send(:convert_system_date_format_to_ruby_date_format)).to eq("%d-%b-%y")
-      end
-    end
-
-    context "when system date format 'dd/MM/yyyy'" do
-      it "returns '%d/%m/%Y'" do
-        allow(provider).to receive(:get_system_short_date_format).and_return("dd/MM/yyyy")
-        expect(provider.send(:convert_system_date_format_to_ruby_date_format)).to eq("%d/%m/%Y")
-      end
-    end
-  end
-
-  describe "#convert_system_date_format_to_ruby_long_date" do
-    context "when system date format 'dd-MMM-yy'" do
-      it "returns '%d-%m-%Y'" do
-        allow(provider).to receive(:get_system_short_date_format).and_return("dd-MMM-yy")
-        expect(provider.send(:convert_system_date_format_to_ruby_long_date)).to eq("%d-%m-%Y")
-      end
-    end
-
-    context "when system date format 'dd/MM/yyyy'" do
-      it "returns '%d/%m/%Y'" do
-        allow(provider).to receive(:get_system_short_date_format).and_return("dd/MM/yyyy")
-        expect(provider.send(:convert_system_date_format_to_ruby_long_date)).to eq("%d/%m/%Y")
-      end
-    end
-  end
-
-  describe "#common_date_format_conversion" do
-    context "when system date format 'dd-MM-yyyy'" do
-      it "returns '%d-%m-%Y'" do
-        expect(provider.send(:common_date_format_conversion, "dd-MM-yyyy")).to eq("%d-%m-%Y")
-      end
-    end
-
-    context "when system date format 'd-M-yyyy'" do
-      it "returns '%d-%m-%Y'" do
-        expect(provider.send(:common_date_format_conversion, "dd-MM-yyyy")).to eq("%d-%m-%Y")
-      end
-    end
-  end
-
-  describe "#update_task_xml" do
-    before do
-      new_resource.command "chef-client"
-      new_resource.run_level :highest
-      new_resource.frequency :minute
-      new_resource.frequency_modifier 15
-      new_resource.user "SYSTEM"
-      new_resource.random_delay "20"
-    end
-
-    it "does nothing if the task doesn't exist" do
-      task_xml = double("xml", :exitstatus => 1)
-      allow(provider).to receive(:powershell_out).and_return(task_xml)
-      output = provider.send(:update_task_xml, ["random_delay"])
-      expect(output).to be(nil)
-    end
-
-    it "updates the task XML if random_delay is passed" do
-      shell_out_obj = double("xml", :exitstatus => 0, :stdout => task_xml)
-      allow(provider).to receive(:powershell_out).and_return(shell_out_obj)
-      expect(::File).to receive(:join)
-      expect(::File).to receive(:open)
-      expect(::File).to receive(:delete)
-      expect(provider).to receive(:run_schtasks).twice
-      output = provider.send(:update_task_xml, ["random_delay"])
-    end
-
-    it "updates the task XML if frequency is set as `:none`" do
-      new_resource.frequency :none
-      new_resource.random_delay ""
-      shell_out_obj = double("xml", :exitstatus => 0, :stdout => task_xml)
-      allow(provider).to receive(:powershell_out).and_return(shell_out_obj)
-      expect(::File).to receive(:delete)
-      expect(::File).to receive(:join)
-      expect(::File).to receive(:open)
-      expect(provider).to receive(:run_schtasks).twice
-      output = provider.send(:update_task_xml, ["random_delay"])
-    end
-  end
-
-  describe "#load_task_hash" do
-    it "returns false if the task doesn't exist" do
-      allow(provider).to receive_message_chain(:powershell_out, :stdout, :force_encoding).and_return("")
-      allow(provider).to receive(:load_task_xml)
-      expect(provider.send(:load_task_hash, "chef-client")).to be(false)
-    end
-
-    it "returns task hash if the task exists" do
-      powershell_output = "\r\nFolder: \\\r\nHostName:                             NIMISHA-PC\r\nTaskName:                             \\chef-client\r\n"
-      task_h = { :"" => "", :Folder => "\\", :HostName => "NIMISHA-PC", :TaskName => "\\chef-client" }
-      allow(provider).to receive_message_chain(:powershell_out, :stdout, :force_encoding).and_return(powershell_output)
-      allow(provider).to receive(:load_task_xml).with("chef-client")
-      expect(provider.send(:load_task_hash, "chef-client")).to eq(task_h)
-    end
-  end
-
-  describe "#frequency_modifier_allowed" do
-    it "returns true for frequency :hourly" do
-      new_resource.frequency :hourly
-      expect(provider.send(:frequency_modifier_allowed)).to be(true)
-    end
-
-    it "returns true for frequency :monthly if frequency_modifier is THIRD" do
-      new_resource.frequency :monthly
-      new_resource.frequency_modifier "THIRD"
-      expect(provider.send(:frequency_modifier_allowed)).to be(true)
-    end
-
-    it "returns false for frequency :once" do
+  describe "#trigger_type" do
+    it "returns 1 if frequency :once" do
       new_resource.frequency :once
-      expect(provider.send(:frequency_modifier_allowed)).to be(false)
+      expect(provider.send(:trigger_type)).to eq(1)
     end
 
-    it "returns false for frequency :none" do
-      new_resource.frequency :none
-      expect(provider.send(:frequency_modifier_allowed)).to be(false)
-    end
-  end
-
-  # In windows_task resource sec_to_dur method converts seconds to duration in format 60 == 'PT60S'
-  # random_delay_updated? method use the value return by sec_to_dur as input for comparison for new_resource.random_delay mocking the same here
-  describe "#random_delay_updated?" do
-    before do
-      new_resource.command "chef-client"
-      new_resource.run_level :highest
-      new_resource.frequency :minute
-      new_resource.frequency_modifier 15
-      new_resource.user "SYSTEM"
+    it "returns 2 if frequency :daily" do
+      new_resource.frequency :daily
+      expect(provider.send(:trigger_type)).to eq(2)
     end
 
-    it "returns false if current_resource.random_delay = nil & random_delay is set to '0' seconds" do
-      task_hash[:random_delay] = nil
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-      new_resource.random_delay = "PT0S"
-      expect(provider.send(:random_delay_updated?)).to be(false)
+    it "returns 3 if frequency :weekly" do
+      new_resource.frequency :weekly
+      expect(provider.send(:trigger_type)).to eq(3)
     end
 
-    it "returns false if current_resource.random_delay = 'P7D' & random_delay is set to '604800' seconds " do
-      task_hash[:random_delay] = "P7D"
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-      new_resource.random_delay = "PT604800S"
-      expect(provider.send(:random_delay_updated?)).to be(false)
+    it "returns 4 if frequency :monthly" do
+      new_resource.frequency :monthly
+      expect(provider.send(:trigger_type)).to eq(4)
     end
 
-    it "returns false if current_resource.random_delay = 'P7DT1S' & random_delay is set to '604801' seconds" do
-      task_hash[:random_delay] = "P7DT1S"
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-      new_resource.random_delay = "PT604801S"
-      expect(provider.send(:random_delay_updated?)).to be(false)
+    it "returns 5 if frequency :monthly and frequency_modifier is 'first, second'" do
+      new_resource.frequency :monthly
+      new_resource.frequency_modifier "first, second"
+      expect(provider.send(:trigger_type)).to eq(5)
     end
 
-    it "returns true if current_resource.random_delay = 'PT1S' & random_delay is set to '3600' seconds" do
-      task_hash[:random_delay] = "PT1S"
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-      new_resource.random_delay = "PT3600S"
-      expect(provider.send(:random_delay_updated?)).to be(true)
+    it "returns 6 if frequency :on_idle" do
+      new_resource.frequency :on_idle
+      expect(provider.send(:trigger_type)).to eq(6)
     end
 
-    it "returns false if current_resource.random_delay = 'P2Y1MT2H' & random_delay is set to '65707200' seconds" do
-      task_hash[:random_delay] = "P2Y1MT2H"
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-      new_resource.random_delay = "PT65707200S"
-      expect(provider.send(:random_delay_updated?)).to be(false)
+    it "returns 8 if frequency :onstart" do
+      new_resource.frequency :onstart
+      expect(provider.send(:trigger_type)).to eq(8)
+    end
+
+    it "returns 9 if frequency :on_logon" do
+      new_resource.frequency :on_logon
+      expect(provider.send(:trigger_type)).to eq(9)
     end
   end
 
-  describe "#execution_time_limit_updated?" do
-    before do
-      new_resource.command "chef-client"
+  describe "#type" do
+    it "returns type hash when frequency :once" do
+      new_resource.frequency :once
+      new_resource.frequency_modifier 2
+      result = provider.send(:type)
+      expect(result).to include(:once)
+      expect(result).to eq({ :once => nil })
+    end
+
+    it "returns type hash when frequency :daily" do
+      new_resource.frequency :daily
+      new_resource.frequency_modifier 2
+      result = provider.send(:type)
+      expect(result).to include(:days_interval)
+      expect(result).to eq({ days_interval: 2 })
+    end
+
+    it "returns type hash when frequency :weekly" do
+      new_resource.start_day "01/02/2018"
+      new_resource.frequency :weekly
+      new_resource.frequency_modifier 2
+      result = provider.send(:type)
+      expect(result).to include(:weeks_interval)
+      expect(result).to include(:days_of_week)
+      expect(result).to eq({ weeks_interval: 2, days_of_week: 4 })
+    end
+
+    it "returns type hash when frequency :monthly" do
+      new_resource.frequency :monthly
+      result = provider.send(:type)
+      expect(result).to include(:months)
+      expect(result).to include(:days)
+      expect(result).to eq({ months: 4095, days: 1 })
+    end
+
+    it "returns type hash when frequency :monthly with frequency_modifier 'first, second, third'" do
+      new_resource.start_day "01/02/2018"
+      new_resource.frequency :monthly
+      new_resource.frequency_modifier "First, Second, third"
+      result = provider.send(:type)
+      expect(result).to include(:months)
+      expect(result).to include(:days_of_week)
+      expect(result).to include(:weeks_of_month)
+      expect(result).to eq({ months: 4095, days_of_week: 4, weeks_of_month: 7 })
+    end
+
+    it "returns type hash when frequency :on_idle" do
+      new_resource.frequency :on_idle
+      result = provider.send(:type)
+      expect(result).to eq(nil)
+    end
+
+    it "returns type hash when frequency :onstart" do
+      new_resource.frequency :onstart
+      result = provider.send(:type)
+      expect(result).to eq(nil)
+    end
+
+    it "returns type hash when frequency :on_logon" do
+      new_resource.frequency :on_logon
+      result = provider.send(:type)
+      expect(result).to eq(nil)
+    end
+  end
+
+  describe "#weeks_of_month" do
+    it "returns the binary value 1 if frequency_modifier is set as 'first'" do
+      new_resource.frequency_modifier "first"
+      expect(provider.send(:weeks_of_month)).to eq(1)
+    end
+
+    it "returns the binary value 2 if frequency_modifier is set as 'second'" do
+      new_resource.frequency_modifier "second"
+      expect(provider.send(:weeks_of_month)).to eq(2)
+    end
+
+    it "returns the binary value 4 if frequency_modifier is set as 'third'" do
+      new_resource.frequency_modifier "third"
+      expect(provider.send(:weeks_of_month)).to eq(4)
+    end
+
+    it "returns the binary value 8 if frequency_modifier is set as 'fourth'" do
+      new_resource.frequency_modifier "fourth"
+      expect(provider.send(:weeks_of_month)).to eq(8)
+    end
+
+    it "returns the binary value 16 if frequency_modifier is set as 'last'" do
+      new_resource.frequency_modifier "last"
+      expect(provider.send(:weeks_of_month)).to eq(nil)
+    end
+  end
+
+  describe "#weeks_of_month" do
+    it "returns the binary value 1 if frequency_modifier is set as 'first'" do
+      new_resource.frequency_modifier "first"
+      expect(provider.send(:weeks_of_month)).to eq(1)
+    end
+
+    it "returns the binary value 2 if frequency_modifier is set as 'second'" do
+      new_resource.frequency_modifier "second"
+      expect(provider.send(:weeks_of_month)).to eq(2)
+    end
+
+    it "returns the binary value 4 if frequency_modifier is set as 'third'" do
+      new_resource.frequency_modifier "third"
+      expect(provider.send(:weeks_of_month)).to eq(4)
+    end
+
+    it "returns the binary value 8 if frequency_modifier is set as 'fourth'" do
+      new_resource.frequency_modifier "fourth"
+      expect(provider.send(:weeks_of_month)).to eq(8)
+    end
+
+    it "returns the binary value 16 if frequency_modifier is set as 'last'" do
+      new_resource.frequency_modifier "last"
+      expect(provider.send(:weeks_of_month)).to eq(nil)
+    end
+
+    it "returns the binary value 15 if frequency_modifier is set as 'first, second, third, fourth'" do
+      new_resource.frequency_modifier "first, second, third, fourth"
+      expect(provider.send(:weeks_of_month)).to eq(15)
+    end
+  end
+
+  # REF: https://msdn.microsoft.com/en-us/library/windows/desktop/aa382063(v=vs.85).aspx
+  describe "#days_of_month" do
+    it "returns the binary value 1 if day is set as 1" do
+      new_resource.day "1"
+      expect(provider.send(:days_of_month)).to eq(1)
+    end
+
+    it "returns the binary value 2 if day is set as 2" do
+      new_resource.day "2"
+      expect(provider.send(:days_of_month)).to eq(2)
+    end
+
+    it "returns the binary value 1073741824 if day is set as 31" do
+      new_resource.day "31"
+      expect(provider.send(:days_of_month)).to eq(1073741824)
+    end
+
+    it "returns the binary value 131072 if day is set as 18" do
+      new_resource.day "18"
+      expect(provider.send(:days_of_month)).to eq(131072)
+    end
+  end
+
+  #Ref : https://msdn.microsoft.com/en-us/library/windows/desktop/aa380729(v=vs.85).aspx
+  describe "#days_of_week" do
+    it "returns the binary value 2 if day is set as 'Mon'" do
+      new_resource.day "Mon"
+      expect(provider.send(:days_of_week)).to eq(2)
+    end
+
+    it "returns the binary value 4 if day is set as 'Tue'" do
+      new_resource.day "Tue"
+      expect(provider.send(:days_of_week)).to eq(4)
+    end
+
+    it "returns the binary value 8 if day is set as 'Wed'" do
+      new_resource.day "Wed"
+      expect(provider.send(:days_of_week)).to eq(8)
+    end
+
+    it "returns the binary value 16 if day is set as 'Thu'" do
+      new_resource.day "Thu"
+      expect(provider.send(:days_of_week)).to eq(16)
+    end
+
+    it "returns the binary value 32 if day is set as 'Fri'" do
+      new_resource.day "Fri"
+      expect(provider.send(:days_of_week)).to eq(32)
+    end
+
+    it "returns the binary value 64 if day is set as 'Sat'" do
+      new_resource.day "Sat"
+      expect(provider.send(:days_of_week)).to eq(64)
+    end
+
+    it "returns the binary value 1 if day is set as 'Sun'" do
+      new_resource.day "Sun"
+      expect(provider.send(:days_of_week)).to eq(1)
+    end
+
+    it "returns the binary value 127 if day is set as 'Mon, tue, wed, thu, fri, sat, sun'" do
+      new_resource.day "Mon, tue, wed, thu, fri, sat, sun"
+      expect(provider.send(:days_of_week)).to eq(127)
+    end
+  end
+
+  # REf: https://msdn.microsoft.com/en-us/library/windows/desktop/aa382064(v=vs.85).aspx
+  describe "#monts_of_year" do
+    it "returns the binary value 1 if day is set as 'Jan'" do
+      new_resource.months "Jan"
+      expect(provider.send(:months_of_year)).to eq(1)
+    end
+
+    it "returns the binary value 2 if day is set as 'Feb'" do
+      new_resource.months "Feb"
+      expect(provider.send(:months_of_year)).to eq(2)
+    end
+
+    it "returns the binary value 4 if day is set as 'Mar'" do
+      new_resource.months "Mar"
+      expect(provider.send(:months_of_year)).to eq(4)
+    end
+
+    it "returns the binary value 8 if day is set as 'Apr'" do
+      new_resource.months "Apr"
+      expect(provider.send(:months_of_year)).to eq(8)
+    end
+
+    it "returns the binary value 16 if day is set as 'May'" do
+      new_resource.months "May"
+      expect(provider.send(:months_of_year)).to eq(16)
+    end
+
+    it "returns the binary value 32 if day is set as 'Jun'" do
+      new_resource.months "Jun"
+      expect(provider.send(:months_of_year)).to eq(32)
+    end
+
+    it "returns the binary value 64 if day is set as 'Jul'" do
+      new_resource.months "Jul"
+      expect(provider.send(:months_of_year)).to eq(64)
+    end
+
+    it "returns the binary value 128 if day is set as 'Aug'" do
+      new_resource.months "Aug"
+      expect(provider.send(:months_of_year)).to eq(128)
+    end
+
+    it "returns the binary value 256 if day is set as 'Sep'" do
+      new_resource.months "Sep"
+      expect(provider.send(:months_of_year)).to eq(256)
+    end
+
+    it "returns the binary value 512 if day is set as 'Oct'" do
+      new_resource.months "Oct"
+      expect(provider.send(:months_of_year)).to eq(512)
+    end
+
+    it "returns the binary value 1024 if day is set as 'Nov'" do
+      new_resource.months "Nov"
+      expect(provider.send(:months_of_year)).to eq(1024)
+    end
+
+    it "returns the binary value 2048 if day is set as 'Dec'" do
+      new_resource.months "Dec"
+      expect(provider.send(:months_of_year)).to eq(2048)
+    end
+
+    it "returns the binary value 4095 if day is set as 'jan, Feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec'" do
+      new_resource.months "jan, Feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec"
+      expect(provider.send(:months_of_year)).to eq(4095)
+    end
+  end
+
+  describe "#run_level" do
+    it "return binary value 1 for run_level highest" do
       new_resource.run_level :highest
-      new_resource.frequency :minute
-      new_resource.frequency_modifier 15
-      new_resource.user "SYSTEM"
+      expect(provider.send(:run_level)).to be(1)
     end
 
-    it "returns false if current_resource.execution_time_limit = 'P7D' & execution_time_limit is set to 604800 seconds " do
-      task_hash[:execution_time_limit] = "P7D"
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-      new_resource.execution_time_limit = "PT604800S"
-      expect(provider.send(:execution_time_limit_updated?)).to be(false)
+    it "return binary value 1 for run_level limited" do
+      new_resource.run_level :limited
+      expect(provider.send(:run_level)).to be(0)
+    end
+  end
+
+  describe "#logon_type" do
+    it "return logon_type bindary value as 5 as if password is nil" do
+      new_resource.password = nil
+      expect(provider.send(:logon_type)).to be(5)
     end
 
-    it "returns false if current_resource.execution_time_limit = 'P7DT1S' & execution_time_limit is set to 604801 seconds" do
-      task_hash[:execution_time_limit] = "P7DT1S"
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-      new_resource.execution_time_limit = "PT604801S"
-      expect(provider.send(:execution_time_limit_updated?)).to be(false)
+    it "return logon_type bindary value as 1 as if password is not nil" do
+      new_resource.password = "abc"
+      expect(provider.send(:logon_type)).to be(1)
     end
+  end
 
-    it "returns true if current_resource.execution_time_limit = 'PT1S' & execution_time_limit is set to '3600' seconds" do
-      task_hash[:execution_time_limit] = "PT1S"
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-      new_resource.execution_time_limit = "PT3600S"
-      expect(provider.send(:execution_time_limit_updated?)).to be(true)
-    end
-
-    it "returns false if current_resource.execution_time_limit = 'P2Y1MT2H' & execution_time_limit is set to '65707200' seconds" do
-      task_hash[:execution_time_limit] = "P2Y1MT2H"
-      allow(provider).to receive(:load_task_hash).and_return(task_hash)
-      provider.load_current_resource
-      new_resource.execution_time_limit = "PT65707200S"
-      expect(provider.send(:execution_time_limit_updated?)).to be(false)
+  describe "#get_day" do
+    it "return day if date is provided" do
+      expect(provider.send(:get_day, "01/02/2018")).to eq("TUE")
     end
   end
 end
