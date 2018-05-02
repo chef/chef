@@ -21,7 +21,7 @@
 
 module ChefConfig
   CHEFCONFIG_ROOT = File.expand_path("../..", __FILE__)
-  VERSION = "13.8.15"
+  VERSION = "13.9.0"
 end
 
 #

@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.8.15 -->
-## [v13.8.15](https://github.com/chef/chef/tree/v13.8.15) (2018-05-02)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Don&#39;t always request lazy files [#7216](https://github.com/chef/chef/pull/7216) ([thommay](https://github.com/thommay))
+- 13.9 Release notes [#7218](https://github.com/chef/chef/pull/7218) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
 <!-- release_rollup since=13.8.5 -->
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- 13.9 Release notes [#7218](https://github.com/chef/chef/pull/7218) ([thommay](https://github.com/thommay)) <!-- 13.9.0 -->
 - Don&#39;t always request lazy files [#7216](https://github.com/chef/chef/pull/7216) ([thommay](https://github.com/thommay)) <!-- 13.8.15 -->
 - Windows MSI: files are now re-unzipped during repair mode (Backport to Chef 13) [#7112](https://github.com/chef/chef/pull/7112) ([stuartpreston](https://github.com/stuartpreston)) <!-- 13.8.14 -->
 - Bump dependencies to bring in Ohai 13.9 [#7135](https://github.com/chef/chef/pull/7135) ([tas50](https://github.com/tas50)) <!-- 13.8.13 -->
