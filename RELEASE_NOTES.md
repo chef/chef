@@ -1,6 +1,52 @@
-_This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
+This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
-# Chef Client Release Notes 14.0.202
+# Chef Client Release Notes 14.1:
+
+## Windows Task
+
+The `windows_task` resource has been entirely rewritten. This resolves a
+large number of bugs, including being able to correctly set the start
+time of tasks, proper creation and deletion of tasks, and improves
+Chef's validation of tasks. The rewrite will also solve the idempotency
+problems that users have reported.
+
+## build_essential
+
+The `build_essential` resource no longer requires a name, similar to the `apt_update` resource. 
+
+## Ignore Failure
+
+The `ignore_failure` property takes a new argument, `:quiet`, to
+suppress the error output when the resource does in fact fail.
+
+## This release of Chef Client 14 resolves a number of regressions in 14.0
+
+- On Windows, the installer now correctly re-extracts files during repair mode
+- Fix a number of issues relating to use with Red Hat Satellite
+- Git fetch now prunes remotes before running
+- Fix locking and unlocking packages with apt and zypper
+- Ensure we don't request every remote file when running with lazy loading enabled
+- The sysctl resource correctly handles missing keys when used with `ignore_error`
+- --recipe-url apparently never worked on Windows. Now it does.
+
+# Ohai Release Notes 14.1:
+
+## Configurable DMI Whitelist
+
+The whitelist of DMI IDs is now user configurable using the
+`additional_dmi_ids` configuration setting, which takes an Array.
+
+## Shard plugin
+
+The Shard plugin has been returned to a default plugin rather than an
+optional one. To ensure we work in FIPS environments, the plugin will
+use SHA256 rather than MD5 in those environments.
+
+## SCSI plugin
+
+A new plugin to enumerate SCSI devices has been added. This plugin is optional.
+
+# Chef Client Release Notes 14.0.202:
 
 This release of Chef 14 resolves several regressions in the Chef 14.0 release.
 
