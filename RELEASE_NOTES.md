@@ -1,5 +1,83 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Chef Client Release Notes 13.9:
+
+- On Windows, the installer now correctly re-extracts files during repair mode
+- The mount resource will now not create duplicate entries when the device type differs
+- Ensure we don't request every remote file when running with lazy loading enabled
+- Don't crash when getting the access rights for Windows system accounts
+
+## Custom Resource Improvements
+
+We've expanded the DSL for custom resources with new functionality to better document your resources and help users with errors and upgrades. Many resources in Chef itself are now using this new functionality, and you'll see more updated to take advantage of this it in the future.
+
+### Deprecations in Cookbook Resources
+
+Chef 13 provides new primitives that allow you to deprecate resources or properties with the same functionality used for deprecations in Chef Client resources. This allows you make breaking changes to enterprise or community cookbooks with friendly notifications to downstream cookbook consumers directly in the Chef run.
+
+Deprecate the foo_bar resource in a cookbook:
+
+```ruby
+deprecated "The foo_bar resource has been deprecated and will be removed in the next major release of this cookbook scheduled for 12/25/2018!"
+
+property :thing, String, name_property: true
+
+action :create do
+ # you'd probably have some actual chef code here
+end
+```
+
+Deprecate the thing2 property in a resource
+
+```ruby
+property :thing2, String, deprecated: 'The thing2 property has been deprecated and will be removed in the next major release of this cookbook scheduled for 12/25/2018!'
+```
+
+Rename a property with a deprecation warning for users of the old property name
+
+```ruby
+deprecated_property_alias 'thing2', 'the_second_thing', 'The thing2 property was renamed the_second_thing in the 2.0 release of this cookbook. Please update your cookbooks to use the new property name.'
+```
+
+### validation_message
+
+Validation messages allow you give the user a friendly error message when any validation on a property fails.
+
+Provide a friendly message when a regex fails:
+
+```ruby
+property :repo_name, String, regex: [/^[^\/]+$/], validation_message: "The repo_name property cannot contain a forward slash '/'",
+```
+
+### Resource Documentation
+
+You can now include documentation that describes how a resource is to be used. Expect this data to be consumed by Chef and other tooling in future releases.
+
+A resource which includes description and introduced values in the resource, actions, and properties:
+
+```ruby
+description 'The apparmor_policy resource is used to add or remove policy files from a cookbook file'
+introduced '14.1'
+
+property :source_cookbook, String,
+         description: 'The cookbook to source the policy file from'
+property :source_filename, String,
+         description: 'The name of the source file if it differs from the apparmor.d file being created'
+
+action :add do
+  description 'Adds an apparmor policy'
+
+  # you'd probably have some actual chef code here
+end
+```
+
+# Ohai Release Notes 13.9:
+
+- Fix uptime parsing on AIX
+- Fix Softlayer cloud detection
+- Use the current Azure metadata endpoint
+- Correctly detect macOS guests on VMware and VirtualBox
+
 # Chef Client Release Notes 13.8:
 
 ## Revert attributes changes from 13.7
