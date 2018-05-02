@@ -127,20 +127,20 @@ class Chef
           else
             basic_validation
             set_start_day_and_time
-            task = TaskScheduler.new
-            if new_resource.frequency == :none
-              task.new_work_item(new_resource.task_name, {})
-              task.activate(new_resource.task_name)
-            else
-              task.new_work_item(new_resource.task_name, trigger)
-            end
-            task.application_name = new_resource.command
-            task.working_directory = new_resource.cwd if new_resource.cwd
-            task.configure_settings(config_settings)
-            task.configure_principals(principal_settings)
-            task.set_account_information(new_resource.user, new_resource.password)
-            task.creator = new_resource.user
             converge_by("#{new_resource} task created") do
+              task = TaskScheduler.new
+              if new_resource.frequency == :none
+                task.new_work_item(new_resource.task_name, {})
+                task.activate(new_resource.task_name)
+              else
+                task.new_work_item(new_resource.task_name, trigger)
+              end
+              task.application_name = new_resource.command
+              task.working_directory = new_resource.cwd if new_resource.cwd
+              task.configure_settings(config_settings)
+              task.configure_principals(principal_settings)
+              task.set_account_information(new_resource.user, new_resource.password)
+              task.creator = new_resource.user
               task.activate(new_resource.task_name)
             end
           end
