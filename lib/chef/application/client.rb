@@ -534,9 +534,13 @@ class Chef::Application::Client < Chef::Application
 
   def fetch_recipe_tarball(url, path)
     Chef::Log.trace("Download recipes tarball from #{url} to #{path}")
-    File.open(path, "wb") do |f|
-      open(url) do |r|
-        f.write(r.read)
+    if File.exist?(url)
+      FileUtils.cp(url, path)
+    else
+      File.open(path, "wb") do |f|
+        open(url) do |r|
+          f.write(r.read)
+        end
       end
     end
   end
