@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 13.9.1 -->
+## [v13.9.1](https://github.com/chef/chef/tree/v13.9.1) (2018-05-03)
 
 #### Merged Pull Requests
+- RFC-102: Deprecation warning in resources [#7219](https://github.com/chef/chef/pull/7219) ([thommay](https://github.com/thommay))
 - 13.9 Release notes [#7218](https://github.com/chef/chef/pull/7218) ([thommay](https://github.com/thommay))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes since 13.8.5 release
 
 #### Merged Pull Requests
+- RFC-102: Deprecation warning in resources [#7219](https://github.com/chef/chef/pull/7219) ([thommay](https://github.com/thommay)) <!-- 13.9.1 -->
 - 13.9 Release notes [#7218](https://github.com/chef/chef/pull/7218) ([thommay](https://github.com/thommay)) <!-- 13.9.0 -->
 - Don&#39;t always request lazy files [#7216](https://github.com/chef/chef/pull/7216) ([thommay](https://github.com/thommay)) <!-- 13.8.15 -->
 - Windows MSI: files are now re-unzipped during repair mode (Backport to Chef 13) [#7112](https://github.com/chef/chef/pull/7112) ([stuartpreston](https://github.com/stuartpreston)) <!-- 13.8.14 -->
