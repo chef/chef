@@ -118,6 +118,19 @@ describe "Chef::Resource.property" do
     end
   end
 
+  context "deprecated properties" do
+    it "does not create a deprecation warning on definition" do
+      expect { resource_class.class_eval { property :x, String, deprecated: 10 } }.not_to raise_error Chef::Exceptions::DeprecatedFeatureError
+    end
+
+    with_property ":x, deprecated: 'a deprecated property'" do
+      it "deprecated properties emit a deprecation warning" do
+        expect(Chef).to receive(:deprecated).with(:property, "a deprecated property")
+        expect(resource.x 10).to eq 10
+      end
+    end
+  end
+
   with_property ":x, name_property: true" do
     context "and subclass" do
       let(:subresource_class) do
@@ -1141,6 +1154,17 @@ describe "Chef::Resource.property" do
       end
     end
 
+  end
+
+  context "with aliased properties" do
+    with_property ":real, Integer" do
+      it "should set the real property and emit a deprecation message" do
+        expect(Chef).to receive(:deprecated).with(:property, "we don't like the deprecated property no more")
+        resource_class.class_eval { deprecated_property_alias :deprecated, :real, "we don't like the deprecated property no more" }
+        resource.deprecated 10
+        expect(resource.real).to eq 10
+      end
+    end
   end
 
   context "redefining Object methods" do
