@@ -25,6 +25,8 @@ github:
   # The file where our CHANGELOG is kept. This file is updated automatically with
   # details from the Pull Request via the `built_in:update_changelog` merge_action.
   changelog_file: "CHANGELOG.md"
+  # This deletes the GitHub PR branch after successfully merged into the release branch
+  delete_branch_on_merge: true
   # The tag format to use (e.g. v1.0.0)
   version_tag_format: "v{{version}}"
   # The Github Team primarily responsible for handling incoming Pull Requests.
