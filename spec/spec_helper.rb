@@ -146,6 +146,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :not_supported_on_mac_osx_106 => true if mac_osx_106?
   config.filter_run_excluding :not_supported_on_mac_osx => true if mac_osx?
   config.filter_run_excluding :mac_osx_only => true if !mac_osx?
+  config.filter_run_excluding :not_supported_on_aix => true if aix?
   config.filter_run_excluding :not_supported_on_solaris => true if solaris?
   config.filter_run_excluding :not_supported_on_gce => true if gce?
   config.filter_run_excluding :not_supported_on_nano => true if windows_nano_server?

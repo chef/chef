@@ -495,7 +495,8 @@ describe Chef::Provider::Mount::Mount do
 
     # the fstab might contain the mount with the device as a device but the resource has a label.
     # we should not create two mount lines, but update the existing one
-    context "when the device is described differently" do
+    # not supported on solaris because it can't cope with a UUID device type
+    context "when the device is described differently", :not_supported_on_solaris do
       it "should update the existing line" do
         @current_resource.enabled(true)
         status = double(:stdout => "/dev/sdz1\n", :exitstatus => 1)

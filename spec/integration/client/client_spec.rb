@@ -300,7 +300,7 @@ EOM
       result.error!
     end
 
-    it "should complete with success when using --profile-ruby and output a profile file" do
+    it "should complete with success when using --profile-ruby and output a profile file", :not_supported_on_aix do
       file "config/client.rb", <<EOM
 local_mode true
 cookbook_path "#{path_to('cookbooks')}"
