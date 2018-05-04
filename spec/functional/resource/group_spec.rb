@@ -81,7 +81,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows, :not_supporte
 
     if user && domain != "."
       computer_name = ENV["computername"]
-      !domain.casecmp(computer_name.downcase).zero?
+      !domain.casecmp(computer_name.downcase) == 0
     end
   end
 
