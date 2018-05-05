@@ -56,7 +56,7 @@ class Chef
     #
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, canonical: nil, override: nil, allow_cookbook_override: false, __core_override__: false, &block)
+    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, canonical: nil, override: nil, allow_cookbook_override: false, __core_override__: false, &block) # rubocop:disable Lint/UnderscorePrefixedVariableName
       new_matcher = { klass: klass }
       new_matcher[:platform] = platform if platform
       new_matcher[:platform_version] = platform_version if platform_version
@@ -75,15 +75,15 @@ class Chef
       # 3. At least one previous `provides` is now locked.
       # 4. No previous `provides` had `allow_cookbook_override`, either set to
       #    true or with a string version matcher that still matches Chef::VERSION
-      if !__core_override__ && map[key] && map[key].any? {|matcher| matcher[:locked] } && !map[key].any? {|matcher| matcher[:cookbook_override].is_a?(String) ? Chef::VERSION =~ matcher[:cookbook_override] : matcher[:cookbook_override] }
+      if !__core_override__ && map[key] && map[key].any? { |matcher| matcher[:locked] } && !map[key].any? { |matcher| matcher[:cookbook_override].is_a?(String) ? Chef::VERSION =~ matcher[:cookbook_override] : matcher[:cookbook_override] }
         # If we ever use locked mode on things other than the resource and provider handler maps, this probably needs a tweak.
         type_of_thing = if klass < Chef::Resource
-          'resource'
-        elsif klass < Chef::Provider
-          'provider'
-        else
-          klass.superclass.to_s
-        end
+                          "resource"
+                        elsif klass < Chef::Provider
+                          "provider"
+                        else
+                          klass.superclass.to_s
+                        end
         # For now, only log the warning.
         Chef.log_deprecation("Trying to register #{type_of_thing} #{key} on top of existing Chef core #{type_of_thing}. Check if a new version of the cookbook is available.")
         # In 15.0, uncomment this and remove the log above.
