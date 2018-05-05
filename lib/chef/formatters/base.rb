@@ -137,7 +137,7 @@ class Chef
 
       def resource_failed(resource, action, exception)
         description = ErrorMapper.resource_failed(resource, action, exception)
-        display_error(description)
+        display_error(description) unless resource.ignore_failure && resource.ignore_failure.to_s == "quiet"
       end
 
       # Generic callback for any attribute/library/lwrp/recipe file in a
