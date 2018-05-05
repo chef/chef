@@ -45,8 +45,10 @@ class Chef
     # @param key [Object] Key to store
     # @param value [Object] Value associated with the key
     # @param filters [Hash] Node filter options to apply to key retrieval
-    # @param allow_cookbook_override [Boolean] Allow a cookbook to add to this
-    #   key even in locked mode.
+    # @param allow_cookbook_override [Boolean, String] Allow a cookbook to add
+    #   to this key even in locked mode. If a string is given, it should be a
+    #   Gem::Requirement-compatible value indicating for which Chef versions an
+    #   override from cookbooks is allowed.
     # @param __core_override__ [Boolean] Advanced-mode override to add to a key
     #   even in locked mode.
     #
@@ -67,7 +69,13 @@ class Chef
       new_matcher[:core_override] = __core_override__
 
       # Check if the key is already present and locked, unless the override is allowed.
-      if !__core_override__ && map[key] && map[key].any? {|matcher| matcher[:locked] } && !map[key].any? {|matcher| matcher[:cookbook_override] }
+      # The checks to see if we should reject, in order:
+      # 1. Core overide mode is not set.
+      # 2. The key exists.
+      # 3. At least one previous `provides` is now locked.
+      # 4. No previous `provides` had `allow_cookbook_override`, either set to
+      #    true or with a string version matcher that still matches Chef::VERSION
+      if !__core_override__ && map[key] && map[key].any? {|matcher| matcher[:locked] } && !map[key].any? {|matcher| matcher[:cookbook_override].is_a?(String) ? Chef::VERSION =~ matcher[:cookbook_override] : matcher[:cookbook_override] }
         type_of_thing = klass.is_a?(Chef::Resource) ? 'resource' : 'provider'
         # For now, only log the warning.
         Chef.log_deprecation("Trying to register #{type_of_thing} #{key} on top of existing Chef core #{type_of_thing}. Check if a new version of the cookbook is available.")
