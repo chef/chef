@@ -275,6 +275,9 @@ class Chef
 
         do_windows_admin_check
 
+        Chef.resource_handler_map.lock!
+        Chef.provider_handler_map.lock!
+
         run_context = setup_run_context
 
         load_required_recipe(@rest, run_context) unless Chef::Config[:solo_legacy_mode]
