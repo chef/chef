@@ -76,7 +76,14 @@ class Chef
       # 4. No previous `provides` had `allow_cookbook_override`, either set to
       #    true or with a string version matcher that still matches Chef::VERSION
       if !__core_override__ && map[key] && map[key].any? {|matcher| matcher[:locked] } && !map[key].any? {|matcher| matcher[:cookbook_override].is_a?(String) ? Chef::VERSION =~ matcher[:cookbook_override] : matcher[:cookbook_override] }
-        type_of_thing = klass.is_a?(Chef::Resource) ? 'resource' : 'provider'
+        # If we ever use locked mode on things other than the resource and provider handler maps, this probably needs a tweak.
+        type_of_thing = if klass < Chef::Resource
+          'resource'
+        elsif klass < Chef::Provider
+          'provider'
+        else
+          klass.superclass.to_s
+        end
         # For now, only log the warning.
         Chef.log_deprecation("Trying to register #{type_of_thing} #{key} on top of existing Chef core #{type_of_thing}. Check if a new version of the cookbook is available.")
         # In 15.0, uncomment this and remove the log above.
