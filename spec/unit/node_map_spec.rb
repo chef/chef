@@ -261,6 +261,14 @@ describe Chef::NodeMap do
         node_map.set(:foo, BarResource, __core_override__: true)
         expect(node_map.get(node, :foo)).to eql(BarResource)
       end
+
+      it "rejects setting the same key twice for a provider" do
+        expect(Chef).to receive(:log_deprecation).with("Trying to register provider foo on top of existing Chef core provider. Check if a new version of the cookbook is available.")
+        node_map.set(:foo, FooProvider)
+        node_map.lock!
+        node_map.set(:foo, BarProvider)
+        # expect(node_map.get(node, :foo)).to eql(FooProvider)
+      end
     end
   end
 
