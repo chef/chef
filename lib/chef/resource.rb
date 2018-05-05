@@ -526,15 +526,16 @@ class Chef
     #
     # Whether to ignore failures.  If set to `true`, and this resource when an
     # action is run, the resource will be marked as failed but no exception will
-    # be thrown (and no error will be output).  Defaults to `false`.
+    # be thrown (and no error will be output).  Defaults to `false`. If set to
+    # `:quiet` or `'quiet'`, the normal error trace will be suppressed.
     #
     # TODO ignore_failure and retries seem to be mutually exclusive; I doubt
     # that was intended.
     #
-    # @param arg [Boolean] Whether to ignore failures.
+    # @param arg [Boolean, String, Symbol] Whether to ignore failures.
     # @return Whether this resource will ignore failures.
     #
-    property :ignore_failure, [ TrueClass, FalseClass ], default: false, desired_state: false
+    property :ignore_failure, [ true, false, :quiet, "quiet" ], default: false, desired_state: false
 
     #
     # Equivalent to #ignore_failure.
