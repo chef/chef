@@ -1,5 +1,11 @@
 _This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes._
 
+# Chef Client Release Notes 13.9.1:
+
+## Platform Additions
+
+Enable Ubuntu-18.04 and Debian-9 tested chef-client packages.
+
 # Chef Client Release Notes 13.9:
 
 - On Windows, the installer now correctly re-extracts files during repair mode
@@ -90,7 +96,7 @@ Per https://discourse.chef.io/t/regression-in-chef-client-13-7-16/12518/1 , ther
 `on_idle` frequency.
 
 ## Security Updates
- 
+
  * Updated libxml2 to 2.9.7; fixes: CVE-2017-15412
 
 # Chef Client Release Notes 13.7:
@@ -160,7 +166,7 @@ The mdadm plugin has been updated to properly handle arrays with more than 10 di
 
 ## Bugfixes
 
-  - Resolved a regression in 13.6.0 that prevented upgrading packages on Debian/Ubuntu when the package name contained a tilde. 
+  - Resolved a regression in 13.6.0 that prevented upgrading packages on Debian/Ubuntu when the package name contained a tilde.
 
 ## Security Updates
 
