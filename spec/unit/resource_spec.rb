@@ -867,7 +867,7 @@ end
       snitch_var1 = snitch_var2 = 0
       runner = Chef::Runner.new(run_context)
 
-      Chef::Provider::SnakeOil.provides :cat
+      Chef::Provider::SnakeOil.provides :cat, __core_override__: true
 
       resource1.only_if { snitch_var1 = 1 }
       resource1.not_if { snitch_var2 = 2 }
