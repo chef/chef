@@ -1,41 +1,30 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.1 -->
-## [v14.1.1](https://github.com/chef/chef/tree/v14.1.1) (2018-05-04)
-
-#### Merged Pull Requests
-- Trying to use --recipe-url on Windows with local file fails [#7223](https://github.com/chef/chef/pull/7223) ([tyler-ball](https://github.com/tyler-ball))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.0.202 -->
-### Changes since 14.0.202 release
-
-#### Merged Pull Requests
-- Trying to use --recipe-url on Windows with local file fails [#7223](https://github.com/chef/chef/pull/7223) ([tyler-ball](https://github.com/tyler-ball)) <!-- 14.1.1 -->
-- [MSYS-752] windows task rewrite using win32-taskscheduler [#6815](https://github.com/chef/chef/pull/6815) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.0.218 -->
-- Allow specifying `ignore_failure :quiet` to disable the error spew [#7194](https://github.com/chef/chef/pull/7194) ([coderanger](https://github.com/coderanger)) <!-- 14.0.217 -->
-- Don&#39;t always request lazy files [#7208](https://github.com/chef/chef/pull/7208) ([thommay](https://github.com/thommay)) <!-- 14.0.216 -->
-- Convert some of remote_directory to use properties [#7204](https://github.com/chef/chef/pull/7204) ([tas50](https://github.com/tas50)) <!-- 14.0.215 -->
-- Convert properties in subversion to use property [#7200](https://github.com/chef/chef/pull/7200) ([tas50](https://github.com/tas50))
-- Convert :key property in registry_key to use property [#7199](https://github.com/chef/chef/pull/7199) ([tas50](https://github.com/tas50))
-- Set desired_state: false on several properties [#7201](https://github.com/chef/chef/pull/7201) ([tas50](https://github.com/tas50))
-- Fix regression where owner was removed from link resource [#7206](https://github.com/chef/chef/pull/7206) ([tas50](https://github.com/tas50))
-- Add descriptions to more resources [#7195](https://github.com/chef/chef/pull/7195) ([tas50](https://github.com/tas50))
-- Allow build_essential resource to be used without setting a name [#7197](https://github.com/chef/chef/pull/7197) ([tas50](https://github.com/tas50))
-- rhsm_register: skip the registration check if force is specified [#7193](https://github.com/chef/chef/pull/7193) ([tas50](https://github.com/tas50))
-- Whitelist some additional Hash/Array methods [#7198](https://github.com/chef/chef/pull/7198) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.214 -->
-- sysctl: Fix ignore_error being ignored [#7192](https://github.com/chef/chef/pull/7192) ([tas50](https://github.com/tas50))
-- prune remotes with git fetch, fixes #3929 [#7129](https://github.com/chef/chef/pull/7129) ([rmoriz](https://github.com/rmoriz))
-- Fix NoMethodError when (un)locking single packages in apt and zypper [#7138](https://github.com/chef/chef/pull/7138) ([RoboticCheese](https://github.com/RoboticCheese)) <!-- 14.0.213 -->
-- CLI help text now includes :trace log level [#7186](https://github.com/chef/chef/pull/7186) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.212 -->
-- Ubuntu 1804 - passing tests and fixed ifconfig provider [#7174](https://github.com/chef/chef/pull/7174) ([thommay](https://github.com/thommay)) <!-- 14.0.208 -->
-- Avoid conflict with build_powershell_command from powershell_out mixin [#7173](https://github.com/chef/chef/pull/7173) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.207 -->
-- Some options, i.e. metric, require specifying dev [#7162](https://github.com/chef/chef/pull/7162) ([tomdoherty](https://github.com/tomdoherty)) <!-- 14.0.206 -->
-- Windows MSI: files are now re-unzipped during repair mode [#7111](https://github.com/chef/chef/pull/7111) ([stuartpreston](https://github.com/stuartpreston)) <!-- 14.0.205 -->
-- add name_property to resource inspector [#7164](https://github.com/chef/chef/pull/7164) ([thommay](https://github.com/thommay)) <!-- 14.0.204 -->
-- fix for Red Hat Satellite yum_package bug [#7147](https://github.com/chef/chef/pull/7147) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 14.0.203 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.1.1](https://github.com/chef/chef/tree/v14.1.1) (2018-05-08)
+
+#### Merged Pull Requests
+- fix for Red Hat Satellite yum_package bug [#7147](https://github.com/chef/chef/pull/7147) ([lamont-granquist](https://github.com/lamont-granquist))
+- add name_property to resource inspector [#7164](https://github.com/chef/chef/pull/7164) ([thommay](https://github.com/thommay))
+- Windows MSI: files are now re-unzipped during repair mode [#7111](https://github.com/chef/chef/pull/7111) ([stuartpreston](https://github.com/stuartpreston))
+- Some options, i.e. metric, require specifying dev [#7162](https://github.com/chef/chef/pull/7162) ([tomdoherty](https://github.com/tomdoherty))
+- Avoid conflict with build_powershell_command from powershell_out mixin [#7173](https://github.com/chef/chef/pull/7173) ([stuartpreston](https://github.com/stuartpreston))
+- Ubuntu 1804 - passing tests and fixed ifconfig provider [#7174](https://github.com/chef/chef/pull/7174) ([thommay](https://github.com/thommay))
+- CLI help text now includes :trace log level [#7186](https://github.com/chef/chef/pull/7186) ([stuartpreston](https://github.com/stuartpreston))
+- Fix NoMethodError when (un)locking single packages in apt and zypper [#7138](https://github.com/chef/chef/pull/7138) ([RoboticCheese](https://github.com/RoboticCheese))
+- Whitelist some additional Hash/Array methods [#7198](https://github.com/chef/chef/pull/7198) ([lamont-granquist](https://github.com/lamont-granquist))
+- Convert some of remote_directory to use properties [#7204](https://github.com/chef/chef/pull/7204) ([tas50](https://github.com/tas50))
+- Don&#39;t always request lazy files [#7208](https://github.com/chef/chef/pull/7208) ([thommay](https://github.com/thommay))
+- Allow specifying `ignore_failure :quiet` to disable the error spew [#7194](https://github.com/chef/chef/pull/7194) ([coderanger](https://github.com/coderanger))
+- [MSYS-752] windows task rewrite using win32-taskscheduler [#6815](https://github.com/chef/chef/pull/6815) ([Vasu1105](https://github.com/Vasu1105))
+- Trying to use --recipe-url on Windows with local file fails [#7223](https://github.com/chef/chef/pull/7223) ([tyler-ball](https://github.com/tyler-ball))
+<!-- latest_stable_release -->
+
 ## [v14.0.202](https://github.com/chef/chef/tree/v14.0.202) (2018-04-16)
 
 #### Merged Pull Requests
@@ -51,7 +40,6 @@
 - bump omnibus [#7157](https://github.com/chef/chef/pull/7157) ([lamont-granquist](https://github.com/lamont-granquist))
 - add support for lock bot [#7136](https://github.com/chef/chef/pull/7136) ([lamont-granquist](https://github.com/lamont-granquist))
 -  Catch json.load exceptions causing syslog errors  [#7155](https://github.com/chef/chef/pull/7155) ([tomdoherty](https://github.com/tomdoherty))
-<!-- latest_stable_release -->
 
 ## [v14.0.190](https://github.com/chef/chef/tree/v14.0.190) (2018-04-03)
 
