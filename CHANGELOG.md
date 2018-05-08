@@ -1,36 +1,32 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 13.9.1 -->
-## [v13.9.1](https://github.com/chef/chef/tree/v13.9.1) (2018-05-03)
-
-#### Merged Pull Requests
-- RFC-102: Deprecation warning in resources [#7219](https://github.com/chef/chef/pull/7219) ([thommay](https://github.com/thommay))
-- 13.9 Release notes [#7218](https://github.com/chef/chef/pull/7218) ([thommay](https://github.com/thommay))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=13.8.5 -->
-### Changes since 13.8.5 release
-
-#### Merged Pull Requests
-- RFC-102: Deprecation warning in resources [#7219](https://github.com/chef/chef/pull/7219) ([thommay](https://github.com/thommay)) <!-- 13.9.1 -->
-- 13.9 Release notes [#7218](https://github.com/chef/chef/pull/7218) ([thommay](https://github.com/thommay)) <!-- 13.9.0 -->
-- Don&#39;t always request lazy files [#7216](https://github.com/chef/chef/pull/7216) ([thommay](https://github.com/thommay)) <!-- 13.8.15 -->
-- Windows MSI: files are now re-unzipped during repair mode (Backport to Chef 13) [#7112](https://github.com/chef/chef/pull/7112) ([stuartpreston](https://github.com/stuartpreston)) <!-- 13.8.14 -->
-- Bump dependencies to bring in Ohai 13.9 [#7135](https://github.com/chef/chef/pull/7135) ([tas50](https://github.com/tas50)) <!-- 13.8.13 -->
-- partially revert 61e3d4bb: do not use properties for mount [#7031](https://github.com/chef/chef/pull/7031) ([thommay](https://github.com/thommay)) <!-- 13.8.12 -->
-- Empty commit to trigger a release build [#7040](https://github.com/chef/chef/pull/7040) ([btm](https://github.com/btm)) <!-- 13.8.11 -->
-- [chef-13] support nils because of course [#7017](https://github.com/chef/chef/pull/7017) ([thommay](https://github.com/thommay)) <!-- 13.8.10 -->
-- Backport mount provider fixes to 13 [#7007](https://github.com/chef/chef/pull/7007) ([thommay](https://github.com/thommay)) <!-- 13.8.9 -->
-- Pass pointer to LsaFreeMemory, not FFI::MemoryPointer [#6991](https://github.com/chef/chef/pull/6991) ([btm](https://github.com/btm)) <!-- 13.8.7 -->
-- Backport RFC-101/RFC-104 resource enhancements [#6964](https://github.com/chef/chef/pull/6964) ([thommay](https://github.com/thommay)) <!-- 13.8.6 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v13.9.1](https://github.com/chef/chef/tree/v13.9.1) (2018-05-08)
+
+#### Merged Pull Requests
+- Backport RFC-101/RFC-104 resource enhancements [#6964](https://github.com/chef/chef/pull/6964) ([thommay](https://github.com/thommay))
+- Pass pointer to LsaFreeMemory, not FFI::MemoryPointer [#6991](https://github.com/chef/chef/pull/6991) ([btm](https://github.com/btm))
+- Backport mount provider fixes to 13 [#7007](https://github.com/chef/chef/pull/7007) ([thommay](https://github.com/thommay))
+- [chef-13] support nils because of course [#7017](https://github.com/chef/chef/pull/7017) ([thommay](https://github.com/thommay))
+- Empty commit to trigger a release build [#7040](https://github.com/chef/chef/pull/7040) ([btm](https://github.com/btm))
+- partially revert 61e3d4bb: do not use properties for mount [#7031](https://github.com/chef/chef/pull/7031) ([thommay](https://github.com/thommay))
+- Bump dependencies to bring in Ohai 13.9 [#7135](https://github.com/chef/chef/pull/7135) ([tas50](https://github.com/tas50))
+- Windows MSI: files are now re-unzipped during repair mode (Backport to Chef 13) [#7112](https://github.com/chef/chef/pull/7112) ([stuartpreston](https://github.com/stuartpreston))
+- Don&#39;t always request lazy files [#7216](https://github.com/chef/chef/pull/7216) ([thommay](https://github.com/thommay))
+- 13.9 Release notes [#7218](https://github.com/chef/chef/pull/7218) ([thommay](https://github.com/thommay))
+- RFC-102: Deprecation warning in resources [#7219](https://github.com/chef/chef/pull/7219) ([thommay](https://github.com/thommay))
+<!-- latest_stable_release -->
+
 ## [v13.8.5](https://github.com/chef/chef/tree/v13.8.5) (2018-03-07)
 
 #### Merged Pull Requests
 - [knife] Don&#39;t crash when a deprecated cookbook has no replacement (#6853) [#6936](https://github.com/chef/chef/pull/6936) ([tas50](https://github.com/tas50))
 - lock ffi at 1.9.21 [#6960](https://github.com/chef/chef/pull/6960) ([thommay](https://github.com/thommay))
-<!-- latest_stable_release -->
 
 ## [v13.8.3](https://github.com/chef/chef/tree/v13.8.3) (2018-03-05)
 
