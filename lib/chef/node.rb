@@ -288,8 +288,11 @@ class Chef
     end
 
     # Returns true if this Node expects a given role, false if not.
+    #
+    # @param role_name [String] Role to check for
+    # @return [Boolean]
     def role?(role_name)
-      run_list.include?("role[#{role_name}]")
+      Array(self[:roles]).include?(role_name)
     end
 
     def primary_runlist
