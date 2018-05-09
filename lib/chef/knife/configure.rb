@@ -75,7 +75,7 @@ class Chef
 
         config_file = File.expand_path(config_file)
         if File.exist?(config_file)
-          confirm("Overwrite #{config_file}?")
+          confirm("Overwrite #{config_file}")
         end
         ::File.open(config_file, "w") do |f|
           f.puts <<-EOH
