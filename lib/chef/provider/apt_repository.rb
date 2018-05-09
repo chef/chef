@@ -66,7 +66,7 @@ class Chef
           new_resource.deb_src
         )
 
-        declare_resource(:file, "/etc/apt/sources.list.d/#{new_resource.name}.list") do
+        declare_resource(:file, "/etc/apt/sources.list.d/#{new_resource.repo_name}.list") do
           owner "root"
           group "root"
           mode "0644"
@@ -79,9 +79,9 @@ class Chef
       end
 
       action :remove do
-        if ::File.exist?("/etc/apt/sources.list.d/#{new_resource.name}.list")
-          converge_by "Removing #{new_resource.name} repository from /etc/apt/sources.list.d/" do
-            declare_resource(:file, "/etc/apt/sources.list.d/#{new_resource.name}.list") do
+        if ::File.exist?("/etc/apt/sources.list.d/#{new_resource.repo_name}.list")
+          converge_by "Removing #{new_resource.repo_name} repository from /etc/apt/sources.list.d/" do
+            declare_resource(:file, "/etc/apt/sources.list.d/#{new_resource.repo_name}.list") do
               sensitive new_resource.sensitive
               action :delete
               notifies :update, "apt_update[#{new_resource.name}]", :immediately if new_resource.cache_rebuild
@@ -93,7 +93,7 @@ class Chef
             end
           end
         else
-          logger.trace("/etc/apt/sources.list.d/#{new_resource.name}.list does not exist. Nothing to do")
+          logger.trace("/etc/apt/sources.list.d/#{new_resource.repo_name}.list does not exist. Nothing to do")
         end
       end
 
