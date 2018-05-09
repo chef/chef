@@ -1,6 +1,6 @@
 #
 # Author:: Chris Doherty <cdoherty@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef, Inc.
+# Copyright:: Copyright 2014-2018, Chef, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@ class Chef
       unified_mode true
 
       resource_name :reboot
+      provides :reboot
 
       description "Use the reboot resource to reboot a node, a necessary step with some"\
                   " installations on certain platforms. This resource is supported for use on"\
@@ -34,7 +35,6 @@ class Chef
                   " probably undesired results."
       introduced "12.0"
 
-      allowed_actions :request_reboot, :reboot_now, :cancel
       default_action :nothing # make sure people are quite clear what they want
 
       property :reason, String,
@@ -44,6 +44,47 @@ class Chef
       property :delay_mins, Integer,
         description: "The amount of time (in minutes) to delay a reboot request.",
         default: 0
+
+      action :request_reboot do
+        description "Reboot a node at the end of a chef-client run."
+
+        converge_by("request a system reboot to occur if the run succeeds") do
+          logger.warn "Reboot requested:'#{new_resource.name}'"
+          request_reboot
+        end
+      end
+
+      action :reboot_now do
+        description "Reboot a node so that the chef-client may continue the installation process."
+
+        converge_by("rebooting the system immediately") do
+          logger.warn "Rebooting system immediately, requested by '#{new_resource.name}'"
+          request_reboot
+          throw :end_client_run_early
+        end
+      end
+
+      action :cancel do
+        description "Cancel a pending reboot request."
+
+        converge_by("cancel any existing end-of-run reboot request") do
+          logger.warn "Reboot canceled: '#{new_resource.name}'"
+          node.run_context.cancel_reboot
+        end
+      end
+
+      action_class do
+        # add a reboot to the node run_context
+        # @return [void]
+        def request_reboot
+          node.run_context.request_reboot(
+            delay_mins: new_resource.delay_mins,
+            reason: new_resource.reason,
+            timestamp: Time.now,
+            requested_by: new_resource.name
+          )
+        end
+      end
     end
   end
 end
