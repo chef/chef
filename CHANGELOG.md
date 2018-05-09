@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.1.2 -->
+## [v14.1.2](https://github.com/chef/chef/tree/v14.1.2) (2018-05-09)
+
+#### Merged Pull Requests
+- Remove redundant &quot;?&quot; in knife configure [#7235](https://github.com/chef/chef/pull/7235) ([alexymik](https://github.com/alexymik))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.1.1 -->
+### Changes since 14.1.1 release
+
+#### Merged Pull Requests
+- Remove redundant &quot;?&quot; in knife configure [#7235](https://github.com/chef/chef/pull/7235) ([alexymik](https://github.com/alexymik)) <!-- 14.1.2 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
