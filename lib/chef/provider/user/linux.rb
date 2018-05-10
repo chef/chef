@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016-2017, Chef Software Inc.
+# Copyright:: Copyright 2016-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -89,6 +89,7 @@ class Chef
           current_resource.send(sym).to_s != new_resource.send(sym).to_s && new_resource.send(sym)
         end
 
+        # FIXME: move to superclass, and one of these implementations must be buggy?
         def updating_home?
           return false unless new_resource.home
           return true unless current_resource.home

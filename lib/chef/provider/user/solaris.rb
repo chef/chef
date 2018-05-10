@@ -71,9 +71,9 @@ class Chef
           opts << "-g" << new_resource.gid if should_set?(:gid)
           opts << "-s" << new_resource.shell if should_set?(:shell)
           opts << "-u" << new_resource.uid if should_set?(:uid)
+          opts << "-d" << new_resource.home if updating_home?
           opts << "-o" if new_resource.non_unique
           if updating_home?
-            opts << "-d" << new_resource.home
             if new_resource.manage_home
               logger.trace("#{new_resource} managing the users home directory")
               opts << "-m"
