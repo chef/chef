@@ -195,7 +195,7 @@ class Chef
           # since we're in a local branch already, just reset to specified revision rather than merge
           logger.trace "Fetching updates from #{new_resource.remote} and resetting to revision #{target_revision}"
           git("fetch", "--prune", new_resource.remote, cwd: cwd)
-          git("fetch", "--prune-tags", new_resource.remote, "--tags", cwd: cwd)
+          git("fetch", new_resource.remote, "--tags", cwd: cwd)
           git("reset", "--hard", target_revision, cwd: cwd)
         end
       end
