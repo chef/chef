@@ -85,13 +85,6 @@ class Chef
           opts
         end
 
-        # FIXME: move to superclass, and one of these implementations must be buggy?
-        def updating_home?
-          return false unless new_resource.home
-          return true unless current_resource.home
-          new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
-        end
-
         def check_lock
           # there's an old bug in rhel (https://bugzilla.redhat.com/show_bug.cgi?id=578534)
           # which means that both 0 and 1 can be success.

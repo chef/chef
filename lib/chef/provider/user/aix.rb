@@ -103,12 +103,6 @@ class Chef
           opts
         end
 
-        # FIXME: move to superclass, and one of these implements must be buggy?
-        def updating_home?
-          return true if current_resource.home.nil? && new_resource.home
-          new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
-        end
-
         private
 
         def add_password

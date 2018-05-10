@@ -200,9 +200,21 @@ class Chef
         raise NotImplementedError
       end
 
-      # helper used by e.g. linux, aix, solaris providers
+      private
+
+      #
+      # helpers for subclasses
+      #
+
       def should_set?(sym)
         current_resource.send(sym).to_s != new_resource.send(sym).to_s && new_resource.send(sym)
+      end
+
+      def updating_home?
+        return false if new_resource.home.nil?
+        return true if current_resource.home.nil?
+        # Pathname#cleanpath matches more edge conditions than File.expand_path()
+        new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
       end
     end
   end

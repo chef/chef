@@ -110,15 +110,6 @@ class Chef
           opts
         end
 
-        def updating_home?
-          # will return false if paths are equivalent
-          # Pathname#cleanpath does a better job than ::File::expand_path (on both unix and windows)
-          # ::File.expand_path("///tmp") == ::File.expand_path("/tmp") => false
-          # ::File.expand_path("\\tmp") => "C:/tmp"
-          return true if current_resource.home.nil? && new_resource.home
-          new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
-        end
-
         def manage_password
           return unless current_resource.password != new_resource.password && new_resource.password
           logger.trace("#{new_resource} setting password to #{new_resource.password}")
