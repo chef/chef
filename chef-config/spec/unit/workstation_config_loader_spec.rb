@@ -394,8 +394,11 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
 node_name = 'barney'
 client_key = "barney_rubble.pem"
 chef_server_url = "https://api.chef.io/organizations/bedrock"
-"knife[:ssh_user]" = 'knife_ssh_user'
-"knife[:secret_file]" = "/home/barney/.chef/encrypted_data_bag_secret.pem"
+knife = {
+  secret_file = "/home/barney/.chef/encrypted_data_bag_secret.pem"
+}
+[default.knife]
+ssh_user = "knife_ssh_user"
 EOH
           content
         end

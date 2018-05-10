@@ -156,10 +156,10 @@ module ChefConfig
       Config.chef_server_url = creds.fetch("chef_server_url") if creds.key?("chef_server_url")
       Config.validation_client_name = creds.fetch("validation_client_name") if creds.key?("validation_client_name")
 
-      creds.each do |cred|
-        knife_setting = /knife\[:(\w+)\]/.match(cred[0])
-        if knife_setting
-          Config.knife[knife_setting[1].to_sym] = cred[1]
+      creds.each  do |key, value|
+        next if key != "knife"
+        value.each do | k, v |
+          Config.knife[k.to_sym] = v
         end
       end
 
