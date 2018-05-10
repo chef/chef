@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,9 @@ class Chef
   class Provider
     class User
       class Useradd < Chef::Provider::User
+
+        Chef::Log.warn("the Chef::Provider::User::Useradd provider is deprecated, please subclass Chef::Provider::User directly")
+
         # the linux version of this has been forked off, this is the base class now of solaris and AIX and should be abandoned
         # and those provider should be rewritten like the linux version.
 
