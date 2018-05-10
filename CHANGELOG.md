@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.2 -->
-## [v14.1.2](https://github.com/chef/chef/tree/v14.1.2) (2018-05-09)
+<!-- latest_release 14.1.3 -->
+## [v14.1.3](https://github.com/chef/chef/tree/v14.1.3) (2018-05-10)
 
 #### Merged Pull Requests
-- Remove redundant &quot;?&quot; in knife configure [#7235](https://github.com/chef/chef/pull/7235) ([alexymik](https://github.com/alexymik))
+- Switch Node#role? to use the attributes expansion instead of the run list [#7234](https://github.com/chef/chef/pull/7234) ([coderanger](https://github.com/coderanger))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.1 -->
 ### Changes since 14.1.1 release
 
 #### Merged Pull Requests
+- Switch Node#role? to use the attributes expansion instead of the run list [#7234](https://github.com/chef/chef/pull/7234) ([coderanger](https://github.com/coderanger)) <!-- 14.1.3 -->
 - Remove redundant &quot;?&quot; in knife configure [#7235](https://github.com/chef/chef/pull/7235) ([alexymik](https://github.com/alexymik)) <!-- 14.1.2 -->
 <!-- release_rollup -->
 
