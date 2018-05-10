@@ -85,10 +85,6 @@ class Chef
           opts
         end
 
-        def should_set?(sym)
-          current_resource.send(sym).to_s != new_resource.send(sym).to_s && new_resource.send(sym)
-        end
-
         # FIXME: move to superclass, and one of these implementations must be buggy?
         def updating_home?
           return false unless new_resource.home

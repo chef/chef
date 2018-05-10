@@ -119,11 +119,6 @@ class Chef
           new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
         end
 
-        # FIXME: move to superclass
-        def should_set?(sym)
-          current_resource.send(sym).to_s != new_resource.send(sym).to_s && new_resource.send(sym)
-        end
-
         def manage_password
           return unless current_resource.password != new_resource.password && new_resource.password
           logger.trace("#{new_resource} setting password to #{new_resource.password}")
