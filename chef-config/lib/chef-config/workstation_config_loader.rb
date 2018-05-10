@@ -157,7 +157,7 @@ module ChefConfig
       Config.validation_client_name = creds.fetch("validation_client_name") if creds.key?("validation_client_name")
 
       creds.each  do |key, value|
-        next if key != "knife"
+        next unless key == "knife"
         value.each do | k, v |
           Config.knife[k.to_sym] = v
         end
