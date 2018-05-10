@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Dave Eddy (<dave@daveeddy.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # Copyright:: Copyright 2015-2016, Dave Eddy
 #
 # License:: Apache License, Version 2.0
@@ -68,7 +68,7 @@ describe Chef::Provider::User::Solaris do
       password_file = Tempfile.new("shadow")
       password_file.puts "adam:existingpassword:15441::::::"
       password_file.close
-      provider.password_file = password_file.path
+      stub_const("Chef::Provider::User::Solaris::PASSWORD_FILE", password_file.path)
       allow(provider).to receive(:shell_out!).and_return(true)
       # may not be able to write to /etc for tests...
       temp_file = Tempfile.new("shadow")

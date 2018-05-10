@@ -25,44 +25,27 @@ class Chef
     class User
       class Solaris < Chef::Provider::User
         provides :solaris_user
-        provides :user, os: %w{omnios solaris2}
-        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]].freeze
+        provides :user, os: %w{openindiana opensolaris illumos omnios solaris2 smartos}
 
-        attr_writer :password_file
-
-        def initialize(new_resource, run_context)
-          @password_file = "/etc/shadow"
-          super
-        end
+        PASSWORD_FILE = "/etc/shadow"
 
         def create_user
-          command = compile_command("useradd") do |useradd|
-            useradd.concat(universal_options)
-            useradd.concat(useradd_options)
-          end
-          shell_out_compact!(command)
+          shell_out_compact!("useradd", universal_options, useradd_options, new_resource.username)
           manage_password
         end
 
         def manage_user
           manage_password
-          return if universal_options.empty?
-          command = compile_command("usermod") do |u|
-            u.concat(universal_options)
-          end
-          shell_out_compact!(command)
+          return if universal_options.empty? && usermod_options.empty?
+          shell_out_compact!("usermod", universal_options, usermod_options, new_resource.username)
         end
 
         def remove_user
-          command = [ "userdel" ]
-          command << "-r" if new_resource.manage_home
-          command << "-f" if new_resource.force
-          command << new_resource.username
-          shell_out_compact!(command)
+          shell_out_compact!("userdel", userdel_options, new_resource.username)
         end
 
         def check_lock
-          user = IO.read(@password_file).match(/^#{Regexp.escape(new_resource.username)}:([^:]*):/)
+          user = IO.read(PASSWORD_FILE).match(/^#{Regexp.escape(new_resource.username)}:([^:]*):/)
 
           # If we're in whyrun mode, and the user is not created, we assume it will be
           return false if whyrun_mode? && user.nil?
@@ -80,40 +63,51 @@ class Chef
           shell_out_compact!("passwd", "-u", new_resource.username)
         end
 
-        def compile_command(base_command)
-          base_command = Array(base_command)
-          yield base_command
-          base_command << new_resource.username
-          base_command
-        end
+        private
 
         def universal_options
-          @universal_options ||=
-            begin
-              opts = []
-              # magic allows UNIVERSAL_OPTIONS to be overridden in a subclass
-              self.class::UNIVERSAL_OPTIONS.each do |field, option|
-                update_options(field, option, opts)
-              end
-              if updating_home?
-                opts << "-d" << new_resource.home
-                if new_resource.manage_home
-                  logger.trace("#{new_resource} managing the users home directory")
-                  opts << "-m"
-                else
-                  logger.trace("#{new_resource} setting home to #{new_resource.home}")
-                end
-              end
-              opts << "-o" if new_resource.non_unique
-              opts
+          opts = []
+          opts << "-c" << new_resource.comment if should_set?(:comment)
+          opts << "-g" << new_resource.gid if should_set?(:gid)
+          opts << "-s" << new_resource.shell if should_set?(:shell)
+          opts << "-u" << new_resource.uid if should_set?(:uid)
+          opts << "-o" if new_resource.non_unique
+          if updating_home?
+            opts << "-d" << new_resource.home
+            if new_resource.manage_home
+              logger.trace("#{new_resource} managing the users home directory")
+              opts << "-m"
+            else
+              logger.trace("#{new_resource} setting home to #{new_resource.home}")
             end
+          end
+          opts
         end
 
-        def update_options(field, option, opts)
-          return unless current_resource.send(field).to_s != new_resource.send(field).to_s
-          return unless new_resource.send(field)
-          logger.trace("#{new_resource} setting #{field} to #{new_resource.send(field)}")
-          opts << option << new_resource.send(field).to_s
+        def usermod_options
+          opts = []
+          opts += [ "-u", new_resource.uid ] if new_resource.non_unique
+          if updating_home?
+            if new_resource.manage_home
+              opts << "-m"
+            end
+          end
+          opts
+        end
+
+        def userdel_options
+          opts = []
+          opts << "-r" if new_resource.manage_home
+          opts << "-f" if new_resource.force
+          opts
+        end
+
+        # Solaris does not support system users and has no '-r' option, solaris also
+        # lacks '-M' and defaults to no-manage-home.
+        def useradd_options
+          opts = []
+          opts << "-m" if new_resource.manage_home
+          opts
         end
 
         def updating_home?
@@ -125,21 +119,9 @@ class Chef
           new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
         end
 
-        private
-
-        # Override the version from {#Useradd} because Solaris doesn't support
-        # system users and therefore has no `-r` option. This also inverts the
-        # logic for manage_home as Solaris defaults to no-manage-home and only
-        # offers `-m`.
-        #
-        # @since 12.15
-        # @api private
-        # @see Useradd#useradd_options
-        # @return [Array<String>]
-        def useradd_options
-          opts = []
-          opts << "-m" if new_resource.manage_home
-          opts
+        # FIXME: move to superclass
+        def should_set?(sym)
+          current_resource.send(sym).to_s != new_resource.send(sym).to_s && new_resource.send(sym)
         end
 
         def manage_password
@@ -148,9 +130,10 @@ class Chef
           write_shadow_file
         end
 
+        # XXX: can we not use the passwd utility?
         def write_shadow_file
           buffer = Tempfile.new("shadow", "/etc")
-          ::File.open(@password_file) do |shadow_file|
+          ::File.open(PASSWORD_FILE) do |shadow_file|
             shadow_file.each do |entry|
               user = entry.split(":").first
               if user == new_resource.username
@@ -163,7 +146,7 @@ class Chef
           buffer.close
 
           # FIXME: mostly duplicates code with file provider deploying a file
-          s = ::File.stat(@password_file)
+          s = ::File.stat(PASSWORD_FILE)
           mode = s.mode & 0o7777
           uid  = s.uid
           gid  = s.gid
@@ -171,7 +154,7 @@ class Chef
           FileUtils.chown uid, gid, buffer.path
           FileUtils.chmod mode, buffer.path
 
-          FileUtils.mv buffer.path, @password_file
+          FileUtils.mv buffer.path, PASSWORD_FILE
         end
 
         def updated_password(entry)
