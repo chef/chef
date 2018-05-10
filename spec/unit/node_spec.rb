@@ -1160,16 +1160,16 @@ describe Chef::Node do
 
   describe "roles" do
     it "should allow you to query whether or not it has a recipe applied with role?" do
-      node.run_list << "role[sunrise]"
+      node.automatic["roles"] = %w{sunrise}
       expect(node.role?("sunrise")).to eql(true)
       expect(node.role?("not at home")).to eql(false)
     end
 
     it "should allow you to set roles with arguments" do
-      node.run_list << "role[one]"
-      node.run_list << "role[two]"
+      node.automatic["roles"] = %w{one two}
       expect(node.role?("one")).to eql(true)
       expect(node.role?("two")).to eql(true)
+      expect(node.role?("three")).to eql(false)
     end
   end
 
