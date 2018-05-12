@@ -156,12 +156,7 @@ module ChefConfig
       Config.chef_server_url = creds.fetch("chef_server_url") if creds.key?("chef_server_url")
       Config.validation_client_name = creds.fetch("validation_client_name") if creds.key?("validation_client_name")
 
-      creds.each do |key, value|
-        next unless key == "knife"
-        value.each do |k, v|
-          Config.knife.merge!({k.to_sym => v})
-        end
-      end
+      Config.knife.merge!(Hash[creds.fetch('knife', {}).map{|k, v| [k.to_sym, v]}])
 
       extract_key(creds, "validation_key", :validation_key, :validation_key_contents)
       extract_key(creds, "validator_key", :validation_key, :validation_key_contents)
