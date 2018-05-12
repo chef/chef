@@ -56,7 +56,7 @@ class Chef
       property :source, String, default: lazy { ::File.basename(path) }
       property :files_backup, [ Integer, FalseClass ], default: 5, desired_state: false
       property :purge, [ TrueClass, FalseClass ], default: false, desired_state: false
-      property :overwrite, [ TrueClass, FalseClass ], default: false
+      property :overwrite, [ TrueClass, FalseClass ], default: true
       property :cookbook, String
 
       def files_group(arg = nil)
