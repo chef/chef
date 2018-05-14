@@ -406,6 +406,32 @@ EOH
         end
       end
 
+      context "and has a default profile with knife settings" do
+        let(:content) do
+          content = <<EOH
+[default]
+node_name = 'barney'
+client_key = "barney_rubble.pem"
+chef_server_url = "https://api.chef.io/organizations/bedrock"
+knife = {
+  secret_file = "/home/barney/.chef/encrypted_data_bag_secret.pem"
+}
+[default.knife]
+ssh_user = "knife_ssh_user"
+EOH
+          content
+        end
+
+        it "applies the expected knife config" do
+          expect { config_loader.load_credentials }.not_to raise_error
+          expect(ChefConfig::Config.chef_server_url).to eq("https://api.chef.io/organizations/bedrock")
+          expect(ChefConfig::Config.client_key.to_s).to eq("#{home}/.chef/barney_rubble.pem")
+          expect(ChefConfig::Config.knife[:ssh_user].to_s).to eq("knife_ssh_user")
+          expect(ChefConfig::Config.knife[:secret_file].to_s).to eq("/home/barney/.chef/encrypted_data_bag_secret.pem")
+          expect(ChefConfig::Config.profile.to_s).to eq("default")
+        end
+      end
+
       context "and has a profile containing a full key" do
         let(:content) do
           content = <<EOH
