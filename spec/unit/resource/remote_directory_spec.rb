@@ -67,6 +67,10 @@ describe Chef::Resource::RemoteDirectory do
     expect(resource.files_owner).to eql(1000)
   end
 
+  it "overwrites by default" do
+    expect(resource.overwrite).to be true
+  end
+
   describe "when it has cookbook, files owner, files mode, and source" do
     before do
       resource.path("/var/path/")
