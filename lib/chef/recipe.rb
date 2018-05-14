@@ -25,7 +25,7 @@ class Chef
   # == Chef::Recipe
   # A Recipe object is the context in which Chef recipes are evaluated.
   class Recipe
-    attr_accessor :cookbook_name, :recipe_name, :recipe, :params, :run_context
+    attr_accessor :cookbook_name, :recipe_name, :params, :run_context
 
     include Chef::DSL::Recipe
 

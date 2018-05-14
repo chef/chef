@@ -1073,6 +1073,33 @@ class Chef
     end
 
     #
+    # User declaration that this resource class delays evalution of its entire
+    # block to the provider.
+    #
+    def self.lazy_block_evaluation
+      @lazy_block_evaluation = true
+
+      define_method(:block) do |&block|
+        if block
+          @block = block
+        else
+          @block
+        end
+      end
+    end
+
+    #
+    # Helper methods to see if we're doing lazy block evaluation
+    #
+    def self.lazy_block?
+      !!@lazy_block_evaluation
+    end
+
+    def lazy_block?
+      self.class.lazy_block?
+    end
+
+    #
     # Call this in `load_current_value` to indicate that the value does not
     # exist and that `current_resource` should therefore be `nil`.
     #

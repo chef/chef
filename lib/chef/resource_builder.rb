@@ -61,11 +61,15 @@ class Chef
 
       # Evaluate resource attribute DSL
       if block_given?
-        resource.resource_initializing = true
-        begin
-          resource.instance_eval(&block)
-        ensure
-          resource.resource_initializing = false
+        if resource.lazy_block?
+          resource.block(&block)
+        else
+          resource.resource_initializing = true
+          begin
+            resource.instance_eval(&block)
+          ensure
+            resource.resource_initializing = false
+          end
         end
       end
 
