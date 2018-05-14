@@ -57,6 +57,8 @@ class Chef
           action :nothing
         end
 
+        cleanup_legacy_file!
+
         repo = build_repo(
           new_resource.uri,
           new_resource.distribution,
@@ -66,7 +68,7 @@ class Chef
           new_resource.deb_src
         )
 
-        declare_resource(:file, "/etc/apt/sources.list.d/#{new_resource.name}.list") do
+        declare_resource(:file, "/etc/apt/sources.list.d/#{new_resource.repo_name}.list") do
           owner "root"
           group "root"
           mode "0644"
@@ -79,9 +81,10 @@ class Chef
       end
 
       action :remove do
-        if ::File.exist?("/etc/apt/sources.list.d/#{new_resource.name}.list")
-          converge_by "Removing #{new_resource.name} repository from /etc/apt/sources.list.d/" do
-            declare_resource(:file, "/etc/apt/sources.list.d/#{new_resource.name}.list") do
+        cleanup_legacy_file!
+        if ::File.exist?("/etc/apt/sources.list.d/#{new_resource.repo_name}.list")
+          converge_by "Removing #{new_resource.repo_name} repository from /etc/apt/sources.list.d/" do
+            declare_resource(:file, "/etc/apt/sources.list.d/#{new_resource.repo_name}.list") do
               sensitive new_resource.sensitive
               action :delete
               notifies :update, "apt_update[#{new_resource.name}]", :immediately if new_resource.cache_rebuild
@@ -93,7 +96,7 @@ class Chef
             end
           end
         else
-          logger.trace("/etc/apt/sources.list.d/#{new_resource.name}.list does not exist. Nothing to do")
+          logger.trace("/etc/apt/sources.list.d/#{new_resource.repo_name}.list does not exist. Nothing to do")
         end
       end
 
@@ -324,6 +327,23 @@ class Chef
         repo =  "deb      #{info}\n"
         repo << "deb-src  #{info}\n" if add_src
         repo
+      end
+
+      # clean up a potentially legacy file from before we fixed the usage of
+      # new_resource.name vs. new_resource.repo_name. We might have the
+      # name.list file hanging around and need to clean it up.
+      #
+      # @return [void]
+      def cleanup_legacy_file!
+        legacy_path = "/etc/apt/sources.list.d/#{new_resource.name}.list"
+        if new_resource.name != new_resource.repo_name && ::File.exist?(legacy_path)
+          converge_by "Cleaning up legacy #{legacy_path} repo file" do
+            declare_resource(:file, legacy_path) do
+              action :delete
+              # Not triggering an update since it isn't super likely to be needed.
+            end
+          end
+        end
       end
     end
   end
