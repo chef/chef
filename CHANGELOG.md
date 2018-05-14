@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.1.5 -->
-## [v14.1.5](https://github.com/chef/chef/tree/v14.1.5) (2018-05-11)
+<!-- latest_release 14.1.6 -->
+## [v14.1.6](https://github.com/chef/chef/tree/v14.1.6) (2018-05-14)
 
 #### Merged Pull Requests
-- repo_name property should be part of new_resource object [#7252](https://github.com/chef/chef/pull/7252) ([tj-anderson](https://github.com/tj-anderson))
+- remote_directory: restore overwrite default [#7254](https://github.com/chef/chef/pull/7254) ([rmoriz](https://github.com/rmoriz))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.1.1 -->
 ### Changes since 14.1.1 release
 
 #### Merged Pull Requests
+- remote_directory: restore overwrite default [#7254](https://github.com/chef/chef/pull/7254) ([rmoriz](https://github.com/rmoriz)) <!-- 14.1.6 -->
 - repo_name property should be part of new_resource object [#7252](https://github.com/chef/chef/pull/7252) ([tj-anderson](https://github.com/tj-anderson)) <!-- 14.1.5 -->
 - fix git provider: -prune-tags is not available with old git versions, fixes #7233 [#7247](https://github.com/chef/chef/pull/7247) ([rmoriz](https://github.com/rmoriz)) <!-- 14.1.4 -->
 - Switch Node#role? to use the attributes expansion instead of the run list [#7234](https://github.com/chef/chef/pull/7234) ([coderanger](https://github.com/coderanger)) <!-- 14.1.3 -->
