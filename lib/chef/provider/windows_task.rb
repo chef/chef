@@ -230,7 +230,6 @@ class Chef
         private
 
         # seprated command arguments from :command property
-        # TODO: Need to work on more accurate result regex currently will fail if command contain file names like "abc _b"
         def set_command_and_arguments
           cmd, *args = Shellwords.split(new_resource.command)
           new_resource.command = cmd
