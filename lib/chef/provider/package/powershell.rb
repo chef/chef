@@ -110,12 +110,14 @@ class Chef
 
         def build_powershell_package_command(command, version = nil)
           command = [command] unless command.is_a?(Array)
+          cmdlet_name = command.first
           command.unshift("(")
           %w{-Force -ForceBootstrap}.each do |arg|
             command.push(arg)
           end
           command.push("-RequiredVersion #{version}") if version
-          command.push("-Source #{new_resource.source}") if new_resource.source && command[1] =~ Regexp.union(/Install-Package/, /Find-Package/)
+          command.push("-Source #{new_resource.source}") if new_resource.source && cmdlet_name =~ Regexp.union(/Install-Package/, /Find-Package/)
+          command.push("-SkipPublisherCheck") if new_resource.skip_publisher_check && cmdlet_name !~ /Find-Package/
           command.push(").Version")
           command.join(" ")
         end
