@@ -107,13 +107,13 @@ GEM
       mixlib-cli (~> 1.4)
       mixlib-shellout (~> 2.0)
     ast (2.4.0)
-    aws-sdk (2.11.49)
-      aws-sdk-resources (= 2.11.49)
-    aws-sdk-core (2.11.49)
+    aws-sdk (2.11.50)
+      aws-sdk-resources (= 2.11.50)
+    aws-sdk-core (2.11.50)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.11.49)
-      aws-sdk-core (= 2.11.49)
+    aws-sdk-resources (2.11.50)
+      aws-sdk-core (= 2.11.50)
     aws-sigv4 (1.0.2)
     azure_mgmt_resources (0.16.0)
       ms_rest_azure (~> 0.10.0)
@@ -400,7 +400,7 @@ GEM
     win32-service (0.8.10)
       ffi
       ffi-win32-extensions
-    win32-taskscheduler (0.4.0)
+    win32-taskscheduler (0.4.1)
       ffi
       structured_warnings
     windows-api (0.4.4)
